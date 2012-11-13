@@ -59,6 +59,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
 import org.hibernate.validator.NotEmpty;
 import org.hibernate.validator.NotNull;
+import org.jboss.seam.core.Events;
 import org.zanata.common.ContentState;
 import org.zanata.common.HasContents;
 import org.zanata.hibernate.search.ContentStateBridge;
@@ -362,6 +363,12 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents, Has
 
    @PostUpdate
    @PostPersist
+   private void targetChanged()
+   {
+      Events.instance().raiseEvent("targetChanged", this);
+      updateInternalHistory();
+   }
+
    @PostLoad
    private void updateInternalHistory()
    {

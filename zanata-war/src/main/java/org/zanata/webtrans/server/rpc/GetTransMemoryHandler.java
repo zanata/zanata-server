@@ -48,6 +48,7 @@ import org.zanata.search.LevenshteinTokenUtil;
 import org.zanata.search.LevenshteinUtil;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.service.TranslatedIdService;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
@@ -74,6 +75,9 @@ public class GetTransMemoryHandler extends AbstractActionHandler<GetTranslationM
 
    @In
    private TextFlowDAO textFlowDAO;
+
+   @In
+   private TranslatedIdService translatedIdService;
 
    @In
    private ZanataIdentity identity;
