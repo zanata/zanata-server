@@ -66,7 +66,7 @@ import com.google.common.collect.Lists;
 public class GetTransMemoryHandler extends AbstractActionHandler<GetTranslationMemory, GetTranslationMemoryResult>
 {
 
-   private static final boolean useTargetIndex = true;
+   private static final boolean useTargetIndex = false;
 
    private static final int MAX_RESULTS = 25;
 
@@ -111,7 +111,7 @@ public class GetTransMemoryHandler extends AbstractActionHandler<GetTranslationM
          else
          {
             // FIXME this won't scale well(findIdsWithTransliations will scan the entire table each time)
-            List<Long> idsWithTranslations = textFlowDAO.findIdsWithTranslations(targetLocale.getLocaleId());
+            List<Long> idsWithTranslations = translatedIdService.getIdsWithTranslations(targetLocale.getLocaleId());
             matches = textFlowDAO.getSearchResult(transMemoryQuery, idsWithTranslations, sourceLocaleId, MAX_RESULTS);
          }
 

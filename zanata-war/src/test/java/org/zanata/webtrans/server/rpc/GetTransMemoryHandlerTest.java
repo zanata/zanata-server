@@ -19,6 +19,7 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.service.TranslatedIdService;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.rpc.GetTranslationMemory;
 import org.zanata.webtrans.shared.rpc.GetTranslationMemoryResult;
@@ -40,6 +41,8 @@ public class GetTransMemoryHandlerTest extends ZanataDbunitJpaTest
    private ZanataIdentity identity;
    @Mock
    private LocaleService localeService;
+   @Mock
+   private TranslatedIdService translatedIdService;
    private LocaleId targetLocaleId = new LocaleId("ja");
    private LocaleId sourceLocaleId = LocaleId.EN_US;
    private TextFlowDAO textFlowDAOSpy;
@@ -59,6 +62,7 @@ public class GetTransMemoryHandlerTest extends ZanataDbunitJpaTest
             .use("identity", identity)
             .use("localeServiceImpl", localeService)
             .use("entityManager", new FullTextEntityManagerImpl(getEm()))
+            .use("translatedIdService", translatedIdService)
             .use("session", getSession());
       TextFlowDAO dao = autoWireInstance
             .autowire(TextFlowDAO.class);
@@ -76,10 +80,17 @@ public class GetTransMemoryHandlerTest extends ZanataDbunitJpaTest
    {
       // Given: hibernate search finds 2 matches for query
       TransMemoryQuery query = new TransMemoryQuery(Lists.newArrayList("file removed"), HasSearchType.SearchType.FUZZY_PLURAL);
+
+      // for target index strategy
       HTextFlowTarget tmMatch1 = getEm().find(HTextFlowTarget.class, 60L);
       HTextFlowTarget tmMatch2 = getEm().find(HTextFlowTarget.class, 62L);
       List<Object[]> matches = Lists.newArrayList(new Object[] {1.0F, tmMatch1}, new Object[] {1.1F, tmMatch2});
       doReturn(matches).when(textFlowDAOSpy).getSearchResult(eq(query), eq(sourceLocaleId), eq(25));
+
+      // for source index strategy
+      List<Object[]> sourceMatches = Lists.newArrayList(new Object[] {1.0F, tmMatch1.getTextFlow()}, new Object[] {1.1F, tmMatch2.getTextFlow()});
+      doReturn(sourceMatches).when(textFlowDAOSpy).getSearchResult(eq(query), anyList(), eq(sourceLocaleId), eq(25));
+
       GetTranslationMemory action = new GetTranslationMemory(query, targetLocaleId, sourceLocaleId);
 
       // When:
@@ -112,7 +123,6 @@ public class GetTransMemoryHandlerTest extends ZanataDbunitJpaTest
       assertThat(result.getMemories(), Matchers.hasSize(0));
    }
 
-   @SuppressWarnings("unchecked")
    @Test
    public void whenThereAreParseException() throws Exception
    {
