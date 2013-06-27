@@ -142,7 +142,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
    {
       PersonDAO personDAO = new PersonDAO(getSession());
       HPerson person = personDAO.findById(1L, false);
-      HTextFlowTarget target = textFlowTargetDAO.findById(1L, false);
+      HTextFlowTarget target = textFlowTargetDAO.findById(2L, false);
 
       List<String> oldTranslation = target.getContents();
       int oldVersion = target.getVersionNum();
