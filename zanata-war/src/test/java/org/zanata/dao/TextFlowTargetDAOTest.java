@@ -44,9 +44,11 @@ import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @Test(groups = { "jpa-tests" })
 public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
@@ -133,5 +135,32 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       assertThat(result.getTargetContents(), Matchers.equalTo(target.getContents()));
       assertThat(result.getMadeByName(), Matchers.equalTo(person.getName()));
       assertThat(result.getMadeDate(), Matchers.lessThanOrEqualTo(new Date()));
+   }
+
+   @Test
+   public void testTargetUserCommentMadeOnPreviousTranslation()
+   {
+      PersonDAO personDAO = new PersonDAO(getSession());
+      HPerson person = personDAO.findById(1L, false);
+      HTextFlowTarget target = textFlowTargetDAO.findById(1L, false);
+
+      List<String> oldTranslation = target.getContents();
+      int oldVersion = target.getVersionNum();
+
+      target.addUserComment("comment blah", person);
+      getEm().persist(target);
+
+      // change target after making comment
+      target.getContents().set(0, "new translation");
+      getEm().persist(target);
+
+      // @formatter:off
+      HTargetUserComment result = getEm()
+            .createQuery("from HTargetUserComment where comment = :comment", HTargetUserComment.class)
+            .setParameter("comment", "comment blah").getSingleResult();
+      // @formatter:on
+
+      assertThat(result.getTargetContents(), Matchers.equalTo(oldTranslation));
+      assertThat(result.getTargetVersion(), Matchers.equalTo(oldVersion));
    }
 }

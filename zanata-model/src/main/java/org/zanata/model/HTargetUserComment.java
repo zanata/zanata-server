@@ -76,31 +76,9 @@ public class HTargetUserComment implements Serializable
    private HPerson madeBy;
    private HTextFlowTarget textFlowTarget;
    private String comment;
-   @Getter
-   private ContentState contentState;
 
-   // contents
-   @Getter(AccessLevel.PROTECTED)
    @Setter(AccessLevel.PROTECTED)
-   private String content0;
-   @Getter(AccessLevel.PROTECTED)
-   @Setter(AccessLevel.PROTECTED)
-   private String content1;
-   @Getter(AccessLevel.PROTECTED)
-   @Setter(AccessLevel.PROTECTED)
-   private String content2;
-   @Getter(AccessLevel.PROTECTED)
-   @Setter(AccessLevel.PROTECTED)
-   private String content3;
-   @Getter(AccessLevel.PROTECTED)
-   @Setter(AccessLevel.PROTECTED)
-   private String content4;
-   @Getter(AccessLevel.PROTECTED)
-   @Setter(AccessLevel.PROTECTED)
-   private String content5;
-
-   @Setter(AccessLevel.NONE)
-   private transient List<String> targetContents;
+   private Integer targetVersion;
 
    @Setter(AccessLevel.NONE)
    private transient String madeByName;
@@ -111,18 +89,7 @@ public class HTargetUserComment implements Serializable
       this.comment = comment;
       this.madeBy = madeBy;
       madeByName = madeBy.getName();
-      contentState = target.getState();
-      content0 = target.getContent0();
-      content1 = target.getContent1();
-      content2 = target.getContent2();
-      content3 = target.getContent3();
-      content4 = target.getContent4();
-      content5 = target.getContent5();
-      // @formatter:off
-      targetContents = ImmutableList.copyOf(
-            Iterables.filter(Lists.newArrayList(content0, content1, content2, content3, content4, content5),
-                  Predicates.notNull()));
-      // @formatter:on
+      targetVersion = target.getVersionNum();
    }
 
    @Id
@@ -175,16 +142,32 @@ public class HTargetUserComment implements Serializable
       return textFlowTarget;
    }
 
+   @NotNull
+   @NaturalId
+   public Integer getTargetVersion()
+   {
+      return targetVersion;
+   }
+
+   // TODO pahuang we probably want to cache below two methods
+   @Transient
+   public ContentState getContentState()
+   {
+      if (textFlowTarget.getVersionNum().equals(targetVersion))
+      {
+         return textFlowTarget.getState();
+      }
+      return textFlowTarget.getHistory().get(targetVersion).getState();
+   }
+
    @Transient
    public List<String> getTargetContents()
    {
-      return targetContents;
+      if (textFlowTarget.getVersionNum().equals(targetVersion))
+      {
+         return textFlowTarget.getContents();
+      }
+      return textFlowTarget.getHistory().get(targetVersion).getContents();
    }
-
-   public void setContents(List<String> contents)
-   {
-      this.targetContents = new ArrayList<String>(contents);
-   }
-
 
 }

@@ -24,25 +24,7 @@
             <column name="comment" type="longtext">
                 <constraints nullable="false"/>
             </column>
-            <column name="content0" type="longtext">
-                <constraints nullable="false"/>
-            </column>
-            <column name="content1" type="longtext">
-                <constraints nullable="true"/>
-            </column>
-            <column name="content2" type="longtext">
-                <constraints nullable="true"/>
-            </column>
-            <column name="content3" type="longtext">
-                <constraints nullable="true"/>
-            </column>
-            <column name="content4" type="longtext">
-                <constraints nullable="true"/>
-            </column>
-            <column name="content5" type="longtext">
-                <constraints nullable="true"/>
-            </column>
-            <column name="contentState" type="char(1)">
+            <column name="targetVersion" type="int">
                 <constraints nullable="false"/>
             </column>
         </createTable>
