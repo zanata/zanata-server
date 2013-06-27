@@ -151,7 +151,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       getEm().persist(target);
 
       // change target after making comment
-      target.getContents().set(0, "new translation");
+      target.setContent0("new translation");
       getEm().persist(target);
 
       // @formatter:off
