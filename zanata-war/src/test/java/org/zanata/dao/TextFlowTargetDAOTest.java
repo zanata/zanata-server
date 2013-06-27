@@ -20,9 +20,16 @@
  */
 package org.zanata.dao;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.TypedQuery;
+
 import lombok.Cleanup;
 
 import org.dbunit.operation.DatabaseOperation;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.testng.annotations.BeforeMethod;
@@ -31,6 +38,8 @@ import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.ContentState;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
+import org.zanata.model.HPerson;
+import org.zanata.model.HTargetUserComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 
@@ -44,12 +53,13 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
 {
 
    private TextFlowTargetDAO textFlowTargetDAO;
-   
+
    
    @Override
    protected void prepareDBUnitOperations()
    {
       //      beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/ClearAllTables.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
+      beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/AccountData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/ProjectsData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/TextFlowTestData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/LocalesData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));      
@@ -98,5 +108,30 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       HLocale hLocale = (HLocale) getSession().get(HLocale.class, 1L);
       @Cleanup
       ScrollableResults scroll = this.textFlowTargetDAO.findMatchingTranslations(doc, hLocale, true, true, true, true);
+   }
+
+   @Test
+   public void testTargetUserComment()
+   {
+      PersonDAO personDAO = new PersonDAO(getSession());
+      HPerson person = personDAO.findById(1L, false);
+      HTextFlowTarget target = textFlowTargetDAO.findById(1L, false);
+
+      List<HTargetUserComment> userComments = target.getUserComments();
+
+      assertThat(userComments, Matchers.empty());
+
+      target.addUserComment("bad translation", person);
+      getEm().persist(target);
+
+      // @formatter:off
+      HTargetUserComment result = getEm()
+            .createQuery("from HTargetUserComment where comment = :comment", HTargetUserComment.class)
+            .setParameter("comment", "bad translation").getSingleResult();
+      // @formatter:on
+
+      assertThat(result.getTargetContents(), Matchers.equalTo(target.getContents()));
+      assertThat(result.getMadeByName(), Matchers.equalTo(person.getName()));
+      assertThat(result.getMadeDate(), Matchers.lessThanOrEqualTo(new Date()));
    }
 }

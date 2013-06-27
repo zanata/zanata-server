@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+                  http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="pahuang@redhat.com">
+        <comment>Add HTargetUserComment table to support user comments.</comment>
+        <createTable tableName="HTargetUserComment">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="madeDate" type="DATETIME">
+                <constraints nullable="false" />
+            </column>
+            <column name="made_by_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="target_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="longtext">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content0" type="longtext">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content1" type="longtext">
+                <constraints nullable="true"/>
+            </column>
+            <column name="content2" type="longtext">
+                <constraints nullable="true"/>
+            </column>
+            <column name="content3" type="longtext">
+                <constraints nullable="true"/>
+            </column>
+            <column name="content4" type="longtext">
+                <constraints nullable="true"/>
+            </column>
+            <column name="content5" type="longtext">
+                <constraints nullable="true"/>
+            </column>
+            <column name="contentState" type="char(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="FKtarget_user_comment_made_by"
+                                 referencedTableName="HPerson" referencedColumnNames="id"
+                                 baseTableName="HTargetUserComment" baseColumnNames="made_by_id"/>
+        <addForeignKeyConstraint constraintName="FKtarget_user_comment"
+                                 referencedTableName="HTextFlowTarget" referencedColumnNames="id"
+                                 baseTableName="HTargetUserComment" baseColumnNames="target_id"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

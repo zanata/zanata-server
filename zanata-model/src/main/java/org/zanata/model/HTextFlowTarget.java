@@ -74,6 +74,7 @@ import org.zanata.hibernate.search.StringListBridge;
 import org.zanata.hibernate.search.TextContainerAnalyzerDiscriminator;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 
 /**
  * Represents a flow of translated text that should be processed as a
@@ -113,6 +114,8 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents, Has
    private HSimpleComment comment;
 
    private Map<Integer, HTextFlowTargetHistory> history;
+
+   private List<HTargetUserComment> userComments;
 
    // Only for internal use (persistence transient)
    @Setter(AccessLevel.PRIVATE)
@@ -386,6 +389,22 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents, Has
          this.history = new HashMap<Integer, HTextFlowTargetHistory>();
       }
       return history;
+   }
+
+   @OneToMany(cascade = { CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST }, mappedBy = "textFlowTarget")
+   public List<HTargetUserComment> getUserComments()
+   {
+      if (userComments == null)
+      {
+         userComments = Lists.newArrayList();
+      }
+      return userComments;
+   }
+
+   public HTextFlowTarget addUserComment(String comment, HPerson commenter)
+   {
+      getUserComments().add(new HTargetUserComment(this, comment, commenter));
+      return this;
    }
 
    @PreUpdate
