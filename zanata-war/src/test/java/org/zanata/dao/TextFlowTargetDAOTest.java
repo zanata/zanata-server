@@ -36,7 +36,7 @@ import org.zanata.common.ContentState;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
-import org.zanata.model.HTargetUserComment;
+import org.zanata.model.HTextFlowTargetReviewComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 
@@ -116,7 +116,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       HPerson person = personDAO.findById(1L, false);
       HTextFlowTarget target = textFlowTargetDAO.findById(1L, false);
 
-      List<HTargetUserComment> userComments = target.getUserComments();
+      List<HTextFlowTargetReviewComment> userComments = target.getUserComments();
 
       assertThat(userComments, Matchers.empty());
 
@@ -124,8 +124,8 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       getEm().persist(target);
 
       // @formatter:off
-      HTargetUserComment result = getEm()
-            .createQuery("from HTargetUserComment where comment = :comment", HTargetUserComment.class)
+      HTextFlowTargetReviewComment result = getEm()
+            .createQuery("from HTextFlowTargetReviewComment where comment = :comment", HTextFlowTargetReviewComment.class)
             .setParameter("comment", "bad translation").getSingleResult();
       // @formatter:on
 
@@ -152,8 +152,8 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
       getEm().persist(target);
 
       // @formatter:off
-      HTargetUserComment result = getEm()
-            .createQuery("from HTargetUserComment where comment = :comment", HTargetUserComment.class)
+      HTextFlowTargetReviewComment result = getEm()
+            .createQuery("from HTextFlowTargetReviewComment where comment = :comment", HTextFlowTargetReviewComment.class)
             .setParameter("comment", "comment blah").getSingleResult();
       // @formatter:on
 

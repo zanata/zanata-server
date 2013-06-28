@@ -66,7 +66,7 @@ import lombok.Setter;
 @BatchSize(size = 20)
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HTargetUserComment implements Serializable
+public class HTextFlowTargetReviewComment implements Serializable
 {
    private static final long serialVersionUID = 1413384329431214946L;
 
@@ -83,7 +83,7 @@ public class HTargetUserComment implements Serializable
    @Setter(AccessLevel.NONE)
    private transient String madeByName;
 
-   public HTargetUserComment(HTextFlowTarget target, String comment, HPerson madeBy)
+   public HTextFlowTargetReviewComment(HTextFlowTarget target, String comment, HPerson madeBy)
    {
       this.textFlowTarget = target;
       this.comment = comment;

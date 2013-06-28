@@ -7,7 +7,7 @@
                   http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="1" author="pahuang@redhat.com">
-        <comment>Add HTargetUserComment table to support user comments.</comment>
+        <comment>Add HTextFlowTargetReviewComment table to support user comments.</comment>
         <createTable tableName="HTargetUserComment">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -30,10 +30,10 @@
         </createTable>
         <addForeignKeyConstraint constraintName="FKtarget_user_comment_made_by"
                                  referencedTableName="HPerson" referencedColumnNames="id"
-                                 baseTableName="HTargetUserComment" baseColumnNames="made_by_id"/>
+                                 baseTableName="HTextFlowTargetReviewComment" baseColumnNames="made_by_id"/>
         <addForeignKeyConstraint constraintName="FKtarget_user_comment"
                                  referencedTableName="HTextFlowTarget" referencedColumnNames="id"
-                                 baseTableName="HTargetUserComment" baseColumnNames="target_id"/>
+                                 baseTableName="HTextFlowTargetReviewComment" baseColumnNames="target_id"/>
     </changeSet>
 
 
