@@ -8,7 +8,7 @@
 
     <changeSet id="1" author="pahuang@redhat.com">
         <comment>Add HTextFlowTargetReviewComment table to support user comments.</comment>
-        <createTable tableName="HTargetUserComment">
+        <createTable tableName="HTextFlowTargetReviewComment">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -28,10 +28,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint constraintName="FKtarget_user_comment_made_by"
+        <addForeignKeyConstraint constraintName="FKtarget_review_comment_made_by"
                                  referencedTableName="HPerson" referencedColumnNames="id"
                                  baseTableName="HTextFlowTargetReviewComment" baseColumnNames="made_by_id"/>
-        <addForeignKeyConstraint constraintName="FKtarget_user_comment"
+        <addForeignKeyConstraint constraintName="FKtarget_review_comment"
                                  referencedTableName="HTextFlowTarget" referencedColumnNames="id"
                                  baseTableName="HTextFlowTargetReviewComment" baseColumnNames="target_id"/>
     </changeSet>
