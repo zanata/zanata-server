@@ -23,12 +23,9 @@ package org.zanata.dao;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-
 import lombok.Cleanup;
 
 import org.dbunit.operation.DatabaseOperation;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -60,7 +57,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
    @Override
    protected void prepareDBUnitOperations()
    {
-      //      beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/ClearAllTables.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
+      beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/ClearAllTables.dbunit.xml", DatabaseOperation.DELETE_ALL));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/AccountData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/ProjectsData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
       beforeTestOperations.add(new DataSetOperation("org/zanata/test/model/TextFlowTestData.dbunit.xml", DatabaseOperation.CLEAN_INSERT));
@@ -132,7 +129,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
             .setParameter("comment", "bad translation").getSingleResult();
       // @formatter:on
 
-      assertThat(result.getTargetContents(), Matchers.equalTo(target.getContents()));
+      assertThat(result.getContentsOfCommentingTarget(), Matchers.equalTo(target.getContents()));
       assertThat(result.getMadeByName(), Matchers.equalTo(person.getName()));
       assertThat(result.getMadeDate(), Matchers.lessThanOrEqualTo(new Date()));
    }
@@ -160,7 +157,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
             .setParameter("comment", "comment blah").getSingleResult();
       // @formatter:on
 
-      assertThat(result.getTargetContents(), Matchers.equalTo(oldTranslation));
+      assertThat(result.getContentsOfCommentingTarget(), Matchers.equalTo(oldTranslation));
       assertThat(result.getTargetVersion(), Matchers.equalTo(oldVersion));
    }
 }
