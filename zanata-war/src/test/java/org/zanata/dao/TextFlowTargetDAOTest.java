@@ -129,7 +129,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
             .setParameter("comment", "bad translation").getSingleResult();
       // @formatter:on
 
-      assertThat(result.getContentsOfCommentingTarget(), Matchers.equalTo(target.getContents()));
+      assertThat(result.getContentsOfCommentedTarget(), Matchers.equalTo(target.getContents()));
       assertThat(result.getMadeByName(), Matchers.equalTo(person.getName()));
       assertThat(result.getMadeDate(), Matchers.lessThanOrEqualTo(new Date()));
    }
@@ -157,7 +157,7 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest
             .setParameter("comment", "comment blah").getSingleResult();
       // @formatter:on
 
-      assertThat(result.getContentsOfCommentingTarget(), Matchers.equalTo(oldTranslation));
+      assertThat(result.getContentsOfCommentedTarget(), Matchers.equalTo(oldTranslation));
       assertThat(result.getTargetVersion(), Matchers.equalTo(oldVersion));
    }
 }

@@ -151,7 +151,7 @@ public class HTargetUserComment implements Serializable
 
    // TODO pahuang we probably want to cache below two methods
    @Transient
-   public ContentState getContentStateOfCommentingTarget()
+   public ContentState getContentStateOfCommentedTarget()
    {
       if (textFlowTarget.getVersionNum().equals(targetVersion))
       {
@@ -161,7 +161,7 @@ public class HTargetUserComment implements Serializable
    }
 
    @Transient
-   public List<String> getContentsOfCommentingTarget()
+   public List<String> getContentsOfCommentedTarget()
    {
       if (textFlowTarget.getVersionNum().equals(targetVersion))
       {
