@@ -45,7 +45,7 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
 
    public static GetTransUnitList newAction(GetTransUnitActionContext context)
    {
-      return new GetTransUnitList(context.getDocument().getId(), context.getOffset(), context.getCount(), context.getFindMessage(), context.isFilterTranslated(), context.isFilterNeedReview(), context.isFilterUntranslated(), context.isFilterApproved(), context.isFilterRejected(), context.isFilterHasError(), context.getTargetTransUnitId(), context.getValidationIds());
+      return new GetTransUnitList(context.getDocument().getId(), context.getOffset(), context.getCount(), context.getFindMessage(), context.isFilterTranslated(), context.isFilterFuzzy(), context.isFilterUntranslated(), context.isFilterApproved(), context.isFilterRejected(), context.isFilterHasError(), context.getTargetTransUnitId(), context.getValidationIds());
    }
 
    public boolean isNeedReloadIndex()

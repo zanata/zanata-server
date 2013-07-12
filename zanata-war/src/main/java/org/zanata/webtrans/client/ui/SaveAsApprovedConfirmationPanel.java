@@ -31,12 +31,9 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.inject.Inject;
 
 /**
@@ -101,7 +98,6 @@ public class SaveAsApprovedConfirmationPanel extends PopupPanel implements SaveA
    {
       this.listener = listener;
       addListenerToButtons();
-      this.center();
    }
 
    private void addListenerToButtons()
