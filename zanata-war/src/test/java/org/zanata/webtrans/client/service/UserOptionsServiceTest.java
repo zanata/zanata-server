@@ -183,7 +183,7 @@ public class UserOptionsServiceTest
       assertThat(configHolder.getState().isShowError(), Matchers.equalTo(UserConfigHolder.DEFAULT_SHOW_ERROR));
       assertThat(configHolder.getState().isDisplayButtons(), Matchers.equalTo(UserConfigHolder.DEFAULT_DISPLAY_BUTTONS));
       assertThat(configHolder.getState().isEnterSavesApproved(), Matchers.equalTo(UserConfigHolder.DEFAULT_ENTER_SAVES_APPROVED));
-      assertThat(configHolder.getState().isFilterByNeedReview(), Matchers.equalTo(UserConfigHolder.DEFAULT_FILTER));
+      assertThat(configHolder.getState().isFilterByFuzzy(), Matchers.equalTo(UserConfigHolder.DEFAULT_FILTER));
       assertThat(configHolder.getState().isFilterByTranslated(), Matchers.equalTo(UserConfigHolder.DEFAULT_FILTER));
       assertThat(configHolder.getState().isFilterByUntranslated(), Matchers.equalTo(UserConfigHolder.DEFAULT_FILTER));
       assertThat(configHolder.getState().isFilterByApproved(), Matchers.equalTo(UserConfigHolder.DEFAULT_FILTER));

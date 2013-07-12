@@ -44,6 +44,7 @@ public class TransFilterPresenterTest
 
       when(userOptionsService.getConfigHolder()).thenReturn(configHolder);
 
+
       presenter = new TransFilterPresenter(display, eventBus, history, userOptionsService);
 
       verify(display).setListener(presenter);
@@ -102,14 +103,24 @@ public class TransFilterPresenterTest
    public void willSetOptionsBackOnFilterViewCancelEvent()
    {
       FilterViewEvent event = new FilterViewEvent(true, true, true, true, true, false, true, null);
+      HistoryToken historyToken = new HistoryToken();
+      when(history.getHistoryToken()).thenReturn(historyToken);
 
+      
       presenter.onFilterView(event);
 
       verify(display).setTranslatedFilter(event.isFilterUntranslated());
       verify(display).setNeedReviewFilter(event.isFilterTranslated());
-      verify(display).setUntranslatedFilter(event.isFilterNeedReview());
+      verify(display).setUntranslatedFilter(event.isFilterFuzzy());
       verify(display).setApprovedFilter(event.isFilterApproved());
       verify(display).setRejectedFilter(event.isFilterRejected());
+      
+      assertThat(historyToken.isFilterUntranslated(), Matchers.equalTo(event.isFilterUntranslated()));
+      assertThat(historyToken.isFilterTranslated(), Matchers.equalTo(event.isFilterTranslated()));
+      assertThat(historyToken.isFilterFuzzy(), Matchers.equalTo(event.isFilterFuzzy()));
+      assertThat(historyToken.isFilterApproved(), Matchers.equalTo(event.isFilterApproved()));
+      assertThat(historyToken.isFilterRejected(), Matchers.equalTo(event.isFilterRejected()));
+      assertThat(historyToken.isFilterHasError(), Matchers.equalTo(event.isFilterHasError()));
    }
 
    @Test
@@ -126,20 +137,30 @@ public class TransFilterPresenterTest
    public void onUserConfigChange()
    {
       configHolder.setFilterByTranslated(true);
-      configHolder.setFilterByNeedReview(false);
+      configHolder.setFilterByFuzzy(false);
       configHolder.setFilterByUntranslated(true);
       configHolder.setFilterByApproved(true);
       configHolder.setFilterByRejected(true);
       configHolder.setFilterByHasError(true);
+      
+      HistoryToken historyToken = new HistoryToken();
+      when(history.getHistoryToken()).thenReturn(historyToken);
 
       presenter.onUserConfigChanged(UserConfigChangeEvent.EDITOR_CONFIG_CHANGE_EVENT);
 
-      verify(display).setTranslatedFilter(true);
-      verify(display).setNeedReviewFilter(false);
-      verify(display).setUntranslatedFilter(true);
-      verify(display).setApprovedFilter(true);
-      verify(display).setRejectedFilter(true);
-      verify(display).setHasErrorFilter(true);
+      verify(display).setTranslatedFilter(configHolder.getState().isFilterByTranslated());
+      verify(display).setNeedReviewFilter(configHolder.getState().isFilterByFuzzy());
+      verify(display).setUntranslatedFilter(configHolder.getState().isFilterByUntranslated());
+      verify(display).setApprovedFilter(configHolder.getState().isFilterByApproved());
+      verify(display).setRejectedFilter(configHolder.getState().isFilterByRejected());
+      verify(display).setHasErrorFilter(configHolder.getState().isFilterByHasError());
+      
+      assertThat(historyToken.isFilterTranslated(), Matchers.equalTo(configHolder.getState().isFilterByTranslated()));
+      assertThat(historyToken.isFilterFuzzy(), Matchers.equalTo(configHolder.getState().isFilterByFuzzy()));
+      assertThat(historyToken.isFilterUntranslated(), Matchers.equalTo(configHolder.getState().isFilterByUntranslated()));
+      assertThat(historyToken.isFilterApproved(), Matchers.equalTo(configHolder.getState().isFilterByApproved()));
+      assertThat(historyToken.isFilterRejected(), Matchers.equalTo(configHolder.getState().isFilterByRejected()));
+      assertThat(historyToken.isFilterHasError(), Matchers.equalTo(configHolder.getState().isFilterByHasError()));
    }
 
    @Test
@@ -152,7 +173,7 @@ public class TransFilterPresenterTest
 
       UserConfigHolder configHolder = userOptionsService.getConfigHolder();
       assertThat(configHolder.getState().isFilterByTranslated(), Matchers.equalTo(true));
-      assertThat(configHolder.getState().isFilterByNeedReview(), Matchers.equalTo(false));
+      assertThat(configHolder.getState().isFilterByFuzzy(), Matchers.equalTo(false));
       assertThat(configHolder.getState().isFilterByUntranslated(), Matchers.equalTo(true));
       assertThat(configHolder.getState().isFilterByApproved(), Matchers.equalTo(true));
       assertThat(configHolder.getState().isFilterByRejected(), Matchers.equalTo(false));

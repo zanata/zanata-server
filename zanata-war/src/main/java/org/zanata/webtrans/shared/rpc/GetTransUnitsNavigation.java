@@ -48,7 +48,7 @@ public class GetTransUnitsNavigation
 
    public static GetTransUnitsNavigation newAction(GetTransUnitActionContext context)
    {
-      return new GetTransUnitsNavigation(context.getDocument().getId().getId(), context.getFindMessage(), context.isFilterUntranslated(), context.isFilterNeedReview(), context.isFilterTranslated(), context.isFilterApproved(), context.isFilterRejected());
+      return new GetTransUnitsNavigation(context.getDocument().getId().getId(), context.getFindMessage(), context.isFilterUntranslated(), context.isFilterFuzzy(), context.isFilterTranslated(), context.isFilterApproved(), context.isFilterRejected());
    }
 
    public Long getId()

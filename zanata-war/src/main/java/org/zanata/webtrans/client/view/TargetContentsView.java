@@ -35,6 +35,7 @@ import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.UserWorkspaceContext;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -240,7 +241,21 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
    @Override
    public List<String> getCachedTargets()
    {
-      return cachedValue.getTargets();
+      ArrayList<String> result = Lists.newArrayList();
+      
+      if(cachedValue != null)
+      {
+         result.addAll(cachedValue.getTargets());
+      }
+      return result;
+      
+   }
+   
+   @Override
+   public void resetEditorsAndCachedTargets()
+   {
+      cachedValue = null;
+      editors.clear();
    }
 
    @Override

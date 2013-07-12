@@ -87,7 +87,7 @@ public class GetTransUnitListHandler extends AbstractActionHandler<GetTransUnitL
       GetTransUnitsNavigationResult navigationResult = null;
       if (action.isNeedReloadIndex())
       {
-         GetTransUnitsNavigation getTransUnitsNavigation = new GetTransUnitsNavigation(action.getDocumentId().getId(), action.getPhrase(), action.isFilterUntranslated(), action.isFilterNeedReview(), action.isFilterTranslated(), action.isFilterApproved(), action.isFilterRejected());
+         GetTransUnitsNavigation getTransUnitsNavigation = new GetTransUnitsNavigation(action.getDocumentId().getId(), action.getPhrase(), action.isFilterByUntranslated(), action.isFilterByFuzzy(), action.isFilterByTranslated(), action.isFilterByApproved(), action.isFilterByRejected());
          log.debug("get trans unit navigation action: {}", getTransUnitsNavigation);
          navigationResult = getTransUnitsNavigationService.getNavigationIndexes(getTransUnitsNavigation, hLocale);
 
@@ -138,7 +138,7 @@ public class GetTransUnitListHandler extends AbstractActionHandler<GetTransUnitL
          // @formatter:off
          FilterConstraints constraints = FilterConstraints
                .filterBy(action.getPhrase()).ignoreCase().filterSource().filterTarget()
-               .filterByStatus(action.isFilterUntranslated(), action.isFilterNeedReview(), action.isFilterTranslated(), action.isFilterApproved(), action.isFilterRejected());
+               .filterByStatus(action.isFilterByUntranslated(), action.isFilterByFuzzy(), action.isFilterByTranslated(), action.isFilterByApproved(), action.isFilterByRejected());
          // @formatter:on
          log.debug("Fetch TransUnits filtered by status and/or search: {}", constraints);
          if (!hasValidationFilter(action))
@@ -162,7 +162,7 @@ public class GetTransUnitListHandler extends AbstractActionHandler<GetTransUnitL
 
    private boolean hasValidationFilter(GetTransUnitList action)
    {
-      return action.isFilterHasError() && action.getValidationIds() != null && !action.getValidationIds().isEmpty();
+      return action.isFilterByHasError() && action.getValidationIds() != null && !action.getValidationIds().isEmpty();
    }
 
    private HLocale validateAndGetLocale(GetTransUnitList action) throws ActionException

@@ -153,7 +153,7 @@ public class LoadOptionsHandler extends AbstractActionHandler<LoadOptionsAction,
 
       if (filteredOptions.containsKey(UserOptions.NeedReviewMessageFilter.getPersistentName()))
       {
-         configHolder.setFilterByNeedReview(filteredOptions.get(UserOptions.NeedReviewMessageFilter.getPersistentName()).getValueAsBoolean());
+         configHolder.setFilterByFuzzy(filteredOptions.get(UserOptions.NeedReviewMessageFilter.getPersistentName()).getValueAsBoolean());
       }
 
       if (filteredOptions.containsKey(UserOptions.UntranslatedMessageFilter.getPersistentName()))
