@@ -197,7 +197,7 @@ public class TransUnitsTablePresenter extends WidgetPresenter<TransUnitsTableDis
    }
 
    @Override
-   public void saveChangesAndFilter()
+   public void saveAsTranslatedAndFilter()
    {
       saveAndFilter(ContentState.Translated);
    }

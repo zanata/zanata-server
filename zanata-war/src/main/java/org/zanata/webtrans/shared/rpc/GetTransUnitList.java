@@ -16,7 +16,7 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    private int count;
    private DocumentId documentId;
    private String phrase;
-   private boolean filterTranslated, filterNeedReview, filterUntranslated, filterApproved, filterRejected, filterHasError;
+   private boolean filterByTranslated, filterByFuzzy, filterByUntranslated, filterByApproved, filterByRejected, filterByHasError;
    private List<ValidationId> validationIds;
    private TransUnitId targetTransUnitId;
    private boolean needReloadIndex = false;
@@ -26,18 +26,18 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    {
    }
 
-   private GetTransUnitList(DocumentId id, int offset, int count, String phrase, boolean filterTranslated, boolean filterNeedReview, boolean filterUntranslated, boolean filterApproved, boolean filterRejected, boolean filterHasError, TransUnitId targetTransUnitId, List<ValidationId> validationIds)
+   private GetTransUnitList(DocumentId id, int offset, int count, String phrase, boolean filterByTranslated, boolean filterByFuzzy, boolean filterByUntranslated, boolean filterByApproved, boolean filterByRejected, boolean filterByHasError, TransUnitId targetTransUnitId, List<ValidationId> validationIds)
    {
       this.documentId = id;
       this.offset = offset;
       this.count = count;
       this.phrase = phrase;
-      this.filterTranslated = filterTranslated;
-      this.filterNeedReview = filterNeedReview;
-      this.filterUntranslated = filterUntranslated;
-      this.filterApproved = filterApproved;
-      this.filterRejected = filterRejected;
-      this.filterHasError = filterHasError;
+      this.filterByTranslated = filterByTranslated;
+      this.filterByFuzzy = filterByFuzzy;
+      this.filterByUntranslated = filterByUntranslated;
+      this.filterByApproved = filterByApproved;
+      this.filterByRejected = filterByRejected;
+      this.filterByHasError = filterByHasError;
       this.targetTransUnitId = targetTransUnitId;
       this.validationIds = validationIds;
 
@@ -79,34 +79,34 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
       return this.phrase;
    }
 
-   public boolean isFilterTranslated()
+   public boolean isFilterByTranslated()
    {
-      return filterTranslated;
+      return filterByTranslated;
    }
 
-   public boolean isFilterNeedReview()
+   public boolean isFilterByFuzzy()
    {
-      return filterNeedReview;
+      return filterByFuzzy;
    }
 
-   public boolean isFilterUntranslated()
+   public boolean isFilterByUntranslated()
    {
-      return filterUntranslated;
+      return filterByUntranslated;
    }
    
-   public boolean isFilterApproved()
+   public boolean isFilterByApproved()
    {
-      return filterApproved;
+      return filterByApproved;
    }
    
-   public boolean isFilterRejected()
+   public boolean isFilterByRejected()
    {
-      return filterRejected;
+      return filterByRejected;
    }
 
-   public boolean isFilterHasError()
+   public boolean isFilterByHasError()
    {
-      return filterHasError;
+      return filterByHasError;
    }
 
    public TransUnitId getTargetTransUnitId()
@@ -122,7 +122,7 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    public boolean isAcceptAllStatus()
    {
       //all filter options are checked or unchecked
-      return filterNeedReview == filterTranslated && filterNeedReview == filterUntranslated && filterNeedReview == filterHasError && filterApproved == filterNeedReview && filterRejected == filterNeedReview;
+      return filterByFuzzy == filterByTranslated && filterByFuzzy == filterByUntranslated && filterByFuzzy == filterByHasError && filterByApproved == filterByFuzzy && filterByRejected == filterByFuzzy;
    }
 
    @Override
@@ -134,12 +134,12 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
             add("count", count).
             add("documentId", documentId).
             add("phrase", phrase).
-            add("filterTranslated", filterTranslated).
-            add("filterNeedReview", filterNeedReview).
-            add("filterUntranslated", filterUntranslated).
-            add("filterApproved", filterApproved).
-            add("filterRejected", filterRejected).
-            add("filterHasError", filterHasError).
+            add("filterByTranslated", filterByTranslated).
+            add("filterByFuzzy", filterByFuzzy).
+            add("filterByUntranslated", filterByUntranslated).
+            add("filterByApproved", filterByApproved).
+            add("filterByRejected", filterByRejected).
+            add("filterByHasError", filterByHasError).
             add("targetTransUnitId", targetTransUnitId).
             add("needReloadIndex", needReloadIndex).
             toString();
