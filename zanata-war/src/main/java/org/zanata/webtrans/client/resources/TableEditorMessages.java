@@ -113,6 +113,9 @@ public interface TableEditorMessages extends Messages
    @DefaultMessage("Reject translation")
    String reviewReject();
    
+   @DefaultMessage("Comment")
+   String comment();
+
    @DefaultMessage("Discard Changes")
    String discardChanges();
    

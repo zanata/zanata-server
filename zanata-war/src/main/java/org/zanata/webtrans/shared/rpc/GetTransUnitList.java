@@ -3,6 +3,7 @@ package org.zanata.webtrans.shared.rpc;
 import java.util.List;
 
 import org.zanata.webtrans.client.service.GetTransUnitActionContext;
+import org.zanata.webtrans.shared.model.ContentStateGroup;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -16,7 +17,8 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    private int count;
    private DocumentId documentId;
    private String phrase;
-   private boolean filterByTranslated, filterByFuzzy, filterByUntranslated, filterByApproved, filterByRejected, filterByHasError;
+   private ContentStateGroup filterStates;
+   private boolean filterHasError;
    private List<ValidationId> validationIds;
    private TransUnitId targetTransUnitId;
    private boolean needReloadIndex = false;
@@ -26,26 +28,29 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    {
    }
 
-   private GetTransUnitList(DocumentId id, int offset, int count, String phrase, boolean filterByTranslated, boolean filterByFuzzy, boolean filterByUntranslated, boolean filterByApproved, boolean filterByRejected, boolean filterByHasError, TransUnitId targetTransUnitId, List<ValidationId> validationIds)
+   private GetTransUnitList(GetTransUnitActionContext context)
    {
-      this.documentId = id;
-      this.offset = offset;
-      this.count = count;
-      this.phrase = phrase;
-      this.filterByTranslated = filterByTranslated;
-      this.filterByFuzzy = filterByFuzzy;
-      this.filterByUntranslated = filterByUntranslated;
-      this.filterByApproved = filterByApproved;
-      this.filterByRejected = filterByRejected;
-      this.filterByHasError = filterByHasError;
-      this.targetTransUnitId = targetTransUnitId;
-      this.validationIds = validationIds;
-
+      documentId = context.getDocument().getId();
+      offset = context.getOffset();
+      count = context.getCount();
+      phrase = context.getFindMessage();
+      // @formatter :off
+      filterStates = ContentStateGroup.builder()
+            .includeNew(context.isFilterUntranslated())
+            .includeFuzzy(context.isFilterFuzzy())
+            .includeTranslated(context.isFilterTranslated())
+            .includeApproved(context.isFilterApproved())
+            .includeRejected(context.isFilterRejected())
+            .build();
+      // @formatter :on
+      filterHasError = context.isFilterHasError();
+      targetTransUnitId = context.getTargetTransUnitId();
+      validationIds = context.getValidationIds();
    }
 
    public static GetTransUnitList newAction(GetTransUnitActionContext context)
    {
-      return new GetTransUnitList(context.getDocument().getId(), context.getOffset(), context.getCount(), context.getFindMessage(), context.isFilterTranslated(), context.isFilterFuzzy(), context.isFilterUntranslated(), context.isFilterApproved(), context.isFilterRejected(), context.isFilterHasError(), context.getTargetTransUnitId(), context.getValidationIds());
+      return new GetTransUnitList(context);
    }
 
    public boolean isNeedReloadIndex()
@@ -79,34 +84,39 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
       return this.phrase;
    }
 
-   public boolean isFilterByTranslated()
+   public ContentStateGroup getFilterStates()
    {
-      return filterByTranslated;
+      return filterStates;
    }
 
-   public boolean isFilterByFuzzy()
+   public boolean isFilterTranslated()
    {
-      return filterByFuzzy;
+      return filterStates.hasTranslated();
    }
 
-   public boolean isFilterByUntranslated()
+   public boolean isFilterNeedReview()
    {
-      return filterByUntranslated;
+      return filterStates.hasFuzzy();
+   }
+
+   public boolean isFilterUntranslated()
+   {
+      return filterStates.hasNew();
    }
    
-   public boolean isFilterByApproved()
+   public boolean isFilterApproved()
    {
-      return filterByApproved;
+      return filterStates.hasApproved();
    }
    
-   public boolean isFilterByRejected()
+   public boolean isFilterRejected()
    {
-      return filterByRejected;
+      return filterStates.hasRejected();
    }
 
-   public boolean isFilterByHasError()
+   public boolean isFilterHasError()
    {
-      return filterByHasError;
+      return filterHasError;
    }
 
    public TransUnitId getTargetTransUnitId()
@@ -122,7 +132,7 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
    public boolean isAcceptAllStatus()
    {
       //all filter options are checked or unchecked
-      return filterByFuzzy == filterByTranslated && filterByFuzzy == filterByUntranslated && filterByFuzzy == filterByHasError && filterByApproved == filterByFuzzy && filterByRejected == filterByFuzzy;
+      return filterStates.hasNoStates() && !filterHasError || filterStates.hasAllStates() && filterHasError;
    }
 
    @Override
@@ -134,12 +144,8 @@ public class GetTransUnitList extends AbstractWorkspaceAction<GetTransUnitListRe
             add("count", count).
             add("documentId", documentId).
             add("phrase", phrase).
-            add("filterByTranslated", filterByTranslated).
-            add("filterByFuzzy", filterByFuzzy).
-            add("filterByUntranslated", filterByUntranslated).
-            add("filterByApproved", filterByApproved).
-            add("filterByRejected", filterByRejected).
-            add("filterByHasError", filterByHasError).
+            add("filterStates", filterStates).
+            add("filterHasError", filterHasError).
             add("targetTransUnitId", targetTransUnitId).
             add("needReloadIndex", needReloadIndex).
             toString();
