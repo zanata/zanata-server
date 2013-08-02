@@ -64,6 +64,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.po.HPoHeader;
 import org.zanata.model.po.HPoTargetHeader;
 import org.zanata.model.type.ContentTypeType;
+import org.zanata.model.type.EntityType;
 import org.zanata.rest.dto.resource.AbstractResourceMeta;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.ResourceMeta;
@@ -71,9 +72,6 @@ import org.zanata.rest.dto.resource.TranslationsResource;
 
 import com.google.common.collect.ImmutableList;
 
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 /**
  * @see AbstractResourceMeta
  * @see Resource
@@ -86,8 +84,9 @@ import lombok.ToString;
 @TypeDef(name = "contentType", typeClass = ContentTypeType.class)
 @Setter
 @NoArgsConstructor
-@ToString(of = {"name", "path", "docId", "locale", "revision"})
-public class HDocument extends ModelEntityBase implements DocumentWithId, IDocumentHistory, Serializable, Iterable<SourceContents>
+@ToString(of = { "name", "path", "docId", "locale", "revision" })
+public class HDocument extends ModelEntityBase implements DocumentWithId, IDocumentHistory, Serializable,
+      Iterable<SourceContents>, IsEntityWithType
 {
    private static final long serialVersionUID = 5129552589912687504L;
    private String docId;
@@ -170,7 +169,7 @@ public class HDocument extends ModelEntityBase implements DocumentWithId, IDocum
    {
       HProjectIteration iter = getProjectIteration();
       HProject proj = iter.getProject();
-      return proj.getSlug()+":"+iter.getSlug()+":"+getDocId();
+      return proj.getSlug() + ":" + iter.getSlug() + ":" + getDocId();
    }
 
    @NotNull
@@ -183,14 +182,16 @@ public class HDocument extends ModelEntityBase implements DocumentWithId, IDocum
    @ManyToOne
    @JoinColumn(name = "locale", nullable = false)
    @Override
-   public @Nonnull HLocale getLocale()
+   public @Nonnull
+   HLocale getLocale()
    {
       return this.locale;
    }
 
    @Transient
    @Override
-   public @Nonnull LocaleId getSourceLocaleId()
+   public @Nonnull
+   LocaleId getSourceLocaleId()
    {
       return locale.getLocaleId();
    }
@@ -284,7 +285,7 @@ public class HDocument extends ModelEntityBase implements DocumentWithId, IDocum
    @Override
    public Iterator<SourceContents> iterator()
    {
-      return ImmutableList.<SourceContents>copyOf(getTextFlows()).iterator();
+      return ImmutableList.<SourceContents> copyOf(getTextFlows()).iterator();
    }
 
    public boolean isObsolete()
@@ -320,10 +321,10 @@ public class HDocument extends ModelEntityBase implements DocumentWithId, IDocum
 
    @OneToOne(fetch = FetchType.LAZY, optional = true)
    @JoinTable(name = "HDocument_RawDocument",
-      joinColumns = @JoinColumn(name="documentId"),
-      inverseJoinColumns = @JoinColumn(name="rawDocumentId")
-   )
-   public HRawDocument getRawDocument()
+         joinColumns = @JoinColumn(name = "documentId"),
+         inverseJoinColumns = @JoinColumn(name = "rawDocumentId")
+         )
+         public HRawDocument getRawDocument()
    {
       return rawDocument;
    }
@@ -335,11 +336,18 @@ public class HDocument extends ModelEntityBase implements DocumentWithId, IDocum
       {
          HAccount account = (HAccount) Component.getInstance(JpaIdentityStore.AUTHENTICATED_USER, ScopeType.SESSION);
          // TODO In some cases there is no session ( such as when pushing async )
-         if( account != null )
+         if (account != null)
          {
             setLastModifiedBy(account.getPerson());
          }
       }
+   }
+
+   @Override
+   @Transient
+   public EntityType getEntityType()
+   {
+      return EntityType.HDocument;
    }
 
 }
