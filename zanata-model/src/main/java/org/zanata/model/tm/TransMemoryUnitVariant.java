@@ -21,16 +21,23 @@
 package org.zanata.model.tm;
 
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyEnumerated;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import org.hibernate.search.annotations.AnalyzerDiscriminator;
 import org.hibernate.search.annotations.ClassBridge;
@@ -39,14 +46,8 @@ import org.zanata.hibernate.search.TransUnitVariantClassBridge;
 import org.zanata.model.ModelEntityBase;
 import org.zanata.util.HashUtil;
 import org.zanata.util.OkapiUtil;
-import com.google.common.collect.Maps;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.google.common.collect.Maps;
 
 /**
  * A translation unit variant.
@@ -81,15 +82,13 @@ public class TransMemoryUnitVariant extends ModelEntityBase implements HasTMMeta
    @Column(name ="plain_text_segment_hash", nullable = false)
    private String plainTextSegmentHash;
 
-   /**
-    * Map values are Json strings containing metadata for the particular type of translation memory
-    */
-   @ElementCollection
-   @JoinTable(name = "TransMemoryUnitVariant_Metadata", joinColumns = {@JoinColumn(name = "tm_trans_unit_variant_id")})
-   @MapKeyEnumerated(EnumType.STRING)
-   @MapKeyColumn(name = "metadata_key")
-   @Column(name = "metadata", length = Integer.MAX_VALUE)
-   private Map<TMMetadataType, String> metadata = Maps.newHashMap();
+   @Enumerated(EnumType.STRING)
+   @Column(name = "metadata_type", nullable = true)
+   private TMMetadataType metadataType;
+
+   @Column(nullable = true)
+   @Basic(fetch = FetchType.LAZY)
+   private String metadata;
 
    public static TransMemoryUnitVariant tuv(String language, String content)
    {
@@ -123,6 +122,25 @@ public class TransMemoryUnitVariant extends ModelEntityBase implements HasTMMeta
    protected boolean logPersistence()
    {
       return false;
+   }
+
+   @Override
+   public String getMetadata(TMMetadataType tmType)
+   {
+      if (this.metadataType == tmType)
+      {
+         return this.metadata;
+      }
+      return null;
+   }
+
+   @Override
+   public void setMetadata(@Nonnull TMMetadataType tmType, String metadata)
+   {
+      assert this.metadataType == null || this.metadataType == tmType :
+         "Only one type of metadata is supported for this entity";
+      setMetadataType(tmType);
+      setMetadata(metadata);
    }
 
    public static Map<String, TransMemoryUnitVariant> newMap(TransMemoryUnitVariant... tuvs)

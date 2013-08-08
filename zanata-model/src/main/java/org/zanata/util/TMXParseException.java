@@ -19,18 +19,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.zanata.model.tm;
+package org.zanata.util;
 
-import javax.annotation.Nonnull;
 
-import org.zanata.model.HasEntityDates;
 
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  *
  */
-public interface HasTMMetadata extends HasEntityDates
+public class TMXParseException extends Exception
 {
-   String getMetadata(TMMetadataType tmType);
-   void setMetadata(@Nonnull TMMetadataType tmType, String metadata);
+   private static final long serialVersionUID = 1L;
+
+   public TMXParseException(String string)
+   {
+      super(string);
+   }
+
+   public TMXParseException(String msg, Throwable e)
+   {
+      super(msg, e);
+   }
+
+   public TMXParseException(Throwable e)
+   {
+      super(e);
+   }
+
 }

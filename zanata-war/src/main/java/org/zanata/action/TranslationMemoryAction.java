@@ -25,12 +25,17 @@ import javax.faces.event.ValueChangeEvent;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.jboss.seam.international.StatusMessage;
 import org.zanata.dao.TransMemoryDAO;
 import org.zanata.model.tm.TransMemory;
 import org.zanata.service.SlugEntityService;
+import com.google.common.base.Optional;
+
+import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 
 /**
  * Controller class for the Translation Memory UI.
@@ -74,10 +79,32 @@ public class TranslationMemoryAction extends EntityHome<TransMemory>
       return true;
    }
 
+   @Transactional
    public void clearTransMemory(String transMemorySlug)
    {
       transMemoryDAO.deleteTransMemoryContents(transMemorySlug);
       transMemoryList = null; // Force refresh next time list is requested
+   }
+
+   @Transactional
+   public void deleteTransMemory(String transMemorySlug)
+   {
+      Optional<TransMemory> transMemory = transMemoryDAO.getBySlug(transMemorySlug);
+      if (transMemory.isPresent())
+      {
+         transMemoryDAO.deleteTransMemoryContents(transMemorySlug);
+         transMemoryDAO.makeTransient(transMemory.get());
+         transMemoryList = null; // Force refresh next time list is requested
+      }
+      else
+      {
+         FacesMessages.instance().addFromResourceBundle(ERROR, "jsf.transmemory.TransMemoryNotFound");
+      }
+   }
+
+   public long getTranslationMemorySize(String tmSlug)
+   {
+      return transMemoryDAO.getTranslationMemorySize(tmSlug);
    }
 
    public String cancel()

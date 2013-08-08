@@ -21,32 +21,33 @@
 package org.zanata.model.tm;
 
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
-
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.zanata.model.ModelEntityBase;
-import com.google.common.collect.Maps;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.zanata.model.ModelEntityBase;
+
+import com.google.common.collect.Maps;
 
 /**
  * A single translation memory unit belonging to a Translation Memory.
@@ -100,21 +101,19 @@ public class TransMemoryUnit extends ModelEntityBase implements HasTMMetadata
    @Column(nullable = true)
    private Integer position;
 
-   @OneToMany(cascade = CascadeType.ALL)
+   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
    @JoinColumn(name = "trans_unit_id", nullable = false)
    @MapKey(name = "language")
    @IndexedEmbedded
    private Map<String, TransMemoryUnitVariant> transUnitVariants = Maps.newHashMap();
 
-   /**
-    * Map values are Json strings containing metadata for the particular type of translation memory
-    */
-   @ElementCollection
-   @MapKeyEnumerated(EnumType.STRING)
-   @MapKeyColumn(name = "metadata_key")
-   @JoinTable(name = "TransMemoryUnit_Metadata", joinColumns = {@JoinColumn(name = "tm_trans_unit_id")})
-   @Column(name = "metadata", length = Integer.MAX_VALUE)
-   private Map<TMMetadataType, String> metadata = Maps.newHashMap();
+   @Enumerated(EnumType.STRING)
+   @Column(name = "metadata_type", nullable = true)
+   private TMMetadataType metadataType;
+
+   @Column(nullable = true)
+   @Basic(fetch = FetchType.LAZY)
+   private String metadata;
 
    public TransMemoryUnit(String uniqueId)
    {
@@ -126,4 +125,24 @@ public class TransMemoryUnit extends ModelEntityBase implements HasTMMetadata
    {
       return false;
    }
+
+   @Override
+   public String getMetadata(TMMetadataType tmType)
+   {
+      if (this.metadataType == tmType)
+      {
+         return this.metadata;
+      }
+      return null;
+   }
+
+   @Override
+   public void setMetadata(@Nonnull TMMetadataType tmType, String metadata)
+   {
+      assert this.metadataType == null || this.metadataType == tmType :
+         "Only one type of metadata is supported for this entity";
+      setMetadataType(tmType);
+      setMetadata(metadata);
+   }
+
 }
