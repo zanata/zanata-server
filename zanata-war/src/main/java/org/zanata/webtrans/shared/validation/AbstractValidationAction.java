@@ -60,6 +60,8 @@ public abstract class AbstractValidationAction implements ValidationAction
    private ArrayList<ValidationAction> exclusiveValidations = new ArrayList<ValidationAction>();
 
    private ValidationMessages validationMessages;
+   
+   private State state = State.Warning;
 
    public AbstractValidationAction(ValidationId id, String description, ValidationInfo validationInfo, ValidationMessages validationMessages)
    {
@@ -122,6 +124,18 @@ public abstract class AbstractValidationAction implements ValidationAction
    public String getDescription()
    {
       return description;
+   }
+   
+   @Override
+   public State getState()
+   {
+      return state;
+   }
+   
+   @Override
+   public void setState(State state)
+   {
+      this.state = state;
    }
 }
 

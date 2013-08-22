@@ -45,4 +45,13 @@ public interface ValidationAction
    ValidationId getId();
 
    String getDescription();
+   
+   State getState();
+   
+   void setState(State state);
+   
+   public static enum State
+   {
+      Off, Warning, Error;
+   }
 }

@@ -22,12 +22,16 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -38,6 +42,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.log.Log;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
 
 @Name("versionValidationOptionsAction")
 @Scope(ScopeType.PAGE)
@@ -59,8 +64,12 @@ public class VersionValidationOptionsAction implements Serializable
 
    private Map<String, Boolean> selectedValidations;
 
+   @Getter
+   @Setter
    private String versionSlug;
 
+   @Getter
+   @Setter
    private String projectSlug;
 
    public List<ValidationAction> getValidationList()
@@ -78,6 +87,11 @@ public class VersionValidationOptionsAction implements Serializable
             selectedValidations.put(exclusiveValAction.getId().name(), false);
          }
       }
+   }
+   
+   public List<State> getValidationStates()
+   {
+      return Arrays.asList(ValidationAction.State.values());
    }
 
    @Out(required = false)
@@ -100,32 +114,12 @@ public class VersionValidationOptionsAction implements Serializable
       {
          versionOverrideValidations = projectIterationHome.getInstance().getOverrideValidations();
       }
-      return versionOverrideValidations;
+      return versionOverrideValidations.booleanValue();
    }
-
+   
    public void setVersionOverrideValidations(boolean versionOverrideValidations)
    {
       this.versionOverrideValidations = versionOverrideValidations;
-   }
-
-   public String getVersionSlug()
-   {
-      return versionSlug;
-   }
-
-   public void setVersionSlug(String versionSlug)
-   {
-      this.versionSlug = versionSlug;
-   }
-
-   public String getProjectSlug()
-   {
-      return projectSlug;
-   }
-
-   public void setProjectSlug(String projectSlug)
-   {
-      this.projectSlug = projectSlug;
    }
 
    public Map<String, Boolean> getSelectedValidations()
@@ -144,8 +138,9 @@ public class VersionValidationOptionsAction implements Serializable
       return selectedValidations;
    }
 
-   public void setSelectedValidations(Map<String, Boolean> selectedValidations)
+   public void setSelectedValidations(Map<String, Boolean> selectedValidations, State state)
    {
-      this.selectedValidations = selectedValidations;
+      log.info("======================" + state);
+//      this.selectedValidations = selectedValidations;
    }
 }

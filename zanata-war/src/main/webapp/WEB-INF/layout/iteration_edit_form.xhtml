@@ -105,17 +105,26 @@
 
 
 	<s:div id="validationOptionsList">
-		 <rich:dataGrid value="#{versionValidationOptionsAction.validationList}" var="validationAction" columns="1"
-                         rendered="#{versionValidationOptionsAction.versionOverrideValidations}">
-              <h:selectBooleanCheckbox value="#{versionValidationOptionsAction.selectedValidations[validationAction.id.name()]}">
-              	<a4j:ajax event="change" listener="#{versionValidationOptionsAction.checkExclusive(validationAction)}" render="validationOptionsList"/>
-              </h:selectBooleanCheckbox>
-              <h:outputLabel value="#{validationAction.id.displayName}"/>
-              <h:outputLabel value="#{validationAction.description}" style="float:right;margin-right:20px;"/>
-          </rich:dataGrid>
+		<rich:dataTable value="#{versionValidationOptionsAction.validationList}" var="validationAction"
+			rendered="#{versionValidationOptionsAction.versionOverrideValidations}">
+			<rich:column>
+				#{validationAction.id.displayName}
+			</rich:column>
+			
+			<rich:column>
+				#{validationAction.description}
+			</rich:column>
+			
+			<rich:column>
+				<h:selectOneRadio value="#{validationAction.state}">
+   					<f:selectItems value="#{versionValidationOptionsAction.validationStates}" var="state"
+   						itemLabel="#{state}" itemValue="#{state}">
+   					</f:selectItems>
+   						
+   				</h:selectOneRadio>
+			</rich:column>
+		</rich:dataTable>
 	</s:div>
-	
-
 
     <div class="actionButtons">
         <h:commandButton id="save"
