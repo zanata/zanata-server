@@ -50,9 +50,6 @@ public class VersionValidationOptionsAction implements Serializable
 {
    private static final long serialVersionUID = 1L;
 
-   @Out(required = false)
-   private Boolean versionOverrideValidations;
-
    @Logger
    private Log log;
 
@@ -106,20 +103,6 @@ public class VersionValidationOptionsAction implements Serializable
          }
       }
       return customizedValidationSet;
-   }
-
-   public boolean getVersionOverrideValidations()
-   {
-      if (versionOverrideValidations == null)
-      {
-         versionOverrideValidations = projectIterationHome.getInstance().getOverrideValidations();
-      }
-      return versionOverrideValidations.booleanValue();
-   }
-   
-   public void setVersionOverrideValidations(boolean versionOverrideValidations)
-   {
-      this.versionOverrideValidations = versionOverrideValidations;
    }
 
    public Map<String, Boolean> getSelectedValidations()

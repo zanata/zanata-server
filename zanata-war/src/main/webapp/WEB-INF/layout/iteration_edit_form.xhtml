@@ -99,19 +99,9 @@
         </a4j:region>
     </s:div>
 	
+    <h:outputText value="#{messages['jsf.customizedValidationMessage']}"/>
 	<s:div>
-		<a4j:region>
-			<h:selectBooleanCheckbox id="validationOptions" value="#{versionValidationOptionsAction.versionOverrideValidations}" >
-				<a4j:ajax event="change" render="validationOptionsList" />
-			</h:selectBooleanCheckbox>
-		</a4j:region>
-		<h:outputText value="#{messages['jsf.customizedValidationMessage']}"/>
-	</s:div>
-
-
-	<s:div id="validationOptionsList">
-		<rich:dataTable value="#{versionValidationOptionsAction.validationList}" var="validationAction"
-			rendered="#{versionValidationOptionsAction.versionOverrideValidations}">
+		<rich:dataTable value="#{versionValidationOptionsAction.validationList}" var="validationAction">
 			<rich:column>
 				#{validationAction.id.displayName}
 			</rich:column>

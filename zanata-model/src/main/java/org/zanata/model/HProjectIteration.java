@@ -101,7 +101,6 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    private Map<String, HDocument> allDocuments;
 
    private boolean overrideLocales = false;
-   private boolean overrideValidations = false;
    private Set<HLocale> customizedLocales;
    private Set<HIterationGroup> groups;
    private Set<String> customizedValidations;
@@ -113,11 +112,6 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    public boolean getOverrideLocales()
    {
       return this.overrideLocales;
-   }
-
-   public boolean getOverrideValidations()
-   {
-      return overrideValidations;
    }
 
    @Column(nullable = true)
