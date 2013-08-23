@@ -351,7 +351,7 @@ public class ProjectIterationService implements ProjectIterationResource
 
       if (hProject != null)
       {
-         to.getCustomizedValidations().addAll(hProject.getCustomizedValidations());
+         to.getCustomizedValidations().putAll(hProject.getCustomizedValidations());
       }
    }
 

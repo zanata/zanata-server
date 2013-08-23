@@ -20,11 +20,15 @@
  */
 package org.zanata.action;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityNotFoundException;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
@@ -40,16 +44,21 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 @Name("projectIterationHome")
 public class ProjectIterationHome extends SlugHome<HProjectIteration>
 {
-
    private static final long serialVersionUID = 1L;
 
    public static final String PROJECT_ITERATION_UPDATE = "project.iteration.update";
 
+   @Getter
+   @Setter
    private String slug;
+   
+   @Getter
+   @Setter
    private String projectSlug;
 
    @In(required = false)
@@ -60,16 +69,16 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
 
    /* Outjected from VersionValidationOptionsAction */
    @In(required = false)
-   private Set<String> versionCustomizedValidations;
+   private Collection<ValidationAction> versionCustomizedValidations;
 
    @In
-   LocaleService localeServiceImpl;
+   private LocaleService localeServiceImpl;
 
    @In
-   SlugEntityService slugEntityServiceImpl;
+   private SlugEntityService slugEntityServiceImpl;
 
    @In(create = true)
-   ProjectDAO projectDAO;
+   private ProjectDAO projectDAO;
 
    @Override
    protected HProjectIteration createInstance()
@@ -78,28 +87,8 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
       HProject project = (HProject) projectDAO.getBySlug(projectSlug);
       project.addIteration(iteration);
       iteration.setProjectType(project.getDefaultProjectType());
-      iteration.getCustomizedValidations().addAll(project.getCustomizedValidations());
+      iteration.getCustomizedValidations().putAll(project.getCustomizedValidations());
       return iteration;
-   }
-
-   public void setSlug(String slug)
-   {
-      this.slug = slug;
-   }
-
-   public String getSlug()
-   {
-      return slug;
-   }
-
-   public String getProjectSlug()
-   {
-      return projectSlug;
-   }
-
-   public void setProjectSlug(String projectSlug)
-   {
-      this.projectSlug = projectSlug;
    }
 
    public void validateSuppliedId()
@@ -222,6 +211,9 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
    private void updateOverrideValidations()
    {
       getInstance().getCustomizedValidations().clear();
-      getInstance().getCustomizedValidations().addAll(versionCustomizedValidations);
+      for(ValidationAction action: versionCustomizedValidations)
+      {
+         getInstance().getCustomizedValidations().put(action.getId().name(), action.getState().name());
+      }
    }
 }

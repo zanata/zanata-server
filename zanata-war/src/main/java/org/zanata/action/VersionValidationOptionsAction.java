@@ -24,11 +24,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +40,9 @@ import org.jboss.seam.log.Log;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
+import org.zanata.webtrans.shared.model.ValidationId;
+
+import com.google.common.collect.Maps;
 
 @Name("versionValidationOptionsAction")
 @Scope(ScopeType.PAGE)
@@ -59,8 +59,6 @@ public class VersionValidationOptionsAction implements Serializable
    @In(required = false)
    private ProjectIterationHome projectIterationHome;
 
-   private Map<String, Boolean> selectedValidations;
-
    @Getter
    @Setter
    private String versionSlug;
@@ -68,62 +66,43 @@ public class VersionValidationOptionsAction implements Serializable
    @Getter
    @Setter
    private String projectSlug;
+   
+   private Map<ValidationId, ValidationAction> availableValidations = Maps.newHashMap();
 
    public List<ValidationAction> getValidationList()
    {
-      Collection<ValidationAction> result = validationServiceImpl.getValidationAction(projectSlug, versionSlug);
-      return new ArrayList<ValidationAction>(result);
+      if(availableValidations.isEmpty())
+      {
+         availableValidations.clear();
+         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug, versionSlug);
+         for (ValidationAction validationAction : validationList)
+         {
+            availableValidations.put(validationAction.getId(), validationAction);
+         }
+      }
+      
+      return new ArrayList<ValidationAction>(availableValidations.values());
    }
-   
+
    public void checkExclusive(ValidationAction valAction)
    {
       for (ValidationAction exclusiveValAction : valAction.getExclusiveValidations())
       {
-         if (selectedValidations.containsKey(exclusiveValAction.getId().name()))
+         if (availableValidations.containsKey(exclusiveValAction.getId()))
          {
-            selectedValidations.put(exclusiveValAction.getId().name(), false);
+            availableValidations.get(exclusiveValAction.getId()).setState(State.Off);
          }
       }
    }
-   
+
    public List<State> getValidationStates()
    {
       return Arrays.asList(ValidationAction.State.values());
    }
 
    @Out(required = false)
-   public Set<String> getVersionCustomizedValidations()
+   public Collection<ValidationAction> getVersionCustomizedValidations()
    {
-      Set<String> customizedValidationSet = new HashSet<String>();
-      for (Map.Entry<String, Boolean> entry : getSelectedValidations().entrySet())
-      {
-         if (entry.getValue() == Boolean.TRUE)
-         {
-            customizedValidationSet.add(entry.getKey());
-         }
-      }
-      return customizedValidationSet;
-   }
-
-   public Map<String, Boolean> getSelectedValidations()
-   {
-      if (selectedValidations == null)
-      {
-         selectedValidations = new HashMap<String, Boolean>();
-         if (!projectIterationHome.getInstance().getCustomizedValidations().isEmpty())
-         {
-            for (String val : projectIterationHome.getInstance().getCustomizedValidations())
-            {
-               selectedValidations.put(val, true);
-            }
-         }
-      }
-      return selectedValidations;
-   }
-
-   public void setSelectedValidations(Map<String, Boolean> selectedValidations, State state)
-   {
-      log.info("======================" + state);
-//      this.selectedValidations = selectedValidations;
+      return availableValidations.values();
    }
 }

@@ -5,9 +5,8 @@ package org.zanata.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -32,9 +31,11 @@ import org.zanata.service.ValidationService;
 import org.zanata.webtrans.server.rpc.TransUnitTransformer;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
+import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Stopwatch;
 
 /**
@@ -81,24 +82,26 @@ public class ValidationServiceImpl implements ValidationService
    @Override
    public Collection<ValidationAction> getValidationAction(String projectSlug)
    {
-      Collection<ValidationAction> validationList = getValidationFactory().getAllValidationActions().values();
-      Set<String> enabledValidations = new HashSet<String>();
+      Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
+      Map<String, String> customizedValidations = Maps.newHashMap();
 
       if (!StringUtils.isEmpty(projectSlug))
       {
          HProject project = projectDAO.getBySlug(projectSlug);
-         enabledValidations = project.getCustomizedValidations();
+         customizedValidations = project.getCustomizedValidations();
       }
 
-      for (ValidationAction valAction : validationList)
+      for (ValidationAction valAction : allValidations)
       {
-         if (enabledValidations.contains(valAction.getId().name()))
+         String name = valAction.getId().name();
+         if (customizedValidations.containsKey(name))
          {
-            valAction.getValidationInfo().setEnabled(true);
+            State persistedState = State.valueOf(customizedValidations.get(name));
+            valAction.setState(persistedState);
          }
       }
 
-      return validationList;
+      return allValidations;
    }
 
    @Override
@@ -119,59 +122,62 @@ public class ValidationServiceImpl implements ValidationService
    @Override
    public Collection<ValidationAction> getValidationObject(HProjectIteration version)
    {
-      Collection<ValidationAction> validationList = getValidationFactory().getAllValidationActions().values();
+      Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
 
-      Set<String> enabledValidations = new HashSet<String>();
+      Map<String, String> customizedValidations = Maps.newHashMap();
 
       if (version != null)
       {
-         enabledValidations = version.getCustomizedValidations();
+         customizedValidations = version.getCustomizedValidations();
 
          // Inherits validations from project if version has no defined
          // validations
-         if (enabledValidations.isEmpty())
+         if (customizedValidations.isEmpty())
          {
-            enabledValidations = version.getProject().getCustomizedValidations();
+            customizedValidations = version.getProject().getCustomizedValidations();
          }
       }
+      
 
-      for (ValidationAction valAction : validationList)
+      for (ValidationAction valAction : allValidations)
       {
-         if (enabledValidations.contains(valAction.getId().name()))
+         String name = valAction.getId().name();
+         if (customizedValidations.containsKey(name))
          {
-            valAction.getValidationInfo().setEnabled(true);
-            valAction.getValidationInfo().setLocked(true);
+            State persistedState = State.valueOf(customizedValidations.get(name));
+            valAction.setState(persistedState);
          }
       }
-      return validationList;
+      return allValidations;
    }
 
-   private List<ValidationId> getEnabledValidationIds(HProjectIteration version)
+   private List<ValidationId> getWarnOrErrorValidationIds(HProjectIteration version)
    {
-      Collection<ValidationAction> validationList = getValidationFactory().getAllValidationActions().values();
-      Set<String> enabledValidations = new HashSet<String>();
-      List<ValidationId> enabledValidationIds = new ArrayList<ValidationId>();
+      Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
+      Map<String, String> customizedValidations = Maps.newHashMap();
+      
+      List<ValidationId> warnOrErrorValidationIds = new ArrayList<ValidationId>();
 
       if (version != null)
       {
-         enabledValidations = version.getCustomizedValidations();
+         customizedValidations = version.getCustomizedValidations();
 
          // Inherits validations from project if version has no defined
          // validations
-         if (enabledValidations.isEmpty())
+         if (customizedValidations.isEmpty())
          {
-            enabledValidations = version.getProject().getCustomizedValidations();
+            customizedValidations = version.getProject().getCustomizedValidations();
          }
       }
 
-      for (ValidationAction valAction : validationList)
+      for (ValidationAction valAction : allValidations)
       {
-         if (enabledValidations.contains(valAction.getId().name()))
+         if (customizedValidations.containsKey(valAction.getId().name()))
          {
-            enabledValidationIds.add(valAction.getId());
+            warnOrErrorValidationIds.add(valAction.getId());
          }
       }
-      return enabledValidationIds;
+      return warnOrErrorValidationIds;
    }
 
    /**
@@ -211,7 +217,7 @@ public class ValidationServiceImpl implements ValidationService
       log.debug("Start runDocValidationsWithServerRules {0}", hDoc.getId());
       Stopwatch stopwatch = new Stopwatch().start();
 
-      List<ValidationId> validationIds = getEnabledValidationIds(hDoc.getProjectIteration());
+      List<ValidationId> validationIds = getWarnOrErrorValidationIds(hDoc.getProjectIteration());
 
       boolean hasError = documentHasError(hDoc, validationIds, localeId);
 

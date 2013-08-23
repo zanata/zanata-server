@@ -22,12 +22,13 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -38,15 +39,16 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.log.Log;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
+import org.zanata.webtrans.shared.model.ValidationId;
+
+import com.google.common.collect.Maps;
 
 @Name("projectValidationOptionsAction")
 @Scope(ScopeType.PAGE)
 public class ProjectValidationOptionsAction implements Serializable
 {
    private static final long serialVersionUID = 1L;
-
-   @Out(required = false)
-   private Boolean overrideValidations;
 
    @Logger
    private Log log;
@@ -57,75 +59,46 @@ public class ProjectValidationOptionsAction implements Serializable
    @In(required = false)
    private ProjectHome projectHome;
 
-   private Map<String, Boolean> selectedValidations;
+   private Map<ValidationId, ValidationAction> availableValidations = Maps.newHashMap();
 
+   @Getter
+   @Setter
    private String projectSlug;
 
    public List<ValidationAction> getValidationList()
    {
-      Collection<ValidationAction> result = validationServiceImpl.getValidationAction(projectSlug);
-      return new ArrayList<ValidationAction>(result);
+      if(availableValidations.isEmpty())
+      {
+         availableValidations.clear();
+         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug);
+         for (ValidationAction validationAction : validationList)
+         {
+            availableValidations.put(validationAction.getId(), validationAction);
+         }
+      }
+      
+      return new ArrayList<ValidationAction>(availableValidations.values());
    }
 
    public void checkExclusive(ValidationAction valAction)
    {
       for (ValidationAction exclusiveValAction : valAction.getExclusiveValidations())
       {
-         if (selectedValidations.containsKey(exclusiveValAction.getId().name()))
+         if (availableValidations.containsKey(exclusiveValAction.getId()))
          {
-            selectedValidations.put(exclusiveValAction.getId().name(), false);
+            availableValidations.get(exclusiveValAction.getId()).setState(State.Off);
          }
       }
    }
    
    @Out(required = false)
-   public Set<String> getCustomizedValidations()
+   public Collection<ValidationAction>  getCustomizedValidations()
    {
-      Set<String> customizedValidationSet = new HashSet<String>();
-      for (Map.Entry<String, Boolean> entry : getSelectedValidations().entrySet())
-      {
-         if (entry.getValue() == Boolean.TRUE)
-         {
-            customizedValidationSet.add(entry.getKey());
-         }
-      }
-      return customizedValidationSet;
+      return availableValidations.values();
    }
-
-   public boolean getOverrideValidations()
+   
+   public List<State> getValidationStates()
    {
-      if (overrideValidations == null)
-      {
-         overrideValidations = projectHome.getInstance().getOverrideValidations();
-      }
-      return overrideValidations;
-   }
-
-   public void setOverrideValidations(boolean overrideValidations)
-   {
-      this.overrideValidations = overrideValidations;
-   }
-
-   public String getProjectSlug()
-   {
-      return projectSlug;
-   }
-
-   public void setProjectSlug(String projectSlug)
-   {
-      this.projectSlug = projectSlug;
-   }
-
-   public Map<String, Boolean> getSelectedValidations()
-   {
-      if(selectedValidations == null)
-      {
-         selectedValidations = new HashMap<String, Boolean>();
-         for (String val : projectHome.getInstance().getCustomizedValidations())
-         {
-            selectedValidations.put(val, true);
-         }
-      }
-      return selectedValidations;
+      return Arrays.asList(ValidationAction.State.values());
    }
 }

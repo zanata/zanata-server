@@ -105,7 +105,28 @@
 	    </s:decorate>
 
         <div style="clear:both"></div>
-
+        
+        <span class="name">#{messages['jsf.customizedValidationMessage']}</span>
+        <s:div id="validationOptionsList">
+            <rich:dataTable value="#{projectValidationOptionsAction.validationList}" var="validationAction">
+                <rich:column>
+                    #{validationAction.id.displayName}
+                </rich:column>
+            
+                <rich:column>
+                    #{validationAction.description}
+                </rich:column>
+            
+                <rich:column>
+                    <h:selectOneRadio value="#{projectValidationOptionsAction.state}">
+                        <f:selectItems value="#{projectValidationOptionsAction.validationStates}" var="state"
+                            itemLabel="#{state}" itemValue="#{state}"/>
+                         <a4j:ajax event="change" listener="#{projectValidationOptionsAction.checkExclusive(validationAction)}" 
+                                render="validationOptionsList"/>
+                    </h:selectOneRadio>
+                </rich:column>
+            </rich:dataTable>
+        </s:div>
     </rich:panel>
 
 	<s:div>
@@ -161,29 +182,6 @@
             </rich:dataGrid>
         </a4j:region>
     </s:div>
-    
-    <s:div>
-		<a4j:region>
-			<h:selectBooleanCheckbox id="validationOptions" value="#{projectValidationOptionsAction.overrideValidations}" >
-				<a4j:ajax event="change" render="validationOptionsList" />
-			</h:selectBooleanCheckbox>
-		</a4j:region>
-		<h:outputText value="#{messages['jsf.customizedValidationMessage']}"/>
-	</s:div>
-
-
-	<s:div id="validationOptionsList">
-		<a4j:region renderRegionOnly="true">
-		 <rich:dataGrid value="#{projectValidationOptionsAction.validationList}" var="validationAction" columns="1"
-                  rendered="#{projectValidationOptionsAction.overrideValidations}">
-       		<h:selectBooleanCheckbox value="#{projectValidationOptionsAction.selectedValidations[validationAction.id.name()]}">
-       			<a4j:ajax event="change" listener="#{projectValidationOptionsAction.checkExclusive(validationAction)}" render="validationOptionsList"/>
-       		</h:selectBooleanCheckbox>
-       		<h:outputLabel value="#{validationAction.id.displayName}"/>
-       		<h:outputLabel value="#{validationAction.description}" style="float:right;margin-right:20px;"/>
-          </rich:dataGrid>
-          </a4j:region>
-	</s:div>
 
     <div class="actionButtons">
         <h:commandButton id="save"

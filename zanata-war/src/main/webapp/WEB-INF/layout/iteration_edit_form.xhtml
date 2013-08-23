@@ -54,8 +54,30 @@
         </s:decorate>
         
         <div style="clear:both"/>
+        
+        <span class="name">#{messages['jsf.customizedValidationMessage']}</span>
+        <s:div id="validationOptionsList">
+	        <rich:dataTable value="#{versionValidationOptionsAction.validationList}" var="validationAction">
+	            <rich:column>
+	                #{validationAction.id.displayName}
+	            </rich:column>
+	        
+	            <rich:column>
+	                #{validationAction.description}
+	            </rich:column>
+	        
+	            <rich:column>
+	                <h:selectOneRadio value="#{validationAction.state}">
+	                    <f:selectItems value="#{versionValidationOptionsAction.validationStates}" var="state"
+	                        itemLabel="#{state}" itemValue="#{state}"/>
+	                     <a4j:ajax event="change" listener="#{versionValidationOptionsAction.checkExclusive(validationAction)}" 
+                                render="validationOptionsList"/>
+	                </h:selectOneRadio>
+	            </rich:column>
+	        </rich:dataTable>
+        </s:div>
     </rich:panel>
-
+    
     <s:div>
         <a4j:region>
             <h:selectBooleanCheckbox title="overrideLocales" value="#{projectIterationLocaleAction.setting}" >
@@ -63,10 +85,10 @@
             </h:selectBooleanCheckbox>
 		</a4j:region>
         <h:outputText value="#{messages['jsf.customizedLocaleMessage']}"/>
+        <br/>
 	</s:div>
 
 	<s:div id="languagelist">
-        <richext:spacer height="20" />
         <a4j:region renderRegionOnly="true">
             <h:panelGrid columns="3" id ="languagePanel" rendered="#{projectIterationLocaleAction.setting}">
                 <h:outputText value="#{messages['jsf.DisabledLocales']}"/>
@@ -99,27 +121,6 @@
         </a4j:region>
     </s:div>
 	
-    <h:outputText value="#{messages['jsf.customizedValidationMessage']}"/>
-	<s:div>
-		<rich:dataTable value="#{versionValidationOptionsAction.validationList}" var="validationAction">
-			<rich:column>
-				#{validationAction.id.displayName}
-			</rich:column>
-			
-			<rich:column>
-				#{validationAction.description}
-			</rich:column>
-			
-			<rich:column>
-                <h:selectOneRadio value="#{validationAction.state}">
-   					<f:selectItems value="#{versionValidationOptionsAction.validationStates}" var="state"
-   					    itemLabel="#{state}" itemValue="#{state}">
-                    </f:selectItems>
-                </h:selectOneRadio>
-			</rich:column>
-		</rich:dataTable>
-	</s:div>
-
     <div class="actionButtons">
         <h:commandButton id="save" value="#{messages['jsf.Save']}" action="#{projectIterationHome.persist}"
             rendered="#{!projectIterationHome.managed}"/>
