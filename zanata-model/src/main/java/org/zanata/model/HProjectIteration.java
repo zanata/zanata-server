@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -84,6 +86,7 @@ import com.google.common.collect.Sets;
 @Restrict
 @EntityRestrict({INSERT, UPDATE, DELETE})
 @Indexed
+@Access(AccessType.FIELD)
 @Setter
 @Getter
 @NoArgsConstructor

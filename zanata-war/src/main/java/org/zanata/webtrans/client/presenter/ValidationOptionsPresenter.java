@@ -47,18 +47,18 @@ import com.google.inject.Inject;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  * 
  **/
-public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOptionsDisplay> implements ValidationOptionsDisplay.Listener, WorkspaceContextUpdateEventHandler, DocValidationResultHandler
+public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOptionsDisplay> implements
+      ValidationOptionsDisplay.Listener, WorkspaceContextUpdateEventHandler, DocValidationResultHandler
 {
    private final ValidationService validationService;
-   private final WebTransMessages messages;
    private MainView currentView;
 
    @Inject
-   public ValidationOptionsPresenter(ValidationOptionsDisplay display, EventBus eventBus, final ValidationService validationService, final WebTransMessages messages)
+   public ValidationOptionsPresenter(ValidationOptionsDisplay display, EventBus eventBus,
+         final ValidationService validationService, final WebTransMessages messages)
    {
       super(display, eventBus);
       this.validationService = validationService;
-      this.messages = messages;
    }
 
    @Override
@@ -76,12 +76,15 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
    public void initDisplay()
    {
       display.clearValidationSelector();
-      ArrayList<ValidationAction> validationActions = new ArrayList<ValidationAction>(validationService.getValidationMap().values());
+      ArrayList<ValidationAction> validationActions = new ArrayList<ValidationAction>(validationService
+            .getValidationMap().values());
       for (final ValidationAction validationAction : validationActions)
       {
          ValidationInfo validationInfo = validationAction.getValidationInfo();
 
-         HasValueChangeHandlers<Boolean> changeHandler = display.addValidationSelector(validationAction.getId().getDisplayName(), validationAction.getDescription(), validationInfo.isEnabled(), validationInfo.isLocked());
+         HasValueChangeHandlers<Boolean> changeHandler = display.addValidationSelector(validationAction.getId()
+               .getDisplayName(), validationAction.getDescription(), validationInfo.isEnabled(), validationInfo
+               .isLocked());
          changeHandler.addValueChangeHandler(new ValidationOptionValueChangeHandler(validationAction));
       }
    }
@@ -125,7 +128,7 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
    @Override
    public void onWorkspaceContextUpdated(WorkspaceContextUpdateEvent event)
    {
-      validationService.setValidationRules(event.getValidationInfoList());
+      validationService.setValidationRules(event.getValidationsState());
 
       initDisplay();
    }

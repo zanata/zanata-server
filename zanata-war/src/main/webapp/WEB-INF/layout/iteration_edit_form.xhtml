@@ -67,7 +67,7 @@
 	            </rich:column>
 	        
 	            <rich:column>
-	                <h:selectOneRadio value="#{validationAction.state}">
+	                <h:selectOneRadio value="#{validationAction.state}" styleClass="validation_options">
 	                    <f:selectItems value="#{versionValidationOptionsAction.validationStates}" var="state"
 	                        itemLabel="#{state}" itemValue="#{state}"/>
 	                     <a4j:ajax event="change" listener="#{versionValidationOptionsAction.checkExclusive(validationAction)}" 

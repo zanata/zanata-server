@@ -41,7 +41,6 @@ import org.zanata.webtrans.shared.model.ProjectIterationId;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.model.WorkspaceContext;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.ExitWorkspace;
@@ -167,11 +166,11 @@ public class TranslationWorkspaceManagerImpl implements TranslationWorkspaceMana
    @Observer(ProjectIterationHome.PROJECT_ITERATION_UPDATE)
    public void projectIterationUpdate(HProjectIteration projectIteration)
    {
-      HashMap<ValidationId, State> validationStateList = Maps.newHashMap();
+      HashMap<ValidationId, State> validationsState = Maps.newHashMap();
 
-      for (ValidationAction validationAction : validationServiceImpl.getValidationObject(projectIteration))
+      for (ValidationAction validationAction : validationServiceImpl.getValidationAction(projectIteration.getProject().getSlug(), projectIteration.getSlug()))
       {
-         validationStateList.put(validationAction.getId(), validationAction.getState());
+         validationsState.put(validationAction.getId(), validationAction.getState());
       }
 
       String projectSlug = projectIteration.getProject().getSlug();
@@ -184,7 +183,7 @@ public class TranslationWorkspaceManagerImpl implements TranslationWorkspaceMana
       ProjectIterationId iterId = new ProjectIterationId(projectSlug, iterSlug, projectIteration.getProjectType());
       for (TranslationWorkspace workspace : projIterWorkspaceMap.get(iterId))
       {
-         WorkspaceContextUpdate event = new WorkspaceContextUpdate(isProjectActive, projectType, validationStateList);
+         WorkspaceContextUpdate event = new WorkspaceContextUpdate(isProjectActive, projectType, validationsState);
          workspace.publish(event);
       }
    }

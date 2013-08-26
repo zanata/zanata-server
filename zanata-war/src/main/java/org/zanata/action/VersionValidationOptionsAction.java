@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,31 +67,41 @@ public class VersionValidationOptionsAction implements Serializable
    @Getter
    @Setter
    private String projectSlug;
-   
+
    private Map<ValidationId, ValidationAction> availableValidations = Maps.newHashMap();
 
    public List<ValidationAction> getValidationList()
    {
-      if(availableValidations.isEmpty())
+      if (availableValidations.isEmpty())
       {
          availableValidations.clear();
-         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug, versionSlug);
+         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug,
+               versionSlug);
          for (ValidationAction validationAction : validationList)
          {
             availableValidations.put(validationAction.getId(), validationAction);
          }
       }
-      
-      return new ArrayList<ValidationAction>(availableValidations.values());
+
+      List<ValidationAction> sortedList = new ArrayList<ValidationAction>(availableValidations.values());
+      Collections.sort(sortedList, ValidationAction.ValidationActionComparator);
+      return sortedList;
    }
 
-   public void checkExclusive(ValidationAction valAction)
+   /**
+    * If this action is enabled(Warning or Error), then it's exclusive validation will be turn off
+    * @param selectedValidationAction
+    */
+   public void checkExclusive(ValidationAction selectedValidationAction)
    {
-      for (ValidationAction exclusiveValAction : valAction.getExclusiveValidations())
+      if (selectedValidationAction.getState() != State.Off)
       {
-         if (availableValidations.containsKey(exclusiveValAction.getId()))
+         for (ValidationAction exclusiveValAction : selectedValidationAction.getExclusiveValidations())
          {
-            availableValidations.get(exclusiveValAction.getId()).setState(State.Off);
+            if (availableValidations.containsKey(exclusiveValAction.getId()))
+            {
+               availableValidations.get(exclusiveValAction.getId()).setState(State.Off);
+            }
          }
       }
    }

@@ -36,8 +36,8 @@ import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.client.ui.HasUpdateValidationWarning;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.inject.Inject;
@@ -143,13 +143,13 @@ public class ValidationService implements RunValidationEventHandler
     * 
     * @param validationInfoList
     */
-   public void setValidationRules(Map<ValidationId, ValidationInfo> validationInfoMap)
+   public void setValidationRules(Map<ValidationId, State> validationInfoMap)
    {
       Map<ValidationId, ValidationAction> validationMap = validationFactory.getAllValidationActions();
       
-      for (Map.Entry<ValidationId, ValidationInfo> entry : validationInfoMap.entrySet())
+      for (Map.Entry<ValidationId, State> entry : validationInfoMap.entrySet())
       {
-         validationMap.get(entry.getKey()).setValidationInfo(entry.getValue());
+         validationMap.get(entry.getKey()).setState(entry.getValue());
       }
       
       this.validationMap = validationMap;

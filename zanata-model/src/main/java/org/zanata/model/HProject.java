@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -62,8 +64,8 @@ import org.zanata.common.ProjectType;
 import org.zanata.model.type.EntityStatusType;
 import org.zanata.rest.dto.Project;
 
-import com.beust.jcommander.internal.Maps;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -72,6 +74,7 @@ import com.google.common.collect.Sets;
  */
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Access(AccessType.FIELD)
 @TypeDef(name = "entityStatus", typeClass = EntityStatusType.class)
 @Restrict
 @EntityRestrict({ INSERT, UPDATE, DELETE })
@@ -108,7 +111,8 @@ public class HProject extends SlugEntityBase implements Serializable, HasEntityS
    private HCopyTransOptions defaultCopyTransOpts;
 
    @ManyToMany
-   @JoinTable(name = "HProject_Locale", joinColumns = @JoinColumn(name = "projectId"), inverseJoinColumns = @JoinColumn(name = "localeId"))
+   @JoinTable(name = "HProject_Locale", joinColumns = @JoinColumn(name = "projectId"),
+         inverseJoinColumns = @JoinColumn(name = "localeId"))
    private Set<HLocale> customizedLocales = Sets.newHashSet();
 
    @Enumerated(EnumType.STRING)
@@ -118,16 +122,18 @@ public class HProject extends SlugEntityBase implements Serializable, HasEntityS
     * @see {@link #addMaintainer(HPerson)}
     */
    @ManyToMany
-   @JoinTable(name = "HProject_Maintainer", joinColumns = @JoinColumn(name = "projectId"), inverseJoinColumns = @JoinColumn(name = "personId"))
+   @JoinTable(name = "HProject_Maintainer", joinColumns = @JoinColumn(name = "projectId"),
+         inverseJoinColumns = @JoinColumn(name = "personId"))
    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
    private Set<HPerson> maintainers = Sets.newHashSet();
 
    @ManyToMany
-   @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(name = "projectId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
+   @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(name = "projectId"),
+         inverseJoinColumns = @JoinColumn(name = "roleId"))
    private Set<HAccountRole> allowedRoles;
 
    @ElementCollection
-   @JoinTable(name = "HProject_Validation", joinColumns = {@JoinColumn(name = "projectId")})
+   @JoinTable(name = "HProject_Validation", joinColumns = { @JoinColumn(name = "projectId") })
    @MapKeyColumn(name = "validation")
    @Column(name = "state", nullable = false)
    private Map<String, String> customizedValidations = Maps.newHashMap();

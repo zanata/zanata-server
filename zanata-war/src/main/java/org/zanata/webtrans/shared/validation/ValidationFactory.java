@@ -54,7 +54,7 @@ public class ValidationFactory
    }
 
    /**
-    * Generate sorted list of all Validation Actions with enabled = false
+    * Generate sorted list of all Validation Actions with default states(Warning)
     * 
     * Used in client side (ValidationAction)
     * 

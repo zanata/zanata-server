@@ -100,44 +100,29 @@ public class ValidationServiceImpl implements ValidationService
             valAction.setState(persistedState);
          }
       }
-
       return allValidations;
    }
 
    @Override
    public Collection<ValidationAction> getValidationAction(String projectSlug, String versionSlug)
    {
-      Collection<ValidationAction> validationList = null;
+      Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
+      Map<String, String> customizedValidations = Maps.newHashMap();
 
       if (!StringUtils.isEmpty(projectSlug))
       {
          HProjectIteration version = projectIterationDAO.getBySlug(projectSlug, versionSlug);
 
-         validationList = getValidationObject(version);
-      }
-
-      return validationList;
-   }
-
-   @Override
-   public Collection<ValidationAction> getValidationObject(HProjectIteration version)
-   {
-      Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
-
-      Map<String, String> customizedValidations = Maps.newHashMap();
-
-      if (version != null)
-      {
          customizedValidations = version.getCustomizedValidations();
 
-         // Inherits validations from project if version has no defined
-         // validations
+         /**
+          * Inherits validations from project if version has no defined validations
+          */
          if (customizedValidations.isEmpty())
          {
             customizedValidations = version.getProject().getCustomizedValidations();
          }
       }
-      
 
       for (ValidationAction valAction : allValidations)
       {
@@ -155,7 +140,7 @@ public class ValidationServiceImpl implements ValidationService
    {
       Collection<ValidationAction> allValidations = getValidationFactory().getAllValidationActions().values();
       Map<String, String> customizedValidations = Maps.newHashMap();
-      
+
       List<ValidationId> warnOrErrorValidationIds = new ArrayList<ValidationId>();
 
       if (version != null)
@@ -240,7 +225,8 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public List<HTextFlow> filterHasErrorTexFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds, LocaleId localeId, int startIndex, int maxSize)
+   public List<HTextFlow> filterHasErrorTexFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
+         LocaleId localeId, int startIndex, int maxSize)
    {
       log.debug("Start filter {0} textFlows", textFlows.size());
       Stopwatch stopwatch = new Stopwatch().start();
@@ -263,7 +249,7 @@ public class ValidationServiceImpl implements ValidationService
       }
 
       int toIndex = startIndex + maxSize;
-      
+
       toIndex = toIndex > result.size() ? result.size() : toIndex;
       startIndex = startIndex > toIndex ? toIndex - maxSize : startIndex;
       startIndex = startIndex < 0 ? 0 : startIndex;

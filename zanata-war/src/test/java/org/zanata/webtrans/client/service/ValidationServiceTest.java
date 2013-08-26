@@ -27,8 +27,8 @@ import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.client.ui.HasUpdateValidationWarning;
 import org.zanata.webtrans.server.locale.Gwti18nReader;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Lists;
@@ -64,14 +64,14 @@ public class ValidationServiceTest
       ValidationFactory validationFactory = new ValidationFactory(validationMessages);
 
       Collection<ValidationAction> validationList = validationFactory.getAllValidationActions().values();
-      Map<ValidationId, ValidationInfo> validationInfoList = new HashMap<ValidationId, ValidationInfo>();
+      Map<ValidationId, State> validationsStateList = new HashMap<ValidationId, State>();
       
       for (ValidationAction action : validationList)
       {
          action.getValidationInfo().setEnabled(true);
-         validationInfoList.put(action.getId(), action.getValidationInfo());
+         validationsStateList.put(action.getId(), action.getState());
       }
-      service.setValidationRules(validationInfoList);
+      service.setValidationRules(validationsStateList);
 
       when(messages.notifyValidationError()).thenReturn("validation error");
       verify(eventBus).addHandler(RunValidationEvent.getType(), service);

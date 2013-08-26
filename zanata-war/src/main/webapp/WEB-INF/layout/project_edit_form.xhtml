@@ -104,7 +104,7 @@
 	        </h:selectOneMenu>
 	    </s:decorate>
 
-        <div style="clear:both"></div>
+        <div style="clear:both"/>
         
         <span class="name">#{messages['jsf.customizedValidationMessage']}</span>
         <s:div id="validationOptionsList">
@@ -118,7 +118,7 @@
                 </rich:column>
             
                 <rich:column>
-                    <h:selectOneRadio value="#{projectValidationOptionsAction.state}">
+                    <h:selectOneRadio value="#{validationAction.state}" styleClass="validation_options">
                         <f:selectItems value="#{projectValidationOptionsAction.validationStates}" var="state"
                             itemLabel="#{state}" itemValue="#{state}"/>
                          <a4j:ajax event="change" listener="#{projectValidationOptionsAction.checkExclusive(validationAction)}" 

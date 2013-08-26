@@ -9,11 +9,9 @@ import java.util.List;
 
 import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
-import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
-
 
 /**
  * 
@@ -23,7 +21,7 @@ import org.zanata.webtrans.shared.model.ValidationId;
 public interface ValidationService
 {
    /**
-    * Return all ValidationActions with enabled=true on those which are defined
+    * Return all ValidationActions on those which are customized
     * to the project
     * 
     * @param projectSlug
@@ -31,7 +29,6 @@ public interface ValidationService
     * @throws IOException
     */
    Collection<ValidationAction> getValidationAction(String projectSlug);
-   
 
    /**
     * Return all ValidationActions on those which are customized to the version
@@ -41,16 +38,6 @@ public interface ValidationService
     * @return
     */
    Collection<ValidationAction> getValidationAction(String projectSlug, String versionSlug);
-
-   /**
-    * Return all ValidationActions with enabled=true on those which are
-    * customized to the version
-    * 
-    * @param HProjectIteration
-    * @return
-    * @throws IOException
-    */
-   Collection<ValidationAction> getValidationObject(HProjectIteration version);
 
    /**
     * Run validation check on HTextFlow and HTextFlowTarget with specific locale
@@ -74,8 +61,8 @@ public interface ValidationService
     * @param maxSize
     * @throws IOException
     */
-   List<HTextFlow> filterHasErrorTexFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds, LocaleId localeId, int startIndex, int maxSize);
-
+   List<HTextFlow> filterHasErrorTexFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
+         LocaleId localeId, int startIndex, int maxSize);
 
    /**
     * Run validation check on HTextFlow and HTextFlowTarget with specific locale

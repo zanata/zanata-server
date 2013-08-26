@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class ProjectValidationOptionsAction implements Serializable
 
    public List<ValidationAction> getValidationList()
    {
-      if(availableValidations.isEmpty())
+      if (availableValidations.isEmpty())
       {
          availableValidations.clear();
          Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug);
@@ -76,8 +77,10 @@ public class ProjectValidationOptionsAction implements Serializable
             availableValidations.put(validationAction.getId(), validationAction);
          }
       }
-      
-      return new ArrayList<ValidationAction>(availableValidations.values());
+
+      List<ValidationAction> sortedList = new ArrayList<ValidationAction>(availableValidations.values());
+      Collections.sort(sortedList, ValidationAction.ValidationActionComparator);
+      return sortedList;
    }
 
    public void checkExclusive(ValidationAction valAction)
@@ -90,13 +93,13 @@ public class ProjectValidationOptionsAction implements Serializable
          }
       }
    }
-   
+
    @Out(required = false)
-   public Collection<ValidationAction>  getCustomizedValidations()
+   public Collection<ValidationAction> getCustomizedValidations()
    {
       return availableValidations.values();
    }
-   
+
    public List<State> getValidationStates()
    {
       return Arrays.asList(ValidationAction.State.values());
