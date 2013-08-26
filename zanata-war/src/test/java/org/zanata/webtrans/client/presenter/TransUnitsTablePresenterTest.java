@@ -129,7 +129,7 @@ public class TransUnitsTablePresenterTest
    @Test
    public void onFilterViewEventDoNothingIfItsCancel()
    {
-      presenter.onFilterView(new FilterViewEvent(true, true, true, true, true, false, true, null));
+      presenter.onFilterView(new FilterViewEvent(true, true, true, true, true, false, true));
 
       verifyNoMoreInteractions(eventBus, display, targetContentsPresenter);
    }
@@ -141,7 +141,7 @@ public class TransUnitsTablePresenterTest
       when(targetContentsPresenter.currentEditorContentHasChanged()).thenReturn(true);
 
       // When: not a cancel event
-      presenter.onFilterView(new FilterViewEvent(true, false, true, false, false, false, false, null));
+      presenter.onFilterView(new FilterViewEvent(true, false, true, false, false, false, false));
 
       // Then:
       verify(display).showFilterConfirmation();
@@ -152,7 +152,7 @@ public class TransUnitsTablePresenterTest
    {
       // Given: current edtior hasn't changed
       when(targetContentsPresenter.currentEditorContentHasChanged()).thenReturn(false);
-      FilterViewEvent event = new FilterViewEvent(true, false, true, false, false, false, false, null);
+      FilterViewEvent event = new FilterViewEvent(true, false, true, false, false, false, false);
 
       // When:
       presenter.onFilterView(event);

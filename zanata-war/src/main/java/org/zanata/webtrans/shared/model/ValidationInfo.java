@@ -1,8 +1,11 @@
 package org.zanata.webtrans.shared.model;
 
+import org.zanata.webtrans.shared.model.ValidationAction.State;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
+ * Holds display rules of this validation according to the state
  * 
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  * 
@@ -11,17 +14,17 @@ public class ValidationInfo implements IsSerializable
 {
    private boolean enabled;
    private boolean locked;
-   
+
    @SuppressWarnings("unused")
    private ValidationInfo()
    {
    }
 
-   public ValidationInfo(boolean enabled)
+   public ValidationInfo(State state)
    {
-      this.enabled = enabled;
+      updateRules(state);
    }
-   
+
    public boolean isEnabled()
    {
       return enabled;
@@ -31,15 +34,34 @@ public class ValidationInfo implements IsSerializable
    {
       this.enabled = enabled;
    }
-   
+
    public boolean isLocked()
    {
       return locked;
    }
-   
-   public void setLocked(boolean locked)
+
+   /**
+    * Update validation state 
+    * Off     : enabled = false, locked = true;
+    * Warning : enabled = true,  locked = false;
+    * Error   : enabled = true,  locked = true;
+    */
+   public void updateRules(State state)
    {
-      this.locked = locked;
+      if (state == State.Off)
+      {
+         enabled = false;
+         locked = true;
+      }
+      else if (state == State.Warning)
+      {
+         enabled = true;
+         locked = false;
+      }
+      else if (state == State.Error)
+      {
+         enabled = true;
+         locked = true;
+      }
    }
-   
 }

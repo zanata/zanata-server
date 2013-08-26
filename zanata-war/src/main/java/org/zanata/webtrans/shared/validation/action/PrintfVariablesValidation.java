@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.AbstractValidationAction;
 
 import com.google.common.collect.Lists;
@@ -47,17 +46,17 @@ public class PrintfVariablesValidation extends AbstractValidationAction
 
    public PrintfVariablesValidation(ValidationId id, ValidationMessages messages)
    {
-      super(id, messages.printfVariablesValidatorDesc(), new ValidationInfo(true), messages);
+      super(id, messages.printfVariablesValidatorDesc(), messages);
    }
-   
+
    public PrintfVariablesValidation(ValidationId id)
    {
-      super(id, null, new ValidationInfo(true), null);
+      super(id, null, null);
    }
 
    public PrintfVariablesValidation(ValidationId id, String description, ValidationMessages messages, boolean enabled)
    {
-      super(id, description, new ValidationInfo(enabled), messages);
+      super(id, description, messages);
    }
 
    @Override
@@ -70,7 +69,8 @@ public class PrintfVariablesValidation extends AbstractValidationAction
       findAddedVariables(errorList, sourceVars, targetVars);
    }
 
-   protected void findMissingVariables(ArrayList<String> errorList, ArrayList<String> sourceVars, ArrayList<String> targetVars)
+   protected void findMissingVariables(ArrayList<String> errorList, ArrayList<String> sourceVars,
+         ArrayList<String> targetVars)
    {
       List<String> missing = listMissing(sourceVars, targetVars);
       if (!missing.isEmpty())
@@ -79,7 +79,8 @@ public class PrintfVariablesValidation extends AbstractValidationAction
       }
    }
 
-   protected void findAddedVariables(ArrayList<String> errorList, ArrayList<String> sourceVars, ArrayList<String> targetVars)
+   protected void findAddedVariables(ArrayList<String> errorList, ArrayList<String> sourceVars,
+         ArrayList<String> targetVars)
    {
       // missing from source = added
       List<String> added = listMissing(targetVars, sourceVars);

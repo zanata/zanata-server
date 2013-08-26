@@ -63,11 +63,11 @@ public abstract class AbstractValidationAction implements ValidationAction
    
    private State state = State.Warning;
 
-   public AbstractValidationAction(ValidationId id, String description, ValidationInfo validationInfo, ValidationMessages validationMessages)
+   public AbstractValidationAction(ValidationId id, String description, ValidationMessages validationMessages)
    {
       this.id = id;
       this.description = description;
-      this.validationInfo = validationInfo;
+      this.validationInfo = new ValidationInfo(state);
       this.validationMessages = validationMessages;
    }
 
@@ -103,12 +103,6 @@ public abstract class AbstractValidationAction implements ValidationAction
    }
    
    @Override
-   public void setValidationInfo(ValidationInfo validationInfo)
-   {
-      this.validationInfo = validationInfo;
-   }
-
-   @Override
    public ValidationInfo getValidationInfo()
    {
       return validationInfo;
@@ -136,6 +130,7 @@ public abstract class AbstractValidationAction implements ValidationAction
    public void setState(State state)
    {
       this.state = state;
+      validationInfo.updateRules(state);
    }
 }
 

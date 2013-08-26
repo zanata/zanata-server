@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.AbstractValidationAction;
 
 import com.google.common.base.CharMatcher;
@@ -33,12 +32,12 @@ public class TabValidation extends AbstractValidationAction
 {
    public TabValidation(ValidationId id, ValidationMessages messages)
    {
-      super(id, messages.tabValidatorDesc(), new ValidationInfo(true), messages);
+      super(id, messages.tabValidatorDesc(), messages);
    }
 
    public TabValidation(ValidationId id)
    {
-      super(id, null, new ValidationInfo(true), null);
+      super(id, null, null);
    }
 
    @Override

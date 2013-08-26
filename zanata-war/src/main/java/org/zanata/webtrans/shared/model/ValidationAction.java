@@ -41,8 +41,6 @@ public interface ValidationAction
 
    ValidationInfo getValidationInfo();
 
-   void setValidationInfo(ValidationInfo actionInfo);
-
    ValidationId getId();
 
    String getDescription();

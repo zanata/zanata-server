@@ -22,12 +22,10 @@ package org.zanata.webtrans.shared.validation.action;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.AbstractValidationAction;
 
 /**
@@ -44,12 +42,12 @@ public class JavaVariablesValidation extends AbstractValidationAction
 {
    public JavaVariablesValidation(ValidationId id, ValidationMessages messages)
    {
-      super(id, messages.javaVariablesValidatorDesc(), new ValidationInfo(true), messages);
+      super(id, messages.javaVariablesValidatorDesc(), messages);
    }
 
    public JavaVariablesValidation(ValidationId id)
    {
-      super(id, null, new ValidationInfo(true), null);
+      super(id, null, null);
    }
 
    @Override
@@ -140,7 +138,6 @@ public class JavaVariablesValidation extends AbstractValidationAction
          errorList.add(getMessages().differentVarCount(different));
       }
 
-
       //TODO check if indices are used with the same format types
       //e.g. "You owe me {0, currency}" --> "Du schuldest mir {0, percent}" is not correct
    }
@@ -178,7 +175,7 @@ public class JavaVariablesValidation extends AbstractValidationAction
       int quotedLength = 0;
 
       //scan for opening brace
-      for (int i = 0; i<inString.length(); i++)
+      for (int i = 0; i < inString.length(); i++)
       {
          // escaping skips a single character
          if (isEscaped)
@@ -225,7 +222,7 @@ public class JavaVariablesValidation extends AbstractValidationAction
             }
             else if (c == '}' && quotedOpenings.size() > 0)
             {
-               String variable = inString.substring(quotedOpenings.remove(quotedOpenings.size() -1), i + 1);
+               String variable = inString.substring(quotedOpenings.remove(quotedOpenings.size() - 1), i + 1);
                descriptor.quotedVars.add(variable);
             }
 
@@ -246,7 +243,7 @@ public class JavaVariablesValidation extends AbstractValidationAction
          }
          else if (c == '}' && openings.size() > 0)
          {
-            String variable = inString.substring(openings.remove(openings.size() -1), i + 1);
+            String variable = inString.substring(openings.remove(openings.size() - 1), i + 1);
             descriptor.vars.add(variable);
          }
       }

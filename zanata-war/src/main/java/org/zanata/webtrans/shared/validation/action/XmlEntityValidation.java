@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.AbstractValidationAction;
 
 import com.google.common.base.Splitter;
@@ -54,12 +53,12 @@ public class XmlEntityValidation extends AbstractValidationAction
 
    public XmlEntityValidation(ValidationId id, ValidationMessages messages)
    {
-      super(id, messages.xmlEntityValidatorDesc(), new ValidationInfo(true), messages);
+      super(id, messages.xmlEntityValidatorDesc(), messages);
    }
 
    public XmlEntityValidation(ValidationId id)
    {
-      super(id, null, new ValidationInfo(true), null);
+      super(id, null, null);
    }
 
    @Override
@@ -83,7 +82,7 @@ public class XmlEntityValidation extends AbstractValidationAction
             if (word.contains(ENTITY_START_CHAR))
             {
                //remove any string that occurs in front
-               word = word.substring(word.indexOf(ENTITY_START_CHAR)); 
+               word = word.substring(word.indexOf(ENTITY_START_CHAR));
                errorList.add(getMessages().invalidXMLEntity(word));
             }
          }
@@ -103,7 +102,7 @@ public class XmlEntityValidation extends AbstractValidationAction
       while (result != null)
       {
          // replace match entity with empty string
-         text = text.replace(result.getGroup(0), ""); 
+         text = text.replace(result.getGroup(0), "");
          result = regex.exec(text);
       }
       return text;

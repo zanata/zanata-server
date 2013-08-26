@@ -225,7 +225,7 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public List<HTextFlow> filterHasErrorTexFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
+   public List<HTextFlow> filterHasErrorTextFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
          LocaleId localeId, int startIndex, int maxSize)
    {
       log.debug("Start filter {0} textFlows", textFlows.size());
