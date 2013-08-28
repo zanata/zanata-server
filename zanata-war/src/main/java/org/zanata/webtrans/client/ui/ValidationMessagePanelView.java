@@ -17,17 +17,22 @@
 package org.zanata.webtrans.client.ui;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.zanata.webtrans.client.resources.TableEditorMessages;
+import org.zanata.webtrans.shared.model.ValidationInfo;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ValidationMessagePanelView extends Composite implements HasUpdateValidationWarning
@@ -41,9 +46,9 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
 
    interface Styles extends CssResource
    {
-      String label();
+      String error();
 
-      String content();
+      String warning();
 
       String container();
 
@@ -54,13 +59,14 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
    Label headerLabel;
 
    @UiField
-   VerticalPanel contents;
+   UnorderedListWidget contents;
 
    @UiField
    Styles style;
 
    @UiField
    TableEditorMessages messages;
+
    @UiField
    DisclosurePanel disclosurePanel;
 
@@ -72,8 +78,17 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
       clear();
    }
 
+   private String getMessageStyle(ValidationInfo info)
+   {
+      if (info.isEnabled() && info.isLocked())
+      {
+         return style.error();
+      }
+      return style.warning();
+   }
+
    @Override
-   public void updateValidationWarning(List<String> errors)
+   public void updateValidationWarning(Map<ValidationInfo, List<String>> errors)
    {
       if (errors == null || errors.isEmpty())
       {
@@ -82,12 +97,20 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
       }
       contents.clear();
 
-      for (String error : errors)
+      for (Entry<ValidationInfo, List<String>> entry : errors.entrySet())
       {
-         Label errorLabel = new Label(error);
-         errorLabel.addStyleName(style.label());
-         contents.add(errorLabel);
+         for (String error : entry.getValue())
+         {
+            SafeHtmlBuilder builder = new SafeHtmlBuilder();
+            builder.appendEscaped(error);
+            
+            HTMLPanel liElement = new HTMLPanel("li", builder.toSafeHtml().asString());
+            liElement.addStyleName(getMessageStyle(entry.getKey()));
+            
+            contents.add(liElement);
+         }
       }
+
       headerLabel.setText(messages.validationWarningsHeading(errors.size()));
       setVisible(true);
    }

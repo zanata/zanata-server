@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:z="urn:import:org.zanata.webtrans.client.ui">
 
     <ui:with field="messages" type="org.zanata.webtrans.client.resources.TableEditorMessages" />
 
@@ -15,18 +16,20 @@
 
         .headerLabel
         {
-			font-size: 11px;
+			font-size: 0.9em;
 			font-weight: bold;
 			color:#FFFFFF;
 		}
 
-        .label {
-            font-size: 11px;
-            color: #e0575b;
+        .error {
+            color: rgb(224, 87, 91);
         }
-
+        
+         .warning {
+            color: rgb(227, 130, 78);
+        }
+        
         .header {
-            text-indent: 5px;
             cursor: pointer;
             text-overflow: ellipsis;
             overflow: hidden;
@@ -40,16 +43,23 @@
 			color:#FFFFFF;
 			text-decoration:underline;
 		}
+		
+		.contents {
 
-        .content {
-            color: #e0575b;
+	    }
+        
+        .contents li {
+            border-left: 3px solid;	
+            padding: 0.1em 0.5em;
+            margin: 2px 0;
+            font-size: 0.9em;
         }
 
     </ui:style>
 
 
 
-	<g:DisclosurePanel addStyleNames="{style.container}" animationEnabled="true" ui:field="disclosurePanel">
+	<g:DisclosurePanel addStyleNames="{style.container} new-zanata" animationEnabled="true" ui:field="disclosurePanel">
         <g:customHeader>
             <g:HorizontalPanel styleName="{style.header}">
                 <g:cell horizontalAlignment="ALIGN_LEFT" verticalAlignment="ALIGN_MIDDLE">
@@ -58,11 +68,7 @@
             </g:HorizontalPanel>
         </g:customHeader>
 
-		<g:ScrollPanel>
-			<g:FlowPanel >
-                <g:VerticalPanel ui:field="contents" addStyleNames="{style.content}" />
-			</g:FlowPanel>
-		</g:ScrollPanel>
+        <z:UnorderedListWidget ui:field="contents" styleName="list--no-bullets {style.contents}"/>
 
 	</g:DisclosurePanel>
 

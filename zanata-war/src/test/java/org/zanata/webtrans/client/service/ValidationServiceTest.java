@@ -22,16 +22,17 @@ import org.testng.annotations.Test;
 import org.zanata.webtrans.client.events.RequestValidationEvent;
 import org.zanata.webtrans.client.events.RunValidationEvent;
 import org.zanata.webtrans.client.presenter.UserConfigHolder;
-import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.client.ui.HasUpdateValidationWarning;
 import org.zanata.webtrans.server.locale.Gwti18nReader;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
+import org.zanata.webtrans.shared.model.ValidationInfo;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * @author Patrick Huang <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
@@ -43,10 +44,9 @@ public class ValidationServiceTest
    private ValidationService service;
    @Mock
    private EventBus eventBus;
-   @Mock
-   private TableEditorMessages messages;
    
    private ValidationMessages validationMessages;
+   
    @Mock
    private HasUpdateValidationWarning validationMessagePanel;
    
@@ -60,7 +60,7 @@ public class ValidationServiceTest
 
       validationMessages = Gwti18nReader.create(ValidationMessages.class);
 
-      service = new ValidationService(eventBus, messages, validationMessages, configHolder);
+      service = new ValidationService(eventBus, validationMessages, configHolder);
       ValidationFactory validationFactory = new ValidationFactory(validationMessages);
 
       Collection<ValidationAction> validationList = validationFactory.getAllValidationActions().values();
@@ -68,12 +68,11 @@ public class ValidationServiceTest
       
       for (ValidationAction action : validationList)
       {
-         action.getValidationInfo().setEnabled(true);
+         action.getInfo().setEnabled(true);
          validationsStateList.put(action.getId(), action.getState());
       }
       service.setValidationRules(validationsStateList);
 
-      when(messages.notifyValidationError()).thenReturn("validation error");
       verify(eventBus).addHandler(RunValidationEvent.getType(), service);
    }
 
@@ -82,8 +81,12 @@ public class ValidationServiceTest
    {
       RunValidationEvent event = new RunValidationEvent("source", "target %s", false);
       event.addWidget(validationMessagePanel);
-      ArrayList<String> errors = Lists.newArrayList(validationMessages.varsAdded(Arrays.asList("%s")), validationMessages.varsAdded(Arrays.asList("%s")));
-
+      
+      ArrayList<String> errorMessages = Lists.newArrayList(validationMessages.varsAdded(Arrays.asList("%s")), validationMessages.varsAdded(Arrays.asList("%s")));
+      Map<ValidationInfo, List<String>> errors = Maps.newHashMap();
+      
+      errors.put(new ValidationInfo(State.Warning), errorMessages);
+      
       service.onValidate(event);
 
       verify(validationMessagePanel).updateValidationWarning(errors);
@@ -96,7 +99,7 @@ public class ValidationServiceTest
 
       ValidationAction validationAction = service.getValidationMap().get(VAL_KEY);
 
-      assertThat(validationAction.getValidationInfo().isEnabled(), Matchers.equalTo(false));
+      assertThat(validationAction.getInfo().isEnabled(), Matchers.equalTo(false));
       verify(eventBus).fireEvent(RequestValidationEvent.EVENT);
    }
 

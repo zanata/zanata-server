@@ -21,6 +21,7 @@
 package org.zanata.webtrans.client.presenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import net.customware.gwt.presenter.client.EventBus;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
@@ -35,6 +36,7 @@ import org.zanata.webtrans.client.service.ValidationService;
 import org.zanata.webtrans.client.view.ValidationOptionsDisplay;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationInfo;
+import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -78,9 +80,12 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
       display.clearValidationSelector();
       ArrayList<ValidationAction> validationActions = new ArrayList<ValidationAction>(validationService
             .getValidationMap().values());
+      
+      Collections.sort(validationActions, ValidationFactory.ValidationActionComparator);
+      
       for (final ValidationAction validationAction : validationActions)
       {
-         ValidationInfo validationInfo = validationAction.getValidationInfo();
+         ValidationInfo validationInfo = validationAction.getInfo();
 
          HasValueChangeHandlers<Boolean> changeHandler = display.addValidationSelector(validationAction.getId()
                .getDisplayName(), validationAction.getDescription(), validationInfo.isEnabled(), validationInfo

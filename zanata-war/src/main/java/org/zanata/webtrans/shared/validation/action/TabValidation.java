@@ -21,6 +21,7 @@
 package org.zanata.webtrans.shared.validation.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -35,26 +36,25 @@ public class TabValidation extends AbstractValidationAction
       super(id, messages.tabValidatorDesc(), messages);
    }
 
-   public TabValidation(ValidationId id)
-   {
-      super(id, null, null);
-   }
-
    @Override
-   public void doValidate(ArrayList<String> errorList, String source, String target)
+   public List<String> doValidate(String source, String target)
    {
+      ArrayList<String> errors = new ArrayList<String>();
+
       @edu.umd.cs.findbugs.annotations.SuppressWarnings("GBU_GUAVA_BETA_CLASS_USAGE")
       CharMatcher tabs = CharMatcher.is('\t');
       int sourceTabs = tabs.countIn(source);
       int targetTabs = tabs.countIn(target);
       if (sourceTabs > targetTabs)
       {
-         errorList.add(getMessages().targetHasFewerTabs(sourceTabs, targetTabs));
+         errors.add(getMessages().targetHasFewerTabs(sourceTabs, targetTabs));
       }
       else if (targetTabs > sourceTabs)
       {
-         errorList.add(getMessages().targetHasMoreTabs(sourceTabs, targetTabs));
+         errors.add(getMessages().targetHasMoreTabs(sourceTabs, targetTabs));
       }
+
+      return errors;
    }
 
 }

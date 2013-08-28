@@ -74,15 +74,14 @@ public abstract class AbstractValidationAction implements ValidationAction
    @Override
    public List<String> validate(String source, String target)
    {
-      ArrayList<String> errorList = new ArrayList<String>();
       if (!Strings.isNullOrEmpty(target) && !Strings.isNullOrEmpty(source))
       {
-         doValidate(errorList, source, target);
+        return doValidate(source, target);
       }
-      return errorList;
+      return Lists.newArrayList();
    }
 
-   protected abstract void doValidate(ArrayList<String> errorList, String source, String target);
+   protected abstract List<String> doValidate(String source, String target);
 
 
    @Override
@@ -103,7 +102,7 @@ public abstract class AbstractValidationAction implements ValidationAction
    }
    
    @Override
-   public ValidationInfo getValidationInfo()
+   public ValidationInfo getInfo()
    {
       return validationInfo;
    }

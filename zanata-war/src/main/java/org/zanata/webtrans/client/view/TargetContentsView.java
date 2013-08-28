@@ -22,6 +22,9 @@ package org.zanata.webtrans.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import net.customware.gwt.presenter.client.EventBus;
 
 import org.zanata.common.ContentState;
 import org.zanata.webtrans.client.events.ReviewCommentEvent;
@@ -33,8 +36,8 @@ import org.zanata.webtrans.client.ui.ValidationMessagePanelView;
 import org.zanata.webtrans.client.util.ContentStateToStyleUtil;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
+import org.zanata.webtrans.shared.model.ValidationInfo;
 
-import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -50,8 +53,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-
-import net.customware.gwt.presenter.client.EventBus;
 
 public class TargetContentsView extends Composite implements TargetContentsDisplay
 {
@@ -302,7 +303,7 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
    }
 
    @Override
-   public void updateValidationWarning(List<String> errors)
+   public void updateValidationWarning(Map<ValidationInfo, List<String>> errors)
    {
       validationPanel.updateValidationWarning(errors);
    }

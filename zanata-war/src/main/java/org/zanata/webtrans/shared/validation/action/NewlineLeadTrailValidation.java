@@ -21,6 +21,7 @@
 package org.zanata.webtrans.shared.validation.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -41,11 +42,6 @@ public class NewlineLeadTrailValidation extends AbstractValidationAction
       super(id, messages.newLineValidatorDesc(), messages);
    }
 
-   public NewlineLeadTrailValidation(ValidationId id)
-   {
-      super(id, null, null);
-   }
-
    private final static String leadNewlineRegex = "^\n";
    private final static String endNewlineRegex = "\n$";
    private final static String newlineRegex = "\n";
@@ -54,39 +50,43 @@ public class NewlineLeadTrailValidation extends AbstractValidationAction
    private final static RegExp endRegExp = RegExp.compile(endNewlineRegex);
 
    @Override
-   public void doValidate(ArrayList<String> errorList, String source, String target)
+   public List<String> doValidate(String source, String target)
    {
+      ArrayList<String> errors = new ArrayList<String>();
+      
       if (notShareLeading(source, target))
       {
-         errorList.add(getMessages().leadingNewlineMissing());
+         errors.add(getMessages().leadingNewlineMissing());
       }
 
       if (notShareLeading(target, source))
       {
-         errorList.add(getMessages().leadingNewlineAdded());
+         errors.add(getMessages().leadingNewlineAdded());
       }
 
       if (notShareTrailing(source, target))
       {
-         errorList.add(getMessages().trailingNewlineMissing());
+         errors.add(getMessages().trailingNewlineMissing());
       }
 
       if (notShareTrailing(target, source))
       {
-         errorList.add(getMessages().trailingNewlineAdded());
+         errors.add(getMessages().trailingNewlineAdded());
       }
 
       int sourceLines = 1 + countNewlines(source);
       int targetLines = 1 + countNewlines(target);
       if (sourceLines < targetLines)
       {
-         errorList.add(getMessages().linesAdded(sourceLines, targetLines));
+         errors.add(getMessages().linesAdded(sourceLines, targetLines));
       }
 
       if (targetLines < sourceLines)
       {
-         errorList.add(getMessages().linesRemoved(sourceLines, targetLines));
+         errors.add(getMessages().linesRemoved(sourceLines, targetLines));
       }
+      
+      return errors;
    }
 
    private boolean notShareTrailing(String source, String target)

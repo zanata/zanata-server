@@ -20,7 +20,6 @@
  */
 package org.zanata.webtrans.shared.model;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.zanata.webtrans.shared.validation.AbstractValidationAction;
@@ -39,7 +38,7 @@ public interface ValidationAction
 
    void mutuallyExclusive(ValidationAction[] exclusiveValidations);
 
-   ValidationInfo getValidationInfo();
+   ValidationInfo getInfo();
 
    ValidationId getId();
 
@@ -53,13 +52,4 @@ public interface ValidationAction
    {
       Off, Warning, Error;
    }
-
-   public static final Comparator<ValidationAction> ValidationActionComparator = new Comparator<ValidationAction>()
-   {
-      @Override
-      public int compare(ValidationAction o1, ValidationAction o2)
-      {
-         return o1.getId().getDisplayName().compareTo(o2.getId().getDisplayName());
-      }
-   };
 }

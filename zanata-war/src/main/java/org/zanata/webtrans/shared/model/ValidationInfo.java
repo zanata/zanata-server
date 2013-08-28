@@ -42,7 +42,7 @@ public class ValidationInfo implements IsSerializable
 
    /**
     * Update validation state 
-    * Off     : enabled = false, locked = true;
+    * Off     : enabled = false, locked = false;
     * Warning : enabled = true,  locked = false;
     * Error   : enabled = true,  locked = true;
     */
@@ -51,7 +51,7 @@ public class ValidationInfo implements IsSerializable
       if (state == State.Off)
       {
          enabled = false;
-         locked = true;
+         locked = false;
       }
       else if (state == State.Warning)
       {

@@ -42,6 +42,7 @@ import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
+import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Maps;
 
@@ -84,7 +85,7 @@ public class VersionValidationOptionsAction implements Serializable
       }
 
       List<ValidationAction> sortedList = new ArrayList<ValidationAction>(availableValidations.values());
-      Collections.sort(sortedList, ValidationAction.ValidationActionComparator);
+      Collections.sort(sortedList, ValidationFactory.ValidationActionComparator);
       return sortedList;
    }
 
