@@ -57,6 +57,7 @@ import org.zanata.webtrans.client.ui.SaveAsApprovedConfirmationDisplay;
 import org.zanata.webtrans.client.ui.ToggleEditor;
 import org.zanata.webtrans.client.ui.ToggleEditor.ViewMode;
 import org.zanata.webtrans.client.ui.UndoLink;
+import org.zanata.webtrans.client.ui.ValidationWarningDisplay;
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
@@ -97,6 +98,8 @@ public class TargetContentsPresenter implements
    private final UserOptionsService userOptionsService;
    private final SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation;
 
+   private final ValidationWarningDisplay validationWarning;
+
    private TargetContentsDisplay display;
    private List<TargetContentsDisplay> displayList = Collections.emptyList();
    private int currentEditorIndex = 0;
@@ -116,7 +119,8 @@ public class TargetContentsPresenter implements
                                   EditorKeyShortcuts editorKeyShortcuts,
                                   TranslationHistoryPresenter historyPresenter,
                                   UserOptionsService userOptionsService,
-                                  SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation)
+                                  SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation,
+                                  ValidationWarningDisplay validationWarning)
    // @formatter:on
    {
       this.displayProvider = displayProvider;
@@ -130,10 +134,12 @@ public class TargetContentsPresenter implements
       this.historyPresenter.setCurrentValueHolder(this);
       this.userOptionsService = userOptionsService;
       this.saveAsApprovedConfirmation = saveAsApprovedConfirmation;
+      this.validationWarning = validationWarning;
       isDisplayButtons = userOptionsService.getConfigHolder().getState().isDisplayButtons();
       spellCheckEnabled = userOptionsService.getConfigHolder().getState().isSpellCheckEnabled();
       editorKeyShortcuts.registerKeys(this);
       saveAsApprovedConfirmation.setListener(this);
+      validationWarning.setListener(this);
 
       bindEventHandlers();
    }
@@ -158,7 +164,20 @@ public class TargetContentsPresenter implements
 
    public void saveCurrent(ContentState status)
    {
-      eventBus.fireEvent(new TransUnitSaveEvent(getNewTargets(), status, display.getId(), display.getVerNum(), display.getCachedTargets()));
+      if (status == ContentState.Translated)
+      {
+         validationWarning.center(display.getId());
+      }
+      else
+      {
+         eventBus.fireEvent(new TransUnitSaveEvent(getNewTargets(), status, display.getId(), display.getVerNum(), display.getCachedTargets()));
+      }
+   }
+
+   @Override
+   public void selectRow(TransUnitId transUnitId)
+   {
+      eventBus.fireEvent(new TableRowSelectedEvent(transUnitId));
    }
 
    public boolean currentEditorContentHasChanged()
@@ -192,7 +211,7 @@ public class TargetContentsPresenter implements
       }
       display.showButtons(isDisplayButtons());
 
-      if(!canEditTranslation())
+      if (!canEditTranslation())
       {
          display.setToMode(ViewMode.VIEW);
          concealDisplay();
@@ -332,7 +351,6 @@ public class TargetContentsPresenter implements
       }
    }
 
-
    public TransUnitId getCurrentTransUnitIdOrNull()
    {
       return currentTransUnitId;
@@ -385,13 +403,13 @@ public class TargetContentsPresenter implements
    @Override
    public void copySource(ToggleEditor editor, TransUnitId id)
    {
-      if(canEditTranslation())
+      if (canEditTranslation())
       {
          currentEditorIndex = editor.getIndex();
          ensureRowSelection(id);
          editor.setTextAndValidate(sourceContentsPresenter.getSelectedSource());
          editor.setFocus();
-   
+
          eventBus.fireEvent(new NotificationEvent(Severity.Info, messages.notifyCopied()));
       }
    }
@@ -410,7 +428,7 @@ public class TargetContentsPresenter implements
    }
 
    @Override
-   public void  onUserConfigChanged(UserConfigChangeEvent event)
+   public void onUserConfigChanged(UserConfigChangeEvent event)
    {
       if (event.getView() != MainView.Editor)
       {
@@ -459,7 +477,7 @@ public class TargetContentsPresenter implements
 
    private void copyTextWhenIsEditing(List<String> contents, boolean isInsertText)
    {
-      if(canEditTranslation())
+      if (canEditTranslation())
       {
          if (isInsertText)
          {
@@ -503,12 +521,12 @@ public class TargetContentsPresenter implements
          TargetContentsDisplay display = displayProvider.get();
          display.setListener(this);
          display.setValueAndCreateNewEditors(transUnit);
-         
-         if(!canEditTranslation())
+
+         if (!canEditTranslation())
          {
             display.setToMode(ViewMode.VIEW);
          }
-         
+
          display.showButtons(isDisplayButtons());
          builder.add(display);
       }
@@ -692,11 +710,11 @@ public class TargetContentsPresenter implements
       ensureRowSelection(id);
       if (display.getCachedState() != ContentState.Rejected)
       {
-         TransUnitSaveEvent event = new TransUnitSaveEvent(getNewTargets(), ContentState.Rejected, display.getId(), display.getVerNum(), display.getCachedTargets());
+         TransUnitSaveEvent event = new TransUnitSaveEvent(getNewTargets(), ContentState.Rejected, display.getId(), display.getVerNum(),
+               display.getCachedTargets());
          eventBus.fireEvent(new CommentBeforeSaveEvent(event));
       }
    }
-
 
    public void updateCommentCount(TransUnitId id, int commentsCount)
    {
