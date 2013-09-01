@@ -92,12 +92,15 @@ public interface TableEditorMessages extends Messages
 
    @DefaultMessage("Cancel changes")
    String cancelChanges();
+   
+   @DefaultMessage("Return to editor")
+   String returnToEditor();
 
    @DefaultMessage("Cancel")
    String cancel();
 
    @DefaultMessage("Don''t show this warning again.")
-   String saveAsApprovedDialogRememberDecision();
+   String dontShowThisAgain();
 
    @DefaultMessage("Warning! Saving a ''Fuzzy'' translation as ''Translated'' without changes.")
    String saveAsTranslatedDialogWarning1();
