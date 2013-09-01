@@ -3,8 +3,6 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:z="urn:import:org.zanata.webtrans.client.ui">
 
-    <ui:with field="messages" type="org.zanata.webtrans.client.resources.TableEditorMessages" />
-
 	<ui:style
 		type="org.zanata.webtrans.client.ui.ValidationMessagePanelView.Styles">
         .container {
@@ -13,13 +11,11 @@
             table-layout: fixed;
             margin-bottom: 3px;
         }
-
-        .headerLabel
-        {
-			font-size: 0.9em;
-			font-weight: bold;
-			color:#FFFFFF;
-		}
+        
+        .container td {
+	       padding-top: 0;
+	       padding-bottom: 0;
+        }
 
         .error {
             color: rgb(224, 87, 91);
@@ -34,13 +30,14 @@
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            background: #e0575b;
+            background: #e3824e;
+            padding:0.25em;
+            font-size: 0.9em;
+            font-weight: bold;
+            color:#FFFFFF;
         }
 
-        .header tr:hover
-        {
-			background: #e0575b;
-			color:#FFFFFF;
+        .header:hover {
 			text-decoration:underline;
 		}
 		
@@ -57,21 +54,13 @@
 
     </ui:style>
 
-
-
 	<g:DisclosurePanel addStyleNames="{style.container} new-zanata" animationEnabled="true" ui:field="disclosurePanel">
         <g:customHeader>
-            <g:HorizontalPanel styleName="{style.header}">
-                <g:cell horizontalAlignment="ALIGN_LEFT" verticalAlignment="ALIGN_MIDDLE">
-                    <g:Label ui:field="headerLabel" styleName="{style.headerLabel}" />
-                </g:cell>
-            </g:HorizontalPanel>
+            <g:Label ui:field="headerLabel" styleName="{style.header}" />
         </g:customHeader>
 
         <z:UnorderedListWidget ui:field="contents" styleName="list--no-bullets {style.contents}"/>
 
 	</g:DisclosurePanel>
-
-
 
 </ui:UiBinder>

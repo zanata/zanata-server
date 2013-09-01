@@ -35,7 +35,7 @@ import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.client.service.ValidationService;
 import org.zanata.webtrans.client.view.ValidationOptionsDisplay;
 import org.zanata.webtrans.shared.model.ValidationAction;
-import org.zanata.webtrans.shared.model.ValidationInfo;
+import org.zanata.webtrans.shared.model.ValidationDisplayRules;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -85,7 +85,7 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
       
       for (final ValidationAction validationAction : validationActions)
       {
-         ValidationInfo validationInfo = validationAction.getInfo();
+         ValidationDisplayRules validationInfo = validationAction.getRules();
 
          HasValueChangeHandlers<Boolean> changeHandler = display.addValidationSelector(validationAction.getId()
                .getDisplayName(), validationAction.getDescription(), validationInfo.isEnabled(), validationInfo

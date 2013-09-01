@@ -50,7 +50,7 @@ import org.zanata.webtrans.client.events.UserConfigChangeEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
 import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.service.UserOptionsService;
-import org.zanata.webtrans.client.ui.HasUpdateValidationWarning;
+import org.zanata.webtrans.client.ui.HasUpdateValidationMessage;
 import org.zanata.webtrans.client.ui.SaveAsApprovedConfirmationDisplay;
 import org.zanata.webtrans.client.ui.ToggleEditor;
 import org.zanata.webtrans.client.ui.UndoLink;
@@ -171,7 +171,7 @@ public class TargetContentsPresenterTest
       assertThat(event.getSourceContent(), equalTo("source"));
       assertThat(event.getTarget(), equalTo("target"));
       assertThat(event.isFireNotification(), equalTo(false));
-      assertThat(event.getWidgetList(), Matchers.<HasUpdateValidationWarning>containsInAnyOrder(editor, display));
+      assertThat(event.getWidgetList(), Matchers.<HasUpdateValidationMessage>containsInAnyOrder(editor, display));
    }
 
    @Test

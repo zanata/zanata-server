@@ -26,7 +26,7 @@ import java.util.List;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
+import org.zanata.webtrans.shared.model.ValidationDisplayRules;
 import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
 import org.zanata.webtrans.shared.validation.action.JavaVariablesValidation;
 import org.zanata.webtrans.shared.validation.action.NewlineLeadTrailValidation;
@@ -55,7 +55,7 @@ public abstract class AbstractValidationAction implements ValidationAction
    private ValidationId id;
    private String description;
 
-   private ValidationInfo validationInfo;
+   private ValidationDisplayRules displayRules;
 
    private ArrayList<ValidationAction> exclusiveValidations = new ArrayList<ValidationAction>();
 
@@ -67,7 +67,7 @@ public abstract class AbstractValidationAction implements ValidationAction
    {
       this.id = id;
       this.description = description;
-      this.validationInfo = new ValidationInfo(state);
+      this.displayRules = new ValidationDisplayRules(state);
       this.validationMessages = validationMessages;
    }
 
@@ -102,9 +102,9 @@ public abstract class AbstractValidationAction implements ValidationAction
    }
    
    @Override
-   public ValidationInfo getInfo()
+   public ValidationDisplayRules getRules()
    {
-      return validationInfo;
+      return displayRules;
    }
 
    @Override
@@ -129,7 +129,7 @@ public abstract class AbstractValidationAction implements ValidationAction
    public void setState(State state)
    {
       this.state = state;
-      validationInfo.updateRules(state);
+      displayRules.updateRules(state);
    }
 }
 

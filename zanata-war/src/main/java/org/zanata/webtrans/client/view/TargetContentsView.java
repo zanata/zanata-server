@@ -36,7 +36,7 @@ import org.zanata.webtrans.client.ui.ValidationMessagePanelView;
 import org.zanata.webtrans.client.util.ContentStateToStyleUtil;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -303,9 +303,9 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
    }
 
    @Override
-   public void updateValidationWarning(Map<ValidationInfo, List<String>> errors)
+   public void updateValidationMessage(Map<ValidationAction, List<String>> errors)
    {
-      validationPanel.updateValidationWarning(errors);
+      validationPanel.updateValidationMessage(errors);
    }
 
    @Override
@@ -336,5 +336,11 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
 
    interface Binder extends UiBinder<HorizontalPanel, TargetContentsView>
    {
+   }
+
+   @Override
+   public Map<ValidationAction, List<String>> getErrorMessages()
+   {
+      return validationPanel.getErrorMessages();
    }
 }

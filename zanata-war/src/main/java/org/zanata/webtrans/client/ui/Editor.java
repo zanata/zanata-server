@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnitId;
-import org.zanata.webtrans.shared.model.ValidationInfo;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Objects;
@@ -248,7 +248,7 @@ public class Editor extends Composite implements ToggleEditor
    }
 
    @Override
-   public void updateValidationWarning(Map<ValidationInfo, List<String>> errors)
+   public void updateValidationMessage(Map<ValidationAction, List<String>> errors)
    {
       if (errors.isEmpty())
       {

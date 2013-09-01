@@ -38,7 +38,7 @@ public interface ValidationAction
 
    void mutuallyExclusive(ValidationAction[] exclusiveValidations);
 
-   ValidationInfo getInfo();
+   ValidationDisplayRules getRules();
 
    ValidationId getId();
 

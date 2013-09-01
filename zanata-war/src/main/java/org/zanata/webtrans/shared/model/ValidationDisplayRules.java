@@ -10,17 +10,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  * 
  */
-public class ValidationInfo implements IsSerializable
+public class ValidationDisplayRules implements IsSerializable
 {
    private boolean enabled;
    private boolean locked;
 
    @SuppressWarnings("unused")
-   private ValidationInfo()
+   private ValidationDisplayRules()
    {
    }
 
-   public ValidationInfo(State state)
+   public ValidationDisplayRules(State state)
    {
       updateRules(state);
    }

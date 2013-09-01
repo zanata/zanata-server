@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
 import org.zanata.webtrans.shared.validation.action.JavaVariablesValidation;
@@ -92,6 +93,7 @@ public final class ValidationFactory
             ValidationId.PRINTF_VARIABLES, validationMessages);
       PrintfXSIExtensionValidation positionalPrintfValidation = new PrintfXSIExtensionValidation(
             ValidationId.PRINTF_XSI_EXTENSION, validationMessages);
+      positionalPrintfValidation.setState(State.Off);
 
       printfVariablesValidation.mutuallyExclusive(positionalPrintfValidation);
       positionalPrintfValidation.mutuallyExclusive(printfVariablesValidation);
