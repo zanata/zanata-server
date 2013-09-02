@@ -20,16 +20,18 @@
  */
 package org.zanata.webtrans.client.ui;
 
+import java.util.List;
+import java.util.Map;
+
 import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnitId;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
-import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -46,28 +48,30 @@ import com.google.inject.Inject;
 public class ValidationWarningPanel extends PopupPanel implements ValidationWarningDisplay
 {
    private static ValidationWarningPanelUiBinder uiBinder = GWT.create(ValidationWarningPanelUiBinder.class);
-   
+
    interface ValidationWarningPanelUiBinder extends UiBinder<HTMLPanel, ValidationWarningPanel>
    {
    }
-   
+
    private TransUnitId transUnitId;
 
    private TargetContentsDisplay.Listener listener;
-   
+
    @UiField
    Label messageLabel;
-   
+
+   @UiField
+   UnorderedListWidget translations;
+
    @UiField
    UnorderedListWidget errorList;
 
    @UiField(provided = true)
    Button returnToEditor;
-   
+
    @UiField(provided = true)
    Button saveAsFuzzy;
-   
-   
+
    @Inject
    public ValidationWarningPanel(TableEditorMessages messages)
    {
@@ -77,9 +81,9 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
       saveAsFuzzy = new Button(messages.saveAsFuzzy());
 
       HTMLPanel container = uiBinder.createAndBindUi(this);
-      
-      messageLabel.setText("You're trying to save a translation that contains validation error.");
-      
+
+      messageLabel.setText("You're trying to save translation that contains validation error.");
+
       setGlassEnabled(true);
       setWidget(container);
       hide();
@@ -112,13 +116,38 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
          }
       });
    }
-   
-   public void center(TransUnitId transUnitId)
+
+   @Override
+   public void center(TransUnitId transUnitId, List<String> targets, Map<ValidationAction, List<String>> errorMessages)
    {
+      translations.clear();
+      errorList.clear();
+
       this.transUnitId = transUnitId;
+
+      for (String target : targets)
+      {
+         SafeHtmlBuilder builder = new SafeHtmlBuilder();
+         HighlightingLabel label = new HighlightingLabel(target);
+         builder.appendHtmlConstant(label.getElement().getString());
+         
+         HTMLPanel targetLabel = new HTMLPanel("li", builder.toSafeHtml().asString());
+         targetLabel.setStyleName("textFlowEntry");
+         
+         translations.add(targetLabel);
+      }
+
+      for (List<String> messages : errorMessages.values())
+      {
+         for (String message : messages)
+         {
+            SafeHtmlBuilder builder = new SafeHtmlBuilder();
+            builder.appendEscaped(message);
+            errorList.add(new HTMLPanel("li", builder.toSafeHtml().asString()));
+         }
+      }
+
       center();
+
    }
 }
-
-
- 

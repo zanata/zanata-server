@@ -3,19 +3,23 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui"
 	xmlns:z='urn:import:org.zanata.webtrans.client.ui'>
 
-	<g:HTMLPanel styleName="new-zanata">
-		
-		
-		
+	<g:HTMLPanel styleName="new-zanata" width="800px">
 		<ul class="list--no-bullets">
-			<li class="l--pad-all-half">
-			     <g:Label ui:field="messageLabel"/>
+			<li class="l--pad-v-half">
+			     <g:Label ui:field="messageLabel" styleName="epsilon"/>
 			</li>
+			<li class="l--pad-v-half">
+			     <h5>Translations</h5>
+			     <z:UnorderedListWidget ui:field="translations" styleName="list--no-bullets"/>
+			</li>
+			<li class="l--pad-v-half">
+                 <h5>Error message</h5>
+                 <z:UnorderedListWidget ui:field="errorList" styleName="list--no-bullets l--pad-h-half"/>
+            </li>
 			<li class="l--pad-all-half">
 			    <g:InlineLabel>Please </g:InlineLabel><g:Button ui:field="returnToEditor" addStyleNames="button--secondary l--push-left-half l--push-right-half"/>
                 <g:InlineLabel> to fix it or </g:InlineLabel><g:Button ui:field="saveAsFuzzy" addStyleNames="button--secondary l--push-left-half l--push-right-half"/>
 			</li>
 		</ul>
-		<z:UnorderedListWidget styleName="list--slat d--top" ui:field="errorList"/>
 	</g:HTMLPanel>
 </ui:UiBinder>

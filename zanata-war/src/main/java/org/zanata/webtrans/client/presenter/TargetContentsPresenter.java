@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import net.customware.gwt.presenter.client.EventBus;
 
@@ -57,10 +58,12 @@ import org.zanata.webtrans.client.ui.SaveAsApprovedConfirmationDisplay;
 import org.zanata.webtrans.client.ui.ToggleEditor;
 import org.zanata.webtrans.client.ui.ToggleEditor.ViewMode;
 import org.zanata.webtrans.client.ui.UndoLink;
+import org.zanata.webtrans.client.ui.ValidationWarningDisplay;
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.UserWorkspaceContext;
+import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.WorkspaceRestrictions;
 import org.zanata.webtrans.shared.util.Finds;
 
@@ -96,6 +99,7 @@ public class TargetContentsPresenter implements
    private final UserWorkspaceContext userWorkspaceContext;
    private final UserOptionsService userOptionsService;
    private final SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation;
+   private final ValidationWarningDisplay validationWarning;
 
    private TargetContentsDisplay display;
    private List<TargetContentsDisplay> displayList = Collections.emptyList();
@@ -116,7 +120,8 @@ public class TargetContentsPresenter implements
                                   EditorKeyShortcuts editorKeyShortcuts,
                                   TranslationHistoryPresenter historyPresenter,
                                   UserOptionsService userOptionsService,
-                                  SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation)
+                                  SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation,
+                                  ValidationWarningDisplay validationWarning)
    // @formatter:on
    {
       this.displayProvider = displayProvider;
@@ -130,10 +135,12 @@ public class TargetContentsPresenter implements
       this.historyPresenter.setCurrentValueHolder(this);
       this.userOptionsService = userOptionsService;
       this.saveAsApprovedConfirmation = saveAsApprovedConfirmation;
+      this.validationWarning = validationWarning;
       isDisplayButtons = userOptionsService.getConfigHolder().getState().isDisplayButtons();
       spellCheckEnabled = userOptionsService.getConfigHolder().getState().isSpellCheckEnabled();
       editorKeyShortcuts.registerKeys(this);
       saveAsApprovedConfirmation.setListener(this);
+      validationWarning.setListener(this);
 
       bindEventHandlers();
    }
@@ -162,8 +169,7 @@ public class TargetContentsPresenter implements
 
       if (status == ContentState.Translated && !errorMessages.isEmpty())
       {
-         //check validation and popup here..
-         //display.getErrorMessage Map<ValidationAction, List<String>>
+         validationWarning.center(display.getId(), getNewTargets(), errorMessages);
 
       }
       else
@@ -171,6 +177,12 @@ public class TargetContentsPresenter implements
          eventBus.fireEvent(new TransUnitSaveEvent(getNewTargets(), status, display.getId(), display.getVerNum(),
                display.getCachedTargets()));
       }
+   }
+
+   @Override
+   public void selectRow(TransUnitId transUnitId)
+   {
+      eventBus.fireEvent(new TableRowSelectedEvent(transUnitId));
    }
 
    public boolean currentEditorContentHasChanged()
@@ -204,7 +216,7 @@ public class TargetContentsPresenter implements
       }
       display.showButtons(isDisplayButtons());
 
-      if(!canEditTranslation())
+      if (!canEditTranslation())
       {
          display.setToMode(ViewMode.VIEW);
          concealDisplay();
@@ -344,7 +356,6 @@ public class TargetContentsPresenter implements
       }
    }
 
-
    public TransUnitId getCurrentTransUnitIdOrNull()
    {
       return currentTransUnitId;
@@ -353,7 +364,8 @@ public class TargetContentsPresenter implements
    @Override
    public boolean isDisplayButtons()
    {
-      return userOptionsService.getConfigHolder().getState().isDisplayButtons() && !userWorkspaceContext.hasReadOnlyAccess();
+      return userOptionsService.getConfigHolder().getState().isDisplayButtons()
+            && !userWorkspaceContext.hasReadOnlyAccess();
    }
 
    @Override
@@ -397,13 +409,13 @@ public class TargetContentsPresenter implements
    @Override
    public void copySource(ToggleEditor editor, TransUnitId id)
    {
-      if(canEditTranslation())
+      if (canEditTranslation())
       {
          currentEditorIndex = editor.getIndex();
          ensureRowSelection(id);
          editor.setTextAndValidate(sourceContentsPresenter.getSelectedSource());
          editor.setFocus();
-   
+
          eventBus.fireEvent(new NotificationEvent(Severity.Info, messages.notifyCopied()));
       }
    }
@@ -422,7 +434,7 @@ public class TargetContentsPresenter implements
    }
 
    @Override
-   public void  onUserConfigChanged(UserConfigChangeEvent event)
+   public void onUserConfigChanged(UserConfigChangeEvent event)
    {
       if (event.getView() != MainView.Editor)
       {
@@ -440,7 +452,8 @@ public class TargetContentsPresenter implements
          }
       }
 
-      saveAsApprovedConfirmation.setShowSaveApprovedWarning(userOptionsService.getConfigHolder().getState().isShowSaveApprovedWarning());
+      saveAsApprovedConfirmation.setShowSaveApprovedWarning(userOptionsService.getConfigHolder().getState()
+            .isShowSaveApprovedWarning());
       isDisplayButtons = displayButtons;
       spellCheckEnabled = isSpellCheckEnabled;
    }
@@ -471,7 +484,7 @@ public class TargetContentsPresenter implements
 
    private void copyTextWhenIsEditing(List<String> contents, boolean isInsertText)
    {
-      if(canEditTranslation())
+      if (canEditTranslation())
       {
          if (isInsertText)
          {
@@ -515,12 +528,12 @@ public class TargetContentsPresenter implements
          TargetContentsDisplay display = displayProvider.get();
          display.setListener(this);
          display.setValueAndCreateNewEditors(transUnit);
-         
-         if(!canEditTranslation())
+
+         if (!canEditTranslation())
          {
             display.setToMode(ViewMode.VIEW);
          }
-         
+
          display.showButtons(isDisplayButtons());
          builder.add(display);
       }
@@ -548,7 +561,8 @@ public class TargetContentsPresenter implements
     */
    public void updateRow(TransUnit updatedTransUnit)
    {
-      Optional<TargetContentsDisplay> contentsDisplayOptional = Finds.findDisplayById(displayList, updatedTransUnit.getId());
+      Optional<TargetContentsDisplay> contentsDisplayOptional = Finds.findDisplayById(displayList,
+            updatedTransUnit.getId());
       if (contentsDisplayOptional.isPresent())
       {
          TargetContentsDisplay contentsDisplay = contentsDisplayOptional.get();
@@ -582,7 +596,8 @@ public class TargetContentsPresenter implements
          else
          {
             // editor is in saving state or unsaved state, we don't want to update value in editor, just the cached value.
-            contentsDisplay.updateCachedTargetsAndVersion(updatedTU.getTargets(), updatedTU.getVerNum(), updatedTU.getStatus());
+            contentsDisplay.updateCachedTargetsAndVersion(updatedTU.getTargets(), updatedTU.getVerNum(),
+                  updatedTU.getStatus());
          }
          setEditingState(updatedTU.getId(), TargetContentsDisplay.EditingState.SAVED);
       }
@@ -607,7 +622,8 @@ public class TargetContentsPresenter implements
    {
       // FIXME once setting codemirror editor to readonly it won't be editable again
       userWorkspaceContext.setProjectActive(event.isProjectActive());
-      userWorkspaceContext.getWorkspaceContext().getWorkspaceId().getProjectIterationId().setProjectType(event.getProjectType());
+      userWorkspaceContext.getWorkspaceContext().getWorkspaceId().getProjectIterationId()
+            .setProjectType(event.getProjectType());
 
       for (TargetContentsDisplay targetContentsDisplay : displayList)
       {
@@ -704,11 +720,11 @@ public class TargetContentsPresenter implements
       ensureRowSelection(id);
       if (display.getCachedState() != ContentState.Rejected)
       {
-         TransUnitSaveEvent event = new TransUnitSaveEvent(getNewTargets(), ContentState.Rejected, display.getId(), display.getVerNum(), display.getCachedTargets());
+         TransUnitSaveEvent event = new TransUnitSaveEvent(getNewTargets(), ContentState.Rejected, display.getId(),
+               display.getVerNum(), display.getCachedTargets());
          eventBus.fireEvent(new CommentBeforeSaveEvent(event));
       }
    }
-
 
    public void updateCommentCount(TransUnitId id, int commentsCount)
    {
@@ -725,7 +741,8 @@ public class TargetContentsPresenter implements
     * @param currentEditorIndex current editor index
     * @param display current display
     */
-   protected void setStatesForTesting(TransUnitId currentTransUnitId, int currentEditorIndex, TargetContentsDisplay display)
+   protected void setStatesForTesting(TransUnitId currentTransUnitId, int currentEditorIndex,
+         TargetContentsDisplay display)
    {
       if (!GWT.isClient())
       {

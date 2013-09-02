@@ -21,8 +21,12 @@
 
 package org.zanata.webtrans.client.ui;
 
+import java.util.List;
+import java.util.Map;
+
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnitId;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 import com.google.inject.ImplementedBy;
 
@@ -34,7 +38,7 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(ValidationWarningPanel.class)
 public interface ValidationWarningDisplay
 {
-   void center(TransUnitId transUnitId);
+   void center(TransUnitId transUnitId, List<String> list, Map<ValidationAction, List<String>> errorMessages);
 
    void hide();
 

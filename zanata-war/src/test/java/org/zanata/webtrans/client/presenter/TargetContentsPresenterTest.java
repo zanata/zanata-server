@@ -54,6 +54,7 @@ import org.zanata.webtrans.client.ui.HasUpdateValidationMessage;
 import org.zanata.webtrans.client.ui.SaveAsApprovedConfirmationDisplay;
 import org.zanata.webtrans.client.ui.ToggleEditor;
 import org.zanata.webtrans.client.ui.UndoLink;
+import org.zanata.webtrans.client.ui.ValidationWarningDisplay;
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitId;
@@ -126,6 +127,8 @@ public class TargetContentsPresenterTest
    private UserOptionsService userOptionsService;
    @Mock
    private SaveAsApprovedConfirmationDisplay saveAsApprovedConfirmation;
+   @Mock
+   private ValidationWarningDisplay validationWarning;
 
    @BeforeMethod
    public void beforeMethod()
@@ -138,7 +141,7 @@ public class TargetContentsPresenterTest
       userWorkspaceContext = TestFixture.userWorkspaceContext();
       presenter = new TargetContentsPresenter(displayProvider, editorTranslators, eventBus,
             tableEditorMessages, sourceContentPresenter, userWorkspaceContext, editorKeyShortcuts,
-            historyPresenter, userOptionsService, saveAsApprovedConfirmation);
+            historyPresenter, userOptionsService, saveAsApprovedConfirmation, validationWarning);
 
       verify(eventBus).addHandler(UserConfigChangeEvent.TYPE, presenter);
       verify(eventBus).addHandler(RequestValidationEvent.getType(), presenter);
