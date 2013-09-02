@@ -82,7 +82,7 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
 
       HTMLPanel container = uiBinder.createAndBindUi(this);
 
-      messageLabel.setText("You're trying to save translation that contains validation error.");
+      messageLabel.setText(messages.validationErrorMessage());
 
       setGlassEnabled(true);
       setWidget(container);

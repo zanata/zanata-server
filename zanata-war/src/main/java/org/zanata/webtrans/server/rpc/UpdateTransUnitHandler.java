@@ -36,6 +36,7 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.service.SecurityService;
 import org.zanata.service.TranslationService;
 import org.zanata.service.TranslationService.TranslationResult;
+import org.zanata.service.ValidationService;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.server.TranslationWorkspace;
 import org.zanata.webtrans.shared.auth.EditorClientId;
@@ -47,7 +48,6 @@ import org.zanata.webtrans.shared.rpc.TransUnitUpdated;
 import org.zanata.webtrans.shared.rpc.TransUnitUpdated.UpdateType;
 import org.zanata.webtrans.shared.rpc.UpdateTransUnit;
 import org.zanata.webtrans.shared.rpc.UpdateTransUnitResult;
-
 
 @Name("webtrans.gwt.UpdateTransUnitHandler")
 @Scope(ScopeType.STATELESS)
@@ -63,12 +63,15 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
    @In
    SecurityService securityServiceImpl;
 
+   @In
+   ValidationService validationServiceImpl;
+
    @Override
    public UpdateTransUnitResult execute(UpdateTransUnit action, ExecutionContext context) throws ActionException
    {
       SecurityService.SecurityCheckResult securityCheckResult;
 
-      if(action.getUpdateType() == UpdateType.WebEditorSaveReview)
+      if (action.getUpdateType() == UpdateType.WebEditorSaveReview)
       {
          securityCheckResult = securityServiceImpl.checkPermission(action, SecurityService.TranslationAction.REVIEW);
       }
@@ -77,13 +80,28 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          securityCheckResult = securityServiceImpl.checkPermission(action, SecurityService.TranslationAction.MODIFY);
       }
 
+      if (action.getUpdateType() == UpdateType.WebEditorSave)
+      {
+         boolean hasValidationError = validationServiceImpl.updateRequestHasError(action.getWorkspaceId().getProjectIterationId()
+               .getProjectSlug(), action.getWorkspaceId().getProjectIterationId().getIterationSlug(), action
+               .getWorkspaceId().getLocaleId(), action.getUpdateRequests());
+         if (hasValidationError)
+         {
+            throw new ActionException("Translation contains validation error. Update failed:"
+                  + action.getUpdateRequests());
+         }
+      }
+
       HLocale hLocale = securityCheckResult.getLocale();
       TranslationWorkspace workspace = securityCheckResult.getWorkspace();
 
-      return doTranslation(hLocale.getLocaleId(), workspace, action.getUpdateRequests(), action.getEditorClientId(), action.getUpdateType());
+      return doTranslation(hLocale.getLocaleId(), workspace, action.getUpdateRequests(), action.getEditorClientId(),
+            action.getUpdateType());
    }
 
-   protected UpdateTransUnitResult doTranslation(LocaleId localeId, TranslationWorkspace workspace, List<TransUnitUpdateRequest> updateRequests, EditorClientId editorClientId, TransUnitUpdated.UpdateType updateType)
+   protected UpdateTransUnitResult doTranslation(LocaleId localeId, TranslationWorkspace workspace,
+         List<TransUnitUpdateRequest> updateRequests, EditorClientId editorClientId,
+         TransUnitUpdated.UpdateType updateType)
    {
       UpdateTransUnitResult result = new UpdateTransUnitResult();
       List<TranslationResult> translationResults = translationServiceImpl.translate(localeId, updateRequests);
@@ -93,7 +111,10 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          HTextFlow hTextFlow = newTarget.getTextFlow();
          int wordCount = hTextFlow.getWordCount().intValue();
          TransUnit tu = transUnitTransformer.transform(hTextFlow, newTarget.getLocale());
-         TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(), translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow.getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(), translationResult.getBaseContentState());
+         TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(),
+               translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow
+                     .getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(),
+               translationResult.getBaseContentState());
          workspace.publish(new TransUnitUpdated(updateInfo, editorClientId, updateType));
 
          result.addUpdateResult(updateInfo);
@@ -103,7 +124,8 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
    }
 
    @Override
-   public void rollback(UpdateTransUnit action, UpdateTransUnitResult result, ExecutionContext context) throws ActionException
+   public void rollback(UpdateTransUnit action, UpdateTransUnitResult result, ExecutionContext context)
+         throws ActionException
    {
       // TODO implement rollback by checking result for success
       // if success, looking up base revision from action and set values back to that

@@ -10,6 +10,7 @@ import java.util.List;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
 import org.zanata.model.HTextFlow;
+import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 
@@ -61,7 +62,7 @@ public interface ValidationService
     * @param maxSize
     * @throws IOException
     */
-   List<HTextFlow> filterHasErrorTextFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
+   List<HTextFlow> filterHasWarningOrErrorTextFlow(List<HTextFlow> textFlows, List<ValidationId> validationIds,
          LocaleId localeId, int startIndex, int maxSize);
 
    /**
@@ -75,4 +76,14 @@ public interface ValidationService
     * @param localeId
     */
    boolean runDocValidationsWithServerRules(HDocument hDoc, LocaleId localeId);
+
+   /**
+    * Run "Error" state validations check on update request
+    * @param versionSlug 
+    * @param projectSlug 
+    * @param localeId
+    * @param updateRequests
+    * @return hasError
+    */
+   boolean updateRequestHasError(String projectSlug, String versionSlug, LocaleId localeId, List<TransUnitUpdateRequest> updateRequests);
 }
