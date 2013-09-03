@@ -99,10 +99,12 @@ public class ValidationServiceImpl implements ValidationService
       return Lists.newArrayList();
    }
 
-   private Collection<ValidationAction> getValidationAction(HProject project)
+   private Collection<ValidationAction> getValidationAction(HProject project, State... includeStates)
    {
       Map<String, String> customizedValidations = project.getCustomizedValidations();
-      return mergeCustomisedStateToAllValidations(customizedValidations);
+      Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);
+
+      return filterList(mergedList, includeStates);
    }
 
    @Override
@@ -131,15 +133,20 @@ public class ValidationServiceImpl implements ValidationService
 
       Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);
 
+      return filterList(mergedList, includeStates);
+   }
+
+   private Collection<ValidationAction> filterList(Collection<ValidationAction> list, State... includeStates)
+   {
       if (includeStates == null || includeStates.length == 0)
       {
-         return mergedList;
+         return list;
       }
 
       List<State> includeStateList = Arrays.asList(includeStates);
 
       Collection<ValidationAction> filteredList = Lists.newArrayList();
-      for (ValidationAction action : mergedList)
+      for (ValidationAction action : list)
       {
          if (includeStateList.isEmpty() || includeStateList.contains(action.getState()))
          {
@@ -312,11 +319,12 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId, TransUnitUpdateRequest updateRequest)
+   public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId,
+         TransUnitUpdateRequest updateRequest)
    {
       Collection<ValidationAction> validationActions = getValidationAction(projectVersion, State.Error);
       List<String> errorList = Lists.newArrayList();
-      
+
       if (updateRequest.getNewContentState() == ContentState.Translated)
       {
          HTextFlow tf = textFlowDAO.findById(updateRequest.getTransUnitId().getId(), false);
