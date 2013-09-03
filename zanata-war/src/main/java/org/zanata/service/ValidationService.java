@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
+import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
 import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -78,12 +79,11 @@ public interface ValidationService
    boolean runDocValidationsWithServerRules(HDocument hDoc, LocaleId localeId);
 
    /**
-    * Run "Error" state validations check on update request
-    * @param versionSlug 
-    * @param projectSlug 
+    * Run "Error" state validations check on update request state to 'translated'
+    * @param projectVersion 
     * @param localeId
-    * @param updateRequests
-    * @return hasError
+    * @param updateRequest
+    * @return list of error message
     */
-   boolean updateRequestHasError(String projectSlug, String versionSlug, LocaleId localeId, List<TransUnitUpdateRequest> updateRequests);
+   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId, TransUnitUpdateRequest updateRequest);
 }

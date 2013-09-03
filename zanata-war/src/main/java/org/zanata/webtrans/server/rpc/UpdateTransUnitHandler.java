@@ -36,7 +36,6 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.service.SecurityService;
 import org.zanata.service.TranslationService;
 import org.zanata.service.TranslationService.TranslationResult;
-import org.zanata.service.ValidationService;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.server.TranslationWorkspace;
 import org.zanata.webtrans.shared.auth.EditorClientId;
@@ -63,9 +62,6 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
    @In
    SecurityService securityServiceImpl;
 
-   @In
-   ValidationService validationServiceImpl;
-
    @Override
    public UpdateTransUnitResult execute(UpdateTransUnit action, ExecutionContext context) throws ActionException
    {
@@ -78,18 +74,6 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
       else
       {
          securityCheckResult = securityServiceImpl.checkPermission(action, SecurityService.TranslationAction.MODIFY);
-      }
-
-      if (action.getUpdateType() == UpdateType.WebEditorSave)
-      {
-         boolean hasValidationError = validationServiceImpl.updateRequestHasError(action.getWorkspaceId().getProjectIterationId()
-               .getProjectSlug(), action.getWorkspaceId().getProjectIterationId().getIterationSlug(), action
-               .getWorkspaceId().getLocaleId(), action.getUpdateRequests());
-         if (hasValidationError)
-         {
-            throw new ActionException("Translation contains validation error. Update failed:"
-                  + action.getUpdateRequests());
-         }
       }
 
       HLocale hLocale = securityCheckResult.getLocale();
