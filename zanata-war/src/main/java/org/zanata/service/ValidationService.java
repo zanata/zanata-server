@@ -11,7 +11,6 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
-import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 
@@ -79,11 +78,13 @@ public interface ValidationService
    boolean runDocValidationsWithServerRules(HDocument hDoc, LocaleId localeId);
 
    /**
-    * Run "Error" state validations check on update request state to 'translated'
+    * Run 'Error' state validations check against sources and translations
     * @param projectVersion 
     * @param localeId
-    * @param updateRequest
+    * @param sources
+    * @param translations
     * @return list of error message
     */
-   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId, TransUnitUpdateRequest updateRequest);
+   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId,
+         List<String> sources, List<String> translations);
 }

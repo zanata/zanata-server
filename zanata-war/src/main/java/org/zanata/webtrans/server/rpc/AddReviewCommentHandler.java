@@ -21,6 +21,10 @@
 
 package org.zanata.webtrans.server.rpc;
 
+import lombok.extern.slf4j.Slf4j;
+import net.customware.gwt.dispatch.server.ExecutionContext;
+import net.customware.gwt.dispatch.shared.ActionException;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -48,12 +52,6 @@ import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.AddReviewCommentAction;
 import org.zanata.webtrans.shared.rpc.AddReviewCommentResult;
 import org.zanata.webtrans.shared.rpc.TransUnitUpdated;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
-
-import lombok.extern.slf4j.Slf4j;
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
 
 /**
  * @author Patrick Huang <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
@@ -126,7 +124,7 @@ public class AddReviewCommentHandler extends AbstractActionHandler<AddReviewComm
    {
       HTextFlow textFlow = hTextFlowTarget.getTextFlow();
       TransUnit transUnit = transUnitTransformer.transform(textFlow, hTextFlowTarget, hLocale);
-      TransUnitUpdated transUnitUpdated = new TransUnitUpdated(new TransUnitUpdateInfo(true, false, action.getDocumentId(), transUnit, textFlow.getWordCount().intValue(), transUnit.getVerNum(), transUnit.getStatus()), action.getEditorClientId(), TransUnitUpdated.UpdateType.AddComment);
+      TransUnitUpdated transUnitUpdated = new TransUnitUpdated(new TransUnitUpdateInfo(true, false, action.getDocumentId(), transUnit, textFlow.getWordCount().intValue(), transUnit.getVerNum(), transUnit.getStatus(), null), action.getEditorClientId(), TransUnitUpdated.UpdateType.AddComment);
       workspace.publish(transUnitUpdated);
    }
 

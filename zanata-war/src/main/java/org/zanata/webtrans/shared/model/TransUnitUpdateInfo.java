@@ -21,8 +21,11 @@
 
 package org.zanata.webtrans.shared.model;
 
+import java.util.List;
+
 import org.zanata.common.ContentState;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Objects;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -41,6 +44,7 @@ public class TransUnitUpdateInfo implements IsSerializable
    private int sourceWordCount;
    private int previousVersionNum;
    private ContentState previousState;
+   private List<String> errorMessages;
 
    // required for GWT rpc serialization
    @SuppressWarnings("unused")
@@ -48,7 +52,8 @@ public class TransUnitUpdateInfo implements IsSerializable
    {
    }
 
-   public TransUnitUpdateInfo(boolean success, boolean targetChanged, DocumentId documentId, TransUnit transUnit, int sourceWordCount, int previousVersionNum, ContentState previousState)
+   public TransUnitUpdateInfo(boolean success, boolean targetChanged, DocumentId documentId, TransUnit transUnit,
+         int sourceWordCount, int previousVersionNum, ContentState previousState, List<String> errorMessages)
    {
       this.success = success;
       this.targetChanged = targetChanged;
@@ -57,12 +62,13 @@ public class TransUnitUpdateInfo implements IsSerializable
       this.sourceWordCount = sourceWordCount;
       this.previousVersionNum = previousVersionNum;
       this.previousState = previousState;
+      this.errorMessages = errorMessages;
    }
 
    public boolean isSuccess()
    {
       // TODO could do this
-//      return transUnit.getVerNum() > previousVersionNum;
+      //      return transUnit.getVerNum() > previousVersionNum;
       return success;
    }
 
@@ -96,6 +102,15 @@ public class TransUnitUpdateInfo implements IsSerializable
       return sourceWordCount;
    }
 
+   public List<String> getErrorMessages()
+   {
+      if (errorMessages == null)
+      {
+         errorMessages = Lists.newArrayList();
+      }
+      return errorMessages;
+   }
+
    @Override
    public String toString()
    {
@@ -107,6 +122,7 @@ public class TransUnitUpdateInfo implements IsSerializable
             add("sourceWordCount", sourceWordCount).
             add("previousVersionNum", previousVersionNum).
             add("previousState", previousState).
+            add("errorMessages", errorMessages).
             toString();
       // @formatter:on
    }

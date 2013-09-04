@@ -16,7 +16,6 @@ import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.log.Log;
-import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectDAO;
@@ -33,7 +32,6 @@ import org.zanata.service.ValidationFactoryProvider;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.server.rpc.TransUnitTransformer;
 import org.zanata.webtrans.shared.model.DocumentStatus;
-import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -320,22 +318,17 @@ public class ValidationServiceImpl implements ValidationService
 
    @Override
    public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId,
-         TransUnitUpdateRequest updateRequest)
+         List<String> sources, List<String> translations)
    {
       Collection<ValidationAction> validationActions = getValidationAction(projectVersion, State.Error);
       List<String> errorList = Lists.newArrayList();
 
-      if (updateRequest.getNewContentState() == ContentState.Translated)
+      String tf_content0 = sources.get(0);
+      String tft_content0 = translations.get(0);
+
+      for (ValidationAction action : validationActions)
       {
-         HTextFlow tf = textFlowDAO.findById(updateRequest.getTransUnitId().getId(), false);
-
-         String tf_content0 = tf.getContents().get(0);
-         String tft_content0 = updateRequest.getNewContents().get(0);
-
-         for (ValidationAction action : validationActions)
-         {
-            errorList.addAll(action.validate(tf_content0, tft_content0));
-         }
+         errorList.addAll(action.validate(tf_content0, tft_content0));
       }
 
       return errorList;

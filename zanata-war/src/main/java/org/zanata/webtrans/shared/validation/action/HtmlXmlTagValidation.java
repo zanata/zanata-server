@@ -60,7 +60,7 @@ public class HtmlXmlTagValidation extends AbstractValidationAction
          errors.add(getMessages().tagsAdded(foundErrors));
       }
 
-      if (foundErrors.isEmpty())
+      if (errors.isEmpty())
       {
          ArrayList<String> sourceTags = getTagList(source);
          ArrayList<String> targetTags = getTagList(target);

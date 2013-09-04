@@ -88,7 +88,7 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          TransUnitUpdated.UpdateType updateType)
    {
       UpdateTransUnitResult result = new UpdateTransUnitResult();
-      List<TranslationResult> translationResults = translationServiceImpl.translate(localeId, updateRequests);
+      List<TranslationResult> translationResults = translationServiceImpl.translate(localeId, updateRequests, true);
       for (TranslationResult translationResult : translationResults)
       {
          HTextFlowTarget newTarget = translationResult.getTranslatedTextFlowTarget();
@@ -98,7 +98,7 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(),
                translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow
                      .getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(),
-               translationResult.getBaseContentState());
+               translationResult.getBaseContentState(), translationResult.getErrorMessages());
          workspace.publish(new TransUnitUpdated(updateInfo, editorClientId, updateType));
 
          result.addUpdateResult(updateInfo);

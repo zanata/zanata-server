@@ -67,11 +67,13 @@ public class RevertTransUnitUpdatesHandler extends AbstractActionHandler<RevertT
    @Override
    public UpdateTransUnitResult execute(RevertTransUnitUpdates action, ExecutionContext context) throws ActionException
    {
-      SecurityService.SecurityCheckResult securityCheckResult = securityServiceImpl.checkPermission(action, SecurityService.TranslationAction.MODIFY);
+      SecurityService.SecurityCheckResult securityCheckResult = securityServiceImpl.checkPermission(action,
+            SecurityService.TranslationAction.MODIFY);
       HLocale hLocale = securityCheckResult.getLocale();
       TranslationWorkspace workspace = securityCheckResult.getWorkspace();
 
-      List<TranslationResult> revertResults = translationServiceImpl.revertTranslations(hLocale.getLocaleId(), action.getUpdatesToRevert());
+      List<TranslationResult> revertResults = translationServiceImpl.revertTranslations(hLocale.getLocaleId(),
+            action.getUpdatesToRevert());
 
       UpdateTransUnitResult results = new UpdateTransUnitResult();
       for (TranslationResult translationResult : revertResults)
@@ -80,7 +82,10 @@ public class RevertTransUnitUpdatesHandler extends AbstractActionHandler<RevertT
          HTextFlow hTextFlow = newTarget.getTextFlow();
          int wordCount = hTextFlow.getWordCount().intValue();
          TransUnit tu = transUnitTransformer.transform(hTextFlow, newTarget.getLocale());
-         TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(), translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow.getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(), translationResult.getBaseContentState());
+         TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(),
+               translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow
+                     .getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(),
+               translationResult.getBaseContentState(), translationResult.getErrorMessages());
 
          workspace.publish(new TransUnitUpdated(updateInfo, action.getEditorClientId(), UpdateType.Revert));
          results.addUpdateResult(updateInfo);
@@ -89,7 +94,8 @@ public class RevertTransUnitUpdatesHandler extends AbstractActionHandler<RevertT
    }
 
    @Override
-   public void rollback(RevertTransUnitUpdates action, UpdateTransUnitResult result, ExecutionContext context) throws ActionException
+   public void rollback(RevertTransUnitUpdates action, UpdateTransUnitResult result, ExecutionContext context)
+         throws ActionException
    {
    }
 }

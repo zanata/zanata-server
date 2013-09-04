@@ -80,6 +80,7 @@ public class TranslationServiceImplTest extends ZanataDbunitJpaTest
           .use(JpaIdentityStore.AUTHENTICATED_USER, seam.autowire(AccountDAO.class).getByUsername("demo"))
           .use("identity", identity)
           .useImpl(LocaleServiceImpl.class)
+          .useImpl(ValidationServiceImpl.class)
           .ignoreNonResolvable();
    }
 
@@ -94,7 +95,7 @@ public class TranslationServiceImplTest extends ZanataDbunitJpaTest
       newContents.add("translated 2");
       TransUnitUpdateRequest translateReq = new TransUnitUpdateRequest(transUnitId, newContents, ContentState.Approved, 1);
 
-      List<TranslationResult> result = transService.translate(new LocaleId("de"), Lists.newArrayList(translateReq));
+      List<TranslationResult> result = transService.translate(new LocaleId("de"), Lists.newArrayList(translateReq), true);
 
       assertThat(result.get(0).isTranslationSuccessful(), is(true));
       assertThat(result.get(0).getBaseVersionNum(), is(1));
@@ -123,7 +124,7 @@ public class TranslationServiceImplTest extends ZanataDbunitJpaTest
       newContents.add("translated 2");
       translationReqs.add( new TransUnitUpdateRequest(transUnitId, newContents, ContentState.NeedReview, 0) );
 
-      List<TranslationResult> results = transService.translate(new LocaleId("de"), translationReqs);
+      List<TranslationResult> results = transService.translate(new LocaleId("de"), translationReqs, true);
 
       // First result
       TranslationResult result = results.get(0);
@@ -153,7 +154,7 @@ public class TranslationServiceImplTest extends ZanataDbunitJpaTest
 
       // Should not pass as the base version (1) does not match
       List<TransUnitUpdateRequest> translationRequests = Lists.newArrayList(translateReq);
-      List<TranslationResult> result = transService.translate(new LocaleId("de"), translationRequests);
+      List<TranslationResult> result = transService.translate(new LocaleId("de"), translationRequests, true);
 
       assertThat(result.get(0).isTranslationSuccessful(), Matchers.is(false));
    }
@@ -167,7 +168,7 @@ public class TranslationServiceImplTest extends ZanataDbunitJpaTest
       TransUnitId transUnitId = new TransUnitId(3L);
       TransUnitUpdateRequest translateReq = new TransUnitUpdateRequest(transUnitId, Lists.newArrayList("a", "b"), ContentState.Approved, 0);
 
-      List<TranslationResult> result = transService.translate(new LocaleId("de"), Lists.newArrayList(translateReq));
+      List<TranslationResult> result = transService.translate(new LocaleId("de"), Lists.newArrayList(translateReq), true);
 
       verify(identity).checkPermission(eq("translation-review"), isA(HProject.class), isA(HLocale.class));
       assertThat(result.get(0).isTranslationSuccessful(), is(true));

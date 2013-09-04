@@ -1,5 +1,7 @@
 package org.zanata.webtrans.client.resources;
 
+import java.util.List;
+
 import com.google.gwt.i18n.client.LocalizableResource.DefaultLocale;
 import com.google.gwt.i18n.client.LocalizableResource.Generate;
 import com.google.gwt.i18n.client.Messages;
@@ -15,8 +17,8 @@ public interface TableEditorMessages extends Messages
    @DefaultMessage("Failed to load data from server")
    String notifyLoadFailed();
 
-   @DefaultMessage("Save FAILED: {0}")
-   String notifyUpdateFailed(String errorMessage);
+   @DefaultMessage("Save FAILED: {0}, messages: {1,list,string}")
+   String notifyUpdateFailed(String errorMessage, List<String> errorMessages);
 
    @DefaultMessage("Row {0} (Id {1}) Saved")
    String notifyUpdateSaved(int rowIndex, String id);

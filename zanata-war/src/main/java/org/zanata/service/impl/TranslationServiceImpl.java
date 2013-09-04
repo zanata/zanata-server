@@ -130,7 +130,8 @@ public class TranslationServiceImpl implements TranslationService
    private TranslationMergeServiceFactory translationMergeServiceFactory;
 
    @Override
-   public List<TranslationResult> translate(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests)
+   public List<TranslationResult> translate(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests,
+         boolean runValidationCheck)
    {
       List<TranslationResult> results = new ArrayList<TranslationResult>();
 
@@ -142,7 +143,8 @@ public class TranslationServiceImpl implements TranslationService
 
       // single locale check - assumes update requests are all from the same
       // project-iteration
-      HTextFlow sampleHTextFlow = entityManager.find(HTextFlow.class, translationRequests.get(0).getTransUnitId().getValue());
+      HTextFlow sampleHTextFlow = entityManager.find(HTextFlow.class, translationRequests.get(0).getTransUnitId()
+            .getValue());
       HProjectIteration projectIteration = sampleHTextFlow.getDocument().getProjectIteration();
       HLocale hLocale = validateLocale(localeId, projectIteration);
 
@@ -151,14 +153,7 @@ public class TranslationServiceImpl implements TranslationService
 
       for (TransUnitUpdateRequest request : translationRequests)
       {
-         List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(projectIteration, localeId, request);
-         
-         if(!validationMessages.isEmpty())
-         {
-            log.warn("Translation contains validation error. Update failed {}. Error message {}", request.getTransUnitId(), validationMessages);
-            continue;
-         }
-         
+
          HTextFlow hTextFlow = entityManager.find(HTextFlow.class, request.getTransUnitId().getValue());
 
          HTextFlowTarget hTextFlowTarget = textFlowTargetDAO.getOrCreateTarget(hTextFlow, hLocale);
@@ -173,12 +168,28 @@ public class TranslationServiceImpl implements TranslationService
          result.baseVersion = hTextFlowTarget.getVersionNum();
          result.baseContentState = hTextFlowTarget.getState();
 
+         if (runValidationCheck && request.getNewContentState() == ContentState.Translated)
+         {
+            List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(
+                  projectIteration, localeId, hTextFlow.getContents(), request.getNewContents());
+
+            if (!validationMessages.isEmpty())
+            {
+               log.warn("Translation contains validation error. Update failed {}. Error message {}",
+                     request.getTransUnitId(), validationMessages);
+               result.isSuccess = false;
+               result.errorMessages = validationMessages;
+               continue;
+            }
+         }
+
          if (request.getBaseTranslationVersion() == hTextFlowTarget.getVersionNum())
          {
             try
             {
                int nPlurals = getNumPlurals(hLocale, hTextFlow);
-               result.targetChanged = translate(hTextFlowTarget, request.getNewContents(), request.getNewContentState(),
+               result.targetChanged = translate(hTextFlowTarget, request.getNewContents(),
+                     request.getNewContentState(),
                      nPlurals, projectIteration.getRequireTranslationReview());
                result.isSuccess = true;
             }
@@ -191,8 +202,13 @@ public class TranslationServiceImpl implements TranslationService
          else
          {
             // concurrent edits not allowed
-            log.warn("translation failed for textflow {}: base versionNum {} does not match current versionNum {}",
-                  hTextFlow.getId(), request.getBaseTranslationVersion(), hTextFlowTarget.getVersionNum());
+            String errorMessage = "translation failed for textflow " + hTextFlow.getId() + ": base versionNum + "
+                  + request.getBaseTranslationVersion() + " does not match current versionNum "
+                  + hTextFlowTarget.getVersionNum();
+
+            log.warn(errorMessage);
+
+            result.errorMessages = Lists.newArrayList(errorMessage);
             result.isSuccess = false;
          }
          result.translatedTextFlowTarget = hTextFlowTarget;
@@ -202,17 +218,19 @@ public class TranslationServiceImpl implements TranslationService
       return results;
    }
 
-   private void validateReviewPermissionIfApplicable(List<TransUnitUpdateRequest> translationRequests, HProjectIteration projectIteration,
+   private void validateReviewPermissionIfApplicable(List<TransUnitUpdateRequest> translationRequests,
+         HProjectIteration projectIteration,
          HLocale hLocale)
    {
-      Optional<TransUnitUpdateRequest> hasReviewRequest = Iterables.tryFind(translationRequests, new Predicate<TransUnitUpdateRequest>()
-      {
-         @Override
-         public boolean apply(TransUnitUpdateRequest input)
-         {
-            return isReviewState(input.getNewContentState());
-         }
-      });
+      Optional<TransUnitUpdateRequest> hasReviewRequest = Iterables.tryFind(translationRequests,
+            new Predicate<TransUnitUpdateRequest>()
+            {
+               @Override
+               public boolean apply(TransUnitUpdateRequest input)
+               {
+                  return isReviewState(input.getNewContentState());
+               }
+            });
       if (hasReviewRequest.isPresent())
       {
          identity.checkPermission("translation-review", projectIteration.getProject(), hLocale);
@@ -267,7 +285,8 @@ public class TranslationServiceImpl implements TranslationService
       }
    }
 
-   private boolean translate(@Nonnull HTextFlowTarget hTextFlowTarget, @Nonnull List<String> contentsToSave, ContentState requestedState,
+   private boolean translate(@Nonnull HTextFlowTarget hTextFlowTarget, @Nonnull List<String> contentsToSave,
+         ContentState requestedState,
          int nPlurals, Boolean requireTranslationReview)
    {
       boolean targetChanged = false;
@@ -320,7 +339,8 @@ public class TranslationServiceImpl implements TranslationService
     * @see #adjustContentsAndState(org.zanata.model.HTextFlowTarget, int,
     *      java.util.List)
     */
-   private boolean setContentStateIfChanged(@Nonnull ContentState requestedState, @Nonnull HTextFlowTarget target, int nPlurals,
+   private boolean setContentStateIfChanged(@Nonnull ContentState requestedState, @Nonnull HTextFlowTarget target,
+         int nPlurals,
          boolean requireTranslationReview)
    {
       boolean changed = false;
@@ -369,7 +389,8 @@ public class TranslationServiceImpl implements TranslationService
     * @param warnings a warning string will be added if state is adjusted
     * @return true if and only if some state was changed
     */
-   private static boolean adjustContentsAndState(@Nonnull HTextFlowTarget target, int nPlurals, @Nonnull List<String> warnings)
+   private static boolean adjustContentsAndState(@Nonnull HTextFlowTarget target, int nPlurals,
+         @Nonnull List<String> warnings)
    {
       ContentState oldState = target.getState();
       String resId = target.getTextFlow().getResId();
@@ -390,12 +411,14 @@ public class TranslationServiceImpl implements TranslationService
     * @param warnings if elements were added or removed
     * @return
     */
-   private static boolean ensureContentsSize(HTextFlowTarget target, int legalSize, String resId, @Nonnull List<String> warnings)
+   private static boolean ensureContentsSize(HTextFlowTarget target, int legalSize, String resId,
+         @Nonnull List<String> warnings)
    {
       int contentsSize = target.getContents().size();
       if (contentsSize < legalSize)
       {
-         String warning = "Should have " + legalSize + " contents; adding empty strings: TextFlowTarget " + resId + " with contents: "
+         String warning = "Should have " + legalSize + " contents; adding empty strings: TextFlowTarget " + resId
+               + " with contents: "
                + target.getContents();
          warnings.add(warning);
          List<String> newContents = new ArrayList<String>(legalSize);
@@ -409,7 +432,8 @@ public class TranslationServiceImpl implements TranslationService
       }
       else if (contentsSize > legalSize)
       {
-         String warning = "Should have " + legalSize + " contents; discarding extra strings: TextFlowTarget " + resId + " with contents: "
+         String warning = "Should have " + legalSize + " contents; discarding extra strings: TextFlowTarget " + resId
+               + " with contents: "
                + target.getContents();
          warnings.add(warning);
          List<String> newContents = new ArrayList<String>(legalSize);
@@ -453,7 +477,8 @@ public class TranslationServiceImpl implements TranslationService
    }
 
    @Override
-   public List<String> translateAllInDoc(final String projectSlug, final String iterationSlug, final String docId, final LocaleId locale,
+   public List<String> translateAllInDoc(final String projectSlug, final String iterationSlug, final String docId,
+         final LocaleId locale,
          final TranslationsResource translations, final Set<String> extensions, final MergeType mergeType)
    {
       HProjectIteration hProjectIteration = projectIterationDAO.getBySlug(projectSlug, iterationSlug);
@@ -493,7 +518,8 @@ public class TranslationServiceImpl implements TranslationService
                   {
                      // handle extensions
                      boolean changed =
-                           resourceUtils.transferFromTranslationsResourceExtensions(translations.getExtensions(true), document, extensions, hLocale,
+                           resourceUtils.transferFromTranslationsResourceExtensions(translations.getExtensions(true),
+                                 document, extensions, hLocale,
                                  mergeType);
                      return changed;
                   }
@@ -542,7 +568,8 @@ public class TranslationServiceImpl implements TranslationService
                            if (textFlow == null)
                            {
                               // return warning for unknown resId to caller
-                              String warning = "Could not find TextFlow for TextFlowTarget " + resId + " with contents: "
+                              String warning = "Could not find TextFlow for TextFlowTarget " + resId
+                                    + " with contents: "
                                     + incomingTarget.getContents();
                               warnings.add(warning);
                               if (asynchronousProcessHandle != null)
@@ -556,9 +583,11 @@ public class TranslationServiceImpl implements TranslationService
                               int nPlurals = getNumPlurals(hLocale, textFlow);
                               HTextFlowTarget hTarget = textFlowTargetDAO.getTextFlowTarget(textFlow, hLocale);
 
-                              TranslationMergeServiceFactory.MergeContext mergeContext = new TranslationMergeServiceFactory.MergeContext(mergeType,
+                              TranslationMergeServiceFactory.MergeContext mergeContext = new TranslationMergeServiceFactory.MergeContext(
+                                    mergeType,
                                     textFlow, hLocale, hTarget, nPlurals);
-                              TranslationMergeService mergeService = translationMergeServiceFactory.getMergeService(mergeContext);
+                              TranslationMergeService mergeService = translationMergeServiceFactory
+                                    .getMergeService(mergeContext);
 
                               if (mergeType == MergeType.IMPORT)
                               {
@@ -683,6 +712,7 @@ public class TranslationServiceImpl implements TranslationService
       private boolean targetChanged = false;
       private int baseVersion;
       private ContentState baseContentState;
+      private List<String> errorMessages;
 
       @Override
       public boolean isTranslationSuccessful()
@@ -714,6 +744,12 @@ public class TranslationServiceImpl implements TranslationService
          return baseContentState;
       }
 
+      @Override
+      public List<String> getErrorMessages()
+      {
+         return errorMessages;
+      }
+
    }
 
    @Override
@@ -724,7 +760,8 @@ public class TranslationServiceImpl implements TranslationService
       if (!translationsToRevert.isEmpty())
       {
 
-         HTextFlow sampleHTextFlow = entityManager.find(HTextFlow.class, translationsToRevert.get(0).getTransUnit().getId().getValue());
+         HTextFlow sampleHTextFlow = entityManager.find(HTextFlow.class, translationsToRevert.get(0).getTransUnit()
+               .getId().getValue());
          HLocale hLocale = validateLocale(localeId, sampleHTextFlow.getDocument().getProjectIteration());
          for (TransUnitUpdateInfo info : translationsToRevert)
          {
@@ -740,7 +777,8 @@ public class TranslationServiceImpl implements TranslationService
             // check that version has not advanced
             // TODO probably also want to check that source has not been updated
             Integer versionNum = hTextFlowTarget.getVersionNum();
-            log.debug("about to revert hTextFlowTarget version {} to TransUnit version {}", versionNum, info.getTransUnit().getVerNum());
+            log.debug("about to revert hTextFlowTarget version {} to TransUnit version {}", versionNum, info
+                  .getTransUnit().getVerNum());
             if (versionNum.equals(info.getTransUnit().getVerNum()))
             {
                // look up replaced version
@@ -756,26 +794,31 @@ public class TranslationServiceImpl implements TranslationService
                }
                else
                {
-                  log.info("got null previous target for tu with id {}, version {}. Assuming previous state is untranslated", hTextFlow.getId(),
+                  log.info(
+                        "got null previous target for tu with id {}, version {}. Assuming previous state is untranslated",
+                        hTextFlow.getId(),
                         info.getPreviousVersionNum());
                   List<String> emptyContents = Lists.newArrayList();
                   for (int i = 0; i < hTextFlowTarget.getContents().size(); i++)
                   {
                      emptyContents.add("");
                   }
-                  TransUnitUpdateRequest request = new TransUnitUpdateRequest(tuId, emptyContents, ContentState.New, versionNum);
+                  TransUnitUpdateRequest request = new TransUnitUpdateRequest(tuId, emptyContents, ContentState.New,
+                        versionNum);
                   updateRequests.add(request);
                }
             }
             else
             {
-               log.info("attempt to revert target version {} for tu with id {}, but current version is {}. Not reverting.", new Object[] {
-                     info.getTransUnit().getVerNum(), tuId, versionNum });
+               log.info(
+                     "attempt to revert target version {} for tu with id {}, but current version is {}. Not reverting.",
+                     new Object[] {
+                           info.getTransUnit().getVerNum(), tuId, versionNum });
                results.add(buildFailResult(hTextFlowTarget));
             }
          }
       }
-      results.addAll(translate(localeId, updateRequests));
+      results.addAll(translate(localeId, updateRequests, false));
       return results;
    }
 
@@ -790,6 +833,7 @@ public class TranslationServiceImpl implements TranslationService
       result.baseContentState = hTextFlowTarget.getState();
       result.isSuccess = false;
       result.translatedTextFlowTarget = hTextFlowTarget;
+      result.errorMessages = Lists.newArrayList();
       return result;
    }
 }

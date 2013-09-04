@@ -44,9 +44,10 @@ public interface TranslationService
     * 
     * @param localeId
     * @param translationRequests
+    * @param runValidationCheck - Should be true by default
     * @return information about each translation change
     */
-   List<TranslationResult> translate(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests);
+   List<TranslationResult> translate(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests, boolean skipValidationCheck);
 
 
    /**
@@ -112,5 +113,6 @@ public interface TranslationService
       HTextFlowTarget getTranslatedTextFlowTarget();
       int getBaseVersionNum();
       ContentState getBaseContentState();
+      List<String> getErrorMessages();
    }
 }
