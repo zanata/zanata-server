@@ -20,12 +20,14 @@
  */
 package org.zanata.service.impl;
 
+import static org.zanata.async.tasks.CopyTransTask.CopyTransTaskHandle;
 import static org.zanata.common.ContentState.*;
 import static org.zanata.model.HCopyTransOptions.ConditionRuleAction.DOWNGRADE_TO_FUZZY;
 import static org.zanata.model.HCopyTransOptions.ConditionRuleAction.REJECT;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 
 import org.hibernate.HibernateException;
@@ -38,6 +40,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.log.Log;
 import org.jboss.seam.util.Work;
+import org.zanata.async.AsyncUtils;
 import org.zanata.common.ContentState;
 import org.zanata.dao.DatabaseConstants;
 import org.zanata.dao.DocumentDAO;
@@ -50,10 +53,10 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.process.CopyTransProcessHandle;
 import org.zanata.rest.service.TranslatedDocResourceService;
 import org.zanata.service.CopyTransService;
 import org.zanata.service.LocaleService;
+import com.google.common.base.Optional;
 
 //TODO unit test suite for this class
 
@@ -75,28 +78,9 @@ public class CopyTransServiceImpl implements CopyTransService
 
    @In
    private ProjectDAO projectDAO;
-
-   @In(required = false, scope = ScopeType.EVENT)
-   private CopyTransProcessHandle asynchronousProcessHandle;
    
    @Logger
    Log log;
-
-
-   /**
-    * Internal helper class to keep track of copy trans matches.
-    */
-   private class CopyTransMatch
-   {
-      private CopyTransMatch(HTextFlowTarget matchingTarget, ContentState targetState)
-      {
-         this.matchingTarget = matchingTarget;
-         this.targetState = targetState;
-      }
-
-      HTextFlowTarget matchingTarget;
-      ContentState targetState;
-   }
 
    @Observer(TranslatedDocResourceService.EVENT_COPY_TRANS)
    public void runCopyTrans(Long docId, String project, String iterationSlug)
@@ -202,6 +186,13 @@ public class CopyTransServiceImpl implements CopyTransService
                return null;
             }
          }.workInTransaction();
+
+         // Advance the task handler if there is one
+         Optional<CopyTransTaskHandle> taskHandle = AsyncUtils.getEventAsyncHandle(CopyTransTaskHandle.class);
+         if( taskHandle.isPresent() )
+         {
+            taskHandle.get().increaseProgress(1);
+         }
       }
       catch (Exception e)
       {
@@ -289,13 +280,33 @@ public class CopyTransServiceImpl implements CopyTransService
       return copyCount;
    }
 
-   private ContentState determineContentState(boolean contextMatches, boolean projectMatches, boolean docIdMatches,
-                                              HCopyTransOptions options, boolean requireTranslationReview, ContentState matchingTargetState)
+   /**
+    * Determines the content state a copied translation should have.
+    *
+    * @param contextMatches Whether the copied TextFlow's context matches the target TextFlow's context or not.
+    * @param projectMatches Whether the copied TextFlow's project matches the target TextFlow's context or not.
+    * @param docIdMatches Whether the copied TextFlow's docId matches the target TextFlow's context or not.
+    * @param options The copy trans options being used.
+    * @param requireTranslationReview Whether the project being copied to requires review or not.
+    * @param matchingTargetState The state of the match found by copy trans.
+    * @return The content state that the copied translation should have. May return null if the translation should not
+    * be copied at all.
+    */
+   private @Nullable
+   ContentState determineContentState(boolean contextMatches, boolean projectMatches, boolean docIdMatches,
+                                      HCopyTransOptions options, boolean requireTranslationReview, ContentState matchingTargetState)
    {
+      // Everything matches, and requires approval
       if (requireTranslationReview && matchingTargetState.isApproved() && projectMatches && contextMatches && docIdMatches)
       {
          return Approved;
       }
+      // Everything matches, and does not require approval
+      else if( matchingTargetState.isApproved() && projectMatches && contextMatches && docIdMatches )
+      {
+         return Translated;
+      }
+      // Everything else
       ContentState state = Translated;
       state = getExpectedContentState(contextMatches, options.getContextMismatchAction(), state);
       state = getExpectedContentState(projectMatches, options.getProjectMismatchAction(), state);
@@ -303,8 +314,19 @@ public class CopyTransServiceImpl implements CopyTransService
       return state;
    }
 
-   public ContentState getExpectedContentState( boolean match, HCopyTransOptions.ConditionRuleAction action,
-                                                 ContentState currentState )
+   /**
+    * Gets the content state that is expected for a translation when evaluated against a single copy trans
+    * condition.
+    * Copy Trans conditions are of the form: Is it the same project? Is it the same documentId? ... etc.
+    *
+    * @param match Whether the condition holds or not (is there a match?)
+    * @param action The action to take when the condition matches.
+    * @param currentState The current state of the translation.
+    * @return The content state that is expected the copied translation to have.
+    */
+   public @Nullable
+   ContentState getExpectedContentState( boolean match, HCopyTransOptions.ConditionRuleAction action,
+                                         ContentState currentState )
    {
       if( currentState == null )
       {
@@ -327,22 +349,12 @@ public class CopyTransServiceImpl implements CopyTransService
    @Override
    public void copyTransForDocument(HDocument document)
    {
-      // Set the max progress only if it hasn't been set yet
-      if( asynchronousProcessHandle != null && !asynchronousProcessHandle.isMaxProgressSet() )
-      {
-         List<HLocale> localeList =
-               localeServiceImpl.getSupportedLangugeByProjectIteration(document.getProjectIteration().getProject().getSlug(),
-                     document.getProjectIteration().getSlug());
+      copyTransForDocument(document, null);
+   }
 
-         asynchronousProcessHandle.setMaxProgress(localeList.size());
-      }
-
-      HCopyTransOptions copyTransOpts = null;
-      // Use process handle options
-      if( asynchronousProcessHandle != null )
-      {
-         copyTransOpts = asynchronousProcessHandle.getOptions();
-      }
+   @Override
+   public void copyTransForDocument(HDocument document, HCopyTransOptions copyTransOpts)
+   {
       // use project level options
       if( copyTransOpts == null )
       {
@@ -356,71 +368,40 @@ public class CopyTransServiceImpl implements CopyTransService
          copyTransOpts = new HCopyTransOptions();
       }
 
-      this.copyTransForDocument(document, copyTransOpts, asynchronousProcessHandle);
-   }
-
-   @Override
-   public void copyTransForIteration(HProjectIteration iteration)
-   {
-      if( asynchronousProcessHandle != null )
-      {
-         List<HLocale> localeList =
-               localeServiceImpl.getSupportedLangugeByProjectIteration(iteration.getProject().getSlug(),
-                     iteration.getSlug());
-
-         asynchronousProcessHandle.setMaxProgress( iteration.getDocuments().size() * localeList.size() );
-         asynchronousProcessHandle.setCurrentProgress(0);
-      }
-
-      // TODO RunnableProcess handle may not be null
-      for( HDocument doc : iteration.getDocuments().values() )
-      {
-         if( asynchronousProcessHandle.shouldStop() )
-         {
-            return;
-         }
-         this.copyTransForDocument(doc, asynchronousProcessHandle.getOptions(), asynchronousProcessHandle);
-      }
-   }
-
-   /**
-    * NB: The handle's options will be ignored. This is a convenience method to have the logic
-    * in a single place.
-    * @see CopyTransServiceImpl#copyTransForDocument(org.zanata.model.HDocument)
-    */
-   private void copyTransForDocument(HDocument document, HCopyTransOptions options, CopyTransProcessHandle processHandle)
-   {
       log.info("copyTrans start: document \"{0}\"", document.getDocId());
+      Optional<CopyTransTaskHandle> taskHandleOpt = AsyncUtils.getEventAsyncHandle(CopyTransTaskHandle.class);
       List<HLocale> localeList =
             localeServiceImpl.getSupportedLangugeByProjectIteration(document.getProjectIteration().getProject().getSlug(),
                   document.getProjectIteration().getSlug());
 
       for (HLocale locale : localeList)
       {
-         if( processHandle != null && processHandle.shouldStop() )
+         if( taskHandleOpt.isPresent() && taskHandleOpt.get().isCancelled() )
          {
             return;
          }
-         copyTransForLocale(document, locale, options, processHandle);
+         copyTransForLocale(document, locale, copyTransOpts);
       }
 
-      if( processHandle != null )
+      if( taskHandleOpt.isPresent() )
       {
-         processHandle.setDocumentsProcessed( processHandle.getDocumentsProcessed() + 1 );
+         taskHandleOpt.get().incrementDocumentsProcessed();
       }
       log.info("copyTrans finished: document \"{0}\"", document.getDocId());
    }
 
-   /**
-    * @see CopyTransServiceImpl#copyTransForLocale(org.zanata.model.HDocument, org.zanata.model.HLocale, HCopyTransOptions, org.zanata.process.CopyTransProcessHandle)
-    */
-   private void copyTransForLocale(HDocument document, HLocale locale, HCopyTransOptions options, CopyTransProcessHandle procHandle)
+   @Override
+   public void copyTransForIteration(HProjectIteration iteration, HCopyTransOptions copyTransOptions)
    {
-      this.copyTransForLocale(document, locale, options);
+      Optional<CopyTransTaskHandle> taskHandleOpt = AsyncUtils.getEventAsyncHandle(CopyTransTaskHandle.class);
 
-      if( procHandle != null )
+      for( HDocument doc : iteration.getDocuments().values() )
       {
-         procHandle.incrementProgress(1);
+         if( taskHandleOpt.isPresent() && taskHandleOpt.get().isCancelled() )
+         {
+            return;
+         }
+         this.copyTransForDocument(doc, copyTransOptions);
       }
    }
 
@@ -429,7 +410,11 @@ public class CopyTransServiceImpl implements CopyTransService
     */
    private static boolean shouldOverwrite(HTextFlowTarget currentlyStored, ContentState matchState)
    {
-      if( currentlyStored != null )
+      if( matchState == null )
+      {
+         return false;
+      }
+      else if( currentlyStored != null )
       {
          if( currentlyStored.getState().isRejectedOrFuzzy() && matchState.isTranslated())
          {
