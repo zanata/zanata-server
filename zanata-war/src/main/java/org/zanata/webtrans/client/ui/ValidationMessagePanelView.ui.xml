@@ -7,9 +7,8 @@
 		type="org.zanata.webtrans.client.ui.ValidationMessagePanelView.Styles">
         .container {
             width: 96%;
-            margin-left: 3%;
             table-layout: fixed;
-            margin-bottom: 3px;
+            margin: 0.1em 0 0.1em 0.1em;
         }
         
         .container td {
@@ -48,7 +47,7 @@
         .contents li {
             border-left: 3px solid;	
             padding: 0.1em 0.5em;
-            margin: 2px 0;
+            margin: 0.15em 0;
             font-size: 0.9em;
         }
 

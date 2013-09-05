@@ -58,9 +58,6 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
    private TargetContentsDisplay.Listener listener;
 
    @UiField
-   Label messageLabel;
-
-   @UiField
    UnorderedListWidget translations;
 
    @UiField
@@ -76,13 +73,12 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
    public ValidationWarningPanel(TableEditorMessages messages)
    {
       super(false, true);
+      setStyleName("new-zanata");
 
       returnToEditor = new Button(messages.returnToEditor());
       saveAsFuzzy = new Button(messages.saveAsFuzzy());
 
       HTMLPanel container = uiBinder.createAndBindUi(this);
-
-      messageLabel.setText(messages.validationErrorMessage());
 
       setGlassEnabled(true);
       setWidget(container);
