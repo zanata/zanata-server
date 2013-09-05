@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.zanata.common.ContentState;
 
-import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**

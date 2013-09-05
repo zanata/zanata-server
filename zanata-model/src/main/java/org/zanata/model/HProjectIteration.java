@@ -84,17 +84,18 @@ import com.google.common.collect.Sets;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @TypeDef(name = "entityStatus", typeClass = EntityStatusType.class)
 @Restrict
-@EntityRestrict({INSERT, UPDATE, DELETE})
+@EntityRestrict({ INSERT, UPDATE, DELETE })
 @Indexed
 @Access(AccessType.FIELD)
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString(callSuper = true, of = {"project"})
-public class HProjectIteration extends SlugEntityBase implements Iterable<DocumentWithId>, HasEntityStatus, IsEntityWithType
+@ToString(callSuper = true, of = { "project" })
+public class HProjectIteration extends SlugEntityBase implements Iterable<DocumentWithId>, HasEntityStatus,
+      IsEntityWithType
 {
    private static final long serialVersionUID = 182037127575991478L;
-   
+
    @ManyToOne
    @NotNull
    // TODO PERF @NaturalId(mutable=false) for better criteria caching
@@ -106,7 +107,7 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    @ManyToOne
    @JoinColumn(name = "parentId")
    private HProjectIteration parent;
-   
+
    @OneToMany(mappedBy = "parent")
    private List<HProjectIteration> children;
 
@@ -116,32 +117,32 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    // TODO add an index for path, name
    @OrderBy("path, name")
    private Map<String, HDocument> documents = Maps.newHashMap();
-   
+
    @OneToMany(mappedBy = "projectIteration", cascade = CascadeType.ALL)
    @MapKey(name = "docId")
    // even obsolete documents
    private Map<String, HDocument> allDocuments = Maps.newHashMap();
 
    private boolean overrideLocales;
-   
+
    @ManyToMany
-   @JoinTable(name = "HProjectIteration_Locale", joinColumns = @JoinColumn(name = "projectIterationId"), 
-      inverseJoinColumns = @JoinColumn(name = "localeId"))
+   @JoinTable(name = "HProjectIteration_Locale", joinColumns = @JoinColumn(name = "projectIterationId"),
+         inverseJoinColumns = @JoinColumn(name = "localeId"))
    private Set<HLocale> customizedLocales = Sets.newHashSet();
-   
+
    @ManyToMany
    @JoinTable(name = "HIterationGroup_ProjectIteration", joinColumns = @JoinColumn(name = "projectIterationId"), inverseJoinColumns = @JoinColumn(name = "iterationGroupId"))
    private Set<HIterationGroup> groups = Sets.newHashSet();
-   
+
    @ElementCollection
-   @JoinTable(name = "HProjectIteration_Validation", joinColumns = {@JoinColumn(name = "projectIterationId")})
+   @JoinTable(name = "HProjectIteration_Validation", joinColumns = { @JoinColumn(name = "projectIterationId") })
    @MapKeyColumn(name = "validation")
    @Column(name = "state", nullable = false)
    private Map<String, String> customizedValidations = Maps.newHashMap();
 
    @Enumerated(EnumType.STRING)
    private ProjectType projectType;
-   
+
    @Type(type = "entityStatus")
    @NotNull
    private EntityStatus status = EntityStatus.ACTIVE;
@@ -152,7 +153,7 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    @Override
    public Iterator<DocumentWithId> iterator()
    {
-      return ImmutableList.<DocumentWithId>copyOf(getDocuments().values()).iterator();
+      return ImmutableList.<DocumentWithId> copyOf(getDocuments().values()).iterator();
    }
 
    @Override
@@ -160,5 +161,14 @@ public class HProjectIteration extends SlugEntityBase implements Iterable<Docume
    public EntityType getEntityType()
    {
       return EntityType.HProjectIteration;
+   }
+
+   public Boolean getRequireTranslationReview()
+   {
+      if (requireTranslationReview == null)
+      {
+         return Boolean.FALSE;
+      }
+      return requireTranslationReview;
    }
 }
