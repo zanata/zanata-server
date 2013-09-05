@@ -603,19 +603,6 @@ public class TranslationServiceImpl implements TranslationService
                            }
                            else
                            {
-                              int nPlurals = getNumPlurals(hLocale, textFlow);
-                              HTextFlowTarget hTarget = textFlowTargetDAO.getTextFlowTarget(textFlow, hLocale);
-
-                              TranslationMergeServiceFactory.MergeContext mergeContext = new TranslationMergeServiceFactory.MergeContext(
-                                    mergeType, textFlow, hLocale, hTarget, nPlurals);
-                              TranslationMergeService mergeService = translationMergeServiceFactory
-                                    .getMergeService(mergeContext);
-
-                              if (mergeType == MergeType.IMPORT)
-                              {
-                                 removedTargets.remove(hTarget);
-                              }
-
                               String validationMessage = validationTranslations(incomingTarget.getState(),
                                     hProjectIteration, incomingTarget.getResId(), textFlow.getContents(),
                                     incomingTarget.getContents());
@@ -626,6 +613,19 @@ public class TranslationServiceImpl implements TranslationService
                                  log.warn(validationMessage);
                                  continue;
                               }
+                              
+                              int nPlurals = getNumPlurals(hLocale, textFlow);
+                              HTextFlowTarget hTarget = textFlowTargetDAO.getTextFlowTarget(textFlow, hLocale);
+
+                              if (mergeType == MergeType.IMPORT)
+                              {
+                                 removedTargets.remove(hTarget);
+                              }
+
+                              TranslationMergeServiceFactory.MergeContext mergeContext = new TranslationMergeServiceFactory.MergeContext(
+                                    mergeType, textFlow, hLocale, hTarget, nPlurals);
+                              TranslationMergeService mergeService = translationMergeServiceFactory
+                                    .getMergeService(mergeContext);
 
                               boolean targetChanged = mergeService.merge(incomingTarget, hTarget, extensions);
                               if (hTarget == null)
