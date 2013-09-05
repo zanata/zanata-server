@@ -31,6 +31,7 @@ import javax.persistence.EntityManager;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -122,7 +123,7 @@ public class TranslationServiceImpl implements TranslationService
 
    @In(value = JpaIdentityStore.AUTHENTICATED_USER, scope = ScopeType.SESSION, required = false)
    private HAccount authenticatedAccount;
-   
+
    @In
    private ZanataIdentity identity;
 
@@ -167,19 +168,15 @@ public class TranslationServiceImpl implements TranslationService
          result.baseVersion = hTextFlowTarget.getVersionNum();
          result.baseContentState = hTextFlowTarget.getState();
 
-         if (runValidationCheck && request.getNewContentState() == ContentState.Translated)
-         {
-            List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(
-                  projectIteration, localeId, hTextFlow.getContents(), request.getNewContents());
+         String validationMessage = validationTranslations(request.getNewContentState(), projectIteration, request
+               .getTransUnitId().toString(), hTextFlow.getContents(), request.getNewContents());
 
-            if (!validationMessages.isEmpty())
-            {
-               log.warn("Translation contains validation error. Update failed {}. Error message {}",
-                     request.getTransUnitId(), validationMessages);
-               result.isSuccess = false;
-               result.errorMessages = validationMessages;
-               continue;
-            }
+         if (runValidationCheck && !StringUtils.isEmpty(validationMessage))
+         {
+            log.warn(validationMessage);
+            result.isSuccess = false;
+            result.errorMessage = validationMessage;
+            continue;
          }
 
          if (request.getBaseTranslationVersion() == hTextFlowTarget.getVersionNum())
@@ -207,7 +204,7 @@ public class TranslationServiceImpl implements TranslationService
 
             log.warn(errorMessage);
 
-            result.errorMessages = Lists.newArrayList(errorMessage);
+            result.errorMessage = errorMessage;
             result.isSuccess = false;
          }
          result.translatedTextFlowTarget = hTextFlowTarget;
@@ -476,12 +473,38 @@ public class TranslationServiceImpl implements TranslationService
       return messages;
    }
 
+   /**
+    * Run validation check if target has changed and translation saving as 'Translated'
+    */
+   private String validationTranslations(ContentState newState, HProjectIteration projectVersion, String targetId,
+         List<String> sources, List<String> translations)
+   {
+      String message = null;
+      if (newState == ContentState.Translated)
+      {
+         List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(
+               projectVersion, sources, translations);
+
+         if (!validationMessages.isEmpty())
+         {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Translation ").append(targetId).append(" contains validation error-\n");
+            for (String validationMessage : validationMessages)
+            {
+               sb.append(validationMessage).append("\n");
+            }
+            message = sb.toString();
+         }
+      }
+      return message;
+   }
+
    @Override
    public List<String> translateAllInDoc(final String projectSlug, final String iterationSlug, final String docId,
          final LocaleId locale,
          final TranslationsResource translations, final Set<String> extensions, final MergeType mergeType)
    {
-      HProjectIteration hProjectIteration = projectIterationDAO.getBySlug(projectSlug, iterationSlug);
+      final HProjectIteration hProjectIteration = projectIterationDAO.getBySlug(projectSlug, iterationSlug);
 
       if (hProjectIteration == null)
       {
@@ -592,6 +615,18 @@ public class TranslationServiceImpl implements TranslationService
                               {
                                  removedTargets.remove(hTarget);
                               }
+
+                              String validationMessage = validationTranslations(incomingTarget.getState(),
+                                    hProjectIteration, incomingTarget.getResId(), textFlow.getContents(),
+                                    incomingTarget.getContents());
+
+                              if (!StringUtils.isEmpty(validationMessage))
+                              {
+                                 warnings.add(validationMessage);
+                                 log.warn(validationMessage);
+                                 continue;
+                              }
+
                               boolean targetChanged = mergeService.merge(incomingTarget, hTarget, extensions);
                               if (hTarget == null)
                               {
@@ -627,7 +662,6 @@ public class TranslationServiceImpl implements TranslationService
                                  }
                                  textFlowTargetDAO.makePersistent(hTarget);
                               }
-
                               signalPostTranslateEvent(hTarget);
                            }
 
@@ -711,7 +745,7 @@ public class TranslationServiceImpl implements TranslationService
       private boolean targetChanged = false;
       private int baseVersion;
       private ContentState baseContentState;
-      private List<String> errorMessages;
+      private String errorMessage;
 
       @Override
       public boolean isTranslationSuccessful()
@@ -744,9 +778,9 @@ public class TranslationServiceImpl implements TranslationService
       }
 
       @Override
-      public List<String> getErrorMessages()
+      public String getErrorMessage()
       {
-         return errorMessages;
+         return errorMessage;
       }
 
    }
@@ -832,7 +866,7 @@ public class TranslationServiceImpl implements TranslationService
       result.baseContentState = hTextFlowTarget.getState();
       result.isSuccess = false;
       result.translatedTextFlowTarget = hTextFlowTarget;
-      result.errorMessages = Lists.newArrayList();
+      result.errorMessage = null;
       return result;
    }
 }

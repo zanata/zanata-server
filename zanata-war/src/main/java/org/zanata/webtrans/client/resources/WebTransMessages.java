@@ -192,8 +192,8 @@ public interface WebTransMessages extends Messages
    @DefaultMessage("Successfully replaced text")
    String replacedTextSuccess();
 
-   @DefaultMessage("Replace text failed in text flow {0}, error message: {1,list,string}")
-   String replaceTextFailureWithMessage(String id, List<String> errorMessages);
+   @DefaultMessage("Replace text failed in text flow {0}, error message: {1}")
+   String replaceTextFailureWithMessage(String id, String errorMessage);
    
    @DefaultMessage("Replace text failed")
    String replaceTextFailure();

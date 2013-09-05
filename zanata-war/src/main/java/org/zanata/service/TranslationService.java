@@ -113,6 +113,6 @@ public interface TranslationService
       HTextFlowTarget getTranslatedTextFlowTarget();
       int getBaseVersionNum();
       ContentState getBaseContentState();
-      List<String> getErrorMessages();
+      String getErrorMessage();
    }
 }

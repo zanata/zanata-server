@@ -98,7 +98,7 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(),
                translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow
                      .getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(),
-               translationResult.getBaseContentState(), translationResult.getErrorMessages());
+               translationResult.getBaseContentState(), translationResult.getErrorMessage());
          workspace.publish(new TransUnitUpdated(updateInfo, editorClientId, updateType));
 
          result.addUpdateResult(updateInfo);

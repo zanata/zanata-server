@@ -44,7 +44,7 @@ public class TransUnitUpdateInfo implements IsSerializable
    private int sourceWordCount;
    private int previousVersionNum;
    private ContentState previousState;
-   private List<String> errorMessages;
+   private String errorMessage;
 
    // required for GWT rpc serialization
    @SuppressWarnings("unused")
@@ -53,7 +53,7 @@ public class TransUnitUpdateInfo implements IsSerializable
    }
 
    public TransUnitUpdateInfo(boolean success, boolean targetChanged, DocumentId documentId, TransUnit transUnit,
-         int sourceWordCount, int previousVersionNum, ContentState previousState, List<String> errorMessages)
+         int sourceWordCount, int previousVersionNum, ContentState previousState, String errorMessage)
    {
       this.success = success;
       this.targetChanged = targetChanged;
@@ -62,7 +62,7 @@ public class TransUnitUpdateInfo implements IsSerializable
       this.sourceWordCount = sourceWordCount;
       this.previousVersionNum = previousVersionNum;
       this.previousState = previousState;
-      this.errorMessages = errorMessages;
+      this.errorMessage = errorMessage;
    }
 
    public boolean isSuccess()
@@ -102,13 +102,9 @@ public class TransUnitUpdateInfo implements IsSerializable
       return sourceWordCount;
    }
 
-   public List<String> getErrorMessages()
+   public String getErrorMessage()
    {
-      if (errorMessages == null)
-      {
-         errorMessages = Lists.newArrayList();
-      }
-      return errorMessages;
+      return errorMessage;
    }
 
    @Override
@@ -122,7 +118,7 @@ public class TransUnitUpdateInfo implements IsSerializable
             add("sourceWordCount", sourceWordCount).
             add("previousVersionNum", previousVersionNum).
             add("previousState", previousState).
-            add("errorMessages", errorMessages).
+            add("errorMessage", errorMessage).
             toString();
       // @formatter:on
    }

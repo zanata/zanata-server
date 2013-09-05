@@ -317,7 +317,7 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId,
+   public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion,
          List<String> sources, List<String> translations)
    {
       Collection<ValidationAction> validationActions = getValidationAction(projectVersion, State.Error);

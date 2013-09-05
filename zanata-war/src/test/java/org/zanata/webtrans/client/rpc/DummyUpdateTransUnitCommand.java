@@ -42,7 +42,7 @@ final class DummyUpdateTransUnitCommand implements Command
             .setLocaleId(LocaleId.EN_US)
             .setSources(firstTu.getNewContents())
             .build();
-      TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(true, true, new DocumentId(new Long(0), ""), tu, 5, firstTu.getBaseTranslationVersion(), ContentState.NeedReview, new ArrayList<String>());
+      TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(true, true, new DocumentId(new Long(0), ""), tu, 5, firstTu.getBaseTranslationVersion(), ContentState.NeedReview, "");
       UpdateTransUnitResult result = new UpdateTransUnitResult(updateInfo);
       callback.onSuccess(result);
       Log.info("EXIT DummyUpdateTransUnitCommand.execute()");

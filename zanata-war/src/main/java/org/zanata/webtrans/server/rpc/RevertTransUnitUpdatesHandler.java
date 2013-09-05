@@ -85,7 +85,7 @@ public class RevertTransUnitUpdatesHandler extends AbstractActionHandler<RevertT
          TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(translationResult.isTranslationSuccessful(),
                translationResult.isTargetChanged(), new DocumentId(hTextFlow.getDocument().getId(), hTextFlow
                      .getDocument().getDocId()), tu, wordCount, translationResult.getBaseVersionNum(),
-               translationResult.getBaseContentState(), translationResult.getErrorMessages());
+               translationResult.getBaseContentState(), translationResult.getErrorMessage());
 
          workspace.publish(new TransUnitUpdated(updateInfo, action.getEditorClientId(), UpdateType.Revert));
          results.addUpdateResult(updateInfo);

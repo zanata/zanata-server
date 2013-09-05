@@ -80,11 +80,10 @@ public interface ValidationService
    /**
     * Run 'Error' state validations check against sources and translations
     * @param projectVersion 
-    * @param localeId
     * @param sources
     * @param translations
     * @return list of error message
     */
-   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, LocaleId localeId,
-         List<String> sources, List<String> translations);
+   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, List<String> sources,
+         List<String> translations);
 }

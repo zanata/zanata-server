@@ -243,7 +243,7 @@ public class TransUnitSaveServiceTest
    public void onPRCSuccessButSaveUnsuccessfulInResult()
    {
       // Given:
-      List<String> errorMessage = Lists.newArrayList("unsuccessful save");
+      String errorMessage = "unsuccessful save";
       TransUnit old = TestFixture.makeTransUnit(TRANS_UNIT_ID.getId(), ContentState.NeedReview, "old content");
       when(navigationService.getByIdOrNull(TRANS_UNIT_ID)).thenReturn(old);
 
@@ -292,7 +292,7 @@ public class TransUnitSaveServiceTest
 
       // Then: will reset value back
       AsyncCallback<UpdateTransUnitResult> callback = resultCaptor.getValue();
-      when(messages.notifyUpdateFailed("id " + TRANS_UNIT_ID, Lists.newArrayList(errorMessage))).thenReturn("update failed");
+      when(messages.notifyUpdateFailed("id " + TRANS_UNIT_ID, errorMessage)).thenReturn("update failed");
       callback.onFailure(new RuntimeException(errorMessage));
       verify(targetContentsPresenter).setEditingState(saveEvent.getTransUnitId(), TargetContentsDisplay.EditingState.UNSAVED);
       ArgumentCaptor<NotificationEvent> notificationEventCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
@@ -304,8 +304,8 @@ public class TransUnitSaveServiceTest
       assertThat(event.getInlineLink(), Matchers.<InlineLink>sameInstance(goToLink));
    }
 
-   private static UpdateTransUnitResult result(boolean success, TransUnit transUnit, ContentState previousState, List<String> errorMessages)
+   private static UpdateTransUnitResult result(boolean success, TransUnit transUnit, ContentState previousState, String errorMessage)
    {
-      return new UpdateTransUnitResult(new TransUnitUpdateInfo(success, true, new DocumentId(new Long(1), ""), transUnit, 9, VER_NUM, previousState, errorMessages));
+      return new UpdateTransUnitResult(new TransUnitUpdateInfo(success, true, new DocumentId(new Long(1), ""), transUnit, 9, VER_NUM, previousState, errorMessage));
    }
 }
