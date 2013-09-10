@@ -23,6 +23,8 @@ package org.zanata.webtrans.client.ui;
 import java.util.List;
 import java.util.Map;
 
+import org.zanata.webtrans.client.keys.ShortcutContext;
+import org.zanata.webtrans.client.presenter.KeyShortcutPresenter;
 import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnitId;
@@ -45,7 +47,7 @@ import com.google.inject.Inject;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  *
  **/
-public class ValidationWarningPanel extends PopupPanel implements ValidationWarningDisplay
+public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implements ValidationWarningDisplay
 {
    private static ValidationWarningPanelUiBinder uiBinder = GWT.create(ValidationWarningPanelUiBinder.class);
 
@@ -70,9 +72,10 @@ public class ValidationWarningPanel extends PopupPanel implements ValidationWarn
    Button saveAsFuzzy;
 
    @Inject
-   public ValidationWarningPanel(TableEditorMessages messages)
+   public ValidationWarningPanel(TableEditorMessages messages, KeyShortcutPresenter keyShortcutPresenter)
    {
-      super(false, true);
+      super(false, true, ShortcutContext.ValidationWarningPopup, keyShortcutPresenter);
+      
       setStyleName("new-zanata");
 
       returnToEditor = new Button(messages.returnToEditor());
