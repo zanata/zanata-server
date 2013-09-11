@@ -21,10 +21,6 @@
 
 package org.zanata.webtrans.server.rpc;
 
-import lombok.extern.slf4j.Slf4j;
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -52,6 +48,9 @@ import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.AddReviewCommentAction;
 import org.zanata.webtrans.shared.rpc.AddReviewCommentResult;
 import org.zanata.webtrans.shared.rpc.TransUnitUpdated;
+import lombok.extern.slf4j.Slf4j;
+import net.customware.gwt.dispatch.server.ExecutionContext;
+import net.customware.gwt.dispatch.shared.ActionException;
 
 /**
  * @author Patrick Huang <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>

@@ -29,6 +29,7 @@ import javax.persistence.EntityNotFoundException;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
@@ -47,8 +48,10 @@ import org.zanata.service.SlugEntityService;
 import org.zanata.webtrans.shared.model.ValidationAction;
 
 @Name("projectIterationHome")
+@Slf4j
 public class ProjectIterationHome extends SlugHome<HProjectIteration>
 {
+
    private static final long serialVersionUID = 1L;
 
    public static final String PROJECT_ITERATION_UPDATE = "project.iteration.update";
@@ -56,7 +59,7 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
    @Getter
    @Setter
    private String slug;
-   
+
    @Getter
    @Setter
    private String projectSlug;
@@ -211,7 +214,7 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
    private void updateOverrideValidations()
    {
       getInstance().getCustomizedValidations().clear();
-      for(ValidationAction action: versionCustomizedValidations)
+      for (ValidationAction action : versionCustomizedValidations)
       {
          getInstance().getCustomizedValidations().put(action.getId().name(), action.getState().name());
       }

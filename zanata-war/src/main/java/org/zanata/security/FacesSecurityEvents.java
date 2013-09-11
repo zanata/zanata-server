@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2013, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  * 
@@ -18,32 +18,34 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.webtrans.shared.rpc;
+package org.zanata.security;
 
-import java.util.List;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Install;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.Startup;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.international.StatusMessage;
 
+import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
+ * Override the {@link org.jboss.seam.security.FacesSecurityEvents} component to
+ * alter default values.
+ *
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public class LoadOptionsAction implements DispatchAction<LoadOptionsResult>
+@Name("org.jboss.seam.security.facesSecurityEvents")
+@Scope(ScopeType.APPLICATION)
+@Install(precedence = APPLICATION, classDependencies = "javax.faces.context.FacesContext")
+@BypassInterceptors
+@Startup
+public class FacesSecurityEvents extends org.jboss.seam.security.FacesSecurityEvents
 {
-   private static final long serialVersionUID = 1L;
-
-   private List<String> prefixes;
-
-   @SuppressWarnings("unused")
-   private LoadOptionsAction()
+   @Override
+   public StatusMessage.Severity getLoginFailedMessageSeverity()
    {
-   }
-
-   public LoadOptionsAction(List<String> prefixes)
-   {
-      this.prefixes = prefixes;
-   }
-
-   public List<String> getPrefixes()
-   {
-      return prefixes;
+      return StatusMessage.Severity.ERROR;
    }
 }

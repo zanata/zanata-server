@@ -45,6 +45,7 @@ import org.zanata.model.validator.Slug;
 @NoArgsConstructor
 public abstract class SlugEntityBase extends ModelEntityBase
 {
+
    private static final long serialVersionUID = -1911540675412928681L;
 
    // TODO PERF @NaturalId(mutable=false) for better criteria caching

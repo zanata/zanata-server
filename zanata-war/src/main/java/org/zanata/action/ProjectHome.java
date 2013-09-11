@@ -131,7 +131,7 @@ public class ProjectHome extends SlugHome<HProject>
    protected HProject loadInstance()
    {
       Session session = (Session) getEntityManager().getDelegate();
-      return (HProject)session.byNaturalId(HProject.class).using("slug", getSlug()).load();
+      return (HProject) session.byNaturalId(HProject.class).using("slug", getSlug()).load();
    }
 
    public void validateSuppliedId()
@@ -349,7 +349,7 @@ public class ProjectHome extends SlugHome<HProject>
    private void updateOverrideValidations()
    {
       getInstance().getCustomizedValidations().clear();
-      for(ValidationAction action: customizedValidations)
+      for (ValidationAction action : customizedValidations)
       {
          getInstance().getCustomizedValidations().put(action.getId().name(), action.getState().name());
       }
@@ -381,10 +381,10 @@ public class ProjectHome extends SlugHome<HProject>
 
    public boolean isUserAllowedToTranslateOrReview(String versionSlug, HLocale localeId)
    {
-      return !StringUtils.isEmpty(versionSlug) 
-            && localeId != null 
-            && isIterationActive(versionSlug) 
-            && identity != null 
+      return !StringUtils.isEmpty(versionSlug)
+            && localeId != null
+            && isIterationActive(versionSlug)
+            && identity != null
             && (identity.hasPermission("add-translation", getInstance(), localeId) || identity.hasPermission("translation-review", getInstance(), localeId));
    }
 
