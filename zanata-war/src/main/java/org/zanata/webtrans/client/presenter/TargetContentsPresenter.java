@@ -167,10 +167,9 @@ public class TargetContentsPresenter implements
    {
       Map<ValidationAction, List<String>> errorMessages = display.getErrorMessages();
 
-      if (status == ContentState.Translated && !errorMessages.isEmpty())
+      if (status.isTranslated() && !errorMessages.isEmpty())
       {
          validationWarning.center(display.getId(), getNewTargets(), errorMessages);
-
       }
       else
       {

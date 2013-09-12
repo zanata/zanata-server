@@ -30,6 +30,7 @@ import org.zanata.webtrans.client.view.TargetContentsDisplay;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.ValidationAction;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,8 +39,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
 
 /**
@@ -75,7 +74,7 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
    public ValidationWarningPanel(TableEditorMessages messages, KeyShortcutPresenter keyShortcutPresenter)
    {
       super(false, true, ShortcutContext.ValidationWarningPopup, keyShortcutPresenter);
-      
+
       setStyleName("new-zanata");
 
       returnToEditor = new Button(messages.returnToEditor());
@@ -119,21 +118,21 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
    @Override
    public void center(TransUnitId transUnitId, List<String> targets, Map<ValidationAction, List<String>> errorMessages)
    {
+      this.transUnitId = transUnitId;
+      refreshView(targets, errorMessages);
+      center();
+   }
+
+   private void refreshView(List<String> targets, Map<ValidationAction, List<String>> errorMessages)
+   {
       translations.clear();
       errorList.clear();
-
-      this.transUnitId = transUnitId;
 
       for (String target : targets)
       {
          SafeHtmlBuilder builder = new SafeHtmlBuilder();
-         HighlightingLabel label = new HighlightingLabel(target);
-         builder.appendHtmlConstant(label.getElement().getString());
-         
-         HTMLPanel targetLabel = new HTMLPanel("li", builder.toSafeHtml().asString());
-         targetLabel.setStyleName("textFlowEntry");
-         
-         translations.add(targetLabel);
+         builder.append(TextContentsDisplay.asSyntaxHighlight(Lists.newArrayList(target)).toSafeHtml());
+         translations.add(new HTMLPanel("li", builder.toSafeHtml().asString()));
       }
 
       for (List<String> messages : errorMessages.values())
@@ -145,8 +144,5 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
             errorList.add(new HTMLPanel("li", builder.toSafeHtml().asString()));
          }
       }
-
-      center();
-
    }
 }

@@ -480,7 +480,7 @@ public class TranslationServiceImpl implements TranslationService
          List<String> sources, List<String> translations)
    {
       String message = null;
-      if (newState == ContentState.Translated)
+      if (newState.isTranslated())
       {
          List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(
                projectVersion, sources, translations);

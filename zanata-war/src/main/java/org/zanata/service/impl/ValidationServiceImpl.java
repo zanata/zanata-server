@@ -57,16 +57,10 @@ public class ValidationServiceImpl implements ValidationService
    private ProjectDAO projectDAO;
 
    @In
-   private TransUnitTransformer transUnitTransformer;
-
-   @In
    private ProjectIterationDAO projectIterationDAO;
 
    @In
    private TextFlowTargetDAO textFlowTargetDAO;
-
-   @In
-   private TextFlowDAO textFlowDAO;
 
    @In
    private DocumentDAO documentDAO;
@@ -118,8 +112,7 @@ public class ValidationServiceImpl implements ValidationService
 
    private Collection<ValidationAction> getValidationAction(HProjectIteration projectVersion, State... includeStates)
    {
-      Map<String, String> customizedValidations = Maps.newHashMap();
-      customizedValidations = projectVersion.getCustomizedValidations();
+      Map<String, String> customizedValidations = projectVersion.getCustomizedValidations();
 
       /**
        * Inherits validations from project if version has no defined validations
@@ -146,7 +139,7 @@ public class ValidationServiceImpl implements ValidationService
       Collection<ValidationAction> filteredList = Lists.newArrayList();
       for (ValidationAction action : list)
       {
-         if (includeStateList.isEmpty() || includeStateList.contains(action.getState()))
+         if (includeStateList.contains(action.getState()))
          {
             filteredList.add(action);
          }

@@ -132,7 +132,7 @@ public interface TableEditorMessages extends Messages
    @DefaultMessage("Save changes before filtering view?")
    String saveChangesConfirmationMessage();
    
-   @DefaultMessage("You''re trying to save translation that contains validation error.")
+   @DefaultMessage("You''re trying to save translation that contains validation error")
    String validationErrorMessage();
    
    @DefaultMessage("Translation")

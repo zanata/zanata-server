@@ -52,14 +52,8 @@ public class VersionValidationOptionsAction implements Serializable
 {
    private static final long serialVersionUID = 1L;
 
-   @Logger
-   private Log log;
-
    @In
    private ValidationService validationServiceImpl;
-
-   @In(required = false)
-   private ProjectIterationHome projectIterationHome;
 
    @Getter
    @Setter
@@ -75,7 +69,6 @@ public class VersionValidationOptionsAction implements Serializable
    {
       if (availableValidations.isEmpty())
       {
-         availableValidations.clear();
          Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug,
                versionSlug);
          for (ValidationAction validationAction : validationList)

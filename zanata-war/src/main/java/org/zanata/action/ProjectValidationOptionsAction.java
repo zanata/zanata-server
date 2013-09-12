@@ -33,11 +33,9 @@ import lombok.Setter;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.log.Log;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
@@ -52,26 +50,19 @@ public class ProjectValidationOptionsAction implements Serializable
 {
    private static final long serialVersionUID = 1L;
 
-   @Logger
-   private Log log;
-
    @In
    private ValidationService validationServiceImpl;
-
-   @In(required = false)
-   private ProjectHome projectHome;
-
-   private Map<ValidationId, ValidationAction> availableValidations = Maps.newHashMap();
 
    @Getter
    @Setter
    private String projectSlug;
 
+   private Map<ValidationId, ValidationAction> availableValidations = Maps.newHashMap();
+
    public List<ValidationAction> getValidationList()
    {
       if (availableValidations.isEmpty())
       {
-         availableValidations.clear();
          Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug);
          for (ValidationAction validationAction : validationList)
          {
