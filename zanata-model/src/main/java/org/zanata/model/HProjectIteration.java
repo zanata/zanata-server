@@ -75,11 +75,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-/**
- * 
- * @see ProjectIteration
- * 
- */
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @TypeDef(name = "entityStatus", typeClass = EntityStatusType.class)

@@ -130,7 +130,7 @@ public class HProject extends SlugEntityBase implements Serializable, HasEntityS
    @ManyToMany
    @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(name = "projectId"),
          inverseJoinColumns = @JoinColumn(name = "roleId"))
-   private Set<HAccountRole> allowedRoles;
+   private Set<HAccountRole> allowedRoles = Sets.newHashSet();
 
    @ElementCollection
    @JoinTable(name = "HProject_Validation", joinColumns = { @JoinColumn(name = "projectId") })
