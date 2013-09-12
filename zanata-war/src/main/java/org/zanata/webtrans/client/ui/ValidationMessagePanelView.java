@@ -24,6 +24,7 @@ import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationDisplayRules;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.CssResource;
@@ -40,7 +41,7 @@ import com.google.inject.Inject;
 public class ValidationMessagePanelView extends Composite implements HasUpdateValidationMessage
 {
    private static UI uiBinder = GWT.create(UI.class);
-   
+
    interface UI extends UiBinder<Widget, ValidationMessagePanelView>
    {
    }
@@ -69,16 +70,14 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
    DisclosurePanel disclosurePanel;
 
    private TableEditorMessages messages;
-   
+
    private Map<ValidationAction, List<String>> displayMessages = Maps.newHashMap();
-   
+
    @Inject
    public ValidationMessagePanelView(TableEditorMessages messages)
    {
       this.messages = messages;
       initWidget(uiBinder.createAndBindUi(this));
-      // this is to remove the .header class so that it won't get style from menu.css
-      disclosurePanel.getHeader().getParent().removeStyleName("header");
       clear();
    }
 
@@ -95,9 +94,9 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
          clear();
          return;
       }
-      
+
       this.displayMessages = displayMessages;
-      
+
       contents.clear();
       int warningCount = 0;
       int errorCount = 0;
@@ -108,11 +107,11 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
          {
             SafeHtmlBuilder builder = new SafeHtmlBuilder();
             builder.appendEscaped(message);
-            
+
             HTMLPanel liElement = new HTMLPanel("li", builder.toSafeHtml().asString());
             liElement.setTitle(entry.getKey().getId().getDisplayName());
-            
-            if(isErrorLocked(entry.getKey().getRules()))
+
+            if (isErrorLocked(entry.getKey().getRules()))
             {
                liElement.addStyleName(style.error());
                errorCount++;
@@ -122,7 +121,7 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
                liElement.addStyleName(style.warning());
                warningCount++;
             }
-            
+
             contents.add(liElement);
          }
       }
@@ -142,14 +141,23 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
    public Map<ValidationAction, List<String>> getErrorMessages()
    {
       Map<ValidationAction, List<String>> errorMessages = Maps.newHashMap();
-      
-      for(Entry<ValidationAction, List<String>> entry: displayMessages.entrySet())
+
+      for (Entry<ValidationAction, List<String>> entry : displayMessages.entrySet())
       {
-         if(isErrorLocked(entry.getKey().getRules()))
+         if (isErrorLocked(entry.getKey().getRules()))
          {
             errorMessages.put(entry.getKey(), entry.getValue());
          }
       }
       return errorMessages;
+   }
+
+   public void setVisibleIfHasError(boolean visible)
+   {
+      if(!displayMessages.isEmpty()) // has error message
+      {
+         setVisible(visible);
+      }
+      setVisible(false);
    }
 }

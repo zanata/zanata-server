@@ -299,7 +299,7 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
       {
          editor.setViewMode(viewMode);
       }
-      validationPanel.setVisible(viewMode == ToggleEditor.ViewMode.EDIT);
+      validationPanel.setVisibleIfHasError(viewMode == ToggleEditor.ViewMode.EDIT);
    }
 
    @Override

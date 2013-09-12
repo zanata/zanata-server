@@ -120,7 +120,7 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
    {
       this.transUnitId = transUnitId;
       refreshView(targets, errorMessages);
-      center();
+      super.center();
    }
 
    private void refreshView(List<String> targets, Map<ValidationAction, List<String>> errorMessages)
