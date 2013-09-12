@@ -87,8 +87,7 @@ public class ValidationServiceImpl implements ValidationService
          HProject project = projectDAO.getBySlug(projectSlug);
          return getValidationAction(project);
       }
-
-      return Lists.newArrayList();
+      return getValidationFactory().getAllValidationActions().values();
    }
 
    private Collection<ValidationAction> getValidationAction(HProject project, State... includeStates)
@@ -107,7 +106,11 @@ public class ValidationServiceImpl implements ValidationService
          HProjectIteration version = projectIterationDAO.getBySlug(projectSlug, versionSlug);
          return getValidationAction(version);
       }
-      return Lists.newArrayList();
+      else if(!StringUtils.isEmpty(projectSlug))
+      {
+         return getValidationAction(projectSlug);
+      }
+      return getValidationFactory().getAllValidationActions().values();
    }
 
    private Collection<ValidationAction> getValidationAction(HProjectIteration projectVersion, State... includeStates)
