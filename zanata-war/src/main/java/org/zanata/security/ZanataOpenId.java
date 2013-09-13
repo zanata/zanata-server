@@ -238,17 +238,10 @@ public class ZanataOpenId implements OpenIdAuthCallback
    @Create
    public void init()
    {
-      try
-      {
-         manager = new ConsumerManager();
-         discovered = null;
-         id = null;
-         authResult = new OpenIdAuthenticationResult();
-      }
-      catch (ConsumerException e)
-      {
-         throw new RuntimeException(e);
-      }
+      manager = new ConsumerManager();
+      discovered = null;
+      id = null;
+      authResult = new OpenIdAuthenticationResult();
       identity = (ZanataIdentity) Component.getInstance(ZanataIdentity.class, ScopeType.SESSION);
       applicationConfiguration = (ApplicationConfiguration) Component.getInstance(ApplicationConfiguration.class, ScopeType.APPLICATION);
    }
@@ -325,14 +318,17 @@ public class ZanataOpenId implements OpenIdAuthCallback
 
          identity.setPreAuthenticated(true);
 
-         // If the user hasn't been registered, there is no authenticated account
          if( authenticatedAccount != null && authenticatedAccount.isEnabled() )
          {
             credentials.setUsername(authenticatedAccount.getUsername());
             Identity.instance().acceptExternallyAuthenticatedPrincipal((new OpenIdPrincipal(result.getAuthenticatedId())));
             this.loginImmediate();
          }
-
+         // If the user hasn't been registered yet
+         else if( authenticatedAccount == null )
+         {
+            credentials.setUsername(result.getAuthenticatedId()); // this is the full open id
+         }
       }
    }
 

@@ -35,12 +35,15 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.rest.MediaTypes;
 import org.zanata.rest.dto.Account;
+import org.zanata.seam.resteasy.IgnoreInterfacePath;
 
 @Name("accountService")
 @Path("/accounts/u/{username:[a-z\\d_]{3,20}}")
 @Transactional
+@IgnoreInterfacePath
 public class AccountService implements AccountResource
 {
+   private static final Log log = Logging.getLog(AccountService.class);
 
    /** User name that identifies an account. */
    @PathParam("username")
@@ -51,8 +54,6 @@ public class AccountService implements AccountResource
 
    @Context
    private UriInfo uri;
-
-   Log log = Logging.getLog(AccountService.class);
 
    @In
    private AccountDAO accountDAO;
