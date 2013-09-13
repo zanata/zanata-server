@@ -27,21 +27,9 @@ public class ShortcutContextAwareDialogBox extends DialogBox
    }
 
    @Override
-   public void show()
-   {
-      super.show();
-      activateContext();
-   }
-
-   @Override
    public void center()
    {
       super.center();
-      activateContext();
-   }
-
-   private void activateContext()
-   {
       keyShortcutPresenter.activateModalContext(modalContext);
    }
 }

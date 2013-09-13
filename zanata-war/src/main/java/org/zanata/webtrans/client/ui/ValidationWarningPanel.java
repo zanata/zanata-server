@@ -100,8 +100,8 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
          @Override
          public void onClick(ClickEvent event)
          {
-            listener.saveAsFuzzy(transUnitId);
             hide();
+            listener.saveAsFuzzy(transUnitId);
          }
       });
       returnToEditor.addClickHandler(new ClickHandler()
@@ -109,8 +109,8 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
          @Override
          public void onClick(ClickEvent event)
          {
-            listener.selectRow(transUnitId);
             hide();
+            listener.setFocus();
          }
       });
    }
@@ -120,7 +120,7 @@ public class ValidationWarningPanel extends ShortcutContextAwareDialogBox implem
    {
       this.transUnitId = transUnitId;
       refreshView(targets, errorMessages);
-      super.center();
+      center();
    }
 
    private void refreshView(List<String> targets, Map<ValidationAction, List<String>> errorMessages)

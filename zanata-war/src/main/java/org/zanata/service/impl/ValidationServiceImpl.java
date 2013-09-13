@@ -122,7 +122,7 @@ public class ValidationServiceImpl implements ValidationService
        */
       if (customizedValidations.isEmpty())
       {
-         return getValidationAction(projectVersion.getProject());
+         return getValidationAction(projectVersion.getProject(), includeStates);
       }
 
       Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);

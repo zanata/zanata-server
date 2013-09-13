@@ -488,7 +488,7 @@ public class TranslationServiceImpl implements TranslationService
          if (!validationMessages.isEmpty())
          {
             StringBuilder sb = new StringBuilder();
-            sb.append("Translation ").append(targetId).append(" contains validation error-\n");
+            sb.append("Translation ").append(targetId).append(" contains validation error - \n");
             for (String validationMessage : validationMessages)
             {
                sb.append(validationMessage).append("\n");
