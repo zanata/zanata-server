@@ -36,7 +36,6 @@ import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.client.ui.HasUpdateValidationMessage;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
-import org.zanata.webtrans.shared.model.ValidationDisplayRules;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
@@ -156,9 +155,19 @@ public class ValidationService implements RunValidationEventHandler
       validationMap.clear();
       for (Map.Entry<ValidationId, State> entry : validationsState.entrySet())
       {
-         ValidationAction action = validationFactory.getValidationAction(entry.getKey());
-         action.setState(entry.getValue());
-         validationMap.put(entry.getKey(), action);
+         if(!validationMap.containsKey(entry.getKey()))
+         {
+            ValidationAction action = validationFactory.getValidationAction(entry.getKey());
+            action.setState(entry.getValue());
+            validationMap.put(entry.getKey(), action);
+
+            for(ValidationAction exclusiveAction: action.getExclusiveValidations())
+            {
+               exclusiveAction.getRules().setEnabled(false);
+               exclusiveAction.getRules().setLocked(true);
+               validationMap.put(exclusiveAction.getId(), exclusiveAction);
+            }
+         }
       }
       updateConfigHolder();
    }

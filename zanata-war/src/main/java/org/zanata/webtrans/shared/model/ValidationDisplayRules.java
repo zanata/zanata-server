@@ -40,6 +40,11 @@ public class ValidationDisplayRules implements IsSerializable
       return locked;
    }
 
+   public void setLocked(boolean locked)
+   {
+      this.locked = locked;
+   }
+
    /**
     * Update validation state 
     * Off     : enabled = false, locked = false;
