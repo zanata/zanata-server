@@ -107,6 +107,7 @@ public class ValidationService implements RunValidationEventHandler
     *
     * @param key
     * @param isEnabled
+    * @param fireRequestValidationEvent
     */
    public void updateStatus(ValidationId key, boolean isEnabled, boolean fireRequestValidationEvent)
    {
@@ -148,7 +149,7 @@ public class ValidationService implements RunValidationEventHandler
     * Update state of validationAction from RPC result to all validation
     * actions from ValidationFactory
     * 
-    * @param validationInfoList
+    * @param validationsState
     */
    public void setValidationRules(Map<ValidationId, State> validationsState)
    {

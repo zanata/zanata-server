@@ -3,7 +3,6 @@
  */
 package org.zanata.webtrans.shared.validation;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +20,19 @@ import org.zanata.webtrans.shared.validation.action.PrintfXSIExtensionValidation
 import org.zanata.webtrans.shared.validation.action.TabValidation;
 import org.zanata.webtrans.shared.validation.action.XmlEntityValidation;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 /**
  * Validation Factory - provides list of available validation rules to run on server or client.
  * 
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
- * 
  */
 public final class ValidationFactory
 {
-   private static Map<ValidationId, ValidationAction> VALIDATION_MAP = new TreeMap<ValidationId, ValidationAction>();
+   private final ValidationMessages validationMessages;
+
+   private final TreeMap<ValidationId, ValidationAction> referenceMap;
 
    public static Comparator<ValidationId> ValidationIdComparator = new Comparator<ValidationId>()
    {
@@ -51,7 +54,8 @@ public final class ValidationFactory
 
    public ValidationFactory(ValidationMessages validationMessages)
    {
-      initMap(validationMessages);
+      this.validationMessages = validationMessages;
+      referenceMap = generateActions();
    }
 
    /**
@@ -61,32 +65,22 @@ public final class ValidationFactory
     */
    public Map<ValidationId, ValidationAction> getAllValidationActions()
    {
-      return VALIDATION_MAP;
+      return Maps.newTreeMap(referenceMap);
    }
 
    public ValidationAction getValidationAction(ValidationId id)
    {
-      return VALIDATION_MAP.get(id);
+      return referenceMap.get(id);
    }
 
-   public List<ValidationAction> getValidationActions(List<ValidationId> validationIds)
+   private TreeMap<ValidationId, ValidationAction> generateActions()
    {
-      List<ValidationAction> actions = new ArrayList<ValidationAction>();
-      for (ValidationId valId : validationIds)
-      {
-         actions.add(getValidationAction(valId));
-      }
-      return actions;
-   }
+      TreeMap<ValidationId, ValidationAction> validationMap = Maps.newTreeMap();
 
-   private void initMap(ValidationMessages validationMessages)
-   {
-      VALIDATION_MAP.clear();
-
-      VALIDATION_MAP.put(ValidationId.HTML_XML, new HtmlXmlTagValidation(ValidationId.HTML_XML, validationMessages));
-      VALIDATION_MAP.put(ValidationId.JAVA_VARIABLES, new JavaVariablesValidation(ValidationId.JAVA_VARIABLES,
+      validationMap.put(ValidationId.HTML_XML, new HtmlXmlTagValidation(ValidationId.HTML_XML, validationMessages));
+      validationMap.put(ValidationId.JAVA_VARIABLES, new JavaVariablesValidation(ValidationId.JAVA_VARIABLES,
             validationMessages));
-      VALIDATION_MAP.put(ValidationId.NEW_LINE, new NewlineLeadTrailValidation(ValidationId.NEW_LINE,
+      validationMap.put(ValidationId.NEW_LINE, new NewlineLeadTrailValidation(ValidationId.NEW_LINE,
             validationMessages));
 
       PrintfVariablesValidation printfVariablesValidation = new PrintfVariablesValidation(
@@ -98,10 +92,11 @@ public final class ValidationFactory
       printfVariablesValidation.mutuallyExclusive(positionalPrintfValidation);
       positionalPrintfValidation.mutuallyExclusive(printfVariablesValidation);
 
-      VALIDATION_MAP.put(ValidationId.PRINTF_VARIABLES, printfVariablesValidation);
-      VALIDATION_MAP.put(ValidationId.PRINTF_XSI_EXTENSION, positionalPrintfValidation);
-      VALIDATION_MAP.put(ValidationId.TAB, new TabValidation(ValidationId.TAB, validationMessages));
-      VALIDATION_MAP.put(ValidationId.XML_ENTITY, new XmlEntityValidation(ValidationId.XML_ENTITY, validationMessages));
+      validationMap.put(ValidationId.PRINTF_VARIABLES, printfVariablesValidation);
+      validationMap.put(ValidationId.PRINTF_XSI_EXTENSION, positionalPrintfValidation);
+      validationMap.put(ValidationId.TAB, new TabValidation(ValidationId.TAB, validationMessages));
+      validationMap.put(ValidationId.XML_ENTITY, new XmlEntityValidation(ValidationId.XML_ENTITY, validationMessages));
 
+      return validationMap;
    }
 }
