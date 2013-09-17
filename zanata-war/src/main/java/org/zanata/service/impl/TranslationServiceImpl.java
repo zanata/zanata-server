@@ -157,17 +157,7 @@ public class TranslationServiceImpl implements TranslationService
       {
          HTextFlow hTextFlow = entityManager.find(HTextFlow.class, request.getTransUnitId().getValue());
 
-         HTextFlowTarget hTextFlowTarget = textFlowTargetDAO.getOrCreateTarget(hTextFlow, hLocale);
-         // if hTextFlowTarget is created, any further hibernate fetch will trigger an implicit flush
-         // (which will save this target even if it's not fully ready!!!)
-         if (request.hasTargetComment())
-         {
-            hTextFlowTarget.setComment(new HSimpleComment(request.getTargetComment()));
-         }
-
          TranslationResultImpl result = new TranslationResultImpl();
-         result.baseVersion = hTextFlowTarget.getVersionNum();
-         result.baseContentState = hTextFlowTarget.getState();
 
          String validationMessage = validateTranslations(request.getNewContentState(), projectIteration, request
                  .getTransUnitId().toString(), hTextFlow.getContents(), request.getNewContents());
@@ -179,6 +169,17 @@ public class TranslationServiceImpl implements TranslationService
             result.errorMessage = validationMessage;
             continue;
          }
+
+         HTextFlowTarget hTextFlowTarget = textFlowTargetDAO.getOrCreateTarget(hTextFlow, hLocale);
+         // if hTextFlowTarget is created, any further hibernate fetch will trigger an implicit flush
+         // (which will save this target even if it's not fully ready!!!)
+         if (request.hasTargetComment())
+         {
+            hTextFlowTarget.setComment(new HSimpleComment(request.getTargetComment()));
+         }
+
+         result.baseVersion = hTextFlowTarget.getVersionNum();
+         result.baseContentState = hTextFlowTarget.getState();
 
          if (request.getBaseTranslationVersion() == hTextFlowTarget.getVersionNum())
          {

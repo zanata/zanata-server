@@ -229,17 +229,23 @@ public class CopyTransServiceImpl implements CopyTransService
             HTextFlowTarget matchingTarget = textFlowTargetDAO.findById((Long) results.get(1), false);
 
             HTextFlow originalTf = (HTextFlow) results.get(0);
-            HTextFlowTarget hTarget = textFlowTargetDAO.getOrCreateTarget(originalTf, locale);
             HProjectIteration matchingTargetProjectIteration = matchingTarget.getTextFlow().getDocument().getProjectIteration();
             ContentState copyState = determineContentState(
-                  originalTf.getResId().equals(matchingTarget.getTextFlow().getResId()),
-                  originalTf.getDocument().getProjectIteration().getProject().getId().equals(matchingTargetProjectIteration.getProject().getId()),
-                  originalTf.getDocument().getDocId().equals( matchingTarget.getTextFlow().getDocument().getDocId() ),
-                  options, requireTranslationReview, matchingTarget.getState());
+                    originalTf.getResId().equals(matchingTarget.getTextFlow().getResId()),
+                    originalTf.getDocument().getProjectIteration().getProject().getId().equals(matchingTargetProjectIteration.getProject().getId()),
+                    originalTf.getDocument().getDocId().equals( matchingTarget.getTextFlow().getDocument().getDocId() ),
+                    options, requireTranslationReview, matchingTarget.getState());
 
             boolean hasValidationError = validationTranslations(copyState, matchingTargetProjectIteration, originalTf.getContents(), matchingTarget.getContents());
 
-            if( shouldOverwrite(hTarget, copyState) && !hasValidationError)
+            //continue to next entry if there's validation error in this translation
+            if(hasValidationError)
+            {
+               continue;
+            }
+
+            HTextFlowTarget hTarget = textFlowTargetDAO.getOrCreateTarget(originalTf, locale);
+            if( shouldOverwrite(hTarget, copyState))
             {
                // NB we don't touch creationDate
                hTarget.setTextFlowRevision(originalTf.getRevision());

@@ -155,17 +155,21 @@ public class ValidationService implements RunValidationEventHandler
       validationMap.clear();
       for (Map.Entry<ValidationId, State> entry : validationsState.entrySet())
       {
-         if(!validationMap.containsKey(entry.getKey()))
+         if (!validationMap.containsKey(entry.getKey()))
          {
             ValidationAction action = validationFactory.getValidationAction(entry.getKey());
             action.setState(entry.getValue());
             validationMap.put(entry.getKey(), action);
 
-            for(ValidationAction exclusiveAction: action.getExclusiveValidations())
+            //if this rule is locked, then lock it's mutual exclusive rule as well.
+            if (action.getRules().isLocked())
             {
-               exclusiveAction.getRules().setEnabled(false);
-               exclusiveAction.getRules().setLocked(true);
-               validationMap.put(exclusiveAction.getId(), exclusiveAction);
+               for (ValidationAction exclusiveAction : action.getExclusiveValidations())
+               {
+                  exclusiveAction.getRules().setEnabled(false);
+                  exclusiveAction.getRules().setLocked(true);
+                  validationMap.put(exclusiveAction.getId(), exclusiveAction);
+               }
             }
          }
       }
