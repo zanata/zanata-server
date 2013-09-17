@@ -82,8 +82,9 @@ public interface ValidationService
     * @param projectVersion 
     * @param sources
     * @param translations
+    * @param actionStates
     * @return list of error message
     */
-   List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion, List<String> sources,
-         List<String> translations);
+   List<String> validateWithServerRules(HProjectIteration projectVersion, List<String> sources,
+                                        List<String> translations, ValidationAction.State... actionStates);
 }

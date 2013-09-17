@@ -83,6 +83,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.zanata.webtrans.shared.model.ValidationAction;
 
 @Name("translationServiceImpl")
 @Scope(ScopeType.STATELESS)
@@ -168,8 +169,8 @@ public class TranslationServiceImpl implements TranslationService
          result.baseVersion = hTextFlowTarget.getVersionNum();
          result.baseContentState = hTextFlowTarget.getState();
 
-         String validationMessage = validationTranslations(request.getNewContentState(), projectIteration, request
-               .getTransUnitId().toString(), hTextFlow.getContents(), request.getNewContents());
+         String validationMessage = validateTranslations(request.getNewContentState(), projectIteration, request
+                 .getTransUnitId().toString(), hTextFlow.getContents(), request.getNewContents());
 
          if (runValidationCheck && !StringUtils.isEmpty(validationMessage))
          {
@@ -474,16 +475,22 @@ public class TranslationServiceImpl implements TranslationService
    }
 
    /**
-    * Run validation check if target has changed and translation saving as 'Translated'
+    * Run enforced validation check(Error) if target has changed and translation saving as 'Translated'
+    * @param newState
+    * @param projectVersion
+    * @param targetId
+    * @param sources
+    * @param translations
+    * @return error messages
     */
-   private String validationTranslations(ContentState newState, HProjectIteration projectVersion, String targetId,
-         List<String> sources, List<String> translations)
+   private String validateTranslations(ContentState newState, HProjectIteration projectVersion, String targetId,
+                                       List<String> sources, List<String> translations)
    {
       String message = null;
       if (newState.isTranslated())
       {
-         List<String> validationMessages = validationServiceImpl.runUpdateRequestValidationsWithServerRules(
-               projectVersion, sources, translations);
+         List<String> validationMessages = validationServiceImpl.validateWithServerRules(
+                 projectVersion, sources, translations, ValidationAction.State.Error);
 
          if (!validationMessages.isEmpty())
          {
@@ -603,9 +610,9 @@ public class TranslationServiceImpl implements TranslationService
                            }
                            else
                            {
-                              String validationMessage = validationTranslations(incomingTarget.getState(),
-                                    hProjectIteration, incomingTarget.getResId(), textFlow.getContents(),
-                                    incomingTarget.getContents());
+                              String validationMessage = validateTranslations(incomingTarget.getState(),
+                                      hProjectIteration, incomingTarget.getResId(), textFlow.getContents(),
+                                      incomingTarget.getContents());
 
                               if (!StringUtils.isEmpty(validationMessage))
                               {

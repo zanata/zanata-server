@@ -313,10 +313,10 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public List<String> runUpdateRequestValidationsWithServerRules(HProjectIteration projectVersion,
-         List<String> sources, List<String> translations)
+   public List<String> validateWithServerRules(HProjectIteration projectVersion,
+                                               List<String> sources, List<String> translations, State... actionStates)
    {
-      Collection<ValidationAction> validationActions = getValidationAction(projectVersion, State.Error);
+      Collection<ValidationAction> validationActions = getValidationAction(projectVersion, actionStates);
       List<String> errorList = Lists.newArrayList();
 
       String tf_content0 = sources.get(0);
