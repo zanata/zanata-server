@@ -31,7 +31,9 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 /**
  * Provide new instance of ValidationFactory
- * Used on server side
+ * Used on server side -
+ *    org.zanata.webtrans.client.resources.ValidationMessages is client side localisation.
+ *    used Gwti18nReader as a basic parser for ValidationMessages.
  */
 public final class ValidationFactoryProvider
 {

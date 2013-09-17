@@ -65,7 +65,7 @@ public final class ValidationFactory
     */
    public Map<ValidationId, ValidationAction> getAllValidationActions()
    {
-      return Maps.newTreeMap(referenceMap);
+      return generateActions();
    }
 
    public ValidationAction getValidationAction(ValidationId id)
