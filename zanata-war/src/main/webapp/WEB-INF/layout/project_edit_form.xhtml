@@ -105,27 +105,7 @@
     </s:decorate>
 
     <div style="clear:both"/>
-
-    <span class="name">#{messages['jsf.customizedValidationMessage']}</span>
-    <s:div id="validationOptionsList">
-      <rich:dataTable value="#{projectValidationOptionsAction.validationList}" var="validationAction">
-        <rich:column>
-          #{validationAction.id.displayName}
-        </rich:column>
-
-        <rich:column>
-          #{validationAction.description}
-        </rich:column>
-
-        <rich:column>
-          <h:selectOneRadio value="#{validationAction.state}" styleClass="validation_options">
-            <f:selectItems value="#{projectValidationOptionsAction.validationStates}" var="state" itemLabel="#{state}" itemValue="#{state}"/>
-            <a4j:ajax event="change" listener="#{projectValidationOptionsAction.checkExclusive(validationAction)}"
-                      render="validationOptionsList"/>
-          </h:selectOneRadio>
-        </rich:column>
-      </rich:dataTable>
-    </s:div>
+    <ui:include src="validation_options.xhtml"/>
   </rich:panel>
 
   <s:div>

@@ -70,9 +70,9 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
    @In(required = false)
    private Boolean iterationOverrideLocales;
 
-   /* Outjected from VersionValidationOptionsAction */
+   /* Outjected from ValidationOptionsAction */
    @In(required = false)
-   private Collection<ValidationAction> versionCustomizedValidations;
+   private Collection<ValidationAction> customizedValidations;
 
    @In
    private LocaleService localeServiceImpl;
@@ -214,7 +214,7 @@ public class ProjectIterationHome extends SlugHome<HProjectIteration>
    private void updateOverrideValidations()
    {
       getInstance().getCustomizedValidations().clear();
-      for (ValidationAction action : versionCustomizedValidations)
+      for (ValidationAction action : customizedValidations)
       {
          getInstance().getCustomizedValidations().put(action.getId().name(), action.getState().name());
       }

@@ -108,7 +108,7 @@ public class ProjectHome extends SlugHome<HProject>
    @In(required = false)
    private Boolean restrictByRoles;
 
-   /* Outjected from ProjectValidationOptionsAction */
+   /* Outjected from ValidationOptionsAction */
    @In(required = false)
    private Collection<ValidationAction> customizedValidations;
 
