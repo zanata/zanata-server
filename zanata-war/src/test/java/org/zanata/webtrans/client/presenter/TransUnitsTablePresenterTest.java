@@ -129,7 +129,15 @@ public class TransUnitsTablePresenterTest
    @Test
    public void onFilterViewEventDoNothingIfItsCancel()
    {
-      presenter.onFilterView(new FilterViewEvent(true, true, true, true, true, false, true));
+      boolean viewTranslated = true;
+      boolean viewFuzzy = true;
+      boolean viewUntranslated = true;
+      boolean viewApproved = true;
+      boolean viewRejected = true;
+      boolean viewHasError = false;
+      boolean cancelFilter = true;
+
+      presenter.onFilterView(new FilterViewEvent(viewTranslated, viewFuzzy, viewUntranslated, viewApproved, viewRejected, viewHasError, cancelFilter));
 
       verifyNoMoreInteractions(eventBus, display, targetContentsPresenter);
    }

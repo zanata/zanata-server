@@ -115,7 +115,6 @@ public class HtmlXmlTagValidationTests
       List<String> errorList =  htmlXmlTagValidation.validate(source, target);
 
       assertThat(errorList, hasItem(messages.tagsMissing(Arrays.asList("<foo>"))));
-      System.out.println(errorList);
       assertThat(errorList.size(), is(1));
    }
 

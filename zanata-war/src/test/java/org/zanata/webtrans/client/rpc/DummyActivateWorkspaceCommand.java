@@ -52,14 +52,14 @@ public class DummyActivateWorkspaceCommand implements Command
 
       ValidationFactory validationFactory = new ValidationFactory(null);
       Map<ValidationId, ValidationAction> validationMap = validationFactory.getAllValidationActions();
-      Map<ValidationId, State> validationsState = new HashMap<ValidationId, State>();
+      Map<ValidationId, State> validationStates = new HashMap<ValidationId, State>();
 
       for (ValidationAction action : validationMap.values())
       {
-         validationsState.put(action.getId(), action.getState());
+         validationStates.put(action.getId(), action.getState());
       }
 
-      callback.onSuccess(new ActivateWorkspaceResult(userWorkspaceContext, identity, new UserConfigHolder().getState(), validationsState));
+      callback.onSuccess(new ActivateWorkspaceResult(userWorkspaceContext, identity, new UserConfigHolder().getState(), validationStates));
       Log.info("EXIT DummyActivateWorkspaceCommand.execute()");
    }
 }

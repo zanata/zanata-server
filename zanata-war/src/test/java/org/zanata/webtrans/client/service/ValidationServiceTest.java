@@ -64,14 +64,14 @@ public class ValidationServiceTest
       ValidationFactory validationFactory = new ValidationFactory(validationMessages);
 
       Collection<ValidationAction> validationList = validationFactory.getAllValidationActions().values();
-      Map<ValidationId, State> validationsStateList = new HashMap<ValidationId, State>();
+      Map<ValidationId, State> validationStatesMap = new HashMap<ValidationId, State>();
       
       for (ValidationAction action : validationList)
       {
          action.getRules().setEnabled(true);
-         validationsStateList.put(action.getId(), action.getState());
+         validationStatesMap.put(action.getId(), action.getState());
       }
-      service.setValidationRules(validationsStateList);
+      service.setValidationRules(validationStatesMap);
 
       verify(eventBus).addHandler(RunValidationEvent.getType(), service);
    }

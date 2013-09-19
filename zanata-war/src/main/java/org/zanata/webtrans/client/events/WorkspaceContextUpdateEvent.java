@@ -13,13 +13,13 @@ public class WorkspaceContextUpdateEvent extends GwtEvent<WorkspaceContextUpdate
 {
    private final boolean isProjectActive;
    private final ProjectType projectType;
-   private final Map<ValidationId, State> validationsState;
+   private final Map<ValidationId, State> validationStates;
 
    public WorkspaceContextUpdateEvent(HasWorkspaceContextUpdateData data)
    {
       this.isProjectActive = data.isProjectActive();
       this.projectType = data.getProjectType();
-      this.validationsState = data.getValidationsState();
+      this.validationStates = data.getValidationsState();
    }
 
    /**
@@ -63,8 +63,8 @@ public class WorkspaceContextUpdateEvent extends GwtEvent<WorkspaceContextUpdate
       return projectType;
    }
 
-   public Map<ValidationId, State> getValidationsState()
+   public Map<ValidationId, State> getValidationStates()
    {
-      return validationsState;
+      return validationStates;
    }
 }

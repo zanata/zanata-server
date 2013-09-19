@@ -88,7 +88,7 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          TransUnitUpdated.UpdateType updateType)
    {
       UpdateTransUnitResult result = new UpdateTransUnitResult();
-      List<TranslationResult> translationResults = translationServiceImpl.translate(localeId, updateRequests, true);
+      List<TranslationResult> translationResults = translationServiceImpl.translateWithoutValidating(localeId, updateRequests);
       for (TranslationResult translationResult : translationResults)
       {
          HTextFlowTarget newTarget = translationResult.getTranslatedTextFlowTarget();

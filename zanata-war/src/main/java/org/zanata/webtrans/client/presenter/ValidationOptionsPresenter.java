@@ -133,7 +133,7 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
    @Override
    public void onWorkspaceContextUpdated(WorkspaceContextUpdateEvent event)
    {
-      validationService.setValidationRules(event.getValidationsState());
+      validationService.setValidationRules(event.getValidationStates());
 
       initDisplay();
    }

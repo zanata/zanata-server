@@ -146,13 +146,13 @@ public class ActivateWorkspaceHandlerTest
       when(workspaceContext.getWorkspaceId()).thenReturn(workspaceId);
 
       Collection<ValidationAction> validationList = validationFactory.getAllValidationActions().values();
-      Map<ValidationId, State> validationsState = new HashMap<ValidationId, State>();
+      Map<ValidationId, State> validationStates = new HashMap<ValidationId, State>();
       for (ValidationAction valAction : validationList)
       {
-         validationsState.put(valAction.getId(), valAction.getState());
+         validationStates.put(valAction.getId(), valAction.getState());
       }
       
-      GetValidationRulesResult validationResult = new GetValidationRulesResult(validationsState);
+      GetValidationRulesResult validationResult = new GetValidationRulesResult(validationStates);
       when(getValidationRulesHandler.execute(isA(GetValidationRulesAction.class), any(ExecutionContext.class))).thenReturn(validationResult);
 
       ActivateWorkspaceResult result = handler.execute(action, null);

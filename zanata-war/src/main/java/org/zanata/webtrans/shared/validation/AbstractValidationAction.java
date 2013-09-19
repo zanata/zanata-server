@@ -57,7 +57,7 @@ public abstract class AbstractValidationAction implements ValidationAction
 
    private ValidationDisplayRules displayRules;
 
-   private ArrayList<ValidationAction> exclusiveValidations = new ArrayList<ValidationAction>();
+   private ArrayList<ValidationAction> exclusiveValidations = Lists.newArrayList();
 
    private ValidationMessages validationMessages;
    

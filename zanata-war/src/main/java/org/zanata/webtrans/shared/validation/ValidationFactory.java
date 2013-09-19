@@ -3,25 +3,14 @@
  */
 package org.zanata.webtrans.shared.validation;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
-import org.zanata.webtrans.client.resources.ValidationMessages;
-import org.zanata.webtrans.shared.model.ValidationAction;
-import org.zanata.webtrans.shared.model.ValidationAction.State;
-import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
-import org.zanata.webtrans.shared.validation.action.JavaVariablesValidation;
-import org.zanata.webtrans.shared.validation.action.NewlineLeadTrailValidation;
-import org.zanata.webtrans.shared.validation.action.PrintfVariablesValidation;
-import org.zanata.webtrans.shared.validation.action.PrintfXSIExtensionValidation;
-import org.zanata.webtrans.shared.validation.action.TabValidation;
-import org.zanata.webtrans.shared.validation.action.XmlEntityValidation;
+import org.zanata.webtrans.client.resources.*;
+import org.zanata.webtrans.shared.model.*;
+import org.zanata.webtrans.shared.model.ValidationAction.*;
+import org.zanata.webtrans.shared.validation.action.*;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 
 /**
  * Validation Factory - provides list of available validation rules to run on server or client.
@@ -32,7 +21,7 @@ public final class ValidationFactory
 {
    private final ValidationMessages validationMessages;
 
-   private final TreeMap<ValidationId, ValidationAction> referenceMap;
+   private final Map<ValidationId, ValidationAction> referenceMap;
 
    public static Comparator<ValidationId> ValidationIdComparator = new Comparator<ValidationId>()
    {
@@ -73,7 +62,7 @@ public final class ValidationFactory
       return referenceMap.get(id);
    }
 
-   private TreeMap<ValidationId, ValidationAction> generateActions()
+   private Map<ValidationId, ValidationAction> generateActions()
    {
       TreeMap<ValidationId, ValidationAction> validationMap = Maps.newTreeMap();
 
