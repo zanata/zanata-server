@@ -148,7 +148,8 @@ public class ValidationServiceImpl implements ValidationService
    /**
     * Get validation id of the HProjectIteration with includeStates. Leave includeStates empty to get all states
     * @param version
-    * @return
+    * @param includeStates
+    * @return list of validation ids for that version
     */
    private List<ValidationId> getValidationIds(HProjectIteration version, State... includeStates)
    {
