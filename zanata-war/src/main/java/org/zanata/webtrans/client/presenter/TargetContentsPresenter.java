@@ -126,11 +126,17 @@ public class TargetContentsPresenter implements
    {
       if (currentEditorContentHasChanged())
       {
-         saveCurrent(ContentState.Translated);
+         saveCurrentIfValid(ContentState.Translated);
       }
    }
 
-   public boolean saveCurrent(ContentState status)
+   /**
+    * Fire TransUnitSaveEvent if there's no validation error
+    *
+    * @param status
+    * @return if saving is to continue by TransUnitSaveEvent listener
+    */
+   public boolean saveCurrentIfValid(ContentState status)
    {
       Map<ValidationAction, List<String>> errorMessages = display.getErrorMessages();
 
@@ -253,7 +259,7 @@ public class TargetContentsPresenter implements
       }
       else
       {
-         if (saveCurrent(ContentState.Translated))
+         if (saveCurrentIfValid(ContentState.Translated))
          {
             currentEditorIndex = 0;
             eventBus.fireEvent(NavTransUnitEvent.NEXT_ENTRY_EVENT);
@@ -283,7 +289,7 @@ public class TargetContentsPresenter implements
    public void saveAsFuzzy(TransUnitId transUnitId)
    {
       ensureRowSelection(transUnitId);
-      saveCurrent(ContentState.NeedReview);
+      saveCurrentIfValid(ContentState.NeedReview);
    }
 
    protected void moveToPreviousEntry()
@@ -675,7 +681,7 @@ public class TargetContentsPresenter implements
    public void acceptTranslation(TransUnitId id)
    {
       ensureRowSelection(id);
-      saveCurrent(ContentState.Approved);
+      saveCurrentIfValid(ContentState.Approved);
    }
 
    @Override

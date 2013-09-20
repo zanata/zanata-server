@@ -20,7 +20,6 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProject;
@@ -30,7 +29,6 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.service.ValidationFactoryProvider;
 import org.zanata.service.ValidationService;
-import org.zanata.webtrans.server.rpc.TransUnitTransformer;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationAction.State;
@@ -80,17 +78,17 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public Collection<ValidationAction> getValidationAction(String projectSlug)
+   public Collection<ValidationAction> getValidationActions(String projectSlug)
    {
       if (!StringUtils.isEmpty(projectSlug))
       {
          HProject project = projectDAO.getBySlug(projectSlug);
-         return getValidationAction(project);
+         return getValidationActions(project);
       }
       return getValidationFactory().getAllValidationActions().values();
    }
 
-   private Collection<ValidationAction> getValidationAction(HProject project, State... includeStates)
+   private Collection<ValidationAction> getValidationActions(HProject project, State... includeStates)
    {
       Map<String, String> customizedValidations = project.getCustomizedValidations();
       Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);
@@ -99,21 +97,21 @@ public class ValidationServiceImpl implements ValidationService
    }
 
    @Override
-   public Collection<ValidationAction> getValidationAction(String projectSlug, String versionSlug)
+   public Collection<ValidationAction> getValidationActions(String projectSlug, String versionSlug)
    {
       if (!StringUtils.isEmpty(projectSlug) && !StringUtils.isEmpty(versionSlug))
       {
          HProjectIteration version = projectIterationDAO.getBySlug(projectSlug, versionSlug);
-         return getValidationAction(version);
+         return getValidationActions(version);
       }
       else if(!StringUtils.isEmpty(projectSlug))
       {
-         return getValidationAction(projectSlug);
+         return getValidationActions(projectSlug);
       }
       return getValidationFactory().getAllValidationActions().values();
    }
 
-   private Collection<ValidationAction> getValidationAction(HProjectIteration projectVersion, State... includeStates)
+   private Collection<ValidationAction> getValidationActions(HProjectIteration projectVersion, State... includeStates)
    {
       Map<String, String> customizedValidations = projectVersion.getCustomizedValidations();
 
@@ -122,7 +120,7 @@ public class ValidationServiceImpl implements ValidationService
        */
       if (customizedValidations.isEmpty())
       {
-         return getValidationAction(projectVersion.getProject(), includeStates);
+         return getValidationActions(projectVersion.getProject(), includeStates);
       }
 
       Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);
@@ -316,7 +314,7 @@ public class ValidationServiceImpl implements ValidationService
    public List<String> validateWithServerRules(HProjectIteration projectVersion,
                                                List<String> sources, List<String> translations, State... actionStates)
    {
-      Collection<ValidationAction> validationActions = getValidationAction(projectVersion, actionStates);
+      Collection<ValidationAction> validationActions = getValidationActions(projectVersion, actionStates);
       List<String> errorList = Lists.newArrayList();
 
       String tf_content0 = sources.get(0);

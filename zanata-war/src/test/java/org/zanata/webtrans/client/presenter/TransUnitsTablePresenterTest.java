@@ -177,7 +177,7 @@ public class TransUnitsTablePresenterTest
 
       presenter.saveAsTranslatedAndFilter();
 
-      verify(targetContentsPresenter).saveCurrent(ContentState.Translated);
+      verify(targetContentsPresenter).saveCurrentIfValid(ContentState.Translated);
       verify(display).hideFilterConfirmation();
       verify(navigationService).execute(Mockito.isA(FilterViewEvent.class));
    }
@@ -189,7 +189,7 @@ public class TransUnitsTablePresenterTest
 
       presenter.saveAsFuzzyAndFilter();
 
-      verify(targetContentsPresenter).saveCurrent(ContentState.NeedReview);
+      verify(targetContentsPresenter).saveCurrentIfValid(ContentState.NeedReview);
       verify(display).hideFilterConfirmation();
       verify(navigationService).execute(Mockito.isA(FilterViewEvent.class));
    }

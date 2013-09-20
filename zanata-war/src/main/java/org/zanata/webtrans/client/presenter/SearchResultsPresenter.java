@@ -1061,7 +1061,6 @@ public class SearchResultsPresenter extends WidgetPresenter<SearchResultsPresent
          {
             eventBus.fireEvent(new NotificationEvent(Severity.Error, messages.replaceTextFailureWithMessage(updateInfo.getTransUnit().getId().toString(), updateInfo.getErrorMessage())));
          }
-         // individual failure behaviour not yet defined
       }
       return successfulReplacements;
    }

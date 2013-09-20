@@ -214,7 +214,7 @@ public class TransUnitsTablePresenter extends WidgetPresenter<TransUnitsTableDis
       {
          return;
       }
-      targetContentsPresenter.saveCurrent(status);
+      targetContentsPresenter.saveCurrentIfValid(status);
       hideFilterConfirmationAndDoFiltering();
    }
 

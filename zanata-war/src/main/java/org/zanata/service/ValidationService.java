@@ -29,7 +29,7 @@ public interface ValidationService
     * @return
     * @throws IOException
     */
-   Collection<ValidationAction> getValidationAction(String projectSlug);
+   Collection<ValidationAction> getValidationActions(String projectSlug);
 
    /**
     * Return all ValidationActions on those which are customized to the version
@@ -38,7 +38,7 @@ public interface ValidationService
     * @param versionSlug
     * @return
     */
-   Collection<ValidationAction> getValidationAction(String projectSlug, String versionSlug);
+   Collection<ValidationAction> getValidationActions(String projectSlug, String versionSlug);
 
    /**
     * Run validation check on HTextFlow and HTextFlowTarget with specific locale

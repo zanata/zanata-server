@@ -76,7 +76,7 @@ public class UpdateTransUnitHandler extends AbstractActionHandler<UpdateTransUni
          List<TransUnitUpdateRequest> updateRequests, EditorClientId editorClientId,
          TransUnitUpdated.UpdateType updateType)
    {
-      List<TranslationResult> translationResults = translationServiceImpl.translateWithoutValidating(localeId, updateRequests);
+      List<TranslationResult> translationResults = translationServiceImpl.translate(localeId, updateRequests);
       return transUnitUpdateHelper.generateUpdateTransUnitResult(translationResults, editorClientId, updateType, workspace);
    }
 

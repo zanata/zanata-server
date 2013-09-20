@@ -2,6 +2,7 @@ package org.zanata.webtrans.client.ui;
 
 import org.zanata.webtrans.client.keys.ShortcutContext;
 import org.zanata.webtrans.client.presenter.KeyShortcutPresenter;
+import com.allen_sauer.gwt.log.client.*;
 import com.google.gwt.user.client.ui.DialogBox;
 
 /**
@@ -30,6 +31,13 @@ public class ShortcutContextAwareDialogBox extends DialogBox
    public void center()
    {
       super.center();
+      keyShortcutPresenter.activateModalContext(modalContext);
+   }
+
+   @Override
+   public void show()
+   {
+      super.show();
       keyShortcutPresenter.activateModalContext(modalContext);
    }
 }

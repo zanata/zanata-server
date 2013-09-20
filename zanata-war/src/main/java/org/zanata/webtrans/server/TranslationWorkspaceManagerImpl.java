@@ -168,7 +168,7 @@ public class TranslationWorkspaceManagerImpl implements TranslationWorkspaceMana
    {
       HashMap<ValidationId, State> validationStates = Maps.newHashMap();
 
-      for (ValidationAction validationAction : validationServiceImpl.getValidationAction(projectIteration.getProject().getSlug(), projectIteration.getSlug()))
+      for (ValidationAction validationAction : validationServiceImpl.getValidationActions(projectIteration.getProject().getSlug(), projectIteration.getSlug()))
       {
          validationStates.put(validationAction.getId(), validationAction.getState());
       }

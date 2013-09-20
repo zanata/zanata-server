@@ -37,8 +37,8 @@ public class ValidationOptionsAction implements Serializable
    {
       if (availableValidations.isEmpty())
       {
-         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug,
-               versionSlug);
+         Collection<ValidationAction> validationList = validationServiceImpl.getValidationActions(projectSlug,
+                 versionSlug);
 
          for (ValidationAction validationAction : validationList)
          {

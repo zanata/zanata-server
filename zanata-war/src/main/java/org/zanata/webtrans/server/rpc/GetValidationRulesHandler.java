@@ -51,7 +51,7 @@ public class GetValidationRulesHandler extends AbstractActionHandler<GetValidati
          throws ActionException
    {
       ProjectIterationId version = action.getWorkspaceId().getProjectIterationId();
-      Collection<ValidationAction> validationActionList = validationServiceImpl.getValidationAction(version.getProjectSlug(),
+      Collection<ValidationAction> validationActionList = validationServiceImpl.getValidationActions(version.getProjectSlug(),
               version.getIterationSlug());
 
       HashMap<ValidationId, State> result = new HashMap<ValidationId, State>();
