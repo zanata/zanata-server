@@ -20,7 +20,7 @@
       <rich:column>
         <h:selectOneRadio value="#{validationAction.state}" styleClass="validation_options">
           <f:selectItems value="#{validationOptionsAction.validationStates}" var="state" itemLabel="#{state}" itemValue="#{state}"/>
-          <a4j:ajax event="change" listener="#{validationOptionsAction.checkExclusive(validationAction)}"
+          <a4j:ajax event="change" listener="#{validationOptionsAction.ensureMutualExclusivity(validationAction)}"
                     render="validationOptionsList"/>
         </h:selectOneRadio>
       </rich:column>

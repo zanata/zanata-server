@@ -49,15 +49,6 @@ public interface TranslationService
    List<TranslationResult> translate(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests);
 
    /**
-    * Updates multiple text flows within a project-iteration without running validation check.
-    *
-    * @param localeId
-    * @param translationRequests
-    * @return information about each translation change
-    */
-   List<TranslationResult> translateWithoutValidating(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests);
-
-   /**
     * Attempts to revert a list of updates by adding a new translation that is
     * identical to the previous one.
     * 

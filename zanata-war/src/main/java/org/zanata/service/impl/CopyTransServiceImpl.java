@@ -238,7 +238,6 @@ public class CopyTransServiceImpl implements CopyTransService
 
             boolean hasValidationError = validationTranslations(copyState, matchingTargetProjectIteration, originalTf.getContents(), matchingTarget.getContents());
 
-            //continue to next entry if there's validation error in this translation
             if(hasValidationError)
             {
                continue;

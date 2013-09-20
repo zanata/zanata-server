@@ -54,7 +54,7 @@ public class ValidationOptionsAction implements Serializable
     * If this action is enabled(Warning or Error), then it's exclusive validation will be turn off
     * @param selectedValidationAction
     */
-   public void checkExclusive(ValidationAction selectedValidationAction)
+   public void ensureMutualExclusivity(ValidationAction selectedValidationAction)
    {
       if (selectedValidationAction.getState() != ValidationAction.State.Off)
       {

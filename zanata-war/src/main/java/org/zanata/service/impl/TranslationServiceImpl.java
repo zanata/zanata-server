@@ -103,8 +103,14 @@ public class TranslationServiceImpl implements TranslationService
       return translate(localeId, translationRequests, true);
    }
 
-   @Override
-   public List<TranslationResult> translateWithoutValidating(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests)
+   /**
+    * This is used when reverting translation
+    *
+    * @param localeId
+    * @param translationRequests
+    * @return
+    */
+   private List<TranslationResult> translateWithoutValidating(LocaleId localeId, List<TransUnitUpdateRequest> translationRequests)
    {
       return translate(localeId, translationRequests, false);
    }
@@ -454,7 +460,7 @@ public class TranslationServiceImpl implements TranslationService
    }
 
    /**
-    * Run enforced validation check(Error) if target has changed and translation saving as 'Translated'
+    * Run enforced validation check(Error) if target has changed and translation saving as 'Translated' and 'Approved'
     * @param newState
     * @param projectVersion
     * @param targetId
@@ -837,7 +843,7 @@ public class TranslationServiceImpl implements TranslationService
             }
          }
       }
-      results.addAll(translate(localeId, updateRequests));
+      results.addAll(translateWithoutValidating(localeId, updateRequests));
       return results;
    }
 
