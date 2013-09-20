@@ -12,5 +12,5 @@ public interface HasWorkspaceContextUpdateData
 
    ProjectType getProjectType();
 
-   Map<ValidationId, State> getValidationsState();
+   Map<ValidationId, State> getValidationStates();
 }

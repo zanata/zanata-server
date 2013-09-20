@@ -236,11 +236,11 @@ public class TransMemoryMergePresenterTest
       AsyncCallback<UpdateTransUnitResult> callback = callbackCaptor.getValue();
       // rpc call success and result has some updated info
       UpdateTransUnitResult result = new UpdateTransUnitResult();
-      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(0), 0, 0, ContentState.Approved, null));
+      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(0), 0, 0, ContentState.Approved));
       // add an unsuccessful result
-      result.addUpdateResult(new TransUnitUpdateInfo(false, true, documentId, currentPageRows.get(1), 0, 0, ContentState.Approved, null));
-      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(2), 0, 0, ContentState.Approved, null));
-      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(3), 0, 0, ContentState.Approved, null));
+      result.addUpdateResult(new TransUnitUpdateInfo(false, true, documentId, currentPageRows.get(1), 0, 0, ContentState.Approved));
+      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(2), 0, 0, ContentState.Approved));
+      result.addUpdateResult(new TransUnitUpdateInfo(true, true, documentId, currentPageRows.get(3), 0, 0, ContentState.Approved));
       callback.onSuccess(result);
 
       // Then:

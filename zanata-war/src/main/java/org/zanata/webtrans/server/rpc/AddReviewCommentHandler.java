@@ -123,7 +123,7 @@ public class AddReviewCommentHandler extends AbstractActionHandler<AddReviewComm
    {
       HTextFlow textFlow = hTextFlowTarget.getTextFlow();
       TransUnit transUnit = transUnitTransformer.transform(textFlow, hTextFlowTarget, hLocale);
-      TransUnitUpdated transUnitUpdated = new TransUnitUpdated(new TransUnitUpdateInfo(true, false, action.getDocumentId(), transUnit, textFlow.getWordCount().intValue(), transUnit.getVerNum(), transUnit.getStatus(), null), action.getEditorClientId(), TransUnitUpdated.UpdateType.AddComment);
+      TransUnitUpdated transUnitUpdated = new TransUnitUpdated(new TransUnitUpdateInfo(true, false, action.getDocumentId(), transUnit, textFlow.getWordCount().intValue(), transUnit.getVerNum(), transUnit.getStatus()), action.getEditorClientId(), TransUnitUpdated.UpdateType.AddComment);
       workspace.publish(transUnitUpdated);
    }
 

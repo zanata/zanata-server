@@ -128,7 +128,7 @@ public class DocumentListOptionsPresenterTest
          }
 
          @Override
-         public Map<ValidationId, State> getValidationsState()
+         public Map<ValidationId, State> getValidationStates()
          {
             return null;
          }

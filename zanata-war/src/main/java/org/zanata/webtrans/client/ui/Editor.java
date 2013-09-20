@@ -248,15 +248,15 @@ public class Editor extends Composite implements ToggleEditor
    }
 
    @Override
-   public void updateValidationMessage(Map<ValidationAction, List<String>> errors)
+   public void updateValidationMessages(Map<ValidationAction, List<String>> messages)
    {
-      if (errors.isEmpty())
+      if (messages.isEmpty())
       {
          targetWrapper.removeStyleName(style.hasValidationError());
       }
       else
       {
-         Log.info(id + " id has error: " + errors.values());
+         Log.info(id + " id has error: " + messages.values());
          targetWrapper.addStyleName(style.hasValidationError());
       }
    }

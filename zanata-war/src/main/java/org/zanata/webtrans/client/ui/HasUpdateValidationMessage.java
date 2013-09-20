@@ -7,5 +7,5 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 
 public interface HasUpdateValidationMessage
 {
-   void updateValidationMessage(Map<ValidationAction, List<String>> errors);
+   void updateValidationMessages(Map<ValidationAction, List<String>> messages);
 }

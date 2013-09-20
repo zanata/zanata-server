@@ -192,7 +192,7 @@ public class DocumentListPresenterTest
             .setTargets(targets).setStatus(ContentState.Approved).setLastModifiedBy("lastModifiedBy")
             .setLastModifiedTime(new Date()).setMsgContext("msgContext").setRowIndex(1).setVerNum(1).build();
       TransUnitUpdateInfo updateInfo = new TransUnitUpdateInfo(true, true, new DocumentId(2222L, ""), newTransUnit, 3,
-            0, ContentState.NeedReview, null);
+            0, ContentState.NeedReview);
       TransUnitUpdatedEvent mockEvent = mock(TransUnitUpdatedEvent.class);
 
       when(mockEvent.getUpdateInfo()).thenReturn(updateInfo);
@@ -520,7 +520,7 @@ public class DocumentListPresenterTest
          }
 
          @Override
-         public Map<ValidationId, State> getValidationsState()
+         public Map<ValidationId, State> getValidationStates()
          {
             return null;
          }

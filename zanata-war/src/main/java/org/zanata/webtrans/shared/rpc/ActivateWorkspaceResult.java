@@ -17,7 +17,7 @@ public class ActivateWorkspaceResult implements DispatchResult
    private UserWorkspaceContext userWorkspaceContext;
    private Identity identity;
    private UserConfigHolder.ConfigurationState storedUserConfiguration;
-   private Map<ValidationId, State> validationsState;
+   private Map<ValidationId, State> validationStates;
 
    @SuppressWarnings("unused")
    private ActivateWorkspaceResult()
@@ -26,12 +26,12 @@ public class ActivateWorkspaceResult implements DispatchResult
 
    public ActivateWorkspaceResult(UserWorkspaceContext userWorkspaceContext,
                                   Identity identity,
- UserConfigHolder.ConfigurationState storedUserConfiguration, Map<ValidationId, State> validationsState)
+ UserConfigHolder.ConfigurationState storedUserConfiguration, Map<ValidationId, State> validationStates)
    {
       this.userWorkspaceContext = userWorkspaceContext;
       this.identity = identity;
       this.storedUserConfiguration = storedUserConfiguration;
-      this.validationsState = validationsState;
+      this.validationStates = validationStates;
    }
 
    public UserWorkspaceContext getUserWorkspaceContext()
@@ -49,8 +49,8 @@ public class ActivateWorkspaceResult implements DispatchResult
       return storedUserConfiguration;
    }
 
-   public Map<ValidationId, State> getValidationsState()
+   public Map<ValidationId, State> getValidationStates()
    {
-      return validationsState;
+      return validationStates;
    }
 }

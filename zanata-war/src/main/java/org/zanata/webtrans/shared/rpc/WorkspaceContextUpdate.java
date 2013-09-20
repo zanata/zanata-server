@@ -14,18 +14,18 @@ public class WorkspaceContextUpdate implements SessionEventData, HasWorkspaceCon
 
    private boolean isProjectActive;
    private ProjectType projectType;
-   private Map<ValidationId, State> validationsState;
+   private Map<ValidationId, State> validationStates;
 
    @SuppressWarnings("unused")
    private WorkspaceContextUpdate()
    {
    }
 
-   public WorkspaceContextUpdate(boolean isProjectActive, ProjectType projectType, Map<ValidationId, State> validationsState)
+   public WorkspaceContextUpdate(boolean isProjectActive, ProjectType projectType, Map<ValidationId, State> validationStates)
    {
       this.isProjectActive = isProjectActive;
       this.projectType = projectType;
-      this.validationsState = validationsState;
+      this.validationStates = validationStates;
    }
 
    @Override
@@ -41,9 +41,9 @@ public class WorkspaceContextUpdate implements SessionEventData, HasWorkspaceCon
    }
 
    @Override
-   public Map<ValidationId, State> getValidationsState()
+   public Map<ValidationId, State> getValidationStates()
    {
-      return validationsState;
+      return validationStates;
    }
 
 }

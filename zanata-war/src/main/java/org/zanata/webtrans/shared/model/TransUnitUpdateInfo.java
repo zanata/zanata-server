@@ -21,13 +21,10 @@
 
 package org.zanata.webtrans.shared.model;
 
-import java.util.List;
+import org.zanata.common.*;
 
-import org.zanata.common.ContentState;
-
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.common.base.*;
+import com.google.gwt.user.client.rpc.*;
 
 /**
  * Represents information about an attempted update of a {@link TransUnit}.
@@ -63,6 +60,12 @@ public class TransUnitUpdateInfo implements IsSerializable
       this.previousVersionNum = previousVersionNum;
       this.previousState = previousState;
       this.errorMessage = errorMessage;
+   }
+
+   public TransUnitUpdateInfo(boolean success, boolean targetChanged, DocumentId documentId, TransUnit transUnit,
+         int sourceWordCount, int previousVersionNum, ContentState previousState)
+   {
+      this(success, targetChanged, documentId, transUnit, sourceWordCount, previousVersionNum, previousState, null);
    }
 
    public boolean isSuccess()

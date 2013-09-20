@@ -20,23 +20,18 @@
  */
 package org.zanata.webtrans.server.rpc;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
+import net.customware.gwt.dispatch.server.*;
+import net.customware.gwt.dispatch.shared.*;
 
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.zanata.service.ValidationService;
-import org.zanata.webtrans.server.ActionHandlerFor;
-import org.zanata.webtrans.shared.model.ValidationAction;
-import org.zanata.webtrans.shared.model.ValidationAction.State;
-import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.rpc.GetValidationRulesAction;
-import org.zanata.webtrans.shared.rpc.GetValidationRulesResult;
+import org.jboss.seam.*;
+import org.jboss.seam.annotations.*;
+import org.zanata.service.*;
+import org.zanata.webtrans.server.*;
+import org.zanata.webtrans.shared.model.*;
+import org.zanata.webtrans.shared.model.ValidationAction.*;
+import org.zanata.webtrans.shared.rpc.*;
 
 /**
  * 
@@ -55,10 +50,10 @@ public class GetValidationRulesHandler extends AbstractActionHandler<GetValidati
    public GetValidationRulesResult execute(GetValidationRulesAction action, ExecutionContext context)
          throws ActionException
    {
-      Collection<ValidationAction> validationActionList = validationServiceImpl.getValidationAction(action
-            .getWorkspaceId().getProjectIterationId().getProjectSlug(), action.getWorkspaceId().getProjectIterationId()
-            .getIterationSlug());
-      
+      ProjectIterationId version = action.getWorkspaceId().getProjectIterationId();
+      Collection<ValidationAction> validationActionList = validationServiceImpl.getValidationAction(version.getProjectSlug(),
+              version.getIterationSlug());
+
       HashMap<ValidationId, State> result = new HashMap<ValidationId, State>();
 
       for (ValidationAction validationAction : validationActionList)

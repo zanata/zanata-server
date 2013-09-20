@@ -87,21 +87,21 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
    }
 
    @Override
-   public void updateValidationMessage(Map<ValidationAction, List<String>> displayMessages)
+   public void updateValidationMessages(Map<ValidationAction, List<String>> messages)
    {
-      if (displayMessages == null || displayMessages.isEmpty())
+      if (messages == null || messages.isEmpty())
       {
          clear();
          return;
       }
 
-      this.displayMessages = displayMessages;
+      this.displayMessages = messages;
 
       contents.clear();
       int warningCount = 0;
       int errorCount = 0;
 
-      for (Entry<ValidationAction, List<String>> entry : displayMessages.entrySet())
+      for (Entry<ValidationAction, List<String>> entry : messages.entrySet())
       {
          for (String message : entry.getValue())
          {
@@ -126,7 +126,7 @@ public class ValidationMessagePanelView extends Composite implements HasUpdateVa
          }
       }
 
-      headerLabel.setText(messages.validationNotificationHeading(warningCount, errorCount));
+      headerLabel.setText(this.messages.validationNotificationHeading(warningCount, errorCount));
       setVisible(true);
    }
 

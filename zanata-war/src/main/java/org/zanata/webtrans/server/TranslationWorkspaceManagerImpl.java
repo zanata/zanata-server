@@ -166,11 +166,11 @@ public class TranslationWorkspaceManagerImpl implements TranslationWorkspaceMana
    @Observer(ProjectIterationHome.PROJECT_ITERATION_UPDATE)
    public void projectIterationUpdate(HProjectIteration projectIteration)
    {
-      HashMap<ValidationId, State> validationsState = Maps.newHashMap();
+      HashMap<ValidationId, State> validationStates = Maps.newHashMap();
 
       for (ValidationAction validationAction : validationServiceImpl.getValidationAction(projectIteration.getProject().getSlug(), projectIteration.getSlug()))
       {
-         validationsState.put(validationAction.getId(), validationAction.getState());
+         validationStates.put(validationAction.getId(), validationAction.getState());
       }
 
       String projectSlug = projectIteration.getProject().getSlug();
@@ -183,7 +183,7 @@ public class TranslationWorkspaceManagerImpl implements TranslationWorkspaceMana
       ProjectIterationId iterId = new ProjectIterationId(projectSlug, iterSlug, projectIteration.getProjectType());
       for (TranslationWorkspace workspace : projIterWorkspaceMap.get(iterId))
       {
-         WorkspaceContextUpdate event = new WorkspaceContextUpdate(isProjectActive, projectType, validationsState);
+         WorkspaceContextUpdate event = new WorkspaceContextUpdate(isProjectActive, projectType, validationStates);
          workspace.publish(event);
       }
    }

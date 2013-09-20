@@ -19,7 +19,7 @@ public class WorkspaceContextUpdateEvent extends GwtEvent<WorkspaceContextUpdate
    {
       this.isProjectActive = data.isProjectActive();
       this.projectType = data.getProjectType();
-      this.validationStates = data.getValidationsState();
+      this.validationStates = data.getValidationStates();
    }
 
    /**

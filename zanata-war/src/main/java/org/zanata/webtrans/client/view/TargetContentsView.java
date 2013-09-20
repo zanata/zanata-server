@@ -303,9 +303,9 @@ public class TargetContentsView extends Composite implements TargetContentsDispl
    }
 
    @Override
-   public void updateValidationMessage(Map<ValidationAction, List<String>> errors)
+   public void updateValidationMessages(Map<ValidationAction, List<String>> messages)
    {
-      validationPanel.updateValidationMessage(errors);
+      validationPanel.updateValidationMessages(messages);
    }
 
    @Override

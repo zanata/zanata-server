@@ -35,14 +35,16 @@ public class ValidationOptionsAction implements Serializable
 
    public List<ValidationAction> getValidationList()
    {
-      Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug,
-            versionSlug);
-
-      for (ValidationAction validationAction : validationList)
+      if (availableValidations.isEmpty())
       {
-         availableValidations.put(validationAction.getId(), validationAction);
-      }
+         Collection<ValidationAction> validationList = validationServiceImpl.getValidationAction(projectSlug,
+               versionSlug);
 
+         for (ValidationAction validationAction : validationList)
+         {
+            availableValidations.put(validationAction.getId(), validationAction);
+         }
+      }
       List<ValidationAction> sortedList = new ArrayList<ValidationAction>(availableValidations.values());
       Collections.sort(sortedList, ValidationFactory.ValidationActionComparator);
       return sortedList;

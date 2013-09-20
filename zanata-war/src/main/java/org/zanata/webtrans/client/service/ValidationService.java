@@ -140,7 +140,7 @@ public class ValidationService implements RunValidationEventHandler
       {
          for (HasUpdateValidationMessage widget : widgetList)
          {
-            widget.updateValidationMessage(errors);
+            widget.updateValidationMessages(errors);
          }
       }
    }
@@ -149,12 +149,12 @@ public class ValidationService implements RunValidationEventHandler
     * Update state of validationAction from RPC result to all validation
     * actions from ValidationFactory
     * 
-    * @param validationsState
+    * @param validationStates
     */
-   public void setValidationRules(Map<ValidationId, State> validationsState)
+   public void setValidationRules(Map<ValidationId, State> validationStates)
    {
       validationMap.clear();
-      for (Map.Entry<ValidationId, State> entry : validationsState.entrySet())
+      for (Map.Entry<ValidationId, State> entry : validationStates.entrySet())
       {
          if (!validationMap.containsKey(entry.getKey()))
          {
