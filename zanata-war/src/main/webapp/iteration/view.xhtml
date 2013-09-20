@@ -138,7 +138,7 @@
 			<s:link styleClass="action_link" 
 				value="#{messages['jsf.ConfigFile']}"
 				title="#{messages['jsf.GenerateProjectConfig']}"
-                action="#{configurationAction.getData()}">
+                action="#{configurationAction.downloadGeneralConfig()}">
 				<f:param name="projectSlug" value="#{viewAllStatusAction.projectSlug}" />
 				<f:param name="iterationSlug" value="#{viewAllStatusAction.iterationSlug}" />
 			</s:link>
@@ -207,11 +207,11 @@
                     <s:div style="text-align:right;" rendered="#{s:hasPermission(viewAllStatusAction.projectIteration, 'copy-trans')}">
                         <s:button value="Cancel" action="#{viewAllStatusAction.cancelCopyTrans}" />
                     </s:div>
-                    #{messages['jsf.iteration.CopyTrans.started']}
+                    <h:outputText value="#{messages['jsf.iteration.CopyTrans.started']}"/>
                     <br/>
-                    #{messages['jsf.iteration.CopyTrans.estimatedTimeRemaining']}
+                    <h:outputText value="#{messages['jsf.iteration.CopyTrans.estimatedTimeRemaining']}"/>
                     <br/>
-                    #{messages['jsf.iteration.CopyTrans.processedDocuments']}
+                    <h:outputText value="#{messages['jsf.iteration.CopyTrans.processedDocuments']}"/>
                 </a4j:outputPanel>
             </a4j:outputPanel>
 

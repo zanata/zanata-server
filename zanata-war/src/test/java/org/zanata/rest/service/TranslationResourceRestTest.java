@@ -763,7 +763,7 @@ public class TranslationResourceRestTest extends ZanataRestTest
          }
       }
    }
-   
+
    @Test
    public void headersFromOriginalPush() throws Exception
    {
@@ -818,7 +818,7 @@ public class TranslationResourceRestTest extends ZanataRestTest
          }
       }
    }
-   
+
    @Test
    public void headersAfterTranslating() throws Exception
    {
