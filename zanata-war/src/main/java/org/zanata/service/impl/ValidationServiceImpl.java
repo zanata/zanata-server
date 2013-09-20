@@ -3,41 +3,22 @@
  */
 package org.zanata.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.log.Log;
-import org.zanata.common.LocaleId;
-import org.zanata.dao.DocumentDAO;
-import org.zanata.dao.ProjectDAO;
-import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.dao.TextFlowTargetDAO;
-import org.zanata.model.HDocument;
-import org.zanata.model.HProject;
-import org.zanata.model.HProjectIteration;
-import org.zanata.model.HTextFlow;
-import org.zanata.model.HTextFlowTarget;
-import org.zanata.service.TranslationStateCache;
-import org.zanata.service.ValidationFactoryProvider;
-import org.zanata.service.ValidationService;
-import org.zanata.webtrans.shared.model.DocumentStatus;
-import org.zanata.webtrans.shared.model.ValidationAction;
-import org.zanata.webtrans.shared.model.ValidationAction.State;
-import org.zanata.webtrans.shared.model.ValidationId;
-import org.zanata.webtrans.shared.validation.ValidationFactory;
+import org.apache.commons.lang.*;
+import org.jboss.seam.*;
+import org.jboss.seam.annotations.*;
+import org.jboss.seam.log.*;
+import org.zanata.common.*;
+import org.zanata.dao.*;
+import org.zanata.model.*;
+import org.zanata.service.*;
+import org.zanata.webtrans.shared.model.*;
+import org.zanata.webtrans.shared.model.ValidationAction.*;
+import org.zanata.webtrans.shared.validation.*;
 
-import com.beust.jcommander.internal.Maps;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
+import com.google.common.base.*;
+import com.google.common.collect.*;
 
 /**
  * 
@@ -104,7 +85,7 @@ public class ValidationServiceImpl implements ValidationService
          HProjectIteration version = projectIterationDAO.getBySlug(projectSlug, versionSlug);
          return getValidationActions(version);
       }
-      else if(!StringUtils.isEmpty(projectSlug))
+      else if (!StringUtils.isEmpty(projectSlug))
       {
          return getValidationActions(projectSlug);
       }
@@ -171,34 +152,20 @@ public class ValidationServiceImpl implements ValidationService
     */
    private List<ValidationId> getValidationIds(HProjectIteration version, State... includeStates)
    {
-      Map<String, String> customizedValidations = Maps.newHashMap();
-      List<State> includeStateList = Arrays.asList(includeStates);
+      List<ValidationId> validationIds = Lists.newArrayList();
 
-      List<ValidationId> filteredValidationIds = new ArrayList<ValidationId>();
+      Collection<ValidationAction> mergedList = Lists.newArrayList();
 
       if (version != null)
       {
-         customizedValidations = version.getCustomizedValidations();
-
-         /**
-          * Inherits validations from project if version has no defined validations
-          */
-         if (customizedValidations.isEmpty())
-         {
-            customizedValidations = version.getProject().getCustomizedValidations();
-         }
+         mergedList = getValidationActions(version, includeStates);
       }
-
-      Collection<ValidationAction> mergedList = mergeCustomisedStateToAllValidations(customizedValidations);
 
       for (ValidationAction action : mergedList)
       {
-         if (includeStateList.isEmpty() || includeStateList.contains(action.getState()))
-         {
-            filteredValidationIds.add(action.getId());
-         }
+         validationIds.add(action.getId());
       }
-      return filteredValidationIds;
+      return validationIds;
    }
 
    /**
@@ -312,7 +279,7 @@ public class ValidationServiceImpl implements ValidationService
 
    @Override
    public List<String> validateWithServerRules(HProjectIteration projectVersion,
-                                               List<String> sources, List<String> translations, State... actionStates)
+         List<String> sources, List<String> translations, State... actionStates)
    {
       Collection<ValidationAction> validationActions = getValidationActions(projectVersion, actionStates);
       List<String> errorList = Lists.newArrayList();

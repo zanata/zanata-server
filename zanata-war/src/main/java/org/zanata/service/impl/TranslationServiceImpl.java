@@ -257,7 +257,6 @@ public class TranslationServiceImpl implements TranslationService
                      hTextFlowTarget.getLocale().getLocaleId(),
                      hTextFlowTarget.getId(),
                      hTextFlowTarget.getState()
-               //                     docStatus
                ));
       }
    }
