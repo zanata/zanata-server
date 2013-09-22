@@ -3,14 +3,21 @@
  */
 package org.zanata.webtrans.shared.validation;
 
-import java.util.*;
+import com.google.common.collect.Maps;
+import org.zanata.webtrans.client.resources.ValidationMessages;
+import org.zanata.webtrans.shared.model.ValidationAction;
+import org.zanata.webtrans.shared.model.ValidationAction.State;
+import org.zanata.webtrans.shared.model.ValidationId;
+import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
+import org.zanata.webtrans.shared.validation.action.JavaVariablesValidation;
+import org.zanata.webtrans.shared.validation.action.NewlineLeadTrailValidation;
+import org.zanata.webtrans.shared.validation.action.PrintfVariablesValidation;
+import org.zanata.webtrans.shared.validation.action.PrintfXSIExtensionValidation;
+import org.zanata.webtrans.shared.validation.action.TabValidation;
+import org.zanata.webtrans.shared.validation.action.XmlEntityValidation;
 
-import org.zanata.webtrans.client.resources.*;
-import org.zanata.webtrans.shared.model.*;
-import org.zanata.webtrans.shared.model.ValidationAction.*;
-import org.zanata.webtrans.shared.validation.action.*;
-
-import com.google.common.collect.*;
+import java.util.Comparator;
+import java.util.Map;
 
 /**
  * Validation Factory - provides list of available validation rules to run on server or client.
@@ -22,15 +29,6 @@ public final class ValidationFactory
    private final ValidationMessages validationMessages;
 
    private final Map<ValidationId, ValidationAction> referenceMap;
-
-   public static Comparator<ValidationId> ValidationIdComparator = new Comparator<ValidationId>()
-   {
-      @Override
-      public int compare(ValidationId o1, ValidationId o2)
-      {
-         return o1.getDisplayName().compareTo(o2.getDisplayName());
-      }
-   };
 
    public static final Comparator<ValidationAction> ValidationActionComparator = new Comparator<ValidationAction>()
    {
@@ -64,7 +62,7 @@ public final class ValidationFactory
 
    private Map<ValidationId, ValidationAction> generateActions()
    {
-      TreeMap<ValidationId, ValidationAction> validationMap = Maps.newTreeMap();
+      Map<ValidationId, ValidationAction> validationMap = Maps.newHashMap();
 
       validationMap.put(ValidationId.HTML_XML, new HtmlXmlTagValidation(ValidationId.HTML_XML, validationMessages));
       validationMap.put(ValidationId.JAVA_VARIABLES, new JavaVariablesValidation(ValidationId.JAVA_VARIABLES,
