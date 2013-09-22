@@ -28,6 +28,7 @@ import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
 import org.zanata.webtrans.client.events.DocValidationResultEvent;
 import org.zanata.webtrans.client.events.DocValidationResultHandler;
+import org.zanata.webtrans.client.events.RequestValidationEvent;
 import org.zanata.webtrans.client.events.RunDocValidationEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEventHandler;
@@ -136,6 +137,10 @@ public class ValidationOptionsPresenter extends WidgetPresenter<ValidationOption
       validationService.setValidationRules(event.getValidationStates());
 
       initDisplay();
+      if(currentView == MainView.Editor)
+      {
+         eventBus.fireEvent(RequestValidationEvent.EVENT);
+      }
    }
 
    public void setCurrentView(MainView view)
