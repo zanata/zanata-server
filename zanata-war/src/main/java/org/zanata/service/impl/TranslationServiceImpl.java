@@ -460,7 +460,7 @@ public class TranslationServiceImpl implements TranslationService
    }
 
    /**
-    * Run enforced validation check(Error) if target has changed and translation saving as 'Translated' and 'Approved'
+    * Run enforced validation check(Error) if target has changed and translation saving as 'Translated' or 'Approved'
     * @param newState
     * @param projectVersion
     * @param targetId
