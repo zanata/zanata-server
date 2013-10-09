@@ -117,8 +117,8 @@ public class ProjectVersionPage extends BasePage {
         return new ProjectSourceDocumentsPage(getDriver());
     }
 
-    public CreateVersionPage clickEditVersion() {
+    public EditVersionPage clickEditVersion() {
         editVersionButton.click();
-        return new CreateVersionPage(getDriver());
+        return new EditVersionPage(getDriver());
     }
 }

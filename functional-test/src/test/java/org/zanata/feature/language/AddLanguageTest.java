@@ -28,7 +28,7 @@ import org.junit.experimental.categories.Category;
 import org.zanata.feature.DetailedTest;
 import org.zanata.page.administration.AddLanguagePage;
 import org.zanata.page.administration.ManageLanguagePage;
-import org.zanata.page.projects.CreateVersionPage;
+import org.zanata.page.projects.EditVersionPage;
 import org.zanata.util.ResetDatabaseRule;
 import org.zanata.workflow.LoginWorkFlow;
 
@@ -72,7 +72,7 @@ public class AddLanguageTest {
         assertThat("The language is enabled by default",
                 manageLanguagePage.languageIsEnabled(language));
 
-        CreateVersionPage createVersionPage = manageLanguagePage
+        EditVersionPage editVersionPage = manageLanguagePage
                 .goToHomePage()
                 .goToProjects()
                 .goToProject("about fedora")
@@ -81,7 +81,7 @@ public class AddLanguageTest {
                 .showLocalesOverride();
 
         assertThat("The language is enabled by default",
-                createVersionPage.getEnabledLanguages(),
+                editVersionPage.getEnabledLanguages(),
                 Matchers.hasItem(languageDisplayName));
     }
 
@@ -111,7 +111,7 @@ public class AddLanguageTest {
         assertThat("The language is disabled by default",
                 !manageLanguagePage.languageIsEnabled(language));
 
-        CreateVersionPage createVersionPage = manageLanguagePage
+        EditVersionPage editVersionPage = manageLanguagePage
                 .goToHomePage()
                 .goToProjects()
                 .goToProject("about fedora")
@@ -120,7 +120,7 @@ public class AddLanguageTest {
                 .showLocalesOverride();
 
         assertThat("The language is disabled by default",
-                createVersionPage.getDisabledLanguages(),
+                editVersionPage.getDisabledLanguages(),
                 Matchers.hasItem(languageDisplayName));
     }
 
