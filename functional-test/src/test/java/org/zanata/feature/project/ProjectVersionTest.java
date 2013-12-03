@@ -26,7 +26,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.DetailedTest;
-import org.zanata.page.projects.CreateVersionPage;
+import org.zanata.page.projects.EditVersionPage;
 import org.zanata.page.projects.ProjectVersionPage;
 import org.zanata.util.ResetDatabaseRule;
 import org.zanata.workflow.LoginWorkFlow;
@@ -49,7 +49,7 @@ public class ProjectVersionTest {
 
     @Test
     public void idFieldMustNotBeEmpty() {
-        CreateVersionPage createVersionPage = new LoginWorkFlow()
+        EditVersionPage editVersionPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToProjects()
                 .goToProject("about fedora")
@@ -57,13 +57,13 @@ public class ProjectVersionTest {
                 .inputVersionId("");
 
         assertThat("The empty value is rejected",
-                createVersionPage.getErrors(),
+                editVersionPage.getErrors(),
                 Matchers.hasItem("value is required"));
     }
 
     @Test
     public void idStartsAndEndsWithAlphanumeric() {
-        CreateVersionPage createVersionPage = new LoginWorkFlow()
+        EditVersionPage editVersionPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToProjects()
                 .goToProject("about fedora")
@@ -71,38 +71,38 @@ public class ProjectVersionTest {
                 .inputVersionId("-A");
 
         assertThat("The input is rejected",
-                createVersionPage.getErrors(),
+                editVersionPage.getErrors(),
                 Matchers.hasItem(formatError));
 
-        createVersionPage = createVersionPage
+        editVersionPage = editVersionPage
                 .inputVersionId("B-")
                 .waitForNumErrors(1);
 
 
         assertThat("The input is rejected",
-                createVersionPage.getErrors(),
+                editVersionPage.getErrors(),
                 Matchers.hasItem(formatError));
 
-        createVersionPage = createVersionPage
+        editVersionPage = editVersionPage
                 .inputVersionId("_C_")
                 .waitForNumErrors(1);
 
         assertThat("The input is rejected",
-                createVersionPage.getErrors(),
+                editVersionPage.getErrors(),
                 Matchers.hasItem(formatError));
 
-        createVersionPage = createVersionPage
+        editVersionPage = editVersionPage
                 .inputVersionId("A-B_C")
                 .waitForNumErrors(0);
 
         assertThat("The input is acceptable",
-                createVersionPage.getErrors(),
+                editVersionPage.getErrors(),
                 Matchers.not(Matchers.hasItem(formatError)));
     }
 
     @Test
     public void overrideLanguages() {
-        CreateVersionPage createVersionPage = new LoginWorkFlow()
+        EditVersionPage editVersionPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToProjects()
                 .goToProject("about fedora")
@@ -111,45 +111,45 @@ public class ProjectVersionTest {
                 .showLocalesOverride();
 
         assertThat("The enabled list contains three languages",
-                createVersionPage.getEnabledLanguages(),
+                editVersionPage.getEnabledLanguages(),
                 Matchers.contains("French [fr] français",
                         "Hindi [hi] हिन्दी",
                         "Polish [pl] polski"));
 
         assertThat("The disabled list contains one language",
-                createVersionPage.getDisabledLanguages(),
+                editVersionPage.getDisabledLanguages(),
                 Matchers.contains("English (United States) [en-US] English "+
                         "(United States)"));
 
-        createVersionPage = createVersionPage
+        editVersionPage = editVersionPage
                 .selectEnabledLanguage("Polish [pl] polski")
                 .clickRemoveLanguage()
                 .waitForListCount(2, 2);
 
         assertThat("The disabled list contains two languages",
-                createVersionPage.getDisabledLanguages(),
+                editVersionPage.getDisabledLanguages(),
                 Matchers.contains("English (United States) [en-US] English "+
                         "(United States)", "Polish [pl] polski"));
 
-        createVersionPage = createVersionPage
+        editVersionPage = editVersionPage
                 .selectDisabledLanguage("English (United States) [en-US] "+
                         "English (United States)")
                 .clickAddLanguage()
                 .waitForListCount(3, 1);
 
         assertThat("The disabled list contains one language",
-                createVersionPage.getDisabledLanguages(),
+                editVersionPage.getDisabledLanguages(),
                 Matchers.contains("Polish [pl] polski"));
 
         assertThat("The enabled list contains three languages",
-                createVersionPage.getEnabledLanguages(),
+                editVersionPage.getEnabledLanguages(),
                 Matchers.contains(
                         "English (United States) [en-US] English "+
                         "(United States)",
                         "French [fr] français",
                         "Hindi [hi] हिन्दी"));
 
-        ProjectVersionPage projectVersionPage = createVersionPage.saveVersion();
+        ProjectVersionPage projectVersionPage = editVersionPage.saveVersion();
 
         assertThat("Three languages are available to translate",
                 projectVersionPage.getTranslatableLanguages(),

@@ -229,4 +229,30 @@ public class BasePage extends CorePage {
                 ExpectedConditions.visibilityOfElementLocated(By
                         .className("off-canvas--right-under")));
     }
+
+    public boolean expectNoCriticalErrors() {
+        return getDriver().findElements(By.id("errorMessage")).size() <= 0;
+    }
+
+    public void assertNoCriticalErrors() {
+        List<WebElement> errors =
+                getDriver().findElements(By.id("errorMessage"));
+        if (errors.size() > 0) {
+            throw new RuntimeException("Critical error: \n"
+                    + errors.get(0).getText());
+        }
+    }
+
+    public boolean hasNoCriticalErrors() {
+        return getDriver().findElements(By.id("errorMessage")).size() <= 0;
+    }
+
+    /**
+     * Shift focus to the page, in order to activate some elements that
+     * only exhibit behaviour on losing focus.
+     */
+    public void defocus() {
+        getDriver().findElement(By.tagName("body")).click();
+    }
+
 }
