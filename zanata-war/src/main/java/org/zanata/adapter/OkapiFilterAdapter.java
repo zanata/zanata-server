@@ -32,10 +32,12 @@ import java.util.Map;
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.EventType;
 import net.sf.okapi.common.IParameters;
+import net.sf.okapi.common.encoder.HtmlEncoder;
 import net.sf.okapi.common.exceptions.OkapiIOException;
 import net.sf.okapi.common.filters.IFilter;
 import net.sf.okapi.common.filterwriter.GenericContent;
 import net.sf.okapi.common.filterwriter.IFilterWriter;
+import net.sf.okapi.common.filterwriter.Parameters;
 import net.sf.okapi.common.resource.RawDocument;
 import net.sf.okapi.common.resource.StartSubDocument;
 import net.sf.okapi.common.resource.TextUnit;
@@ -387,6 +389,26 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
             Map<String, TextFlowTarget> translations,
             net.sf.okapi.common.LocaleId localeId, IFilterWriter writer,
             Optional<String> params) {
+
+
+
+
+        // This code would work if I could get it to the right place.
+        // At this point the encoder in the EncoderManager is null so this has no effect
+        // Some digging has found that AbstractMarkupEventBuilder.postProcessTextUnit
+        // wipes out any encoder and default options that are present immediately
+        // before doing final processing of the text unit, so anything set before
+        // then is doomed. The only option may be to override it.
+
+//        String charsToXmlEncode = "\u00AE"; // registered symbol
+//        IParameters encoderParams = new Parameters();
+//        encoderParams.setString("escapeCharacters", charsToXmlEncode);
+//        writer.getEncoderManager().setOptions(encoderParams, "UTF-8", "\n");
+
+
+
+
+
         RawDocument rawDoc =
                 new RawDocument(originalFile, "UTF-8",
                         net.sf.okapi.common.LocaleId.fromString("en"));
