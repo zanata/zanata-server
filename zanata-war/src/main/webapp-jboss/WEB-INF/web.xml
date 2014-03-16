@@ -271,6 +271,17 @@
     <url-pattern>/webtrans/files/upload</url-pattern>
   </servlet-mapping>
 
+  <!-- Multi File upload service -->
+  <servlet>
+    <servlet-name>multiUploadServlet</servlet-name>
+    <servlet-class>org.zanata.servlet.MultiFileUploadServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>multiUploadServlet</servlet-name>
+    <url-pattern>/files/upload/*</url-pattern>
+  </servlet-mapping>
+
   <!-- Uncomment this to enable the H2Console
 
   <servlet>
