@@ -135,7 +135,8 @@
                         data.context.each(function (index) {
                             var error = data.files[index].error;
                             if (error) {
-                                $(this).find('.error').text(error);
+                                $(this).find('.fileupload-error').text(error)
+                                .removeClass('is-invisible');
                             }
                         });
                     }

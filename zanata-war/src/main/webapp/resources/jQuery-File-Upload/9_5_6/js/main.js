@@ -20,7 +20,8 @@ $(function () {
 
         uploadForm.fileupload({
             sequentialUploads: true,
-            dropZone: dropZone
+            dropZone: dropZone,
+            acceptFileTypes: /(\.|\/)(pot|dtd|txt|idml|html?|od[tpsg])$/i
         });
 
         // FIXME may be unnecessary. If necessary, it could just go in the above options
