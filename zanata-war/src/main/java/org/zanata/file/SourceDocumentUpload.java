@@ -89,11 +89,34 @@ public class SourceDocumentUpload {
     @In
     private DocumentService documentServiceImpl;
 
+    public Response tryUploadSourceFileWithoutHash(GlobalDocumentId id,
+            DocumentFileUploadForm uploadForm) {
+        try {
+            failIfSourceUploadNotValid(id, uploadForm);
+        } catch (ChunkUploadException e) {
+            return Response.status(e.getStatusCode())
+                    .entity(new ChunkUploadResponse(e.getMessage())).build();
+        }
+
+        return tryValidatedUploadSourceFile(id, uploadForm);
+    }
+
     public Response tryUploadSourceFile(GlobalDocumentId id,
             DocumentFileUploadForm uploadForm) {
         try {
             failIfSourceUploadNotValid(id, uploadForm);
+            util.failIfHashNotPresent(uploadForm);
+        } catch (ChunkUploadException e) {
+            return Response.status(e.getStatusCode())
+                    .entity(new ChunkUploadResponse(e.getMessage())).build();
+        }
 
+        return tryValidatedUploadSourceFile(id, uploadForm);
+    }
+
+    public Response tryValidatedUploadSourceFile(GlobalDocumentId id,
+            DocumentFileUploadForm uploadForm) {
+        try {
             Optional<File> tempFile;
             int totalChunks;
 
@@ -121,7 +144,7 @@ public class SourceDocumentUpload {
                         Optional.of(util
                                 .combineToTempFileAndDeleteUploadRecord(
                                         previousParts,
-                                        uploadForm.getFileStream()));
+                                        uploadForm));
             }
 
             if (uploadForm.getFileType().equals(".pot")) {
