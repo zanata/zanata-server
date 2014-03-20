@@ -16,7 +16,11 @@ $(function () {
 
     $('.fileupload').each(function() {
         var uploadForm = $(this),
-            dropZone = uploadForm.find('.drag-drop')
+            dropZone = uploadForm.find('.drag-drop'),
+            container = uploadForm.closest('.modal');
+
+        // move the container to the end of the body so it is on top of everything
+        container.appendTo('body');
 
         uploadForm.fileupload({
             sequentialUploads: true,
