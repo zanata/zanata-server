@@ -125,6 +125,8 @@
                             // TODO proper i18n for these strings
                             if (error === 'File type not allowed') {
                                 data.files[index].error = '"' + file.name + '" is not a supported file type.'
+                            } else if (error === 'File is too large') {
+                                data.files[index].error = '"' + file.name + '" is too large.'
                             }
                             that._renderError(file).appendTo(options.errorList);
                         } else {

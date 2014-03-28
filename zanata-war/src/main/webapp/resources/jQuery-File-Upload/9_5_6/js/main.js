@@ -87,6 +87,7 @@ $(function () {
 
         uploadForm.fileupload({
             sequentialUploads: true,
+            maxFileSize: 200*1024*1024,
             dropZone: dropZone,
             beforeAdd: (function beforeAdd (e, data) {
                 errorList.empty();
