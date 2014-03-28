@@ -54,7 +54,8 @@
     $.blueimp.fileupload.prototype._specialOptions.push(
         'filesContainer',
         'uploadTemplateId',
-        'downloadTemplateId'
+        'downloadTemplateId',
+        'errorTemplateId'
     );
 
     // The UI version extends the file upload widget
@@ -70,6 +71,8 @@
             uploadTemplateId: 'template-upload',
             // The ID of the download template:
             downloadTemplateId: 'template-download',
+            // The ID of the template for rendering an error
+            errorTemplateId: 'template-error',
             // The container for the list of files. If undefined, it is set to
             // an element with class "files" inside of the widget element:
             filesContainer: undefined,
@@ -84,6 +87,11 @@
             // used by the maxNumberOfFiles validation:
             getNumberOfFiles: function () {
                 return this.filesContainer.children()
+                    .not('.processing').length;
+            },
+
+            getNumberOfUploadedFiles: function () {
+                return this.filesContainer.children('.template-download')
                     .not('.processing').length;
             },
 
@@ -106,40 +114,36 @@
                     that = $this.data('blueimp-fileupload') ||
                         $this.data('fileupload'),
                     options = that.options;
-                data.context = that._renderUpload(data.files)
-                    .data('data', data)
-                    .addClass('processing');
-                options.filesContainer[
-                    options.prependFiles ? 'prepend' : 'append'
-                ](data.context);
-                that._forceReflow(data.context);
-                that._transition(data.context);
+
                 data.process(function () {
                     return $this.fileupload('process', data);
                 }).always(function () {
-                    data.context.each(function (index) {
-                        $(this).find('.size').text(
-                            that._formatFileSize(data.files[index].size)
-                        );
-                    }).removeClass('processing');
-                    that._renderPreviews(data);
-                }).done(function () {
-                    data.context.find('.start').prop('disabled', false);
-                    if ((that._trigger('added', e, data) !== false) &&
-                            (options.autoUpload || data.autoUpload) &&
-                            data.autoUpload !== false) {
-                        data.submit();
-                    }
-                }).fail(function () {
-                    if (data.files.error) {
-                        data.context.each(function (index) {
-                            var error = data.files[index].error;
-                            if (error) {
-                                $(this).find('.fileupload-error').text(error)
-                                .removeClass('is-invisible');
+                    var successFiles = [];
+                    $.each(data.files, function (index, file) {
+                        var error = file.error;
+                        if (error) {
+                            // TODO proper i18n for these strings
+                            if (error === 'File type not allowed') {
+                                data.files[index].error = '"' + file.name + '" is not a supported file type.'
                             }
-                        });
-                    }
+                            that._renderError(file).appendTo(options.errorList);
+                        } else {
+                            successFiles.push(file);
+                        }
+                    });
+
+                    data.files = successFiles;
+
+                    // render successful files
+                    data.context = that._renderUpload(data.files)
+                        .data('data', data);
+                    data.context.find('.start').prop('disabled', false);
+                    options.filesContainer[
+                        options.prependFiles ? 'prepend' : 'append'
+                    ](data.context);
+
+                    that._forceReflow(data.context);
+                    that._transition(data.context);
                 });
             },
             // Callback for the start of each file upload request:
@@ -519,6 +523,10 @@
             ).find('a[download]').each(this._enableDragToDesktop).end();
         },
 
+        _renderError: function (error) {
+            return $(this.options.errorTemplate(error));
+        },
+
         _startHandler: function (e) {
             e.preventDefault();
             var button = $(e.currentTarget),
@@ -581,10 +589,16 @@
 
         _initButtonBarEventHandlers: function () {
             var fileUploadButtonBar = this.element.find('.fileupload-buttonbar'),
-                filesList = this.options.filesContainer;
+                filesList = this.options.filesContainer,
+                dropZone = this.element.find('.drag-drop');
             this._on(fileUploadButtonBar.find('.start'), {
                 click: function (e) {
                     e.preventDefault();
+                    $(e.target).prop('disabled', true)
+                        .text('Uploading...');
+                    dropZone.addClass('is-hidden');
+                    // TODO change upload progress message
+                    this.options.updateUploadCountIndicator(this.options);
                     filesList.find('.start').click();
                 }
             });
@@ -665,6 +679,9 @@
                 }
                 if (options.downloadTemplateId) {
                     options.downloadTemplate = tmpl(options.downloadTemplateId);
+                }
+                if (options.errorTemplateId) {
+                    options.errorTemplate = tmpl(options.errorTemplateId);
                 }
             }
         },

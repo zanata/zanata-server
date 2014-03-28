@@ -958,6 +958,13 @@
                 fileSet,
                 i,
                 j = 0;
+            if (options.beforeAdd) {
+                if (typeof options.beforeAdd === "function") {
+                    options.beforeAdd(e, $.extend({}, this.options, data));
+                } else {
+                    console.log('options.beforeAdd should be type "function", but is type "' + typeof options.beforeAdd + '"');
+                }
+            }
             if (limitSize && (!filesLength || files[0].size === undefined)) {
                 limitSize = undefined;
             }
@@ -1012,6 +1019,13 @@
                 );
                 return result;
             });
+            if (options.afterAdd) {
+                if (typeof options.afterAdd === "function") {
+                    options.afterAdd(e, $.extend({}, this.options, data));
+                } else {
+                    console.log('options.afterAdd should be type "function", but is type "' + typeof options.beforeAdd + '"');
+                }
+            }
             return result;
         },
 
