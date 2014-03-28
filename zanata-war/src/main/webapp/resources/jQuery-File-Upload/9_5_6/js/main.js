@@ -85,6 +85,14 @@ $(function () {
             dropZone.addClass('is-active');
         });
 
+        var acceptedTypes = (function (commaSeparated) {
+            var types = commaSeparated.split(',');
+            $.each(types, function (i, type) {
+                types[i] = type.trim();
+            });
+            return new RegExp('(\.|\/)(' + types.join('|') + ')$', 'i');
+        })(uploadForm.data('accepted'));
+
         uploadForm.fileupload({
             sequentialUploads: true,
             maxFileSize: 200*1024*1024,
@@ -97,8 +105,7 @@ $(function () {
                 updateCountIndicator(data);
             }),
             errorList: errorList,
-            // TODO this might need to be passed in as a composite interface attribute and stored in a data- attribute
-            acceptFileTypes: /(\.|\/)(pot|dtd|txt|idml|html?|od[tpsg])$/i,
+            acceptFileTypes: acceptedTypes,
             failed: (function updateCount (e, data) {
                 // update count when removing files
                 var $this = $(this),

@@ -34,6 +34,9 @@ site: http://www.fsf.org.
   <composite:attribute name="title"
                        shortDescription="tooltip for button"
                        required="true" />
+  <composite:attribute name="accepted"
+                       shortDescription="comma-separated list of file extensions that can be uploaded"
+                       required="true" />
 </composite:interface>
 
 <composite:implementation>
@@ -56,7 +59,7 @@ site: http://www.fsf.org.
         <button type="button" class="fileupload-close modal__close button--link" data-dismiss="modal"><i class="i i--huge i--cancel"></i></button>
       </header>
 
-      <form class="fileupload" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data">
+      <form class="fileupload" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data" data-accepted="#{cc.attrs.accepted}">
 
         <div class="modal__content">
           <ul class="js-errors list--no-bullets">
@@ -71,7 +74,7 @@ site: http://www.fsf.org.
               </a>
             </p>
             <small class="txt--meta">Maximum file size is 200MB</small><br />
-            <small class="txt--meta">Accepted: pot, dtd, txt, idml, htm, html, odt, odp, ods, odg</small>
+            <small class="txt--meta">Accepted: #{cc.attrs.accepted}</small>
           </div>
 
           <div class="panel l--push-h-1 l--push-v-half">
