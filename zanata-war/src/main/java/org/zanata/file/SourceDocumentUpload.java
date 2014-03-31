@@ -147,7 +147,7 @@ public class SourceDocumentUpload {
                                         uploadForm));
             }
 
-            if (uploadForm.getFileType().equals(".pot")) {
+            if (uploadForm.getFileType().equals("pot")) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
                 parsePotFile(potStream, id, uploadForm);
             } else {
@@ -315,10 +315,11 @@ public class SourceDocumentUpload {
 
     private void parsePotFile(InputStream potStream, GlobalDocumentId id,
             DocumentFileUploadForm uploadForm) {
-        Resource doc;
-        doc =
-                translationFileServiceImpl.parseUpdatedPotFile(potStream,
-                        id.getDocId(), uploadForm.getFileType(),
+        // real upload filename not available, but the service only cares about
+        // the suffix.
+        String uploadFileName = "." + uploadForm.getFileType();
+        Resource doc = translationFileServiceImpl.parseUpdatedPotFile(potStream,
+                        id.getDocId(), uploadFileName,
                         useOfflinePo(id));
         doc.setLang(new LocaleId("en-US"));
         // TODO Copy Trans values
