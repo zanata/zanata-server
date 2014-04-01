@@ -75,7 +75,6 @@ $(function () {
             e.preventDefault();
         });
 
-
         dropZone.bind('drop dragleave dragend', function (e) {
             e.preventDefault();
             dropZone.removeClass('is-active');
@@ -85,13 +84,20 @@ $(function () {
             dropZone.addClass('is-active');
         });
 
+        var accepted = uploadForm.data('accepted') || '';
         var acceptedTypes = (function (commaSeparated) {
             var types = commaSeparated.split(',');
             $.each(types, function (i, type) {
                 types[i] = type.trim();
             });
             return new RegExp('(\.|\/)(' + types.join('|') + ')$', 'i');
-        })(uploadForm.data('accepted'));
+        })(accepted);
+
+        if (accepted.trim().length === 0) {
+            uploadForm.find('.js-upload-supported').addClass('is-hidden');
+        } else {
+            uploadForm.find('.js-upload-not-supported').addClass('is-hidden');
+        }
 
         uploadForm.fileupload({
             sequentialUploads: true,
