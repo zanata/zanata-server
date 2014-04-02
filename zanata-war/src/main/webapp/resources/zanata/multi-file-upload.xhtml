@@ -59,7 +59,7 @@ site: http://www.fsf.org.
         <button type="button" class="fileupload-close modal__close button--link" data-dismiss="modal"><i class="i i--huge i--cancel"></i></button>
       </header>
 
-      <form class="fileupload" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data" data-accepted="#{cc.attrs.accepted}">
+      <form class="fileupload l--push-bottom-0" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data" data-accepted="#{cc.attrs.accepted}">
 
         <div class="modal__content">
 
@@ -87,7 +87,7 @@ site: http://www.fsf.org.
               <small class="txt--meta">Accepted: #{cc.attrs.accepted}</small>
             </div>
 
-            <div class="panel l--push-h-1 l--push-v-half">
+            <div class="js-files-panel panel l--push-h-1 l--push-v-half is-hidden">
               <!-- .files is used for attaching elements generated from templates. Could change to use id or data- -->
               <ul class="files list--panel bg--higher">
               </ul>
