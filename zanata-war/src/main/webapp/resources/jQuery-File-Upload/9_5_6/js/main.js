@@ -74,6 +74,9 @@ $(function () {
 
         closeButtons.bind('click', function (e) {
             zanata.modal.hide('#' + container.attr('id'));
+            // refreshStatistics() is provided by the JSF page,
+            // it will cause the document list to be updated with uploaded documents.
+            refreshStatistics();
         });
 
         // prevent default file drop behaviour on the page
