@@ -190,6 +190,9 @@ public class MultiFileUploadServlet extends HttpServlet {
         jsono.put("name", docId);
         jsono.put("size", item.getSize());
         if (error != null && !error.isEmpty()) {
+            if (error.equals("Valid combination of username and api-key for this server were not included in the request.")) {
+                error = "not logged in";
+            }
             jsono.put("error", error);
         } else {
             if (success != null && !success.isEmpty()) {
@@ -205,6 +208,7 @@ public class MultiFileUploadServlet extends HttpServlet {
     // FIXME maven is having some issue with using org.json here,
     //       so these are just some quick replica classes to get things working
     //       until I have time to sort out the dependencies.
+    //       Are these coming from gwt sdk and so not available?
     private static class JSONObject extends HashMap<String, String> {
 
         @Override

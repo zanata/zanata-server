@@ -188,6 +188,18 @@
                     data.context.each(function (index) {
                         var file = files[index] ||
                                 {error: 'Empty file upload result'};
+                        if (file.error) {
+                            if (file.error === 'not logged in') {
+                                that._showSingletonError('Your session has timed out. Please log in again before uploading files.');
+                                // no inline error should be displayed since there is already a singleton error
+                                file.error = null;
+
+                                // TODO render this file as an upload, not a download
+                                // TODO do not process any additional files? Or process them all as 'not uploaded'?
+                                // TODO change upload button to 'try again'
+                            }
+                        }
+
                         deferred = that._addFinishedDeferreds();
                         that._transition($(this)).done(
                             function () {
@@ -527,6 +539,13 @@
 
         _renderError: function (error) {
             return $(this.options.errorTemplate(error));
+        },
+
+        _showSingletonError: function (errorMessage) {
+            var matchingErrors = this.options.errorList.filter(":contains('" + errorMessage + "')");
+            if (matchingErrors.length === 0) {
+                this._renderError({ error: errorMessage }).appendTo(this.options.errorList);
+            }
         },
 
         _startHandler: function (e) {
