@@ -23,8 +23,6 @@ site: http://www.fsf.org.
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:composite="http://java.sun.com/jsf/composite"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:h="http://java.sun.com/jsf/html">
 
 <composite:interface>
@@ -41,8 +39,6 @@ site: http://www.fsf.org.
 
 <composite:implementation>
 
-  <!-- TODO need to give this button a distinct id so that I can refer to it from the script,
-       id needs to be accessed from the modal, -->
   <button class="button button--snug l--push-top-half"
           id="#{cc.clientId}-toggle-button"
           data-toggle="modal"
@@ -189,7 +185,7 @@ site: http://www.fsf.org.
                 <div class="list__item__info">
                   <span class="list__title">{%=file.name%}</span>
                   {% if (file.error) { %}
-                    <span class="message message--danger">{%=file.error%}</span>
+                    <span class="txt--danger l--push-left-quarter">{%=file.error%}</span>
                   {% } %}
                 </div>
 
