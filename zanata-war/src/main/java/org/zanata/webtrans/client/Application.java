@@ -43,6 +43,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -167,7 +169,7 @@ public class Application implements EntryPoint {
                 new GetDocumentList(injector.getLocation().getQueryDocuments());
 
         documentListPresenter.showLoading(true);
-        final Stopwatch stopwatch = new Stopwatch().start();
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         injector.getDispatcher().execute(action,
                 new AsyncCallback<GetDocumentListResult>() {
                     @Override
@@ -187,7 +189,7 @@ public class Application implements EntryPoint {
                                 + result.getProjectIterationId() + ": "
                                 + documents.size()
                                 + " elements, loading time: "
-                                + stopwatch.elapsedMillis() + "ms");
+                                + stopwatch.elapsed(MILLISECONDS) + "ms");
                         documentListPresenter.setDocuments(documents);
 
                         History history = injector.getHistory();
