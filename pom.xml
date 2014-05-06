@@ -698,7 +698,7 @@
         <configuration>
           <rules>
             <banDuplicateClasses>
-              <dependencies combine.children="append">
+              <dependencies>
                 <!-- multiple versions in the dependency tree -->
                 <dependency>
                   <groupId>com.beust</groupId>
@@ -745,14 +745,6 @@
                   <artifactId>ehcache-core</artifactId>
                   <ignoreClasses>
                     <ignoreClass>net.sf.ehcache.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <!-- lombok is "provided", so these duplicate classes don't get deployed -->
-                <dependency>
-                  <groupId>org.projectlombok</groupId>
-                  <artifactId>lombok</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>com.sun.jna.*</ignoreClass>
                   </ignoreClasses>
                 </dependency>
               </dependencies>
