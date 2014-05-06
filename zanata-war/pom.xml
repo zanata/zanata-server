@@ -1316,18 +1316,16 @@
     <!-- Richfaces -->
 
     <dependency>
-      <groupId>org.richfaces.ui</groupId>
-      <artifactId>richfaces-components-api</artifactId>
+      <groupId>org.richfaces.compat</groupId>
+      <artifactId>richfaces-components-rich</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.richfaces.ui</groupId>
-      <artifactId>richfaces-components-ui</artifactId>
+      <groupId>org.richfaces.compat</groupId>
+      <artifactId>richfaces-components-a4j</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.richfaces.core</groupId>
-      <artifactId>richfaces-core-impl</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.richfaces</groupId>
+      <artifactId>richfaces</artifactId>
     </dependency>
 
     <dependency>

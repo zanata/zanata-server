@@ -27,8 +27,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.richfaces.component.SortOrder;
 import org.richfaces.component.UIColumn;
+import org.richfaces.model.SortOrder;
 
 /**
  * Handles column sorting in a page. Used in conjuction with the
