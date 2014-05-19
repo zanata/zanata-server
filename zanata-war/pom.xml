@@ -1197,7 +1197,6 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20090211</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- NB: This must be before jboss-seam, because beanutils includes old commons collections classes -->
