@@ -39,7 +39,7 @@ import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.zanata.util.FunctionalTestHelper.assumeFalse;
+import static org.zanata.util.FunctionalTestHelper.assumeTrue;
 
 /**
  * @author Damian Jansen <a
@@ -64,10 +64,14 @@ public class HTMLDocumentTypeTest extends ZanataTestCase {
                 CleanDocumentStorageRule.getDocumentStoragePath()
                         .concat(File.separator).concat("documents")
                         .concat(File.separator);
-        assumeFalse("", new File(documentStorageDirectory).exists());
+        File docStorage = new File(documentStorageDirectory);
+        assumeTrue("The storage folder is empty",
+                docStorage == null ||
+                !docStorage.exists() ||
+                docStorage.listFiles().length == 0);
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void uploadHTMLFile() {
         File htmlfile =
                 testFileGenerator
@@ -85,9 +89,9 @@ public class HTMLDocumentTypeTest extends ZanataTestCase {
                         .pressUploadFileButton()
                         .enterFilePath(htmlfile.getAbsolutePath())
                         .submitUpload();
+
         assertThat("Document uploaded notification shows",
-                projectVersionPage.getNotificationMessage(),
-                Matchers.equalTo(successfullyUploaded));
+                projectVersionPage.expectNotification(successfullyUploaded));
 
         VersionDocumentsPage versionDocumentsPage =
                 projectVersionPage.gotoDocumentTab();
