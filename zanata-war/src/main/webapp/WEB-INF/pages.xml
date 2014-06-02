@@ -330,11 +330,24 @@
 
     <navigation
       from-action="#{languageSearchAction.manageMembers(language.localeId.id)}">
-      <redirect view-id="/language/language.xhtml">
+      <redirect view-id="/admin/language.xhtml">
         <param name="id" value="#{language.localeId.id}" />
       </redirect>
     </navigation>
   </page>
+
+  <page view-id="/admin/language.xhtml">
+    <param name="id" value="#{languageTeamAction.language}" />
+    <action execute="#{breadcrumbs.clear}" />
+    <action
+      execute="#{breadcrumbs.addLocation('/admin/home.xhtml', messages['jsf.Administration'])}" />
+    <action
+      execute="#{breadcrumbs.addLocation('/admin/languagemanager.xhtml', messages['jsf.ManageLanguage'])}" />
+    <action
+      execute="#{breadcrumbs.addLocation('', languageTeamAction.language)}" />
+  </page>
+
+
 
   <page view-id="/admin/rolerules.xhtml">
     <action execute="#{breadcrumbs.clear}" />
@@ -768,6 +781,17 @@
     </navigation>
     <navigation from-action="#{translationMemoryAction.cancel}">
       <redirect view-id="/tm/home.xhtml" />
+    </navigation>
+  </page>
+
+  <!-- we need to explicitly secure webtrans after removing seam remoting -->
+  <page view-id="/webtrans/Application.xhtml" conversation-required="false">
+    <navigation evaluate="#{identity.isLoggedIn()}">
+      <rule if-outcome="false">
+        <redirect view-id="/account/sign_in">
+          <param name="continue" value="#{userRedirect.encodedUrl}" />
+        </redirect>
+      </rule>
     </navigation>
   </page>
 

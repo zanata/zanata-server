@@ -37,7 +37,6 @@ import javax.faces.application.FacesMessage;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -79,6 +78,7 @@ import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
+import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.util.ZanataMessages;
 import org.zanata.webtrans.shared.model.DocumentStatus;
@@ -151,11 +151,9 @@ public class VersionHomeAction extends AbstractSortAction implements
     private WordStatistic overallStatistic;
 
     @Getter
-    @Setter
     private HLocale selectedLocale;
 
     @Getter
-    @Setter
     private HDocument selectedDocument;
 
     @In
@@ -858,8 +856,8 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     private class DocumentFilter extends InMemoryListFilter<HDocument> {
-        private DocumentDAO documentDAO = (DocumentDAO) Component
-                .getInstance(DocumentDAO.class);
+        private DocumentDAO documentDAO =
+                ServiceLocator.instance().getInstance(DocumentDAO.class);
 
         @Override
         protected List<HDocument> fetchAll() {
@@ -874,7 +872,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     };
 
     private class SourceDocumentFilter extends InMemoryListFilter<HDocument> {
-        private DocumentDAO documentDAO = (DocumentDAO) Component
+        private DocumentDAO documentDAO = ServiceLocator.instance()
                 .getInstance(DocumentDAO.class);
 
         @Override

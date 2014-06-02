@@ -144,22 +144,22 @@ public class VersionGroupPage extends BasePage {
     }
 
     public VersionGroupPage clickLanguagesTab() {
-        clickWhenTabEnabled(getDriver().findElement(By.id("languages")));
+        clickWhenTabEnabled(getDriver().findElement(By.id("languages_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickProjectsTab() {
-        clickWhenTabEnabled(getDriver().findElement(By.id("projects")));
+        clickWhenTabEnabled(getDriver().findElement(By.id("projects_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickMaintainersTab() {
-        clickWhenTabEnabled(getDriver().findElement(By.id("maintainers")));
+        clickWhenTabEnabled(getDriver().findElement(By.id("maintainers_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickSettingsTab() {
-        clickWhenTabEnabled(getDriver().findElement(By.id("settings")));
+        clickWhenTabEnabled(getDriver().findElement(By.id("settings_tab")));
         return new VersionGroupPage(getDriver());
     }
 
@@ -204,23 +204,23 @@ public class VersionGroupPage extends BasePage {
     }
 
     public VersionGroupPage selectProjectVersion(final String searchEntry) {
-        WebElement searchItem = waitForTenSec().until(
-                new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver driver) {
-                List<WebElement> items = WebElementUtil
-                        .getSearchAutocompleteResults(driver,
-                                "settings-projects-form",
-                                "versionAutocomplete");
-                for (WebElement item : items) {
-                    if (item.getText().equals(searchEntry)) {
-                        return item;
+        waitForTenSec().until(
+                new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver driver) {
+                        List<WebElement> items = WebElementUtil
+                                .getSearchAutocompleteResults(driver,
+                                        "settings-projects-form",
+                                        "versionAutocomplete");
+                        for (WebElement item : items) {
+                            if (item.getText().equals(searchEntry)) {
+                                item.click();
+                                return true;
+                            }
+                        }
+                        return false;
                     }
-                }
-                return null;
-            }
-        });
-        searchItem.click();
+                });
         return new VersionGroupPage(getDriver());
     }
 
