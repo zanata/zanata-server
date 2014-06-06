@@ -49,6 +49,9 @@
      -->
     <hibernate.search.version>4.4.2.Final</hibernate.search.version>
     <hibernate.entitymanager.version>${hibernate.version}</hibernate.entitymanager.version>
+    <!-- For EAP 6 / Hibernate 4.2 -->
+    <hibernate.jta.platform>org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform</hibernate.jta.platform>
+
     <war_bundles_jsf_impl>false</war_bundles_jsf_impl>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
 
@@ -61,6 +64,9 @@
     <jdbc.groupId>mysql</jdbc.groupId>
     <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
     <jdbc.version>5.1.26</jdbc.version>
+
+    <!-- This is referenced in web.xml: -->
+    <klogin.auth.method>SPNEGO</klogin.auth.method>
   </properties>
 
   <dependencyManagement>
@@ -856,6 +862,21 @@
   </build>
 
   <profiles>
+
+    <profile>
+      <id>wildfly</id>
+      <activation>
+        <property>
+          <name>wildfly</name>
+        </property>
+      </activation>
+      <!-- TODO pull in webapp-wildfly/WEB-INF/jboss-all.xml -->
+      <properties>
+        <hibernate.jta.platform>JBossAS</hibernate.jta.platform>
+        <hibernate.version>4.3.5.Final</hibernate.version>
+        <klogin.auth.method>FORM</klogin.auth.method>
+      </properties>
+    </profile>
 
     <profile>
       <!-- Profile to use more recent versions of hibernate etc. for jboss 7 -->

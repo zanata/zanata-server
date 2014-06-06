@@ -1,0 +1,4 @@
+<jboss xmlns="urn:jboss:1.0">
+  <!-- NB: this is not compatible with JBoss EAP 6 -->
+  <weld xmlns="urn:jboss:weld:1.0" require-bean-descriptor="true"/>
+</jboss>

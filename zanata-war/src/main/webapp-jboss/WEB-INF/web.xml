@@ -17,14 +17,20 @@
       <role-name>*</role-name>
     </auth-constraint>
   </security-constraint>
+
+  <!-- This breaks WildFly -->
   <login-config>
-    <auth-method>SPNEGO</auth-method>
+    <!-- auth-method should be SPNEGO for EAP6.
+         FORM is wrong, but enables WildFly to deploy
+         (without SPNEGO support, obv.) -->
+    <auth-method>${klogin.auth.method}</auth-method>
     <form-login-config>
       <form-login-page>/account/kloginform.jsp</form-login-page>
       <!-- Error page not needed since the login form takes over -->
       <form-error-page>/</form-error-page>
     </form-login-config>
   </login-config>
+
   <security-role>
     <role-name>*</role-name>
   </security-role>
