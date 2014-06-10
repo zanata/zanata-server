@@ -11,18 +11,21 @@
 
   <ui:define name="head">
     <!-- Load jQuery -->
-    <rich:jQuery query="jquery"/>
+    <!--<rich:jQuery query="jquery"/>-->
 
     <script type="text/javascript">
-      function updateLoginType(selectedElement, type, showUsername,
+      function updateLoginType(selectedElement, showUsername,
                                usernameLabel, showPassword) {
-        jQuery(".selected_login_option").each(function () {
-          jQuery(this).removeClass('selected_login_option')
-        });
-        jQuery(selectedElement).addClass('selected_login_option');
+        jQuery(selectedElement).parent().siblings("li").children("a").removeClass('is-active');
+
+        jQuery('.js--provider--dropdown').children('span').attr('class', jQuery(selectedElement).attr('class'));
+        jQuery('.js--provider--dropdown').children('span').html(jQuery(selectedElement).html());
+
+        jQuery(selectedElement).addClass('is-active');
+        jQuery('.js--provider--dropdown').parent().removeClass('is-active');
 
         var fieldSelector = "[id='#{rich:clientId('login_provider')}']";
-        jQuery(fieldSelector).val(type);
+        jQuery(fieldSelector).val(jQuery(selectedElement).attr('name'));
 
         var usernamefieldSelector = "#providerUsernameField";
         if (showUsername) {
@@ -43,6 +46,7 @@
         jQuery("[id='#{rich:clientId('verifyButton')}']").show();
       }
     </script>
+
   </ui:define>
 
   <ui:define name="center_content">
@@ -64,51 +68,45 @@
           <p>
             <h:outputText
               value="#{messages['jsf.profile.MergeAccount.info']}"/>
-          </p>>
-          <br/>
-          <br/>
-          <ui:remove>
-            <!-- TODO use localizable strings for tooltips. -->
-          </ui:remove>
-          <ul class="list--horizontal">
-            <li>
-              <h:graphicImage id="fedora_signin"
-                value="../images/openid/fedora.png"
-                styleClass="login_option" title="Fedora" height="40" width="40"
-                onclick="updateLoginType(this, 'Fedora', true, '#{messages['jsf.login.openid.fedora']}')"/>
-            </li>
-            <li>
-              <h:graphicImage id="google_signin"
-                value="../images/openid/google.png"
-                styleClass="login_option" title="Google" height="40" width="40"
-                onclick="updateLoginType(this, 'Google', false)"/>
-            </li>
-            <li>
-              <h:graphicImage id="myopenid_signin"
-                value="../images/openid/myopenid.png"
-                styleClass="login_option" title="MyOpenID" height="40"
-                width="40"
-                onclick="updateLoginType(this, 'MyOpenId', true, '#{messages['jsf.login.openid.myopenid']}')"/>
-            </li>
-            <li>
-              <h:graphicImage id="yahoo_signin"
-                value="../images/openid/yahoo.png"
-                styleClass="login_option" title="Yahoo" height="40" width="40"
-                onclick="updateLoginType(this, 'Yahoo', true, '#{messages['jsf.login.openid.yahoo']}')"/>
-            </li>
-            <li>
-              <h:graphicImage id="openid_signin"
-                value="../images/openid/openid.png"
-                styleClass="login_option" title="Open ID" height="40" width="40"
-                onclick="updateLoginType(this, 'Generic', true, '#{messages['jsf.login.openid']}')"/>
-            </li>
-            <li>
-              <img id="internal_signin"
-                src="#{applicationConfiguration.webAssetsUrl}/logo.svg"
-                class="login_option" title="Zanata" height="40" width="40"
-                onclick="updateLoginType(this, 'INTERNAL', true, '#{messages['jsf.login.internal']}', true)"/>
-            </li>
-          </ul>
+          </p>
+
+          <span class="dropdown dropdown--toggle-right js-dropdown">
+            <a class="dropdown__toggle dropdown__toggle--large js-dropdown__toggle js--provider--dropdown" href="#">
+              <span>#{messages['jsf.account.merge.select.label']}</span>
+            </a>
+            <ul class="dropdown__content js-dropdown__content">
+              <li>
+                <a class="list__item--fedora" href="#" name="Fedora"
+                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.fedora']}')">
+                  Fedora
+                </a>
+              </li>
+              <li>
+                <a href="#" class="list__item--google" name="Google"
+                  onclick="updateLoginType(this, false)">
+                  Google
+                </a>
+              </li>
+              <li>
+                <a href="#" class="list__item--yahoo" name="Yahoo"
+                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.yahoo']}')">
+                  Yahoo
+                </a>
+              </li>
+              <li>
+                <a href="#" class="list__item--openid" name="Generic"
+                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid']}')">
+                  OpenId
+                </a>
+              </li>
+              <li>
+                <a href="#" class="list__item--zanata" name="INTERNAL"
+                  onclick="updateLoginType(this, true, '#{messages['jsf.login.internal']}', true)">
+                  Zanata
+                </a>
+              </li>
+            </ul>
+          </span>
 
           <h:inputHidden id="login_provider"
             value="${accountMergeAction.providerType}"/>
@@ -162,5 +160,4 @@
       </div>
     </div>
   </ui:define>
-
 </ui:composition>
