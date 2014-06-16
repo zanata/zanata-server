@@ -7,7 +7,7 @@ import static org.zanata.util.ZanataRestCaller.buildTextFlow;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.hamcrest.Matchers;
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +58,12 @@ public class EditorFilterMessagesTest extends ZanataTestCase {
             public List<String> call() throws Exception {
                 return page.getMessageSources();
             }
-        }, Matchers.contains("greetings"));
+        }, new Condition<List<String>>() {
+            @Override
+            public boolean matches(List<String> value) {
+                return value.contains("greetings");
+            }
+        });
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)

@@ -26,8 +26,6 @@ import java.util.concurrent.Callable;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
@@ -35,8 +33,9 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.zanata.util.WebElementUtil;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+
+import org.assertj.core.api.Condition;
 
 /**
  * The base class for the page driver. Contains functionality not generally of
@@ -129,21 +128,20 @@ public class AbstractPage {
      * For example, wait for a translation updated event gets broadcast to editor.
      *
      * @param callable a callable that returns a result
-     * @param matcher a matcher that matches to expected result
+     * @param condition a condition that validates expected result
      * @param <T> result type
      */
-    public <T> void
-            waitFor(final Callable<T> callable, final Matcher<T> matcher) {
+    public <T> void waitFor(final Callable<T> callable,
+                            final Condition condition) {
         waitForTenSec().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 try {
                     T result = callable.call();
-                    if (!matcher.matches(result)) {
-                        matcher.describeMismatch(result,
-                                new Description.NullDescription());
+                    if (!condition.matches(result)) {
+                        condition.describedAs("Condition failed", result);
                     }
-                    return matcher.matches(result);
+                    return condition.matches(result);
                 } catch (Exception e) {
                     log.warn("exception", e);
                     return false;
