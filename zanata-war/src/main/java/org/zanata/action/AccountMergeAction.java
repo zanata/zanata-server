@@ -27,7 +27,6 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -38,6 +37,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
+import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdAuthenticationResult;
@@ -72,7 +72,7 @@ public class AccountMergeAction implements Serializable {
     @Getter
     private HAccount obsoleteAccount;
 
-    private OpenIdProviderType providerType;
+    private OpenIdProviderType providerType = OpenIdProviderType.Fedora;
 
     private boolean accountsValid;
 
@@ -100,6 +100,9 @@ public class AccountMergeAction implements Serializable {
     public boolean isAccountSelected() {
         return obsoleteAccount != null;
     }
+
+    @In
+    private ConversationScopeMessages conversationScopeMessages;
 
     public void validateAccounts() {
         boolean valid = true;
