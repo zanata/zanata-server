@@ -3,6 +3,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:s="http://jboss.org/schema/seam/taglib"
+  xmlns:a4j="http://richfaces.org/a4j"
   template="../WEB-INF/template/template.xhtml">
 
   <ui:define
@@ -16,16 +17,9 @@
     <script type="text/javascript">
       function updateLoginType(selectedElement, showUsername,
                                usernameLabel, showPassword) {
-        jQuery(selectedElement).parent().siblings("li").children("a").removeClass('is-active');
-
-        jQuery('.js--provider--dropdown').children('span').attr('class', jQuery(selectedElement).attr('class'));
-        jQuery('.js--provider--dropdown').children('span').html(jQuery(selectedElement).html());
-
-        jQuery(selectedElement).addClass('is-active');
-        jQuery('.js--provider--dropdown').parent().removeClass('is-active');
 
         var fieldSelector = "[id='#{rich:clientId('login_provider')}']";
-        jQuery(fieldSelector).val(jQuery(selectedElement).attr('name'));
+        jQuery(fieldSelector).val(jQuery(selectedElement).children('input').attr('value'));
 
         var usernamefieldSelector = "#providerUsernameField";
         if (showUsername) {
@@ -43,7 +37,6 @@
         else {
           jQuery(passwordfieldSelector).addClass("is-hidden");
         }
-        jQuery("[id='#{rich:clientId('verifyButton')}']").show();
       }
     </script>
 
@@ -70,48 +63,74 @@
               value="#{messages['jsf.profile.MergeAccount.info']}"/>
           </p>
 
-          <span class="dropdown dropdown--toggle-right js-dropdown">
-            <a class="dropdown__toggle dropdown__toggle--large js-dropdown__toggle js--provider--dropdown" href="#">
-              <span>#{messages['jsf.account.merge.select.label']}</span>
-            </a>
-            <ul class="dropdown__content js-dropdown__content">
-              <li>
-                <a class="list__item--fedora" href="#" name="Fedora"
-                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.fedora']}')">
-                  Fedora
-                </a>
-              </li>
-              <li>
-                <a href="#" class="list__item--google" name="Google"
-                  onclick="updateLoginType(this, false)">
-                  Google
-                </a>
-              </li>
-              <li>
-                <a href="#" class="list__item--yahoo" name="Yahoo"
-                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.yahoo']}')">
-                  Yahoo
-                </a>
-              </li>
-              <li>
-                <a href="#" class="list__item--openid" name="Generic"
-                  onclick="updateLoginType(this, true, '#{messages['jsf.login.openid']}')">
-                  OpenId
-                </a>
-              </li>
-              <li>
-                <a href="#" class="list__item--zanata" name="INTERNAL"
-                  onclick="updateLoginType(this, true, '#{messages['jsf.login.internal']}', true)">
-                  Zanata
-                </a>
-              </li>
-            </ul>
-          </span>
+          <ul class="list--slat l--push-bottom-1">
+            <li>
+              <div class="form__radio js-form__radio"
+                onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.fedora']}')">
+                <input type="radio" name="auth-type" value="Fedora"
+                  class="form__radio__input js-form__radio__input"
+                  id="fedora:auth-type" checked="true"/>
+                <label for="fedora:auth-type" class="form__radio__label">
+                  <span class="list__item--fedora">Fedora</span>
+                </label>
+              </div>
+            </li>
+
+            <li>
+              <div class="form__radio js-form__radio"
+                onclick="updateLoginType(this, false)">
+                <input type="radio" name="auth-type" value="Google"
+                  class="form__radio__input js-form__radio__input"
+                  id="google:auth-type"/>
+                <label for="google:auth-type" class="form__radio__label">
+                  <span class="list__item--google">Google</span>
+                </label>
+              </div>
+            </li>
+
+            <li>
+              <div class="form__radio js-form__radio"
+                onclick="updateLoginType(this, true, '#{messages['jsf.login.openid.yahoo']}')">
+                <input type="radio" name="auth-type" value="Yahoo"
+                  class="form__radio__input js-form__radio__input"
+                  id="yahoo:auth-type"/>
+                <label for="yahoo:auth-type" class="form__radio__label">
+                  <span class="list__item--yahoo">Yahoo</span>
+                </label>
+              </div>
+            </li>
+
+            <li>
+              <div class="form__radio js-form__radio"
+                onclick="updateLoginType(this, true, '#{messages['jsf.login.openid']}')">
+                <input type="radio" name="auth-type" value="Generic"
+                  class="form__radio__input js-form__radio__input"
+                  id="openid:auth-type"/>
+                <label for="openid:auth-type" class="form__radio__label">
+                  <span class="list__item--openid">OpenId</span>
+                </label>
+              </div>
+            </li>
+
+            <li>
+              <div class="form__radio js-form__radio"
+                onclick="updateLoginType(this, true, '#{messages['jsf.login.internal']}', true)">
+                <input type="radio" name="auth-type" value="INTERNAL"
+                  class="form__radio__input js-form__radio__input"
+                  id="zanata:auth-type"/>
+                <label for="zanata:auth-type" class="form__radio__label">
+                  <span class="list__item--zanata">Zanata</span>
+                </label>
+              </div>
+            </li>
+          </ul>
 
           <h:inputHidden id="login_provider"
             value="${accountMergeAction.providerType}"/>
 
-          <div class="l--push-top-half form__item is-hidden"
+          <hr></hr>
+
+          <div class="l--push-top-half form__item"
             id="providerUsernameField">
             <h:outputLabel id="identityLabel" for="username">
               #{messages['jsf.FedoraUsername']}
@@ -135,23 +154,19 @@
           </div>
 
           <div class="l--push-top-1">
-            <h:commandButton id="verifyButton"
-              styleClass="button--primary button--full"
+            <h:commandButton styleClass="button--primary button--full"
               value="#{messages['jsf.identities.Verify']}"
-              action="#{accountMergeAction.loginToMergingAccount}"
-              style="display:none"/>
+              action="#{accountMergeAction.loginToMergingAccount}"/>
           </div>
         </h:form>
 
-        <h:form
+        <h:form styleClass="l--push-top-1"
           rendered="#{accountMergeAction.accountSelected and accountMergeAction.accountsValid}">
-          <div class="content_box">
             <p>
               <h:outputText escape="false"
                 value="#{messages['jsf.profile.MergeAccount.confirmationMessage']}"/>
             </p>
-          </div>
-          <h:commandButton
+          <h:commandButton styleClass="button--primary l--push-right-quarter"
             value="#{messages['jsf.profile.MergeAccount.confirm']}"
             action="#{accountMergeAction.mergeAccounts}"/>
           <h:commandButton value="#{messages['jsf.Cancel']}"

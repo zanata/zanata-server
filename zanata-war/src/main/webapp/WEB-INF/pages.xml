@@ -511,7 +511,7 @@
     <action execute="#{accountMergeAction.validateAccounts}" />
 
     <navigation from-action="#{accountMergeAction.cancel}">
-      <redirect view-id="/profile/view.xhtml" />
+      <redirect view-id="/dashboard/home.xhtml" />
     </navigation>
   </page>
 
