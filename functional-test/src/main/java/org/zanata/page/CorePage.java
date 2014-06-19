@@ -38,6 +38,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+import javax.annotation.Nullable;
+
 /**
  * Contains the physical elements, such as page title and home link, that must
  * exist on all Zanata pages.
@@ -122,19 +124,18 @@ public class CorePage extends AbstractPage {
         return messages.size() > 0 ? messages.get(0).getText() : "";
     }
 
-    public void waitForNotificationMessage(final String expectedMessage) {
-        waitForTenSec().until(new Predicate<WebDriver>() {
+    public boolean expectNotification(final String notification) {
+        return waitForTenSec().until(new Function<WebDriver, Boolean>() {
             @Override
-            public boolean apply(WebDriver driver) {
-                List<WebElement> messages =
-                        getDriver().findElement(By.id("messages"))
-                                .findElements(By.tagName("li"));
+            public Boolean apply(WebDriver driver) {
+                List<WebElement> messages = getDriver()
+                        .findElement(By.id("messages"))
+                        .findElements(By.tagName("li"));
+                List<String> notifications = new ArrayList<String>();
                 for( WebElement message : messages ) {
-                    if( message.getText().trim().equals( expectedMessage ) ) {
-                        return true;
-                    }
+                    notifications.add(message.getText().trim());
                 }
-                return false;
+                return notifications.contains(notification);
             }
         });
     }

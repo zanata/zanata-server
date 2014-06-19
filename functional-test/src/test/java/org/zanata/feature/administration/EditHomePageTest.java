@@ -20,61 +20,70 @@
  */
 package org.zanata.feature.administration;
 
-import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.administration.EditHomeCodePage;
 import org.zanata.page.administration.EditHomeContentPage;
 import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.page.utility.HomePage;
 import org.zanata.util.AddUsersRule;
-import org.zanata.util.NoScreenshot;
 import org.zanata.workflow.LoginWorkFlow;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Damian Jansen <a
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
 @Category(DetailedTest.class)
-@NoScreenshot
-public class EditHomePageTest {
+public class EditHomePageTest extends ZanataTestCase {
+
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     @Ignore("Cannot access the editor via WebDriver")
     public void goToEditPageContent() {
         DashboardBasePage dashboard = new LoginWorkFlow().signIn("admin", "admin");
         EditHomeContentPage editHomeContentPage =
                 dashboard.goToHomePage().goToEditPageContent();
 
-        assertThat("Correct page", editHomeContentPage.getTitle(),
-                Matchers.equalTo("Zanata: Edit Home Page"));
+        assertThat(editHomeContentPage.getTitle())
+                .isEqualTo("Zanata: Edit Home Page")
+                .as("Correct page");
+
         editHomeContentPage = editHomeContentPage.enterText("Test");
         HomePage homePage = editHomeContentPage.update();
         editHomeContentPage = homePage.goToEditPageContent();
         editHomeContentPage.cancelUpdate();
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void goToEditPageCode() {
         DashboardBasePage dashboard = new LoginWorkFlow().signIn("admin", "admin");
         EditHomeCodePage editHomeCodePage =
                 dashboard.goToHomePage().goToEditPageCode();
 
-        assertThat("Correct page", editHomeCodePage.getTitle(),
-                Matchers.equalTo("Zanata: Edit Page Code"));
+        assertThat(editHomeCodePage.getTitle())
+                .isEqualTo("Zanata: Edit Page Code")
+                .as("Correct page");
+
         HomePage homePage = editHomeCodePage.enterText("Test").update();
-        assertThat("Message displayed", homePage.getNotificationMessage(),
-                Matchers.equalTo("Home content was successfully updated."));
+
+        assertThat(homePage
+                .expectNotification("Home content was successfully updated."))
+                .isTrue()
+                .as("Message displayed");
+
         editHomeCodePage = homePage.goToEditPageCode();
         homePage = editHomeCodePage.cancelUpdate();
-        assertThat("Homepage text has been updated",
-                homePage.getMainBodyContent(), Matchers.equalTo("Test"));
+
+        assertThat(homePage.getMainBodyContent())
+                .isEqualTo("Test")
+                .as("Homepage text has been updated");
     }
 }

@@ -23,37 +23,52 @@ package org.zanata.page.dashboard;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.zanata.page.BasePage;
-import org.zanata.page.projects.CreateProjectPage;
-
-import com.google.common.base.Predicate;
+import org.zanata.page.dashboard.dashboardsettings.DashboardAccountTab;
+import org.zanata.page.dashboard.dashboardsettings.DashboardClientTab;
+import org.zanata.page.dashboard.dashboardsettings.DashboardProfileTab;
 
 public class DashboardBasePage extends BasePage {
 
-    @FindBy(id = "activity")
+    @FindBy(id = "activity_tab")
     private WebElement activityTab;
 
-    @FindBy(id = "projects")
+    @FindBy(id = "projects_tab")
     private WebElement projectsTab;
 
-    @FindBy(id = "settings")
+    @FindBy(id = "settings_tab")
     private WebElement settingsTab;
 
-    @FindBy(id = "activity-today")
+    @FindBy(id = "account_tab")
+    private WebElement settingsAccountTab;
+
+    @FindBy(id = "profile_tab")
+    private WebElement settingsProfileTab;
+
+    @FindBy(id = "client_tab")
+    private WebElement settingsClientTab;
+
+    @FindBy(id = "activity-today_tab")
     private WebElement todaysActivityTab;
 
-    @FindBy(id = "activity-week")
+    @FindBy(id = "activity-week_tab")
     private WebElement thisWeeksActivityTab;
 
-    @FindBy(id = "activity-month")
+    @FindBy(id = "activity-month_tab")
     private WebElement thisMonthsActivityTab;
 
     public DashboardBasePage(final WebDriver driver) {
         super(driver);
+    }
+
+    public String getUserFullName() {
+        return getDriver().findElement(By.id("profile-overview"))
+                .findElement(By.tagName("h1")).getText();
     }
 
     public DashboardActivityTab gotoActivityTab() {
@@ -81,8 +96,33 @@ public class DashboardBasePage extends BasePage {
         return new DashboardProjectsTab(getDriver());
     }
 
-    public DashboardSettingsTab gotoSettingsTab() {
-        settingsTab.click();
-        return new DashboardSettingsTab(getDriver());
+    public DashboardBasePage goToSettingsTab() {
+        clickWhenTabEnabled(settingsTab);
+        return new DashboardBasePage(getDriver());
     }
+
+    public DashboardAccountTab gotoSettingsAccountTab() {
+        clickWhenTabEnabled(settingsAccountTab);
+        return new DashboardAccountTab(getDriver());
+    }
+
+    public DashboardProfileTab goToSettingsProfileTab() {
+        clickWhenTabEnabled(settingsProfileTab);
+        return new DashboardProfileTab(getDriver());
+    }
+
+    public DashboardClientTab goToSettingsClientTab() {
+        clickWhenTabEnabled(settingsClientTab);
+        return new DashboardClientTab(getDriver());
+    }
+
+    public void waitForUsernameChanged(final String current) {
+        waitForTenSec().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return !getUserFullName().equals(current);
+            }
+        });
+    }
+
 }

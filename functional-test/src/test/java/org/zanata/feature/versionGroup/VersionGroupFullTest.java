@@ -22,17 +22,16 @@ package org.zanata.feature.versionGroup;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.BasicAcceptanceTest;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.page.groups.CreateVersionGroupPage;
 import org.zanata.page.groups.VersionGroupPage;
 import org.zanata.page.groups.VersionGroupsPage;
-import org.zanata.util.NoScreenshot;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.LoginWorkFlow;
 
@@ -43,8 +42,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
 @Category(DetailedTest.class)
-@NoScreenshot
-public class VersionGroupFullTest {
+public class VersionGroupFullTest extends ZanataTestCase {
+
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
     private DashboardBasePage dashboardPage;
@@ -54,7 +53,7 @@ public class VersionGroupFullTest {
         dashboardPage = new LoginWorkFlow().signIn("admin", "admin");
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     @Category(BasicAcceptanceTest.class)
     public void createABasicGroup() {
         String groupID = "basic-group";
@@ -75,7 +74,7 @@ public class VersionGroupFullTest {
                 Matchers.equalTo("Groups - ".concat(groupName)));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void requiredFields() {
         String errorMsg = "value is required";
         String groupID = "verifyRequiredFieldsGroupID";
@@ -99,24 +98,7 @@ public class VersionGroupFullTest {
                 Matchers.contains(errorMsg));
     }
 
-    @Test
-    public void groupIDFieldSize() {
-        String groupID = "abcdefghijklmnopqrstuvwxyzabcdefghijklmn";
-        String groupIDExtra = "xyz";
-        String groupName = "verifyIDFieldSizeName";
-
-        CreateVersionGroupPage groupPage = dashboardPage
-                .goToGroups()
-                .createNewGroup()
-                .inputGroupId(groupID + groupIDExtra)
-                .inputGroupName(groupName);
-
-        assertThat("User cannot enter more than 40 characters",
-                groupPage.getGroupIdValue(),
-                Matchers.equalTo(groupID));
-    }
-
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void groupDescriptionFieldSize() {
         String errorMsg = "value must be shorter than or equal to 100 characters";
         String groupID = "verifyDescriptionFieldSizeID";
@@ -148,8 +130,7 @@ public class VersionGroupFullTest {
 
     }
 
-    @Test
-    @Ignore("at the moment direct input project version to add without auto-complete will not work")
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addANewProjectVersionToAnEmptyGroup()
         throws InterruptedException {
         String groupID = "add-version-to-empty-group";
@@ -162,14 +143,16 @@ public class VersionGroupFullTest {
                 .saveGroup()
                 .goToGroup(groupName)
                 .clickProjectsTab()
-                .clickAddProjectVersionsButton()
-                .enterProjectVersion("about-fedora master")
-                .confirmAddProject()
+                .clickAddProjectVersionsButton();
+
+        versionGroupPage = versionGroupPage
+                .enterProjectVersion("about-fedora")
+                .selectProjectVersion("about-fedora master")
                 .clickProjectsTab();
 
         assertThat("The version group shows in the list",
                 versionGroupPage.getProjectVersionsInGroup(),
-                Matchers.hasItem("about-fedora master"));
+                Matchers.hasItem("about fedora\nmaster"));
 
     }
 

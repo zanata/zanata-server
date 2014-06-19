@@ -12,7 +12,6 @@ import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -24,6 +23,7 @@ import org.zanata.security.ZanataIdentity;
 
 import com.google.common.collect.Lists;
 import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.util.ServiceLocator;
 
 @Name("projectSearch")
 @Scope(ScopeType.CONVERSATION)
@@ -33,10 +33,6 @@ public class ProjectSearch implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final static int DEFAULT_PAGE_SIZE = 30;
-
-    @Getter
-    @Setter
-    private int scrollerPage = 1;
 
     @In
     private ZanataIdentity identity;
@@ -49,10 +45,6 @@ public class ProjectSearch implements Serializable {
 
     // Count of result to be return as part of autocomplete
     private final static int INITIAL_RESULT_COUNT = 5;
-
-    public int getPageSize() {
-        return queryProjectPagedListDataModel.getPageSize();
-    }
 
     public DataModel getProjectPagedListDataModel() {
         queryProjectPagedListDataModel.setIncludeObsolete(identity
@@ -74,8 +66,8 @@ public class ProjectSearch implements Serializable {
     private class ProjectAutocomplete extends
             AbstractAutocomplete<SearchResult> {
 
-        private ProjectDAO projectDAO = (ProjectDAO) Component
-                .getInstance(ProjectDAO.class);
+        private ProjectDAO projectDAO =
+                ServiceLocator.instance().getInstance(ProjectDAO.class);
 
         /**
          * Return results on search

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>server</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>3.5.0-SNAPSHOT</version>
   </parent>
   <artifactId>zanata-model</artifactId>
   <name>Zanata model</name>
@@ -32,7 +32,6 @@
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
-          <failOnWarning>true</failOnWarning>
           <usedDependencies combine.children="append">
             <usedDependency>org.projectlombok:lombok</usedDependency>
             <usedDependency>org.hibernate:hibernate-search</usedDependency>

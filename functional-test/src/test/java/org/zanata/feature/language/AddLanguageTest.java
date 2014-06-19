@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.Matchers;
-import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.administration.AddLanguagePage;
 import org.zanata.page.administration.ManageLanguagePage;
 import org.zanata.util.SampleProjectRule;
@@ -43,12 +43,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
 @Category(DetailedTest.class)
-public class AddLanguageTest {
+public class AddLanguageTest extends ZanataTestCase {
 
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     @Ignore("RHBZ-1086036")
     public void addLanguageAsEnabled() {
         String language = "Goa'uld";
@@ -88,7 +88,7 @@ public class AddLanguageTest {
                 Matchers.hasItem(languageDisplayName));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addLanguageAsDisabled() {
         String language = "Klingon";
         String languageDisplayName = "klingon[Klingon]";
@@ -122,7 +122,7 @@ public class AddLanguageTest {
                 Matchers.not(Matchers.hasItem(languageDisplayName)));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addKnownLanguage() {
         String language = "ru-RU";
         ManageLanguagePage manageLanguagePage =

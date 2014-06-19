@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>server</artifactId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>3.5.0-SNAPSHOT</version>
   <name>Zanata server modules</name>
   <packaging>pom</packaging>
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>18-SNAPSHOT</version>
+    <version>19</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -31,11 +31,11 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
-    <zanata.api.version>3.3.1-SNAPSHOT</zanata.api.version>
+    <zanata.api.version>3.3.1</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.3.0</zanata.api.compat.version>
-    <zanata.client.version>3.3.0</zanata.client.version>
-    <zanata.common.version>3.3.0-SNAPSHOT</zanata.common.version>
+    <zanata.client.version>3.3.1</zanata.client.version>
+    <zanata.common.version>3.3.0</zanata.common.version>
 
     <richfaces.version>4.3.4.Final</richfaces.version>
 
@@ -191,16 +191,19 @@
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
         <version>${gwt.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.google.gwt.inject</groupId>
@@ -322,6 +325,18 @@
       <dependency>
         <groupId>net.sf.okapi.filters</groupId>
         <artifactId>okapi-filter-plaintext</artifactId>
+        <version>${okapi.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.sf.okapi.logbind</groupId>
+            <artifactId>build-log4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.okapi.filters</groupId>
+        <artifactId>okapi-filter-regex</artifactId>
         <version>${okapi.version}</version>
         <exclusions>
           <exclusion>
@@ -493,6 +508,16 @@
         <groupId>org.apache.solr</groupId>
         <artifactId>solr-solrj</artifactId>
         <version>3.6.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -708,7 +733,8 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>gwt-maven-plugin</artifactId>
-          <version>2.5.0</version>
+          <!-- NB In some cases, we might not want to use gwt.version here -->
+          <version>${gwt.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

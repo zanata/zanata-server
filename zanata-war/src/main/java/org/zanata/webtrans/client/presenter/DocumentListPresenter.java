@@ -213,7 +213,7 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
         }
 
         // don't carry searches over to the next document
-        token.setSearchText("");
+        token.setEditorTextSearch("");
         history.newItem(token);
 
         userWorkspaceContext.setSelectedDoc(doc);
@@ -434,7 +434,9 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
             userWorkspaceContext.setSelectedDoc(node.getDocInfo());
             // required in order to show the document selected in doclist when
             // loading from bookmarked history token
-            fireDocumentSelection(node.getDocInfo());
+            userWorkspaceContext.setSelectedDoc(node.getDocInfo());
+
+
         }
     }
 
@@ -794,7 +796,7 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
                 TranslationStatistics msgStats2 =
                         o2.getDocInfo().getStats()
                                 .getStats(localeId.getId(), StatUnit.MESSAGE);
-                return (int) (msgStats1.getApproved() - msgStats2.getApproved());
+                return (int) (msgStats1.getTranslatedAndApproved() - msgStats2.getTranslatedAndApproved());
             } else {
                 TranslationStatistics msgStats1 =
                         o1.getDocInfo().getStats()
@@ -802,7 +804,7 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
                 TranslationStatistics msgStats2 =
                         o2.getDocInfo().getStats()
                                 .getStats(localeId.getId(), StatUnit.WORD);
-                return (int) (msgStats1.getApproved() - msgStats2.getApproved());
+                return (int) (msgStats1.getTranslatedAndApproved() - msgStats2.getTranslatedAndApproved());
             }
         }
 
@@ -820,17 +822,17 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
                 TranslationStatistics msgStats2 =
                         o2.getDocInfo().getStats()
                                 .getStats(localeId.getId(), StatUnit.MESSAGE);
-                return (int) (msgStats1.getUntranslated() - msgStats2
-                        .getUntranslated());
+                return (int) (msgStats1.getIncomplete() - msgStats2
+                        .getIncomplete());
             } else {
-                TranslationStatistics msgStats1 =
+                TranslationStatistics wordStats1 =
                         o1.getDocInfo().getStats()
                                 .getStats(localeId.getId(), StatUnit.WORD);
-                TranslationStatistics msgStats2 =
+                TranslationStatistics wordStats2 =
                         o2.getDocInfo().getStats()
                                 .getStats(localeId.getId(), StatUnit.WORD);
-                return (int) (msgStats1.getUntranslated() - msgStats2
-                        .getUntranslated());
+                return (int) (wordStats1.getIncomplete() - wordStats2
+                        .getIncomplete());
             }
         }
 

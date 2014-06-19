@@ -29,7 +29,8 @@ import static org.hamcrest.Matchers.not;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.BasePage;
 import org.zanata.page.projects.ProjectBasePage;
 import org.zanata.page.projects.ProjectsPage;
@@ -42,12 +43,12 @@ import org.zanata.workflow.LoginWorkFlow;
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
 @Category(DetailedTest.class)
-public class ProjectSearchTest {
+public class ProjectSearchTest extends ZanataTestCase {
 
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void successfulProjectSearchAndDisplay() {
         BasePage basePage = new BasicWorkFlow()
                 .goToHome()
@@ -66,7 +67,7 @@ public class ProjectSearchTest {
                 equalTo("about fedora"));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void unsuccessfulProjectSearch() {
         ProjectsPage projectsPage = new BasicWorkFlow()
                 .goToHome()
@@ -78,7 +79,7 @@ public class ProjectSearchTest {
                 .getProjectNamesOnCurrentPage().isEmpty());
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void normalUserCannotSearchObsolete() {
         new LoginWorkFlow().signIn("admin", "admin").goToProjects()
                 .goToProject("about fedora").gotoSettingsTab()

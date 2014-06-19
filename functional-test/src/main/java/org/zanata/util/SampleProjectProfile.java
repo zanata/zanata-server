@@ -1,12 +1,14 @@
 package org.zanata.util;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.hibernate.Session;
 import org.hibernate.search.FullTextSession;
-import org.hibernate.search.Search;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -46,6 +48,8 @@ import com.github.huangp.entityunit.entity.EntityMaker;
 import com.github.huangp.entityunit.entity.EntityMakerBuilder;
 import com.github.huangp.entityunit.entity.FixIdCallback;
 import com.github.huangp.entityunit.maker.FixedValueMaker;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,29 +98,49 @@ public class SampleProjectProfile {
         enUSLocale =
                 forLocale(false, LocaleId.EN_US).makeAndPersist(entityManager,
                         HLocale.class);
-        Query query = entityManager.createQuery(
-                "update HApplicationConfiguration set value = '' where key = :key");
-        query.setParameter("key", HApplicationConfiguration.KEY_HOME_CONTENT);
-        query.executeUpdate();
-        query.setParameter("key", HApplicationConfiguration.KEY_HELP_CONTENT);
-        query.executeUpdate();
+
+        List<HApplicationConfiguration> configurations = entityManager
+                .createQuery("from HApplicationConfiguration",
+                        HApplicationConfiguration.class).getResultList();
+
+        Iterable<HApplicationConfiguration> cleanableConfig =
+                Iterables.filter(configurations,
+                        new Predicate<HApplicationConfiguration>() {
+                            @Override
+                            public boolean
+                                    apply(HApplicationConfiguration input) {
+                                String key = input.getKey();
+                                // TODO if we ever need to test this settings, we need to reset values for following to default
+                                return !key
+                                        .equals(HApplicationConfiguration.KEY_EMAIL_FROM_ADDRESS)
+                                        && !key.equals(HApplicationConfiguration.KEY_EMAIL_LOG_EVENTS)
+                                        && !key.equals(HApplicationConfiguration.KEY_EMAIL_LOG_LEVEL);
+                            }
+                        });
+        for (HApplicationConfiguration configuration : cleanableConfig) {
+            entityManager.remove(configuration);
+        }
+        entityManager.flush();
 
         purgeLuceneIndexes();
         // TODO probably should delete cache as well
     }
 
     private void purgeLuceneIndexes() {
-        FullTextSession fullTextSession =
-                Search.getFullTextSession((Session) entityManagerFactory
-                        .createEntityManager().getDelegate());
-
-        fullTextSession.purgeAll(HAccount.class);
-        fullTextSession.purgeAll(HGlossaryEntry.class);
-        fullTextSession.purgeAll(HGlossaryTerm.class);
-        fullTextSession.purgeAll(HProject.class);
-        fullTextSession.purgeAll(HProjectIteration.class);
-        fullTextSession.purgeAll(TransMemoryUnit.class);
-        fullTextSession.purgeAll(HTextFlowTarget.class);
+        FullTextEntityManager em =
+                Search.getFullTextEntityManager(
+                        entityManagerFactory.createEntityManager());
+        try {
+            em.purgeAll(HAccount.class);
+            em.purgeAll(HGlossaryEntry.class);
+            em.purgeAll(HGlossaryTerm.class);
+            em.purgeAll(HProject.class);
+            em.purgeAll(HProjectIteration.class);
+            em.purgeAll(TransMemoryUnit.class);
+            em.purgeAll(HTextFlowTarget.class);
+        } finally {
+            em.close();
+        }
     }
 
     public void makeSampleLanguages() {
@@ -244,6 +268,9 @@ public class SampleProjectProfile {
                         // iteration
                         .addFieldOrPropertyMaker(HProjectIteration.class,
                                 "slug", FixedValueMaker.fix("master"))
+                        .addFieldOrPropertyMaker(HProject.class,
+                                "sourceViewURL",
+                          FixedValueMaker.EMPTY_STRING_MAKER)
                         // document
                         // public HDocument(String docId, String name, String
                         // path,

@@ -22,17 +22,21 @@
   <composite:attribute name="render"
     shortDescription="Ids of component to render on pull request"/>
 
+  <composite:attribute name="oncomplete"
+    shortDescription="The client-side script method to be called after complete"/>
+
   <composite:attribute name="onCompleteRender"
     shortDescription="Ids of component to render on complete"/>
 
   <composite:attribute name="type"
-    shortDescription="Type of statistic bar, 'large' or leave empty for default"/>
+    shortDescription="Type of statistic bar, 'large', 'full' or leave empty for default"
+    default=""/>
 
 </composite:interface>
 <composite:implementation>
 
   <a4j:jsFunction name="onCompleteFunction"
-    render="poll-#{cc.attrs.id}, #{cc.attrs.onCompleteRender}"/>
+    render="poll-#{cc.attrs.id}, #{cc.attrs.onCompleteRender}" oncomplete="#{cc.attrs.oncomplete}"/>
 
   <a4j:poll id="poll-#{cc.attrs.id}" interval="#{cc.attrs.interval}"
     enabled="#{cc.attrs.actionBean.inProgress}"
@@ -54,7 +58,7 @@
       jQuery(uncompletedBar).css('margin-left', completedPercentage + "%");
 
       var inProgress = jQuery("[id='#{cc.attrs.id}-inProgress']").val();
-      if (inProgress == 'false' && completedPercentage == '100') {
+      if (inProgress == 'false' || completedPercentage == '100') {
         onCompleteFunction();
       }
     }
@@ -72,11 +76,27 @@
           value="#{cc.attrs.actionBean.completedPercentage}"/>
       </s:div>
 
-      <s:div
-        styleClass="#{cc.attrs.type eq 'large' ? 'progress-bar--large' : 'progress-bar'}">
-        <span class="progress-bar__translated" style="width: 0%;"/>
-        <span class="progress-bar__item" style="width: 100%;margin-left: 0%"/>
-      </s:div>
+      <s:fragment rendered="#{cc.attrs.type eq 'large'}">
+        <s:div styleClass="progress-bar progress-bar--large">
+          <span class="progress-bar__translated" style="width: 0%;"/>
+          <span class="progress-bar__item" style="width: 100%;margin-left: 0%"/>
+        </s:div>
+      </s:fragment>
+
+      <s:fragment rendered="#{cc.attrs.type eq 'full'}">
+        <s:div styleClass="progress-bar progress-bar--full">
+          <span class="progress-bar__translated" style="width: 0%;"/>
+          <span class="progress-bar__item" style="width: 100%;margin-left: 0%"/>
+        </s:div>
+      </s:fragment>
+
+      <s:fragment rendered="#{cc.attrs.type eq ''}">
+        <s:div styleClass="progress-bar">
+          <span class="progress-bar__translated" style="width: 0%;"/>
+          <span class="progress-bar__item" style="width: 100%;margin-left: 0%"/>
+        </s:div>
+      </s:fragment>
+
     </s:div>
   </s:div>
 </composite:implementation>

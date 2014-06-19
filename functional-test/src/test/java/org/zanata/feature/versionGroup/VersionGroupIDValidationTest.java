@@ -29,11 +29,12 @@ import org.junit.experimental.categories.Category;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.groups.CreateVersionGroupPage;
 import org.zanata.util.AddUsersRule;
-import org.zanata.util.NoScreenshot;
 import org.zanata.workflow.LoginWorkFlow;
 
 /**
@@ -42,8 +43,10 @@ import org.zanata.workflow.LoginWorkFlow;
  */
 @RunWith(Theories.class)
 @Category(DetailedTest.class)
-@NoScreenshot
-public class VersionGroupIDValidationTest {
+public class VersionGroupIDValidationTest extends ZanataTestCase {
+
+    @Rule
+    public Timeout timeout = new Timeout(ZanataTestCase.MAX_LONG_TEST_DURATION);
 
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();

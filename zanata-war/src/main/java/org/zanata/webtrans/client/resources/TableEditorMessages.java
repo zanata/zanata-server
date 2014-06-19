@@ -135,9 +135,15 @@ public interface TableEditorMessages extends Messages {
     @DefaultMessage("You are trying to save an invalid translation")
     String validationErrorMessage();
 
+    @DefaultMessage("Invalid translation")
+    String invalidTranslation();
+
     @DefaultMessage("Translation")
     String translation();
 
     @DefaultMessage("Error message")
     String errorMessage();
+
+    @DefaultMessage("Turn syntax highlighting on or off. Spellcheck will not work when syntax highlighting is active.")
+    String switchBetweenEditor();
 }

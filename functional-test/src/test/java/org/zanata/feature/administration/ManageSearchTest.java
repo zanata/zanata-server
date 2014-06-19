@@ -25,16 +25,17 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.administration.ManageSearchPage;
 import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.LoginWorkFlow;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Category(DetailedTest.class)
-public class ManageSearchTest {
+public class ManageSearchTest extends ZanataTestCase {
 
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
@@ -46,30 +47,30 @@ public class ManageSearchTest {
         dashboardPage = new LoginWorkFlow().signIn("admin", "admin");
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void regenerateSearchIndexes() {
         ManageSearchPage manageSearchPage = dashboardPage
                 .goToAdministration()
                 .goToManageSeachPage()
                 .clickSelectAll();
 
-        assertThat("All actions are selected",
-                manageSearchPage.allActionsSelected());
-        assertThat("No operations are running",
-                manageSearchPage.noOperationsRunningIsDisplayed());
+        assertThat(manageSearchPage.allActionsSelected())
+                .as("All actions are selected");
+        assertThat(manageSearchPage.noOperationsRunningIsDisplayed())
+                .as("No operations are running");
 
         manageSearchPage = manageSearchPage
                 .performSelectedActions()
                 .waitForActionsToFinish();
 
-        assertThat("Completed is displayed",
-                manageSearchPage.completedIsDisplayed());
+        assertThat(manageSearchPage.completedIsDisplayed())
+                .as("Completed is displayed");
 
-        assertThat("No operations are running",
-                manageSearchPage.noOperationsRunningIsDisplayed());
+        assertThat(manageSearchPage.noOperationsRunningIsDisplayed())
+                .as("No operations are running");
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     @Ignore("Data set not large enough to achieve stable test")
     public void abortReindexes() {
         ManageSearchPage manageSearchPage = dashboardPage
@@ -77,16 +78,16 @@ public class ManageSearchTest {
                 .goToManageSeachPage()
                 .clickSelectAll();
 
-        assertThat("All actions are selected",
-                manageSearchPage.allActionsSelected());
-        assertThat("No operations are running",
-                manageSearchPage.noOperationsRunningIsDisplayed());
+        assertThat(manageSearchPage.allActionsSelected())
+                .as("All actions are selected");
+        assertThat(manageSearchPage.noOperationsRunningIsDisplayed())
+                .as("No operations are running");
 
         manageSearchPage = manageSearchPage
                 .performSelectedActions()
                 .abort();
 
-        assertThat("Aborted is displayed",
-                manageSearchPage.abortedIsDisplayed());
+        assertThat(manageSearchPage.abortedIsDisplayed())
+                .as("Aborted is displayed");
     }
 }

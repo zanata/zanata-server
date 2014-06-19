@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.httpclient.URIException;
 import org.dbunit.operation.DatabaseOperation;
 import org.fedorahosted.tennera.jgettext.HeaderFields;
 import org.hamcrest.Matchers;
@@ -85,6 +84,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// single threaded because of ehcache (perhaps other reasons too)
 @Test(singleThreaded = true)
 public class TranslationResourceRestTest extends ZanataRestTest {
     private static final Logger log = LoggerFactory
@@ -326,7 +326,7 @@ public class TranslationResourceRestTest extends ZanataRestTest {
     }
 
     @Test
-    public void getDocument() throws URIException {
+    public void getDocument() throws Exception {
         String docName = "my/path/document.txt";
         String docUri = RestUtil.convertToDocumentURIId(docName);
         Resource resource = createSourceDoc(docName, false);
@@ -354,7 +354,7 @@ public class TranslationResourceRestTest extends ZanataRestTest {
     }
 
     @Test
-    public void getDocumentWithResources() throws URIException {
+    public void getDocumentWithResources() throws Exception {
         LocaleId nbLocale = new LocaleId("de");
         String docName = "my/path/document.txt";
         String docUri = RestUtil.convertToDocumentURIId(docName);

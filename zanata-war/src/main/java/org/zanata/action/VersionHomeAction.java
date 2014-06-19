@@ -33,11 +33,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.faces.application.FacesMessage;
 import javax.validation.ConstraintViolationException;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -49,7 +55,6 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.MergeType;
 import org.zanata.common.ProjectType;
-import org.zanata.dao.CredentialsDAO;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.ProjectIterationDAO;
@@ -77,23 +82,19 @@ import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
-import org.zanata.ui.FilterUtil;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
+import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
+import org.zanata.util.UrlUtil;
 import org.zanata.util.ZanataMessages;
 import org.zanata.webtrans.shared.model.DocumentStatus;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 @Name("versionHomeAction")
 @Scope(ScopeType.PAGE)
@@ -156,7 +157,6 @@ public class VersionHomeAction extends AbstractSortAction implements
     private HLocale selectedLocale;
 
     @Getter
-    @Setter
     private HDocument selectedDocument;
 
     @In
@@ -272,7 +272,7 @@ public class VersionHomeAction extends AbstractSortAction implements
                     return StringUtils.startsWithIgnoreCase(elem.getLocaleId()
                             .getId(), filter)
                             || StringUtils.containsIgnoreCase(
-                            elem.retrieveDisplayName(), filter);
+                                    elem.retrieveDisplayName(), filter);
                 }
             };
 
@@ -282,6 +282,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     public void sortLanguageList() {
         languageComparator.setSelectedDocumentId(null);
         Collections.sort(getSupportedLocale(), languageComparator);
+        languageTabLanguageFilter.reset();
     }
 
     /**
@@ -290,6 +291,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     public void sortLanguageList(Long documentId) {
         languageComparator.setSelectedDocumentId(documentId);
         Collections.sort(getSupportedLocale(), languageComparator);
+        documentsTabLanguageFilter.reset();
     }
 
     /**
@@ -300,16 +302,19 @@ public class VersionHomeAction extends AbstractSortAction implements
     public void sortDocumentList(LocaleId localeId) {
         documentComparator.setSelectedLocaleId(localeId);
         Collections.sort(getDocuments(), documentComparator);
+        languageTabDocumentFilter.reset();
     }
 
     public void sortSourceDocumentList() {
         sourceDocumentComparator.setSelectedLocaleId(null);
         Collections.sort(getSourceDocuments(), sourceDocumentComparator);
+        documentsTabDocumentFilter.reset();
     }
 
     public void sortSettingsDocumentList() {
         settingsDocumentComparator.setSelectedLocaleId(null);
         Collections.sort(getDocuments(), settingsDocumentComparator);
+        settingsTabDocumentFilter.reset();
     }
 
     @Override
@@ -418,10 +423,6 @@ public class VersionHomeAction extends AbstractSortAction implements
             loadStatistics();
         }
         this.pageRendered = pageRendered;
-    }
-
-    public void setSelectedLocale(HLocale hLocale) {
-        this.selectedLocale = hLocale;
     }
 
     @Getter
@@ -688,6 +689,15 @@ public class VersionHomeAction extends AbstractSortAction implements
                 .getAdapterParams()));
     }
 
+    public void setSelectedLocaleId(String localeId) {
+        this.selectedLocale = localeDAO.findByLocaleId(new LocaleId(localeId));
+    }
+
+    public void setSelectedDocumentId(String projectSlug, String versionSlug, String docId) {
+        docId = UrlUtil.decodeString(docId);
+        this.selectedDocument = documentDAO.getByProjectIterationAndDocId(projectSlug, versionSlug, docId);
+    }
+
     // TODO add logging for disk writing errors
     // TODO damason: unify this with Source/TranslationDocumentUpload
     private void uploadAdapterFile() {
@@ -792,6 +802,14 @@ public class VersionHomeAction extends AbstractSortAction implements
         translationFileServiceImpl.removeTempFile(tempFile);
     }
 
+    public String encodeDocId(String docId) {
+        return UrlUtil.encodeString(docId);
+    }
+
+    public String decodeDocId(String docId) {
+        return UrlUtil.decodeString(docId);
+    }
+
     public void uploadTranslationFile(HLocale hLocale) {
         identity.checkPermission("modify-translation", hLocale, getVersion()
                 .getProject());
@@ -850,8 +868,8 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     private class DocumentFilter extends InMemoryListFilter<HDocument> {
-        private DocumentDAO documentDAO = (DocumentDAO) Component
-                .getInstance(DocumentDAO.class);
+        private DocumentDAO documentDAO =
+                ServiceLocator.instance().getInstance(DocumentDAO.class);
 
         @Override
         protected List<HDocument> fetchAll() {
@@ -866,7 +884,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     };
 
     private class SourceDocumentFilter extends InMemoryListFilter<HDocument> {
-        private DocumentDAO documentDAO = (DocumentDAO) Component
+        private DocumentDAO documentDAO = ServiceLocator.instance()
                 .getInstance(DocumentDAO.class);
 
         @Override

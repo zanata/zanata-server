@@ -20,34 +20,31 @@
  */
 package org.zanata.feature.administration;
 
-import org.concordion.api.extension.Extensions;
-import org.concordion.ext.ScreenshotExtension;
-import org.concordion.ext.TimestampFormatterExtension;
-import org.concordion.integration.junit4.ConcordionRunner;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.zanata.concordion.CustomResourceExtension;
-import org.zanata.feature.ConcordionTest;
-import org.zanata.page.administration.ManageUserAccountPage;
-import org.zanata.page.administration.ManageUserPage;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.util.AddUsersRule;
 import org.zanata.util.HasEmailRule;
 import org.zanata.workflow.LoginWorkFlow;
 
-@RunWith(ConcordionRunner.class)
-@Extensions({ ScreenshotExtension.class, TimestampFormatterExtension.class,
-        CustomResourceExtension.class })
-@Category(ConcordionTest.class)
-public class ManageUsersTest {
-    @ClassRule
-    public static HasEmailRule hasEmailRule = new HasEmailRule();
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * @author Damian Jansen <a
+ *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
+ */
+@Category(DetailedTest.class)
+public class ManageUsersTest extends ZanataTestCase {
 
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
+    @ClassRule
+    public static HasEmailRule emailRule = new HasEmailRule();
 
     private DashboardBasePage dashboardPage;
 
@@ -56,26 +53,21 @@ public class ManageUsersTest {
         dashboardPage = new LoginWorkFlow().signIn("admin", "admin");
     }
 
-    public ManageUserPage goToUserAdministration() {
-        return dashboardPage.goToAdministration().goToManageUserPage();
-    }
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void changeAUsersPassword() {
+        dashboardPage.goToAdministration()
+                .goToManageUserPage()
+                .editUserAccount("translator")
+                .enterPassword("newpassword")
+                .enterConfirmPassword("newpassword")
+                .saveUser()
+                .logout();
 
-    public ManageUserAccountPage editUserAccount(ManageUserPage manageUserPage,
-            String username) {
-        return manageUserPage.editUserAccount(username);
-    }
+        dashboardPage = new LoginWorkFlow().signIn("translator", "newpassword");
 
-    public ManageUserPage changeUsernameAndPassword(
-            ManageUserAccountPage manageUserAccount, String username,
-            String password) {
-        return manageUserAccount.clearFields().enterUsername(username)
-                .enterPassword(password).enterConfirmPassword(password)
-                .saveUser();
-    }
-
-    public boolean userListContains(ManageUserPage manageUserPage,
-            String username) {
-        return manageUserPage.getUserList().contains(username);
+        assertThat(dashboardPage.loggedInAs())
+                .isEqualTo("translator")
+                .as("User logged in with new password");
     }
 
 }

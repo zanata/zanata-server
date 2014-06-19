@@ -58,6 +58,8 @@ import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.inject.Inject;
 
 import net.customware.gwt.presenter.client.EventBus;

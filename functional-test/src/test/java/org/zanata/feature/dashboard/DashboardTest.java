@@ -31,7 +31,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.dashboard.DashboardActivityTab;
 import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.page.dashboard.DashboardProjectsTab;
@@ -44,7 +46,7 @@ import org.zanata.workflow.LoginWorkFlow;
 
 @Category(DetailedTest.class)
 @Slf4j
-public class DashboardTest {
+public class DashboardTest extends ZanataTestCase {
 
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
@@ -70,7 +72,8 @@ public class DashboardTest {
         dashboard = new LoginWorkFlow().signIn("admin", "admin");
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    @Category(BasicAcceptanceTest.class)
     public void dashboardBasicTests() throws Exception {
         assertThat(dashboardPresentAfterLogin())
                 .as("Dashboard is present").isTrue();
@@ -97,32 +100,30 @@ public class DashboardTest {
         return projectsTab.getMaintainedProjectList().size() > 0;
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void accountEmailModification() throws Exception {
         final String successMessage =
                 "You will soon receive an email with a link to activate your email account change.";
-        dashboard.gotoSettingsTab()
-                 .typeNewAccountEmailAddress("new@fakeemail.com")
-                 .clickUpdateEmailButton()
-                 .waitForNotificationMessage(successMessage);
-        assertThat(dashboard.getNotificationMessage())
-                .isEqualTo(successMessage);
+        dashboard.goToSettingsTab()
+                .gotoSettingsAccountTab()
+                .typeNewAccountEmailAddress("new@fakeemail.com")
+                .clickUpdateEmailButton();
+        assertThat(dashboard.expectNotification(successMessage));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void passwordChange() throws Exception {
         final String passwordChanged =
                 "Your password has been successfully changed.";
-        dashboard.gotoSettingsTab()
-                 .typeOldPassword("admin")
-                 .typeNewPassword("admin2")
-                 .clickUpdatePasswordButton()
-                 .waitForNotificationMessage(passwordChanged);
-        assertThat(dashboard.getNotificationMessage()).isEqualTo(
-                passwordChanged);
+        dashboard.goToSettingsTab()
+                .gotoSettingsAccountTab()
+                .typeOldPassword("admin")
+                .typeNewPassword("admin2")
+                .clickUpdatePasswordButton();
+        assertThat(dashboard.expectNotification(passwordChanged));
     }
 
-    @Test
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void createProject() throws Exception {
         CreateProjectPage createProjectPage =
             dashboard.gotoProjectsTab().clickOnCreateProjectLink();
