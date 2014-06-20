@@ -27,6 +27,7 @@ import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projectversion.VersionDocumentsPage;
@@ -86,6 +87,8 @@ public class DocTypeUploadTest extends ZanataTestCase {
                     "00:04:35.03,00:04:38.82" +
                     sep() + testString);
 
+    @Feature(summary = "The user can upload the supported document types",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Theory
     @Category(BasicAcceptanceTest.class)
     public void uploadFile(File testFile) throws Exception {

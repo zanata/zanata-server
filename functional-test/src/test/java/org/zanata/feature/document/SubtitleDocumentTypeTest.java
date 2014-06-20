@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projectversion.VersionDocumentsPage;
@@ -46,6 +47,10 @@ import static org.zanata.util.FunctionalTestHelper.assumeTrue;
  * @author Damian Jansen
  * <a href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
+@Feature(summary = "The system can parse subtitle files with labels, " +
+        "multiline entries and tagged formatting ",
+        tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0,
+        bugzilla = 1062835)
 @Category(DetailedTest.class)
 public class SubtitleDocumentTypeTest extends ZanataTestCase {
 
