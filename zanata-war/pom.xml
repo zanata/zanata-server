@@ -37,7 +37,6 @@
 
     <groovy.version>2.1.5</groovy.version>
     <zanata.web.assets.version>5</zanata.web.assets.version>
-    <resteasy.scope>compile</resteasy.scope>
   </properties>
 
   <build>
