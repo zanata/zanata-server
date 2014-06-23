@@ -138,9 +138,7 @@
             <usedDependency>com.google.code.findbugs:jsr305</usedDependency>
             <!-- used for arquillian tests -->
             <usedDependency>org.jboss.as:jboss-as-controller</usedDependency>
-            <!-- used for gwt super devmode -->
-            <usedDependency>org.json:json</usedDependency>
-             <!--used to log sql and parameters when debugging Hibernate -->
+            <!--used to log sql and parameters when debugging Hibernate -->
             <usedDependency>com.googlecode.log4jdbc:log4jdbc</usedDependency>
 
             <!-- Grandfathered entries: -->
