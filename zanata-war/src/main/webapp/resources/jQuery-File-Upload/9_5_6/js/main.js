@@ -20,7 +20,7 @@ $(function () {
             dropZone = uploadForm.find('.drag-drop'),
             filesList = uploadForm.find('.files'),
             errorList = uploadForm.find('.js-errors'),
-            startButton = uploadForm.find('.fileupload-main-start'),
+            startButton = uploadForm.find('.js-fileupload-main-start'),
             doneButton = uploadForm.find('.fileupload-done'),
             cancelButton = uploadForm.find('.fileupload-cancel'),
             closeButton = uploadForm.find('.fileupload-close'),
