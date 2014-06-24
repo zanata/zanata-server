@@ -50,7 +50,7 @@
     <hibernate.search.version>4.4.2.Final</hibernate.search.version>
     <hibernate.entitymanager.version>${hibernate.version}</hibernate.entitymanager.version>
     <!-- For EAP 6 / Hibernate 4.2 -->
-    <hibernate.jta.platform>org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform</hibernate.jta.platform>
+    <hibernate.jta.platform>org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform</hibernate.jta.platform>
 
     <war_bundles_jsf_impl>false</war_bundles_jsf_impl>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
