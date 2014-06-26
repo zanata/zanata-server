@@ -21,11 +21,10 @@
 package org.zanata.feature.editor;
 
 import java.io.File;
-import java.util.HashMap;
 
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.testharness.ZanataTestCase;
@@ -34,12 +33,10 @@ import org.zanata.page.webtrans.EditorPage;
 import org.zanata.util.CleanDocumentStorageRule;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.TestFileGenerator;
-import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.zanata.util.FunctionalTestHelper.assumeFalse;
 
 /**
  * @author Damian Jansen <a
@@ -48,25 +45,22 @@ import static org.zanata.util.FunctionalTestHelper.assumeFalse;
 @Category(DetailedTest.class)
 public class TranslateTextTest extends ZanataTestCase {
 
-    @Rule
-    public SampleProjectRule sampleProjectRule = new SampleProjectRule();
+    @ClassRule
+    public static SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
-    @Rule
-    public CleanDocumentStorageRule documentStorageRule =
+    @ClassRule
+    public static CleanDocumentStorageRule documentStorageRule =
             new CleanDocumentStorageRule();
 
     private TestFileGenerator testFileGenerator = new TestFileGenerator();
 
-    @Before
-    public void before() {
-        new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
-        assumeFalse(
-                "",
-                new File(CleanDocumentStorageRule.getDocumentStoragePath()
-                        .concat(File.separator).concat("documents")
-                        .concat(File.separator)).exists());
+    @BeforeClass
+    public static void beforeClass() {
         new LoginWorkFlow().signIn("admin", "admin");
+        new ProjectWorkFlow().createNewProjectVersion("about fedora",
+                "text-translate", "File");
     }
+
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void translateBasicTextFile() {
@@ -74,21 +68,17 @@ public class TranslateTextTest extends ZanataTestCase {
                 testFileGenerator.generateTestFileWithContent("basictext",
                         ".txt", "Line One\nLine Two\nLine Three");
 
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", "text-project");
-        projectSettings.put("Name", "text-project");
-        projectSettings.put("Project Type", "File");
-
         EditorPage editorPage =
-                new ProjectWorkFlow().createNewProject(projectSettings)
-                        .clickCreateVersionLink().inputVersionId("text")
-                        .saveVersion()
+                new ProjectWorkFlow().goToProjectByName("about fedora")
+                        .gotoVersion("text-translate")
                         .gotoSettingsTab()
                         .gotoSettingsDocumentsTab()
                         .pressUploadFileButton()
                         .enterFilePath(testfile.getAbsolutePath())
-                        .submitUpload().translate("fr", testfile.getName());
+                        .submitUpload()
+                        .clickUploadDone()
+                        .gotoLanguageTab()
+                        .translate("fr", testfile.getName());
 
         assertThat("Item 1 shows Line One",
                 editorPage.getMessageSourceAtRowIndex(0),

@@ -2,13 +2,12 @@ package org.zanata.page.projectversion.versionsettings;
 
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.zanata.page.projectversion.VersionBasePage;
-import org.zanata.page.projectversion.VersionLanguagesPage;
 
 /**
  * @author Damian Jansen <a
@@ -32,55 +31,69 @@ public class VersionDocumentsTab extends VersionBasePage {
      */
     public boolean canSubmitDocument() {
         return getDriver().findElement(
-                By.id("uploadDocForm:generalDocSubmitUploadButton"))
+                By.id("file-upload-component-start-upload"))
                 .isEnabled();
     }
 
     public VersionDocumentsTab cancelUpload() {
-        getDriver().findElement(
-                By.id("uploadDocForm:generalDocCancelUploadButton")).click();
+        getDriver()
+                .findElement(By.id("file-upload-component-cancel-upload"))
+                .click();
+        waitForTenSec().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply( WebDriver input) {
+                return !getDriver().findElement(By.id("file-upload-component"))
+                        .isDisplayed();
+            }
+        });
         return new VersionDocumentsTab(getDriver());
     }
 
     public VersionDocumentsTab enterFilePath(String filePath) {
-        // selenium action: a thing that you add steps to
+        // Make the hidden input element slightly not hidden
+        ((JavascriptExecutor)getDriver())
+                .executeScript("arguments[0].style.visibility = 'visible'; " +
+                        "arguments[0].style.height = '1px'; " +
+                        "arguments[0].style.width = '1px'; " +
+                        "arguments[0].style.opacity = 1",
+                        getDriver().findElement(
+                                By.id("file-upload-component-file-input")));
 
-
-
-        WebElement fileInput = getDriver().findElement(By.id("file-upload-component-file-input"));
-
-        // THIS IS A HACK
-        // Why would I do this?
-        //   The 'browse files' click target to open the file input dialog is
-        //   actually overlayed with a transparent file input element that
-        //   receives the click. This is to get around the lack of styling
-        //   ability of the file input element.
-        //   To keep the test simple, I want to just enter a file path into
-        //   the input element, rather than try to make selenium control the
-        //   file selection dialog.
-
-        // This hack makes the file input element visible by preventing its
-        // parent having hidden overflow, and changing the element itself
-        // be opaque.
-
-//        WebElement container = fileInput.findElement(By.xpath(".."));
-        JavascriptExecutor js = (JavascriptExecutor) getDriver();
-        js.executeScript("arguments[0].style.opacity = 1; arguments[0].parentElement.style.overflow = '';", fileInput);
-
-//        element.sendKeys(filePath);
-        new Actions(getDriver()).sendKeys(fileInput, filePath).perform();
-
+        getDriver().findElement(
+                By.id("file-upload-component-file-input"))
+                .sendKeys(filePath);
         return new VersionDocumentsTab(getDriver());
     }
 
-    public VersionLanguagesPage submitUpload() {
+    public VersionDocumentsTab submitUpload() {
+        waitForTenSec().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return getDriver().findElement(
+                        By.id("file-upload-component-start-upload"))
+                        .isEnabled();
+            }
+        });
         getDriver().findElement(
                 By.id("file-upload-component-start-upload")).click();
-        return new VersionLanguagesPage(getDriver());
+        return new VersionDocumentsTab(getDriver());
+    }
+
+    public VersionDocumentsTab clickUploadDone() {
+        waitForTenSec().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return getDriver()
+                .findElement(By.id("file-upload-component-done-upload"))
+                .isEnabled();
+            }
+        });
+        getDriver().findElement(By.id("file-upload-component-done-upload"))
+                .click();
+        return new VersionDocumentsTab(getDriver());
     }
 
     public boolean sourceDocumentsContains(String document) {
-
         List<WebElement> documentLabelList =
                 getDriver()
                         .findElement(By.id("settings-document_form"))
@@ -93,5 +106,17 @@ public class VersionDocumentsTab extends VersionBasePage {
             }
         }
         return false;
+    }
+
+    public String getUploadError() {
+        waitForTenSec().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return getDriver().findElement(By.id("file-upload-component"))
+                        .findElement(By.className("txt--danger")).isDisplayed();
+            }
+        });
+        return getDriver().findElement(By.id("file-upload-component"))
+                .findElement(By.className("txt--danger")).getText();
     }
 }
