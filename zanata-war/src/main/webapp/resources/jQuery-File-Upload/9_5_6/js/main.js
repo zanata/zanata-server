@@ -29,6 +29,8 @@ $(function () {
             revealButtonId = container.attr('id') + '-toggle-button',
             revealButton = $('#' + revealButtonId),
             countIndicator = uploadForm.find('.js-file-count'),
+            filePathField = uploadForm.find('input[name=filepath]'),
+            fileParamsField = uploadForm.find('textarea[name=fileparams]'),
             resetUploadForm = (function resetUploadForm () {
                 errorList.empty();
                 // individual items should clean up any resources they use
@@ -41,6 +43,9 @@ $(function () {
                 doneButton.addClass('is-hidden').prop('disabled', true);
                 cancelButton.removeClass('is-hidden').prop('disabled', false);
                 dropZone.removeClass('is-hidden');
+                // clear out path and custom attributes
+                filePathField.val('');
+                fileParamsField.val('');
                 $('.js-files-panel').addClass('is-hidden');
             }),
             updateCountIndicator = (function updateCountIndicator (options) {
