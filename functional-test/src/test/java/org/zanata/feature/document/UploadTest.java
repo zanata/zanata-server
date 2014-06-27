@@ -107,7 +107,6 @@ public class UploadTest extends ZanataTestCase {
                 .submitUpload()
                 .clickUploadDone();
 
-        // We should be able to assume the new file is the only file
         assertThat(new File(documentStorageDirectory).list().length)
                 .isEqualTo(1)
                 .as("There is only one uploaded source file");

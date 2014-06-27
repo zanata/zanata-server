@@ -1,5 +1,6 @@
 package org.zanata.page.projectversion.versionsettings;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Predicate;
@@ -106,6 +107,33 @@ public class VersionDocumentsTab extends VersionBasePage {
             }
         }
         return false;
+    }
+
+    public List<String> getUploadList() {
+        List<String> filenames = new ArrayList<String>();
+        for (WebElement element : getUploadListElements()) {
+            filenames.add(element.findElement(By.className("list__title"))
+                    .getText());
+        }
+        return filenames;
+    }
+
+    public VersionDocumentsTab clickRemoveOn(String filename) {
+        for (WebElement element : getUploadListElements()) {
+            if (element.findElement(By.className("list__title"))
+                    .getText().equals(filename)) {
+                element.findElement(By.className("list__item__actions"))
+                        .findElement(By.className("cancel"))
+                        .click();
+            }
+        }
+        return new VersionDocumentsTab(getDriver());
+    }
+
+    private List<WebElement> getUploadListElements() {
+        return getDriver().findElement(By.className("js-files-panel"))
+                .findElement(By.tagName("ul"))
+                .findElements(By.tagName("li"));
     }
 
     public String getUploadError() {
