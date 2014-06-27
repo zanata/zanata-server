@@ -113,9 +113,17 @@ $(function () {
             uploadForm.find('.js-upload-not-supported').addClass('is-hidden');
         }
 
+        var maxFilesString = uploadForm.data('maxfiles');
+        var maxFiles = parseInt(maxFilesString);
+        if (maxFiles === NaN) {
+            maxFiles = 100; // default fallback if it is not properly configured
+        }
+
+
         uploadForm.fileupload({
             sequentialUploads: true,
             maxFileSize: 200*1024*1024,
+            maxNumberOfFiles: maxFiles,
             dropZone: dropZone,
             beforeAdd: (function beforeAdd (e, data) {
                 errorList.empty();

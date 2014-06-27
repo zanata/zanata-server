@@ -127,8 +127,10 @@
                                 data.files[index].error = '"' + file.name + '" is not a supported file type.'
                             } else if (error === 'File is too large') {
                                 data.files[index].error = '"' + file.name + '" is too large.'
+                            } else if (error === 'Maximum number of files exceeded') {
+                                data.files[index].error = 'Too many files. You can upload more files after the current files are uploaded.';
                             }
-                            that._renderError(file).appendTo(options.errorList);
+                            that._showSingletonError(file.error);
                         } else {
                             successFiles.push(file);
                         }

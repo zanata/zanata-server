@@ -35,6 +35,9 @@ site: http://www.fsf.org.
   <composite:attribute name="accepted"
                        shortDescription="comma-separated list of file extensions that can be uploaded"
                        required="true" />
+  <composite:attribute name="maxfiles"
+                       shortDescription="maximum number of files allowed in the upload dialog at once"
+                       required="true" />
 </composite:interface>
 
 <composite:implementation>
@@ -55,7 +58,9 @@ site: http://www.fsf.org.
         <button type="button" class="fileupload-close modal__close button--link" data-dismiss="modal"><i class="i i--huge i--cancel"></i></button>
       </header>
 
-      <form class="fileupload l--push-bottom-0" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data" data-accepted="#{cc.attrs.accepted}">
+      <form class="fileupload l--push-bottom-0" action="#{cc.attrs.url}" method="post" enctype="multipart/form-data"
+            data-accepted="#{cc.attrs.accepted}"
+            data-maxfiles="#{cc.attrs.maxfiles}">
 
         <div class="modal__content">
 
@@ -81,6 +86,7 @@ site: http://www.fsf.org.
                 </a>
               </p>
               <small class="txt--meta">Maximum file size is 200MB</small><br />
+              <small class="txt--meta">Maximum number of files is #{cc.attrs.maxfiles}</small><br />
               <small class="txt--meta">Accepted: #{cc.attrs.accepted}</small>
             </div>
 
