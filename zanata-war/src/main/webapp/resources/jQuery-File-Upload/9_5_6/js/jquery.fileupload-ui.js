@@ -620,6 +620,7 @@
                     dropZone.addClass('is-hidden');
                     // TODO change upload progress message
                     this.options.updateUploadCountIndicator(this.options);
+                    filesList.find('.cancel').addClass('is-hidden');
                     filesList.find('.start').click();
                 }
             });
