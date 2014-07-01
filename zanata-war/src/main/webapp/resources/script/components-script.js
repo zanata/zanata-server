@@ -194,11 +194,17 @@ function onInputFocus(inputField, renderResultFn) {
   }
 }
 
-function onValueChange(inputField, event, renderResultFn) {
-  if (!isArrowKey(event.keyCode)) {
+function onValueChange(inputField, event, renderResultFn, resetFn) {
+  if (event.keyCode == 27) {
+    // key: ESC
+    jQuery(inputField).select().parent().find('.js-autocomplete__results').remove();
+  } else if (!isArrowKey(event.keyCode)) {
     var minLength = parseInt(jQuery(inputField).next().val());
     if (jQuery(inputField).val().length >= minLength) {
       renderResultFn(jQuery(inputField).val());
+    }
+    else {
+      if(resetFn) resetFn()
     }
   }
 }
