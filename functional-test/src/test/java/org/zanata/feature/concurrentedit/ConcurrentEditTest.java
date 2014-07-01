@@ -2,7 +2,7 @@ package org.zanata.feature.concurrentedit;
 
 import java.util.concurrent.Callable;
 
-import org.hamcrest.Matchers;
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zanata.util.ZanataRestCaller.buildSourceResource;
 import static org.zanata.util.ZanataRestCaller.buildTextFlow;
 import static org.zanata.util.ZanataRestCaller.buildTextFlowTarget;
@@ -72,7 +72,7 @@ public class ConcurrentEditTest extends ZanataTestCase {
 
         String translation = editorPage.getMessageTargetAtRowIndex(0);
         // for some reason getText() will return one space in it
-        assertThat(translation.trim(), Matchers.isEmptyString());
+        assertThat(translation.trim()).isEmpty();
 
         // push target
         TranslationsResource translationsResource =
@@ -87,7 +87,13 @@ public class ConcurrentEditTest extends ZanataTestCase {
             public String call() throws Exception {
                 return editorPage.getBasicTranslationTargetAtRowIndex(0);
             }
-        }, Matchers.equalTo("hello world translated"));
+        }, new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.equals("hello world translated");
+            }
+        });
+
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -127,7 +133,7 @@ public class ConcurrentEditTest extends ZanataTestCase {
 
         String translation = editorPage.getMessageTargetAtRowIndex(0);
         // for some reason getText() will return one space in it
-        assertThat(translation.trim(), Matchers.isEmptyString());
+        assertThat(translation.trim()).isEmpty();
 
         // run copyTrans
         restCaller.runCopyTrans(projectSlug, "beta", docId);
@@ -138,7 +144,12 @@ public class ConcurrentEditTest extends ZanataTestCase {
             public String call() throws Exception {
                 return editorPage.getBasicTranslationTargetAtRowIndex(0);
             }
-        }, Matchers.equalTo("hello world translated"));
+        }, new Condition<String>() {
+            @Override
+            public boolean matches(String value) {
+                return value.equals("hello world translated");
+            }
+        });
     }
 
 }
