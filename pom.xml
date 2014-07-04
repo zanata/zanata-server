@@ -41,7 +41,7 @@
 
     <!-- see http://community.jboss.org/wiki/HibernateCompatibilityMatrix?decorator=print -->
     <!-- see also the jboss7 profile below -->
-    <hibernate.scope>provided</hibernate.scope>
+    <hibernate.scope>compile</hibernate.scope>
     <hibernate.version>4.2.7.SP1</hibernate.version>
     <hibernate.search.scope>compile</hibernate.search.scope>
     <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
