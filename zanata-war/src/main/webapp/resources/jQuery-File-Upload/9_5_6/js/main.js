@@ -17,6 +17,7 @@ $(function () {
     $('.fileupload').each(function() {
         var $doc = $(document),
             uploadForm = $(this),
+            url = uploadForm.attr('action'),
             dropZone = uploadForm.find('.drag-drop'),
             filesList = uploadForm.find('.files'),
             errorList = uploadForm.find('.js-errors'),
@@ -115,12 +116,13 @@ $(function () {
 
         var maxFilesString = uploadForm.data('maxfiles');
         var maxFiles = parseInt(maxFilesString);
-        if (maxFiles === NaN) {
+        if (typeof maxFiles !== 'number' || isNaN(maxFiles)) {
             maxFiles = 100; // default fallback if it is not properly configured
         }
 
 
         uploadForm.fileupload({
+            url: url,
             sequentialUploads: true,
             maxFileSize: 200*1024*1024,
             maxNumberOfFiles: maxFiles,

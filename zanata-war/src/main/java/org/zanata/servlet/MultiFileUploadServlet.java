@@ -22,13 +22,10 @@ package org.zanata.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,37 +33,41 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
+import com.google.common.base.Optional;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.hibernate.StaleStateException;
-import org.jboss.seam.Component;
+import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.seam.servlet.ContextualHttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.action.AuthenticatedAccountHome;
 import org.zanata.file.GlobalDocumentId;
 import org.zanata.file.SourceDocumentUpload;
+import org.zanata.file.UserFileUploadTracker;
 import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.rest.dto.ChunkUploadResponse;
 import org.zanata.service.TranslationFileService;
 import org.zanata.service.impl.TranslationFileServiceImpl;
+import org.zanata.util.ServiceLocator;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Endpoint for upload dialogs using multi-file upload forms.
  *
+ * Use GET on the endpoint to check that upload is acceptable, including whether
+ * the user is signed in and whether they already have an upload in-progress
+ * in a separate tab.
  */
 public class MultiFileUploadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    private SourceDocumentUpload sourceUploader;
-    private TranslationFileService translationFileServiceImpl;
 
     private static final Logger log = LoggerFactory
             .getLogger(MultiFileUploadServlet.class);
@@ -75,9 +76,67 @@ public class MultiFileUploadServlet extends HttpServlet {
     public void init(ServletConfig config) {
     }
 
+    /**
+     * Use GET to check the endpoint before doing a POST.
+     *
+     * This allows the browser to check that the upload is allowed before attempting an upload.
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        new ContextualHttpServletRequest(request) {
+            @Override
+            public void process() throws Exception {
+                respondWithUploadAvailability(response);
+            }
+        }.run();
+    }
+
+    /**
+     * Indicate in response any errors that would prevent upload to this endpoint.
+     *
+     * @param response to respond with error or success JSON
+     */
+    private void respondWithUploadAvailability(HttpServletResponse response) throws IOException {
+        Optional<String> reason = getCannotUploadReason();
+        String responseBody = reason.isPresent()
+                ? "{ \"error\": \"" + reason.get() + "\" }"
+                : "{ \"success\": \"ok to upload\" }";
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
+        writer.write(responseBody);
+        writer.close();
+    }
+
+    /**
+     * @return the reason that the user cannot upload at this time. Reason will
+     *         be absent if the user is able to upload.
+     */
+    private Optional<String> getCannotUploadReason() {
+        Optional<Long> accountId = getAccountId();
+        boolean loggedIn = accountId.isPresent();
+
+        if (loggedIn) {
+            UserFileUploadTracker tracker = ServiceLocator.instance().getInstance(
+                    UserFileUploadTracker.class);
+            boolean alreadyUploading = tracker.isUserUploading(accountId.get());
+            if (alreadyUploading) {
+                return Optional.of("already uploading");
+            }
+        } else {
+            return Optional.of("not logged in");
+        }
+        return Optional.absent();
+    }
+
+    private Optional<Long> getAccountId() {
+        AuthenticatedAccountHome accountHome = ServiceLocator.instance().getInstance(
+                AuthenticatedAccountHome.class);
+        return Optional.fromNullable((Long) accountHome.getId());
+    }
+
     @Override
     protected void doPost(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
+                          final HttpServletResponse response) throws ServletException,
             IOException {
         new ContextualHttpServletRequest(request) {
             @Override
@@ -87,82 +146,84 @@ public class MultiFileUploadServlet extends HttpServlet {
         }.run();
     }
 
-    private void processPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        if (ServletFileUpload.isMultipartContent(req)) {
-            processMultipartPost(req, resp);
+    /**
+     * Ensure the request is a Multipart request.
+     *
+     * Initiates processing if the request is multipart, otherwise respond with
+     * an error.
+     */
+    private void processPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        if (ServletFileUpload.isMultipartContent(request)) {
+            registerForUploadAndProcessMultipartPost(request, response);
         } else {
             log.error("File upload received non-multipart request");
-            resp.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
+            response.sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
                     "Unsupported request type. File upload supports only multipart requests.");
         }
     }
 
-    public void processMultipartPost(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+    /**
+     * Ensure that upload is allowed at this time, then initiate processing of
+     * the upload request.
+     *
+     * This method is responsible for making sure that a user only has one active
+     * upload at a time.
+     */
+    private void registerForUploadAndProcessMultipartPost(HttpServletRequest request,
+                                                          HttpServletResponse response) throws IOException {
+        // TODO at this point the server will expect a response per-file. The simplistic error responses may not be handled well
 
-        sourceUploader = (SourceDocumentUpload) Component.getInstance(SourceDocumentUpload.class);
-        translationFileServiceImpl = (TranslationFileService) Component.getInstance(TranslationFileServiceImpl.class);
+        Optional<Long> accountId = getAccountId();
 
-        if (translationFileServiceImpl == null) {
-            log.error("translationFileServiceImpl is null");
-        }
-
-        String projectSlug = request.getParameter("p");
-        String versionSlug = request.getParameter("v");
-
-
-        // Create a factory for disk-based file items
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload uploadHandler = new ServletFileUpload(factory);
-
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-
-        List<FileItem> items;
-        try {
-            items = uploadHandler.parseRequest(request);
-        } catch (FileUploadException e) {
-            JSONObject responseObject = new JSONObject();
-            try {
-                responseObject.put("error", "upload failed: " + e.getMessage());
-            } catch (JSONException je) {
-                log.error("Error while generating JSON", je);
-            }
-            writer.write(responseObject.toString());
-            writer.close();
-            return;
-        }
-
-        JSONArray filesJson = new JSONArray();
-
-        String path = "";
-        String lang = "en-US";
-        String fileParams = "";
-
-        // Make sure params are available before processing files
-        for (FileItem item : items) {
-            if (item.isFormField()) {
-                String field = item.getFieldName();
-                String value = item.getString();
-                if (field.equals("filepath")) {
-                    path = value;
-                } else if (field.equals("filelang")) {
-                    lang = value;
-                } else if (field.equals("fileparams")) {
-                    fileParams = value;
+        if (accountId.isPresent()) {
+            UserFileUploadTracker tracker = ServiceLocator.instance().getInstance(
+                    UserFileUploadTracker.class);
+            boolean registeredForUpload = tracker.tryToRegisterUserForFileUpload(accountId.get());
+            if (!registeredForUpload) {
+                log.error("User with id {} is already uploading something.", accountId.get());
+                respondWithError(response, "already uploading");
+            } else {
+                try {
+                    processMultipartPost(request, response);
+                } finally {
+                    tracker.deRegisterUserForFileUpload(accountId.get());
                 }
             }
+        } else {
+            log.error("User attempted upload when not logged in.");
+            respondWithError(response, "not logged in");
         }
+    }
 
-        for (FileItem item : items) {
-            if (!item.isFormField()) {
-                JSONObject jsono =
-                        processFileItem(item, projectSlug, versionSlug,
-                                path, fileParams);
-                filesJson.put(jsono);
-            }
+    private void respondWithError(HttpServletResponse response, String error) throws IOException {
+        JSONObject responseObject = new JSONObject();
+        try {
+            responseObject.put("error", "upload failed: " + error);
+        } catch (JSONException e) {
+            log.error("Error while generating JSON", e);
         }
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
+        writer.write(responseObject.toString());
+        writer.close();
+    }
+
+    private void processMultipartPost(HttpServletRequest request,
+                                     HttpServletResponse response) throws IOException {
+
+        FileUploadRequestHandler uploadRequestHandler = new FileUploadRequestHandler(request);
+        JSONArray filesJson;
+        try {
+            filesJson = uploadRequestHandler.process();
+        } catch (FileUploadException e) {
+            respondWithError(response, "upload failed: " + e.getMessage());
+            return;
+        }
+        respondWithFiles(response, filesJson);
+    }
+
+    private void respondWithFiles(HttpServletResponse response, JSONArray filesJson) throws IOException {
         JSONObject responseObject = new JSONObject();
         try {
             responseObject.put("files", filesJson);
@@ -171,66 +232,178 @@ public class MultiFileUploadServlet extends HttpServlet {
         }
         String responseString = responseObject.toString();
         log.info("response string: " + responseString);
+        response.setContentType("application/json");
+        PrintWriter writer = response.getWriter();
         writer.write(responseString);
         writer.close();
-
-        // FIXME this needs to be very robust so it doesn't risk taking down the server
-        //       so I should really wrap it in a catch Exception that will print error
-        //       stack trace and return a response with error to the server.
     }
 
-    public JSONObject processFileItem(FileItem item, String projectSlug,
-            String versionSlug, String path, String fileParams) {
-        String docId = translationFileServiceImpl.generateDocId(path, item.getName());
+    private class FileUploadRequestHandler {
+        private final HttpServletRequest request;
 
-        GlobalDocumentId id = new GlobalDocumentId(projectSlug, versionSlug, docId);
-        DocumentFileUploadForm form = new DocumentFileUploadForm();
-        form.setAdapterParams(fileParams);
-        form.setFirst(true);
-        form.setLast(true);
-        form.setSize(item.getSize());
-        form.setFileType(translationFileServiceImpl.extractExtension(item.getName()));
+        private String projectSlug;
+        private String versionSlug;
+        private String path = "";
+        private String lang = "en-US";
+        private String fileParams = "";
 
-        String error;
-        String success = null;
-        try {
-            form.setFileStream(item.getInputStream());
-            Response resp = sourceUploader.tryUploadSourceFileWithoutHash(id, form);
-            ChunkUploadResponse responseEntity = (ChunkUploadResponse) resp.getEntity();
-            error = responseEntity.getErrorMessage();
-            success = responseEntity.getSuccessMessage();
-        } catch (IOException e) {
-            error = "could not access file data";
-        } catch (OptimisticLockException e) {
-            error = "failed: concurrent upload";
-        } catch (StaleStateException e) {
-            // this happens in the same circumstances as OptimisticLockException
-            // but is thrown because we are using hibernate directly rather than
-            // through JPA.
-            error = "failed: concurrent upload";
+        private SourceDocumentUpload sourceUploader;
+        private TranslationFileService translationFileServiceImpl;
+
+        public FileUploadRequestHandler(HttpServletRequest request) {
+            this.request = request;
+            projectSlug = request.getParameter("p");
+            versionSlug = request.getParameter("v");
+
+            sourceUploader = ServiceLocator.instance().getInstance(SourceDocumentUpload.class);
+            translationFileServiceImpl = ServiceLocator.instance().getInstance(
+                    TranslationFileServiceImpl.class);
         }
 
-        JSONObject jsono = new JSONObject();
-
-        try {
-            jsono.put("name", docId);
-            jsono.put("size", item.getSize());
-            if (!isNullOrEmpty(error)) {
-                if (error.equals("Valid combination of username and api-key for this server were not included in the request.")) {
-                    error = "not logged in";
-                }
-                jsono.put("error", error);
-            } else {
-                if (!isNullOrEmpty(success)) {
-                    jsono.put("message", success);
-                }
-                // TODO could provide REST URL for this file
-//                            jsono.put("url", "upload?getfile=" + item.getName());
+        public JSONArray process() throws FileUploadException {
+            // FIXME fail with error?
+            if (translationFileServiceImpl == null) {
+                log.error("translationFileServiceImpl is null");
             }
-        } catch (JSONException e) {
-            log.error("Error while generating JSON", e);
-        }
-        return jsono;
-    }
 
+            List<FileItem> items = getRequestItems();
+            JSONArray filesJson = processFilesFromItems(items);
+
+            return filesJson;
+        }
+
+        private List<FileItem> getRequestItems() throws FileUploadException {
+            List<FileItem> items;// Create a factory for disk-based file items
+            FileItemFactory factory = new DiskFileItemFactory();
+            ServletFileUpload uploadHandler = new ServletFileUpload(factory);
+            items = uploadHandler.parseRequest(request);
+            return items;
+        }
+
+        private JSONArray processFilesFromItems(List<FileItem> items) {
+            // parameters are required before processing files
+            recordParametersFromItems(items);
+
+            JSONArray filesJson = new JSONArray();
+            for (FileItem item : items) {
+                if (!item.isFormField()) {
+                    JSONObject jsono = processFileItem(item);
+                    filesJson.put(jsono);
+                }
+            }
+            return filesJson;
+        }
+
+        /**
+         * Must be called before processing any file items.
+         *
+         * @param items all items from multipart request.
+         */
+        private void recordParametersFromItems(List<FileItem> items) {
+            // Make sure params are available before processing files
+            for (FileItem item : items) {
+                if (item.isFormField()) {
+                    String field = item.getFieldName();
+                    String value = item.getString();
+                    if (field.equals("filepath")) {
+                        this.path = value;
+                    } else if (field.equals("filelang")) {
+                        this.lang = value;
+                    } else if (field.equals("fileparams")) {
+                        this.fileParams = value;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Process upload of a single file item from a multipart request.
+         *
+         * @return JSON summary of outcome of the attempt.
+         */
+        private JSONObject processFileItem(FileItem item) {
+            String docId = translationFileServiceImpl.generateDocId(path, item.getName());
+            GlobalDocumentId id = new GlobalDocumentId(projectSlug, versionSlug, docId);
+
+            Optional<String> errorMessage;
+            Optional<String> successMessage = Optional.absent();
+
+            Optional<String> concurrentUploadError = Optional.of("failed: someone else is already uploading this file");
+
+            try {
+                DocumentFileUploadForm form = createUploadFormForItem(item);
+                Response response = sourceUploader.tryUploadSourceFileWithoutHash(id, form);
+                ChunkUploadResponse responseEntity = (ChunkUploadResponse) response.getEntity();
+                errorMessage = optionalStringEmptyIsAbsent(responseEntity.getErrorMessage());
+                successMessage = optionalStringEmptyIsAbsent(responseEntity.getSuccessMessage());
+            } catch (IOException e) {
+                errorMessage = Optional.of("could not access file data");
+            } catch (OptimisticLockException e) {
+                errorMessage = concurrentUploadError;
+            } catch (StaleStateException e) {
+                // this happens in the same circumstances as OptimisticLockException
+                // but is thrown because we are using hibernate directly rather than
+                // through JPA.
+                errorMessage = concurrentUploadError;
+            } catch (ConstraintViolationException e) {
+                errorMessage = concurrentUploadError;
+            } catch (PersistenceException e) {
+                errorMessage = Optional.of("Timed out: failed because the file took too long to process");
+            }
+
+            return createJSONInfo(item, docId, errorMessage, successMessage);
+        }
+
+        /**
+         * Create JSON summary of outcome of an attempt to process an item.
+         */
+        private JSONObject createJSONInfo(FileItem item, String docId, Optional<String> error, Optional<String> success) {
+            JSONObject jsono = new JSONObject();
+
+            try {
+                jsono.put("name", docId);
+                jsono.put("size", item.getSize());
+                if (error.isPresent()) {
+                    if (error.get().equals("Valid combination of username and api-key for this server were not included in the request.")) {
+                        error = Optional.of("not logged in");
+                    }
+                    jsono.put("error", error.get());
+                } else {
+                    if (success.isPresent()) {
+                        jsono.put("message", success.get());
+                    }
+                    // TODO could provide REST URL for this file
+//                            jsono.put("url", "upload?getfile=" + item.getName());
+                }
+            } catch (JSONException e) {
+                log.error("Error while generating JSON", e);
+            }
+            return jsono;
+        }
+
+        /**
+         * Create the upload form required by sourceUploader for file upload.
+         *
+         * @throws IOException if the input stream cannot be opened for the file data.
+         */
+        private DocumentFileUploadForm createUploadFormForItem(FileItem item) throws IOException {
+            DocumentFileUploadForm form = new DocumentFileUploadForm();
+            form.setAdapterParams(fileParams);
+            form.setFirst(true);
+            form.setLast(true);
+            form.setSize(item.getSize());
+            form.setFileType(translationFileServiceImpl.extractExtension(item.getName()));
+            form.setFileStream(item.getInputStream());
+            return form;
+        }
+
+
+        /**
+         * @return absent if the given String is null or empty, otherwise an
+         *         Option containing the given String.
+         */
+        private Optional<String> optionalStringEmptyIsAbsent(String value) {
+            return(Optional.fromNullable(emptyToNull(value)));
+        }
+    }
 }

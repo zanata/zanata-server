@@ -343,10 +343,18 @@
                     );
             },
             // Callback for uploads start, equivalent to the global ajaxStart event:
+            // This is invoked once when the button is clicked to start an upload.
             start: function (e) {
+                console.log('Upload start handler being called here in jquery.fileupload-ui.js');
                 if (e.isDefaultPrevented()) {
                     return false;
                 }
+
+                // I have cut this off here to make sure that it will prevent upload,
+                // since I need to do that if I'm to hold off on uploading until the
+                // server is ready to accept the upload.
+//                return; // nope, that doesn't seem to make any difference. Must be somewhere else.
+
                 var that = $(this).data('blueimp-fileupload') ||
                         $(this).data('fileupload');
                 that._resetFinishedDeferreds();
@@ -546,8 +554,16 @@
         _showSingletonError: function (errorMessage) {
             var matchingErrors = this.options.errorList.filter(":contains('" + errorMessage + "')");
             if (matchingErrors.length === 0) {
-                this._renderError({ error: errorMessage }).appendTo(this.options.errorList);
+                matchingErrors = this._renderError({ error: errorMessage })
+                    .appendTo(this.options.errorList);
             }
+            matchingErrors.each(function (i, el) {
+                if (el.scrollIntoViewIfNeeded) { // non-standard webkit version
+                    el.scrollIntoViewIfNeeded();
+                } else {
+                    el.scrollIntoView();
+                }
+            });
         },
 
         _startHandler: function (e) {
@@ -612,18 +628,62 @@
 
         _initButtonBarEventHandlers: function () {
             var fileUploadButtonBar = this.element.find('.fileupload-buttonbar'),
+                that = this,
+                options = this.options,
                 filesList = this.options.filesContainer,
-                dropZone = this.element.find('.drag-drop');
+                dropZone = this.element.find('.drag-drop'),
+                url = this.options.url; // Looks like this is undefined. Figure out where to find it...
             this._on(fileUploadButtonBar.find('.start'), {
                 click: function (e) {
                     e.preventDefault();
+//                    return; // FIXME this is just to see if I can do this.
+
                     $(e.target).prop('disabled', true)
-                        .text('Uploading...');
-                    dropZone.addClass('is-hidden');
-                    // TODO change upload progress message
-                    this.options.updateUploadCountIndicator(this.options);
-                    filesList.find('.cancel').addClass('is-hidden');
-                    filesList.find('.start').click();
+                        .text('Checking Server...');
+
+                    // here, I need to do a check on the server to see whether upload is ok, display an error if it is
+                    // not, and do the following if it is.
+                    // It should be asynchronous, and show a spinner while checking.
+
+                    // I should probably use: http://api.jquery.com/jquery.getjson/
+
+                    console.log('trying to get data from URL %s', url);
+
+
+                    function setTryAgain () {
+                        $(e.target).prop('disabled', false)
+                            .text('Try Again');
+                    }
+
+                    // This is running the right code, but the server is complaining of
+                    // no active application context, even though it is doing the same
+                    // thing as in the POST.
+                    $.getJSON(url, function(data) {
+                        console.log('got data %o', data);
+
+                        if (data.error) {
+                            if (data.error === 'not logged in') {
+                                console.log('not logged in');
+                                that._showSingletonError('You are not logged in. Open a separate tab or window to log in, then try again.');
+                            } else if (data.error === 'already uploading') {
+                                console.error('already uploading. TODO show error on UI that says to wait for other upload to complete');
+                                that._showSingletonError('You already have an upload in progress. Wait for the other upload to finish, then try again.');
+                            } else {
+                                console.error('some other error: %s', data.error);
+                                that._showSingletonError('Got an error while checking if it is ok to upload: ' + data.error
+                                  + '. If the error persists, please report it using the "Report a problem" link at the bottom of the page.');
+                            }
+                            setTryAgain ();
+                        } else {
+                            $(e.target).prop('disabled', true)
+                                .text('Uploading...');
+                            dropZone.addClass('is-hidden');
+                            // TODO change upload progress message
+                            options.updateUploadCountIndicator(options);
+                            filesList.find('.cancel').addClass('is-hidden');
+                            filesList.find('.start').click();
+                        }
+                    });
                 }
             });
             this._on(fileUploadButtonBar.find('.cancel'), {
