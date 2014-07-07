@@ -42,7 +42,7 @@
     <!-- see http://community.jboss.org/wiki/HibernateCompatibilityMatrix?decorator=print -->
     <!-- see also the jboss7 profile below -->
     <hibernate.scope>compile</hibernate.scope>
-    <hibernate.version>4.2.7.SP1</hibernate.version>
+    <hibernate.version>4.2.14.Final</hibernate.version>
     <hibernate.search.scope>compile</hibernate.search.scope>
     <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
@@ -873,8 +873,8 @@
       </activation>
       <!-- TODO pull in webapp-wildfly/WEB-INF/jboss-all.xml -->
       <properties>
-        <hibernate.jta.platform>JBossAS</hibernate.jta.platform>
-        <hibernate.version>4.3.5.Final</hibernate.version>
+        <!--<hibernate.jta.platform>JBossAS</hibernate.jta.platform>-->
+        <!--<hibernate.version>4.3.5.Final</hibernate.version>-->
         <klogin.auth.method>FORM</klogin.auth.method>
       </properties>
     </profile>

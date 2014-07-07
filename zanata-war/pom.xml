@@ -1397,6 +1397,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hibernate.common</groupId>
+      <artifactId>hibernate-commons-annotations</artifactId>
+      <version>4.0.4.Final</version>
+      <scope>${hibernate.scope}</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <scope>${hibernate.scope}</scope>
@@ -1610,11 +1617,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.hibernate.common</groupId>-->
+      <!--<artifactId>hibernate-commons-annotations</artifactId>-->
+      <!--<scope>provided</scope>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-search-analyzers</artifactId>

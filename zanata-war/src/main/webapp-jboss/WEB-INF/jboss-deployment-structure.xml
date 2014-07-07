@@ -10,6 +10,8 @@
     </exclude-subsystems>
     <exclusions>
       <module name="javaee.api" />
+      <module name="org.hibernate" />
+      <module name="org.hibernate.commons-annotations" />
     </exclusions>
     <dependencies>
       <!-- needed by arquillian test -->
@@ -34,8 +36,8 @@
       <module name="org.apache.log4j" />
       <!-- needed by functional test -->
       <module name="org.dom4j" />
-      <module name="org.hibernate" />
-      <module name="org.hibernate.commons-annotations" />
+      <!--<module name="org.hibernate" />-->
+      <!--<module name="org.hibernate.commons-annotations" />-->
       <module name="org.hibernate.validator" />
       <module name="org.jboss.security.negotiation" />
       <module name="org.picketbox" />
