@@ -1422,6 +1422,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jipijapa</groupId>
+      <artifactId>jipijapa-hibernate4-1</artifactId>
+      <version>1.0.0.Beta2</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.github.huangp</groupId>
       <artifactId>entityunit</artifactId>
       <version>0.3</version>
