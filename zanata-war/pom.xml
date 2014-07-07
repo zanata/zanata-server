@@ -258,6 +258,10 @@
                 <!-- Caused by differing IDs for JDK_HOME/tools.jar -->
                 <ignoreClass>com.sun.tools.*</ignoreClass>
                 <ignoreClass>sun.*</ignoreClass>
+                <!-- Caused by different versions (enforcer bug) -->
+                <ignoreClass>org.hibernate.annotations.common.*</ignoreClass>
+                <!-- Caused by Arquillian AS7 container -->
+                <ignoreClass>org.jboss.logging.annotations.*</ignoreClass>
               </ignoreClasses>
             </banDuplicateClasses>
           </rules>
