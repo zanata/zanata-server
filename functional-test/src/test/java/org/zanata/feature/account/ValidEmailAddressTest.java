@@ -105,7 +105,7 @@ public class ValidEmailAddressTest extends ZanataTestCase {
 
     @Feature(summary = "The system will allow all acceptable forms of " +
             "email address for registration",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 302064)
     @Theory
     public void validEmailAcceptance(ValidEmailAddressRFC2822 emailAddress)
             throws Exception {

@@ -109,7 +109,7 @@ public class UsernameValidationTest extends ZanataTestCase {
 
     @Feature(summary = "The user must enter acceptable username characters" +
             "to register",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 393133)
     @Theory
     public void usernameCharacterValidation(String username) throws Exception {
         log.info(testName.getMethodName() + " : " + username);

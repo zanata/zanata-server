@@ -21,7 +21,6 @@
 package org.zanata.util;
 
 import java.util.List;
-
 import javax.mail.internet.MimeMultipart;
 
 import org.junit.rules.TestRule;
@@ -63,6 +62,10 @@ public class HasEmailRule implements TestRule {
         return wiser.getMessages();
     }
 
+    public void purgeMessages() {
+        wiser.getMessages().clear();
+    }
+
     public static String getEmailContent(WiserMessage wiserMessage) {
         try {
             return ((MimeMultipart) wiserMessage.getMimeMessage().getContent())
@@ -71,4 +74,5 @@ public class HasEmailRule implements TestRule {
             throw Throwables.propagate(e);
         }
     }
+
 }

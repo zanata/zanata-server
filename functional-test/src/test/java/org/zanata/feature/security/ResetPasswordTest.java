@@ -26,14 +26,12 @@ import org.junit.experimental.categories.Category;
 import org.subethamail.wiser.WiserMessage;
 import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.account.ResetPasswordPage;
 import org.zanata.util.AddUsersRule;
 import org.zanata.util.EnsureLogoutRule;
 import org.zanata.util.HasEmailRule;
 import org.zanata.workflow.BasicWorkFlow;
-import org.zanata.workflow.LoginWorkFlow;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
 @Category(DetailedTest.class)
-public class SecurityTest extends ZanataTestCase {
+public class ResetPasswordTest extends ZanataTestCase {
 
     @Rule
     public HasEmailRule hasEmailRule = new HasEmailRule();
@@ -52,31 +50,6 @@ public class SecurityTest extends ZanataTestCase {
 
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
-
-    @Feature(summary = "The user can log in",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86815)
-    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
-    public void signInSuccessful() {
-        assertThat(new LoginWorkFlow()
-                .signIn("admin", "admin")
-                .loggedInAs())
-                .isEqualTo("admin")
-                .as("User can log in");
-    }
-
-    @Feature(summary = "The user must enter a correct username and " +
-            "password to log in",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86815)
-    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
-    public void signInFailure() {
-        assertThat(new LoginWorkFlow()
-                .signInFailure("nosuchuser", "password")
-                .expectError("Login failed"))
-                .contains("Login failed")
-                .as("Log in error message is shown");
-    }
 
     @Feature(summary = "The user may reset their password via email",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
@@ -172,5 +145,4 @@ public class SecurityTest extends ZanataTestCase {
                 error.equals("must match ^[a-z\\d_]{3,20}$"))
                 .as("The regex match for the reset password field has failed");
     }
-
 }

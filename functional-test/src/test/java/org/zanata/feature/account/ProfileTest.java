@@ -20,9 +20,12 @@
  */
 package org.zanata.feature.account;
 
+import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.subethamail.wiser.WiserMessage;
 import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
@@ -30,9 +33,13 @@ import org.zanata.page.account.RegisterPage;
 import org.zanata.page.dashboard.dashboardsettings.DashboardAccountTab;
 import org.zanata.page.dashboard.dashboardsettings.DashboardClientTab;
 import org.zanata.page.dashboard.dashboardsettings.DashboardProfileTab;
+import org.zanata.page.utility.HomePage;
 import org.zanata.util.AddUsersRule;
 import org.zanata.util.Constants;
+import org.zanata.util.EmailQuery;
+import org.zanata.util.HasEmailRule;
 import org.zanata.util.PropertiesHolder;
+import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,12 +54,21 @@ public class ProfileTest extends ZanataTestCase {
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
 
+    @ClassRule
+    public static HasEmailRule hasEmailRule = new HasEmailRule();
+
     private static final String adminsApiKey = "b6d7044e9ee3b2447c28fb7c50d86d98";
     private static final String serverUrl = PropertiesHolder
                 .getProperty(Constants.zanataInstance.value());
 
-    @Feature(summary = "The user can view their account details",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86819)
+    @After
+    public void afterTest() {
+        new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
+        hasEmailRule.purgeMessages();
+    }
+
+    @Feature(summary = "The user can view their account client settings",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 392574)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void verifyProfileData() throws Exception {
         DashboardClientTab dashboardClientTab = new LoginWorkFlow()
@@ -77,7 +93,7 @@ public class ProfileTest extends ZanataTestCase {
     }
 
     @Feature(summary = "The user can change their API key",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds =  392569)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void changeUsersApiKey() throws Exception {
         DashboardClientTab dashboardClientTab = new LoginWorkFlow()
@@ -101,6 +117,23 @@ public class ProfileTest extends ZanataTestCase {
                 .as("The configuration api key matches the label");
     }
 
+    @Feature(summary = "The user can view their profile",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86819)
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void viewUserProfile() throws Exception {
+        DashboardProfileTab dashboardProfileTab = new LoginWorkFlow()
+                .signIn("translator", "translator")
+                .goToSettingsTab()
+                .goToSettingsProfileTab();
+
+        assertThat(dashboardProfileTab.getUsername())
+                .isEqualTo("translator")
+                .as("The user's username is visible");
+        assertThat(dashboardProfileTab.getDisplayName())
+                .isEqualTo("translator")
+                .as("The user's name is visible");
+    }
+
     @Feature(summary = "The user can change their display name",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86822)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -118,8 +151,9 @@ public class ProfileTest extends ZanataTestCase {
                 .as("The user's name has been changed");
     }
 
-    @Feature(summary = "The user's email address change is validated",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86822)
+    @Feature(summary = "The user must enter a valid email address change " +
+            "to change it",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 392578)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void emailValidationIsUsedOnProfileEdit() throws Exception {
         DashboardAccountTab dashboardAccountTab = new LoginWorkFlow()
@@ -145,5 +179,61 @@ public class ProfileTest extends ZanataTestCase {
                     RegisterPage.MALFORMED_EMAIL_ERROR))
                 .contains(RegisterPage.MALFORMED_EMAIL_ERROR)
                 .as("The email is rejected, being of invalid format");
+    }
+
+    @Feature(summary = "The user can change their email address",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 392576)
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void changeEmailAddress() throws Exception {
+        DashboardAccountTab dashboardAccountTab = new LoginWorkFlow()
+                .signIn("translator", "translator")
+                .goToSettingsTab()
+                .gotoSettingsAccountTab()
+                .typeNewAccountEmailAddress("translator@something.com")
+                .clickUpdateEmailButton();
+
+        assertThat(dashboardAccountTab
+                .expectNotification(DashboardAccountTab.EMAIL_CHANGED))
+                .isTrue()
+                .as("The user is notified of the change");
+
+        WiserMessage message = hasEmailRule.getMessages().get(0);
+
+        assertThat(message.getEnvelopeReceiver())
+                .isEqualTo("translator@something.com")
+                .as("The new email address is the verification mail target");
+
+        assertThat(EmailQuery.hasEmailVerificationLink(message))
+                .isTrue()
+                .as("The email has an activation link");
+
+        dashboardAccountTab = new BasicWorkFlow()
+                .goToUrl(EmailQuery.getEmailVerificationLink(message),
+                    HomePage.class)
+                .goToMyDashboard()
+                .goToSettingsTab()
+                .gotoSettingsAccountTab();
+
+        assertThat(dashboardAccountTab.getEmailAddress())
+                .isEqualTo("translator@something.com")
+                .as("The email was changed");
+    }
+
+    @Feature(summary = "The user must enter a unique value to change " +
+            "their email address",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 392577)
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void changedEmailAddressIsUnique() throws Exception {
+        DashboardAccountTab dashboardAccountTab = new LoginWorkFlow()
+                .signIn("translator", "translator")
+                .goToSettingsTab()
+                .gotoSettingsAccountTab()
+                .typeNewAccountEmailAddress("admin@example.com")
+                .clickUpdateEmailButton();
+
+        assertThat(dashboardAccountTab
+                .expectError(DashboardAccountTab.EMAIL_TAKEN_ERROR))
+                .contains(DashboardAccountTab.EMAIL_TAKEN_ERROR)
+                .as("The 'email is taken' error is displayed");
     }
 }

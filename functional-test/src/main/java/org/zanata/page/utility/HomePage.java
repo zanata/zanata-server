@@ -38,6 +38,8 @@ public class HomePage extends BasePage {
     private By editPageContentButton = By.linkText("Edit Page Content");
     private By editPageCodeButton = By.linkText("Edit Page Code");
 
+    public static final String SIGNUP_EMAIL_UPDATED = "Email updated.";
+
     public HomePage(final WebDriver driver) {
         super(driver);
     }

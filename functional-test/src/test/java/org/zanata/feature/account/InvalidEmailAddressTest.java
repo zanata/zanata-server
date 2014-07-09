@@ -177,7 +177,7 @@ public class InvalidEmailAddressTest extends ZanataTestCase {
 
     @Feature(summary = "The user must enter a valid email address to " +
             "register with Zanata",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 302064)
     @Theory
     public void invalidEmailRejection(InvalidEmailAddressRFC2822 emailAddress)
             throws Exception {
