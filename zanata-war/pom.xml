@@ -146,17 +146,10 @@
             <usedDependency>antlr:antlr</usedDependency>
             <!-- required for guava in gwt -->
             <usedDependency>com.google.guava:guava-gwt</usedDependency>
-            <!-- used for org.hibernate:hibernate-validator -->
-            <usedDependency>com.ibm.icu:icu4j</usedDependency>
-            <!-- Used by org.zanata.util.HashUtil.md5Hex -->
-            <usedDependency>commons-codec:commons-codec</usedDependency>
-            <!-- used by jboss-as-parent-7.2.0.Final.pom -->
-            <usedDependency>commons-collections:commons-collections</usedDependency>
             <!-- Used for StringUtils lib -->
             <!-- Needed by ui rendering on runtime -->
             <usedDependency>javax.el:el-api</usedDependency>
             <usedDependency>javax.servlet.jsp:jsp-api</usedDependency>
-            <usedDependency>org.richfaces.core:richfaces-core-impl</usedDependency>
             <usedDependency>com.sun.faces:jsf-impl</usedDependency>
             <!-- Used for different content analyzers based on langugage for search. -->
             <usedDependency>org.apache.solr:solr-core</usedDependency>
@@ -215,6 +208,15 @@
         <configuration>
           <rules>
             <banDuplicateClasses>
+              <dependencies>
+                <dependency>
+                  <groupId>commons-beanutils</groupId>
+                  <artifactId>commons-beanutils</artifactId>
+                  <ignoreClasses>
+                    <ignoreClass>org.apache.commons.beanutils.*</ignoreClass>
+                  </ignoreClasses>
+                </dependency>
+              </dependencies>
               <ignoreClasses combine.children="append">
                 <!-- Please remove exclusions as offending jars are fixed
                      or removed -->
@@ -1475,6 +1477,12 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava-gwt</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
