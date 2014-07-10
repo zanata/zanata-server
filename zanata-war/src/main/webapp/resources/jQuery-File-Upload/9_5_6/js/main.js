@@ -32,6 +32,22 @@ $(function () {
             countIndicator = uploadForm.find('.js-file-count'),
             filePathField = uploadForm.find('input[name=filepath]'),
             fileParamsField = uploadForm.find('textarea[name=fileparams]'),
+            showFileCount = (function showFileCount (numberOfFiles) {
+                var noFiles = numberOfFiles === 0;
+                // FIXME i18n on this string
+                countIndicator.text((noFiles ? 'No' : numberOfFiles) + ' document' + (numberOfFiles === 1 ? '' : 's') + ' queued');
+                // start button should only be enabled if there are files to upload
+                startButton.attr('disabled', noFiles);
+                if (noFiles) {
+                    $('.js-files-panel').addClass('is-hidden');
+                } else {
+                    $('.js-files-panel').removeClass('is-hidden');
+                }
+            }),
+            updateCountIndicator = (function updateCountIndicator (options) {
+                var numberOfFiles = options.getNumberOfFiles();
+                showFileCount(numberOfFiles);
+            }),
             resetUploadForm = (function resetUploadForm () {
                 errorList.empty();
                 // individual items should clean up any resources they use
@@ -48,19 +64,8 @@ $(function () {
                 filePathField.val('');
                 fileParamsField.val('');
                 $('.js-files-panel').addClass('is-hidden');
-            }),
-            updateCountIndicator = (function updateCountIndicator (options) {
-                var numberOfFiles = options.getNumberOfFiles(),
-                    noFiles = numberOfFiles === 0;
-                // FIXME i18n on this string
-                countIndicator.text((noFiles ? 'No' : numberOfFiles) + ' document' + (numberOfFiles === 1 ? '' : 's') + ' queued');
-                // start button should only be enabled if there are files to upload
-                startButton.attr('disabled', noFiles);
-                if (noFiles) {
-                    $('.js-files-panel').addClass('is-hidden');
-                } else {
-                    $('.js-files-panel').removeClass('is-hidden');
-                }
+
+                showFileCount(0);
             }),
             updateUploadCountIndicator = (function updateUploadCountIndicator (options) {
                 var totalFiles = options.getNumberOfFiles(),
