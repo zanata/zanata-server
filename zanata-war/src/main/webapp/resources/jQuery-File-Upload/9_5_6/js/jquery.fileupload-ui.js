@@ -566,6 +566,10 @@
             });
         },
 
+        _clearErrors: function () {
+            this.options.errorList.empty();
+        },
+
         _startHandler: function (e) {
             e.preventDefault();
             var button = $(e.currentTarget),
@@ -636,6 +640,8 @@
             this._on(fileUploadButtonBar.find('.start'), {
                 click: function (e) {
                     e.preventDefault();
+
+                    fileUploadWidget._clearErrors();
 
                     $(e.target).prop('disabled', true)
                         .text('Checking Server...');
