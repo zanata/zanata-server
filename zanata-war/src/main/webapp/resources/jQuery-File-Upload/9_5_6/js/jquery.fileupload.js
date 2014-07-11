@@ -358,7 +358,10 @@
                 ) + (data.uploadedBytes || 0);
                 // Add the difference from the previously loaded state
                 // to the global loaded counter:
-                this._progress.loaded += (loaded - data._progress.loaded);
+                // This is a workaround to prevent the full amount for each file being counted before the file has
+                // actually uploaded.
+                this._progress.loaded = this._progress.nextLoaded;
+                this._progress.nextLoaded += (loaded - data._progress.loaded);
                 this._progress.bitrate = this._bitrateTimer.getBitrate(
                     now,
                     this._progress.loaded,
@@ -802,7 +805,7 @@
                 // Set timer for global bitrate progress calculation:
                 this._bitrateTimer = new this._BitrateTimer();
                 // Reset the global progress values:
-                this._progress.loaded = this._progress.total = 0;
+                this._progress.loaded = this._progress.total = this._progress.nextLoaded = 0;
                 this._progress.bitrate = 0;
             }
             // Make sure the container objects for the .response() and
