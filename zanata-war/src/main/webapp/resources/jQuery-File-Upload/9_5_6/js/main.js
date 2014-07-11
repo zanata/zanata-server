@@ -75,6 +75,7 @@ $(function () {
                     startButton.addClass('is-hidden').prop('disabled', true);
                     doneButton.removeClass('is-hidden').prop('disabled', false);
                     cancelButton.addClass('is-hidden').prop('disabled', true);
+                    container.off('hide.zanata.modal', confirmCancelUpload);
                 }
             });
 
@@ -84,11 +85,20 @@ $(function () {
         revealButton.bind('click', resetUploadForm);
 
         closeButtons.bind('click', function (e) {
-            zanata.modal.hide('#' + container.attr('id'));
-            // refreshStatistics() is provided by the JSF page,
-            // it will cause the document list to be updated with uploaded documents.
-            refreshStatistics();
+            container.trigger('hide.zanata.modal');
         });
+
+        container.on('hide.zanata.modal', function () {
+            refreshStatistics();
+        })
+
+        function confirmCancelUpload (e) {
+            var confirmCancel = confirm('Do you really want to stop uploading files?');
+            if (confirmCancel) {
+                container.off('hide.zanata.modal', confirmCancelUpload);
+            }
+            return confirmCancel;
+        }
 
         // prevent default file drop behaviour on the page
         $doc.bind('drop dragover', function (e) {
@@ -128,6 +138,8 @@ $(function () {
 
         uploadForm.fileupload({
             url: url,
+            container: container,
+            confirmCancelUpload: confirmCancelUpload,
             sequentialUploads: true,
             maxFileSize: 200*1024*1024,
             maxNumberOfFiles: maxFiles,

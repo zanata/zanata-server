@@ -662,6 +662,7 @@
                             $(e.target).prop('disabled', true)
                                 .text('Uploading...');
                             dropZone.addClass('is-hidden');
+                            options.container.on('hide.zanata.modal', options.confirmCancelUpload);
                             // TODO change upload progress message
                             options.updateUploadCountIndicator(options);
                             filesList.find('.cancel').addClass('is-hidden');
