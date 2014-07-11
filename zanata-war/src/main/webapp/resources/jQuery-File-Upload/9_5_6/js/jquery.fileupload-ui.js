@@ -155,24 +155,10 @@
                 if (e.isDefaultPrevented()) {
                     return false;
                 }
-                var that = $(this).data('blueimp-fileupload') ||
+                var fileuploadWidget = $(this).data('blueimp-fileupload') ||
                         $(this).data('fileupload');
-                if (data.context && data.dataType &&
-                        data.dataType.substr(0, 6) === 'iframe') {
-                    // Iframe Transport does not support progress events.
-                    // In lack of an indeterminate progress bar, we set
-                    // the progress to 100%, showing the full animated bar:
-                    data.context
-                        .find('.progress').addClass(
-                            !$.support.transition && 'progress-animated'
-                        )
-                        .attr('aria-valuenow', 100)
-                        .children().first().css(
-                            'width',
-                            '100%'
-                        );
-                }
-                return that._trigger('sent', e, data);
+                data.context.find('.loader').addClass('is-active');
+                return fileuploadWidget._trigger('sent', e, data);
             },
             // Callback for successful uploads:
             done: function (e, data) {
@@ -318,6 +304,7 @@
                     });
                 }
             },
+            // FIXME files are contributing 100% of their data when they begin upload, instead of when they finish.
             // Callback for global upload progress events:
             progressall: function (e, data) {
                 if (e.isDefaultPrevented()) {

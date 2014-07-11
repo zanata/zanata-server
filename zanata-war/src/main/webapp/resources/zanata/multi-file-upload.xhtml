@@ -163,6 +163,13 @@ site: http://www.fsf.org.
                   {% } %}
                 </div>
                 <div class="list__item__actions">
+                  <span class="loader loader--inline loader--small">
+                    <span class="loader__spinner">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </span>
+                  </span>
                   <span class="txt--meta">{%=o.formatFileSize(file.size)%}</span>
                     {% if (!i && !o.options.autoUpload) { %}
                       <button class="start is-invisible" disabled />
@@ -170,14 +177,10 @@ site: http://www.fsf.org.
                     {% if (!i) { %}
                       <button class="button--link link--danger cancel" title="Remove document">
                         <span class="is-invisible">Remove document</span>
-                        <i class="i i--large i--cancel"></i>
+                        <i class="i i--large i--remove"></i>
                       </button>
                     {% } %}
                 </div>
-              </div>
-              <div class="progress-bar">
-                <span class="progress-bar__item"></span>
-                <!-- <span class="progress-bar__success" style="width: 40%"></span> -->
               </div>
             </li>
 {% } %}
@@ -198,15 +201,14 @@ site: http://www.fsf.org.
                 </div>
 
                 <div class="list__item__actions">
+                  {% if (file.error) { %}
+                    <i class="i i--dot txt--danger"></i>
+                  {% } else { %}
+                    <i class="i i--dot txt--success"></i>
+                    <span class="is-invisible">Successfully uploaded</span>
+                  {% } %}
                   <span class="txt--meta">{%=o.formatFileSize(file.size)%}</span>
                 </div>
-              </div>
-              <div class="progress-bar">
-                {% if (file.error) { %}
-                  <span class="progress-bar__item"></span>
-                {% } else { %}
-                  <span class="progress-bar__success" style="width: 100%"></span>
-                {% } %}
               </div>
             </li>
 {% } %}
