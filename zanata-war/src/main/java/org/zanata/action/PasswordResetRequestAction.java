@@ -2,12 +2,15 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.mail.internet.InternetAddress;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.googlecode.totallylazy.collections.PersistentMap;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.End;
@@ -17,11 +20,17 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.faces.Renderer;
 import org.zanata.dao.AccountDAO;
+import org.zanata.email.EmailBuilder;
+import org.zanata.email.EmailBuilderStrategy;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.service.UserAccountService;
 
+import static org.zanata.email.EmailUtil.toAddress;
+
 @Name("passwordResetRequest")
+@NoArgsConstructor
 @Scope(ScopeType.EVENT)
 @Slf4j
 public class PasswordResetRequestAction implements Serializable {
@@ -29,12 +38,10 @@ public class PasswordResetRequestAction implements Serializable {
 
     @In
     private AccountDAO accountDAO;
-
+    @In
+    private EmailBuilder.Context emailContext;
     @In
     private UserAccountService userAccountServiceImpl;
-
-    @In(create = true)
-    private Renderer renderer;
 
     private String username;
     private String email;
@@ -61,7 +68,7 @@ public class PasswordResetRequestAction implements Serializable {
         this.email = email;
     }
 
-    @Email
+    @org.hibernate.validator.constraints.Email
     @NotEmpty
     public String getEmail() {
         return email;
@@ -77,8 +84,14 @@ public class PasswordResetRequestAction implements Serializable {
             FacesMessages.instance().add("No such account found");
             return null;
         } else {
-            setActivationKey(key.getKeyHash());
-            renderer.render("/WEB-INF/facelets/email/password_reset.xhtml");
+            try {
+                EmailBuilder builder = new EmailBuilder(emailContext);
+                builder.sendMessage(new PasswordResetEmailStrategy(
+                        key.getKeyHash()),
+                        toAddress(account.getPerson()), null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             log.info("Sent password reset key to {} ({})", account
                     .getPerson().getName(), account.getUsername());
             FacesMessages
@@ -97,4 +110,30 @@ public class PasswordResetRequestAction implements Serializable {
         this.activationKey = activationKey;
     }
 
+    @RequiredArgsConstructor
+    public static class PasswordResetEmailStrategy extends
+            EmailBuilderStrategy {
+        private final String key;
+
+        @Override
+        public String getSubject(Messages msgs) {
+            return msgs.get("jsf.email.passwordreset.Subject");
+        }
+
+        @Override
+        public String getBodyResourceName() {
+            return "org/zanata/email/templates/password_reset.vm";
+        }
+
+        @Override
+        public PersistentMap<String, Object> makeContext(
+                PersistentMap<String, Object> genericContext,
+                InternetAddress[] toAddresses) {
+            PersistentMap<String, Object> context = super.makeContext(genericContext,
+                    toAddresses);
+            return context
+                    .insert("activationKey", key)
+                    .insert("toName", toAddresses[0].getPersonal());
+        }
+    }
 }

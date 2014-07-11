@@ -20,6 +20,7 @@
  */
 package org.zanata.action;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
 
@@ -28,11 +29,14 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.ExternalContext;
+import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Size;
 
+import com.googlecode.totallylazy.collections.PersistentMap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,13 +50,14 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Conversation;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.security.RunAsOperation;
 import org.jboss.seam.security.management.IdentityManager;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.CredentialsDAO;
 import org.zanata.dao.PersonDAO;
+import org.zanata.email.EmailBuilder;
+import org.zanata.email.EmailBuilderStrategy;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
@@ -87,14 +92,11 @@ import org.zanata.util.ServiceLocator;
 @Slf4j
 public class UserSettingsAction {
 
-    @In(create = true)
-    protected Renderer renderer;
+    @In
+    private EmailBuilder.Context emailContext;
 
     @In
     private EmailChangeService emailChangeService;
-
-    @In(create = true)
-    private ProfileAction profileAction;
 
     @In
     private PersonDAO personDAO;
@@ -167,10 +169,14 @@ public class UserSettingsAction {
                     emailChangeService.generateActivationKey(person,
                             emailAddress);
             // TODO create a separate field for newEmail, perhaps in this class
-            // TODO should template and messages.properties use userSettingsAction, not profileAction?
-            profileAction.setEmail(emailAddress);
-            profileAction.setActivationKey(activationKey);
-            renderer.render("/WEB-INF/facelets/email/email_validation.xhtml");
+            try {
+                EmailBuilder builder = new EmailBuilder(emailContext);
+                InternetAddress to = new InternetAddress(this.emailAddress, this.accountName, UTF_8.name());
+                builder.sendMessage(new EmailValidationEmailStrategy(
+                        activationKey), to, null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             FacesMessages
                     .instance()
@@ -404,6 +410,34 @@ public class UserSettingsAction {
             return "/dashboard/settings?cid="
                     + Conversation.instance().getId(); // keep the same
             // conversation
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static class EmailValidationEmailStrategy extends
+            EmailBuilderStrategy {
+        private final String key;
+
+        @Override
+        public String getSubject(Messages msgs) {
+            return msgs.get("jsf.email.accountchange.Subject");
+        }
+
+        @Override
+        public String getBodyResourceName() {
+            return "org/zanata/email/templates/email_validation.vm";
+        }
+
+        @Override
+        public com.googlecode.totallylazy.collections.PersistentMap<String, Object> makeContext(
+                PersistentMap<String, Object> genericContext,
+                InternetAddress[] toAddresses) {
+            PersistentMap<String, Object> context = super.makeContext(genericContext,
+                    toAddresses);
+            return context
+                    .insert("activationKey", key)
+                    .insert("newEmail", toAddresses[0].getAddress())
+                    .insert("toName", toAddresses[0].getPersonal());
         }
     }
 }

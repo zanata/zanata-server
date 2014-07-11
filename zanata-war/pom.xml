@@ -1084,11 +1084,22 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.7</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.googlecode.totallylazy</groupId>
+      <artifactId>totallylazy</artifactId>
+      <version>1.10</version>
+    </dependency>
 
     <!-- Zanata-specific dependencies -->
 
@@ -1320,6 +1331,25 @@
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+      <version>r239</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jvnet.mock-javamail</groupId>
+      <artifactId>mock-javamail</artifactId>
+      <version>1.9</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- Richfaces -->

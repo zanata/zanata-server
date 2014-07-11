@@ -26,9 +26,6 @@ public abstract class AbstractProfileAction {
     protected boolean valid;
     private String activationKey;
 
-    @In(create = true)
-    protected Renderer renderer;
-
     @In
     ZanataIdentity identity;
 

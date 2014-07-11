@@ -21,6 +21,9 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+
+import com.googlecode.totallylazy.collections.PersistentMap;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
@@ -30,9 +33,16 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.faces.FacesMessages;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.email.EmailBuilder;
+import org.zanata.email.EmailBuilderStrategy;
+import org.zanata.i18n.Messages;
 import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataOpenId;
 import org.zanata.service.RegisterService;
+
+import javax.mail.internet.InternetAddress;
+
+import static com.google.common.base.Charsets.UTF_8;
 
 /**
  * This action handles new user profile creation.
@@ -46,6 +56,9 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
 
     @In
     private ZanataOpenId zanataOpenId;
+
+    @In
+    private EmailBuilder.Context emailContext;
 
     @In
     RegisterService registerServiceImpl;
@@ -92,8 +105,13 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
                             .getAuthResult().getAuthenticatedId(),
                             AuthenticationType.OPENID, this.name, this.email);
         }
-        setActivationKey(key);
-        renderer.render("/WEB-INF/facelets/email/email_activation.xhtml");
+        try {
+            EmailBuilder builder = new EmailBuilder(emailContext);
+            InternetAddress to = new InternetAddress(this.email, this.name, UTF_8.name());
+            builder.sendMessage(new EmailActivationEmailStrategy(key), to, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         identity.unAuthenticate();
         FacesMessages
                 .instance()
@@ -104,4 +122,30 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
         identity.logout();
     }
 
+    @RequiredArgsConstructor
+    public static class EmailActivationEmailStrategy extends
+            EmailBuilderStrategy {
+        private final String key;
+
+        @Override
+        public String getSubject(Messages msgs) {
+            return msgs.get("jsf.email.activation.Subject");
+        }
+
+        @Override
+        public String getBodyResourceName() {
+            return "org/zanata/email/templates/email_activation.vm";
+        }
+
+        @Override
+        public PersistentMap<String, Object> makeContext(
+                PersistentMap<String, Object> genericContext,
+                InternetAddress[] toAddresses) {
+            PersistentMap<String, Object> context = super.makeContext(genericContext,
+                    toAddresses);
+            return context
+                    .insert("activationKey", key)
+                    .insert("toName", toAddresses[0].getPersonal());
+        }
+    }
 }

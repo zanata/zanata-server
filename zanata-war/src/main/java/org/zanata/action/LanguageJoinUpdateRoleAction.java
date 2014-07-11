@@ -119,6 +119,10 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
         return title;
     }
 
+    public boolean requestingTranslator() {
+        return requestAsTranslator != null && requestAsTranslator && !isTranslator();
+    }
+
     public boolean isTranslator() {
         HLocaleMember member = getLocaleMember();
         if (member != null) {
@@ -127,12 +131,20 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
         return false;
     }
 
+    public boolean requestingReviewer() {
+        return requestAsReviewer != null && requestAsReviewer && !isReviewer();
+    }
+
     public boolean isReviewer() {
         HLocaleMember member = getLocaleMember();
         if (member != null) {
             return getLocaleMember().isReviewer();
         }
         return false;
+    }
+
+    public boolean requestingCoordinator() {
+        return requestAsCoordinator != null && requestAsCoordinator && !isCoordinator();
     }
 
     public boolean isCoordinator() {
