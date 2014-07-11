@@ -794,18 +794,6 @@
 
         _beforeSend: function (e, data) {
 
-            // This could be the place to hook in and stop the upload.
-            // I will have a go at it anyway.
-
-            // this does not prevent each of the files from being sent.
-            // How terrible is this code? I could probably have rewritten all the UI logic in the time it has taken me
-            // to try to figure out how some things work.
-//            console.log('running _beforeSend() with an event and some data, but I stopped it.');
-//            return;
-
-
-
-
             if (this._active === 0) {
                 // the start callback is triggered when an upload starts
                 // and no other uploads are currently running,
