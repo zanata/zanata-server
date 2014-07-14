@@ -76,6 +76,7 @@ $(function () {
                     doneButton.removeClass('is-hidden').prop('disabled', false);
                     cancelButton.addClass('is-hidden').prop('disabled', true);
                     container.off('hide.zanata.modal', confirmCancelUpload);
+                    $(window).off('beforeunload', confirmLeavePage);
                 }
             });
 
@@ -92,12 +93,17 @@ $(function () {
             refreshStatistics();
         })
 
-        function confirmCancelUpload (e) {
+        function confirmCancelUpload () {
             var confirmCancel = confirm('Do you really want to stop uploading files?');
             if (confirmCancel) {
                 container.off('hide.zanata.modal', confirmCancelUpload);
+                $(window).off('beforeunload', confirmLeavePage);
             }
             return confirmCancel;
+        }
+
+        function confirmLeavePage () {
+            return 'Do you really want to interrupt your uploading files by leaving this page?';
         }
 
         // prevent default file drop behaviour on the page
@@ -140,6 +146,7 @@ $(function () {
             url: url,
             container: container,
             confirmCancelUpload: confirmCancelUpload,
+            confirmLeavePage: confirmLeavePage,
             sequentialUploads: true,
             maxFileSize: 200*1024*1024,
             maxNumberOfFiles: maxFiles,
