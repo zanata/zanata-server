@@ -1,5 +1,3 @@
-## TODO This file is almost identical to email_activation.vm
-
 <p>$msgs.format("jsf.email.activation.register.DearName", $toName)</p>
 
 <p>$msgs.get("jsf.email.activation.ClickLinkToActivateAccount")</p>

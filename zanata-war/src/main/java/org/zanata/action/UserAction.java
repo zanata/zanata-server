@@ -22,13 +22,10 @@ package org.zanata.action;
 
 import java.util.List;
 import javax.faces.model.DataModel;
-import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import com.googlecode.totallylazy.collections.PersistentMap;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -38,21 +35,18 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.security.management.IdentityManager;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
-import org.zanata.email.EmailBuilder;
-import org.zanata.email.EmailBuilderStrategy;
 import org.zanata.i18n.Messages;
+import org.zanata.service.EmailService;
 import org.zanata.service.UserAccountService;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
@@ -89,10 +83,7 @@ public class UserAction extends
     private UserAccountService userAccountServiceImpl;
 
     @In
-    private EmailBuilder emailBuilder;
-
-    @In(create = true)
-    private Renderer renderer;
+    private EmailService emailServiceImpl;
 
     private boolean newUserFlag;
 
@@ -171,17 +162,10 @@ public class UserAction extends
         String saveResult = super.save();
 
         if (usernameChanged) {
-            try {
-                String email = getEmail(newUsername);
-                InternetAddress to = new InternetAddress(
-                        email, newUsername, UTF_8.name());
-                boolean resetPassword =
-                        applicationConfiguration.isInternalAuth();
-                emailBuilder.sendMessage(new UsernameChangedEmailStrategy(
-                        newUsername, resetPassword), to, null);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            String email = getEmail(newUsername);
+            String message = emailServiceImpl.sendUsernameChangedEmail(
+                    email, newUsername);
+            FacesMessages.instance().add(message);
         }
         return saveResult;
     }
@@ -222,32 +206,4 @@ public class UserAction extends
         }
     }
 
-    @RequiredArgsConstructor
-    public static class UsernameChangedEmailStrategy extends
-            EmailBuilderStrategy {
-        private final String newUserName;
-        private final boolean shouldResetPassword;
-
-        @Override
-        public String getSubject(Messages msgs) {
-            return msgs.get("jsf.email.usernamechange.Subject");
-        }
-
-        @Override
-        public String getBodyResourceName() {
-            return "org/zanata/email/templates/username_changed.vm";
-        }
-
-        @Override
-        public com.googlecode.totallylazy.collections.PersistentMap<String, Object> makeContext(
-                PersistentMap<String, Object> genericContext,
-                InternetAddress[] toAddresses) {
-            PersistentMap<String, Object> context = super.makeContext(genericContext,
-                    toAddresses);
-            return context
-                    .insert("toName", toAddresses[0].getPersonal())
-                    .insert("newUsername", newUserName)
-                    .insert("shouldResetPassword", shouldResetPassword);
-        }
-    }
 }

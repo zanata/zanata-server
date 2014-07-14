@@ -20,7 +20,6 @@
  */
 package org.zanata.action;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
 
@@ -56,8 +55,7 @@ import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.CredentialsDAO;
 import org.zanata.dao.PersonDAO;
-import org.zanata.email.EmailBuilder;
-import org.zanata.email.EmailBuilderStrategy;
+import org.zanata.email.EmailStrategy;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
@@ -71,6 +69,7 @@ import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdAuthenticationResult;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.security.openid.YahooOpenIdProvider;
+import org.zanata.service.EmailService;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.impl.EmailChangeService;
 
@@ -93,8 +92,7 @@ import org.zanata.util.ServiceLocator;
 public class UserSettingsAction {
 
     @In
-    private EmailBuilder emailBuilder;
-
+    private EmailService emailServiceImpl;
     @In
     private EmailChangeService emailChangeService;
 
@@ -169,17 +167,10 @@ public class UserSettingsAction {
                     emailChangeService.generateActivationKey(person,
                             emailAddress);
             // TODO create a separate field for newEmail, perhaps in this class
-            try {
-                InternetAddress to = new InternetAddress(this.emailAddress, this.accountName, UTF_8.name());
-                emailBuilder.sendMessage(new EmailValidationEmailStrategy(
-                        activationKey), to, null);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            FacesMessages
-                    .instance()
-                    .add("You will soon receive an email with a link to activate your email account change.");
+            String message =
+                    emailServiceImpl.sendEmailValidationEmail(this.accountName,
+                            this.emailAddress, activationKey);
+            FacesMessages.instance().add(message);
         }
     }
 
@@ -412,31 +403,4 @@ public class UserSettingsAction {
         }
     }
 
-    @RequiredArgsConstructor
-    public static class EmailValidationEmailStrategy extends
-            EmailBuilderStrategy {
-        private final String key;
-
-        @Override
-        public String getSubject(Messages msgs) {
-            return msgs.get("jsf.email.accountchange.Subject");
-        }
-
-        @Override
-        public String getBodyResourceName() {
-            return "org/zanata/email/templates/email_validation.vm";
-        }
-
-        @Override
-        public com.googlecode.totallylazy.collections.PersistentMap<String, Object> makeContext(
-                PersistentMap<String, Object> genericContext,
-                InternetAddress[] toAddresses) {
-            PersistentMap<String, Object> context = super.makeContext(genericContext,
-                    toAddresses);
-            return context
-                    .insert("activationKey", key)
-                    .insert("newEmail", toAddresses[0].getAddress())
-                    .insert("toName", toAddresses[0].getPersonal());
-        }
-    }
 }

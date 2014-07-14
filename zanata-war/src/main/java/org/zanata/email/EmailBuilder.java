@@ -4,7 +4,6 @@ import static com.google.common.base.Charsets.UTF_8;
 import static javax.mail.Message.RecipientType.TO;
 
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -17,7 +16,6 @@ import javax.mail.internet.MimeMultipart;
 
 import com.googlecode.totallylazy.collections.PersistentMap;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
@@ -29,6 +27,7 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.mail.MailSession;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.i18n.Messages;
 
@@ -46,7 +45,6 @@ import static org.jboss.seam.ScopeType.STATELESS;
 @AllArgsConstructor
 @AutoCreate
 @Name("emailBuilder")
-@NoArgsConstructor
 @Scope(STATELESS)
 @Slf4j
 public class EmailBuilder {
@@ -55,8 +53,12 @@ public class EmailBuilder {
     private static final boolean LOG_FULL_MESSAGES = false;
     private static final VelocityEngine velocityEngine = makeVelocityEngine();
 
-    @In
-    private Session mailSession;
+    public EmailBuilder() {
+        this.mailSession = MailSession.instance();
+    }
+
+    // it seems to be impossible to inject this in Seam 2:
+    private final Session mailSession;
     @In
     private Context emailContext;
     @In
@@ -77,28 +79,28 @@ public class EmailBuilder {
      * Build message using 'strategy' and send it via Transport to 'toAddress'.
      * @param strategy
      * @throws javax.mail.MessagingException
-     * @throws java.io.UnsupportedEncodingException
      */
-    public void sendMessage(EmailBuilderStrategy strategy,
-            InternetAddress toAddress, String receivedReason)
-            throws MessagingException, UnsupportedEncodingException {
-        sendMessage(strategy, new InternetAddress[] { toAddress },
-                receivedReason);
+    public void sendMessage(EmailStrategy strategy,
+            String receivedReason, InternetAddress toAddress) {
+        sendMessage(strategy, receivedReason, new InternetAddress[] {
+                        toAddress });
     }
 
     /**
      * Build message using 'strategy' and send it via Transport to 'toAddresses'.
      * @param strategy
      * @throws javax.mail.MessagingException
-     * @throws java.io.UnsupportedEncodingException
      */
-    public void sendMessage(EmailBuilderStrategy strategy,
-            InternetAddress[] toAddresses, String receivedReason)
-            throws MessagingException, UnsupportedEncodingException {
-        MimeMessage email = new MimeMessage(mailSession);
-        buildMessage(email, strategy, toAddresses, receivedReason);
-        logMessage(email);
-        Transport.send(email);
+    public void sendMessage(EmailStrategy strategy,
+            String receivedReason, InternetAddress[] toAddresses) {
+        try {
+            MimeMessage email = new MimeMessage(mailSession);
+            buildMessage(email, strategy, toAddresses, receivedReason);
+            logMessage(email);
+            Transport.send(email);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void logMessage(MimeMessage msg) {
@@ -128,16 +130,15 @@ public class EmailBuilder {
      * @param strategy
      * @return
      * @throws javax.mail.MessagingException
-     * @throws java.io.UnsupportedEncodingException
      */
     @VisibleForTesting
-    MimeMessage buildMessage(MimeMessage msg, EmailBuilderStrategy strategy,
+    MimeMessage buildMessage(MimeMessage msg, EmailStrategy strategy,
             InternetAddress[] toAddresses, String receivedReason)
-            throws MessagingException, UnsupportedEncodingException {
+            throws MessagingException {
 
         Optional<InternetAddress> from = strategy.getFromAddress();
-        msg.setFrom(from.or(new InternetAddress(
-                emailContext.getFromAddress(), emailContext.getFromName(), UTF_8.name())));
+        msg.setFrom(from.or(Addresses.getAddress(
+                emailContext.getFromAddress(), emailContext.getFromName())));
         Optional<InternetAddress[]> replyTo = strategy.getReplyToAddress();
         if (replyTo.isPresent()) {
             msg.setReplyTo(replyTo.get());

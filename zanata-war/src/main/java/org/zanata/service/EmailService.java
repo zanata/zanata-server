@@ -22,7 +22,7 @@ package org.zanata.service;
 
 import java.util.List;
 
-import org.zanata.email.EmailBuilderStrategy;
+import org.zanata.email.EmailStrategy;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 
@@ -30,37 +30,6 @@ import org.zanata.model.HPerson;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public interface EmailService {
-    public static final String ADMIN_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/email_admin.vm";
-    public static final String COORDINATOR_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/email_coordinator.vm";
-    public static final String REQUEST_TO_JOIN_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/email_request_to_join_language.vm";
-    public static final String REQUEST_ROLE_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/email_request_role_language.vm";
-    public static final String REQUEST_TO_JOIN_GROUP_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/email_request_to_join_group.vm";
-    public static final String ACTIVATION_ACCOUNT_EMAIL_TEMPLATE =
-            "org/zanata/email/templates/activation.vm";
-
-    /**
-     * sends emails to configured admin emails for server, or admin users if no
-     * server emails are configured.
-     */
-    String sendToAdmins(EmailBuilderStrategy strategy);
-
-    /**
-     * sends emails to version group maintainers -> admin -> admin users
-     */
-    String sendToVersionGroupMaintainers(List<HPerson> maintainers,
-            EmailBuilderStrategy strategy);
-
-    /**
-     * sends emails to language coordinators -> admin -> admin users
-     *
-     */
-    String sendToLanguageCoordinators(HLocale locale,
-            EmailBuilderStrategy strategy);
 
     /**
      * send account activation email to register user
@@ -72,4 +41,31 @@ public interface EmailService {
      */
     String sendActivationEmail(String toName,
             String toEmailAddr, String activationKey);
+
+    String sendEmailValidationEmail(String toName,
+            String toEmailAddr, String activationKey);
+
+    String sendPasswordResetEmail(HPerson person, String key);
+
+    /**
+     * sends emails to configured admin emails for server, or admin users if no
+     * server emails are configured.
+     */
+    String sendToAdmins(EmailStrategy strategy);
+
+    /**
+     * sends emails to version group maintainers -> admin -> admin users
+     */
+    String sendToVersionGroupMaintainers(List<HPerson> maintainers,
+            EmailStrategy strategy);
+
+    /**
+     * sends emails to language coordinators -> admin -> admin users
+     *
+     */
+    String sendToLanguageCoordinators(HLocale locale,
+            EmailStrategy strategy);
+
+    String sendUsernameChangedEmail(String email, String newUsername);
+
 }

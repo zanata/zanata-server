@@ -20,8 +20,6 @@
  */
 package org.zanata.email;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.mail.internet.InternetAddress;
 
 import com.google.common.base.Optional;
@@ -33,7 +31,7 @@ import org.zanata.i18n.Messages;
  * of an email.
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
-public abstract class EmailBuilderStrategy {
+public abstract class EmailStrategy {
 
     /**
      * For absent, use the default From address configured by the server
@@ -43,8 +41,7 @@ public abstract class EmailBuilderStrategy {
         return Optional.absent();
     }
 
-    public Optional<InternetAddress[]> getReplyToAddress()
-            throws UnsupportedEncodingException {
+    public Optional<InternetAddress[]> getReplyToAddress(){
         return Optional.absent();
     }
 

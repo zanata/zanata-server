@@ -40,13 +40,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.zanata.action.NewProfileAction;
-import org.zanata.action.PasswordResetRequestAction;
-import org.zanata.action.UserAction;
-import org.zanata.action.UserSettingsAction;
 import org.zanata.common.ProjectType;
 import org.zanata.i18n.Messages;
-import org.zanata.service.impl.EmailServiceImpl;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 
 /**
@@ -159,8 +154,8 @@ public class EmailStrategyTest {
 
     @Test
     public void activation() throws Exception {
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.ActivationEmailStrategy(key);
+        EmailStrategy strategy =
+                new ActivationEmailStrategy(key);
 
         builder.buildMessage(message, strategy, toAddresses, "activation test");
 
@@ -179,8 +174,8 @@ public class EmailStrategyTest {
 
     @Test
     public void contactAdmin() throws Exception {
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.ContactAdminEmailStrategy(
+        EmailStrategy strategy =
+                new ContactAdminEmailStrategy(
                         fromLoginName, fromName, replyEmail, userSubject,
                         htmlMessage);
 
@@ -202,8 +197,8 @@ public class EmailStrategyTest {
 
     @Test
     public void contactLanguageCoordinator() throws Exception {
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.ContactLanguageCoordinatorEmailStrategy(
+        EmailStrategy strategy =
+                new ContactLanguageCoordinatorEmailStrategy(
                         fromLoginName, fromName, replyEmail, userSubject,
                         localeId, localeNativeName, htmlMessage);
 
@@ -228,30 +223,9 @@ public class EmailStrategyTest {
     }
 
     @Test
-    public void emailActivation() throws Exception {
-        EmailBuilderStrategy strategy =
-                new NewProfileAction.EmailActivationEmailStrategy(key);
-
-        builder.buildMessage(message, strategy, toAddresses,
-                "emailActivation test");
-
-        checkFromAndTo(message);
-        assertThat(message.getSubject()).isEqualTo(msgs.get(
-                "jsf.email.activation.Subject"));
-
-        String html = extractHtmlPart(message);
-        checkGenericTemplate(html);
-
-        assertThat(html).contains(msgs.get(
-                "jsf.email.activation.ClickLinkToActivateAccount"));
-        assertThat(html).contains(
-                serverPath + "/account/activate/123456");
-    }
-
-    @Test
     public void emailValidation() throws Exception {
-        EmailBuilderStrategy strategy =
-                new UserSettingsAction.EmailValidationEmailStrategy(key);
+        EmailStrategy strategy =
+                new EmailValidationEmailStrategy(key);
 
         builder.buildMessage(message, strategy, toAddresses,
                 "emailValidation test");
@@ -272,8 +246,8 @@ public class EmailStrategyTest {
 
     @Test
     public void passwordReset() throws Exception {
-        EmailBuilderStrategy strategy =
-                new PasswordResetRequestAction.PasswordResetEmailStrategy(key);
+        EmailStrategy strategy =
+                new PasswordResetEmailStrategy(key);
 
         builder.buildMessage(message, strategy, toAddresses,
                 "passwordReset test");
@@ -293,8 +267,8 @@ public class EmailStrategyTest {
 
     @Test
     public void requestRoleLanguage() throws Exception {
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.RequestRoleLanguageEmailStrategy(
+        EmailStrategy strategy =
+                new RequestRoleLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         localeId, localeNativeName, htmlMessage,
                         true, true, true);
@@ -320,8 +294,8 @@ public class EmailStrategyTest {
 
     @Test
     public void requestToJoinLanguage() throws Exception {
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.RequestToJoinLanguageEmailStrategy(
+        EmailStrategy strategy =
+                new RequestToJoinLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         localeId, localeNativeName, htmlMessage,
                         true, true, true);
@@ -354,8 +328,8 @@ public class EmailStrategyTest {
                         ProjectType.File)
         );
 
-        EmailBuilderStrategy strategy =
-                new EmailServiceImpl.RequestToJoinVersionGroupEmailStrategy(
+        EmailStrategy strategy =
+                new RequestToJoinVersionGroupEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         versionGroupName, versionGroupSlug,
                         projectIterIds, htmlMessage);
@@ -383,8 +357,8 @@ public class EmailStrategyTest {
     public void usernameChanged() throws Exception {
         String newUsername = "NEW_USERNAME[测试]";
 
-        EmailBuilderStrategy strategy =
-                new UserAction.UsernameChangedEmailStrategy(newUsername, true);
+        EmailStrategy strategy =
+                new UsernameChangedEmailStrategy(newUsername, true);
 
         builder.buildMessage(message, strategy, toAddresses,
                 "usernameChanged test");

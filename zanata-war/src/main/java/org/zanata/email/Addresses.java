@@ -38,35 +38,39 @@ import org.zanata.model.HPerson;
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmailUtil {
-    public static InternetAddress toAddress(HPerson person)
-            throws UnsupportedEncodingException {
-        return new InternetAddress(person.getEmail(), person.getName(), UTF_8.name());
+public class Addresses {
+    private static final String UTF8 = UTF_8.name();
+
+    public static InternetAddress getAddress(String email, String name) {
+        try {
+            return new InternetAddress(email, name, UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static InternetAddress[] getAddresses(List<HPerson> personList)
-            throws UnsupportedEncodingException {
+
+    public static InternetAddress getAddress(HPerson person) {
+        return getAddress(person.getEmail(), person.getName());
+    }
+
+    public static InternetAddress[] getAddresses(List<HPerson> personList) {
         List<InternetAddress> toAddresses = new ArrayList<InternetAddress>();
         for (HPerson coord : personList) {
-            toAddresses.add(new InternetAddress(coord.getEmail(),
-                    coord.getName(), UTF_8.name()));
+            toAddresses.add(getAddress(coord.getEmail(), coord.getName()));
         }
         return toAddresses.toArray(new InternetAddress[toAddresses.size()]);
     }
 
-    public static InternetAddress[] getAddresses(List<String> emailList, String name)
-            throws UnsupportedEncodingException {
+    public static InternetAddress[] getAddresses(List<String> emailList, String name) {
         List<InternetAddress> toAddresses = new ArrayList<InternetAddress>();
         for (String email : emailList) {
-            toAddresses.add(new InternetAddress(email,
-                    name, UTF_8.name()));
+            toAddresses.add(getAddress(email, name));
         }
         return toAddresses.toArray(new InternetAddress[toAddresses.size()]);
     }
 
-    public static InternetAddress[] getReplyTo(String email, String name)
-            throws UnsupportedEncodingException {
-        return new InternetAddress[] {new InternetAddress(email,
-                name, UTF_8.name())};
+    public static InternetAddress[] getReplyTo(String email, String name) {
+        return new InternetAddress[] { getAddress(email, name) };
     }
 
 }

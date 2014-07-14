@@ -38,10 +38,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.security.management.JpaIdentityStore;
-import org.zanata.ApplicationConfiguration;
 import org.zanata.common.LocaleId;
-import org.zanata.email.EmailBuilderStrategy;
-import org.zanata.i18n.Messages;
+import org.zanata.email.EmailStrategy;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -55,11 +53,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 
-import static org.zanata.service.impl.EmailServiceImpl.ContactAdminEmailStrategy;
-import static org.zanata.service.impl.EmailServiceImpl.ContactLanguageCoordinatorEmailStrategy;
-import static org.zanata.service.impl.EmailServiceImpl.RequestRoleLanguageEmailStrategy;
-import static org.zanata.service.impl.EmailServiceImpl.RequestToJoinLanguageEmailStrategy;
-import static org.zanata.service.impl.EmailServiceImpl.RequestToJoinVersionGroupEmailStrategy;
+import org.zanata.email.ContactAdminEmailStrategy;
+import org.zanata.email.ContactLanguageCoordinatorEmailStrategy;
+
+import org.zanata.email.RequestRoleLanguageEmailStrategy;
+
+import org.zanata.email.RequestToJoinLanguageEmailStrategy;
+import org.zanata.email.RequestToJoinVersionGroupEmailStrategy;
 
 /**
  * Sends an email to a specified role.
@@ -176,7 +176,7 @@ public class SendEmailAction implements Serializable {
 
         try {
             if (emailType.equals(EMAIL_TYPE_CONTACT_ADMIN)) {
-                EmailBuilderStrategy strategy = new ContactAdminEmailStrategy(
+                EmailStrategy strategy = new ContactAdminEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         subject, htmlMessage);
 
@@ -189,7 +189,7 @@ public class SendEmailAction implements Serializable {
             } else if (emailType.equals(EMAIL_TYPE_CONTACT_COORDINATOR)) {
                 String localeNativeName = locale.retrieveNativeName();
 
-                EmailBuilderStrategy strategy = new ContactLanguageCoordinatorEmailStrategy(
+                EmailStrategy strategy = new ContactLanguageCoordinatorEmailStrategy(
                         fromLoginName, fromName, replyEmail, subject,
                         locale.getLocaleId().getId(),
                         localeNativeName, htmlMessage);
@@ -203,7 +203,7 @@ public class SendEmailAction implements Serializable {
             } else if (emailType.equals(EMAIL_TYPE_REQUEST_JOIN)) {
                 String localeNativeName = locale.retrieveNativeName();
 
-                EmailBuilderStrategy strategy = new RequestToJoinLanguageEmailStrategy(
+                EmailStrategy strategy = new RequestToJoinLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         locale.getLocaleId().getId(),
                         localeNativeName, htmlMessage,
@@ -219,7 +219,7 @@ public class SendEmailAction implements Serializable {
             } else if (emailType.equals(EMAIL_TYPE_REQUEST_ROLE)) {
                 String localeNativeName = locale.retrieveNativeName();
 
-                EmailBuilderStrategy strategy = new RequestRoleLanguageEmailStrategy(
+                EmailStrategy strategy = new RequestRoleLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         locale.getLocaleId().getId(),
                         localeNativeName, htmlMessage,
@@ -248,7 +248,7 @@ public class SendEmailAction implements Serializable {
                     }
                 }
 
-                EmailBuilderStrategy strategy = new RequestToJoinVersionGroupEmailStrategy(
+                EmailStrategy strategy = new RequestToJoinVersionGroupEmailStrategy(
                         fromLoginName, fromName, replyEmail,
                         groupName, groupSlug,
                         projectIterIds, htmlMessage);
