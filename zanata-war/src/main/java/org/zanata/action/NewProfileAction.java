@@ -58,7 +58,9 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
     private ZanataOpenId zanataOpenId;
 
     @In
-    private EmailBuilder.Context emailContext;
+    private EmailBuilder emailBuilder;
+    @In
+    Messages msgs;
 
     @In
     RegisterService registerServiceImpl;
@@ -106,16 +108,15 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
                             AuthenticationType.OPENID, this.name, this.email);
         }
         try {
-            EmailBuilder builder = new EmailBuilder(emailContext);
             InternetAddress to = new InternetAddress(this.email, this.name, UTF_8.name());
-            builder.sendMessage(new EmailActivationEmailStrategy(key), to, null);
+            emailBuilder.sendMessage(new EmailActivationEmailStrategy(key), to, null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         identity.unAuthenticate();
         FacesMessages
                 .instance()
-                .add("You will soon receive an email with a link to activate your account.");
+                .add(msgs.get("jsf.Account.ActivationMessage"));
     }
 
     public void cancel() {

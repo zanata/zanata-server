@@ -89,7 +89,7 @@ public class UserAction extends
     private UserAccountService userAccountServiceImpl;
 
     @In
-    private EmailBuilder.Context emailContext;
+    private EmailBuilder emailBuilder;
 
     @In(create = true)
     private Renderer renderer;
@@ -172,13 +172,12 @@ public class UserAction extends
 
         if (usernameChanged) {
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
                 String email = getEmail(newUsername);
                 InternetAddress to = new InternetAddress(
                         email, newUsername, UTF_8.name());
                 boolean resetPassword =
                         applicationConfiguration.isInternalAuth();
-                builder.sendMessage(new UsernameChangedEmailStrategy(
+                emailBuilder.sendMessage(new UsernameChangedEmailStrategy(
                         newUsername, resetPassword), to, null);
             } catch (Exception e) {
                 throw new RuntimeException(e);

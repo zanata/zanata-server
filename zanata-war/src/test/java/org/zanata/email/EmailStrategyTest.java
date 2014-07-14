@@ -77,8 +77,23 @@ public class EmailStrategyTest {
     InternetAddress[] toAddresses;
 
     Session session = Session.getDefaultInstance(new Properties());
-    EmailBuilder builder = new EmailBuilder(serverPath, session, msgs,
-            fromAddress, fromName);
+    EmailBuilder.Context context = new EmailBuilder.Context() {
+        @Override
+        String getFromAddress() {
+            return fromAddress;
+        }
+
+        @Override
+        String getServerPath() {
+            return serverPath;
+        }
+
+        @Override
+        String getFromName() {
+            return fromName;
+        }
+    };
+    EmailBuilder builder = new EmailBuilder(session, context, msgs);
     MimeMessage message;
 
     // context values needed for some templates:

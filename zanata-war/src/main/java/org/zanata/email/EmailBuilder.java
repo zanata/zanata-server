@@ -16,7 +16,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import com.googlecode.totallylazy.collections.PersistentMap;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
@@ -27,6 +28,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.i18n.Messages;
 
@@ -34,27 +36,33 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 import static com.googlecode.totallylazy.collections.PersistentMap.constructors.map;
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.ScopeType.STATELESS;
 
-@RequiredArgsConstructor
+/**
+ * Uses an instance of EmailBuilderStrategy to build an email from a Velocity
+ * template and send it via the default JavaMail Transport.
+ */
+@AllArgsConstructor
+@AutoCreate
+@Name("emailBuilder")
+@NoArgsConstructor
+@Scope(STATELESS)
 @Slf4j
 public class EmailBuilder {
     // Use this if you want emails logged on stderr
     // Warning: The full message may contain sensitive information
     private static final boolean LOG_FULL_MESSAGES = false;
+    private static final VelocityEngine velocityEngine = makeVelocityEngine();
 
-    private final String serverPath;
-    private final Session mailSession;
-    private final Messages msgs;
-    private final String fromAddress;
-    private final String fromName;
+    @In
+    private Session mailSession;
+    @In
+    private Context emailContext;
+    @In
+    private Messages msgs;
 
-    public EmailBuilder(Context context) {
-        this(context.getServerPath(), context.mailSession,
-                context.msgs, context.getFromAddress(),
-                context.getFromName());
-    }
-
-    private VelocityEngine makeVelocityEngine() {
+    private static VelocityEngine makeVelocityEngine() {
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         ve.setProperty("classpath.resource.loader.class",
@@ -128,7 +136,8 @@ public class EmailBuilder {
             throws MessagingException, UnsupportedEncodingException {
 
         Optional<InternetAddress> from = strategy.getFromAddress();
-        msg.setFrom(from.or(new InternetAddress(fromAddress, fromName, UTF_8.name())));
+        msg.setFrom(from.or(new InternetAddress(
+                emailContext.getFromAddress(), emailContext.getFromName(), UTF_8.name())));
         Optional<InternetAddress[]> replyTo = strategy.getReplyToAddress();
         if (replyTo.isPresent()) {
             msg.setReplyTo(replyTo.get());
@@ -141,14 +150,13 @@ public class EmailBuilder {
         PersistentMap<String, Object> genericContext = map(
                 "msgs",  msgs,
                 "receivedReason", receivedReason,
-                "serverPath", serverPath);
+                "serverPath", emailContext.getServerPath());
 
         // the Map needs to be mutable for "foreach" to work
         VelocityContext context = new VelocityContext(
                 strategy.makeContext(genericContext, toAddresses).toMutableMap());
-        VelocityEngine ve = makeVelocityEngine();
         Template template =
-                ve.getTemplate(strategy.getTemplateResourceName());
+                velocityEngine.getTemplate(strategy.getTemplateResourceName());
         StringWriter writer = new StringWriter();
         template.merge(context, writer);
         String body = writer.toString();
@@ -171,11 +179,10 @@ public class EmailBuilder {
      */
     @AutoCreate
     @Name("emailContext")
+    @Scope(EVENT)
     public static class Context {
         @In
         private ApplicationConfiguration applicationConfiguration;
-        @In
-        private Session mailSession;
         @In
         private Messages msgs;
         String getServerPath() {

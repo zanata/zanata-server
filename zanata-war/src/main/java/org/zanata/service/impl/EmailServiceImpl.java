@@ -74,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
             BLOCKS.and(FORMATTING).and(IMAGES).and(LINKS);
 
     @In
-    private EmailBuilder.Context emailContext;
+    private EmailBuilder emailBuilder;
 
     @In
     private IdentityManager identityManager;
@@ -95,9 +95,8 @@ public class EmailServiceImpl implements EmailService {
     public String sendActivationEmail(String toName,
             String toEmailAddr, String activationKey) {
         try {
-            EmailBuilder builder = new EmailBuilder(emailContext);
             InternetAddress to = new InternetAddress(toEmailAddr, toName, UTF_8.name());
-            builder.sendMessage(new ActivationEmailStrategy(activationKey), to,
+            emailBuilder.sendMessage(new ActivationEmailStrategy(activationKey), to,
                     null);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -127,8 +126,7 @@ public class EmailServiceImpl implements EmailService {
                             locale.retrieveNativeName());
 
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
-                builder.sendMessage(strategy, getAddresses(coordinators),
+                emailBuilder.sendMessage(strategy, getAddresses(coordinators),
                         receivedReason);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -147,8 +145,7 @@ public class EmailServiceImpl implements EmailService {
             String receivedReason = msgs.format("jsf.email.group.maintainer.ReceivedReason",
                     versionGroupJoinAction.getGroupName());
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
-                builder.sendMessage(strategy, getAddresses(maintainers),
+                emailBuilder.sendMessage(strategy, getAddresses(maintainers),
                         receivedReason);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -167,8 +164,7 @@ public class EmailServiceImpl implements EmailService {
             String receivedReason = msgs.get("jsf.email.admin.ReceivedReason");
             String toName = msgs.get("jsf.ZanataAdministrator");
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
-                builder.sendMessage(strategy, getAddresses(adminEmails, toName),
+                emailBuilder.sendMessage(strategy, getAddresses(adminEmails, toName),
                         receivedReason);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -187,8 +183,7 @@ public class EmailServiceImpl implements EmailService {
         String receivedReason = msgs.get(
                 "jsf.email.admin.user.ReceivedReason");
         try {
-            EmailBuilder builder = new EmailBuilder(emailContext);
-            builder.sendMessage(strategy, getAddresses(getAdmins()),
+            emailBuilder.sendMessage(strategy, getAddresses(getAdmins()),
                     receivedReason);
         } catch (Exception e) {
             throw new RuntimeException(e);

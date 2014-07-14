@@ -29,6 +29,8 @@ import com.googlecode.totallylazy.collections.PersistentMap;
 import org.zanata.i18n.Messages;
 
 /**
+ * Strategy class for EmailBuilder to customise the content and recipients
+ * of an email.
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 public abstract class EmailBuilderStrategy {

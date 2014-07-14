@@ -34,6 +34,7 @@ import lombok.NoArgsConstructor;
 import org.zanata.model.HPerson;
 
 /**
+ * Helper methods for working with JavaMail addresses.
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

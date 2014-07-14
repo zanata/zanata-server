@@ -39,7 +39,7 @@ public class PasswordResetRequestAction implements Serializable {
     @In
     private AccountDAO accountDAO;
     @In
-    private EmailBuilder.Context emailContext;
+    private EmailBuilder emailBuilder;
     @In
     private UserAccountService userAccountServiceImpl;
 
@@ -85,8 +85,7 @@ public class PasswordResetRequestAction implements Serializable {
             return null;
         } else {
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
-                builder.sendMessage(new PasswordResetEmailStrategy(
+                emailBuilder.sendMessage(new PasswordResetEmailStrategy(
                         key.getKeyHash()),
                         toAddress(account.getPerson()), null);
             } catch (Exception e) {

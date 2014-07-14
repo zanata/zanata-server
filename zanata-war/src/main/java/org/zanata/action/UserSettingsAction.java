@@ -93,7 +93,7 @@ import org.zanata.util.ServiceLocator;
 public class UserSettingsAction {
 
     @In
-    private EmailBuilder.Context emailContext;
+    private EmailBuilder emailBuilder;
 
     @In
     private EmailChangeService emailChangeService;
@@ -170,9 +170,8 @@ public class UserSettingsAction {
                             emailAddress);
             // TODO create a separate field for newEmail, perhaps in this class
             try {
-                EmailBuilder builder = new EmailBuilder(emailContext);
                 InternetAddress to = new InternetAddress(this.emailAddress, this.accountName, UTF_8.name());
-                builder.sendMessage(new EmailValidationEmailStrategy(
+                emailBuilder.sendMessage(new EmailValidationEmailStrategy(
                         activationKey), to, null);
             } catch (Exception e) {
                 throw new RuntimeException(e);
