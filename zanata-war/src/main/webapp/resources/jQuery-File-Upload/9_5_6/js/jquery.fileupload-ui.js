@@ -666,6 +666,7 @@
                             $(window).on('beforeunload', options.confirmLeavePage);
                             // TODO change upload progress message
                             options.updateUploadCountIndicator(options);
+                            filesList.children().addClass('txt--neutral');
                             filesList.find('.cancel').addClass('is-hidden');
                             filesList.find('.start').click();
                         }
