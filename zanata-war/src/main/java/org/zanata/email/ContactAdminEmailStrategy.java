@@ -47,7 +47,7 @@ public class ContactAdminEmailStrategy extends EmailStrategy {
 
     @Override
     public Optional<InternetAddress[]> getReplyToAddress() {
-        return Optional.of(getReplyTo(fromName, replyEmail));
+        return Optional.of(getReplyTo(replyEmail, fromName));
     }
 
     @Override
