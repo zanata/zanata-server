@@ -65,7 +65,7 @@ public class ContactLanguageCoordinatorEmailStrategy
             InternetAddress[] toAddresses) {
         PersistentMap<String, Object> context = super.makeContext(genericContext,
                 toAddresses);
-        String safeHTML = EmailSanitizer.SANITIZER.sanitize(htmlMessage);
+        String safeHTML = EmailUtil.SANITIZER.sanitize(htmlMessage);
         return context
                 .insert("fromLoginName", fromLoginName)
                 .insert("fromName", fromName)

@@ -183,6 +183,8 @@
             <usedDependency>org.jboss.seam:jboss-seam-debug</usedDependency>
             <!-- runtime dependency for email implementations -->
             <usedDependency>org.jboss.seam:jboss-seam-mail</usedDependency>
+            <!-- Used for email unit tests -->
+            <usedDependency>org.jvnet.mock-javamail:mock-javamail</usedDependency>
             <!-- Needed for urlrewrite.xml impl -->
             <usedDependency>org.tuckey:urlrewritefilter</usedDependency>
             <!-- Need for test scope -->
@@ -1433,6 +1435,12 @@
     </dependency>
 
     <dependency>
+      <groupId>net.htmlparser.jericho</groupId>
+      <artifactId>jericho-html</artifactId>
+      <version>3.3</version>
+    </dependency>
+
+    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
       <version>2.5.1</version>
@@ -1660,6 +1668,12 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

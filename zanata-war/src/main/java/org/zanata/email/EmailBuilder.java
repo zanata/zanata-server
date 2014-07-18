@@ -162,14 +162,19 @@ public class EmailBuilder {
         template.merge(context, writer);
         String body = writer.toString();
 
+        // Alternative parts should be added in increasing order of preference,
+        // ie the preferred format should be added last.
         Multipart mp = new MimeMultipart("alternative");
-        String text = "Please use an HTML-capable email client to read this message.";
+
+        MimeBodyPart textPart = new MimeBodyPart();
+        String text = EmailUtil.htmlToText(body);
+        textPart.setText(text, "UTF-8");
+        mp.addBodyPart(textPart);
+
         MimeBodyPart htmlPart = new MimeBodyPart();
         htmlPart.setContent(body, "text/html; charset=UTF-8");
         mp.addBodyPart(htmlPart);
-        MimeBodyPart textPart = new MimeBodyPart();
-        textPart.setText(text, "UTF-8");
-        mp.addBodyPart(textPart);
+
         msg.setContent(mp);
         return msg;
     }

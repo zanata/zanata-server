@@ -20,6 +20,9 @@
  */
 package org.zanata.email;
 
+import net.htmlparser.jericho.Renderer;
+import net.htmlparser.jericho.Segment;
+import net.htmlparser.jericho.Source;
 import org.owasp.html.PolicyFactory;
 
 import static org.owasp.html.Sanitizers.BLOCKS;
@@ -30,8 +33,21 @@ import static org.owasp.html.Sanitizers.LINKS;
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
-public class EmailSanitizer {
+public class EmailUtil {
     // Don't allow CSS styles, scripts, etc
     public static final PolicyFactory SANITIZER =
             BLOCKS.and(FORMATTING).and(IMAGES).and(LINKS);
+
+    /**
+     * Converts HTML to plain text.  'br' tags become newlines, and URLs in
+     * links are inserted after the text of the link.
+     * @param html
+     * @return
+     */
+    public static String htmlToText(String html) {
+        Source htmlSource = new Source(html);
+        Segment htmlSeg = new Segment(htmlSource, 0, htmlSource.length());
+        Renderer htmlRend = new Renderer(htmlSeg);
+        return htmlRend.toString();
+    }
 }
