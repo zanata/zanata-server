@@ -121,15 +121,16 @@ public class EmailStrategyTest {
         Multipart multipart = (Multipart) message.getContent();
         // one for html, one for text
         assertThat(multipart.getCount()).isEqualTo(2);
-        // NB this assumes that HTML is first
-        BodyPart htmlPart = multipart.getBodyPart(0);
+
+        // Text should appear first (because HTML is the preferred format)
+        BodyPart textPart = multipart.getBodyPart(0);
+        assertThat(textPart.getDataHandler().getContentType()).isEqualTo(
+                "text/plain; charset=UTF-8");
+
+        BodyPart htmlPart = multipart.getBodyPart(1);
         assertThat(htmlPart.getDataHandler().getContentType()).isEqualTo(
                 "text/html; charset=UTF-8");
         String htmlContent = (String) htmlPart.getContent();
-
-        BodyPart textPart = multipart.getBodyPart(1);
-        assertThat(textPart.getDataHandler().getContentType()).isEqualTo(
-                "text/plain; charset=UTF-8");
 
         return htmlContent;
     }
