@@ -86,6 +86,7 @@
             // Function returning the current number of files,
             // used by the maxNumberOfFiles validation:
             getNumberOfFiles: function () {
+                // FIXME this does not indicate failed files properly
                 return this.filesContainer.children()
                     .not('.processing').length;
             },
@@ -650,8 +651,7 @@
                                 console.log('not logged in');
                                 fileUploadWidget._showSingletonError('You are not logged in. Open a separate tab or window to log in, then try again.');
                             } else if (data.error === 'already uploading') {
-                                console.error('already uploading. TODO show error on UI that says to wait for other upload to complete');
-                                fileUploadWidget._showSingletonError('You already have an upload in progress. Wait for the other upload to finish, then try again.');
+                                fileUploadWidget._showSingletonError('You already have an upload in progress. Wait for the other upload to finish, then try again. Uploads may take up to 5 minutes to finish processing.');
                             } else {
                                 console.error('some other error: %s', data.error);
                                 fileUploadWidget._showSingletonError('Got an error while checking if it is ok to upload: ' + data.error
