@@ -50,6 +50,9 @@
         if="#{!identity.isLoggedIn() and authenticationManager.authenticatedAccountWaitingForActivation}">
         <redirect view-id="/account/inactive_account.xhtml" />
       </rule>
+      <rule if="#{!identity.loggedIn and applicationConfiguration.singleOpenIdProvider}">
+        <redirect view-id="/home.xhtml" />
+      </rule>
       <rule if="#{!identity.loggedIn}">
         <redirect view-id="/account/login.xhtml" />
       </rule>

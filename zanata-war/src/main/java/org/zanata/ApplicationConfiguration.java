@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,7 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.Synchronized;
 import org.jboss.seam.web.ServletContexts;
 import org.zanata.config.DatabaseBackedConfig;
+import org.zanata.config.JaasConfig;
 import org.zanata.config.JndiBackedConfig;
 import org.zanata.log4j.ZanataHTMLLayout;
 import org.zanata.log4j.ZanataSMTPAppender;
@@ -56,6 +59,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.zanata.security.OpenIdLoginModule;
 
 @Name("applicationConfiguration")
 @Scope(ScopeType.APPLICATION)
@@ -76,6 +80,8 @@ public class ApplicationConfiguration implements Serializable {
     private DatabaseBackedConfig databaseBackedConfig;
     @In
     private JndiBackedConfig jndiBackedConfig;
+    @In
+    private JaasConfig jaasConfig;
 
     private static final ZanataSMTPAppender smtpAppenderInstance =
             new ZanataSMTPAppender();
@@ -273,6 +279,20 @@ public class ApplicationConfiguration implements Serializable {
 
     public boolean isOpenIdAuth() {
         return this.loginModuleNames.containsKey(AuthenticationType.OPENID);
+    }
+
+    public boolean isSingleOpenIdProvider() {
+        return getOpenIdProviderUrl() != null;
+    }
+
+    public String getOpenIdProviderUrl() {
+        if (loginModuleNames.containsKey(AuthenticationType.OPENID)) {
+            return jaasConfig.getAppConfigurationProperty(
+                    loginModuleNames.get(AuthenticationType.OPENID),
+                    OpenIdLoginModule.class,
+                    OpenIdLoginModule.OPEN_ID_PROVIDER_KEY);
+        }
+        return null;
     }
 
     public boolean isKerberosAuth() {

@@ -154,9 +154,17 @@
       <h:outputLink id="signin_link"
         value="#{request.contextPath}/account/sign_in?continue=#{urlUtil.getEncodedLocalUrl(request)}"
         propagation="none" styleClass="l--push-left-half button--primary"
-        rendered="#{not applicationConfiguration.kerberosAuth}">
+        rendered="#{applicationConfiguration.internalAuth or applicationConfiguration.jaasAuth or (applicationConfiguration.openIdAuth and not applicationConfiguration.singleOpenIdProvider)}">
         #{msgs['jsf.Login']}
       </h:outputLink>
+
+      <h:form rendered="#{applicationConfiguration.openIdAuth and applicationConfiguration.singleOpenIdProvider}">
+        <h:commandLink id="openid_single_signin_link"
+          action="#{loginAction.genericOpenIdLogin(applicationConfiguration.openIdProviderUrl)}"
+          propagation="none" styleClass="l--push-left-half button--primary">
+          #{msgs['jsf.Login']}
+        </h:commandLink>
+      </h:form>
 
       <h:outputLink id="ksignin_link"
         value="#{request.contextPath}/account/klogin.seam?continue=#{urlUtil.getEncodedLocalUrl(request)}"
