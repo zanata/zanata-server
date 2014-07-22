@@ -22,19 +22,19 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.ApplicationConfiguration;
-import org.zanata.dao.AccountDAO;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataCredentials;
 import org.zanata.security.openid.OpenIdProviderType;
-
-import lombok.Getter;
-import lombok.Setter;
+import org.zanata.security.openid.OpenIdUtil;
 
 /**
  * This action takes care of logging a user into the system. It contains logic
@@ -119,5 +119,17 @@ public class LoginAction implements Serializable {
         credentials.setAuthType(AuthenticationType.OPENID);
         credentials.setOpenIdProviderType(providerType);
         return authenticationManager.openIdLogin();
+    }
+
+    /**
+     * Another way of doing open id without knowing the provider first hand.
+     * Tries to match the given open id with a known provider. If it can't find
+     * one it uses a generic provider.
+     */
+    public String genericOpenIdLogin(String openId) {
+        setOpenId(openId);
+        OpenIdProviderType providerType =
+                OpenIdUtil.getBestSuitedProvider(openId);
+        return openIdLogin(providerType.name());
     }
 }
