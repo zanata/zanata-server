@@ -166,10 +166,11 @@ $(function () {
                     that = $this.data('blueimp-fileupload') ||
                            $this.data('fileupload'),
                     options = that.options;
-                // FIXME may want to make sure this doesn't trigger update while
-                //       uploading. Alternative: make this function aware of
-                //       current uploading state.
-                updateCountIndicator(options);
+                if (data.errorThrown == 'abort') {
+                    updateCountIndicator(options);
+                } else {
+                    updateUploadCountIndicator(options);
+                }
             }),
             completed: (function completed (e, data) {
                 var $this = $(this),
