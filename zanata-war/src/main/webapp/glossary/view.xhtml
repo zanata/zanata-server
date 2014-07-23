@@ -72,7 +72,7 @@
     }
 
     function confirmDelete(localeId) {
-      return confirm("#{messages['jsf.Glossary.delete.confirm']}");
+      return confirm("#{msgs['jsf.Glossary.delete.confirm']}");
     }
 
   </script>
@@ -85,11 +85,11 @@
 </ui:define>
 
 
-<ui:define name="page_title">#{messages['jsf.Glossary']}</ui:define>
+<ui:define name="page_title">#{msgs['jsf.Glossary']}</ui:define>
 <ui:define name="center_content">
 <div class="g--centered">
   <div class="g__item w--2-3">
-    <h1 class="txt--meta">#{messages['jsf.Glossary']}</h1>
+    <h1 class="txt--meta">#{msgs['jsf.Glossary']}</h1>
     <div class="panel">
       <div class="panel__header">
         <div class="panel__header__actions">
@@ -107,7 +107,7 @@
               class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown"
               id="glossary-more-actions">
               <a class="dropdown__toggle js-dropdown__toggle" href="#"
-                title="#{messages['jsf.tooltip.MoreActions']}"><i
+                title="#{msgs['jsf.tooltip.MoreActions']}"><i
                 class="i i--ellipsis"></i></a>
               <ul class="dropdown__content js-dropdown__content" role="content"
                 aria-labelledby="dropdownContent">
@@ -115,7 +115,7 @@
                   rendered="#{s:hasPermission('', 'glossary-insert')}">
                   <li>
                     <a href="#" onclick="openUploadPanel(); return false;">
-                      #{messages['jsf.Glossary.upload']}
+                      #{msgs['jsf.Glossary.upload']}
                       <i class="i i--import i__item__icon"></i>
                     </a>
                   </li>
@@ -124,7 +124,7 @@
             </div>
           </s:fragment>
         </div>
-        <h2 class="panel__heading">#{messages['jsf.Glossary.entries.label']}</h2>
+        <h2 class="panel__heading">#{msgs['jsf.Glossary.entries.label']}</h2>
       </div>
 
       <div class="panel__sub-header js-reveal">
@@ -132,7 +132,7 @@
           listId="glossary_form"
           render="glossary_form, glossarySearchBottom-pager, glossarySearchBottom-page-info"
           id="glossarySearch" iconClass="i--language"
-          placeholder="#{messages['jsf.language.search.placeholder']}"
+          placeholder="#{msgs['jsf.language.search.placeholder']}"
           actionBean="#{glossaryAction.glossaryFilter}"/>
       </div>
 
@@ -145,13 +145,13 @@
       <h:form id="glossary_form" styleClass="l--push-bottom-1">
         <s:div styleClass="l--pad-all-half"
           rendered="#{empty glossaryAction.getEntries()}">
-          <p class="txt--meta">#{messages['jsf.Glossary.empty']}</p>
+          <p class="txt--meta">#{msgs['jsf.Glossary.empty']}</p>
           <s:fragment
             rendered="#{s:hasPermission('', 'glossary-insert')}">
             <p>
               <a href="#" onclick="openUploadPanel(); return false;"
                 class="button--primary">
-                #{messages['jsf.Glossary.upload']}
+                #{msgs['jsf.Glossary.upload']}
                 <i class="i i--plus i__item__icon"></i>
               </a>
             </p>
@@ -160,7 +160,7 @@
 
         <s:div styleClass="l--pad-all-half"
           rendered="#{not empty glossaryAction.getEntries() and empty glossaryAction.glossaryFilter.currentPage}">
-          <p class="txt--meta">#{messages['jsf.search.NoResult']}</p>
+          <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
         </s:div>
 
         <s:fragment
@@ -178,9 +178,9 @@
                     class="dropdown dropdown--small dropdown--inline dropdown--single list__item__dropdown js-dropdown">
                     <a href="#"
                       class="dropdown__toggle js-dropdown__toggle txt--meta"
-                      title="#{messages['jsf.Glossary.options']}">
+                      title="#{msgs['jsf.Glossary.options']}">
                       <span class="is-invisible">
-                        #{messages['jsf.Glossary.options']}
+                        #{msgs['jsf.Glossary.options']}
                       </span>
                     </a>
                     <ul class="dropdown__content js-dropdown__content">
@@ -189,7 +189,7 @@
                         <li>
                           <a href="#" onclick="if(confirmDelete('#{glossary.localeId}')) {deleteGlossary('#{glossary.localeId}')}; return false;"
                             class="i__item--right">
-                              #{messages['jsf.Glossary.delete']}<i
+                              #{msgs['jsf.Glossary.delete']}<i
                               class="i i--remove i__item__icon"></i>
                           </a>
                         </li>
@@ -215,7 +215,7 @@
                         <span
                           class="stats__figure">#{glossary.entryCount}</span>
                         <span class="stats__unit txt--lowercase">
-                          #{messages['jsf.Entries']}
+                          #{msgs['jsf.Entries']}
                         </span>
                       </span>
                     </div>
@@ -230,7 +230,7 @@
       <zanata:list-filter listId="glossary_form"
         render="glossary_form, glossarySearch-pager, glossarySearch-page-info"
         id="glossarySearchBottom" iconClass="i--language" bottomPanel="true"
-        placeholder="#{messages['jsf.language.search.placeholder']}"
+        placeholder="#{msgs['jsf.language.search.placeholder']}"
         actionBean="#{glossaryAction.glossaryFilter}"/>
     </div>
   </div>
@@ -240,11 +240,11 @@
 <rich:popupPanel id="uploadPanel" moveable="#{true}"
   resizeable="#{false}" autosized="#{true}">
   <f:facet name="header">
-    <h:outputText value="#{messages['jsf.Upload']}"/>
+    <h:outputText value="#{msgs['jsf.Upload']}"/>
   </f:facet>
   <h:form id="uploadForm" enctype="multipart/form-data">
     <div>
-      <h:outputLabel value="#{messages['jsf.Glossary.supportedFileFormat']}"
+      <h:outputLabel value="#{msgs['jsf.Glossary.supportedFileFormat']}"
         class="glossarySupportedFileLabel"/>
     </div>
 
@@ -254,9 +254,9 @@
       onchange="updateForm(this.value)">
     </s:fileUpload>
 
-    <div title="#{messages['jsf.Glossary.SourceLocale.Title']}"
+    <div title="#{msgs['jsf.Glossary.SourceLocale.Title']}"
       class="glosaryFileUploadDialog" id="sourceLangDiv" style="display:none">
-      <h:outputLabel value="#{messages['jsf.SourceLanguage']}"/>
+      <h:outputLabel value="#{msgs['jsf.SourceLanguage']}"/>
       <h:selectOneMenu
         value="#{glossaryAction.glossaryFileUpload.sourceLang}">
         <s:selectItems value="#{glossaryAction.availableLocales}"
@@ -266,9 +266,9 @@
 
       </h:selectOneMenu>
     </div>
-    <div title="#{messages['jsf.Glossary.TargetLocale.Title']}"
+    <div title="#{msgs['jsf.Glossary.TargetLocale.Title']}"
       class="glosaryFileUploadDialog" id="targetLangDiv" style="display:none">
-      <h:outputLabel value="#{messages['jsf.TargetLanguage']}"/>
+      <h:outputLabel value="#{msgs['jsf.TargetLanguage']}"/>
       <h:selectOneMenu
         value="#{glossaryAction.glossaryFileUpload.transLang}">
         <s:selectItems value="#{glossaryAction.availableLocales}"
@@ -282,30 +282,30 @@
     <div class="glosaryFileUploadDialog" id="treatCommentSameDiv"
       style="display:none">
       <h:outputText
-        value="#{messages['jsf.Glossary.TreatSourceCommentsAsTarget']}"
-        title="#{messages['jsf.Glossary.TreatSourceCommentsAsTarget.Title']}"/>
+        value="#{msgs['jsf.Glossary.TreatSourceCommentsAsTarget']}"
+        title="#{msgs['jsf.Glossary.TreatSourceCommentsAsTarget.Title']}"/>
       <h:selectBooleanCheckbox
         value="#{glossaryAction.glossaryFileUpload.treatSourceCommentsAsTarget}"
-        title="#{messages['jsf.Glossary.TreatSourceCommentsAsTarget.Title']}"/>
+        title="#{msgs['jsf.Glossary.TreatSourceCommentsAsTarget.Title']}"/>
     </div>
 
     <div class="glosaryFileUploadDialog" id="commentColsDiv"
       style="display:none">
-      <h:outputText value="#{messages['jsf.Glossary.CommentColumnNames']}"
-        title="#{messages['jsf.Glossary.CommentColumnNames.Title']}"/>
+      <h:outputText value="#{msgs['jsf.Glossary.CommentColumnNames']}"
+        title="#{msgs['jsf.Glossary.CommentColumnNames.Title']}"/>
       <h:inputText
         value="#{glossaryAction.glossaryFileUpload.commentCols}"
-        title="#{messages['jsf.Glossary.CommentColumnNames.Title']}"/>
+        title="#{msgs['jsf.Glossary.CommentColumnNames.Title']}"/>
     </div>
 
 
     <div align="right" class="glosaryFileUploadDialog">
       <h:graphicImage value="/images/loading.gif" id="fileUploading"
         style="display:none"/>
-      <h:commandButton value="#{messages['jsf.Upload']}"
+      <h:commandButton value="#{msgs['jsf.Upload']}"
         action="#{glossaryAction.uploadFile}" id="uploadButton"
         onclick="showLoading(true)"/>
-      <h:commandButton value="#{messages['jsf.Cancel']}"
+      <h:commandButton value="#{msgs['jsf.Cancel']}"
         onclick="showLoading(false);hideUploadPanel();return false;"/>
     </div>
   </h:form>

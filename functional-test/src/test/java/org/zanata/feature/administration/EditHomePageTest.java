@@ -20,15 +20,12 @@
  */
 package org.zanata.feature.administration;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
-import org.zanata.page.administration.EditHomeCodePage;
-import org.zanata.page.administration.EditHomeContentPage;
-import org.zanata.page.dashboard.DashboardBasePage;
 import org.zanata.page.utility.HomePage;
 import org.zanata.util.AddUsersRule;
 import org.zanata.workflow.LoginWorkFlow;
@@ -45,45 +42,35 @@ public class EditHomePageTest extends ZanataTestCase {
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
 
+    @Feature(summary = "The administrator can edit the home screen in " +
+            "WYSIWYG mode",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Ignore("Cannot access the editor via WebDriver")
-    public void goToEditPageContent() {
-        DashboardBasePage dashboard = new LoginWorkFlow().signIn("admin", "admin");
-        EditHomeContentPage editHomeContentPage =
-                dashboard.goToHomePage().goToEditPageContent();
+    public void editPageContent() throws Exception {
+        HomePage homePage = new LoginWorkFlow()
+                .signIn("admin", "admin")
+                .goToHomePage()
+                .goToEditPageContent()
+                .enterText("Test")
+                .update();
 
-        assertThat(editHomeContentPage.getTitle())
-                .isEqualTo("Zanata: Edit Home Page")
-                .as("Correct page");
-
-        editHomeContentPage = editHomeContentPage.enterText("Test");
-        HomePage homePage = editHomeContentPage.update();
-        editHomeContentPage = homePage.goToEditPageContent();
-        editHomeContentPage.cancelUpdate();
+        assertThat(homePage.getMainBodyContent()).isEqualTo("Test")
+                .as("Homepage text has been updated");
     }
 
+    @Feature(summary = "The administrator can edit the home screen in " +
+            "html mode",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    public void goToEditPageCode() {
-        DashboardBasePage dashboard = new LoginWorkFlow().signIn("admin", "admin");
-        EditHomeCodePage editHomeCodePage =
-                dashboard.goToHomePage().goToEditPageCode();
+    public void editPageCode() throws Exception {
+        HomePage homePage = new LoginWorkFlow()
+                .signIn("admin", "admin")
+                .goToHomePage()
+                .goToEditPageCode()
+                .enterText("<b>Test</b>")
+                .update();
 
-        assertThat(editHomeCodePage.getTitle())
-                .isEqualTo("Zanata: Edit Page Code")
-                .as("Correct page");
-
-        HomePage homePage = editHomeCodePage.enterText("Test").update();
-
-        assertThat(homePage
-                .expectNotification("Home content was successfully updated."))
-                .isTrue()
-                .as("Message displayed");
-
-        editHomeCodePage = homePage.goToEditPageCode();
-        homePage = editHomeCodePage.cancelUpdate();
-
-        assertThat(homePage.getMainBodyContent())
-                .isEqualTo("Test")
+        assertThat(homePage.getMainBodyContent()).isEqualTo("Test")
                 .as("Homepage text has been updated");
     }
 }

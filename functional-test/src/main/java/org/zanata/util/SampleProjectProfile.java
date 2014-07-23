@@ -3,7 +3,6 @@ package org.zanata.util;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 
 import org.hibernate.Session;
 import org.hibernate.search.FullTextSession;
@@ -20,6 +19,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountActivationKey;
+import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.HApplicationConfiguration;
 import org.zanata.model.HDocument;
@@ -33,6 +33,7 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HPersonEmailValidationKey;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HRoleAssignmentRule;
 import org.zanata.model.HTermComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
@@ -94,7 +95,11 @@ public class SampleProjectProfile {
                 HProjectIteration.class, HProject.class,
                 // account
                 HAccountActivationKey.class, HPersonEmailValidationKey.class,
-                HCredentials.class, HPerson.class, HAccount.class));
+                HAccountResetPasswordKey.class, HCredentials.class,
+                HPerson.class, HAccount.class,
+                // account role
+                HRoleAssignmentRule.class
+        ));
         enUSLocale =
                 forLocale(false, LocaleId.EN_US).makeAndPersist(entityManager,
                         HLocale.class);
@@ -144,13 +149,15 @@ public class SampleProjectProfile {
     }
 
     public void makeSampleLanguages() {
-        forLocale(true, LocaleId.FR).makeAndPersist(entityManager,
-                HLocale.class);
+        makeLanguage(LocaleId.FR);
 
-        forLocale(true, new LocaleId("hi")).makeAndPersist(entityManager,
-                HLocale.class);
+        makeLanguage(new LocaleId("hi"));
 
-        forLocale(true, new LocaleId("pl")).makeAndPersist(entityManager,
+        makeLanguage(new LocaleId("pl"));
+    }
+
+    public void makeLanguage(LocaleId localeId) {
+        forLocale(true, localeId).makeAndPersist(entityManager,
                 HLocale.class);
     }
 
