@@ -21,6 +21,7 @@ $(function () {
             dropZone = uploadForm.find('.drag-drop'),
             filesList = uploadForm.find('.files'),
             errorList = uploadForm.find('.js-errors'),
+            advancedSettings = uploadForm.find('.js-fileupload-advanced-settings'),
             startButton = uploadForm.find('.js-fileupload-main-start'),
             doneButton = uploadForm.find('.fileupload-done'),
             cancelButton = uploadForm.find('.fileupload-cancel'),
@@ -60,6 +61,7 @@ $(function () {
                 doneButton.addClass('is-hidden').prop('disabled', true);
                 cancelButton.removeClass('is-hidden').prop('disabled', false);
                 dropZone.removeClass('is-hidden');
+                advancedSettings.removeClass('is-hidden');
                 // clear out path and custom attributes
                 filePathField.val('');
                 fileParamsField.val('');
@@ -91,7 +93,7 @@ $(function () {
 
         container.on('hide.zanata.modal', function () {
             refreshStatistics();
-        })
+        });
 
         function confirmCancelUpload () {
             var confirmCancel = confirm('Do you really want to stop uploading files?');
@@ -151,6 +153,7 @@ $(function () {
             maxFileSize: 200*1024*1024,
             maxNumberOfFiles: maxFiles,
             dropZone: dropZone,
+            advancedSettings: advancedSettings,
             beforeAdd: (function beforeAdd (e, data) {
                 errorList.empty();
                 startButton.attr('disabled', true);

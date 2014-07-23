@@ -624,6 +624,7 @@
                 options = this.options,
                 filesList = this.options.filesContainer,
                 dropZone = this.element.find('.drag-drop'),
+                advancedSettings = this.options.advancedSettings,
                 url = this.options.url;
             this._on(fileUploadButtonBar.find('.start'), {
                 click: function (e) {
@@ -662,6 +663,7 @@
                             $(e.target).prop('disabled', true)
                                 .text('Uploading...');
                             dropZone.addClass('is-hidden');
+                            advancedSettings.addClass('is-hidden');
                             options.container.on('hide.zanata.modal', options.confirmCancelUpload);
                             $(window).on('beforeunload', options.confirmLeavePage);
                             // TODO change upload progress message
