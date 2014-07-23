@@ -97,9 +97,9 @@ site: http://www.fsf.org.
             </div>
             <div class="js-fileupload-advanced-settings l--push-bottom-1 l--push-h-1 js-reveal">
               <p class="txt--align-center">
-                <button class="button--link js-reveal__toggle" data-target="#fu-advanced">Advanced settings</button>
+                <button class="button--link js-reveal__toggle" data-target="##{cc.clientId}-fileupload-advanced">Advanced settings</button>
               </p>
-              <div id="fu-advanced" class="l--pad-all-half bg--pop-higher is-hidden">
+              <div id="#{cc.clientId}-fileupload-advanced" class="l--pad-all-half bg--pop-higher is-hidden">
                 <label for="#filepath">File Path</label>
                 <input type="text" id="filepath" name="filepath" />
                 <!-- Source language is currently ignored by the server.
@@ -108,10 +108,13 @@ site: http://www.fsf.org.
                   <option value="english-US" selected="selected">English (United States)</option>
                 </select>
                 -->
-                <label for="fileparams">File Parameters</label>
-                <a href="https://github.com/zanata/zanata-server/wiki/Custom-document-parameters"
-                   title="Not needed in most cases, click here for the help page."><i class="i i--help"></i></a>
-                <textarea name="fileparams" id="fileparams" class="l--push-bottom-0" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;"></textarea>
+                <button class="button--link js-reveal__toggle" data-target="##{cc.clientId}-fileupload-file-params" title="Click to expand">File Parameters</button>
+                  <span id="#{cc.clientId}-fileupload-file-params" class="is-hidden">
+                    <a href="https://github.com/zanata/zanata-server/wiki/Custom-document-parameters"
+                       title="Custom file parameters are not needed in most cases. Click here to open the help page."><i class="i i--help"></i></a>
+                    <textarea name="fileparams" id="fileparams" class="l--push-bottom-0"
+                              style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;"></textarea>
+                  </span>
               </div>
             </div>
             <!-- fileupload-progress is used in the script to locate the progress bar -->
