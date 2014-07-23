@@ -46,9 +46,14 @@
   <composite:attribute name="inputClass"
     shortDescription="CSS class for input field"/>
 
+  <composite:attribute name="onSelectStatus"
+    shortDescription="Name of the a4j:status component to activate when selecting an item from the suggestion list"/>
+
 </composite:interface>
 
 <composite:implementation>
+
+  <h:outputScript library="script" name="jquery.typing-0.2.0.min.js" target="body"/>
 
   <a4j:jsFunction name="#{cc.attrs.id}RenderResult"
     render="#{cc.attrs.id}-result"
@@ -76,13 +81,23 @@
       var loaderId = '#' + '#{cc.attrs.id}-loader'
       jQuery(loaderId).addClass('is-hidden')
     }
+
+    jQuery(function() {
+      jQuery('#' + '#{cc.attrs.id}-autocomplete__input').typing({
+        stop: function(event, elem) {
+          onValueChange(elem, event, #{cc.attrs.id}RenderResult, #{cc.attrs.id}ClearResults);
+        },
+        delay: 400
+      });
+    });
   </script>
 
   <s:fragment rendered="#{cc.attrs.onSelectItem == 'null'}">
     <a4j:jsFunction name="#{cc.attrs.id}SubmitSelected"
       action="#{cc.attrs.actionBean.onSelectItemAction()}"
       render="#{cc.attrs.render}"
-      oncomplete="#{cc.attrs.oncomplete}">
+      oncomplete="#{cc.attrs.oncomplete}"
+      status="#{cc.attrs.onSelectStatus}">
       <a4j:param name="val" assignTo="#{cc.attrs.actionBean.selectedItem}"/>
     </a4j:jsFunction>
   </s:fragment>
@@ -98,7 +113,6 @@
 
     <input type="text" maxlength="#{cc.attrs.maxlength}" autocomplete="off"
       class="js-autocomplete__input autocomplete__input js-tabs-nav-focus-input #{cc.attrs.inputClass}"
-      onkeyup="onValueChange(this, event, #{cc.attrs.id}RenderResult, #{cc.attrs.id}ClearResults)"
       onfocus="onInputFocus(this, #{cc.attrs.id}RenderResult)"
       id="#{cc.attrs.id}-autocomplete__input"
       placeholder="#{cc.attrs.placeholder}"/>

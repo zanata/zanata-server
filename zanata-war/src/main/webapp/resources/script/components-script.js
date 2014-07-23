@@ -198,7 +198,7 @@ function onValueChange(inputField, event, renderResultFn, resetFn) {
   if (event.keyCode == 27) {
     // key: ESC
     jQuery(inputField).select().parent().find('.js-autocomplete__results').remove();
-  } else if (!isArrowKey(event.keyCode)) {
+  } else if (hasValueChanged(inputField)) {
     var minLength = parseInt(jQuery(inputField).next().val());
     if (jQuery(inputField).val().length >= minLength) {
       renderResultFn(jQuery(inputField).val());
@@ -206,6 +206,18 @@ function onValueChange(inputField, event, renderResultFn, resetFn) {
     else {
       if(resetFn) resetFn()
     }
+  }
+}
+
+function hasValueChanged(element) {
+  var $elem = jQuery(element);
+  originalValue = $elem.attr('data-original-value');
+  if($elem.val() == originalValue) {
+    return false;
+  }
+  else {
+    $elem.attr('data-original-value', $elem.val());
+    return true;
   }
 }
 

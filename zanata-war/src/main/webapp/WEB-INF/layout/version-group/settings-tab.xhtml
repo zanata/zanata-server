@@ -200,6 +200,11 @@
   <li id="settings-maintainers">
     <h2 class="l--push-all-0 gamma d--bottom l--push-bottom-half">
       #{messages['jsf.Maintainers']}
+      <a4j:status name="maintainers-form-loader">
+        <f:facet name="start">
+          <zanata:loader layout="inline" type="loader--small"/>
+        </f:facet>
+      </a4j:status>
     </h2>
     <h:form id="settings-maintainers-form" styleClass="l--push-bottom-0">
       <ul class="list--slat list--highlight l--push-top-half">
@@ -243,7 +248,8 @@
             fetchValue="#{result.account.username}"
             render="settings-maintainers-form,maintainers-size,maintainers-list,maintainers-form"
             oncomplete="focusCurrentActiveInput()"
-            placeholder="#{messages['jsf.SearchUsers']}">
+            placeholder="#{messages['jsf.SearchUsers']}"
+            onSelectStatus="maintainers-form-loader">
 
           <span class="w--r-1 bx--round l--push-right-quarter">
             <img
