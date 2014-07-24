@@ -326,11 +326,14 @@ public class TransMemoryView extends Composite implements
             Anchor infoCell = new Anchor();
             if (item.getMatchType() == MatchType.Imported) {
                 String originStr = Joiner.on(", ").join(item.getOrigins());
-                String ellipsizedStr =
-                        Splitter.fixedLength(10).limit(2).split(originStr)
-                                .iterator().next()
-                                + "...";
-                infoCell.setText(ellipsizedStr);
+                int maxLength = 10;
+                if (originStr.length() > maxLength) {
+                    String ellipsizedStr =
+                            originStr.substring(0, maxLength-1).concat("...");
+                    infoCell.setText(ellipsizedStr);
+                } else {
+                    infoCell.setText(originStr);
+                }
                 infoCell.setTitle(originStr);
             } else {
                 infoCell.setStyleName("icon-info-circle-2 txt--lead");
