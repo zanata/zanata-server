@@ -83,17 +83,52 @@
             // option of the $.ajax upload requests:
             dataType: 'json',
 
+
+            // FIXME put this somewhere else
+            setUploadState: function setUploadState(node, state) {
+                node.removeClass('js-upload-in-progress js-upload-queued js-upload-successful js-upload-failed')
+                    .addClass(state);
+            },
+
+            getFileCounts: function () {
+                var container = this.filesContainer;
+                function lengthOf(className) {
+                    return container.children(className).length
+                }
+
+                var counts = {
+                    queued: lengthOf('.js-upload-queued'),
+                    uploading: lengthOf('.js-upload-in-progress'),
+                    uploaded: lengthOf('.js-upload-successful'),
+                    failed: lengthOf('.js-upload-failed')
+                };
+                counts.total = counts.queued + counts.uploading + counts.uploaded + counts.failed;
+                console.log('counted upload files: %o', counts);
+                return counts;
+            },
+
             // Function returning the current number of files,
             // used by the maxNumberOfFiles validation:
             getNumberOfFiles: function () {
                 // FIXME this does not indicate failed files properly
-                return this.filesContainer.children()
+                var checkLength = this.filesContainer.children()
                     .not('.processing').length;
+                var counts = this.getFileCounts();
+                var total = counts.total;
+                if (total !== checkLength) {
+                    console.error('files counts do not equal check length. checkLength: %d, total: %d, counts: %o', checkLength, total, counts)
+                }
+
+                // FIXME this seems to make file adding fail, but why?
+                // AHA! It is actually adding them, but the zero count is causing the list to be hidden
+                return total;
             },
 
             getNumberOfUploadedFiles: function () {
-                return this.filesContainer.children('.template-download')
-                    .not('.processing').length;
+//                return this.filesContainer.children('.template-download')
+//                    .not('.processing').length;
+                var counts = this.getFileCounts();
+                return counts.uploaded + counts.failed
             },
 
             // Callback to retrieve the list of files from the server response:
@@ -121,19 +156,47 @@
                 }).always(function () {
                     var successFiles = [];
                     $.each(data.files, function (index, file) {
-                        var error = file.error;
-                        if (error) {
+                        if (file.error) {
                             // TODO proper i18n for these strings
-                            if (error === 'File type not allowed') {
-                                data.files[index].error = '"' + file.name + '" is not a supported file type.'
-                            } else if (error === 'File is too large') {
-                                data.files[index].error = '"' + file.name + '" is too large.'
-                            } else if (error === 'Maximum number of files exceeded') {
-                                data.files[index].error = 'Too many files. You can upload more files after the current files are uploaded.';
-                            }
+
+                            console.error('got error for file: %o', file.error);
+
+                            //FIXME these are not the errors I get back for an upload.
+                            // These are what I get when I am adding a file.
+                            // I need to find the one for upload.
+                            substituteError(true, 'Failed to upload this file.');
+                            substituteError('Forbidden', 'Failed to upload this file.');
+
+
+                            substituteError('File type not allowed', '"' + file.name + '" is not a supported file type.');
+                            substituteError('File is too large', '"' + file.name + '" is too large.');
+                            substituteError('Maximum number of files exceeded', 'Too many files. You can upload more files after the current files are uploaded.');
+
+//                            if (error === true) {
+//                                useError('Failed to upload this file.');
+//                            } else if (error === 'Forbidden') {
+//                                useError('Failed to upload this file.');
+//                            } else if (error === 'File type not allowed') {
+//                                useError('"' + file.name + '" is not a supported file type.');
+//                            } else if (error === 'File is too large') {
+//                                useError('"' + file.name + '" is too large.');
+//                            } else if (error === 'Maximum number of files exceeded') {
+//                                useError('Too many files. You can upload more files after the current files are uploaded.');
+//                            }
+
                             that._showSingletonError(file.error);
                         } else {
                             successFiles.push(file);
+                        }
+
+                        function substituteError(error, newError) {
+                            if (file.error === error) {
+                                useError(newError);
+                            }
+                        }
+
+                        function useError (newError) {
+                            data.files[index].error = newError;
                         }
                     });
 
@@ -156,30 +219,45 @@
                 if (e.isDefaultPrevented()) {
                     return false;
                 }
-                var fileuploadWidget = $(this).data('blueimp-fileupload') ||
+                var widget = $(this).data('blueimp-fileupload') ||
                         $(this).data('fileupload');
                 data.context.find('.loader').addClass('is-active');
-                return fileuploadWidget._trigger('sent', e, data);
+                console.log('widget is %o', widget);
+                widget.options.setUploadState(data.context, 'js-upload-in-progress');
+                return widget._trigger('sent', e, data);
             },
             // Callback for successful uploads:
             done: function (e, data) {
                 if (e.isDefaultPrevented()) {
                     return false;
                 }
-                var that = $(this).data('blueimp-fileupload') ||
+                var widget = $(this).data('blueimp-fileupload') ||
                         $(this).data('fileupload'),
                     getFilesFromResponse = data.getFilesFromResponse ||
-                        that.options.getFilesFromResponse,
+                        widget.options.getFilesFromResponse,
                     files = getFilesFromResponse(data),
                     template,
                     deferred;
                 if (data.context) {
                     data.context.each(function (index) {
-                        var file = files[index] ||
-                                {error: 'Empty file upload result'};
+                        var file = files[index] || {};
+//                                {error: 'Empty file upload result'}; // FIXME this triggers for files after logout while upload is in progress
+
+                        if (!files[index]) {
+                            console.log('empty upload result, context is: %o', data.context[index])
+                            // This reveals that the context is the <li> for the file.
+                            // I could pull the file name out of the li so that it can still display,
+                            // or I could make sure it does not re-render, but instead just inserts the
+                            // error in the upload template...
+
+                            // Maybe I could avoid re-render and just show a singleton error...
+                            // except the template renders the whole list? I think it ends up being
+                            // one at a time because the batches are one.
+                        }
+
                         if (file.error) {
                             if (file.error === 'not logged in') {
-                                that._showSingletonError('Your session has timed out. Please log in again before uploading files.');
+                                widget._showSingletonError('Your session has timed out. Please log in again before uploading files.');
                                 // no inline error should be displayed since there is already a singleton error
                                 file.error = null;
 
@@ -189,18 +267,45 @@
                             }
                         }
 
-                        deferred = that._addFinishedDeferreds();
-                        that._transition($(this)).done(
+
+                        // so I could just not use _renderDownload to replace the existing display,
+                        // and show an error at the top. That would leave the file displaying as
+                        // greyed out.
+                        // _transition just tries to fade stuff
+
+                        deferred = widget._addFinishedDeferreds();
+                        widget._transition($(this)).done(
                             function () {
                                 var node = $(this);
-                                template = that._renderDownload([file])
-                                    .replaceAll(node);
-                                that._forceReflow(template);
-                                that._transition(template).done(
+
+                                // This is not so good, since it leaves the throbber on each of these files.
+                                // Maybe I could add a class to the li to make it look errored, but also hide
+                                // the spinner...
+                                // I can add class 'txt--danger' and deactivate the spinner.
+                                if (files[index]) {
+//                                    var node = $(this);
+                                    node = widget._renderDownload([file])
+                                        .replaceAll(node);
+                                    widget._forceReflow(node);
+                                    widget.options.setUploadState(node, 'js-upload-successful');
+                                } else {
+                                    node.find('.loader').removeClass('is-active');
+                                    node.addClass('txt--danger');
+                                    widget._showSingletonError('Some files could not be uploaded. The server stopped responding.');
+
+                                    // Now I just need a way to have these files count as finished.
+                                    // I really need to change the counting so it depends on states, not which
+                                    // template things are based on.
+                                    // Maybe js-queued, js-uploading, js-failure, js-success
+
+                                    widget.options.setUploadState(node, 'js-upload-failed');
+                                }
+
+                                widget._transition(node).done(
                                     function () {
                                         data.context = $(this);
-                                        that._trigger('completed', e, data);
-                                        that._trigger('finished', e, data);
+                                        widget._trigger('completed', e, data);
+                                        widget._trigger('finished', e, data);
                                         deferred.resolve();
                                     }
                                 );
@@ -208,16 +313,16 @@
                         );
                     });
                 } else {
-                    template = that._renderDownload(files)[
-                        that.options.prependFiles ? 'prependTo' : 'appendTo'
-                    ](that.options.filesContainer);
-                    that._forceReflow(template);
-                    deferred = that._addFinishedDeferreds();
-                    that._transition(template).done(
+                    var node = widget._renderDownload(files)[
+                        widget.options.prependFiles ? 'prependTo' : 'appendTo'
+                    ](widget.options.filesContainer);
+                    widget._forceReflow(node);
+                    deferred = widget._addFinishedDeferreds();
+                    widget._transition(node).done(
                         function () {
                             data.context = $(this);
-                            that._trigger('completed', e, data);
-                            that._trigger('finished', e, data);
+                            widget._trigger('completed', e, data);
+                            widget._trigger('finished', e, data);
                             deferred.resolve();
                         }
                     );
@@ -228,7 +333,7 @@
                 if (e.isDefaultPrevented()) {
                     return false;
                 }
-                var that = $(this).data('blueimp-fileupload') ||
+                var widget = $(this).data('blueimp-fileupload') ||
                         $(this).data('fileupload'),
                     template,
                     deferred;
@@ -237,55 +342,56 @@
                         if (data.errorThrown !== 'abort') {
                             var file = data.files[index];
                             file.error = file.error || data.errorThrown ||
-                                true;
-                            deferred = that._addFinishedDeferreds();
-                            that._transition($(this)).done(
+                                'Failed to upload this file.';
+                            deferred = widget._addFinishedDeferreds();
+                            widget._transition($(this)).done(
                                 function () {
                                     var node = $(this);
-                                    template = that._renderDownload([file])
+                                    template = widget._renderDownload([file])
                                         .replaceAll(node);
-                                    that._forceReflow(template);
-                                    that._transition(template).done(
+                                    widget.options.setUploadState(template, 'js-upload-failed');
+                                    widget._forceReflow(template);
+                                    widget._transition(template).done(
                                         function () {
                                             data.context = $(this);
-                                            that._trigger('failed', e, data);
-                                            that._trigger('finished', e, data);
+                                            widget._trigger('failed', e, data);
+                                            widget._trigger('finished', e, data);
                                             deferred.resolve();
                                         }
                                     );
                                 }
                             );
                         } else {
-                            deferred = that._addFinishedDeferreds();
-                            that._transition($(this)).done(
+                            deferred = widget._addFinishedDeferreds();
+                            widget._transition($(this)).done(
                                 function () {
                                     $(this).remove();
-                                    that._trigger('failed', e, data);
-                                    that._trigger('finished', e, data);
+                                    widget._trigger('failed', e, data);
+                                    widget._trigger('finished', e, data);
                                     deferred.resolve();
                                 }
                             );
                         }
                     });
                 } else if (data.errorThrown !== 'abort') {
-                    data.context = that._renderUpload(data.files)[
-                        that.options.prependFiles ? 'prependTo' : 'appendTo'
-                    ](that.options.filesContainer)
+                    data.context = widget._renderUpload(data.files)[
+                        widget.options.prependFiles ? 'prependTo' : 'appendTo'
+                    ](widget.options.filesContainer)
                         .data('data', data);
-                    that._forceReflow(data.context);
-                    deferred = that._addFinishedDeferreds();
-                    that._transition(data.context).done(
+                    widget._forceReflow(data.context);
+                    deferred = widget._addFinishedDeferreds();
+                    widget._transition(data.context).done(
                         function () {
                             data.context = $(this);
-                            that._trigger('failed', e, data);
-                            that._trigger('finished', e, data);
+                            widget._trigger('failed', e, data);
+                            widget._trigger('finished', e, data);
                             deferred.resolve();
                         }
                     );
                 } else {
-                    that._trigger('failed', e, data);
-                    that._trigger('finished', e, data);
-                    that._addFinishedDeferreds().resolve();
+                    widget._trigger('failed', e, data);
+                    widget._trigger('finished', e, data);
+                    widget._addFinishedDeferreds().resolve();
                 }
             },
             // Callback for upload progress events:
@@ -529,6 +635,12 @@
         },
 
         _renderDownload: function (files) {
+            $.each(files, function (index, file) {
+                if (file.error === 'Forbidden') {
+                    files[index].error = 'Failed to upload this file.';
+                }
+            });
+
             return this._renderTemplate(
                 this.options.downloadTemplate,
                 files

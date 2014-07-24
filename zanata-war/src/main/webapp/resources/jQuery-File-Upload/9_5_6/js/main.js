@@ -70,10 +70,22 @@ $(function () {
                 showFileCount(0);
             }),
             updateUploadCountIndicator = (function updateUploadCountIndicator (options) {
-                var totalFiles = options.getNumberOfFiles(),
-                    uploadedFiles = options.getNumberOfUploadedFiles();
-                countIndicator.text('Uploaded ' + uploadedFiles + ' of ' + totalFiles + ' files');
-                if (uploadedFiles === totalFiles) {
+                var counts = options.getFileCounts();
+
+                // FIXME just have one function that returns an object like { uploaded: 2, failed: 1, queued: 1, uploading: 1, total: 5 }
+//                var totalFiles = options.getNumberOfFiles(),
+//                    uploadedFiles = options.getNumberOfUploadedFiles();
+
+                // FIXME use a format string here
+                var message = 'Uploaded ' + counts.uploaded + ' of ' + counts.total + ' files.';
+                if (counts.failed > 0) {
+                    message = message + ' ' + counts.failed + ' uploads failed.'
+                }
+
+                countIndicator.text(message);
+
+//                countIndicator.text('Uploaded ' + uploadedFiles + ' of ' + totalFiles + ' files');
+                if ((counts.uploaded + counts.failed) === counts.total) {
                     startButton.addClass('is-hidden').prop('disabled', true);
                     doneButton.removeClass('is-hidden').prop('disabled', false);
                     cancelButton.addClass('is-hidden').prop('disabled', true);
