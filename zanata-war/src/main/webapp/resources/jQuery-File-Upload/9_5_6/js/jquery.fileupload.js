@@ -966,7 +966,7 @@
                 if (typeof options.beforeAdd === "function") {
                     options.beforeAdd(e, $.extend({}, this.options, data));
                 } else {
-                    console.log('options.beforeAdd should be type "function", but is type "' + typeof options.beforeAdd + '"');
+                    console.log('options.beforeAdd should be type "function", but is type "%s"', typeof options.beforeAdd);
                 }
             }
             if (limitSize && (!filesLength || files[0].size === undefined)) {
@@ -1027,7 +1027,7 @@
                 if (typeof options.afterAdd === "function") {
                     options.afterAdd(e, $.extend({}, this.options, data));
                 } else {
-                    console.log('options.afterAdd should be type "function", but is type "' + typeof options.beforeAdd + '"');
+                    console.log('options.afterAdd should be type "function", but is type "%s"', typeof options.beforeAdd);
                 }
             }
             return result;

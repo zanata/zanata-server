@@ -39,11 +39,7 @@ $(function () {
                 countIndicator.text((noFiles ? 'No' : numberOfFiles) + ' document' + (numberOfFiles === 1 ? '' : 's') + ' queued');
                 // start button should only be enabled if there are files to upload
                 startButton.attr('disabled', noFiles);
-                if (noFiles) {
-                    $('.js-files-panel').addClass('is-hidden');
-                } else {
-                    $('.js-files-panel').removeClass('is-hidden');
-                }
+                $('.js-files-panel').toggleClass('is-hidden', noFiles);
             }),
             updateCountIndicator = (function updateCountIndicator (options) {
                 var numberOfFiles = options.getNumberOfFiles();
