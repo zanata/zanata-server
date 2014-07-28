@@ -9,7 +9,7 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-/* global $, window */
+/* global $, window, refreshStatistics */
 
 $(function () {
     'use strict';
@@ -33,10 +33,25 @@ $(function () {
             countIndicator = uploadForm.find('.js-file-count'),
             filePathField = uploadForm.find('input[name=filepath]'),
             fileParamsField = uploadForm.find('textarea[name=fileparams]'),
+            i18n = function () {
+                var widget = uploadForm.data('blueimp-fileupload') || uploadForm.data('fileupload'),
+                    options = widget.options;
+                return options.i18n.apply(options, arguments);
+            },
             showFileCount = (function showFileCount (numberOfFiles) {
-                var noFiles = numberOfFiles === 0;
-                // FIXME i18n on this string
-                countIndicator.text((noFiles ? 'No' : numberOfFiles) + ' document' + (numberOfFiles === 1 ? '' : 's') + ' queued');
+                var // options = getOptions(),
+                    noFiles = numberOfFiles === 0,
+                    message;
+
+                if (noFiles) {
+                    message = i18n('No documents queued.');
+                } else if (numberOfFiles === 1) {
+                    message = i18n('1 document queued.');
+                } else {
+                    message = i18n('{documentCount} documents queued.', { documentCount: numberOfFiles });
+                }
+                countIndicator.text(message);
+
                 // start button should only be enabled if there are files to upload
                 startButton.attr('disabled', noFiles);
                 $('.js-files-panel').toggleClass('is-hidden', noFiles);
@@ -66,21 +81,16 @@ $(function () {
                 showFileCount(0);
             }),
             updateUploadCountIndicator = (function updateUploadCountIndicator (options) {
-                var counts = options.getFileCounts();
+                var counts = options.getFileCounts(),
+                    message;
 
-                // FIXME just have one function that returns an object like { uploaded: 2, failed: 1, queued: 1, uploading: 1, total: 5 }
-//                var totalFiles = options.getNumberOfFiles(),
-//                    uploadedFiles = options.getNumberOfUploadedFiles();
-
-                // FIXME use a format string here
-                var message = 'Uploaded ' + counts.uploaded + ' of ' + counts.total + ' files.';
                 if (counts.failed > 0) {
-                    message = message + ' ' + counts.failed + ' uploads failed.'
+                    message = i18n('Uploaded {uploaded} of {total} files. {failed} uploads failed.', counts);
+                } else {
+                    message = i18n('Uploaded {uploaded} of {total} files.', counts);
                 }
-
                 countIndicator.text(message);
 
-//                countIndicator.text('Uploaded ' + uploadedFiles + ' of ' + totalFiles + ' files');
                 if ((counts.uploaded + counts.failed) === counts.total) {
                     startButton.addClass('is-hidden').prop('disabled', true);
                     doneButton.removeClass('is-hidden').prop('disabled', false);
@@ -104,7 +114,7 @@ $(function () {
         });
 
         function confirmCancelUpload () {
-            var confirmCancel = confirm('Do you really want to stop uploading files?');
+            var confirmCancel = confirm(i18n('Do you really want to stop uploading files?'));
             if (confirmCancel) {
                 container.off('hide.zanata.modal', confirmCancelUpload);
                 $(window).off('beforeunload', confirmLeavePage);
@@ -113,7 +123,7 @@ $(function () {
         }
 
         function confirmLeavePage () {
-            return 'Do you really want to interrupt your uploading files by leaving this page?';
+            return i18n('Do you really want to interrupt your uploading files by leaving this page?');
         }
 
         // prevent default file drop behaviour on the page
