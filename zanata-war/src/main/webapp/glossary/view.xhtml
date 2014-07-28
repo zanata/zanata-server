@@ -71,8 +71,8 @@
       }
     }
 
-    function confirmDelete(localeId) {
-      return confirm("#{msgs['jsf.Glossary.delete.confirm']}");
+    function confirmDelete(msg) {
+      return confirm(msg);
     }
 
   </script>
@@ -187,7 +187,7 @@
                       <s:fragment
                         rendered="#{s:hasPermission('', 'glossary-delete')}">
                         <li>
-                          <a href="#" onclick="if(confirmDelete('#{glossary.localeId}')) {deleteGlossary('#{glossary.localeId}')}; return false;"
+                          <a href="#" onclick="if(confirmDelete('#{glossaryAction.getDeleteConfirmationMessage(glossary.displayName)}')) {deleteGlossary('#{glossary.localeId}')}; return false;"
                             class="i__item--right">
                               #{msgs['jsf.Glossary.delete']}<i
                               class="i i--remove i__item__icon"></i>

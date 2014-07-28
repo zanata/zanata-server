@@ -21,6 +21,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.exception.ZanataServiceException;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.service.GlossaryFileService;
@@ -49,6 +50,9 @@ public class GlossaryAction implements Serializable {
     @In
     private GlossaryFileService glossaryFileServiceImpl;
 
+    @In
+    private Messages msgs;
+
     @Getter
     private GlossaryFileUploadHelper glossaryFileUpload =
             new GlossaryFileUploadHelper();
@@ -60,9 +64,13 @@ public class GlossaryAction implements Serializable {
             Lists.newArrayList(SortingType.SortOption.ALPHABETICAL,
                     SortingType.SortOption.Entry));
 
-    private final GlossaryEntryComparator glossaryEntryComparator = new GlossaryEntryComparator(
-            getGlossarySortingList());
+    private final GlossaryEntryComparator glossaryEntryComparator =
+            new GlossaryEntryComparator(
+                    getGlossarySortingList());
 
+    public String getDeleteConfirmationMessage(String localeId) {
+        return msgs.format("jsf.Glossary.delete.confirm", localeId);
+    }
 
     public List<HLocale> getAvailableLocales() {
         return localeDAO.findAllActive();
@@ -75,8 +83,8 @@ public class GlossaryAction implements Serializable {
                     glossaryDAO.deleteAllEntries(new LocaleId(localeId));
             log.info("Glossary deleted (" + localeId + "): " + rowCount);
         }
-        FacesMessages.instance().add(Severity.INFO, "Glossary deleted: {0}",
-                rowCount);
+        FacesMessages.instance().add(Severity.INFO,
+                msgs.format("jsf.Glossary.deleted", rowCount, localeId));
         return FacesContext.getCurrentInstance().getViewRoot().getViewId();
     }
 
@@ -119,7 +127,6 @@ public class GlossaryAction implements Serializable {
         glossaryFilter.reset();
     }
 
-
     public List<GlossaryEntry> getEntries() {
         if (glossaryEntries == null) {
             glossaryEntries = Lists.newArrayList();
@@ -137,10 +144,10 @@ public class GlossaryAction implements Serializable {
     }
 
     private List<GlossaryEntry> getEntries(GlossaryDAO glossaryDAO) {
-        if(this.glossaryDAO == null) {
+        if (this.glossaryDAO == null) {
             this.glossaryDAO = glossaryDAO;
         }
-       return getEntries();
+        return getEntries();
     }
 
     /**
@@ -214,8 +221,9 @@ public class GlossaryAction implements Serializable {
             }
 
             if (selectedSortOption.equals(SortingType.SortOption.ALPHABETICAL)) {
-                return entry1.getDisplayName().compareTo(entry2.getDisplayName());
-            } else if(selectedSortOption.equals(SortingType.SortOption.Entry)) {
+                return entry1.getDisplayName().compareTo(
+                        entry2.getDisplayName());
+            } else if (selectedSortOption.equals(SortingType.SortOption.Entry)) {
                 return entry1.getEntryCount() > entry2.getEntryCount() ? 1 : -1;
             }
 
@@ -244,7 +252,6 @@ public class GlossaryAction implements Serializable {
             new InMemoryListFilter<GlossaryEntry>() {
                 private GlossaryDAO glossaryDAO = ServiceLocator.instance()
                         .getInstance(GlossaryDAO.class);
-
 
                 @Override
                 protected List<GlossaryEntry> fetchAll() {
