@@ -218,6 +218,16 @@
         <configuration>
           <rules>
             <banDuplicateClasses>
+              <dependencies combine.children="append">
+                <!-- Caused by different versions (extra-enforcer-rules bug) -->
+                <dependency>
+                  <groupId>org.javassist</groupId>
+                  <artifactId>javassist</artifactId>
+                  <ignoreClasses>
+                    <ignoreClass>javassist.*</ignoreClass>
+                  </ignoreClasses>
+                </dependency>
+              </dependencies>
               <ignoreClasses combine.children="append">
                 <!-- TODO remove exclusions as offending jars are fixed or removed -->
 
@@ -258,7 +268,7 @@
                 <!-- Caused by differing IDs for JDK_HOME/tools.jar -->
                 <ignoreClass>com.sun.tools.*</ignoreClass>
                 <ignoreClass>sun.*</ignoreClass>
-                <!-- Caused by different versions (enforcer bug) -->
+                <!-- Caused by different versions (extra-enforcer-rules bug) -->
                 <ignoreClass>org.hibernate.annotations.common.*</ignoreClass>
                 <!-- Caused by Arquillian AS7 container -->
                 <ignoreClass>org.jboss.logging.annotations.*</ignoreClass>
@@ -1734,7 +1744,8 @@
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <scope>provided</scope>
+      <version>3.18.2-GA</version>
+      <scope>${hibernate.scope}</scope>
     </dependency>
 
     <!-- This must appear before arquillian dependencies -->
