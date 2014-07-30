@@ -29,10 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.security.auth.login.AppConfigurationEntry;
-import javax.security.auth.login.Configuration;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 import lombok.Setter;
@@ -118,12 +117,15 @@ public class ApplicationConfiguration implements Serializable {
     // set by component.xml
     private String webAssetsVersion = "";
 
+    private Optional<String> openIdProvider; // Cache the OpenId provider
+
     @Create
     public void load() {
         log.info("Reloading configuration");
         this.loadLoginModuleNames();
         this.validateConfiguration();
         this.applyLoggingConfiguration();
+        this.loadJaasConfig();
     }
 
     @Observer({ EVENT_CONFIGURATION_CHANGED })
@@ -208,6 +210,23 @@ public class ApplicationConfiguration implements Serializable {
         }
     }
 
+    /**
+     * Load configuration pertaining to JAAS.
+     */
+    private void loadJaasConfig() {
+        if (loginModuleNames.containsKey(AuthenticationType.OPENID)) {
+            openIdProvider =
+                    Optional.fromNullable(jaasConfig
+                            .getAppConfigurationProperty(
+                                    loginModuleNames
+                                            .get(AuthenticationType.OPENID),
+                                    OpenIdLoginModule.class,
+                                    OpenIdLoginModule.OPEN_ID_PROVIDER_KEY));
+        } else {
+            openIdProvider = Optional.absent();
+        }
+    }
+
     public String getRegisterPath() {
         return databaseBackedConfig.getRegistrationUrl();
     }
@@ -282,17 +301,11 @@ public class ApplicationConfiguration implements Serializable {
     }
 
     public boolean isSingleOpenIdProvider() {
-        return getOpenIdProviderUrl() != null;
+        return openIdProvider.isPresent();
     }
 
     public String getOpenIdProviderUrl() {
-        if (loginModuleNames.containsKey(AuthenticationType.OPENID)) {
-            return jaasConfig.getAppConfigurationProperty(
-                    loginModuleNames.get(AuthenticationType.OPENID),
-                    OpenIdLoginModule.class,
-                    OpenIdLoginModule.OPEN_ID_PROVIDER_KEY);
-        }
-        return null;
+        return openIdProvider.orNull();
     }
 
     public boolean isKerberosAuth() {

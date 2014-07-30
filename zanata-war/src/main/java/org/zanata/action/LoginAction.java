@@ -33,8 +33,10 @@ import org.zanata.ApplicationConfiguration;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataCredentials;
+import org.zanata.security.openid.FedoraOpenIdProvider;
+import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdProviderType;
-import org.zanata.security.openid.OpenIdUtil;
+import org.zanata.security.openid.YahooOpenIdProvider;
 
 /**
  * This action takes care of logging a user into the system. It contains logic
@@ -128,8 +130,25 @@ public class LoginAction implements Serializable {
      */
     public String genericOpenIdLogin(String openId) {
         setOpenId(openId);
-        OpenIdProviderType providerType =
-                OpenIdUtil.getBestSuitedProvider(openId);
+        OpenIdProviderType providerType = getBestSuitedProvider(openId);
         return openIdLogin(providerType.name());
+    }
+
+    /**
+     * Returns the best suited provider for a given Open id.
+     *
+     * @param openId
+     *            An Open id (They are usually in the form of a url).
+     */
+    public static OpenIdProviderType getBestSuitedProvider(String openId) {
+        if (new FedoraOpenIdProvider().accepts(openId)) {
+            return OpenIdProviderType.Fedora;
+        } else if (new GoogleOpenIdProvider().accepts(openId)) {
+            return OpenIdProviderType.Google;
+        } else if (new YahooOpenIdProvider().accepts(openId)) {
+            return OpenIdProviderType.Yahoo;
+        } else {
+            return OpenIdProviderType.Generic;
+        }
     }
 }
