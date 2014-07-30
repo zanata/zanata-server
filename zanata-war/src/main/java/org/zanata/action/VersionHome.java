@@ -358,6 +358,25 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                 msgs.get("jsf.iteration.CopyProjectType.message"));
     }
 
+    /**
+     * @return comma-separated list of accepted file extensions. May be an empty string
+     */
+    public String getAcceptedSourceFileTypes() {
+        ProjectType type = getProjectType();
+        if (type == null) {
+            return "";
+        }
+        switch (type) {
+            case Gettext:
+            case Podir:
+                return "pot";
+            case File:
+                return "dtd, txt, idml, htm, html, odt, odp, ods, odg, srt, sbt, sub, vtt";
+            default:
+                return "";
+        }
+    }
+
     private void updateProjectType() {
         if (!StringUtils.isEmpty(selectedProjectType)
                 && !selectedProjectType.equals("null")) {
