@@ -59,7 +59,6 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.zanata.common.ContentState;
 import org.zanata.common.HasContents;
 import org.zanata.common.LocaleId;
@@ -228,7 +227,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
 
     @Override
     @Transient
-    @NotEmpty
     // TODO extend HTextContainer and remove this
     @Field(name = IndexFieldLabels.CONTENT, bridge = @FieldBridge(
             impl = StringListBridge.class, params = {

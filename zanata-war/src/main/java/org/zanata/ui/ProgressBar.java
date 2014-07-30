@@ -29,5 +29,5 @@ public interface ProgressBar {
 
     boolean isInProgress();
 
-    int getCompletedPercentage();
+    double getCompletedPercentage();
 }

@@ -97,14 +97,15 @@ public class CopyTransAction implements Serializable, ProgressBar {
     }
 
     @Override
-    public int getCompletedPercentage() {
+    public double getCompletedPercentage() {
         CopyTransTask.CopyTransTaskHandle handle =
                 copyTransManager
                         .getCopyTransProcessHandle(getProjectIteration());
         if (handle != null) {
-            int completedPercent =
-                    handle.getCurrentProgress() * 100 / handle.getMaxProgress();
-            if (completedPercent == 100) {
+            double completedPercent =
+                    (double) handle.getCurrentProgress() / (double) handle
+                            .getMaxProgress() * 100;
+            if (Double.compare(completedPercent, 100) == 0) {
                 conversationScopeMessages
                         .setMessage(
                                 FacesMessage.SEVERITY_INFO,

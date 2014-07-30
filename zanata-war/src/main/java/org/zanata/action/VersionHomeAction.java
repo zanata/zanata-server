@@ -27,21 +27,15 @@ import java.io.Serializable;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.faces.application.FacesMessage;
 import javax.validation.ConstraintViolationException;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -50,6 +44,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.util.Hex;
+import org.zanata.async.tasks.CopyVersionTask;
 import org.zanata.common.DocumentType;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -84,17 +79,24 @@ import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ProgressBar;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Name("versionHomeAction")
 @Scope(ScopeType.PAGE)
@@ -102,6 +104,9 @@ import com.google.common.collect.Maps;
 public class VersionHomeAction extends AbstractSortAction implements
         Serializable {
     private static final long serialVersionUID = 1L;
+
+    @In
+    private CopyVersionManager copyVersionManager;
 
     @In
     private ProjectIterationDAO projectIterationDAO;
@@ -139,11 +144,9 @@ public class VersionHomeAction extends AbstractSortAction implements
     @In
     private TranslationService translationServiceImpl;
 
-    @Setter
     @Getter
     private String versionSlug;
 
-    @Setter
     @Getter
     private String projectSlug;
 
@@ -232,6 +235,9 @@ public class VersionHomeAction extends AbstractSortAction implements
             new DocumentFilter();
 
     @Getter
+    private CopyVersionHandler copyVersionHandler = new CopyVersionHandler();
+
+    @Getter
     private final AbstractListFilter<HIterationGroup> groupFilter =
             new InMemoryListFilter<HIterationGroup>() {
                 @Override
@@ -281,6 +287,91 @@ public class VersionHomeAction extends AbstractSortAction implements
                                     elem.retrieveDisplayName(), filter);
                 }
             };
+
+    public void setVersionSlug(String versionSlug) {
+        this.versionSlug = versionSlug;
+        copyVersionHandler.setVersionSlug(versionSlug);
+    }
+
+    public void setProjectSlug(String projectSlug) {
+        this.projectSlug = projectSlug;
+        copyVersionHandler.setProjectSlug(projectSlug);
+    }
+
+    @NoArgsConstructor
+    public static class CopyVersionHandler implements ProgressBar {
+
+        @Setter
+        private String projectSlug;
+
+        @Setter
+        private String versionSlug;
+
+        private final DecimalFormat df = new DecimalFormat("###.####");
+
+        private final CopyVersionManager copyVersionManager = ServiceLocator
+                .instance().getInstance(CopyVersionManager.class);
+        private final Messages msgs = ServiceLocator
+                .instance().getInstance(Messages.class);
+
+        @Override
+        public boolean isInProgress() {
+            return copyVersionManager.isCopyVersionRunning(projectSlug,
+                    versionSlug);
+        }
+
+        @Override
+        public double getCompletedPercentage() {
+            CopyVersionTask.CopyVersionTaskHandle handle = getHandle();
+            if (handle != null) {
+                double completedPercent =
+                        (double) handle.getCurrentProgress() / (double) handle
+                                .getMaxProgress() * 100;
+                if (Double.compare(completedPercent, 100) == 0) {
+                    getConversationScopeMsg().setMessage(
+                            FacesMessage.SEVERITY_INFO,
+                            msgs.format("jsf.copyVersion.Completed",
+                                    versionSlug));
+                }
+                return Double.valueOf(df.format(completedPercent));
+            } else {
+                return 0;
+            }
+        }
+
+        public void stopCopyVersion() {
+            copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
+
+            getConversationScopeMsg().setMessage(FacesMessage.SEVERITY_INFO,
+                    msgs.format("jsf.copyVersion.Cancelled", versionSlug));
+        }
+
+        public int getProcessedDocuments() {
+            CopyVersionTask.CopyVersionTaskHandle handle = getHandle();
+            if (handle != null) {
+                return handle.getDocumentCopied();
+            }
+            return 0;
+        }
+
+        public int getTotalDocuments() {
+            CopyVersionTask.CopyVersionTaskHandle handle = getHandle();
+            if (handle != null) {
+                return handle.getTotalDoc();
+            }
+            return 0;
+        }
+
+        private ConversationScopeMessages getConversationScopeMsg() {
+            return ServiceLocator.instance().getInstance(
+                    ConversationScopeMessages.class);
+        }
+
+        private CopyVersionTask.CopyVersionTaskHandle getHandle() {
+            return copyVersionManager.getCopyVersionProcessHandle(projectSlug,
+                    versionSlug);
+        }
+    }
 
     /**
      * Sort language list based on locale statistic
@@ -371,6 +462,12 @@ public class VersionHomeAction extends AbstractSortAction implements
             Collections.sort(supportedLocale, languageComparator);
         }
         return supportedLocale;
+    }
+
+    public int
+            getVersionSupportedLocales(String projectSlug, String versionSlug) {
+        return localeServiceImpl.getSupportedLanguageByProjectIteration(
+                projectSlug, versionSlug).size();
     }
 
     public List<HDocument> getDocuments() {
@@ -698,9 +795,12 @@ public class VersionHomeAction extends AbstractSortAction implements
         this.selectedLocale = localeDAO.findByLocaleId(new LocaleId(localeId));
     }
 
-    public void setSelectedDocumentId(String projectSlug, String versionSlug, String docId) {
+    public void setSelectedDocumentId(String projectSlug, String versionSlug,
+            String docId) {
         docId = UrlUtil.decodeString(docId);
-        this.selectedDocument = documentDAO.getByProjectIterationAndDocId(projectSlug, versionSlug, docId);
+        this.selectedDocument =
+                documentDAO.getByProjectIterationAndDocId(projectSlug,
+                        versionSlug, docId);
     }
 
     // TODO add logging for disk writing errors

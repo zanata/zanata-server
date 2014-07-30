@@ -100,6 +100,9 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     @In
     private Messages msgs;
 
+    @In
+    private CopyVersionManager copyVersionManager;
+
     private Map<ValidationId, ValidationAction> availableValidations = Maps
             .newHashMap();
 
@@ -115,6 +118,23 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     private VersionLocaleAutocomplete localeAutocomplete =
             new VersionLocaleAutocomplete();
 
+    @Getter
+    private boolean copyFromVersion;
+
+    @Getter
+    @Setter
+    private String copyFromVersionSlug;
+
+    public void setCopyFromVersion(boolean copyFromVersion) {
+        this.copyFromVersion = copyFromVersion;
+        List<HProjectIteration> otherVersions = getOtherVersions();
+        if (!otherVersions.isEmpty()) {
+            this.copyFromVersionSlug = otherVersions.get(0).getSlug();
+        } else {
+            this.copyFromVersionSlug = "";
+        }
+    }
+
     public void init(boolean isNewInstance) {
         this.isNewInstance = isNewInstance;
         if (isNewInstance) {
@@ -124,7 +144,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
             }
         } else {
             ProjectType versionProjectType = getInstance().getProjectType();
-            if(versionProjectType != null) {
+            if (versionProjectType != null) {
                 selectedProjectType = versionProjectType.name();
             }
         }
@@ -132,6 +152,18 @@ public class VersionHome extends SlugHome<HProjectIteration> {
 
     public HProject getProject() {
         return projectDAO.getBySlug(projectSlug);
+    }
+
+    public List<HProjectIteration> getOtherVersions() {
+        HProject project = getProject();
+        if (project != null) {
+            List<HProjectIteration> versionList =
+                    project.getProjectIterations();
+            Collections.sort(versionList,
+                    ComparatorUtil.VERSION_CREATION_DATE_COMPARATOR);
+            return versionList;
+        }
+        return Lists.newArrayList();
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
@@ -229,25 +261,51 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                 projectSlug);
     }
 
-    @Override
-    public String persist() {
-        conversationScopeMessages.clearMessages();
-        updateProjectType();
-
+    public String createVersion() {
         if (!validateSlug(getInstance().getSlug(), "slug"))
             return null;
+
+        if (copyFromVersion) {
+            copyVersion();
+            return "copy-version";
+        } else {
+            return persist();
+        }
+    }
+
+    public void copyVersion() {
+        getInstance().setStatus(EntityStatus.READONLY);
+
+        // create basic version here
+        HProject project = getProject();
+        project.addIteration(getInstance());
+        super.persist();
+
+        copyVersionManager.startCopyVersion(projectSlug,
+                copyFromVersionSlug, getInstance().getSlug());
+
+        conversationScopeMessages
+                .setMessage(FacesMessage.SEVERITY_INFO, msgs.
+                        format("jsf.copyVersion.started",
+                                getInstance().getSlug(),
+                                copyFromVersionSlug));
+    }
+
+    @Override
+    public String persist() {
+        updateProjectType();
 
         HProject project = getProject();
         project.addIteration(getInstance());
 
         List<HLocale> projectLocales =
-                localeServiceImpl.getSupportedLanguageByProject(projectSlug);
+                localeServiceImpl
+                        .getSupportedLanguageByProject(projectSlug);
 
         getInstance().getCustomizedLocales().addAll(projectLocales);
 
         getInstance().getCustomizedValidations().putAll(
                 project.getCustomizedValidations());
-
         return super.persist();
     }
 
@@ -305,7 +363,6 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     @Override
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public String update() {
-        conversationScopeMessages.clearMessages();
         String state = super.update();
         Events.instance().raiseEvent(PROJECT_ITERATION_UPDATE, getInstance());
         return state;
