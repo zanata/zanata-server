@@ -1,133 +1,161 @@
 package org.zanata.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
 
-import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.hibernate.annotations.Cascade;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.zanata.common.HasContents;
-import org.zanata.common.LocaleId;
-import org.zanata.model.HSimpleComment;
-import org.zanata.model.HTextContainer;
-import org.zanata.model.HasSimpleComment;
-import org.zanata.model.ITextFlow;
-import org.zanata.model.ITextFlowHistory;
-import org.zanata.model.ITextFlowTarget;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(JPACopier.class)
 public class JPACopierTest {
     @Test
     public void testCopy() throws Exception {
-        DummyClass original = constructTestData();
-        DummyClass clone = JPACopier.<DummyClass> copyBean(original);
+        ParentClass original = constructTestData();
+        ParentClass clone =
+                JPACopier.<ParentClass> copyBean(original, "customIgnoreField");
         assertClone(original, clone);
     }
 
-    @Test
-    public void testRecursiveClone() throws Exception {
-        PowerMockito.mockStatic(JPACopier.class);
+    private void assertClone(ParentClass original, ParentClass clone) {
+        assertThat(clone.getString()).isEqualTo(original.getString());
 
-        DummyClass original = constructTestData();
+        assertThat(clone.getCustomIgnoreField()).isNotEqualTo(
+                original.getCustomIgnoreField());
 
-        DummyClass clone = JPACopier.<DummyClass> copyBean(original);
-
-        PowerMockito.verifyStatic(times(1));
-        JPACopier.copyBean(any(DummyClass.class));
-
-        PowerMockito.verifyStatic(times(1));
-        JPACopier.copyBean(any(DummyClass2.class));
+        assertChildClass(original.getChild1(), clone.getChild1(), true);
+        assertChildClass(original.getChild2(), clone.getChild2(), false);
+        assertChildClass(original.getChild3(), clone.getChild3(), true);
     }
 
-    private void assertClone(DummyClass original, DummyClass clone) {
+    private void assertChildClass(ChildClass original, ChildClass clone,
+            boolean expectNewRef) {
+        if (expectNewRef) {
+            assertThat(clone).isNotSameAs(original);
+            assertThat(clone.getId()).isNotEqualTo(original.getId());
+            assertThat(clone.getTestList()).isNotSameAs(original.getTestList());
+            assertThat(clone.getTestSet()).isNotSameAs(original.getTestSet());
+            assertThat(clone.getTestMap()).isNotSameAs(original.getTestMap());
+        } else {
+            assertThat(clone.getId()).isEqualTo(original.getId());
+            assertThat(clone.getTestList()).isSameAs(original.getTestList());
+            assertThat(clone.getTestSet()).isSameAs(original.getTestSet());
+            assertThat(clone.getTestMap()).isSameAs(original.getTestMap());
+        }
+
         assertThat(clone.getTestString()).isEqualTo(original.getTestString());
-
-        assertThat(clone.getTestClass()).isNotSameAs(original.getTestClass());
-
-        assertThat(clone.getTestClass().getTestString1()).isEqualTo(
-                original.getTestClass().getTestString1());
-
-        assertThat(clone.getTestClass().getTestString2()).isEqualTo(
-                original.getTestClass().getTestString2());
-
-        assertThat(clone.getTestClass().getTestList()).isNotSameAs(
-                original.getTestClass().getTestList());
-
-        assertThat(clone.getTestClass().getTestList()).isEqualTo(
-                original.getTestClass().getTestList());
+        assertThat(clone.getTestList()).isEqualTo(original.getTestList());
+        assertThat(clone.getTestSet()).isEqualTo(original.getTestSet());
+        assertThat(clone.getTestMap()).isEqualTo(original.getTestMap());
     }
 
-    private DummyClass constructTestData() {
-        DummyClass2 child =
-                new DummyClass2("String1", "String2", Lists.newArrayList(
-                        "item1", "item2", "item3"));
-        return new DummyClass("string 1", child);
+    private ParentClass constructTestData() {
+        List<String> testList = Lists.newArrayList("list1", "list2", "list3");
+        Set<String> testSet = Sets.newHashSet("set1", "set2", "set3");
+        Map<String, String> testMap = Maps.newHashMap();
+        testMap.put("One", "one");
+        testMap.put("Two", "two");
+        testMap.put("Three", "three");
+
+        ChildClass child1 =
+                new ChildClass(1L, "String1", testList, testSet, testMap);
+
+        ChildClass child2 =
+                new ChildClass(2L, "String2", testList, testSet, testMap);
+
+        ChildClass child3 =
+                new ChildClass(3L, "String3", testList, testSet, testMap);
+
+        return new ParentClass("string", Boolean.TRUE, true, Byte.MIN_VALUE,
+                Byte.MAX_VALUE, Character.MIN_VALUE,
+                Character.MAX_VALUE, Double.MIN_VALUE,
+                Double.MAX_VALUE, Float.MIN_VALUE, Float.MAX_VALUE,
+                Integer.MIN_VALUE, Integer.MAX_VALUE, Long.MIN_VALUE,
+                Long.MAX_VALUE, Short.MIN_VALUE, Short.MAX_VALUE, 100,
+                child1, child2, child3);
     }
 
     @Setter
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DummyClass {
+    public static class ParentClass {
+        private String string;
+
+        private Boolean wrapper_boolean;
+        private boolean primitive_boolean;
+
+        private Byte wrapper_byte;
+        private byte primitive_byte;
+
+        private Character wrapper_char;
+        private char primitive_char;
+
+        private Double wrapper_double;
+        private double primitive_double;
+
+        private Float wrapper_float;
+        private float primitive_float;
+
+        private Integer wrapper_int;
+        private int primitive_int;
+
+        private Long wrapper_long;
+        private long primitive_long;
+
+        private Short wrapper_short;
+        private short primitive_short;
+
+        // custom ignore field
+        private int customIgnoreField;
+
+        // expect to copy with new reference
+        @OneToOne
+        private ChildClass child1;
+
+        // expect to copy with same reference
+        @OneToMany
+        private ChildClass child2;
+
+        // expect to copy with new reference
+        @OneToMany(mappedBy = "id")
+        private ChildClass child3;
+
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChildClass {
+        // common ignored field
+        private Long id;
+
         private String testString;
-        private DummyClass2 testClass;
-
-        // expect to clone but not the same instance
-        @OneToOne(optional = true, fetch = FetchType.LAZY,
-                cascade = CascadeType.ALL)
-        public DummyClass2 getTestClass() {
-            return testClass;
-        }
-
-        public String getTestString() {
-            return testString;
-        }
-    }
-
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DummyClass2 {
-
-        private String testString1;
-        private String testString2;
-        private List<String> testList;
-
-        public String getTestString1() {
-            return testString1;
-        }
-
-        public String getTestString2() {
-            return testString2;
-        }
 
         // expect to create new instance when copy
-        public List<String> getTestList() {
-            return testList;
-        }
+        private List<String> testList;
+
+        // expect to create new instance when copy
+        private Set<String> testSet;
+
+        // expect to create new instance when copy
+        private Map<String, String> testMap;
     }
 
 }

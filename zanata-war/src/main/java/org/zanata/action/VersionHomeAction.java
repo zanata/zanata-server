@@ -34,8 +34,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.faces.application.FacesMessage;
 import javax.validation.ConstraintViolationException;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -86,17 +94,11 @@ import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 @Name("versionHomeAction")
 @Scope(ScopeType.PAGE)
@@ -298,6 +300,17 @@ public class VersionHomeAction extends AbstractSortAction implements
         copyVersionHandler.setProjectSlug(projectSlug);
     }
 
+    public void onCopyVersionComplete() {
+        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.copyVersion.Completed", versionSlug));
+    }
+
+    public void stopCopyVersion() {
+        copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
+        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.copyVersion.Cancelled", versionSlug));
+    }
+
     @NoArgsConstructor
     public static class CopyVersionHandler implements ProgressBar {
 
@@ -309,14 +322,9 @@ public class VersionHomeAction extends AbstractSortAction implements
 
         private final DecimalFormat df = new DecimalFormat("###.####");
 
-        private final CopyVersionManager copyVersionManager = ServiceLocator
-                .instance().getInstance(CopyVersionManager.class);
-        private final Messages msgs = ServiceLocator
-                .instance().getInstance(Messages.class);
-
         @Override
         public boolean isInProgress() {
-            return copyVersionManager.isCopyVersionRunning(projectSlug,
+            return getCopyVersionManager().isCopyVersionRunning(projectSlug,
                     versionSlug);
         }
 
@@ -327,23 +335,10 @@ public class VersionHomeAction extends AbstractSortAction implements
                 double completedPercent =
                         (double) handle.getCurrentProgress() / (double) handle
                                 .getMaxProgress() * 100;
-                if (Double.compare(completedPercent, 100) == 0) {
-                    getConversationScopeMsg().setMessage(
-                            FacesMessage.SEVERITY_INFO,
-                            msgs.format("jsf.copyVersion.Completed",
-                                    versionSlug));
-                }
                 return Double.valueOf(df.format(completedPercent));
             } else {
                 return 0;
             }
-        }
-
-        public void stopCopyVersion() {
-            copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
-
-            getConversationScopeMsg().setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.copyVersion.Cancelled", versionSlug));
         }
 
         public int getProcessedDocuments() {
@@ -362,12 +357,15 @@ public class VersionHomeAction extends AbstractSortAction implements
             return 0;
         }
 
-        private ConversationScopeMessages getConversationScopeMsg() {
+        private CopyVersionManager getCopyVersionManager() {
             return ServiceLocator.instance().getInstance(
-                    ConversationScopeMessages.class);
+                    CopyVersionManager.class);
         }
 
         private CopyVersionTask.CopyVersionTaskHandle getHandle() {
+            CopyVersionManager copyVersionManager = ServiceLocator
+                    .instance().getInstance(CopyVersionManager.class);
+
             return copyVersionManager.getCopyVersionProcessHandle(projectSlug,
                     versionSlug);
         }
@@ -465,7 +463,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     public int
-            getVersionSupportedLocales(String projectSlug, String versionSlug) {
+            getVersionSupportedLocaleCount(String projectSlug, String versionSlug) {
         return localeServiceImpl.getSupportedLanguageByProjectIteration(
                 projectSlug, versionSlug).size();
     }

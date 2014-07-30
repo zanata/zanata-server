@@ -27,17 +27,52 @@ import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 import lombok.extern.slf4j.Slf4j;
 
+// @formatter:off
 /**
+ * Utility class for creating copy of Hibernate entity in
+ * {@link org.zanata.model}.
+ *
+ * This will copy all writable properties {@link PropertyUtilsBean#isWriteable}
+ * in provided bean except for:
+ *
+ * Properties in {@link this#COMMON_IGNORED_FIELDS}, and
+ * Properties in ignoreProperties field.
+ *
+ * @see this#shouldCopy(PropertyUtilsBean, Object, String, java.util.List)
+ * for condition check.
+ *
+ *
+ * Property which has {@link javax.persistence.OneToMany#mappedBy()} or
+ * {@link javax.persistence.OneToOne} in field or GetterMethod {@link PropertyUtilsBean#getReadMethod}
+ * will be copied using {@link this#copyBean(Object, String...)},
+ * otherwise {@link BeanUtilsBean#copyProperty} will be used.
+ *
+ * New collection will be created if bean type is: {@link java.util.List},
+ * {@link java.util.Set} and {@link java.util.Map}
+ *
+ *
+ * @see this#copyBean(Object, String...)
+ * @see this#copyBean(Object, Object, String...)
+ *
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
+// @formatter:on
 @Slf4j
 public class JPACopier {
 
-    private static final List<String> MODEL_ENTITY_IGNORE_LIST = ImmutableList
+    /**
+     * Common ignored fields when copying entity, {id, creationDate,
+     * lastChanged}
+     */
+    private static final List<String> COMMON_IGNORED_FIELDS = ImmutableList
             .<String> builder().add("id").add("creationDate")
             .add("lastChanged").build();
 
-    private static Map<Class, List<String>> CLASS_JPA_COPIER_MAP = Maps
+    /**
+     * Fields to copy using {@link this#copyBean(Object, String...)} in class.
+     */
+    private static Map<Class, List<String>> FIELDS_TO_COPY = Maps
             .newConcurrentMap();
 
     /**
@@ -60,8 +95,10 @@ public class JPACopier {
         Preconditions.checkNotNull(fromBean);
 
         // create a copy of the bean entity
+        // TODO: replace HibernateProxyHelper as its being phased out
         Object copy = HibernateProxyHelper.getClassWithoutInitializingProxy(
                 fromBean).newInstance();
+
         copy = copyBean(fromBean, copy, ignoreProperties);
         return (T) copy;
     }
@@ -79,6 +116,10 @@ public class JPACopier {
      * @throws InstantiationException
      * @throws InvocationTargetException
      * @throws NoSuchMethodException
+     *
+     * @return fromBean if
+     *         {@link org.zanata.util.JPACopier#isPrimitiveOrString(Object)},
+     *         otherwise return toBean
      */
     public static <T> T copyBean(@Nonnull T fromBean,
             @Nonnull T toBean, String... ignoreProperties)
@@ -89,20 +130,17 @@ public class JPACopier {
         Preconditions.checkNotNull(toBean);
 
         if (isPrimitiveOrString(fromBean)) {
-            toBean = fromBean;
-            return toBean;
+            return fromBean;
         }
 
         BeanUtilsBean beanUtilsBean = BeanUtilsBean.getInstance();
 
         if (isCollectionType(fromBean.getClass())) {
-            toBean =
-                    (T) createNewCollection(fromBean.getClass(), fromBean);
+            toBean = (T) createNewCollection(fromBean.getClass(), fromBean);
             return toBean;
         }
 
         List<String> ignoreList = Lists.newArrayList(ignoreProperties);
-        ignoreList.addAll(MODEL_ENTITY_IGNORE_LIST);
 
         Map<String, Object> propertiesMap =
                 beanUtilsBean.getPropertyUtils().describe(fromBean);
@@ -111,8 +149,7 @@ public class JPACopier {
             String property = entry.getKey();
             Object value = entry.getValue();
 
-            if (!isProceedCopy(beanUtilsBean.getPropertyUtils(), toBean,
-                    property,
+            if (!shouldCopy(beanUtilsBean.getPropertyUtils(), toBean, property,
                     ignoreList)) {
                 continue;
             }
@@ -126,17 +163,19 @@ public class JPACopier {
     }
 
     /**
-     * Check if property is writable and not in ignore list.
+     * Check if property is writable and not in ignore list and common ignore
+     * list.
      *
      * @param propertyUtilsBean
      * @param toBean
      * @param property
      * @param ignoreList
      */
-    private static boolean isProceedCopy(PropertyUtilsBean propertyUtilsBean,
+    private static boolean shouldCopy(PropertyUtilsBean propertyUtilsBean,
             Object toBean, String property, List<String> ignoreList) {
         return propertyUtilsBean.isWriteable(toBean, property)
-                && !ignoreList.contains(property);
+                && !ignoreList.contains(property)
+                && !COMMON_IGNORED_FIELDS.contains(property);
     }
 
     /**
@@ -148,10 +187,10 @@ public class JPACopier {
     private static boolean isJPACopyProperty(Object bean, String property)
             throws IllegalAccessException, NoSuchMethodException,
             InvocationTargetException {
-        if (!CLASS_JPA_COPIER_MAP.containsKey(bean.getClass())) {
-            CLASS_JPA_COPIER_MAP.put(bean.getClass(), getJPACopierFields(bean));
+        if (!FIELDS_TO_COPY.containsKey(bean.getClass())) {
+            FIELDS_TO_COPY.put(bean.getClass(), getJPACopierFields(bean));
         }
-        return CLASS_JPA_COPIER_MAP.get(bean.getClass()).contains(property);
+        return FIELDS_TO_COPY.get(bean.getClass()).contains(property);
     }
 
     /**
@@ -163,7 +202,7 @@ public class JPACopier {
      */
     private static boolean isPrimitiveOrString(Object obj) {
         return obj instanceof String
-                || Primitives.isWrapperType(Primitives.unwrap(obj.getClass()));
+                || Primitives.isWrapperType(Primitives.wrap(obj.getClass()));
     }
 
     /**
@@ -248,6 +287,7 @@ public class JPACopier {
 
         List<String> properties = Lists.newCopyOnWriteArrayList();
 
+        // TODO: replace HibernateProxyHelper as its being phased out
         Class noProxyBean =
                 HibernateProxyHelper.getClassWithoutInitializingProxy(bean);
 
@@ -286,7 +326,8 @@ public class JPACopier {
      * {@link javax.persistence.OneToMany#mappedBy()}
      * {@link javax.persistence.OneToOne}
      *
-     * @param accessibleObject method object
+     * @param accessibleObject
+     *            method object
      */
     private static boolean isUseJPACopier(AccessibleObject accessibleObject) {
         if (accessibleObject == null) {

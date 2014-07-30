@@ -59,6 +59,7 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.zanata.common.ContentState;
 import org.zanata.common.HasContents;
 import org.zanata.common.LocaleId;
@@ -221,6 +222,7 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
 
     @Deprecated
     @Transient
+    @NotEmpty
     public void setContent(String content) {
         this.setContents(Arrays.asList(content));
     }

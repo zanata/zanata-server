@@ -172,7 +172,7 @@
                     <h:outputFormat
                       value="#{msgs['jsf.copyVersion.processedDocumentsAndPercent']}">
                       <f:param
-                        value="#{projectHomeAction.getCopyVersionProcessedDocuments(version.project.slug, version.slug)}"/>
+                        value="#{projectHomeAction.getCopiedDocumentCount(version.project.slug, version.slug)}"/>
                       <f:param
                         value="#{projectHomeAction.getCopyVersionTotalDocuments(version.project.slug, version.slug)}"/>
                       <f:param

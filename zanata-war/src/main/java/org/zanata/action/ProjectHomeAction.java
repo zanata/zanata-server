@@ -159,8 +159,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 .isCopyVersionRunning(projectSlug, versionSlug);
     }
 
-    public String getCopyVersionProcessedDocuments(String projectSlug,
-            String versionSlug) {
+    public String
+            getCopiedDocumentCount(String projectSlug, String versionSlug) {
         CopyVersionTask.CopyVersionTaskHandle handler =
                 copyVersionManager.getCopyVersionProcessHandle(projectSlug,
                         versionSlug);
@@ -191,8 +191,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
             if (Double.compare(completedPercent, 100) == 0) {
                 conversationScopeMessages.setMessage(
                         FacesMessage.SEVERITY_INFO,
-                        msgs.format("jsf.copyVersion.Completed",
-                                versionSlug));
+                        msgs.format("jsf.copyVersion.Completed", versionSlug));
             }
             return String.format("%1$,.2f", completedPercent);
         } else {
@@ -215,7 +214,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     private List<Activity> fetchProjectLastActivity() {
         if (StringUtils.isEmpty(slug) || !identity.isLoggedIn()) {
-            return Lists.newArrayList();
+            return Collections.EMPTY_LIST;
         }
 
         Collection<Long> versionIds =
@@ -332,7 +331,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
         if (statisticMap.containsKey(versionSlug)) {
             statistic = statisticMap.get(versionSlug);
         } else {
-            HProjectIteration version = projectIterationDAO.getBySlug(slug, versionSlug);
+            HProjectIteration version =
+                    projectIterationDAO.getBySlug(slug, versionSlug);
             statistic = getAllLocaleStatisticForVersion(version);
             statisticMap.put(versionSlug, statistic);
         }
@@ -367,12 +367,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
             return localeServiceImpl.getSupportedLanguageByProjectIteration(
                     slug, version.getSlug());
         }
-        return Lists.newArrayList();
+        return Collections.EMPTY_LIST;
     }
 
     public List<HLocale> getUserJoinedLocales(HProjectIteration version) {
         if (authenticatedAccount == null) {
-            return Lists.newArrayList();
+            return Collections.EMPTY_LIST;
         }
 
         List<HLocale> userJoinedLocales = Lists.newArrayList();

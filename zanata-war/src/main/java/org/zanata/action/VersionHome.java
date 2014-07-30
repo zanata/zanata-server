@@ -163,7 +163,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                     ComparatorUtil.VERSION_CREATION_DATE_COMPARATOR);
             return versionList;
         }
-        return Lists.newArrayList();
+        return Collections.EMPTY_LIST;
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
@@ -480,7 +480,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                         .getSupportedLanguageByProjectIteration(projectSlug,
                                 slug);
             }
-            return Lists.newArrayList();
+            return Collections.EMPTY_LIST;
         }
 
         /**
