@@ -13,6 +13,16 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.service.CopyVersionService;
 
 /**
+ * Copy text flow target and persist in transaction.
+ *
+ * Copy HTextFlowTarget from HTextFlow(id=tfId) in batches(batchStart,
+ * batchLength) into HTextFlow(id=newTfId).
+ *
+ * @see CopyVersionService#copyTextFlowTarget
+ *
+ * @return count of HTextFlowTarget copied.
+ *
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j

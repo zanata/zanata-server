@@ -15,6 +15,15 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Run copy text flow and persist in transaction.
+ *
+ * Copy HTextFlow from HDocument(id=documentId) in batches(batchStart,
+ * batchLength) into HDocument(id=newDocumentId).
+ *
+ * @see CopyVersionService#copyTextFlow
+ *
+ * @return Map of original HTextFlow id => copied HTextFlow id
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j
@@ -29,7 +38,7 @@ public class CopyTextFlowWork extends Work<Map<Long, Long>> {
     private final int batchStart;
     private final int batchLength;
 
-    private final Maps.EntryTransformer<Long, HTextFlow, Long> transformer =
+    private static final Maps.EntryTransformer<Long, HTextFlow, Long> transformer =
             new Maps.EntryTransformer<Long, HTextFlow, Long>() {
                 @Override
                 public Long transformEntry(Long key, HTextFlow value) {

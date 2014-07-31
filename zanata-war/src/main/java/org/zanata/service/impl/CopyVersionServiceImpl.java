@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -43,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Name("copyVersionServiceImpl")
 @Scope(ScopeType.STATELESS)
 @Slf4j
+@AutoCreate
 public class CopyVersionServiceImpl implements CopyVersionService {
 
     // Document batch size

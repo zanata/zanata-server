@@ -400,12 +400,11 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
             HDocument document,
             HLocale targetLocale) {
         String queryString =
-                "select count(*) from HTextFlowTarget tft "
-                        +
-                        "where tft.textFlow.document.docId = :docId and tft.locale = :locale "
-                        +
-                        "and tft.textFlow.obsolete = false and tft.textFlow.document.obsolete = false "
-                        +
+                "select count(*) from HTextFlowTarget tft " +
+                        "where tft.textFlow.document.docId = :docId " +
+                        "and tft.locale = :locale " +
+                        "and tft.textFlow.obsolete = false " +
+                        "and tft.textFlow.document.obsolete = false " +
                         "and tft.textFlow.document.projectIteration <> :self";
         Query query =
                 getSession()
@@ -433,15 +432,14 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
         HProjectIteration projectIteration = document.getProjectIteration();
         HProject project = projectIteration.getProject();
         String queryString =
-                "select count(*) from HTextFlowTarget tft "
-                        +
-                        "where tft.textFlow.document.projectIteration.project = :project and tft.locale = :locale "
-                        +
-                        "and tft.textFlow.obsolete = false and tft.textFlow.document.obsolete = false "
-                        +
-                        "and tft.textFlow.document.projectIteration.status <> :obsoleteStatus "
-                        +
+                "select count(*) from HTextFlowTarget tft " +
+                        "where tft.textFlow.document.projectIteration.project = :project " +
+                        "and tft.locale = :locale " +
+                        "and tft.textFlow.obsolete = false " +
+                        "and tft.textFlow.document.obsolete = false " +
+                        "and tft.textFlow.document.projectIteration.status <> :obsoleteStatus " +
                         "and tft.textFlow.document.projectIteration <> :self";
+
         Query query =
                 getSession()
                         .createQuery(queryString)

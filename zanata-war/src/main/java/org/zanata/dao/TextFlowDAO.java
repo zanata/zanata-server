@@ -150,10 +150,10 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
                                 "from HTextFlow tf where tf.obsolete=0 and tf.document.id = :documentId order by tf.pos");
         q.setParameter("documentId", documentId);
 
-        if(offset != null) {
+        if (offset != null) {
             q.setFirstResult(offset);
         }
-        if(maxResults != null) {
+        if (maxResults != null) {
             q.setMaxResults(maxResults);
         }
         q.setCacheable(true).setComment("TextFlowDAO.getTextFlowsByDocumentId");
@@ -222,18 +222,14 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
         return result;
     }
 
-    public long countActiveTextFlowsInProjectIteration(Long projIterId) {
-        Query q =
-                getSession()
-                        .createQuery(
-                                "select count(*) from HTextFlow tf "
-                                        +
-                                        "where tf.obsolete = 0 and "
-                                        +
-                                        "tf.document.obsolete = 0 and "
-                                        +
-                                        "tf.document.projectIteration.id=:projIterId");
-        q.setParameter("projIterId", projIterId);
+    public long countActiveTextFlowsInProjectIteration(Long versionId) {
+        String query =
+                "select count(*) from HTextFlow tf where tf.obsolete = 0 " +
+                        "and tf.document.obsolete = 0 " +
+                        "and tf.document.projectIteration.id=:versionId";
+
+        Query q = getSession().createQuery(query);
+        q.setParameter("versionId", versionId);
         q.setCacheable(true).setComment(
                 "TextFlowDAO.countTextFlowsInProjectIteration");
         return (Long) q.uniqueResult();

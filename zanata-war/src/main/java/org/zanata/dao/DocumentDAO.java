@@ -467,7 +467,7 @@ public class DocumentDAO extends AbstractDAOImpl<HDocument, Long> {
         return q.list();
     }
 
-    public List<HDocument> getByVersionId(Long versionId, int offset,
+    public List<HDocument> findAllByVersionId(Long versionId, int offset,
             int maxResults) {
         Query q =
                 getSession()

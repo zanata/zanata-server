@@ -18,6 +18,16 @@ import org.zanata.service.CopyVersionService;
 import com.google.common.collect.Maps;
 
 /**
+ * Run copy document and persist in transaction.
+ *
+ * Copy documents from HProjectIteration(id=versionId) in batches(batchStart,
+ * batchLength) into HProjectIteration(id=newVersionId). Copying includes
+ * HRawDocument stored in file system.
+ *
+ * @see CopyVersionService#copyDocument
+ *
+ * @return Map of original HDocument id => copied HDocument id
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j
@@ -40,13 +50,13 @@ public class CopyDocumentWork extends Work<Map<Long, Long>> {
         HProjectIteration newVersion =
                 projectIterationDAO.findById(newVersionId);
 
-        List<HDocument> documents = documentDAO.getByVersionId(versionId,
+        List<HDocument> documents = documentDAO.findAllByVersionId(versionId,
                 batchStart, batchLength);
 
         for (HDocument doc : documents) {
             HDocument newDocument =
                     copyVersionService.copyDocument(newVersion, doc);
-            // Needs to persist before insert raw document
+            // Needs to persist before inserting raw document
             newDocument = documentDAO.makePersistent(newDocument);
 
             if (doc.getRawDocument() != null) {

@@ -308,7 +308,7 @@ public class JPACopier {
                     continue;
                 }
             } catch (NoSuchMethodException e) {
-                log.warn("Read method inaccessible for {0} in class-{1}",
+                log.debug("Read method inaccessible for {0} in class-{1}",
                         property, noProxyBean.getName());
             }
             Field field =
