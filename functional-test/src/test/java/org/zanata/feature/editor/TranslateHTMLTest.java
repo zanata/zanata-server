@@ -96,14 +96,15 @@ public class TranslateHTMLTest extends ZanataTestCase {
         projectSettings.put("Project Type", "File");
 
         EditorPage editorPage = new ProjectWorkFlow()
-                .createNewProject(projectSettings)
-                .clickCreateVersionLink().inputVersionId(extension)
-                .saveVersion()
+                .goToProjectByName("about fedora")
+                .gotoVersion("html-translate")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testfile.getAbsolutePath())
                 .submitUpload()
+                .clickUploadDone()
+                .gotoLanguageTab()
                 .translate("fr", testfile.getName());
 
         assertThat(editorPage.getMessageSourceAtRowIndex(0))

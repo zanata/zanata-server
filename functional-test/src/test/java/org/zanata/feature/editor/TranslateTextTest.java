@@ -90,7 +90,10 @@ public class TranslateTextTest extends ZanataTestCase {
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testfile.getAbsolutePath())
-                .submitUpload().translate("fr", testfile.getName());
+                .submitUpload()
+                .clickUploadDone()
+                .gotoLanguageTab()
+                .translate("fr", testfile.getName());
 
         assertThat(editorPage.getMessageSourceAtRowIndex(0))
                 .isEqualTo("Line One")

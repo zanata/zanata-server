@@ -30,7 +30,6 @@ import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
-import org.zanata.page.projectversion.VersionLanguagesPage;
 import org.zanata.page.webtrans.EditorPage;
 import org.zanata.util.CleanDocumentStorageRule;
 import org.zanata.util.SampleProjectRule;
@@ -81,18 +80,17 @@ public class TranslateIdmlTest extends ZanataTestCase {
         projectSettings.put("Name", "idml-project");
         projectSettings.put("Project Type", "File");
 
-        VersionLanguagesPage projectVersionPage = new ProjectWorkFlow()
-                .createNewProject(projectSettings)
-                .clickCreateVersionLink().inputVersionId("idml")
-                .saveVersion()
+        EditorPage editorPage = new ProjectWorkFlow()
+                .goToProjectByName("about fedora")
+                .gotoVersion("idml-translate")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testfile.getAbsolutePath())
-                .submitUpload();
-
-        EditorPage editorPage =
-                projectVersionPage.translate("fr", testfile.getName());
+                .submitUpload()
+                .clickUploadDone()
+                .gotoLanguageTab()
+                .translate("fr", testfile.getName());
 
         assertThat(editorPage.getMessageSourceAtRowIndex(0))
                 .isEqualTo("Line One")
