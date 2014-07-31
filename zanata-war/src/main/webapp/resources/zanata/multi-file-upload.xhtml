@@ -22,8 +22,8 @@ site: http://www.fsf.org.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:composite="http://java.sun.com/jsf/composite"
-  xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core">
 
 <composite:interface>
   <composite:attribute name="url"
@@ -68,9 +68,9 @@ site: http://www.fsf.org.
           </ul>
 
           <div class="js-upload-not-supported">
-            <div class="message--warning txt--align-center txt--hero">This project-version is not set to a type that supports web upload</div>
+            <div class="message--warning txt--align-center txt--hero">#{msgs['jsf.upload.NotSupported']}</div>
             <div class="l--pad-h-2 l--pad-v-1">
-              <p>You can use the Zanata client to upload documents. Instructions for to upload documents with the client can be found in <a href="http://zanata.org/help/cli/cli-push/">Help - Document Upload with Client</a></p>
+              <p>#{msgs['jsf.upload.ClientUploadInstructions']}</p>
               <p>A maintainer of this project can set or change the type in the project and version settings.</p>
             </div>
           </div>
@@ -85,9 +85,15 @@ site: http://www.fsf.org.
                     style="position:absolute;top:0;left:0;width:100%;height:100%;direction:ltr;opacity:0;font-size:14px;" />
                 </a>
               </p>
-              <small class="txt--meta">Maximum file size is 200MB</small><br />
-              <small class="txt--meta">Maximum number of files is #{cc.attrs.maxfiles}</small><br />
-              <small class="txt--meta">Accepted: #{cc.attrs.accepted}</small>
+              <small class="txt--meta"><h:outputFormat value="#{msgs['jsf.upload.MaximumFileSize']}">
+                  <f:param value="200"/>
+              </h:outputFormat></small><br />
+              <small class="txt--meta"><h:outputFormat value="#{msgs['jsf.upload.MaximumNumberOfFiles']}">
+                  <f:param value="#{cc.attrs.maxfiles}"/>
+              </h:outputFormat></small><br />
+              <small class="txt--meta"><h:outputFormat value="#{msgs['jsf.upload.AcceptedFileTypes']}">
+                  <f:param value="#{cc.attrs.accepted}"/>
+              </h:outputFormat></small>
             </div>
 
             <div class="js-files-panel panel l--push-h-1 l--push-v-half is-hidden">
