@@ -89,15 +89,9 @@ public class TranslateHTMLTest extends ZanataTestCase {
                 "basichtml", "." + extension,
                 "<html><body>Line One<p>Line Two<p>Line Three</body></html>");
 
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", extension + "-project");
-        projectSettings.put("Name", extension + "-project");
-        projectSettings.put("Project Type", "File");
-
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
-                .gotoVersion("html-translate")
+                .gotoVersion("master")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()

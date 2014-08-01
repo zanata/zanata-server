@@ -76,16 +76,9 @@ public class TranslateTextTest extends ZanataTestCase {
                 "basictext",".txt",
                 "Line One\nLine Two\nLine Three");
 
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", "text-project");
-        projectSettings.put("Name", "text-project");
-        projectSettings.put("Project Type", "File");
-
         EditorPage editorPage = new ProjectWorkFlow()
-                .createNewProject(projectSettings)
-                .clickCreateVersionLink().inputVersionId("text")
-                .saveVersion()
+                .goToProjectByName("about fedora")
+                .gotoVersion("master")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()

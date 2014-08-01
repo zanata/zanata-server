@@ -74,15 +74,9 @@ public class TranslateIdmlTest extends ZanataTestCase {
     public void translateBasicIdmlFile() {
         File testfile = testFileGenerator.openTestFile("test-idml.idml");
 
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", "idml-project");
-        projectSettings.put("Name", "idml-project");
-        projectSettings.put("Project Type", "File");
-
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
-                .gotoVersion("idml-translate")
+                .gotoVersion("master")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
