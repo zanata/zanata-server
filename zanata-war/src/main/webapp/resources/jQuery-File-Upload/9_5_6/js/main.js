@@ -33,6 +33,9 @@ $(function () {
             countIndicator = uploadForm.find('.js-file-count'),
             filePathField = uploadForm.find('input[name=filepath]'),
             fileParamsField = uploadForm.find('textarea[name=fileparams]'),
+
+            // Wraps the i18n function that is attached to the widget options
+            // so that it can be used below without a reference to options.
             i18n = function () {
                 var widget = uploadForm.data('blueimp-fileupload') || uploadForm.data('fileupload'),
                     options = widget.options;
@@ -44,11 +47,11 @@ $(function () {
                     message;
 
                 if (noFiles) {
-                    message = i18n('No documents queued.');
+                    message = i18n('jsf.upload.NoDocumentsQueued'); // No documents queued.
                 } else if (numberOfFiles === 1) {
-                    message = i18n('1 document queued.');
+                    message = i18n('jsf.upload.OneDocumentQueued'); // 1 document queued.
                 } else {
-                    message = i18n('{documentCount} documents queued.', { documentCount: numberOfFiles });
+                    message = i18n('jsf.upload.NumberOfDocumentsQueued', { documentCount: numberOfFiles }); // {documentCount} documents queued.
                 }
                 countIndicator.text(message);
 
@@ -85,9 +88,9 @@ $(function () {
                     message;
 
                 if (counts.failed > 0) {
-                    message = i18n('Uploaded {uploaded} of {total} files. {failed} uploads failed.', counts);
+                    message = i18n('jsf.upload.UploadedOfTotalWithFailures', counts); // Uploaded {uploaded} of {total} files. {failed} uploads failed.
                 } else {
-                    message = i18n('Uploaded {uploaded} of {total} files.', counts);
+                    message = i18n('jsf.upload.UploadedOfTotal', counts); // Uploaded {uploaded} of {total} files.
                 }
                 countIndicator.text(message);
 
@@ -114,7 +117,7 @@ $(function () {
         });
 
         function confirmCancelUpload () {
-            var confirmCancel = confirm(i18n('Do you really want to stop uploading files?'));
+            var confirmCancel = confirm(i18n('jsf.upload.ConfirmStopUploading')); // Do you really want to stop uploading files?
             if (confirmCancel) {
                 container.off('hide.zanata.modal', confirmCancelUpload);
                 $(window).off('beforeunload', confirmLeavePage);
@@ -123,7 +126,7 @@ $(function () {
         }
 
         function confirmLeavePage () {
-            return i18n('Do you really want to interrupt your uploading files by leaving this page?');
+            return i18n('jsf.upload.ConfirmInterruptByLeavingPage'); // Do you really want to interrupt your uploading files by leaving this page?
         }
 
         // prevent default file drop behaviour on the page
@@ -162,6 +165,19 @@ $(function () {
         }
 
 
+        var messages = {};
+        // get UI strings from the page
+        // they are included in the markup of the page so they can easily go
+        // through the same translation workflow as other UI strings.
+        var messageElement = uploadForm.find('.js-upload-strings');
+        messageElement.children().each(function () {
+            var item = $(this);
+            var key = item.data('key');
+            var value = item.text();
+            messages[key] = value;
+        });
+
+
         uploadForm.fileupload({
             url: url,
             container: container,
@@ -171,6 +187,7 @@ $(function () {
             maxFileSize: 200*1024*1024,
             maxNumberOfFiles: maxFiles,
             dropZone: dropZone,
+            messages: messages,
             advancedSettings: advancedSettings,
             beforeAdd: (function beforeAdd (e, data) {
                 errorList.empty();

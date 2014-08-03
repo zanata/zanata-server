@@ -140,10 +140,10 @@
                     var successFiles = [];
                     $.each(data.files, function (index, file) {
                         if (file.error) {
-                            substituteError('File type not allowed', options.i18n('"{filename}" is not a supported file type.', {filename: file.name}));
-                            substituteError('File is too large', options.i18n('"{filename}" is too large.', {filename: file.name}));
+                            substituteError('File type not allowed', options.i18n('jsf.upload.NotSupportedFileType', {filename: file.name})); // "{filename}" is not a supported file type.
+                            substituteError('File is too large', options.i18n('jsf.upload.FileIsTooLarge', {filename: file.name})); // "{filename}" is too large.
                             substituteError('Maximum number of files exceeded',
-                                options.i18n('Too many files. You can upload more files after the current files are uploaded.'));
+                                options.i18n('jsf.upload.TooManyFiles')); // Too many files. You can upload more files after the current files are uploaded.
 
                             widget._showSingletonError(file.error);
                         } else {
@@ -198,7 +198,7 @@
                         var file = files[index] || {};
 
                         if (file.error === 'not logged in') {
-                            widget._showSingletonError(options.i18n('Your session has timed out. Please log in again before uploading files.'));
+                            widget._showSingletonError(options.i18n('jsf.upload.SessionTimedOut')); // Your session has timed out. Please log in again before uploading files.
                             // no inline error should be displayed since there is already a global error
                             file.error = null;
                         }
@@ -216,7 +216,7 @@
                                 } else {
                                     node.find('.loader').removeClass('is-active');
                                     node.addClass('txt--danger');
-                                    widget._showSingletonError(options.i18n('Some files could not be uploaded. The server stopped responding.'));
+                                    widget._showSingletonError(options.i18n('jsf.upload.ServerStoppedResponding')); // Some files could not be uploaded. The server stopped responding.
                                     widget.options.setUploadState(node, 'js-upload-failed');
                                 }
 
@@ -548,14 +548,15 @@
         },
 
         _renderDownload: function (files) {
+            var options = this.options;
             $.each(files, function (index, file) {
                 if (file.error === 'Forbidden') {
-                    files[index].error = this.options.i18n('Failed to upload this file.');
+                    files[index].error = options.i18n('jsf.upload.FailedToUpload'); // Failed to upload this file.
                 }
             });
 
             return this._renderTemplate(
-                this.options.downloadTemplate,
+                options.downloadTemplate,
                 files
             ).find('a[download]').each(this._enableDragToDesktop).end();
         },
@@ -669,14 +670,14 @@
                     $.getJSON(url, function(data) {
                         if (data.error) {
                             if (data.error === 'not logged in') {
-                                fileUploadWidget._showSingletonError(options.i18n(
-                                    'You are not logged in. Open a separate tab or window to log in, then try again.'));
+                                // You are not logged in. Open a separate tab or window to log in, then try again.
+                                fileUploadWidget._showSingletonError(options.i18n('jsf.upload.NotLoggedIn'));
                             } else if (data.error === 'already uploading') {
-                                fileUploadWidget._showSingletonError(options.i18n(
-                                    'You already have an upload in progress. Wait for the other upload to finish, then try again. Uploads may take up to 5 minutes to finish processing.'));
+                                // You already have an upload in progress. Wait for the other upload to finish, then try again. Uploads may take up to 5 minutes to finish processing.
+                                fileUploadWidget._showSingletonError(options.i18n('jsf.upload.UploadInProgress'));
                             } else {
-                                fileUploadWidget._showSingletonError(options.i18n(
-                                    'Got an error while checking if it is ok to upload: {error}. If the error persists, please report it using the "Report a problem" link at the bottom of the page.',
+                                // Got an error while checking if it is ok to upload: {error}. If the error persists, please report it using the "Report a problem" link at the bottom of the page.
+                                fileUploadWidget._showSingletonError(options.i18n('jsf.upload.ErrorWhileChecking',
                                         {error: data.error}));
                             }
                             setTryAgain ();

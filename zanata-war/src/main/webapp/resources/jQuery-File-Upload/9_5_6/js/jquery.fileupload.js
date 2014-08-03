@@ -142,9 +142,7 @@
             autoUpload: true,
 
             // Error and info messages:
-            messages: {
-                uploadedBytes: 'Uploaded bytes exceed file size'
-            },
+            messages: {},
 
             // Translation function, gets the message key to be translated
             // and an object with context specific data as arguments:

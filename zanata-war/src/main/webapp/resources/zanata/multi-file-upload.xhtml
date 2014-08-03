@@ -63,6 +63,27 @@ site: http://www.fsf.org.
             data-accepted="#{cc.attrs.accepted}"
             data-maxfiles="#{cc.attrs.maxfiles}">
 
+        <!-- UI strings used in the control script -->
+        <ul class="js-upload-strings is-hidden">
+            <li data-key="jsf.upload.NoDocumentsQueued">#{msgs['jsf.upload.NoDocumentsQueued']}</li>
+            <li data-key="jsf.upload.OneDocumentQueued">#{msgs['jsf.upload.OneDocumentQueued']}</li>
+            <li data-key="jsf.upload.NumberOfDocumentsQueued">#{msgs['jsf.upload.NumberOfDocumentsQueued']}</li>
+            <li data-key="jsf.upload.UploadedOfTotal">#{msgs['jsf.upload.UploadedOfTotal']}</li>
+            <li data-key="jsf.upload.UploadedOfTotalWithFailures">#{msgs['jsf.upload.UploadedOfTotalWithFailures']}</li>
+            <li data-key="jsf.upload.ConfirmStopUploading">#{msgs['jsf.upload.ConfirmStopUploading']}</li>
+            <li data-key="jsf.upload.ConfirmInterruptByLeavingPage">#{msgs['jsf.upload.ConfirmInterruptByLeavingPage']}</li>
+            <li data-key="jsf.upload.FailedToUpload">#{msgs['jsf.upload.FailedToUpload']}</li>
+            <li data-key="jsf.upload.NotSupportedFileType">#{msgs['jsf.upload.NotSupportedFileType']}</li>
+            <li data-key="jsf.upload.FileIsTooLarge">#{msgs['jsf.upload.FileIsTooLarge']}</li>
+            <li data-key="jsf.upload.TooManyFiles">#{msgs['jsf.upload.TooManyFiles']}</li>
+            <li data-key="jsf.upload.SessionTimedOut">#{msgs['jsf.upload.SessionTimedOut']}</li>
+            <li data-key="jsf.upload.ServerStoppedResponding">#{msgs['jsf.upload.ServerStoppedResponding']}</li>
+            <li data-key="jsf.upload.NotLoggedIn">#{msgs['jsf.upload.NotLoggedIn']}</li>
+            <li data-key="jsf.upload.UploadInProgress">#{msgs['jsf.upload.UploadInProgress']}</li>
+            <li data-key="jsf.upload.ErrorWhileChecking">#{msgs['jsf.upload.ErrorWhileChecking']}</li>
+            <li data-key="uploadedBytes">#{msgs['jsf.upload.UploadedBytesExceedFileSize']}</li>
+        </ul>
+
         <div class="modal__content">
 
           <ul class="js-errors list--no-bullets">
