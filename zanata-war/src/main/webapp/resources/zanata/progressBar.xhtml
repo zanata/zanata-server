@@ -38,7 +38,10 @@
 </composite:interface>
 <composite:implementation>
 
-  <a4j:jsFunction name="onCompleteFunction" action="#{cc.attrs.oncompleteAction}"
+  <a4j:jsFunction name="onCompleteFunction" action="#{cc.attrs.oncompleteAction}" rendered="#{not empty cc.attrs.oncompleteAction}"
+    render="poll-#{cc.attrs.id}, #{cc.attrs.onCompleteRender}" oncomplete="#{cc.attrs.oncomplete}"/>
+
+  <a4j:jsFunction name="onCompleteFunction" rendered="#{empty cc.attrs.oncompleteAction}"
     render="poll-#{cc.attrs.id}, #{cc.attrs.onCompleteRender}" oncomplete="#{cc.attrs.oncomplete}"/>
 
   <a4j:poll id="poll-#{cc.attrs.id}" interval="#{cc.attrs.interval}"

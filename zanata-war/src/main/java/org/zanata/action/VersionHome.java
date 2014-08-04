@@ -269,7 +269,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
 
     public String createVersion() {
         if (!validateSlug(getInstance().getSlug(), "slug"))
-            return null;
+            return "invalid-slug";
 
         if (copyFromVersion) {
             copyVersion();

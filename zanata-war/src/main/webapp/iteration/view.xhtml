@@ -310,7 +310,7 @@
         actionBean="#{versionHomeAction.copyVersionHandler}"
         render="copy-version-progress-messages"
         oncomplete="refreshStatistics();"
-        oncompleteAction="#{versionHomeAction.onCopyVersionComplete}"
+        oncompleteAction="#{versionHomeAction.onCopyVersionComplete()}"
         onCompleteRender="version-info, version-more-actions, version-settings, copy-version"/>
 
       <s:div id="copy-version-progress-messages"

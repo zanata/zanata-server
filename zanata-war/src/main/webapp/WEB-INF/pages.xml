@@ -581,6 +581,11 @@
     <action execute="#{versionHome.init(true)}" />
 
     <navigation from-action="#{versionHome.createVersion}">
+      <rule if-outcome="invalid-slug">
+        <redirect view-id="/project/add_iteration.xhtml">
+          <param name="projectSlug" value="#{versionHome.projectSlug}" />
+        </redirect>
+      </rule>
       <rule if-outcome="copy-version">
         <redirect view-id="/project/project.xhtml">
           <param name="slug" value="#{versionHome.projectSlug}" />
