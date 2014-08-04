@@ -48,6 +48,7 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
@@ -81,6 +82,9 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     @Getter
     @Setter
     private String projectSlug;
+
+    @In
+    private ProjectIterationDAO projectIterationDAO;
 
     @In
     private ConversationScopeMessages conversationScopeMessages;
@@ -158,7 +162,9 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         HProject project = getProject();
         if (project != null) {
             List<HProjectIteration> versionList =
-                    project.getProjectIterations();
+                    projectIterationDAO.getByProjectSlug(projectSlug,
+                            EntityStatus.ACTIVE, EntityStatus.READONLY);
+            project.getProjectIterations();
             Collections.sort(versionList,
                     ComparatorUtil.VERSION_CREATION_DATE_COMPARATOR);
             return versionList;
