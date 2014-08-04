@@ -149,7 +149,7 @@ $(function () {
             $.each(types, function (i, type) {
                 types[i] = type.trim();
             });
-            return new RegExp('(\.|\/)(' + types.join('|') + ')$', 'i');
+            return new RegExp('(^|\\.)(' + types.join('|') + ')$', 'i');
         })(accepted);
 
         if (accepted.trim().length === 0) {
