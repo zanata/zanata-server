@@ -66,8 +66,7 @@ public class JPACopier {
      * lastChanged}
      */
     private static final List<String> COMMON_IGNORED_FIELDS = ImmutableList
-            .<String> builder().add("id").add("creationDate")
-            .add("lastChanged").build();
+            .<String> builder().add("id").add("creationDate").build();
 
     /**
      * Fields to copy using {@link this#copyBean(Object, String...)} in class.
