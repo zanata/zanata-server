@@ -51,11 +51,10 @@ public class CopyVersionManager implements Serializable {
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
 
-            HProjectIteration version = projectIterationDAO.getBySlug(projectSlug,
-                    versionSlug);
-            version.setStatus(EntityStatus.ACTIVE);
-            projectIterationDAO.makePersistent(version);
-            projectIterationDAO.flush();
+//            HProjectIteration version = projectIterationDAO.getBySlug(projectSlug,
+//                    versionSlug);
+//            version.setStatus(EntityStatus.ACTIVE);
+//            projectIterationDAO.makePersistent(version);
         }
     }
 
