@@ -4,21 +4,21 @@ import static org.zanata.async.tasks.CopyVersionTask.CopyVersionTaskHandle;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.security.Identity;
 import org.zanata.async.tasks.CopyVersionTask;
-import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.model.HProjectIteration;
 import org.zanata.service.AsyncTaskManagerService;
+import org.zanata.service.CopyVersionService;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -50,6 +50,12 @@ public class CopyVersionManager implements Serializable {
             handle.forceCancel();
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
+
+            if( Events.exists() ) {
+                Events.instance().raiseEvent(
+                        CopyVersionService.COPY_VERSION_CANCELLED, projectSlug,
+                        versionSlug);
+            }
 
 //            HProjectIteration version = projectIterationDAO.getBySlug(projectSlug,
 //                    versionSlug);

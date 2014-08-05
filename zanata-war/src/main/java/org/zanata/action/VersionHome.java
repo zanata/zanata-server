@@ -26,14 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityNotFoundException;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
@@ -41,6 +36,8 @@ import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -54,6 +51,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
+import org.zanata.service.CopyVersionService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
@@ -62,9 +60,12 @@ import org.zanata.util.ComparatorUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Name("versionHome")
 @Slf4j
@@ -221,6 +222,21 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         }
 
         return availableValidations;
+    }
+
+    @Observer(CopyVersionService.COPY_VERSION_CANCELLED)
+    @Transactional
+    public void onCopyVersionCancelled(String projectSlug, String versionSlug) {
+        if (slug.equals(versionSlug) && projectSlug.equals(projectSlug)) {
+            loadInstance();
+        }
+    }
+
+    @Observer(CopyVersionService.COPY_VERSION_COMPLETED)
+    public void onCopyVersionCompleted(String projectSlug, String versionSlug) {
+        if (slug.equals(versionSlug) && projectSlug.equals(projectSlug)) {
+            loadInstance();
+        }
     }
 
     public void validateSuppliedId() {

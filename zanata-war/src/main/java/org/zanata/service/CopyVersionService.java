@@ -30,6 +30,10 @@ import org.zanata.model.HTextFlowTarget;
 
 public interface CopyVersionService {
 
+    public final static String COPY_VERSION_COMPLETED = "copy.version.completed";
+
+    public final static String COPY_VERSION_CANCELLED = "copy.version.cancelled";
+
     //@formatter:off
     /**
      *  Perform copy of HProjectIteration in order
