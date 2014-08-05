@@ -23,10 +23,10 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.validation.constraints.Pattern;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,34 +54,38 @@ import static org.zanata.model.HApplicationConfiguration.*;
 @Name("serverConfigurationBean")
 @Scope(ScopeType.PAGE)
 @Restrict("#{s:hasRole('admin')}")
-@Getter
-@Setter
 @Slf4j
 public class ServerConfigurationBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private ApplicationConfigurationDAO applicationConfigurationDAO;
 
     @In
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private ApplicationConfiguration applicationConfiguration;
 
     @Url(canEndInSlash = true)
+    @Getter
+    @Setter
     private String registerUrl;
 
     @Url(canEndInSlash = false)
+    @Getter
+    @Setter
     private String serverUrl;
 
+    @Getter
+    @Setter
     private String emailDomain;
 
     @EmailList
+    @Getter
+    @Setter
     private String adminEmail;
 
     @Email
+    @Getter
+    @Setter
     private String fromEmailAddr;
     private PropertyWithKey<String> fromEmailAddrProperty = new PropertyWithKey<String>("fromEmailAddr", KEY_EMAIL_FROM_ADDRESS);
 
@@ -91,28 +95,44 @@ public class ServerConfigurationBean implements Serializable {
     private String helpContent;
     private PropertyWithKey<String> helpContentProperty = new PropertyWithKey<String>("helpContent", KEY_HELP_CONTENT);
 
+    @Getter
+    @Setter
     private boolean enableLogEmail;
     private PropertyWithKey<Boolean> enableLogEmailProperty = new PropertyWithKey<Boolean>("enableLogEmail", KEY_EMAIL_LOG_EVENTS);
 
+    @Getter
+    @Setter
     private String logDestinationEmails;
 
+    @Getter
+    @Setter
     private String logEmailLevel;
 
     @Url(canEndInSlash = true)
+    @Getter
+    @Setter
     private String piwikUrl;
 
+    @Getter
+    @Setter
     private String piwikIdSite;
 
     @Url(canEndInSlash = true)
+    @Getter
+    @Setter
     private String termsOfUseUrl;
 
     @Pattern(regexp = "\\d{0,5}")
+    @Getter
+    @Setter
     private String maxConcurrentRequestsPerApiKey;
 
     @Pattern(regexp = "\\d{0,5}")
+    @Getter
+    @Setter
     private String maxActiveRequestsPerApiKey;
 
-    private PropertyWithKey<String>[] commonStringProperties = Arrays.asList(
+    private List<PropertyWithKey<String>> commonStringProperties = Arrays.asList(
             new PropertyWithKey<String>("registerUrl", KEY_REGISTER),
             new PropertyWithKey<String>("serverUrl", KEY_HOST),
             new PropertyWithKey<String>("emailDomain", KEY_DOMAIN),
@@ -124,19 +144,19 @@ public class ServerConfigurationBean implements Serializable {
             new PropertyWithKey<String>("termsOfUseUrl", KEY_TERMS_CONDITIONS_URL),
             new PropertyWithKey<String>("maxConcurrentRequestsPerApiKey", KEY_MAX_CONCURRENT_REQ_PER_API_KEY),
             new PropertyWithKey<String>("maxActiveRequestsPerApiKey", KEY_MAX_ACTIVE_REQ_PER_API_KEY)
-    ).toArray(new PropertyWithKey[11]);
+    );
 
     public String getHomeContent() {
         HApplicationConfiguration var =
                 applicationConfigurationDAO
-                        .findByKey(HApplicationConfiguration.KEY_HOME_CONTENT);
+                        .findByKey(homeContentProperty.getKey());
         return var != null ? var.getValue() : "";
     }
 
     public String getHelpContent() {
         HApplicationConfiguration var =
                 applicationConfigurationDAO
-                        .findByKey(HApplicationConfiguration.KEY_HELP_CONTENT);
+                        .findByKey(helpContentProperty.getKey());
         return var != null ? var.getValue() : "";
     }
 
@@ -160,13 +180,11 @@ public class ServerConfigurationBean implements Serializable {
     @Create
     public void onCreate() {
         setPropertiesFromConfigIfNotNull(commonStringProperties);
-
         setBooleanPropertyFromConfigIfNotNull(enableLogEmailProperty);
-
         this.fromEmailAddr = applicationConfiguration.getFromEmailAddr();
     }
 
-    private void setPropertiesFromConfigIfNotNull(PropertyWithKey<String>... properties) {
+    private void setPropertiesFromConfigIfNotNull(List<PropertyWithKey<String>> properties) {
         for (PropertyWithKey<String> property : properties) {
             setPropertyFromConfigIfNotNull(property);
         }
@@ -225,7 +243,7 @@ public class ServerConfigurationBean implements Serializable {
         return "success";
     }
 
-    private void persistPropertiesToDatabase(PropertyWithKey<String>... properties) {
+    private void persistPropertiesToDatabase(List<PropertyWithKey<String>> properties) {
         for (PropertyWithKey<String> property : properties) {
             persistPropertyToDatabase(property);
         }
