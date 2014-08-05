@@ -7,7 +7,8 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich">
 
-<a4j:jsFunction name="clearVersionStats" action="#{projectHomeAction.clearVersionStats(versionSlug)}">
+<a4j:jsFunction name="clearVersionStats"
+  action="#{projectHomeAction.clearVersionStats(versionSlug)}">
   <a4j:param name="val1" assignTo="#{versionSlug}"/>
 </a4j:jsFunction>
 
@@ -33,12 +34,10 @@
         <ul class="dropdown__content js-dropdown__content" role="content"
           aria-labelledby="dropdownContent">
           <li>
-            <s:link id="new-version-link"
+            <s:link id="new-version-link" propagation="none"
               value="#{msgs['jsf.project.NewVersion']}"
-              view="/project/add_iteration.xhtml"
-              propagation="none">
-              <f:param name="projectSlug"
-                value="#{projectHomeAction.slug}"/>
+              view="/project/add_iteration.xhtml">
+              <f:param name="projectSlug" value="#{projectHomeAction.slug}"/>
               <i class="i i--plus i__item__icon"></i>
             </s:link>
           </li>
@@ -71,12 +70,10 @@
     <s:fragment
       rendered="#{s:hasPermission(projectHome.instance, 'update')}">
       <p>
-        <s:link styleClass="button--primary"
+        <s:link styleClass="button--primary" propagation="none"
           value="#{msgs['jsf.project.NewVersion']}"
-          view="/project/add_iteration.xhtml"
-          propagation="none">
-          <f:param name="projectSlug"
-            value="#{projectHomeAction.slug}"/>
+          view="/project/add_iteration.xhtml">
+          <f:param name="projectSlug" value="#{projectHomeAction.slug}"/>
           <i class="i i--plus i__item__icon"></i>
         </s:link>
       </p>
@@ -92,8 +89,7 @@
     rendered="#{!projectHomeAction.versionFilter.currentPage.isEmpty()}">
     <ul class="list--stats">
       <ui:repeat
-        value="#{projectHomeAction.versionFilter.currentPage}"
-        var="version">
+        value="#{projectHomeAction.versionFilter.currentPage}" var="version">
         <ui:param name="hasActions" value="#{identity.loggedIn}"/>
         <li
           class="progress-bar__expander #{(hasActions) ? 'list__item--actionable' : ''}">
@@ -101,19 +97,19 @@
             <ui:param name="isCopying"
               value="#{projectHomeAction.isVersionCopying(version.project.slug, version.slug)}"/>
             <a4j:poll interval="2000" limitRender="true" render="version-info"
-              enabled="#{isCopying}" oncomplete="clearVersionStats('#{version.slug}')"/>
+              enabled="#{isCopying}"
+              oncomplete="clearVersionStats('#{version.slug}')"/>
             <s:div styleClass="list__item__action" rendered="#{hasActions}">
               <div
                 class="dropdown dropdown--small dropdown--inline dropdown--single list__item__dropdown js-dropdown">
-                <a href="#"
-                  class="dropdown__toggle js-dropdown__toggle txt--meta"
-                  title="#{msgs['jsf.tooltip.options']}">
-                      <span class="is-invisible">
-                        #{msgs['jsf.tooltip.options']}
-                      </span>
+                <a href="#" title="#{msgs['jsf.tooltip.options']}"
+                  class="dropdown__toggle js-dropdown__toggle txt--meta">
+                  <span
+                    class="is-invisible">#{msgs['jsf.tooltip.options']}</span>
                 </a>
                 <ul class="dropdown__content js-dropdown__content">
-                  <s:fragment rendered="#{s:hasPermission(version, 'update') and isCopying}">
+                  <s:fragment
+                    rendered="#{s:hasPermission(version, 'update') and isCopying}">
                     <li>
                       <a4j:commandLink styleClass="i__item--right"
                         action="#{projectHomeAction.cancelCopyVersion(version.project.slug, version.slug)}"
@@ -133,8 +129,7 @@
                           <f:param name="project"
                             value="#{projectHomeAction.slug}"/>
                           <f:param name="iteration" value="#{version.slug}"/>
-                          <f:param name="localeId"
-                            value="#{hLocale.localeId}"/>
+                          <f:param name="localeId" value="#{hLocale.localeId}"/>
                           <f:param name="locale" value="#{locale.language}"/>
                           <span>
                             <h:outputFormat

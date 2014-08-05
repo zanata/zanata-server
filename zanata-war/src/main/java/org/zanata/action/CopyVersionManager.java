@@ -15,6 +15,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.Identity;
 import org.zanata.async.tasks.CopyVersionTask;
+import org.zanata.common.EntityStatus;
+import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.model.HProjectIteration;
 import org.zanata.service.AsyncTaskManagerService;
 
 /**
@@ -30,6 +33,9 @@ public class CopyVersionManager implements Serializable {
     @In
     private Identity identity;
 
+    @In
+    private ProjectIterationDAO projectIterationDAO;
+
     public void startCopyVersion(String projectSlug, String versionSlug,
             String newVersionSlug) {
         asyncTaskManagerServiceImpl.startTask(new CopyVersionTask(
@@ -44,6 +50,12 @@ public class CopyVersionManager implements Serializable {
             handle.forceCancel();
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
+
+            HProjectIteration version = projectIterationDAO.getBySlug(projectSlug,
+                    versionSlug);
+            version.setStatus(EntityStatus.ACTIVE);
+            projectIterationDAO.makePersistent(version);
+            projectIterationDAO.flush();
         }
     }
 

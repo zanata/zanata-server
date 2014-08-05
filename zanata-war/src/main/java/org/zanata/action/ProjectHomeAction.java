@@ -47,6 +47,7 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
+import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;

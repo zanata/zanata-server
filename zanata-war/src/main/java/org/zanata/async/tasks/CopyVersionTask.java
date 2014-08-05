@@ -76,25 +76,13 @@ public class CopyVersionTask implements
         return handle;
     }
 
+    @Getter
+    @Setter
     public static class CopyVersionTaskHandle extends TimedAsyncHandle<Void> {
-        @Getter
-        @Setter
         private int documentCopied;
-
-        @Getter
-        @Setter
         private int totalDoc;
-
-        @Getter
-        @Setter
         private String cancelledBy;
-
-        @Getter
-        @Setter
         private long cancelledTime;
-
-        @Getter
-        @Setter
         private String triggeredBy;
 
         public CopyVersionTaskHandle(String taskName) {
