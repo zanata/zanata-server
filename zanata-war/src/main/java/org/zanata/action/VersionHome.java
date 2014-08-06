@@ -37,7 +37,6 @@ import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -222,21 +221,6 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         }
 
         return availableValidations;
-    }
-
-    @Observer(CopyVersionService.COPY_VERSION_CANCELLED)
-    @Transactional
-    public void onCopyVersionCancelled(String projectSlug, String versionSlug) {
-        if (slug.equals(versionSlug) && projectSlug.equals(projectSlug)) {
-            loadInstance();
-        }
-    }
-
-    @Observer(CopyVersionService.COPY_VERSION_COMPLETED)
-    public void onCopyVersionCompleted(String projectSlug, String versionSlug) {
-        if (slug.equals(versionSlug) && projectSlug.equals(projectSlug)) {
-            loadInstance();
-        }
     }
 
     public void validateSuppliedId() {

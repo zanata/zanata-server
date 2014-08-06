@@ -9,12 +9,9 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.security.Identity;
 import org.zanata.async.tasks.CopyVersionTask;
-import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.service.AsyncTaskManagerService;
-import org.zanata.service.CopyVersionService;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,9 +30,6 @@ public class CopyVersionManager implements Serializable {
     @In
     private Identity identity;
 
-    @In
-    private ProjectIterationDAO projectIterationDAO;
-
     public void startCopyVersion(String projectSlug, String versionSlug,
             String newVersionSlug) {
         asyncTaskManagerServiceImpl.startTask(new CopyVersionTask(
@@ -50,17 +44,6 @@ public class CopyVersionManager implements Serializable {
             handle.forceCancel();
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
-
-            if( Events.exists() ) {
-                Events.instance().raiseEvent(
-                        CopyVersionService.COPY_VERSION_CANCELLED, projectSlug,
-                        versionSlug);
-            }
-
-//            HProjectIteration version = projectIterationDAO.getBySlug(projectSlug,
-//                    versionSlug);
-//            version.setStatus(EntityStatus.ACTIVE);
-//            projectIterationDAO.makePersistent(version);
         }
     }
 
@@ -72,9 +55,7 @@ public class CopyVersionManager implements Serializable {
 
     public boolean isCopyVersionRunning(String projectSlug, String versionSlug) {
         CopyVersionTaskHandle handle =
-                (CopyVersionTaskHandle) asyncTaskManagerServiceImpl
-                        .getHandleByKey(CopyVersionKey.getKey(projectSlug,
-                                versionSlug));
+                getCopyVersionProcessHandle(projectSlug, versionSlug);
         return handle != null && !handle.isDone();
     }
 

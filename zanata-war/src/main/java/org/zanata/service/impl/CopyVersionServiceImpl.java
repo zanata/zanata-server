@@ -9,7 +9,6 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Events;
 import org.zanata.async.AsyncUtils;
 import org.zanata.async.tasks.CopyVersionTask;
 import org.zanata.dao.DocumentDAO;
@@ -137,12 +136,6 @@ public class CopyVersionServiceImpl implements CopyVersionService {
         log.info("copy version end: copy {} to {}, {}", projectSlug
                 + ":" + versionSlug, projectSlug + ":" + newVersionSlug,
                 overallStopwatch);
-
-        if (Events.exists()) {
-            Events.instance().raiseEvent(
-                    CopyVersionService.COPY_VERSION_COMPLETED, projectSlug,
-                    newVersionSlug);
-        }
     }
 
     @Override
