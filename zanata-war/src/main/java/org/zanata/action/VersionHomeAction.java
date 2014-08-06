@@ -305,6 +305,14 @@ public class VersionHomeAction extends AbstractSortAction implements
                 msgs.format("jsf.copyVersion.Completed", versionSlug));
     }
 
+    /**
+     * Prevent getting cached data from hibernate that might be outdated,
+     * forced to get latest status from Database.
+     */
+    public EntityStatus getStatus() {
+        return projectIterationDAO.getEntityStatus(projectSlug, versionSlug);
+    }
+
     public void stopCopyVersion() {
         copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
@@ -463,7 +471,8 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     public int
-            getVersionSupportedLocaleCount(String projectSlug, String versionSlug) {
+            getVersionSupportedLocaleCount(String projectSlug,
+                    String versionSlug) {
         return localeServiceImpl.getSupportedLanguageByProjectIteration(
                 projectSlug, versionSlug).size();
     }
