@@ -173,7 +173,7 @@
           title="#{msgs['jsf.iteration.files.UploadNewSourceDocument']}"
           accepted="#{versionHome.acceptedSourceFileTypes}"
           url="#{request.contextPath}/files/upload?p=#{versionHome.projectSlug}&amp;v=#{versionHome.slug}"
-          maxfiles="100"><!-- TODO get max files value from configuration -->
+          maxfiles="#{applicationConfiguration.maxFilesPerUpload}">
           <i class="i i--plus"></i>
         </zanata:multi-file-upload>
         <zanata:sortlist id="settings-document_sorting"
