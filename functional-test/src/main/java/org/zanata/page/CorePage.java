@@ -153,7 +153,7 @@ public class CorePage extends AbstractPage {
 
     public void assertNoCriticalErrors() {
         List<WebElement> errors =
-                getDriver().findElements(By.id("errorMessage"));
+                getDriver().findElements(By.className("alert--danger"));
         if (errors.size() > 0) {
             throw new RuntimeException("Critical error: \n"
                     + errors.get(0).getText());
