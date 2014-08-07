@@ -113,6 +113,7 @@ public class DocumentDAOTest extends ZanataDbunitJpaTest {
                         ITERATION_SLUG, DOC_ID);
         mutator.apply(doc);
 
+        System.out.println("===== Modified: " + doc.getLastModifiedBy());
         // force a flush on the DB
         getSession().flush();
 
