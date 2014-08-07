@@ -170,7 +170,7 @@ site: http://www.fsf.org.
     </div>
   </div>
 
-
+    <!-- templates are used in JavaScript, see jquery.fileupload-ui.js -->
     <script id="template-error" type="text/x-tmpl">
 <![CDATA[
             <li class="message message--danger l--pad-h-1">
@@ -179,7 +179,7 @@ site: http://www.fsf.org.
 ]]>
     </script>
 
-    <!-- The template to display files available for upload -->
+    <!-- The template to display files available for upload. Templates are used in JavaScript, see jquery.fileupload-ui.js -->
     <script id="template-upload" type="text/x-tmpl">
 <![CDATA[
 {% for (var i=0, file; file=o.files[i]; i++) { %}
@@ -218,7 +218,7 @@ site: http://www.fsf.org.
 ]]>
     </script>
 
-    <!-- The template to display files available for download -->
+    <!-- The template to display files available for download. Templates are used in JavaScript, see jquery.fileupload-ui.js -->
     <script id="template-download" type="text/x-tmpl">
 <![CDATA[
 {% for (var i=0, file; file=o.files[i]; i++) { %}
