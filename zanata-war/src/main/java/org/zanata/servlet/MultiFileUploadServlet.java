@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import com.google.common.base.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -66,11 +67,9 @@ import static com.google.common.base.Strings.emptyToNull;
  * the user is signed in and whether they already have an upload in-progress
  * in a separate tab.
  */
+@Slf4j
 public class MultiFileUploadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    private static final Logger log = LoggerFactory
-            .getLogger(MultiFileUploadServlet.class);
 
     @Override
     public void init(ServletConfig config) {
