@@ -48,8 +48,7 @@
   </a4j:jsFunction>
 
   <div class="form__item l--push-top-1">
-    <h:outputLabel
-      for="slug">#{msgs['jsf.ProjectVersionId']}
+    <h:outputLabel for="slug">#{msgs['jsf.ProjectVersionId']}
       <span class="txt--meta"><i class="i i--info"
         title="#{msgs['jsf.SlugExample']}"></i></span>
     </h:outputLabel>
@@ -156,27 +155,27 @@
       rendered="#{versionHome.copyFromVersion and not empty versionHome.project.projectIterations}">
       <ul class="list--slat l--push-bottom-1">
         <ui:repeat value="#{versionHome.getOtherVersions()}"
-          var="version" varStatus="status">
+          var="versionItem" varStatus="status">
           <li>
             <div class="form__radio js-form__radio"
-              onclick="onCopyFromVersionChanged('#{version.slug}')">
-              <s:fragment rendered="#{status.first}">
-                <input type="radio" name="project-type" value="#{version.slug}"
+              onclick="onCopyFromVersionChanged('#{versionItem.version.slug}')">
+              <s:fragment rendered="#{versionItem.selected}">
+                <input type="radio" name="project-type" value="#{versionItem.version.slug}"
                   class="form__radio__input js-form__radio__input"
-                  checked="true" id="#{status.index}:version:#{version.slug}"/>
+                  checked="true" id="#{status.index}:version:#{versionItem.version.slug}"/>
               </s:fragment>
-              <s:fragment rendered="#{!status.first}">
-                <input type="radio" name="project-type" value="#{version.slug}"
+              <s:fragment rendered="#{!versionItem.selected}">
+                <input type="radio" name="project-type" value="#{versionItem.version.slug}"
                   class="form__radio__input js-form__radio__input"
-                  id="#{status.index}:version:#{version.slug}"/>
+                  id="#{status.index}:version:#{versionItem.version.slug}"/>
               </s:fragment>
-              <label for="#{status.index}:version:#{version.slug}"
-                class="form__radio__label">#{version.slug} <span
+              <label for="#{status.index}:version:#{versionItem.version.slug}"
+                class="form__radio__label">#{versionItem.version.slug} <span
                 class="txt--meta">
                 <i class="i--document i txt--neutral"
-                  title="#{msgs['jsf.Documents']}"></i> #{version.documents.size()}  <i
+                  title="#{msgs['jsf.Documents']}"></i> #{versionItem.version.documents.size()}  <i
                 class="i--language i txt--neutral"
-                title="#{msgs['jsf.Languages']}"></i> #{versionHomeAction.getVersionSupportedLocaleCount(version.project.slug, version.slug)}
+                title="#{msgs['jsf.Languages']}"></i> #{versionHomeAction.getVersionSupportedLocaleCount(versionItem.version.project.slug, versionItem.version.slug)}
               </span>
               </label>
             </div>

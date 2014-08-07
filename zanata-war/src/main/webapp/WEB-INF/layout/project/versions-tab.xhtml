@@ -29,7 +29,7 @@
       status="versionTab-versionsLoader"/>
 
     <s:fragment
-      rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+      rendered="#{s:hasPermission(projectHome.instance, 'insert')}">
       <div
         class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown"
         id="versions-more-actions">
@@ -39,9 +39,10 @@
         <ul class="dropdown__content js-dropdown__content" role="content"
           aria-labelledby="dropdownContent">
           <li>
-            <s:link id="new-version-link" propagation="none"
+            <s:link id="new-version-link"
               value="#{msgs['jsf.project.NewVersion']}"
-              view="/project/add_iteration.xhtml">
+              view="/project/add_iteration.xhtml"
+              action="#{versionHome.reset()}">
               <f:param name="projectSlug" value="#{projectHomeAction.slug}"/>
               <i class="i i--plus i__item__icon"></i>
             </s:link>
@@ -122,6 +123,21 @@
                     class="is-invisible">#{msgs['jsf.tooltip.TranslateOptions']}</span>
                 </a>
                 <ul class="dropdown__content js-dropdown__content">
+                  <s:fragment
+                    rendered="#{s:hasPermission(projectHome.instance, 'insert')}">
+                    <li>
+                      <s:link view="/project/add_iteration.xhtml"
+                        action="#{versionHome.reset()}"
+                        styleClass="i__item--right"
+                        value="#{msgs['jsf.copyVersion.versionPage.label']}">
+                        <f:param name="projectSlug"
+                          value="#{projectHome.slug}"/>
+                        <f:param name="copyFromVersionSlug"
+                          value="#{version.slug}"/>
+                        <i class="i i--plus i__item__icon"></i>
+                      </s:link>
+                    </li>
+                  </s:fragment>
                   <ui:repeat
                     value="#{projectHomeAction.getUserJoinedLocales(version)}"
                     var="hLocale">
@@ -183,7 +199,8 @@
                     value="#{msgs['jsf.copyVersion.stop']}"
                     rendered="#{s:hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}"
                     action="#{projectHomeAction.cancelCopyVersion(version.project.slug, version.slug)}"
-                    title="#{msgs['jsf.copyVersion.cancel.message']}" render="poll, version-info"/>
+                    title="#{msgs['jsf.copyVersion.cancel.message']}"
+                    render="poll, version-info"/>
                 </div>
 
                 <div class="list__item__stats">

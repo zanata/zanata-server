@@ -584,6 +584,7 @@
   <page view-id="/project/add_iteration.xhtml">
     <restrict>#{s:hasPermission(projectHome.instance, 'insert')}</restrict>
     <param name="projectSlug" value="#{versionHome.projectSlug}" />
+    <param name="copyFromVersionSlug" value="#{versionHome.copyFromVersionSlug}" />
     <action execute="#{versionHome.validateProjectSlug}" />
     <action execute="#{versionHome.init(true)}" />
 

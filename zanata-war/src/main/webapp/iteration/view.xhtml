@@ -389,15 +389,27 @@
             </a>
             <ul class="dropdown__content js-dropdown__content"
               role="content" aria-labelledby="dropdownContent">
-              <li>
-                <h:outputLink id="exportTMXIterLink"
-                  onclick="return confirm('#{msgs['jsf.ConfirmExportTMXIter']}')"
-                  styleClass="i__item--right"
-                  value="#{request.contextPath}/rest/tm/projects/#{versionHomeAction.projectSlug}/iterations/#{versionHomeAction.versionSlug}">
-                  #{msgs['jsf.iteration.ExportTMXIter']}<i
-                  class="i i--export i__item__icon"></i>
-                </h:outputLink>
-              </li>
+              <s:fragment
+                rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
+                <li>
+                  <a href="javascript:void(0)" class="i__item--right"
+                    onclick="zanata.modal.show('#copy-trans-modal')">
+                    #{msgs['jsf.CopyTrans']}
+                    <i class="i i--translate i__item__icon"></i>
+                  </a>
+                </li>
+              </s:fragment>
+              <s:fragment rendered="#{s:hasPermission(versionHome.instance.project, 'insert')}">
+                <li>
+                  <s:link view="/project/add_iteration.xhtml" action="#{versionHome.reset()}"
+                    styleClass="i__item--right"
+                    value="#{msgs['jsf.copyVersion.versionPage.label']}">
+                    <f:param name="projectSlug" value="#{versionHome.projectSlug}"/>
+                    <f:param name="copyFromVersionSlug" value="#{versionHome.slug}"/>
+                    <i class="i i--plus i__item__icon"></i>
+                  </s:link>
+                </li>
+              </s:fragment>
               <li>
                 <s:link title="#{msgs['jsf.GenerateProjectConfig']}"
                   styleClass="i__item--right"
@@ -410,16 +422,15 @@
                   <i class="i i--export i__item__icon"></i>
                 </s:link>
               </li>
-              <s:fragment
-                rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
-                <li>
-                  <a href="javascript:void(0)" class="i__item--right"
-                    onclick="zanata.modal.show('#copy-trans-modal')">
-                    #{msgs['jsf.CopyTrans']}
-                    <i class="i i--translate i__item__icon"></i>
-                  </a>
-                </li>
-              </s:fragment>
+              <li>
+                <h:outputLink id="exportTMXIterLink"
+                  onclick="return confirm('#{msgs['jsf.ConfirmExportTMXIter']}')"
+                  styleClass="i__item--right"
+                  value="#{request.contextPath}/rest/tm/projects/#{versionHomeAction.projectSlug}/iterations/#{versionHomeAction.versionSlug}">
+                  #{msgs['jsf.iteration.ExportTMXIter']}<i
+                  class="i i--export i__item__icon"></i>
+                </h:outputLink>
+              </li>
             </ul>
           </s:fragment>
         </s:div>
