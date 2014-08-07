@@ -147,7 +147,7 @@ public class SourceDocumentUpload {
                                         uploadForm));
             }
 
-            if (uploadForm.getFileType().equals("pot")) {
+            if (DocumentType.typeFor(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
                 parsePotFile(potStream, id, uploadForm);
             } else {
