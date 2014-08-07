@@ -196,11 +196,11 @@
                   </s:span>
                   <a4j:commandButton
                     styleClass="button--danger txt--mini l--push-left-half"
-                    value="#{msgs['jsf.copyVersion.stop']}"
+                    value="#{msgs['jsf.copyVersion.stop']}" limitRender="true"
                     rendered="#{s:hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}"
                     action="#{projectHomeAction.cancelCopyVersion(version.project.slug, version.slug)}"
                     title="#{msgs['jsf.copyVersion.cancel.message']}"
-                    render="poll, version-info"/>
+                    render="poll, version-info, messages"/>
                 </div>
 
                 <div class="list__item__stats">

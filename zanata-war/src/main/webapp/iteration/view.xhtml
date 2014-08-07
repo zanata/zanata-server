@@ -160,9 +160,9 @@
 <a4j:jsFunction name="cancelCopyTrans" action="#{copyTransAction.cancel}"
   render="copy-trans, copy-trans-buttons"/>
 
-<a4j:jsFunction name="cancelCopyVersion"
-  action="#{versionHomeAction.stopCopyVersion}"
-  render="version-info, version-more-actions, version-settings, copy-version"/>
+<a4j:jsFunction name="cancelCopyVersion" limitRender="true"
+  action="#{versionHomeAction.cancelCopyVersion()}"
+  render="version-info, version-more-actions, version-settings, copy-version, messages"/>
 
 
 <div class="g" id="version-page">
@@ -311,7 +311,7 @@
         render="copy-version-progress-messages"
         oncomplete="refreshStatistics();"
         oncompleteAction="#{versionHomeAction.onCopyVersionComplete()}"
-        onCompleteRender="version-info, version-more-actions, version-settings, copy-version"/>
+        onCompleteRender="version-info, version-more-actions, version-settings, copy-version, messages"/>
 
       <s:div id="copy-version-progress-messages"
         styleClass="txt--meta l--push-top-quarter">

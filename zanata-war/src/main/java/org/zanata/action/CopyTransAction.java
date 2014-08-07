@@ -97,7 +97,7 @@ public class CopyTransAction implements Serializable, ProgressBar {
     }
 
     @Override
-    public double getCompletedPercentage() {
+    public String getCompletedPercentage() {
         CopyTransTask.CopyTransTaskHandle handle =
                 copyTransManager
                         .getCopyTransProcessHandle(getProjectIteration());
@@ -111,9 +111,9 @@ public class CopyTransAction implements Serializable, ProgressBar {
                                 FacesMessage.SEVERITY_INFO,
                                 msgs.get("jsf.iteration.CopyTrans.Completed"));
             }
-            return completedPercent;
+            return PERCENT_FORMAT.format(completedPercent);
         } else {
-            return 0;
+            return "0";
         }
     }
 
