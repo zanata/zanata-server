@@ -272,7 +272,7 @@ public class SourceDocumentUpload {
                     translationFileServiceImpl.parseUpdatedAdapterDocumentFile(
                             tempFile.toURI(), id.getDocId(),
                             uploadForm.getFileType(), params);
-            doc.setLang(new LocaleId("en-US"));
+            doc.setLang(LocaleId.EN_US);
             // TODO Copy Trans values
             document =
                     documentServiceImpl.saveDocument(id.getProjectSlug(),
@@ -321,7 +321,7 @@ public class SourceDocumentUpload {
         Resource doc = translationFileServiceImpl.parseUpdatedPotFile(potStream,
                         id.getDocId(), uploadFileName,
                         useOfflinePo(id));
-        doc.setLang(new LocaleId("en-US"));
+        doc.setLang(LocaleId.EN_US);
         // TODO Copy Trans values
         documentServiceImpl.saveDocument(id.getProjectSlug(),
                 id.getVersionSlug(), doc,
