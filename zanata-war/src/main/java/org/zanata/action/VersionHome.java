@@ -31,6 +31,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -362,19 +363,8 @@ public class VersionHome extends SlugHome<HProjectIteration> {
      * @return comma-separated list of accepted file extensions. May be an empty string
      */
     public String getAcceptedSourceFileTypes() {
-        ProjectType type = getProjectType();
-        if (type == null) {
-            return "";
-        }
-        switch (type) {
-            case Gettext:
-            case Podir:
-                return "pot";
-            case File:
-                return "dtd, txt, idml, htm, html, odt, odp, ods, odg, srt, sbt, sub, vtt";
-            default:
-                return "";
-        }
+        return Joiner.on(", ")
+            .join(ProjectType.getSupportedSourceFileTypes(getProjectType()));
     }
 
     private void updateProjectType() {
