@@ -1,9 +1,9 @@
 package org.zanata.service.impl;
 
-import java.util.Collections;
-import java.util.Map;
-import javax.annotation.Nonnull;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -30,11 +30,10 @@ import org.zanata.model.po.HPotEntryData;
 import org.zanata.service.CopyVersionService;
 import org.zanata.service.VersionStateCache;
 import org.zanata.util.JPACopier;
-import com.google.common.base.Optional;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.Nonnull;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -251,7 +250,7 @@ public class CopyVersionServiceImpl implements CopyVersionService {
     public HProjectIteration copyVersionSettings(
             HProjectIteration version, HProjectIteration newVersion) {
         try {
-            JPACopier.copyBean(version, newVersion, "slug", "project",
+            JPACopier.copyBean(version, newVersion, "slug", "status", "project",
                     "children", "documents", "allDocuments");
         } catch (Exception e) {
             log.warn("exception during copy version", e);

@@ -336,8 +336,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         conversationScopeMessages
                 .setMessage(FacesMessage.SEVERITY_INFO, msgs.
                         format("jsf.copyVersion.started",
-                                getInstance().getSlug(),
-                                copyFromVersionSlug));
+                                getInstance().getSlug(), copyFromVersionSlug));
     }
 
     @Override
