@@ -134,7 +134,14 @@ site: http://www.fsf.org.
         #{msgs['jsf.upload.NotSupported']}
       </div>
       <div class="l--pad-h-2 l--pad-v-1">
-        <p>#{msgs['jsf.upload.ClientUploadInstructions']}</p>
+        <p>
+          <h:outputFormat
+            value="#{msgs['jsf.upload.ClientUploadInstructions']}"
+            escape="false">
+            <f:param value="&lt;a href=&quot;http://zanata.org/help/cli/cli-push/&quot;>"/>
+            <f:param value="&lt;/a>"/>
+          </h:outputFormat>
+        </p>
 
         <p>
           #{msgs['jsf.upload.ChangeProjectTypeInstructions']}</p>
