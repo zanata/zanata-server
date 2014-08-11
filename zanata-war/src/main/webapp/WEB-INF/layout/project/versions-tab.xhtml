@@ -189,7 +189,7 @@
               </div>
             </s:div>
 
-            <s:link view="/iteration/view.xhtml"
+            <s:link view="/iteration/view.xhtml" action="#{versionHome.reset()}"
               disabled="#{projectHomeAction.isVersionCopying(version.project.slug, version.slug)}">
               <f:param name="projectSlug" value="#{projectHomeAction.slug}"/>
               <f:param name="iterationSlug" value="#{version.slug}"/>
