@@ -66,6 +66,7 @@ import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -461,6 +462,14 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.iteration.CopyProjectType.message"));
+    }
+
+    /**
+     * @return comma-separated list of accepted file extensions. May be an empty string
+     */
+    public String getAcceptedSourceFileTypes() {
+        return Joiner.on(", ")
+            .join(ProjectType.getSupportedSourceFileTypes(getProjectType()));
     }
 
     private void updateProjectType() {

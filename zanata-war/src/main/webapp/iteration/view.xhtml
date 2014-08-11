@@ -125,6 +125,12 @@
       fileInput.value === "";
     submitButton.disabled = noFileSelected;
   }
+
+  function onCancelCopyVersion() {
+    if(confirm('#{msgs['jsf.copyVersion.cancel.confirm']}')) {
+      cancelCopyVersion();
+    }
+  }
 </script>
 
 <a4j:jsFunction name="reloadLocale" status="languageTab-documentsLoader"
@@ -296,7 +302,7 @@
         rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
 
         <a href="javascript:void(0)"
-          onclick="cancelCopyVersion();refreshStatistics();"
+          onclick="onCancelCopyVersion();refreshStatistics();"
           title="#{msgs['jsf.copyVersion.cancel.message']}"
           class="button--small button--link">#{msgs['jsf.Cancel']}</a>
 
