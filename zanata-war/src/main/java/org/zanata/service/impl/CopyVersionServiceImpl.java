@@ -45,7 +45,7 @@ import java.util.Map;
 public class CopyVersionServiceImpl implements CopyVersionService {
 
     // Document batch size
-    protected final static int DOC_BATCH_SIZE = 5;
+    protected final static int DOC_BATCH_SIZE = 2;
 
     // TextFlow batch size
     protected final static int TF_BATCH_SIZE = 20;
