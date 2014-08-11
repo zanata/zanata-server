@@ -16,6 +16,7 @@ import org.zanata.service.AsyncTaskManagerService;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -23,6 +24,7 @@ import lombok.Getter;
 @AutoCreate
 @Name("copyVersionManager")
 @Scope(ScopeType.STATELESS)
+@Slf4j
 public class CopyVersionManager implements Serializable {
     @In
     private AsyncTaskManagerService asyncTaskManagerServiceImpl;
@@ -44,6 +46,8 @@ public class CopyVersionManager implements Serializable {
             handle.forceCancel();
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
+
+            log.info("Copy version cancelled- {}:{}", projectSlug, versionSlug);
         }
     }
 

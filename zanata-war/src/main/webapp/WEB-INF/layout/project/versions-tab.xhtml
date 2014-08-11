@@ -17,6 +17,13 @@
   <a4j:param name="val1" assignTo="#{versionInfoId}"/>
 </a4j:jsFunction>
 
+<a4j:jsFunction name="cancelCopyVersion" limitRender="true"
+  action="#{projectHomeAction.cancelCopyVersion(projectSlug, versionSlug)}"
+  render="poll, version-info, messages">
+  <a4j:param name="val1" assignTo="#{projectSlug}"/>
+  <a4j:param name="val2" assignTo="#{versionSlug}"/>
+</a4j:jsFunction>
+
 <div class="panel">
 <div class="panel__header">
   <div class="panel__header__actions">
@@ -194,13 +201,14 @@
                         value="#{projectHomeAction.getCopyVersionCompletePercent(version.project.slug, version.slug)}"/>
                     </h:outputFormat>
                   </s:span>
-                  <a4j:commandButton
-                    styleClass="button--danger txt--mini l--push-left-half"
-                    value="#{msgs['jsf.copyVersion.stop']}" limitRender="true"
-                    rendered="#{s:hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}"
-                    action="#{projectHomeAction.cancelCopyVersion(version.project.slug, version.slug)}"
-                    title="#{msgs['jsf.copyVersion.cancel.message']}"
-                    render="poll, version-info, messages"/>
+                  <s:fragment
+                    rendered="#{s:hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}">
+                    <button class="button--danger txt--mini l--push-left-half"
+                      title="#{msgs['jsf.copyVersion.cancel.message']}"
+                      onclick="if(confirm('#{msgs['jsf.copyVersion.cancel.confirm']}')){cancelCopyVersion('#{version.project.slug}', '#{version.slug}');}return false;">
+                      #{msgs['jsf.copyVersion.stop']}
+                    </button>
+                  </s:fragment>
                 </div>
 
                 <div class="list__item__stats">

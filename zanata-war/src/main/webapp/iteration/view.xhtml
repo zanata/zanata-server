@@ -179,13 +179,13 @@
   </p>
 
   <s:div styleClass="l--push-bottom-half" id="version-info">
-    <s:fragment rendered="#{versionHomeAction.status eq 'ACTIVE'}">
+    <s:fragment rendered="#{versionHome.instance.status eq 'ACTIVE'}">
       <h1 class="l--push-all-0">
         <i class="i--small i--version txt--neutral i--left"></i>
         #{versionHomeAction.versionSlug}
       </h1>
     </s:fragment>
-    <s:fragment rendered="#{versionHomeAction.status ne 'ACTIVE'}">
+    <s:fragment rendered="#{versionHome.instance.status ne 'ACTIVE'}">
       <h1 class="l--push-all-0 txt--neutral">
         <i class="i--small i--version txt--neutral i--left"></i>
         #{versionHomeAction.versionSlug}
@@ -254,7 +254,7 @@
         styleClass="panel__header__actions l--push-right-half l--push-bottom-0"
         rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
 
-        <a href="javascript:void(0)" onclick="cancelCopyTrans()"
+        <a href="javascript:void(0)" onclick="if(confirm('#{msgs['jsf.copyVersion.cancel.confirm']}')) {cancelCopyTrans()};"
           title="#{msgs['jsf.CopyTrans.cancel']}"
           class="button--small button--link">#{msgs['jsf.Cancel']}</a>
 

@@ -76,18 +76,6 @@ public class ProjectIterationDAO extends
         return getBySlug(project, iterationSlug);
     }
 
-    public EntityStatus getEntityStatus(@Nonnull String projectSlug,
-            @Nonnull String versionSlug) {
-        Query q =
-                getSession()
-                        .createQuery(
-                                "select v.status from HProjectIteration v where v.slug = :versionSlug and v.project.slug = :projectSlug");
-        q.setParameter("projectSlug", projectSlug);
-        q.setParameter("versionSlug", versionSlug);
-        q.setComment("ProjectDAO.getEntityStatus");
-        return (EntityStatus) q.uniqueResult();
-    }
-
     @Nullable
     public HProjectIteration getBySlug(@Nonnull HProject project,
             @Nonnull String iterationSlug) {
