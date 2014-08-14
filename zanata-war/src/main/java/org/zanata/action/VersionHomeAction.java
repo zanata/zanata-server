@@ -21,28 +21,15 @@
  */
 package org.zanata.action;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.faces.application.FacesMessage;
-import javax.validation.ConstraintViolationException;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -76,10 +63,10 @@ import org.zanata.rest.service.VirusScanner;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.DocumentService;
+import org.zanata.service.DocumentStateCache;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TranslationFileService;
 import org.zanata.service.TranslationService;
-import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
@@ -91,10 +78,20 @@ import org.zanata.util.UrlUtil;
 import org.zanata.util.ZanataMessages;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.faces.application.FacesMessage;
+import javax.validation.ConstraintViolationException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Name("versionHomeAction")
 @Scope(ScopeType.PAGE)
@@ -116,7 +113,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     private VersionStateCache versionStateCacheImpl;
 
     @In
-    private TranslationStateCache translationStateCacheImpl;
+    private DocumentStateCache documentStateCacheImpl;
 
     @In
     private ZanataMessages zanataMessages;
@@ -442,7 +439,8 @@ public class VersionHomeAction extends AbstractSortAction implements
         DocumentLocaleKey key = new DocumentLocaleKey(documentId, localeId);
         if (!documentStatisticMap.containsKey(key)) {
             WordStatistic wordStatistic =
-                    documentDAO.getWordStatistics(documentId, localeId);
+                    documentStateCacheImpl.getDocumentStatistics(documentId,
+                            localeId);
             wordStatistic.setRemainingHours(StatisticsUtil
                     .getRemainingHours(wordStatistic));
             documentStatisticMap.put(key, wordStatistic);
@@ -477,7 +475,7 @@ public class VersionHomeAction extends AbstractSortAction implements
                 date = document.getLastChanged();
             } else {
                 DocumentStatus docStat =
-                        translationStateCacheImpl.getDocumentStatus(
+                        documentStateCacheImpl.getDocumentStatus(
                                 document.getId(), localeId);
                 date = docStat.getLastTranslatedDate();
             }
@@ -693,9 +691,12 @@ public class VersionHomeAction extends AbstractSortAction implements
         this.selectedLocale = localeDAO.findByLocaleId(new LocaleId(localeId));
     }
 
-    public void setSelectedDocumentId(String projectSlug, String versionSlug, String docId) {
+    public void setSelectedDocumentId(String projectSlug, String versionSlug,
+            String docId) {
         docId = UrlUtil.decodeString(docId);
-        this.selectedDocument = documentDAO.getByProjectIterationAndDocId(projectSlug, versionSlug, docId);
+        this.selectedDocument =
+                documentDAO.getByProjectIterationAndDocId(projectSlug,
+                        versionSlug, docId);
     }
 
     // TODO add logging for disk writing errors
@@ -930,10 +931,11 @@ public class VersionHomeAction extends AbstractSortAction implements
                     .equals(SortingType.SortOption.LAST_TRANSLATED)) {
                 if (selectedLocaleId != null) {
                     DocumentStatus docStat1 =
-                            translationStateCacheImpl.getDocumentStatus(
+                            documentStateCacheImpl.getDocumentStatus(
                                     o1.getId(), selectedLocaleId);
+
                     DocumentStatus docStat2 =
-                            translationStateCacheImpl.getDocumentStatus(
+                            documentStateCacheImpl.getDocumentStatus(
                                     o2.getId(), selectedLocaleId);
 
                     return DateUtil.compareDate(

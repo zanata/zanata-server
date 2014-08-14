@@ -3,14 +3,9 @@
  */
 package org.zanata.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -26,7 +21,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.service.TranslationStateCache;
+import org.zanata.service.DocumentStateCache;
 import org.zanata.service.ValidationFactoryProvider;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -34,8 +29,11 @@ import org.zanata.webtrans.shared.model.ValidationAction.State;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -59,7 +57,7 @@ public class ValidationServiceImpl implements ValidationService {
     private DocumentDAO documentDAO;
 
     @In
-    private TranslationStateCache translationStateCacheImpl;
+    private DocumentStateCache documentStateCacheImpl;
 
     private ValidationFactory validationFactory;
 
@@ -188,7 +186,8 @@ public class ValidationServiceImpl implements ValidationService {
         Stopwatch stopwatch = new Stopwatch().start();
 
         HDocument hDoc = documentDAO.findById(hDocId, false);
-        boolean hasError = documentHasWarningOrError(hDoc, validationIds, localeId);
+        boolean hasError =
+                documentHasWarningOrError(hDoc, validationIds, localeId);
         log.debug("Finished runDocValidations in " + stopwatch);
         return hasError;
     }
@@ -263,9 +262,8 @@ public class ValidationServiceImpl implements ValidationService {
         if (target != null) {
             for (ValidationId validationId : validationIds) {
                 Boolean value =
-                        translationStateCacheImpl
-                                .textFlowTargetHasWarningOrError(
-                                        target.getId(), validationId);
+                        documentStateCacheImpl.textFlowTargetHasWarningOrError(
+                                target.getId(), validationId);
                 if (value != null && value.booleanValue()) {
                     return value.booleanValue();
                 }

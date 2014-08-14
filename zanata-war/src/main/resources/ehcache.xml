@@ -39,29 +39,7 @@
     />
 
   <cache
-    name="org.zanata.service.impl.TranslationStateCacheImpl.filterCache"
-    maxElementsInMemory="200"
-    eternal="false"
-    timeToIdleSeconds="1800"
-    timeToLiveSeconds="0"
-    overflowToDisk="false"
-    memoryStoreEvictionPolicy="LRU"
-    statistics="true"
-    />
-
-  <cache
-    name="org.zanata.service.impl.TranslationStateCacheImpl.translatedTextFlowCache"
-    maxElementsInMemory="200"
-    eternal="false"
-    timeToIdleSeconds="86400"
-    timeToLiveSeconds="0"
-    overflowToDisk="false"
-    memoryStoreEvictionPolicy="LRU"
-    statistics="true"
-    />
-
-  <cache
-    name="org.zanata.service.impl.TranslationStateCacheImpl.docStatusCache"
+    name="org.zanata.service.impl.DocumentStateCacheImpl.docStatusCache"
     maxElementsInMemory="400"
     eternal="false"
     timeToIdleSeconds="86400"
@@ -72,7 +50,29 @@
     />
 
   <cache
-    name="org.zanata.service.impl.TranslationStateCacheImpl.targetValidationCache"
+    name="org.zanata.service.impl.DocumentStateCacheImpl.targetValidationCache"
+    maxElementsInMemory="10000"
+    eternal="false"
+    timeToIdleSeconds="86400"
+    timeToLiveSeconds="0"
+    overflowToDisk="false"
+    memoryStoreEvictionPolicy="LRU"
+    statistics="true"
+    />
+
+  <cache
+    name="org.zanata.service.impl.DocumentStateCacheImpl.documentStatisticCache"
+    maxElementsInMemory="10000"
+    eternal="false"
+    timeToIdleSeconds="86400"
+    timeToLiveSeconds="0"
+    overflowToDisk="false"
+    memoryStoreEvictionPolicy="LRU"
+    statistics="true"
+    />
+
+  <cache
+    name="org.zanata.service.impl.VersionStateCacheImpl.versionStatisticCache"
     maxElementsInMemory="10000"
     eternal="false"
     timeToIdleSeconds="86400"

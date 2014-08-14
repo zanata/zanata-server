@@ -1,14 +1,13 @@
 package org.zanata.webtrans.server.rpc;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import net.customware.gwt.dispatch.server.ExecutionContext;
+import net.customware.gwt.dispatch.shared.ActionException;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
-import org.zanata.service.TranslationStateCache;
+import org.zanata.service.DocumentStateCache;
 import org.zanata.service.impl.StatisticsServiceImpl;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.shared.model.AuditInfo;
@@ -17,8 +16,8 @@ import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.rpc.GetDocumentStats;
 import org.zanata.webtrans.shared.rpc.GetDocumentStatsResult;
 
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Name("webtrans.gwt.GetDocumentStatsHandler")
 @Scope(ScopeType.STATELESS)
@@ -29,7 +28,7 @@ public class GetDocumentStatsHandler extends
     private StatisticsServiceImpl statisticsServiceImpl;
 
     @In
-    private TranslationStateCache translationStateCacheImpl;
+    private DocumentStateCache documentStateCacheImpl;
 
     @Override
     public GetDocumentStatsResult execute(GetDocumentStats action,
@@ -45,12 +44,11 @@ public class GetDocumentStatsHandler extends
                             action.getWorkspaceId().getLocaleId());
             statsMap.put(documentId, stats);
 
-            DocumentStatus docStat =
-                    translationStateCacheImpl.getDocumentStatus(documentId
-                            .getId(), action.getWorkspaceId().getLocaleId());
+            DocumentStatus docStat = documentStateCacheImpl.getDocumentStatus(
+                    documentId.getId(), action.getWorkspaceId()
+                            .getLocaleId());
 
-            lastTranslatedMap.put(
-                    documentId,
+            lastTranslatedMap.put(documentId,
                     new AuditInfo(docStat.getLastTranslatedDate(), docStat
                             .getLastTranslatedBy()));
         }
