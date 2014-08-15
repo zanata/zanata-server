@@ -29,6 +29,7 @@ import lombok.Getter;
 import net.sf.ehcache.CacheManager;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
@@ -65,6 +66,7 @@ import java.util.Map;
  */
 @Name("documentStateCacheImpl")
 @Scope(ScopeType.APPLICATION)
+@AutoCreate
 public class DocumentStateCacheImpl implements DocumentStateCache {
     private static final String BASE = DocumentStateCacheImpl.class.getName();
 
