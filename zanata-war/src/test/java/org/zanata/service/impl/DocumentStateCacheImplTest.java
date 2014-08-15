@@ -20,15 +20,7 @@
  */
 package org.zanata.service.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.common.cache.CacheLoader;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterMethod;
@@ -36,19 +28,29 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowTargetDAO;
-import org.zanata.service.ValidationService;
-import org.zanata.service.impl.TranslationStateCacheImpl.TranslatedDocumentKey;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.model.ValidationId;
 
-import com.google.common.cache.CacheLoader;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.zanata.service.impl.DocumentStateCacheImpl.DocumentLocaleKey;
 
 @Test(groups = { "business-tests" })
-public class TranslationStateCacheImplTest {
-    TranslationStateCacheImpl tsCache;
+public class DocumentStateCacheImplTest {
+    DocumentStateCacheImpl tsCache;
     @Mock
-    private CacheLoader<TranslatedDocumentKey, DocumentStatus> docStatsLoader;
+    private CacheLoader<DocumentLocaleKey, WordStatistic> docStatisticLoader;
+
+    @Mock
+    private CacheLoader<DocumentLocaleKey, DocumentStatus> docStatsLoader;
     @Mock
     private TextFlowTargetDAO textFlowTargetDAO;
     @Mock
@@ -58,13 +60,13 @@ public class TranslationStateCacheImplTest {
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
         tsCache =
-                new TranslationStateCacheImpl(docStatsLoader,
+                new DocumentStateCacheImpl(docStatisticLoader, docStatsLoader,
                         targetValidationLoader) {
-            @Override
-            TextFlowTargetDAO getTextFlowTargetDAO() {
-                return textFlowTargetDAO;
-            }
-        };
+                    @Override
+                    TextFlowTargetDAO getTextFlowTargetDAO() {
+                        return textFlowTargetDAO;
+                    }
+                };
 
         tsCache.create();
         tsCache.destroy();
@@ -80,8 +82,8 @@ public class TranslationStateCacheImplTest {
         // Given:
         Long documentId = new Long("100");
         LocaleId testLocaleId = LocaleId.DE;
-        TranslatedDocumentKey key =
-                new TranslatedDocumentKey(documentId, testLocaleId);
+        DocumentStateCacheImpl.DocumentLocaleKey key =
+                new DocumentLocaleKey(documentId, testLocaleId);
         DocumentStatus docStats =
                 new DocumentStatus(new DocumentId(documentId, ""), new Date(),
                         "");

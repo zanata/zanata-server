@@ -1,12 +1,5 @@
 package org.zanata.webtrans.server.rpc;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,13 +16,20 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.TestFixture;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.service.DocumentStateCache;
 import org.zanata.service.TranslationFileService;
-import org.zanata.service.TranslationStateCache;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentInfo;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetDocumentList;
 import org.zanata.webtrans.shared.rpc.GetDocumentListResult;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Patrick Huang <a
@@ -45,7 +45,7 @@ public class GetDocumentListHandlerTest {
     @Mock
     private TranslationFileService translationFileServiceImpl;
     @Mock
-    private TranslationStateCache translationStateCacheImpl;
+    private DocumentStateCache documentStateCacheImpl;
     @Mock
     private FilePersistService filePersistService;
 
@@ -58,7 +58,7 @@ public class GetDocumentListHandlerTest {
             .use("identity", identity)
             .use("documentDAO", documentDAO)
             .use("translationFileServiceImpl", translationFileServiceImpl)
-            .use("translationStateCacheImpl", translationStateCacheImpl)
+            .use("documentStateCacheImpl", documentStateCacheImpl)
             .use("filePersistService", filePersistService)
             .ignoreNonResolvable()
             .autowire(GetDocumentListHandler.class);

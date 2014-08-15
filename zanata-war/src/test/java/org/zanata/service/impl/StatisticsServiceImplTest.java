@@ -20,16 +20,7 @@
  */
 package org.zanata.service.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-
-import java.util.Arrays;
-
+import net.sf.ehcache.CacheManager;
 import org.dbunit.operation.DatabaseOperation;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -42,7 +33,15 @@ import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.ValidationService;
 
-import net.sf.ehcache.CacheManager;
+import java.util.Arrays;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * @author Carlos Munoz <a
@@ -83,7 +82,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
             .use("entityManager", getEm())
             .use("session", getSession())
             .use("validationServiceImpl", validationServiceImpl)
-            .useImpl(TranslationStateCacheImpl.class)
+            .useImpl(DocumentStateCacheImpl.class)
             .ignoreNonResolvable();
       // @formatter:on
         cacheManager = CacheManager.create();

@@ -1,15 +1,6 @@
 package org.zanata.webtrans.server.rpc;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.search.impl.FullTextSessionImpl;
@@ -30,8 +21,8 @@ import org.zanata.rest.service.ResourceUtils;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.service.impl.DocumentStateCacheImpl;
 import org.zanata.service.impl.TextFlowSearchServiceImpl;
-import org.zanata.service.impl.TranslationStateCacheImpl;
 import org.zanata.service.impl.ValidationServiceImpl;
 import org.zanata.webtrans.client.service.GetTransUnitActionContext;
 import org.zanata.webtrans.shared.auth.EditorClientId;
@@ -42,6 +33,14 @@ import org.zanata.webtrans.shared.rpc.GetTransUnitList;
 import org.zanata.webtrans.shared.rpc.GetTransUnitListResult;
 import org.zanata.webtrans.shared.rpc.GetTransUnitsNavigation;
 import org.zanata.webtrans.shared.rpc.GetTransUnitsNavigationResult;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Patrick Huang <a
@@ -93,7 +92,7 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
                         .use("transUnitTransformer", transUnitTransformer)
                         .use("webtrans.gwt.GetTransUnitsNavigationHandler",
                                 getTransUnitsNavigationService)
-                        .useImpl(TranslationStateCacheImpl.class)
+                        .useImpl(DocumentStateCacheImpl.class)
                         .useImpl(TextFlowSearchServiceImpl.class)
                         .useImpl(ValidationServiceImpl.class).allowCycles();
 

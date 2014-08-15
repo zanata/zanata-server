@@ -286,7 +286,7 @@ public class DocumentStateCacheImpl implements DocumentStateCache {
     @AllArgsConstructor
     @EqualsAndHashCode
     @Getter
-    public class DocumentLocaleKey implements Serializable {
+    public static final class DocumentLocaleKey implements Serializable {
         private Long documentId;
         private LocaleId localeId;
     }
