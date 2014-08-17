@@ -23,4 +23,18 @@ public class ContentStateToStyleUtil {
         }
         return styleNames;
     }
+
+    public static String stateToStyle(ContentState state) {
+        String styleNames = "";
+        if (state == ContentState.Approved || state == ContentState.Translated) {
+            styleNames = "txt--state-success";
+        } else if (state == ContentState.New) {
+            styleNames = "txt--state-neutral";
+        } else if (state == ContentState.NeedReview) {
+            styleNames = " txt--state-unsure";
+        } else if (state == ContentState.Rejected) {
+            styleNames = " txt--state-danger";
+        }
+        return styleNames;
+    }
 }

@@ -200,7 +200,7 @@ public class GlossaryView extends Composite implements GlossaryDisplay {
                     "txt--align-center smallCol");
 
             Anchor infoCell = new Anchor();
-            infoCell.setStyleName("icon-info-circle-2  txt--lead");
+            infoCell.setStyleName("i i--info txt--lead");
             infoCell.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {

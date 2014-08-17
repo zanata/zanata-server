@@ -44,8 +44,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import net.customware.gwt.presenter.client.EventBus;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.mockito.ArgumentCaptor;
@@ -73,7 +71,6 @@ import org.zanata.webtrans.client.events.UserConfigChangeEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
 import org.zanata.webtrans.client.resources.TableEditorMessages;
 import org.zanata.webtrans.client.resources.ValidationMessages;
-import org.zanata.webtrans.client.service.NavigationService;
 import org.zanata.webtrans.client.service.UserOptionsService;
 import org.zanata.webtrans.client.ui.HasUpdateValidationMessage;
 import org.zanata.webtrans.client.ui.SaveAsApprovedConfirmationDisplay;
@@ -87,13 +84,14 @@ import org.zanata.webtrans.shared.model.UserWorkspaceContext;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.common.collect.Maps;
 import com.google.inject.Provider;
+
+import net.customware.gwt.presenter.client.EventBus;
 
 @Test(groups = { "unit-tests" })
 public class TargetContentsPresenterTest {
@@ -613,8 +611,7 @@ public class TargetContentsPresenterTest {
         verify(display).setValueAndCreateNewEditors(updatedTransUnit);
         verify(display).refresh();
         verify(display).getEditors();
-        verify(editorTranslators).updateTranslator(display.getEditors(),
-                selectedTU.getId());
+        verify(editorTranslators).updateTranslator(display, selectedTU.getId());
     }
 
     @Test
@@ -675,8 +672,8 @@ public class TargetContentsPresenterTest {
         presenter.onTransUnitEdit(event);
 
         InOrder inOrder = inOrder(editorTranslators);
-        inOrder.verify(editorTranslators).clearTranslatorList(currentEditors);
-        inOrder.verify(editorTranslators).updateTranslator(currentEditors,
+        inOrder.verify(display).clearTranslatorList();
+        inOrder.verify(editorTranslators).updateTranslator(display,
                 selectedTU.getId());
         verifyNoMoreInteractions(editorTranslators);
     }
@@ -877,8 +874,7 @@ public class TargetContentsPresenterTest {
         presenter.setSelected(selectedTU.getId());
 
         // Then:
-        verify(editorTranslators).clearTranslatorList(previousEditors);
-        verify(editor).clearTranslatorList();
+        verify(display).clearTranslatorList();
         verify(display).showButtons(false);
         verify(display).setToMode(ToggleEditor.ViewMode.VIEW);
         verify(editorKeyShortcuts).enableNavigationContext();
