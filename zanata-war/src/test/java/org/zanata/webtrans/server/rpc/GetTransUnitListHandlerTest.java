@@ -21,7 +21,7 @@ import org.zanata.rest.service.ResourceUtils;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
-import org.zanata.service.impl.DocumentStateCacheImpl;
+import org.zanata.service.impl.TranslationStateCacheImpl;
 import org.zanata.service.impl.TextFlowSearchServiceImpl;
 import org.zanata.service.impl.ValidationServiceImpl;
 import org.zanata.webtrans.client.service.GetTransUnitActionContext;
@@ -91,7 +91,7 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
             .use("transUnitTransformer", transUnitTransformer)
             .use("webtrans.gwt.GetTransUnitsNavigationHandler",
                 getTransUnitsNavigationService)
-            .useImpl(DocumentStateCacheImpl.class)
+            .useImpl(TranslationStateCacheImpl.class)
             .useImpl(TextFlowSearchServiceImpl.class)
             .useImpl(ValidationServiceImpl.class).allowCycles();
 

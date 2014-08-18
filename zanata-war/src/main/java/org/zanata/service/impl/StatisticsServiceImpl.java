@@ -41,7 +41,7 @@ import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
 import org.zanata.rest.service.StatisticsResource;
 import org.zanata.rest.service.ZPathService;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
@@ -77,7 +77,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
     private ZPathService zPathService;
 
     @In
-    private DocumentStateCache documentStateCacheImpl;
+    private TranslationStateCache translationStateCacheImpl;
 
     // TODO Need to refactor this method to get Message statistic by default.
     // This is to be consistance with UI which uses message stats, and for
@@ -233,7 +233,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
                     getDocStatistics(document.getId(), localeId);
 
             DocumentStatus docStatus =
-                    documentStateCacheImpl.getDocumentStatus(
+                    translationStateCacheImpl.getDocumentStatus(
                             document.getId(), localeId);
 
             TranslationStatistics docWordStatistic =

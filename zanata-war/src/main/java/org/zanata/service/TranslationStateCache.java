@@ -33,7 +33,7 @@ import org.zanata.webtrans.shared.model.ValidationId;
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public interface DocumentStateCache {
+public interface TranslationStateCache {
 
     /**
      * Returns DocumentStatus of last modified HTextFlowTarget for the given

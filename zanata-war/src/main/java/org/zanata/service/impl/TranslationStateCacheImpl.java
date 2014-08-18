@@ -46,7 +46,7 @@ import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.ValidationFactoryProvider;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ServiceLocator;
@@ -64,11 +64,11 @@ import java.util.Map;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("documentStateCacheImpl")
+@Name("translationStateCacheImpl")
 @Scope(ScopeType.APPLICATION)
 @AutoCreate
-public class DocumentStateCacheImpl implements DocumentStateCache {
-    private static final String BASE = DocumentStateCacheImpl.class.getName();
+public class TranslationStateCacheImpl implements TranslationStateCache {
+    private static final String BASE = TranslationStateCacheImpl.class.getName();
 
     private static final String DOC_STATISTIC_CACHE_NAME = BASE
             + ".documentStatisticCache";
@@ -94,16 +94,16 @@ public class DocumentStateCacheImpl implements DocumentStateCache {
     private ServiceLocator serviceLocator;
 
     // constructor for Seam
-    public DocumentStateCacheImpl() {
+    public TranslationStateCacheImpl() {
         this(new DocumentStatisticLoader(), new HTextFlowTargetIdLoader(),
                 new HTextFlowTargetValidationLoader());
     }
 
     // Constructor for testing
-    public DocumentStateCacheImpl(
-            CacheLoader<DocumentLocaleKey, WordStatistic> documentStatisticLoader,
-            CacheLoader<DocumentLocaleKey, DocumentStatus> docStatsLoader,
-            CacheLoader<Long, Map<ValidationId, Boolean>> targetValidationLoader) {
+    public TranslationStateCacheImpl(
+        CacheLoader<DocumentLocaleKey, WordStatistic> documentStatisticLoader,
+        CacheLoader<DocumentLocaleKey, DocumentStatus> docStatsLoader,
+        CacheLoader<Long, Map<ValidationId, Boolean>> targetValidationLoader) {
         this.documentStatisticLoader = documentStatisticLoader;
         this.docStatusLoader = docStatsLoader;
         this.targetValidationLoader = targetValidationLoader;

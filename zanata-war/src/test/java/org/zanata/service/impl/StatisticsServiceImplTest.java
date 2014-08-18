@@ -82,7 +82,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
             .use("entityManager", getEm())
             .use("session", getSession())
             .use("validationServiceImpl", validationServiceImpl)
-            .useImpl(DocumentStateCacheImpl.class)
+            .useImpl(TranslationStateCacheImpl.class)
             .ignoreNonResolvable();
       // @formatter:on
         cacheManager = CacheManager.create();

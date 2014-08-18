@@ -16,7 +16,7 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.TestFixture;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.TranslationFileService;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentInfo;
@@ -45,7 +45,7 @@ public class GetDocumentListHandlerTest {
     @Mock
     private TranslationFileService translationFileServiceImpl;
     @Mock
-    private DocumentStateCache documentStateCacheImpl;
+    private TranslationStateCache translationStateCacheImpl;
     @Mock
     private FilePersistService filePersistService;
 
@@ -58,7 +58,7 @@ public class GetDocumentListHandlerTest {
             .use("identity", identity)
             .use("documentDAO", documentDAO)
             .use("translationFileServiceImpl", translationFileServiceImpl)
-            .use("documentStateCacheImpl", documentStateCacheImpl)
+            .use("translationStateCacheImpl", translationStateCacheImpl)
             .use("filePersistService", filePersistService)
             .ignoreNonResolvable()
             .autowire(GetDocumentListHandler.class);

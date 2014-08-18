@@ -21,7 +21,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.ValidationFactoryProvider;
 import org.zanata.service.ValidationService;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -57,7 +57,7 @@ public class ValidationServiceImpl implements ValidationService {
     private DocumentDAO documentDAO;
 
     @In
-    private DocumentStateCache documentStateCacheImpl;
+    private TranslationStateCache translationStateCacheImpl;
 
     private ValidationFactory validationFactory;
 
@@ -262,7 +262,7 @@ public class ValidationServiceImpl implements ValidationService {
         if (target != null) {
             for (ValidationId validationId : validationIds) {
                 Boolean value =
-                        documentStateCacheImpl.textFlowTargetHasWarningOrError(
+                        translationStateCacheImpl.textFlowTargetHasWarningOrError(
                                 target.getId(), validationId);
                 if (value != null && value.booleanValue()) {
                     return value.booleanValue();

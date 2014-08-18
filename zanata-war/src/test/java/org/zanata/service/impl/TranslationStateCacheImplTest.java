@@ -41,11 +41,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.zanata.service.impl.DocumentStateCacheImpl.DocumentLocaleKey;
+import static org.zanata.service.impl.TranslationStateCacheImpl.DocumentLocaleKey;
 
 @Test(groups = { "business-tests" })
-public class DocumentStateCacheImplTest {
-    DocumentStateCacheImpl tsCache;
+public class TranslationStateCacheImplTest {
+    TranslationStateCacheImpl tsCache;
     @Mock
     private CacheLoader<DocumentLocaleKey, WordStatistic> docStatisticLoader;
 
@@ -60,7 +60,7 @@ public class DocumentStateCacheImplTest {
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
         tsCache =
-                new DocumentStateCacheImpl(docStatisticLoader, docStatsLoader,
+                new TranslationStateCacheImpl(docStatisticLoader, docStatsLoader,
                         targetValidationLoader) {
                     @Override
                     TextFlowTargetDAO getTextFlowTargetDAO() {
@@ -82,7 +82,7 @@ public class DocumentStateCacheImplTest {
         // Given:
         Long documentId = new Long("100");
         LocaleId testLocaleId = LocaleId.DE;
-        DocumentStateCacheImpl.DocumentLocaleKey key =
+        TranslationStateCacheImpl.DocumentLocaleKey key =
                 new DocumentLocaleKey(documentId, testLocaleId);
         DocumentStatus docStats =
                 new DocumentStatus(new DocumentId(documentId, ""), new Date(),

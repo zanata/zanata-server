@@ -63,7 +63,7 @@ import org.zanata.rest.service.VirusScanner;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.DocumentService;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TranslationFileService;
 import org.zanata.service.TranslationService;
@@ -113,7 +113,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     private VersionStateCache versionStateCacheImpl;
 
     @In
-    private DocumentStateCache documentStateCacheImpl;
+    private TranslationStateCache translationStateCacheImpl;
 
     @In
     private ZanataMessages zanataMessages;
@@ -439,7 +439,7 @@ public class VersionHomeAction extends AbstractSortAction implements
         DocumentLocaleKey key = new DocumentLocaleKey(documentId, localeId);
         if (!documentStatisticMap.containsKey(key)) {
             WordStatistic wordStatistic =
-                    documentStateCacheImpl.getDocumentStatistics(documentId,
+                    translationStateCacheImpl.getDocumentStatistics(documentId,
                             localeId);
             wordStatistic.setRemainingHours(StatisticsUtil
                     .getRemainingHours(wordStatistic));
@@ -475,7 +475,7 @@ public class VersionHomeAction extends AbstractSortAction implements
                 date = document.getLastChanged();
             } else {
                 DocumentStatus docStat =
-                        documentStateCacheImpl.getDocumentStatus(
+                        translationStateCacheImpl.getDocumentStatus(
                                 document.getId(), localeId);
                 date = docStat.getLastTranslatedDate();
             }
@@ -931,11 +931,11 @@ public class VersionHomeAction extends AbstractSortAction implements
                     .equals(SortingType.SortOption.LAST_TRANSLATED)) {
                 if (selectedLocaleId != null) {
                     DocumentStatus docStat1 =
-                            documentStateCacheImpl.getDocumentStatus(
+                            translationStateCacheImpl.getDocumentStatus(
                                     o1.getId(), selectedLocaleId);
 
                     DocumentStatus docStat2 =
-                            documentStateCacheImpl.getDocumentStatus(
+                            translationStateCacheImpl.getDocumentStatus(
                                     o2.getId(), selectedLocaleId);
 
                     return DateUtil.compareDate(

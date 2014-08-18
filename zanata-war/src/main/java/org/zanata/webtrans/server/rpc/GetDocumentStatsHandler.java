@@ -7,7 +7,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
-import org.zanata.service.DocumentStateCache;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.impl.StatisticsServiceImpl;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.shared.model.AuditInfo;
@@ -28,7 +28,7 @@ public class GetDocumentStatsHandler extends
     private StatisticsServiceImpl statisticsServiceImpl;
 
     @In
-    private DocumentStateCache documentStateCacheImpl;
+    private TranslationStateCache translationStateCacheImpl;
 
     @Override
     public GetDocumentStatsResult execute(GetDocumentStats action,
@@ -44,7 +44,7 @@ public class GetDocumentStatsHandler extends
                             action.getWorkspaceId().getLocaleId());
             statsMap.put(documentId, stats);
 
-            DocumentStatus docStat = documentStateCacheImpl.getDocumentStatus(
+            DocumentStatus docStat = translationStateCacheImpl.getDocumentStatus(
                     documentId.getId(), action.getWorkspaceId()
                             .getLocaleId());
 

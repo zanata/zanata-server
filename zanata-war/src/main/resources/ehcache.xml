@@ -39,7 +39,7 @@
     />
 
   <cache
-    name="org.zanata.service.impl.DocumentStateCacheImpl.docStatusCache"
+    name="org.zanata.service.impl.TranslationStateCacheImpl.docStatusCache"
     maxElementsInMemory="400"
     eternal="false"
     timeToIdleSeconds="86400"
@@ -50,7 +50,7 @@
     />
 
   <cache
-    name="org.zanata.service.impl.DocumentStateCacheImpl.targetValidationCache"
+    name="org.zanata.service.impl.TranslationStateCacheImpl.targetValidationCache"
     maxElementsInMemory="10000"
     eternal="false"
     timeToIdleSeconds="86400"
@@ -61,7 +61,7 @@
     />
 
   <cache
-    name="org.zanata.service.impl.DocumentStateCacheImpl.documentStatisticCache"
+    name="org.zanata.service.impl.TranslationStateCacheImpl.documentStatisticCache"
     maxElementsInMemory="10000"
     eternal="true"
     overflowToDisk="true"
