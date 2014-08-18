@@ -120,12 +120,12 @@ public class TransMemoryView extends Composite implements
 
         FlexCellFormatter formatter = resultTable.getFlexCellFormatter();
 
-        formatter.setStyleName(0, SOURCE_COL, "epsilon");
-        formatter.setStyleName(0, TARGET_COL, "epsilon");
-        formatter.setStyleName(0, NUM_TRANS_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, ACTION_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, SIMILARITY_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, ORIGIN_COL, "epsilon txt--align-center smallCol");
+        formatter.setStyleName(0, SOURCE_COL, "zeta");
+        formatter.setStyleName(0, TARGET_COL, "zeta");
+        formatter.setStyleName(0, NUM_TRANS_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, ACTION_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, SIMILARITY_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, ORIGIN_COL, "zeta txt--align-center smallCol");
 
         Anchor diffLegendInfo = new Anchor();
         diffLegendInfo.setStyleName("i i--info txt--lead l--push-left-quarter");

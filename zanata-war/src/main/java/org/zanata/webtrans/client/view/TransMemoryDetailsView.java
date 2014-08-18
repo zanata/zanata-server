@@ -63,7 +63,6 @@ public class TransMemoryDetailsView extends DialogBox implements
         setGlassEnabled(true);
         closeButton = new DialogBoxCloseButton(this);
         this.messages = messages;
-
         HTMLPanel container = uiBinder.createAndBindUi(this);
         getCaption().setText(messages.translationMemoryDetails());
 

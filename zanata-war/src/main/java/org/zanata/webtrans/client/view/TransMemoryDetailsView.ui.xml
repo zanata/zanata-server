@@ -14,8 +14,8 @@
     <fui:DialogBoxCloseButton ui:field="closeButton" />
     <div class="l__wrapper {style.container} l--scroll-auto">
       <div>
-        <span class="delta">Locations</span>
-        <g:ListBox ui:field='documentListBox' visibleItemCount='5' />
+        <span class="epsilon">Locations</span>
+        <g:ListBox ui:field='documentListBox' visibleItemCount='1' />
       </div>
       <div class="l--push-top-half txt--understated epsilon">
         <i class="i i--project"></i>

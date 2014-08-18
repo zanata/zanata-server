@@ -171,21 +171,21 @@ public class DocumentListTable extends FlexTable {
         this.setWidget(0, ACTION_COLUMN, actionHeader);
 
         this.getCellFormatter().setStyleName(0, PATH_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, DOC_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, STATS_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, COMPLETE_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, INCOMPLETE_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, REMAINING_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, LAST_UPLOAD_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, LAST_TRANSLATED_COLUMN,
-                "zeta docListHeader sortable");
+                "docListHeader sortable");
         this.getCellFormatter().setStyleName(0, ACTION_COLUMN, "docListHeader");
     }
 
@@ -231,9 +231,9 @@ public class DocumentListTable extends FlexTable {
             this.getCellFormatter().setStyleName(i + 1, REMAINING_COLUMN,
                     "remainingCol");
             this.getCellFormatter().setStyleName(i + 1, LAST_UPLOAD_COLUMN,
-                    "auditCol");
+                    "txt--understated auditCol");
             this.getCellFormatter().setStyleName(i + 1, LAST_TRANSLATED_COLUMN,
-                    "auditCol");
+                    "txt--understated auditCol");
             this.getCellFormatter().setStyleName(i + 1, ACTION_COLUMN,
                     "actionCol");
 
