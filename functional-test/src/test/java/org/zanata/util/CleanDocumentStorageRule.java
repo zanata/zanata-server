@@ -1,6 +1,5 @@
 package org.zanata.util;
 
-import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.ExternalResource;
@@ -10,6 +9,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -39,6 +39,7 @@ public class CleanDocumentStorageRule extends ExternalResource {
     public static String getDocumentStoragePath() {
         if (storagePath == null) {
             final Properties env = new Properties();
+//            env.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
             env.put(Context.INITIAL_CONTEXT_FACTORY,
                     org.jboss.naming.remote.client.InitialContextFactory.class
                             .getName());
@@ -54,7 +55,15 @@ public class CleanDocumentStorageRule extends ExternalResource {
                         .lookup("zanata/files/document-storage-directory");
             }
             catch (NamingException e) {
-                throw Throwables.propagate(e);
+                // TODO wildfly jndi remoting is not working
+                URL testClassRoot =
+                        Thread.currentThread().getContextClassLoader()
+                                .getResource("setup.properties");
+                File targetDir =
+                        new File(testClassRoot.getPath()).getParentFile();
+                storagePath =
+                        new File(targetDir, "zanata-documents")
+                                .getAbsolutePath();
             }
         }
         return storagePath;
