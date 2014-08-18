@@ -39,6 +39,7 @@
 
     .selectedTab, .selectedTab:hover {
       color: #416988 !important;
+      opacity: 1;
     }
 
     .disableTab, .disableTab:hover {
@@ -50,6 +51,14 @@
     .content {
       height: 100%;
       margin: 0 2em 0 0.1em;
+    }
+
+    .tab {
+      opacity:0.6;
+    }
+
+    .tab:hover {
+      opacity:0.8;
     }
 
   </ui:style>
@@ -71,14 +80,14 @@
           <li class="{style.right-nav}">
             <fui:TransUnitCountBar ui:field="translationStatsBar"
               styleName="{style.translationStats}" />
-            <g:Anchor styleName="i i--document txt--hero"
+            <g:Anchor styleName="i i--document txt--hero {style.tab}"
               ui:field="documentListTab" />
-            <g:Anchor styleName="i i--translate txt--hero"
+            <g:Anchor styleName="i i--translate txt--hero {style.tab}"
               ui:field="editorTab" />
-            <g:Anchor styleName="i i--search txt--hero"
+            <g:Anchor styleName="i i--search txt--hero {style.tab}"
               ui:field="searchAndReplaceTab" />
             <g:Anchor ui:field="keyShortcuts"
-              styleName="i i--keyboard txt--hero" />
+              styleName="i i--keyboard txt--hero {style.tab}" />
           </li>
         </ul>
       </g:HTMLPanel>

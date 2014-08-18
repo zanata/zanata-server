@@ -26,14 +26,17 @@ public class ContentStateToStyleUtil {
 
     public static String stateToStyle(ContentState state) {
         String styleNames = "";
-        if (state == ContentState.Approved || state == ContentState.Translated) {
-            styleNames = "txt--state-success";
-        } else if (state == ContentState.New) {
-            styleNames = "txt--state-neutral";
-        } else if (state == ContentState.NeedReview) {
-            styleNames = " txt--state-unsure";
-        } else if (state == ContentState.Rejected) {
-            styleNames = " txt--state-danger";
+        switch (state) {
+            case New:
+                return "txt--state-neutral";
+            case NeedReview:
+                return "txt--state-unsure";
+            case Translated:
+                return "txt--state-success";
+            case Approved:
+                return "txt--state-highlight";
+            case Rejected:
+                return "txt--state-danger";
         }
         return styleNames;
     }
