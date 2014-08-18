@@ -1,35 +1,48 @@
 /*
  *
- *  * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
- *  * @author tags. See the copyright.txt file in the distribution for a full
- *  * listing of individual contributors.
- *  *
- *  * This is free software; you can redistribute it and/or modify it under the
- *  * terms of the GNU Lesser General Public License as published by the Free
- *  * Software Foundation; either version 2.1 of the License, or (at your option)
- *  * any later version.
- *  *
- *  * This software is distributed in the hope that it will be useful, but WITHOUT
- *  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- *  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- *  * details.
- *  *
- *  * You should have received a copy of the GNU Lesser General Public License
- *  * along with this software; if not, write to the Free Software Foundation,
- *  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- *  * site: http://www.fsf.org.
+ * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
+ * @author tags. See the copyright.txt file in the distribution for a full
+ * listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 package org.zanata.action;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.faces.application.FacesMessage;
+import javax.validation.ConstraintViolationException;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -63,10 +76,10 @@ import org.zanata.rest.service.VirusScanner;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.DocumentService;
-import org.zanata.service.TranslationStateCache;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TranslationFileService;
 import org.zanata.service.TranslationService;
+import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
@@ -78,20 +91,10 @@ import org.zanata.util.UrlUtil;
 import org.zanata.util.ZanataMessages;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 
-import javax.faces.application.FacesMessage;
-import javax.validation.ConstraintViolationException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Name("versionHomeAction")
 @Scope(ScopeType.PAGE)
@@ -691,12 +694,9 @@ public class VersionHomeAction extends AbstractSortAction implements
         this.selectedLocale = localeDAO.findByLocaleId(new LocaleId(localeId));
     }
 
-    public void setSelectedDocumentId(String projectSlug, String versionSlug,
-            String docId) {
+    public void setSelectedDocumentId(String projectSlug, String versionSlug, String docId) {
         docId = UrlUtil.decodeString(docId);
-        this.selectedDocument =
-                documentDAO.getByProjectIterationAndDocId(projectSlug,
-                        versionSlug, docId);
+        this.selectedDocument = documentDAO.getByProjectIterationAndDocId(projectSlug, versionSlug, docId);
     }
 
     // TODO add logging for disk writing errors
@@ -933,7 +933,6 @@ public class VersionHomeAction extends AbstractSortAction implements
                     DocumentStatus docStat1 =
                             translationStateCacheImpl.getDocumentStatus(
                                     o1.getId(), selectedLocaleId);
-
                     DocumentStatus docStat2 =
                             translationStateCacheImpl.getDocumentStatus(
                                     o2.getId(), selectedLocaleId);

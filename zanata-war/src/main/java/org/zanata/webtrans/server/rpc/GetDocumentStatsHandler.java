@@ -1,7 +1,8 @@
 package org.zanata.webtrans.server.rpc;
 
-import net.customware.gwt.dispatch.server.ExecutionContext;
-import net.customware.gwt.dispatch.shared.ActionException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -16,8 +17,8 @@ import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.rpc.GetDocumentStats;
 import org.zanata.webtrans.shared.rpc.GetDocumentStatsResult;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.customware.gwt.dispatch.server.ExecutionContext;
+import net.customware.gwt.dispatch.shared.ActionException;
 
 @Name("webtrans.gwt.GetDocumentStatsHandler")
 @Scope(ScopeType.STATELESS)
@@ -44,11 +45,12 @@ public class GetDocumentStatsHandler extends
                             action.getWorkspaceId().getLocaleId());
             statsMap.put(documentId, stats);
 
-            DocumentStatus docStat = translationStateCacheImpl.getDocumentStatus(
-                    documentId.getId(), action.getWorkspaceId()
-                            .getLocaleId());
+            DocumentStatus docStat =
+                    translationStateCacheImpl.getDocumentStatus(documentId
+                            .getId(), action.getWorkspaceId().getLocaleId());
 
-            lastTranslatedMap.put(documentId,
+            lastTranslatedMap.put(
+                    documentId,
                     new AuditInfo(docStat.getLastTranslatedDate(), docStat
                             .getLastTranslatedBy()));
         }

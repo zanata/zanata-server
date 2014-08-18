@@ -20,7 +20,16 @@
  */
 package org.zanata.service.impl;
 
-import net.sf.ehcache.CacheManager;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+
+import java.util.Arrays;
+
 import org.dbunit.operation.DatabaseOperation;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -33,15 +42,7 @@ import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.ValidationService;
 
-import java.util.Arrays;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import net.sf.ehcache.CacheManager;
 
 /**
  * @author Carlos Munoz <a

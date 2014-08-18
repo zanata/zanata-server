@@ -20,6 +20,13 @@
  */
 package org.zanata.service.impl;
 
+import java.net.URI;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Path;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -45,12 +52,6 @@ import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
-
-import javax.ws.rs.Path;
-import java.net.URI;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Default implementation for the
@@ -92,7 +93,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -200,7 +201,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);

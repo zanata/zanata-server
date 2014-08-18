@@ -1,6 +1,15 @@
 package org.zanata.webtrans.server.rpc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.search.impl.FullTextSessionImpl;
@@ -21,8 +30,8 @@ import org.zanata.rest.service.ResourceUtils;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
-import org.zanata.service.impl.TranslationStateCacheImpl;
 import org.zanata.service.impl.TextFlowSearchServiceImpl;
+import org.zanata.service.impl.TranslationStateCacheImpl;
 import org.zanata.service.impl.ValidationServiceImpl;
 import org.zanata.webtrans.client.service.GetTransUnitActionContext;
 import org.zanata.webtrans.shared.auth.EditorClientId;
@@ -34,14 +43,6 @@ import org.zanata.webtrans.shared.rpc.GetTransUnitListResult;
 import org.zanata.webtrans.shared.rpc.GetTransUnitsNavigation;
 import org.zanata.webtrans.shared.rpc.GetTransUnitsNavigationResult;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
@@ -49,7 +50,6 @@ import static org.mockito.Mockito.when;
 @Test(groups = { "jpa-tests" })
 @Slf4j
 public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
-
     private GetTransUnitListHandler handler;
     @Mock
     private ZanataIdentity identity;
@@ -61,13 +61,14 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
     private final DocumentInfo document = TestFixture.documentInfo(1L, "");
     private final LocaleId localeId = new LocaleId("ja");
     private HLocale jaHLocale;
+
     private SeamAutowire seam = SeamAutowire.instance();
 
     @Override
     protected void prepareDBUnitOperations() {
         beforeTestOperations.add(new DataSetOperation(
-            "performance/GetTransUnitListTest.dbunit.xml",
-            DatabaseOperation.CLEAN_INSERT));
+                "performance/GetTransUnitListTest.dbunit.xml",
+                DatabaseOperation.CLEAN_INSERT));
     }
 
     @BeforeMethod
@@ -79,25 +80,25 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
             seam.reset().use("resourceUtils", resourceUtils)
                 .autowire(TransUnitTransformer.class);
 
-        seam.use("localeServiceImpl", localeService)
-            .use("documentDAO", new DocumentDAO(getSession()))
-            .use("projectIterationDAO",
-                new ProjectIterationDAO(getSession()))
-            .use("entityManager",
-                new FullTextEntityManagerImpl(getEm()))
-            .use("session", new FullTextSessionImpl(getSession()))
-            .use("identity", identity)
-            .use("textFlowDAO", new TextFlowDAO(getSession()))
-            .use("transUnitTransformer", transUnitTransformer)
-            .use("webtrans.gwt.GetTransUnitsNavigationHandler",
-                getTransUnitsNavigationService)
-            .useImpl(TranslationStateCacheImpl.class)
-            .useImpl(TextFlowSearchServiceImpl.class)
-            .useImpl(ValidationServiceImpl.class).allowCycles();
+            seam.use("localeServiceImpl", localeService)
+                        .use("documentDAO", new DocumentDAO(getSession()))
+                        .use("projectIterationDAO",
+                                new ProjectIterationDAO(getSession()))
+                        .use("entityManager",
+                                new FullTextEntityManagerImpl(getEm()))
+                        .use("session", new FullTextSessionImpl(getSession()))
+                        .use("identity", identity)
+                        .use("textFlowDAO", new TextFlowDAO(getSession()))
+                        .use("transUnitTransformer", transUnitTransformer)
+                        .use("webtrans.gwt.GetTransUnitsNavigationHandler",
+                                getTransUnitsNavigationService)
+                        .useImpl(TranslationStateCacheImpl.class)
+                        .useImpl(TextFlowSearchServiceImpl.class)
+                        .useImpl(ValidationServiceImpl.class).allowCycles();
 
         // @formatter:off
-        handler = seam.autowire(GetTransUnitListHandler.class);
-        // @formatter:on
+      handler = seam.autowire(GetTransUnitListHandler.class);
+      // @formatter:on
 
         jaHLocale = getEm().find(HLocale.class, 3L);
     }
@@ -105,42 +106,42 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
     private void prepareActionAndMockLocaleService(GetTransUnitList action) {
         action.setEditorClientId(new EditorClientId("sessionId", 1));
         action.setWorkspaceId(TestFixture.workspaceId(localeId, "plurals",
-            "master", ProjectType.Podir));
+                "master", ProjectType.Podir));
         ProjectIterationId projectIterationId =
-            action.getWorkspaceId().getProjectIterationId();
+                action.getWorkspaceId().getProjectIterationId();
         when(
-            localeService.validateLocaleByProjectIteration(action
-                .getWorkspaceId().getLocaleId(), projectIterationId
-                .getProjectSlug(), projectIterationId
-                .getIterationSlug())).thenReturn(jaHLocale);
+                localeService.validateLocaleByProjectIteration(action
+                        .getWorkspaceId().getLocaleId(), projectIterationId
+                        .getProjectSlug(), projectIterationId
+                        .getIterationSlug())).thenReturn(jaHLocale);
         when(localeService.getByLocaleId(localeId)).thenReturn(jaHLocale);
     }
 
     @Test
     public void testExecuteToGetAll() throws Exception {
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document));
         prepareActionAndMockLocaleService(action);
 
         long startTime = System.nanoTime();
         GetTransUnitListResult result = handler.execute(action, null);
         log.info("********** duration :{} second",
-            (System.nanoTime() - startTime) / 1000000000.0);
+                (System.nanoTime() - startTime) / 1000000000.0);
 
         log.info("result: {}", result);
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(1, 2, 3, 4, 5));
+                Matchers.contains(1, 2, 3, 4, 5));
     }
 
     @Test
     public void testExecuteWithStatusFilterOnly() throws Exception {
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFilterFuzzy(true)
-                .withFilterUntranslated(true));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFilterFuzzy(true)
+                        .withFilterUntranslated(true));
         prepareActionAndMockLocaleService(action);
 
         GetTransUnitListResult result = handler.execute(action, null);
@@ -149,14 +150,14 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(3, 5, 6, 7, 8));
+                Matchers.contains(3, 5, 6, 7, 8));
     }
 
     @Test
     public void testExecuteWithHasErrorFilterOnly() throws Exception {
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFilterHasError(true));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFilterHasError(true));
         prepareActionAndMockLocaleService(action);
 
         GetTransUnitListResult result = handler.execute(action, null);
@@ -165,7 +166,7 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(1, 2, 3, 4, 5));
+                Matchers.contains(1, 2, 3, 4, 5));
     }
 
     @Test
@@ -174,9 +175,9 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         // size
         // to 10 and start from index 2
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFindMessage("FiLe").withCount(10)
-                .withOffset(1));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFindMessage("FiLe").withCount(10)
+                        .withOffset(1));
         prepareActionAndMockLocaleService(action);
 
         // When:
@@ -187,7 +188,7 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(2, 3, 4, 5, 6, 8));
+                Matchers.contains(2, 3, 4, 5, 6, 8));
     }
 
     @Test
@@ -195,11 +196,11 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         // Given: we want to search for file (mixed case) in fuzzy and
         // untranslated text flows
         GetTransUnitList action =
-            GetTransUnitList
-                .newAction(new GetTransUnitActionContext(document)
-                    .withFindMessage("FiLe")
-                    .withFilterUntranslated(true)
-                    .withFilterFuzzy(true));
+                GetTransUnitList
+                        .newAction(new GetTransUnitActionContext(document)
+                                .withFindMessage("FiLe")
+                                .withFilterUntranslated(true)
+                                .withFilterFuzzy(true));
         prepareActionAndMockLocaleService(action);
 
         // When:
@@ -210,16 +211,16 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(3, 5, 6, 8));
+                Matchers.contains(3, 5, 6, 8));
     }
 
     @Test
     public void testExecuteWithSearchAndStatusFilter2() throws Exception {
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFindMessage("FiLe")
-                .withFilterUntranslated(true).withFilterFuzzy(true)
-                .withFilterHasError(true));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFindMessage("FiLe")
+                        .withFilterUntranslated(true).withFilterFuzzy(true)
+                        .withFilterHasError(true));
         prepareActionAndMockLocaleService(action);
 
         // When:
@@ -230,7 +231,7 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         assertThat(result.getDocumentId(), Matchers.equalTo(document.getId()));
         assertThat(result.getGotoRow(), Matchers.equalTo(0));
         assertThat(TestFixture.asIds(result.getUnits()),
-            Matchers.contains(3, 5, 6, 8));
+                Matchers.contains(3, 5, 6, 8));
     }
 
     @Test
@@ -242,11 +243,11 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         int countPerPage = 25;
 
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFindMessage("FiLe")
-                .withFilterUntranslated(true).withFilterFuzzy(true)
-                .withFilterHasError(true).withOffset(offset)
-                .withCount(countPerPage));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFindMessage("FiLe")
+                        .withFilterUntranslated(true).withFilterFuzzy(true)
+                        .withFilterHasError(true).withOffset(offset)
+                        .withCount(countPerPage));
 
         prepareActionAndMockLocaleService(action);
 
@@ -267,27 +268,27 @@ public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
         int countPerPage = 25;
 
         GetTransUnitsNavigationResult navigationResult =
-            mock(GetTransUnitsNavigationResult.class);
+                mock(GetTransUnitsNavigationResult.class);
         List<TransUnitId> idIndexList = new ArrayList<TransUnitId>();
         for (int i = 1; i < offset; i++) {
             idIndexList.add(new TransUnitId(i));
         }
 
         GetTransUnitList action =
-            GetTransUnitList.newAction(new GetTransUnitActionContext(
-                document).withFindMessage("FiLe")
-                .withFilterUntranslated(true).withFilterFuzzy(true)
-                .withFilterHasError(true).withOffset(offset)
-                .withCount(countPerPage));
+                GetTransUnitList.newAction(new GetTransUnitActionContext(
+                        document).withFindMessage("FiLe")
+                        .withFilterUntranslated(true).withFilterFuzzy(true)
+                        .withFilterHasError(true).withOffset(offset)
+                        .withCount(countPerPage));
         action.setNeedReloadIndex(true);
 
         prepareActionAndMockLocaleService(action);
 
         // When:
         when(
-            getTransUnitsNavigationService.getNavigationIndexes(
-                isA(GetTransUnitsNavigation.class), isA(HLocale.class)))
-            .thenReturn(navigationResult);
+                getTransUnitsNavigationService.getNavigationIndexes(
+                        isA(GetTransUnitsNavigation.class), isA(HLocale.class)))
+                .thenReturn(navigationResult);
         when(navigationResult.getIdIndexList()).thenReturn(idIndexList);
 
         GetTransUnitListResult result = handler.execute(action, null);
