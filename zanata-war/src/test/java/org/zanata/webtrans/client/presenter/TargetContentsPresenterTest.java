@@ -20,30 +20,13 @@
  */
 package org.zanata.webtrans.client.presenter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.zanata.model.TestFixture.extractFromEvents;
-import static org.zanata.model.TestFixture.makeTransUnit;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.inject.Provider;
+import net.customware.gwt.presenter.client.EventBus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.mockito.ArgumentCaptor;
@@ -84,14 +67,30 @@ import org.zanata.webtrans.shared.model.UserWorkspaceContext;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.action.HtmlXmlTagValidation;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.common.collect.Maps;
-import com.google.inject.Provider;
 
-import net.customware.gwt.presenter.client.EventBus;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static org.zanata.model.TestFixture.extractFromEvents;
+import static org.zanata.model.TestFixture.makeTransUnit;
 
 @Test(groups = { "unit-tests" })
 public class TargetContentsPresenterTest {
@@ -610,7 +609,6 @@ public class TargetContentsPresenterTest {
 
         verify(display).setValueAndCreateNewEditors(updatedTransUnit);
         verify(display).refresh();
-        verify(display).getEditors();
         verify(editorTranslators).updateTranslator(display, selectedTU.getId());
     }
 
@@ -671,8 +669,9 @@ public class TargetContentsPresenterTest {
 
         presenter.onTransUnitEdit(event);
 
+        verify(display).clearTranslatorList();
+
         InOrder inOrder = inOrder(editorTranslators);
-        inOrder.verify(display).clearTranslatorList();
         inOrder.verify(editorTranslators).updateTranslator(display,
                 selectedTU.getId());
         verifyNoMoreInteractions(editorTranslators);
