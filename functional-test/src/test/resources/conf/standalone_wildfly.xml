@@ -298,7 +298,7 @@
     <subsystem xmlns="urn:jboss:domain:pojo:1.0"/>
     <subsystem xmlns="urn:jboss:domain:remoting:2.0">
       <endpoint worker="default"/>
-      <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm" />
+      <http-connector name="http-remoting-connector" connector-ref="default" />
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:resource-adapters:2.0"/>
     <subsystem xmlns="urn:jboss:domain:sar:1.0"/>

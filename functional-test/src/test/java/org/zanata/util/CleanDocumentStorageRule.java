@@ -1,5 +1,6 @@
 package org.zanata.util;
 
+import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.junit.rules.ExternalResource;
@@ -55,15 +56,25 @@ public class CleanDocumentStorageRule extends ExternalResource {
                         .lookup("zanata/files/document-storage-directory");
             }
             catch (NamingException e) {
-                // TODO wildfly jndi remoting is not working
-                URL testClassRoot =
-                        Thread.currentThread().getContextClassLoader()
-                                .getResource("setup.properties");
-                File targetDir =
-                        new File(testClassRoot.getPath()).getParentFile();
-                storagePath =
-                        new File(targetDir, "zanata-documents")
-                                .getAbsolutePath();
+                try {
+                    // wildfly uses 'http-remoting:' not 'remote:'
+                    rmiPort = 8080+portOffset;
+                    env.put(Context.PROVIDER_URL, "http-remoting://localhost:" + rmiPort);
+                    remoteContext = new InitialContext(env);
+                    storagePath =
+                            (String) remoteContext
+                                    .lookup("zanata/files/document-storage-directory");
+                } catch (NamingException e1) {
+                    // fall back option:
+                    URL testClassRoot =
+                            Thread.currentThread().getContextClassLoader()
+                                    .getResource("setup.properties");
+                    File targetDir =
+                            new File(testClassRoot.getPath()).getParentFile();
+                    storagePath =
+                            new File(targetDir, "zanata-documents")
+                                    .getAbsolutePath();
+                }
             }
         }
         return storagePath;
