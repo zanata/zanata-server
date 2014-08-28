@@ -54,12 +54,13 @@
   <!--                                                                         -->
   <!-- This jQuery needs to import before assets/js/script.min.js (dependency) -->
   <!--                                                                         -->
-  <script type="text/javascript"
-    src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <!--<script type="text/javascript"
+    src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
 
   <script type="text/javascript"
     src="#{applicationConfiguration.webAssetsUrl}/assets/js/script.min.js"></script>
 
-  <script type="text/javascript" src="#{request.contextPath}/resources/script/signals.min.js"/>
-  <script type="text/javascript" src="#{request.contextPath}/resources/script/crossroads.min.js"/>
+  <h:outputScript library="script" name="components-script.js"/>
+  <h:outputScript library="script" name="signals.min.js"/>
+  <h:outputScript library="script" name="crossroads.min.js"/>
 </f:view>
