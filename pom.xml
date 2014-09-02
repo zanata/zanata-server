@@ -39,8 +39,7 @@
     <zanata.client.version>3.3.1</zanata.client.version>
     <zanata.common.version>3.3.0</zanata.common.version>
 
-    <richfaces.compat.version>4.5.0.Alpha2</richfaces.compat.version>
-    <richfaces.version>5.0.0.Alpha3</richfaces.version>
+    <richfaces.version>4.5.0.Beta1</richfaces.version>
 
     <shrinkwrap.desc.version>2.0.0-alpha-5</shrinkwrap.desc.version>
 
@@ -128,26 +127,8 @@
       <!-- make sure the richfaces version is not provided by the seam bom -->
       <dependency>
         <groupId>org.richfaces</groupId>
-        <artifactId>richfaces-bom</artifactId>
-        <version>${richfaces.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.richfaces</groupId>
         <artifactId>richfaces</artifactId>
         <version>${richfaces.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.richfaces.compat</groupId>
-        <artifactId>richfaces-components-rich</artifactId>
-        <version>${richfaces.compat.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.richfaces.compat</groupId>
-        <artifactId>richfaces-components-a4j</artifactId>
-        <version>${richfaces.compat.version}</version>
       </dependency>
 
       <dependency>

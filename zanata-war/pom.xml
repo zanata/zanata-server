@@ -1353,15 +1353,6 @@
     </dependency>
 
     <!-- Richfaces -->
-
-    <dependency>
-      <groupId>org.richfaces.compat</groupId>
-      <artifactId>richfaces-components-rich</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.richfaces.compat</groupId>
-      <artifactId>richfaces-components-a4j</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.richfaces</groupId>
       <artifactId>richfaces</artifactId>
