@@ -157,15 +157,23 @@ public class LoginAction implements Serializable {
     }
 
     /**
+     * This method is executed when accessing the login page. Depending on
+     * current session state, it might indicate to redirect to a different
+     * location. For example, if the user is already logged in, it will indicate
+     * to redirect to the dashboard.
      *
+     * @return A string indicating where the user should be redirected when
+     *         trying to access the login page.
      */
-    public String goToLoginPage() {
-        if(identity.isLoggedIn()) {
+    public String onLoginPageAccessed() {
+        if (identity.isLoggedIn()) {
             return "dashboard";
         }
-        if(applicationConfiguration.isSingleOpenIdProvider()) {
+        if (applicationConfiguration.isOpenIdAuth()
+                && applicationConfiguration.isSingleOpenIdProvider()) {
             // go directly to the provider's login page
-            return genericOpenIdLogin(applicationConfiguration.getOpenIdProviderUrl());
+            return genericOpenIdLogin(applicationConfiguration
+                    .getOpenIdProviderUrl());
         }
         return "login";
     }
