@@ -108,8 +108,8 @@
       value="no-cache, no-store, max-age=0, must-revalidate" />
     <param name="continue" value="#{userRedirect.encodedUrl}" />
 
-    <action execute="#{loginAction.onLoginPageAccessed()}" />
-    <navigation from-action="#{loginAction.onLoginPageAccessed()}">
+    <action execute="#{loginAction.getLoginPageRedirect()}" />
+    <navigation from-action="#{loginAction.getLoginPageRedirect()}">
       <rule if-outcome="dashboard">
         <redirect view-id="/dashboard/home.xhtml" />
       </rule>
