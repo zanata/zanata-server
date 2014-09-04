@@ -240,7 +240,13 @@ public class TestFileGenerator {
     public File openTestFile(String filename) {
         URL url = Thread.currentThread().getContextClassLoader()
                 .getResource(filename);
-        File testFile = new File(url.getPath());
+        File testFile;
+        try {
+            testFile = new File(url.getPath());
+        } catch (NullPointerException npe) {
+            throw new RuntimeException(filename + " not found!");
+        }
+
         Preconditions.checkArgument(testFile.exists(), "%s not found", testFile);
         return testFile;
     }

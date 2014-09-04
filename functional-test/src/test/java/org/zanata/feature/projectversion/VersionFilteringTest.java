@@ -29,6 +29,7 @@ import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projects.ProjectVersionsPage;
 import org.zanata.util.SampleProjectRule;
+import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
 
@@ -44,35 +45,23 @@ public class VersionFilteringTest extends ZanataTestCase {
     @ClassRule
     public static SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
+    private ZanataRestCaller zanataRestCaller;
+
     @Feature(summary = "The user can filter project versions by name",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void versionSearchFiltering() throws Exception {
         String projectName = "versionsearchnums";
+        zanataRestCaller = new ZanataRestCaller("translator",
+                "d83882201764f7d339e97c4b087f0806");
+        zanataRestCaller.createProjectAndVersion(projectName, "alpha", "file");
+        zanataRestCaller.createProjectAndVersion(projectName, "bravo", "file");
 
         assertThat(new LoginWorkFlow()
                 .signIn("translator", "translator")
                 .loggedInAs())
                 .isEqualTo("translator")
                 .as("Login as translator");
-
-        assertThat(new ProjectWorkFlow()
-                .createNewSimpleProject("version-search", projectName)
-                .getProjectName())
-                .isEqualTo(projectName)
-                .as("The project is created");
-
-        assertThat(new ProjectWorkFlow()
-                .createNewProjectVersion(projectName, "alpha")
-                .getProjectVersionName())
-                .isEqualTo("alpha")
-                .as("The version alpha is created");
-
-        assertThat(new ProjectWorkFlow()
-                .createNewProjectVersion(projectName, "bravo")
-                .getProjectVersionName())
-                .isEqualTo("bravo")
-                .as("The version bravo is created");
 
         ProjectVersionsPage projectVersionsPage = new ProjectWorkFlow()
                 .goToProjectByName(projectName)
