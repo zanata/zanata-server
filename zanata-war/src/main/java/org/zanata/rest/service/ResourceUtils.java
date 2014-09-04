@@ -195,6 +195,11 @@ public class ResourceUtils {
             if (count % 100 == 0) {
                 entityManager.flush();
             }
+            if (count % 500 == 0) {
+                // this in some cases seem to slow down overall performance
+                entityManager.clear();
+                to = entityManager.find(HDocument.class, to.getId());
+            }
         }
 
         // set remaining textflows to obsolete.

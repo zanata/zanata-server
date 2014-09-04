@@ -71,7 +71,7 @@ public class FilterConstraintToQueryJpaTest extends ZanataJpaTest {
 
     @BeforeMethod
     public void setUpData() {
-        deleteData();
+        deleteAllTables();
         hLocale =
                 EntityMakerBuilder.builder().build()
                         .makeAndPersist(getEm(), HLocale.class);
@@ -149,32 +149,6 @@ public class FilterConstraintToQueryJpaTest extends ZanataJpaTest {
                 .withTargetState(ContentState.Translated).build();
 
         getEm().flush();
-    }
-
-    private void deleteData() {
-        EntityCleaner.deleteAll(getEm(), Lists.<Class> newArrayList(
-                TransMemoryUnitVariant.class, TransMemoryUnit.class,
-                TransMemory.class,
-                Activity.class,
-                // glossary
-                HTermComment.class, HGlossaryTerm.class,
-                HGlossaryEntry.class,
-                // tex flows and targets
-                HPoTargetHeader.class, HTextFlowTargetHistory.class,
-                HTextFlowTargetReviewComment.class,
-                HTextFlowTarget.class, HTextFlow.class,
-                // documents
-                HDocumentHistory.class, HDocument.class,
-                HDocumentUploadPart.class, HDocumentUpload.class,
-                // locales
-                HLocaleMember.class, HLocale.class,
-                // version group
-                HIterationGroup.class,
-                // project
-                HProjectIteration.class, HProject.class,
-                // account
-                HAccountActivationKey.class, HCredentials.class, HPerson.class,
-                HAccount.class));
     }
 
     private HPerson makePerson(String username) {
