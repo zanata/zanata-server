@@ -19,7 +19,7 @@
                   <property name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Djboss.socket.binding.port-offset=100 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787</property>
       -->
       <property
-        name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Djboss.socket.binding.port-offset=100
+        name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Djboss.socket.binding.port-offset=100 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787
       </property>
 
       <!-- From JBOSS_HOME/standalone/configuration -->

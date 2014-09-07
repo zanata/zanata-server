@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.PerformanceProfiling;
+import org.zanata.SlowTest;
 import org.zanata.ZanataJpaTest;
 import org.zanata.common.ContentType;
 import org.zanata.common.LocaleId;
@@ -65,8 +66,8 @@ public class ResourceUtilsJpaTest extends ZanataJpaTest {
         // TODO check the results in 'to'
     }
 
-//    @Test
-//    @SlowTest
+    @Test(enabled = false, description = "This should be executed manually in IDE")
+    @SlowTest
     @PerformanceProfiling
     // ideally change persistence.xml to use a local mysql database and monitor general log etc.
     public void transferFromResource() {
