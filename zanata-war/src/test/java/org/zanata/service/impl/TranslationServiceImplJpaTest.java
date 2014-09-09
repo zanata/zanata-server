@@ -40,7 +40,7 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 @Slf4j
-@Test(groups = { "jpa-tests" })
+//@Test(groups = { "jpa-tests" })
 public class TranslationServiceImplJpaTest extends ZanataJpaTest {
 
     static SeamAutowire seam = SeamAutowire.instance();

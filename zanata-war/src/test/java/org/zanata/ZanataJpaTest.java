@@ -1,5 +1,7 @@
 package org.zanata;
 
+import static com.github.huangp.entityunit.entity.EntityCleaner.deleteAll;
+
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -7,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import net.sf.ehcache.CacheManager;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
@@ -21,32 +24,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import org.zanata.model.Activity;
-import org.zanata.model.HAccount;
-import org.zanata.model.HAccountActivationKey;
-import org.zanata.model.HDocument;
-import org.zanata.model.HDocumentHistory;
-import org.zanata.model.HGlossaryEntry;
-import org.zanata.model.HGlossaryTerm;
-import org.zanata.model.HIterationGroup;
-import org.zanata.model.HLocale;
-import org.zanata.model.HLocaleMember;
-import org.zanata.model.HPerson;
-import org.zanata.model.HProject;
-import org.zanata.model.HProjectIteration;
-import org.zanata.model.HTermComment;
-import org.zanata.model.HTextFlow;
-import org.zanata.model.HTextFlowTarget;
-import org.zanata.model.HTextFlowTargetHistory;
-import org.zanata.model.HTextFlowTargetReviewComment;
-import org.zanata.model.po.HPoTargetHeader;
-import org.zanata.model.security.HCredentials;
-import org.zanata.model.tm.TransMemory;
-import org.zanata.model.tm.TransMemoryUnit;
-import org.zanata.model.tm.TransMemoryUnitVariant;
 import org.zanata.testng.TestMethodListener;
-import com.github.huangp.entityunit.entity.EntityCleaner;
-import com.google.common.collect.Lists;
+import org.zanata.util.ZanataEntities;
 
 @Listeners(TestMethodListener.class)
 // single threaded because of ehcache (perhaps other reasons too)
@@ -152,27 +131,6 @@ public abstract class ZanataJpaTest {
     }
 
     protected void deleteAllTables() {
-        EntityCleaner.deleteAll(getEm(), Lists.<Class>newArrayList(
-                TransMemoryUnitVariant.class, TransMemoryUnit.class,
-                TransMemory.class,
-                Activity.class,
-                // glossary
-                HTermComment.class, HGlossaryTerm.class,
-                HGlossaryEntry.class,
-                // tex flows and targets
-                HPoTargetHeader.class, HTextFlowTargetHistory.class,
-                HTextFlowTargetReviewComment.class,
-                HTextFlowTarget.class, HTextFlow.class,
-                // documents
-                HDocumentHistory.class, HDocument.class,
-                // locales
-                HLocaleMember.class, HLocale.class,
-                // version group
-                HIterationGroup.class,
-                // project
-                HProjectIteration.class, HProject.class,
-                // account
-                HAccountActivationKey.class, HCredentials.class, HPerson.class,
-                HAccount.class));
+        deleteAll(getEm(), ZanataEntities.entitiesInOrderForDelete());
     }
 }

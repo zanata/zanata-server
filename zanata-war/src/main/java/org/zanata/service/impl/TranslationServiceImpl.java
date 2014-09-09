@@ -749,8 +749,8 @@ public class TranslationServiceImpl implements TranslationService {
                     String warning =
                             MessageFormat
                                     .format("TextFlowTarget {0} may be obsolete; "
-                                                    + "associated source hash: {1}; "
-                                                    + "expected hash is {2} for source: {3}",
+                                            + "associated source hash: {1}; "
+                                            + "expected hash is {2} for source: {3}",
                                             resId, sourceHash,
                                             textFlow.getContentHash(),
                                             textFlow.getContents());
