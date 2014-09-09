@@ -198,7 +198,7 @@ public class CopyTransServiceImplPerformanceTest {
 
         copyTransService = seam.autowire(CopyTransServiceImpl.class);
 
-        deleteAll(getEm(), ZanataEntities.entitiesInOrderForDelete());
+        deleteAll(getEm(), ZanataEntities.entitiesForRemoval());
 
         HLocale enUS = makeLocale(LocaleId.EN_US);
         HLocale de = makeLocale(LocaleId.DE);

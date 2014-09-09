@@ -20,7 +20,6 @@
  */
 package org.zanata;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.zanata.util.ZanataRestCaller.buildSourceResource;
 import static org.zanata.util.ZanataRestCaller.buildTextFlow;
 import static org.zanata.util.ZanataRestCaller.buildTextFlowTarget;
@@ -28,55 +27,24 @@ import static org.zanata.util.ZanataRestCaller.buildTranslationResource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
-import org.junit.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.ZanataRestCaller;
 
+/**
+ * This is a class for experiment some things i.e. populate cargo instance with
+ * some example users and languages so that a manual test can be performed.
+ * Under normal circumstances it will have no active tests in it.
+ */
 @Slf4j
 public class ExperimentTest {
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
-    @Test
-    public void canFindText() {
-        String linkText = "master\n   Documents: 0";
-        System.out.println(linkText);
-        String stripNewLine = linkText.replaceAll("\\n", " ");
-        System.out.println(stripNewLine);
-        boolean matches = stripNewLine.matches("master\\s+Documents.+");
-        assertThat(matches, Matchers.equalTo(true));
-    }
-
     // @Test
-    public void canDoCampbell() {
-        // #. Tag: para
-        // #, no-c-format
-        // msgid "Describes Fedora, the Fedora Project, and how you can help."
-        // msgstr ""
-        String tag = "#. Tag: para";
-        String msgCtx = "#, no-c-format";
-        String msgId = "msgid \"This is string number %d. \"";
-        String msgStr = "msgstr \"%s %d\"";
-        String potMsgStr = "msgstr \"\"";
-
-        for (int i = 55; i > 0; i--) {
-            System.out.println(tag);
-            System.out.println(msgCtx);
-            System.out.printf(msgId, i);
-            System.out.println();
-            System.out.printf(potMsgStr);
-            // System.out.printf(msgStr, "translated string number", i);
-            System.out.println();
-            System.out.println();
-        }
-    }
-
-//    @Test
     public void testPushTranslation() {
         ZanataRestCaller restCaller =
                 new ZanataRestCaller();
@@ -97,7 +65,8 @@ public class ExperimentTest {
             transResource.getTextFlowTargets().add(
                     buildTextFlowTarget(resId, content));
         }
-        restCaller.postSourceDocResource(projectSlug, iterationSlug, sourceResource, false);
+        restCaller.postSourceDocResource(projectSlug, iterationSlug,
+                sourceResource, false);
         restCaller.postTargetDocResource(projectSlug, iterationSlug, docId,
                 new LocaleId("pl"), transResource, "auto");
     }

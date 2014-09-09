@@ -71,7 +71,6 @@ public class HLocale extends ModelEntityBase implements Serializable {
         this.localeId = localeId;
     }
 
-    @VisibleForTesting
     public HLocale(@Nonnull LocaleId localeId, boolean enabledByDefault,
             boolean active) {
         this.localeId = localeId;

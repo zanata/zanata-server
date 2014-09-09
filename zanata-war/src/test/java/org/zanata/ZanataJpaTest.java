@@ -131,6 +131,6 @@ public abstract class ZanataJpaTest {
     }
 
     protected void deleteAllTables() {
-        deleteAll(getEm(), ZanataEntities.entitiesInOrderForDelete());
+        deleteAll(getEm(), ZanataEntities.entitiesForRemoval());
     }
 }

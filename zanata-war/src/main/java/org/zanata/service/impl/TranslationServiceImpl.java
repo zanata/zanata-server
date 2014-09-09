@@ -719,7 +719,7 @@ public class TranslationServiceImpl implements TranslationService {
 
             // we need a fresh object in this session,
             // so that it can lazily load associated objects
-            HProjectIteration iterationReloaded =
+            HProjectIteration iteration =
                     projectIterationDAO.findById(projectIterationId);
             Map<String, HTextFlow> resIdToTextFlowMap = textFlowDAO.getByDocumentAndResIds(document, Lists.transform(
                     batch, new Function<TextFlowTarget, String>() {
@@ -761,7 +761,7 @@ public class TranslationServiceImpl implements TranslationService {
                 } else {
                     String validationMessage =
                             validateTranslations(incomingTarget.getState(),
-                                    iterationReloaded,
+                                    iteration,
                                     incomingTarget.getResId(),
                                     textFlow.getContents(),
                                     incomingTarget.getContents());

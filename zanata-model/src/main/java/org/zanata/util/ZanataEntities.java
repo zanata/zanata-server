@@ -57,10 +57,12 @@ public class ZanataEntities {
     private static List<Class> entitiesForDelete;
 
     /**
+     * TODO probably put this under test and make a test-jar of zanata-model
+     *
      * @return a list of entity classes that is in order for deletion i.e. won't
      *         violate referential constraint.
      */
-    public static List<Class> entitiesInOrderForDelete() {
+    public static List<Class> entitiesForRemoval() {
         if (entitiesForDelete != null) {
             return entitiesForDelete;
         }
