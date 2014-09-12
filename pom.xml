@@ -19,32 +19,39 @@
   </scm>
 
   <properties>
+    <byteman.version>2.1.2</byteman.version>
     <cobertura.total-line-rate>50</cobertura.total-line-rate>
     <cobertura.total-branch-rate>30</cobertura.total-branch-rate>
     <cobertura.halt.failure>false</cobertura.halt.failure>
     <delombok.dir>${project.build.directory}/delombok/org/zanata</delombok.dir>
     <guava.version>17.0</guava.version>
     <gwt.version>2.6.1</gwt.version>
-    <icu4j.version>4.8</icu4j.version>
+    <icu4j.version>50.1.1</icu4j.version>
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
     <lucene.version>3.6.2</lucene.version>
     <seam.version>2.3.1.Final</seam.version>
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
-    <zanata.api.version>3.3.1</zanata.api.version>
+    <zanata.api.version>3.4.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
-    <zanata.api.compat.version>3.3.0</zanata.api.compat.version>
+    <zanata.api.compat.version>3.3.1</zanata.api.compat.version>
     <zanata.client.version>3.3.1</zanata.client.version>
     <zanata.common.version>3.3.0</zanata.common.version>
 
     <richfaces.compat.version>4.5.0.Alpha2</richfaces.compat.version>
     <richfaces.version>5.0.0.Alpha3</richfaces.version>
 
+    <shrinkwrap.desc.version>2.0.0-alpha-5</shrinkwrap.desc.version>
+
     <!-- see http://community.jboss.org/wiki/HibernateCompatibilityMatrix?decorator=print -->
     <!-- see also the jboss7 profile below -->
     <hibernate.scope>provided</hibernate.scope>
-    <hibernate.version>4.2.7.SP1</hibernate.version>
+    <!--
+         TODO include Hibernate in war (or deploy as JBoss modules).
+         NB: JBoss EAP 6.2.3 only has 4.2.7.SP4
+    -->
+    <hibernate.version>4.2.8.Final</hibernate.version>
     <hibernate.search.scope>compile</hibernate.search.scope>
     <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
@@ -63,6 +70,8 @@
     <jdbc.groupId>mysql</jdbc.groupId>
     <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
     <jdbc.version>5.1.26</jdbc.version>
+
+    <resteasy.scope>compile</resteasy.scope>
   </properties>
 
   <dependencyManagement>
@@ -93,6 +102,18 @@
         <version>1.1.1.Final</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.spec.javax.servlet</groupId>
+        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+        <version>1.0.1.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>1.13</version>
       </dependency>
 
       <!-- repeat resteasy version to make sure the seam bom doesn't downgrade it -->
@@ -148,10 +169,130 @@
       </dependency>
 
       <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.9.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.2.3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-aether-provider</artifactId>
+        <version>3.0.5</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-provider-api</artifactId>
+        <version>2.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http-lightweight</artifactId>
+        <version>2.4</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>1.6.0</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman</artifactId>
+        <version>${byteman.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-bmunit</artifactId>
+        <version>${byteman.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-install</artifactId>
+        <version>${byteman.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman-submit</artifactId>
+        <version>${byteman.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.com.sun.httpserver</groupId>
+        <artifactId>httpserver</artifactId>
+        <version>1.0.1.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-api-base</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-api-javaee</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-api-jboss</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-impl-base</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-impl-jboss</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-spi</artifactId>
+        <version>${shrinkwrap.desc.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-api</artifactId>
+        <version>3.2.3.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.xnio</groupId>
+        <artifactId>xnio-nio</artifactId>
+        <version>3.2.3.Final</version>
       </dependency>
 
       <dependency>
@@ -165,6 +306,16 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-common-api</artifactId>
         <version>${zanata.api.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- zanata common -->
@@ -190,6 +341,17 @@
         <artifactId>zanata-rest-client</artifactId>
         <version>${zanata.client.version}</version>
         <scope>test</scope>
+        <!-- The client uses a newer version of resteasy -->
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>jaxrs-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.zanata</groupId>
@@ -240,6 +402,11 @@
           <groupId>com.google.protobuf</groupId>
           <artifactId>protobuf-java</artifactId>
           <version>2.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.4.180</version>
       </dependency>
       <dependency>
         <groupId>com.ibm.icu</groupId>
@@ -432,6 +599,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.hibernate.common</groupId>
+        <artifactId>hibernate-commons-annotations</artifactId>
+        <version>4.0.4.Final</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
@@ -468,9 +641,33 @@
       </dependency>
 
       <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.18.2-GA</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.jboss.el</groupId>
         <artifactId>jboss-el</artifactId>
         <version>1.0_02.CR6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>3.1.4.GA</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-annotations</artifactId>
+        <version>1.2.0.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-processor</artifactId>
+        <version>1.2.0.Final</version>
       </dependency>
 
       <dependency>
@@ -501,6 +698,10 @@
           <exclusion>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
           </exclusion>
           <exclusion>
             <groupId>org.apache.solr</groupId>
@@ -587,7 +788,7 @@
       <dependency>
         <groupId>org.fedorahosted.tennera</groupId>
         <artifactId>jgettext</artifactId>
-        <version>0.11</version>
+        <version>0.13</version>
       </dependency>
       <dependency>
         <groupId>org.functionaljava</groupId>
@@ -609,14 +810,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-
-      <dependency>
-        <groupId>javax.xml.stream</groupId>
-        <artifactId>stax-api</artifactId>
-        <version>1.0</version>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -658,6 +851,17 @@
       <id>okapi-cloudbees-release</id>
       <name>okapi-cloudbees-release</name>
       <url>http://repository-okapi.forge.cloudbees.com/release/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <!-- Needed for totallylazy -->
+    <repository>
+      <id>repo.bodar.com</id>
+      <url>http://repo.bodar.com</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -714,62 +918,20 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <configuration>
           <rules>
-            <banDuplicateClasses>
-              <dependencies>
-                <!-- multiple versions in the dependency tree -->
-                <dependency>
-                  <groupId>com.beust</groupId>
-                  <artifactId>jcommander</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>com.beust.jcommander.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <dependency>
-                  <groupId>com.google.gwt</groupId>
-                  <artifactId>gwt-dev</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>org.apache.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <!-- multiple versions in the dependency tree -->
-                <dependency>
-                  <groupId>commons-fileupload</groupId>
-                  <artifactId>commons-fileupload</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>org.apache.commons.fileupload.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <!-- multiple versions in the dependency tree -->
-                <dependency>
-                  <groupId>org.apache.maven</groupId>
-                  <artifactId>maven*</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>org.apache.maven.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <!-- multiple versions in the dependency tree -->
-                <dependency>
-                  <groupId>org.picketbox</groupId>
-                  <artifactId>picketbox</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>org.picketbox.*</ignoreClass>
-                    <ignoreClass>org.jboss.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-                <!-- multiple versions in the dependency tree -->
-                <dependency>
-                  <groupId>net.sf.ehcache</groupId>
-                  <artifactId>ehcache-core</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>net.sf.ehcache.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-              </dependencies>
-            </banDuplicateClasses>
+            <bannedDependencies>
+              <excludes combine.children="append">
+                <!-- use org.jboss.spec.javax.servlet:jboss-servlet-api_3.0_spec -->
+                <exclude>org.jboss.spec.javax.servlet:jboss-servlet-api_3.1_spec</exclude>
+
+                <!-- use org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec -->
+                <exclude>org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec</exclude>
+              </excludes>
+            </bannedDependencies>
             <requireNoRepositories>
               <allowedRepositories combine.children="append">
                 <allowedRepository>jboss-public-repository-group</allowedRepository>
                 <allowedRepository>okapi-cloudbees-release</allowedRepository>
+                <allowedRepository>repo.bodar.com</allowedRepository>
               </allowedRepositories>
               <allowedPluginRepositories combine.children="append">
                 <allowedPluginRepository>cobertura-it-maven-plugin-maven2-release</allowedPluginRepository>
@@ -856,55 +1018,6 @@
   <profiles>
 
     <profile>
-      <!-- Profile to use more recent versions of hibernate etc. for jboss 7 -->
-      <id>jboss7</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>commons-collections</groupId>
-          <artifactId>commons-collections</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>javassist</groupId>
-          <artifactId>javassist</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.faces</groupId>
-          <artifactId>jsf-api</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>javax.faces</groupId>
-          <artifactId>jsf-impl</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-user</artifactId>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>net.customware.gwt.presenter</groupId>
-          <artifactId>gwt-presenter</artifactId>
-          <version>1.1.1</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-
-    </profile>
-
-    <profile>
       <!--this is used to run GWT in dev mode. Adjust your IDE to include the delombok -->
       <id>delombok</id>
       <properties>
@@ -983,6 +1096,7 @@
   <modules>
     <module>zanata-model</module>
     <module>zanata-war</module>
+    <module>zanata-test-war</module>
     <module>functional-test</module>
     <!-- <module>zanata-dist</module> -->
   </modules>

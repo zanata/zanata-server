@@ -16,7 +16,6 @@ import org.zanata.webtrans.shared.model.TransMemoryResultItem;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -121,15 +120,15 @@ public class TransMemoryView extends Composite implements
 
         FlexCellFormatter formatter = resultTable.getFlexCellFormatter();
 
-        formatter.setStyleName(0, SOURCE_COL, "epsilon");
-        formatter.setStyleName(0, TARGET_COL, "epsilon");
-        formatter.setStyleName(0, NUM_TRANS_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, ACTION_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, SIMILARITY_COL, "epsilon txt--align-center smallCol");
-        formatter.setStyleName(0, ORIGIN_COL, "epsilon txt--align-center smallCol");
+        formatter.setStyleName(0, SOURCE_COL, "zeta");
+        formatter.setStyleName(0, TARGET_COL, "zeta");
+        formatter.setStyleName(0, NUM_TRANS_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, ACTION_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, SIMILARITY_COL, "zeta txt--align-center smallCol");
+        formatter.setStyleName(0, ORIGIN_COL, "zeta txt--align-center smallCol");
 
         Anchor diffLegendInfo = new Anchor();
-        diffLegendInfo.setStyleName("icon-info-circle-2 txt--lead");
+        diffLegendInfo.setStyleName("i i--info txt--lead l--push-left-quarter");
         diffLegendInfo.setTitle(messages.colorLegend());
 
         diffLegendInfo.addClickHandler(new ClickHandler() {
@@ -326,14 +325,10 @@ public class TransMemoryView extends Composite implements
             Anchor infoCell = new Anchor();
             if (item.getMatchType() == MatchType.Imported) {
                 String originStr = Joiner.on(", ").join(item.getOrigins());
-                String ellipsizedStr =
-                        Splitter.fixedLength(10).limit(2).split(originStr)
-                                .iterator().next()
-                                + "...";
-                infoCell.setText(ellipsizedStr);
+                infoCell.setText(shorten(originStr, 10));
                 infoCell.setTitle(originStr);
             } else {
-                infoCell.setStyleName("icon-info-circle-2 txt--lead");
+                infoCell.setStyleName("i i--info txt--lead");
                 infoCell.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
@@ -346,6 +341,15 @@ public class TransMemoryView extends Composite implements
             resultTable.getFlexCellFormatter().setStyleName(i + 1, ORIGIN_COL,
                     "txt--align-center");
         }
+    }
+
+    // TODO: Replace with ShortString::shorten when gwt can resolve the module
+    private String shorten(String s, int maxLength) {
+        String ellipsis = "…";
+        if (s.length() <= maxLength) {
+            return s;
+        }
+        return s.substring(0, maxLength - ellipsis.length()) + ellipsis;
     }
 
     private static boolean odd(int n) {

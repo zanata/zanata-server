@@ -57,14 +57,11 @@
       <property name="jboss.entity.manager.factory.jndi.name"
         value="java:/zanataEntityManagerFactory" />
 
-      <!-- Breaks under Hibernate 3.6/4
-        <property name="hibernate.dialect_resolvers" value="org.zanata.util.ZanataDialectResolver" />
-       -->
-
       <!-- Automatic schema export and drop -->
       <property name="hibernate.hbm2ddl.auto"
         value="${env.hibernate.hbm2ddl.auto}" />
 
+      <!-- TODO this won't work with Hibernate 4.3 or later -->
       <property name="hibernate.connection.provider_class"
         value="org.zanata.database.WrappedDatasourceConnectionProvider" />
 
@@ -78,9 +75,13 @@
       <property name="hibernate.connection.characterEncoding" value="UTF-8" />
 
       <!-- Only relevant if Seam is loading the persistence unit (Java SE bootstrap) -->
+      <!-- NB: Might have to be removed for Hibernate 4.3 -->
       <property name="hibernate.transaction.manager_lookup_class"
         value="org.hibernate.transaction.JBossTransactionManagerLookup" />
 
+      <!-- for Hibernate 4.3 (but not 4.2):
+      <property name="hibernate.transaction.jta.platform" value="JBossAS" />
+      -->
 
       <!-- Search engine -->
       <property name="hibernate.search.default.directory_provider"
@@ -114,7 +115,6 @@
       <property name="hibernate.cache.use_query_cache" value="true" />
 
       <!-- https://docs.jboss.org/author/display/AS71/JPA+Reference+Guide#JPAReferenceGuide-Persistenceunitproperties -->
-      <property name="jboss.as.jpa.providerModule" value="hibernate3-bundled" />
       <property name="jboss.as.jpa.managed" value="false" />
     </properties>
   </persistence-unit>

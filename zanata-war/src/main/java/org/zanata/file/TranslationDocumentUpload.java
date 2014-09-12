@@ -114,7 +114,7 @@ public class TranslationDocumentUpload {
                             Optional.of(util
                                     .combineToTempFileAndDeleteUploadRecord(
                                             previousParts,
-                                            uploadForm.getFileStream()));
+                                            uploadForm));
                 }
             }
 
@@ -168,6 +168,7 @@ public class TranslationDocumentUpload {
             String localeId, DocumentFileUploadForm uploadForm)
             throws ChunkUploadException {
         util.failIfUploadNotValid(id, uploadForm);
+        util.failIfHashNotPresent(uploadForm);
         failIfDocumentDoesNotExist(id);
         failIfFileTypeNotValid(uploadForm);
         failIfTranslationUploadNotAllowed(id, localeId);
@@ -227,7 +228,7 @@ public class TranslationDocumentUpload {
     }
 
     private boolean isTranslationUploadAllowed(GlobalDocumentId id,
-            HLocale localeId) {
+            HLocale locale) {
         HProjectIteration projectIteration =
                 projectIterationDAO.getBySlug(id.getProjectSlug(),
                         id.getVersionSlug());
@@ -237,7 +238,7 @@ public class TranslationDocumentUpload {
                 && projectIteration.getProject().getStatus() == EntityStatus.ACTIVE
                 && identity != null
                 && identity.hasPermission("add-translation",
-                        projectIteration.getProject(), localeId);
+                        projectIteration.getProject(), locale);
     }
 
     private static Set<String> newExtensions(boolean gettextExtensions) {

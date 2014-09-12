@@ -20,6 +20,7 @@ import org.zanata.util.PropertiesHolder;
 import org.zanata.workflow.LoginWorkFlow;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.zanata.util.FunctionalTestHelper.loosely;
 
 /**
  * @author Patrick Huang <a
@@ -30,8 +31,8 @@ public class ContactAdminTest extends ZanataTestCase {
 
     @Rule
     public AddUsersRule addUsersRule = new AddUsersRule();
-    @ClassRule
-    public static HasEmailRule emailRule = new HasEmailRule();
+    @Rule
+    public HasEmailRule emailRule = new HasEmailRule();
 
     @Feature(summary = "The user can contact the site administrator",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181717)
@@ -67,16 +68,9 @@ public class ContactAdminTest extends ZanataTestCase {
         String content = HasEmailRule.getEmailContent(wiserMessage);
 
         assertThat(content)
-                .contains("Zanata user 'translator' with id 'translator' " +
-                        "has sent the following message:")
-                .as("The email header is correct");
-        assertThat(content)
-                .contains("I love Zanata")
-                .as("The message content is correct");
-        assertThat(content)
-                .contains("You can reply to translator at " +
-                        "translator@example.com")
-                .as("The email instructions are correct");
+                .contains("You are receiving this mail because:")
+                .contains("You are an administrator")
+                .contains("I love Zanata");
 
         // contains instance url (without last slash)
         String instanceUrl = PropertiesHolder.getProperty(

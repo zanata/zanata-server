@@ -91,7 +91,7 @@ public class VersionGroupTest extends ZanataTestCase {
                 .createNewGroup()
                 .saveGroupFailure();
 
-        assertThat(groupPage.getFieldValidationErrors())
+        assertThat(groupPage.getFieldErrors())
                 .contains(errorMsg, errorMsg)
                 .as("The two errors are value is required");
 
@@ -99,7 +99,7 @@ public class VersionGroupTest extends ZanataTestCase {
                 .inputGroupName(groupName)
                 .saveGroupFailure();
 
-        assertThat(groupPage.getFieldValidationErrors())
+        assertThat(groupPage.getFieldErrors())
                 .contains(errorMsg)
                 .as("The value required error shown");
 
@@ -107,7 +107,7 @@ public class VersionGroupTest extends ZanataTestCase {
                 .inputGroupId(groupID)
                 .saveGroupFailure();
 
-        assertThat(groupPage.getFieldValidationErrors())
+        assertThat(groupPage.getFieldErrors())
                 .contains(errorMsg)
                 .as("The value required error shown");
     }
@@ -133,7 +133,7 @@ public class VersionGroupTest extends ZanataTestCase {
                 .inputGroupDescription(groupDescription)
                 .saveGroupFailure();
 
-        assertThat(groupPage.getFieldValidationErrors())
+        assertThat(groupPage.getFieldErrors())
                 .contains(CreateVersionGroupPage.LENGTH_ERROR)
                 .as("Invalid length error is shown");
 
@@ -173,5 +173,25 @@ public class VersionGroupTest extends ZanataTestCase {
         assertThat(versionGroupPage.getProjectVersionsInGroup())
                 .contains("about fedora\nmaster")
                 .as("The version group shows in the list");
+    }
+
+    @Feature(summary = "The administrator can use numbers, letters, periods, " +
+            "underscores and hyphens to create a group",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 396261)
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void groupIdCharactersAreAcceptable() throws Exception {
+        String groupID = "test-_.1";
+        String groupName = "TestValidIdCharacters";
+        VersionGroupPage versionGroupPage = dashboardPage
+                .goToGroups()
+                .createNewGroup()
+                .inputGroupId(groupID)
+                .inputGroupName(groupName)
+                .saveGroup()
+                .goToGroup(groupName);
+
+        assertThat(versionGroupPage.getGroupName())
+                .isEqualTo(groupName)
+                .as("The group was created");
     }
 }

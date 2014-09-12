@@ -61,6 +61,7 @@ public class Application implements EntryPoint {
     private UncaughtExceptionHandlerImpl exceptionHandler;
 
     public void onModuleLoad() {
+        Log.info("Loading Zanata Web Editor...");
         exceptionHandler =
                 new UncaughtExceptionHandlerImpl(injector.getDispatcher(),
                         injector.getUserConfig());
@@ -73,6 +74,7 @@ public class Application implements EntryPoint {
                     @Override
                     public void onFailure(Throwable caught) {
                         if (caught instanceof AuthenticationError) {
+                            Log.error("Authentication error.", caught);
                             redirectToLogin();
                         } else if (caught instanceof NoSuchWorkspaceException) {
                             Log.error("Invalid workspace", caught);

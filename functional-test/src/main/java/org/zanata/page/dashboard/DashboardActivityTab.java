@@ -20,18 +20,21 @@
  */
 package org.zanata.page.dashboard;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.zanata.util.WebElementUtil;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@Slf4j
 public class DashboardActivityTab extends DashboardBasePage {
 
     public DashboardActivityTab(WebDriver driver) {
@@ -39,6 +42,7 @@ public class DashboardActivityTab extends DashboardBasePage {
     }
 
     public List<WebElement> getMyActivityList() {
+        log.info("Query activity list");
         WebElement listWrapper =
                 getDriver().findElement(By.id("activity-list"));
 
@@ -48,17 +52,31 @@ public class DashboardActivityTab extends DashboardBasePage {
         return new ArrayList<WebElement>();
     }
 
-    public void clickMoreActivity() {
+    /**
+     * Click on the activity list's "More Activity element".
+     * @return true, if there is more activity available. False otherwise.
+     */
+    public boolean clickMoreActivity() {
+        log.info("Click More Activity button");
         WebElement moreActivity = getMoreActivityElement();
+        final int activityListOrigSize = getMyActivityList().size();
         if (moreActivity != null) {
             moreActivity.click();
             WebElementUtil.waitForTenSeconds(getDriver()).until(
-                    ExpectedConditions.invisibilityOfElementLocated(By
-                            .className("loader__spinner")));
+                    new ExpectedCondition<Object>() {
+                        @Nullable
+                        @Override
+                        public Object apply(@Nullable WebDriver input) {
+                            return getMyActivityList().size() > activityListOrigSize;
+                        }
+                    });
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public WebElement getMoreActivityElement() {
+    private WebElement getMoreActivityElement() {
         return getDriver().findElement(By.id("moreActivity"));
     }
 }

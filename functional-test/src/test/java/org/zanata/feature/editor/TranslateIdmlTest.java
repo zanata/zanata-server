@@ -30,11 +30,11 @@ import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
-import org.zanata.page.projectversion.VersionLanguagesPage;
 import org.zanata.page.webtrans.EditorPage;
 import org.zanata.util.CleanDocumentStorageRule;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.TestFileGenerator;
+import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
@@ -56,10 +56,12 @@ public class TranslateIdmlTest extends ZanataTestCase {
     public CleanDocumentStorageRule documentStorageRule =
             new CleanDocumentStorageRule();
 
+    private ZanataRestCaller zanataRestCaller;
     private TestFileGenerator testFileGenerator = new TestFileGenerator();
 
     @Before
     public void before() {
+        zanataRestCaller = new ZanataRestCaller();
         new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
         assumeFalse(
                 "",
@@ -73,26 +75,20 @@ public class TranslateIdmlTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void translateBasicIdmlFile() {
+        zanataRestCaller.createProjectAndVersion("idml-translate", "idml", "file");
         File testfile = testFileGenerator.openTestFile("test-idml.idml");
 
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", "idml-project");
-        projectSettings.put("Name", "idml-project");
-        projectSettings.put("Project Type", "File");
-
-        VersionLanguagesPage projectVersionPage = new ProjectWorkFlow()
-                .createNewProject(projectSettings)
-                .clickCreateVersionLink().inputVersionId("idml")
-                .saveVersion()
+        EditorPage editorPage = new ProjectWorkFlow()
+                .goToProjectByName("idml-translate")
+                .gotoVersion("idml")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testfile.getAbsolutePath())
-                .submitUpload();
-
-        EditorPage editorPage =
-                projectVersionPage.translate("fr", testfile.getName());
+                .submitUpload()
+                .clickUploadDone()
+                .gotoLanguageTab()
+                .translate("fr", testfile.getName());
 
         assertThat(editorPage.getMessageSourceAtRowIndex(0))
                 .isEqualTo("Line One")

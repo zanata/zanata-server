@@ -38,6 +38,11 @@ public class VersionGroupPage extends BasePage {
     private final By newVersionListBy = By
             .id("settings-projects-form:newVersionField:newVersionItems");
 
+    public String getGroupName() {
+        return getDriver().findElement(By.id("group-info"))
+                .findElement(By.tagName("h1")).getText();
+    }
+
     public List<WebElement> searchProject(final String projectName,
             final int expectedResultNum) {
         projectSearchField.sendKeys(projectName);
@@ -88,7 +93,7 @@ public class VersionGroupPage extends BasePage {
      *         "$projectID $version"
      */
     public List<String> getProjectVersionsInGroup() {
-
+        log.info("Query Group project versions");
         List<WebElement> elements = WebElementUtil
                 .getListItems(getDriver(), versionsInGroupTableBy);
 
@@ -130,6 +135,7 @@ public class VersionGroupPage extends BasePage {
     }
 
     public VersionGroupPage clickAddProjectVersionsButton() {
+        log.info("Click Add Project Version");
         waitForTenSec().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver driver) {
@@ -144,21 +150,25 @@ public class VersionGroupPage extends BasePage {
     }
 
     public VersionGroupPage clickLanguagesTab() {
+        log.info("Click Languages tab");
         clickWhenTabEnabled(getDriver().findElement(By.id("languages_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickProjectsTab() {
+        log.info("Click Projects tab");
         clickWhenTabEnabled(getDriver().findElement(By.id("projects_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickMaintainersTab() {
+        log.info("Click Maintainers tab");
         clickWhenTabEnabled(getDriver().findElement(By.id("maintainers_tab")));
         return new VersionGroupPage(getDriver());
     }
 
     public VersionGroupPage clickSettingsTab() {
+        log.info("Click Settings tab");
         clickWhenTabEnabled(getDriver().findElement(By.id("settings_tab")));
         return new VersionGroupPage(getDriver());
     }
@@ -170,6 +180,7 @@ public class VersionGroupPage extends BasePage {
     }
 
     public Boolean isLanguagesTabActive() {
+        log.info("Query is languages tab displayed");
         final WebElement languagesTab = getDriver().findElement(By.id("languages"));
         waitForTenSec().until( new Predicate<WebDriver>() {
             @Override
@@ -197,6 +208,7 @@ public class VersionGroupPage extends BasePage {
      * @return new VersionGroupPage
      */
     public VersionGroupPage enterProjectVersion(String projectVersion) {
+        log.info("Enter project version {}", projectVersion);
         getDriver()
                 .findElement(By.id("versionAutocomplete-autocomplete__input"))
                 .sendKeys(projectVersion);
@@ -204,6 +216,7 @@ public class VersionGroupPage extends BasePage {
     }
 
     public VersionGroupPage selectProjectVersion(final String searchEntry) {
+        log.info("Click project version {}", searchEntry);
         waitForTenSec().until(
                 new Predicate<WebDriver>() {
                     @Override

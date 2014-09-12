@@ -20,10 +20,12 @@
  */
 package org.zanata.page.administration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.zanata.page.BasePage;
 
+@Slf4j
 public class AdministrationPage extends BasePage {
     private final By MANAGE_LANGUAGE_LINK = By
             .id("Admin_Manage_languages_home");
@@ -34,21 +36,27 @@ public class AdministrationPage extends BasePage {
 
     private final By MANAGE_SEARCH_LINK = By.id("Admin_Manage_search_home");
 
+    private final By MANAGE_ROLES_ASSIGN_LINK =
+            By.id("Admin_Role_Assignment_Rules_home");
+
     public AdministrationPage(WebDriver driver) {
         super(driver);
     }
 
     public ManageLanguagePage goToManageLanguagePage() {
+        log.info("Click Manage Languages");
         clickLinkAfterAnimation(MANAGE_LANGUAGE_LINK);
         return new ManageLanguagePage(getDriver());
     }
 
     public ManageUserPage goToManageUserPage() {
+        log.info("Click Manage Users");
         clickLinkAfterAnimation(MANAGE_USER_LINK);
         return new ManageUserPage(getDriver());
     }
 
     public TranslationMemoryPage goToTranslationMemoryPage() {
+        log.info("Click Translation Memory");
         clickLinkAfterAnimation(MANAGE_TM_LINK);
         return new TranslationMemoryPage(getDriver());
     }
@@ -56,5 +64,11 @@ public class AdministrationPage extends BasePage {
     public ManageSearchPage goToManageSeachPage() {
         clickLinkAfterAnimation(MANAGE_SEARCH_LINK);
         return new ManageSearchPage(getDriver());
+    }
+
+    public RoleAssignmentsPage goToManageRoleAssignments() {
+        log.info("Click Manage Roles");
+        clickLinkAfterAnimation(MANAGE_ROLES_ASSIGN_LINK);
+        return new RoleAssignmentsPage(getDriver());
     }
 }

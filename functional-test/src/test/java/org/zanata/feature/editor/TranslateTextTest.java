@@ -34,6 +34,7 @@ import org.zanata.page.webtrans.EditorPage;
 import org.zanata.util.CleanDocumentStorageRule;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.TestFileGenerator;
+import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
@@ -55,10 +56,13 @@ public class TranslateTextTest extends ZanataTestCase {
     public CleanDocumentStorageRule documentStorageRule =
             new CleanDocumentStorageRule();
 
+    private ZanataRestCaller zanataRestCaller;
+
     private TestFileGenerator testFileGenerator = new TestFileGenerator();
 
     @Before
     public void before() {
+        zanataRestCaller = new ZanataRestCaller();
         new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
         assumeFalse(
                 "",
@@ -75,22 +79,18 @@ public class TranslateTextTest extends ZanataTestCase {
         File testfile = testFileGenerator.generateTestFileWithContent(
                 "basictext",".txt",
                 "Line One\nLine Two\nLine Three");
-
-        HashMap<String, String> projectSettings =
-                ProjectWorkFlow.projectDefaults();
-        projectSettings.put("Project ID", "text-project");
-        projectSettings.put("Name", "text-project");
-        projectSettings.put("Project Type", "File");
-
+        zanataRestCaller.createProjectAndVersion("txt-translate", "txt", "file");
         EditorPage editorPage = new ProjectWorkFlow()
-                .createNewProject(projectSettings)
-                .clickCreateVersionLink().inputVersionId("text")
-                .saveVersion()
+                .goToProjectByName("txt-translate")
+                .gotoVersion("txt")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testfile.getAbsolutePath())
-                .submitUpload().translate("fr", testfile.getName());
+                .submitUpload()
+                .clickUploadDone()
+                .gotoLanguageTab()
+                .translate("fr", testfile.getName());
 
         assertThat(editorPage.getMessageSourceAtRowIndex(0))
                 .isEqualTo("Line One")

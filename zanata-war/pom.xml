@@ -36,7 +36,7 @@
     <lombok.lib>${org.projectlombok:lombok:jar}</lombok.lib>
 
     <groovy.version>2.1.5</groovy.version>
-    <zanata.web.assets.version>5</zanata.web.assets.version>
+    <zanata.web.assets.version>6</zanata.web.assets.version>
   </properties>
 
   <build>
@@ -138,9 +138,7 @@
             <usedDependency>com.lowagie:itext</usedDependency>
             <!-- used for arquillian tests -->
             <usedDependency>org.jboss.as:jboss-as-controller</usedDependency>
-            <!-- used for gwt super devmode -->
-            <usedDependency>org.json:json</usedDependency>
-             <!--used to log sql and parameters when debugging Hibernate -->
+            <!--used to log sql and parameters when debugging Hibernate -->
             <usedDependency>com.googlecode.log4jdbc:log4jdbc</usedDependency>
             <!-- used for org.hibernate:hibernate-core and  org.drools:drools-compiler -->
             <usedDependency>antlr:antlr</usedDependency>
@@ -175,6 +173,8 @@
             <usedDependency>org.jboss.seam:jboss-seam-debug</usedDependency>
             <!-- runtime dependency for email implementations -->
             <usedDependency>org.jboss.seam:jboss-seam-mail</usedDependency>
+            <!-- Used for email unit tests -->
+            <usedDependency>org.jvnet.mock-javamail:mock-javamail</usedDependency>
             <!-- Needed for urlrewrite.xml impl -->
             <usedDependency>org.tuckey:urlrewritefilter</usedDependency>
             <!-- Need for test scope -->
@@ -205,44 +205,48 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+
+
+
+      <plugin>
+        <groupId>com.ning.maven.plugins</groupId>
+        <artifactId>maven-duplicate-finder-plugin</artifactId>
         <configuration>
-          <rules>
-            <banDuplicateClasses>
-              <dependencies>
-                <dependency>
-                  <groupId>commons-beanutils</groupId>
-                  <artifactId>commons-beanutils</artifactId>
-                  <ignoreClasses>
-                    <ignoreClass>org.apache.commons.beanutils.*</ignoreClass>
-                  </ignoreClasses>
-                </dependency>
-              </dependencies>
-              <ignoreClasses combine.children="append">
-                <!-- Please remove exclusions as offending jars are fixed
-                     or removed -->
-
-                <ignoreClass>org.apache.maven.model.*</ignoreClass>
-                <ignoreClass>org.apache.maven.artifact.repository.metadata.*</ignoreClass>
-                <ignoreClass>javax.annotation.*</ignoreClass>
-                <ignoreClass>com.beust.jcommander.*</ignoreClass>
-                <ignoreClass>net.sf.ehcache.*</ignoreClass>
-
-                <!--  caused by gwt jars -->
-                <ignoreClass>com.google.gwt.*</ignoreClass>
-                <ignoreClass>com.google.web.bindery.*</ignoreClass>
-                <ignoreClass>javax.servlet.*</ignoreClass>
-                <ignoreClass>javax.validation.ConstraintViolationException_CustomFieldSerializer</ignoreClass>
-                <ignoreClass>org.hibernate.validator.*</ignoreClass>
-                <ignoreClass>org.w3c.css.sac.*</ignoreClass>
-
-                <!-- picketbox jar -->
-                <ignoreClass>org.jboss.crypto.*</ignoreClass>
-                <ignoreClass>org.jboss.security.*</ignoreClass>
-                <ignoreClass>org.picketbox.*</ignoreClass>
-              </ignoreClasses>
-            </banDuplicateClasses>
-          </rules>
+          <ignoredDependencies>
+            <dependency>
+              <groupId>com.google.gwt</groupId>
+              <artifactId>gwt-user</artifactId>
+            </dependency>
+          </ignoredDependencies>
+          <ignoredResources>
+            <!-- iText and JavaMelody -->
+            <ignoredResource>com/lowagie/text/pdf/fonts/cmap_info.txt</ignoredResource>
+            <!-- Seam -->
+            <ignoredResource>META-INF/components.xml</ignoredResource>
+            <!-- Seam and RichFaces -->
+            <ignoredResource>META-INF/faces-config.xml</ignoredResource>
+            <!-- any mail provider will need this -->
+            <ignoredResource>META-INF/javamail.providers</ignoredResource>
+            <!-- RichFaces 4.3 -->
+            <ignoredResource>META-INF/richfaces/resource-mappings.properties</ignoredResource>
+            <!-- Seam -->
+            <ignoredResource>META-INF/seam-deployment.properties</ignoredResource>
+            <!-- drools and quartz -->
+            <ignoredResource>build.properties</ignoredResource>
+            <!-- Seam -->
+            <ignoredResource>seam.properties</ignoredResource>
+          </ignoredResources>
         </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -438,7 +442,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Dconcordion.output.dir=${concordion.output.dir}</argLine>
+          <argLine>-Dconcordion.output.dir=${concordion.output.dir} -XX:MaxPermSize=256m</argLine>
           <junitArtifactName>none:none</junitArtifactName>
           <testNGArtifactName>org.testng:testng</testNGArtifactName>
           <forkCount>1.5C</forkCount>
@@ -1067,11 +1071,22 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.7</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.googlecode.totallylazy</groupId>
+      <artifactId>totallylazy</artifactId>
+      <version>1.10</version>
+    </dependency>
 
     <!-- Zanata-specific dependencies -->
 
@@ -1158,7 +1173,6 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20090211</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- NB: This must be before jboss-seam, because beanutils includes old commons collections classes -->
@@ -1200,11 +1214,15 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
-      <scope>provided</scope>
+      <scope>${resteasy.scope}</scope>
       <exclusions>
         <exclusion>
           <groupId>javassist</groupId>
           <artifactId>javassist</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.annotation</groupId>
+          <artifactId>jsr250-api</artifactId>
         </exclusion>
         <exclusion>
           <artifactId>jcip-annotations</artifactId>
@@ -1215,18 +1233,18 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxb-provider</artifactId>
-      <scope>provided</scope>
+      <scope>${resteasy.scope}</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson-provider</artifactId>
-      <scope>provided</scope>
+      <scope>${resteasy.scope}</scope>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-multipart-provider</artifactId>
-      <scope>provided</scope>
+      <scope>${resteasy.scope}</scope>
       <exclusions>
         <exclusion>
           <artifactId>
@@ -1315,6 +1333,25 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+      <version>r239</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jvnet.mock-javamail</groupId>
+      <artifactId>mock-javamail</artifactId>
+      <version>1.9</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Richfaces -->
 
     <dependency>
@@ -1381,6 +1418,23 @@
     </dependency>
 
     <dependency>
+      <groupId>io.undertow</groupId>
+      <artifactId>undertow-servlet</artifactId>
+      <version>1.0.15.Final</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.servlet</groupId>
+          <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.annotation</groupId>
+          <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
       <groupId>com.github.huangp</groupId>
       <artifactId>entityunit</artifactId>
       <version>0.3</version>
@@ -1391,6 +1445,12 @@
       <artifactId>log4jdbc</artifactId>
       <version>1.2</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.htmlparser.jericho</groupId>
+      <artifactId>jericho-html</artifactId>
+      <version>3.3</version>
     </dependency>
 
     <dependency>
@@ -1492,7 +1552,7 @@
     <dependency>
       <groupId>net.bull.javamelody</groupId>
       <artifactId>javamelody-core</artifactId>
-      <version>1.48.0</version>
+      <version>1.52.0</version>
     </dependency>
 
     <dependency>
@@ -1593,8 +1653,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1630,8 +1690,14 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec.javax.annotation</groupId>
+      <artifactId>jboss-annotations-api_1.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1664,13 +1730,14 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <version>1.3.176</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <scope>provided</scope>
+      <scope>${hibernate.scope}</scope>
     </dependency>
 
     <!-- This must appear before arquillian dependencies -->
@@ -1794,6 +1861,7 @@
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
+      <version>3.1.3.GA</version>
       <scope>test</scope>
     </dependency>
 
@@ -1965,7 +2033,7 @@
     <dependency>
       <groupId>org.picketbox</groupId>
       <artifactId>picketbox</artifactId>
-      <version>4.0.14.Final</version>
+      <version>4.0.15.Final</version>
       <scope>provided</scope>
     </dependency>
 
@@ -1980,6 +2048,10 @@
       <artifactId>classloader-leak-prevention</artifactId>
       <version>1.9.3</version>
       <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.apache.cxf</groupId>
           <artifactId>cxf-rt-transports-http</artifactId>
@@ -2000,7 +2072,7 @@
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
-      <version>1.12</version>
+      <version>1.27</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -2015,7 +2087,7 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-      <scope>provided</scope>
+      <scope>${resteasy.scope}</scope>
     </dependency>
     <dependency>
       <groupId>javax.xml.bind</groupId>

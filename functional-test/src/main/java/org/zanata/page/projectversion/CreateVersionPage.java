@@ -20,7 +20,9 @@
  */
 package org.zanata.page.projectversion;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,11 +34,12 @@ import org.zanata.util.Constants;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class CreateVersionPage extends BasePage {
 
     public final static String VALIDATION_ERROR =
-            "must start and end with letter or number, "
-            + "and contain only letters, numbers, underscores and hyphens.";
+            "must start and end with letter or number, and contain only " +
+                    "letters, numbers, periods, underscores and hyphens.";
 
     @FindBy(id = "create-version-form:project-type")
     private WebElement projectTypeSelection;
@@ -47,6 +50,9 @@ public class CreateVersionPage extends BasePage {
     @FindBy(id = "create-version-form:button-create")
     private WebElement saveButton;
 
+    @FindBy(id = "create-version-form:copy-from-version")
+    private WebElement copyFromPreviousVersionChk;
+
     private static final Map<String, String> projectTypeOptions =
             Constants.projectTypeOptions();
 
@@ -56,15 +62,18 @@ public class CreateVersionPage extends BasePage {
 
     /**
      * Enter a version ID - only available on creating a new version
+     *
      * @param versionId
      * @return new CreateVersionPage
      */
     public CreateVersionPage inputVersionId(final String versionId) {
+        log.info("Enter version ID {}", versionId);
         waitForTenSec().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 getVersionIdField().clear();
-                new Actions(getDriver()).moveToElement(getVersionIdField()).perform();
+                new Actions(getDriver()).moveToElement(getVersionIdField())
+                        .perform();
                 getVersionIdField().sendKeys(versionId);
                 return true;
             }
@@ -72,16 +81,32 @@ public class CreateVersionPage extends BasePage {
         return new CreateVersionPage(getDriver());
     }
 
+    public CreateVersionPage clickCopyFromVersion() {
+        log.info("Click Copy From Previous checkbox");
+        copyFromPreviousVersionChk.click();
+        waitForTenSec().until(new Function<WebDriver, WebElement>() {
+            @Override
+            public WebElement apply(WebDriver driver) {
+                return getDriver().findElement(By.id(
+                        "create-version-form:project-type-list"));
+            }
+        });
+        return this;
+    }
+
     private WebElement getVersionIdField() {
-        return getDriver().findElement(By.id("create-version-form:slugField:slug"));
+        log.info("Query Version ID");
+        return getDriver().findElement(
+                By.id("create-version-form:slugField:slug"));
     }
 
     public CreateVersionPage selectProjectType(String projectType) {
+        log.info("Click project type {}", projectType);
         List<WebElement> projectTypes =
                 projectTypeSelection.findElements(By.tagName("li"));
         for (WebElement projectTypeLi : projectTypes) {
             if (projectTypeLi.findElement(By.xpath(".//div/label")).getText()
-                    .equals(projectType)) {
+                    .startsWith(projectType)) {
                 projectTypeLi.findElement(By.xpath(".//div")).click();
                 break;
             }
@@ -90,11 +115,13 @@ public class CreateVersionPage extends BasePage {
     }
 
     public VersionLanguagesPage saveVersion() {
+        log.info("Click Save");
         clickAndCheckErrors(saveButton);
         return new VersionLanguagesPage(getDriver());
     }
 
     public CreateVersionPage waitForNumErrors(final int numberOfErrors) {
+        log.info("Wait for number of error to be {}", numberOfErrors);
         waitForTenSec().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {

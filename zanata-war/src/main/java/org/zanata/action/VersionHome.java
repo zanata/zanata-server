@@ -21,20 +21,14 @@
  */
 package org.zanata.action;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.event.ValueChangeEvent;
-import javax.persistence.EntityNotFoundException;
-
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
@@ -48,6 +42,7 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
@@ -62,8 +57,15 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.faces.application.FacesMessage;
+import javax.faces.event.ValueChangeEvent;
+import javax.persistence.EntityNotFoundException;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Name("versionHome")
 @Slf4j
@@ -83,6 +85,9 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     private String projectSlug;
 
     @In
+    private ProjectIterationDAO projectIterationDAO;
+
+    @In
     private ConversationScopeMessages conversationScopeMessages;
 
     @In
@@ -100,6 +105,9 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     @In
     private Messages msgs;
 
+    @In
+    private CopyVersionManager copyVersionManager;
+
     private Map<ValidationId, ValidationAction> availableValidations = Maps
             .newHashMap();
 
@@ -115,6 +123,36 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     private VersionLocaleAutocomplete localeAutocomplete =
             new VersionLocaleAutocomplete();
 
+
+    @Getter
+    @Setter
+    private boolean copyFromVersion = false;
+
+    @Getter
+    @Setter
+    private String copyFromVersionSlug;
+
+    private final Function<HProjectIteration, VersionItem> VERSION_ITEM_FN =
+            new Function<HProjectIteration, VersionItem>() {
+                @Override
+                public VersionItem apply(HProjectIteration input) {
+                    boolean selected = StringUtils.isNotEmpty(
+                            copyFromVersionSlug) && copyFromVersionSlug
+                            .equals(input.getSlug()) ? true : false;
+                    return new VersionItem(selected, input);
+                }
+            };
+
+    private void setDefaultCopyFromVersion() {
+        List<VersionItem> otherVersions = getOtherVersions();
+        if (!otherVersions.isEmpty()
+                && StringUtils.isEmpty(copyFromVersionSlug)) {
+            this.copyFromVersionSlug =
+                    otherVersions.get(0).getVersion().getSlug();
+            copyFromVersion = true;
+        }
+    }
+
     public void init(boolean isNewInstance) {
         this.isNewInstance = isNewInstance;
         if (isNewInstance) {
@@ -122,16 +160,48 @@ public class VersionHome extends SlugHome<HProjectIteration> {
             if (projectType != null) {
                 selectedProjectType = projectType.name();
             }
+            setDefaultCopyFromVersion();
         } else {
             ProjectType versionProjectType = getInstance().getProjectType();
-            if(versionProjectType != null) {
+            if (versionProjectType != null) {
                 selectedProjectType = versionProjectType.name();
             }
+            copyFromVersionSlug = "";
         }
     }
 
     public HProject getProject() {
         return projectDAO.getBySlug(projectSlug);
+    }
+
+    public List<VersionItem> getOtherVersions() {
+        HProject project = getProject();
+        if (project != null) {
+            List<HProjectIteration> versionList =
+                    projectIterationDAO.getByProjectSlug(projectSlug,
+                            EntityStatus.ACTIVE, EntityStatus.READONLY);
+
+            Collections.sort(versionList,
+                    ComparatorUtil.VERSION_CREATION_DATE_COMPARATOR);
+
+            List<VersionItem> versionItems =
+                    Lists.transform(versionList, VERSION_ITEM_FN);
+
+            if (StringUtils.isEmpty(copyFromVersionSlug)
+                    && !versionItems.isEmpty()) {
+                versionItems.get(0).setSelected(true);
+            }
+            return versionItems;
+        }
+        return Collections.EMPTY_LIST;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public class VersionItem implements Serializable {
+        private boolean selected;
+        private HProjectIteration version;
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
@@ -229,25 +299,50 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                 projectSlug);
     }
 
+    public String createVersion() {
+        if (!validateSlug(getInstance().getSlug(), "slug"))
+            return "invalid-slug";
+
+        if (copyFromVersion) {
+            copyVersion();
+            return "copy-version";
+        } else {
+            return persist();
+        }
+    }
+
+    public void copyVersion() {
+        getInstance().setStatus(EntityStatus.READONLY);
+
+        // create basic version here
+        HProject project = getProject();
+        project.addIteration(getInstance());
+        super.persist();
+
+        copyVersionManager.startCopyVersion(projectSlug,
+                copyFromVersionSlug, getInstance().getSlug());
+
+        conversationScopeMessages
+                .setMessage(FacesMessage.SEVERITY_INFO, msgs.
+                        format("jsf.copyVersion.started",
+                                getInstance().getSlug(), copyFromVersionSlug));
+    }
+
     @Override
     public String persist() {
-        conversationScopeMessages.clearMessages();
         updateProjectType();
-
-        if (!validateSlug(getInstance().getSlug(), "slug"))
-            return null;
 
         HProject project = getProject();
         project.addIteration(getInstance());
 
         List<HLocale> projectLocales =
-                localeServiceImpl.getSupportedLanguageByProject(projectSlug);
+                localeServiceImpl
+                        .getSupportedLanguageByProject(projectSlug);
 
         getInstance().getCustomizedLocales().addAll(projectLocales);
 
         getInstance().getCustomizedValidations().putAll(
                 project.getCustomizedValidations());
-
         return super.persist();
     }
 
@@ -305,7 +400,6 @@ public class VersionHome extends SlugHome<HProjectIteration> {
     @Override
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public String update() {
-        conversationScopeMessages.clearMessages();
         String state = super.update();
         Events.instance().raiseEvent(PROJECT_ITERATION_UPDATE, getInstance());
         return state;
@@ -356,6 +450,16 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.iteration.CopyProjectType.message"));
+    }
+
+    /**
+     * @return comma-separated list of accepted file extensions. May be an empty
+     *         string
+     */
+    public String getAcceptedSourceFileTypes() {
+        return Joiner
+                .on(", ")
+                .join(ProjectType.getSupportedSourceFileTypes(getProjectType()));
     }
 
     private void updateProjectType() {
@@ -423,7 +527,7 @@ public class VersionHome extends SlugHome<HProjectIteration> {
                         .getSupportedLanguageByProjectIteration(projectSlug,
                                 slug);
             }
-            return Lists.newArrayList();
+            return Collections.EMPTY_LIST;
         }
 
         /**

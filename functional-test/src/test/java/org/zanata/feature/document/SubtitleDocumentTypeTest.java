@@ -21,6 +21,8 @@
 package org.zanata.feature.document;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,12 +30,15 @@ import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projectversion.VersionDocumentsPage;
 import org.zanata.page.projectversion.VersionLanguagesPage;
+import org.zanata.page.projectversion.versionsettings.VersionDocumentsTab;
 import org.zanata.page.webtrans.EditorPage;
 import org.zanata.util.CleanDocumentStorageRule;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.TestFileGenerator;
+import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
+import org.zanata.workflow.ProjectWorkFlow;
 
 import java.io.File;
 
@@ -49,26 +54,22 @@ import static org.zanata.util.FunctionalTestHelper.assumeTrue;
 @Category(DetailedTest.class)
 public class SubtitleDocumentTypeTest extends ZanataTestCase {
 
-    @Rule
-    public SampleProjectRule sampleProjectRule = new SampleProjectRule();
+    @ClassRule
+    public static SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
     @Rule
     public CleanDocumentStorageRule documentStorageRule =
             new CleanDocumentStorageRule();
 
+    private ZanataRestCaller zanataRestCaller;
     private TestFileGenerator testFileGenerator = new TestFileGenerator();
     private String sep = System.getProperty("line.separator");
 
     @Before
-    public void before() {
-        new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
-        String documentStorageDirectory = CleanDocumentStorageRule
-                .getDocumentStoragePath()
-                .concat(File.separator).concat("documents")
-                .concat(File.separator);
-
-        assumeTrue("The storage directory is empty, or doesn't exist",
-                storageIsClean(documentStorageDirectory));
+    public void beforeClass() {
+        zanataRestCaller = new ZanataRestCaller();
+        zanataRestCaller.createProjectAndVersion("subtitle-test", "subtitles",
+                "file");
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -240,31 +241,21 @@ public class SubtitleDocumentTypeTest extends ZanataTestCase {
      * Upload and open the test file in the editor for verification
      */
     private EditorPage uploadAndGoToDocument(File testFile) {
-        String successfullyUploaded =
-                "Document " + testFile.getName() + " uploaded.";
-        VersionLanguagesPage versionLanguagesPage = new LoginWorkFlow()
+        VersionDocumentsPage versionDocumentsPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToProjects()
-                .goToProject("about fedora")
-                .gotoVersion("master")
+                .goToProject("subtitle-test")
+                .gotoVersion("subtitles")
                 .gotoSettingsTab()
                 .gotoSettingsDocumentsTab()
                 .pressUploadFileButton()
                 .enterFilePath(testFile.getAbsolutePath())
-                .submitUpload();
-
-        versionLanguagesPage.expectNotification(successfullyUploaded);
-
-        assertThat(versionLanguagesPage.getNotificationMessage())
-                .isEqualTo(successfullyUploaded)
-                .as("Document uploaded notification shows");
-
-        VersionDocumentsPage versionDocumentsPage = versionLanguagesPage
+                .submitUpload()
+                .clickUploadDone()
                 .gotoDocumentTab();
 
         assertThat(versionDocumentsPage.sourceDocumentsContains(testFile
                 .getName())).as("Document shows in table");
-
 
         return versionDocumentsPage
                 .gotoLanguageTab()
