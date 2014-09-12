@@ -16,10 +16,10 @@
       <!-- We can use the JAVA_HOME env variable instead of this -->
       <!--             <property name="javaHome">/usr/lib/jvm/jre-1.6.0-openjdk.x86_64</property> -->
       <!--
-                  <property name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Djboss.socket.binding.port-offset=100 -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787</property>
+                  <property name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787</property>
       -->
       <property
-        name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Djboss.socket.binding.port-offset=100
+        name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false
       </property>
 
       <!-- From JBOSS_HOME/standalone/configuration -->
@@ -27,7 +27,8 @@
       <!--<property name="allowConnectingToRunningServer">true</property>-->
       <!-- This needs to be here if -Djboss.socket.binding.port-offset is used in javaVmArguments.
            It must match the exact management port to be used-->
-      <property name="managementPort">10099</property>
+      <!-- NB: don't put whitespace around the number -->
+      <property name="managementPort">${jboss.management.native.port,env.JBOSS_MANAGEMENT_NATIVE_PORT:10099}</property>
     </configuration>
   </container>
   <extension qualifier="seam2">

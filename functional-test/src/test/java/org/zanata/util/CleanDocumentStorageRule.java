@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
@@ -46,7 +48,10 @@ public class CleanDocumentStorageRule extends ExternalResource {
                             .getName());
             long portOffset = Integer.parseInt(
                 PropertiesHolder.getProperty("cargo.port.offset", "0"));
-            long rmiPort = 4447 + portOffset;
+            String port = System.getenv("JBOSS_REMOTING_PORT");
+            int portNum = port != null ? parseInt(port) : 4547;
+            long rmiPort = portOffset + portNum;
+
             env.put(Context.PROVIDER_URL, "remote://localhost:" + rmiPort);
             InitialContext remoteContext = null;
             try {
