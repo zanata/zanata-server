@@ -1,0 +1,16 @@
+#!/bin/env groovy
+
+Map ports = [:]
+List sockets = new ArrayList()
+try {
+    for(String name: args) {
+        def s = new ServerSocket(0)
+        sockets.add(s)
+        ports[name] = s.localPort
+    }
+} finally {
+    sockets*.close()
+}
+
+ports.each { println "export ${it.key}=${it.value};" }
+return
