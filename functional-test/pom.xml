@@ -308,14 +308,13 @@
 
   <profiles>
     <profile>
-      <id>wildfly</id>
+      <id>wildfly81</id>
       <activation>
         <property>
-          <name>wildfly</name>
+          <name>wildfly81</name>
         </property>
       </activation>
       <properties>
-        <wildfly.version>8.1.0.Final</wildfly.version>
         <cargo.container>wildfly8x</cargo.container>
         <cargo.installation>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</cargo.installation>
         <standalone.xml.file>standalone_wildfly.xml</standalone.xml.file>

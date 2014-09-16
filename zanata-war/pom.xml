@@ -19,7 +19,6 @@
 
   <properties>
     <war.config.dir>${basedir}/src/etc</war.config.dir>
-    <containerId>jboss71x</containerId>
     <allow.deploy.skip>true</allow.deploy.skip>
 
     <!-- application properties -->
@@ -165,27 +164,6 @@
           </usedDependencies>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-arquillian-jboss-home</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <phase>pre-integration-test</phase>
-            <configuration>
-              <rules combine.self="override">
-                <requireProperty>
-                  <property>arquillian.jboss.home</property>
-                  <message xml:space="preserve">You must set the arquillian.jboss.home property to run integration tests</message>
-                </requireProperty>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
 
       <plugin>
         <groupId>com.ning.maven.plugins</groupId>
@@ -252,18 +230,6 @@
             <goals>
               <goal>run</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>prepare-arquillian-container</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <copy file="${project.basedir}/src/test/resources/arquillian/standalone.xml" tofile="${arquillian.jboss.home}/standalone/configuration/zanata-standalone.xml" />
-              </target>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -479,28 +445,6 @@
             <haltOnFailure>${cobertura.halt.failure}</haltOnFailure>
           </check>
         </configuration>
-      </plugin>
-
-      <!-- Configure Failsafe to run in integration-test/verify phase -->
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <!-- Container (Arquillian tests) -->
-          <execution>
-            <id>container-tests</id>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-            <configuration>
-              <includes>
-                <include>**/*ITCase.java</include>
-              </includes>
-              <testNGArtifactName>none:none</testNGArtifactName>
-              <runOrder>alphabetical</runOrder>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
@@ -1029,6 +973,233 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <profile>
+      <id>jbosseap6</id>
+      <activation>
+        <property>
+          <name>jbosseap6</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-arquillian-container</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <fail message="'arquillian.jboss.home' property must be set to run integration tests in this profile"
+                      unless="arquillian.jboss.home"/>
+                    <copy overwrite="true"
+                      file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian.xml"
+                      tofile="${arquillian.jboss.home}/standalone/configuration/standalone-arquillian.xml" />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Configure Failsafe to run in integration-test/verify phase -->
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <!-- Container (Arquillian tests) -->
+              <execution>
+                <id>container-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*ITCase.java</include>
+                  </includes>
+                  <testNGArtifactName>none:none</testNGArtifactName>
+                  <runOrder>alphabetical</runOrder>
+                  <forkCount>1</forkCount>
+                  <reuseForks>true</reuseForks>
+                  <systemPropertyVariables>
+                    <arquillian.launch>jbossas-managed</arquillian.launch>
+                  </systemPropertyVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-arquillian-common</artifactId>
+          <scope>test</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.jboss.logmanager</groupId>
+              <artifactId>log4j-jboss-logmanager</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+
+        <dependency>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-arquillian-container-managed</artifactId>
+          <version>${jboss.as.version}</version>
+          <scope>test</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.jboss.logmanager</groupId>
+              <artifactId>jboss-logmanager</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.jboss.logmanager</groupId>
+              <artifactId>log4j-jboss-logmanager</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+
+        <dependency>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-controller-client</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-controller</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>wildfly81</id>
+      <!-- Why do I need to repeat this? -->
+      <activation>
+        <property>
+          <name>wildfly81</name>
+        </property>
+      </activation>
+      <properties>
+        <wildfly.home>${project.build.directory}/wildfly/wildfly-${wildfly.version}</wildfly.home>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- NB: This plugin needs to be before antrun, because it
+                 creates the wildfly directory for the unzip tasks. -->
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.wildfly</groupId>
+                      <artifactId>wildfly-dist</artifactId>
+                      <version>${wildfly.version}</version>
+                      <type>zip</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-arquillian-container</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <copy
+                      overwrite="true"
+                      file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian-wildfly.xml"
+                      tofile="${wildfly.home}/standalone/configuration/standalone.xml" />
+                    <mkdir dir="${project.build.directory}/downloads/" />
+                    <get
+                      src="http://sourceforge.net/projects/zanata/files/wildfly/wildfly-8.1.0.Final-module-mojarra-2.1.28.zip/download"
+                      dest="${project.build.directory}/downloads/wildfly-8.1.0.Final-module-mojarra-2.1.28.zip"
+                      usetimestamp="true" />
+                    <get
+                      src="http://sourceforge.net/projects/zanata/files/wildfly/wildfly-8.1.0.Final-module-hibernate-main-4.2.15.Final.zip/download"
+                      dest="${project.build.directory}/downloads/wildfly-8.1.0.Final-module-hibernate-main-4.2.15.Final.zip"
+                      usetimestamp="true" />
+                    <unzip
+                      src="${project.build.directory}/downloads/wildfly-8.1.0.Final-module-mojarra-2.1.28.zip"
+                      dest="${wildfly.home}" />
+                    <unzip
+                      src="${project.build.directory}/downloads/wildfly-8.1.0.Final-module-hibernate-main-4.2.15.Final.zip"
+                      dest="${wildfly.home}" />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Configure Failsafe to run in integration-test/verify phase -->
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <!-- Container (Arquillian tests) -->
+              <execution>
+                <id>container-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/*ITCase.java</include>
+                  </includes>
+                  <testNGArtifactName>none:none</testNGArtifactName>
+                  <runOrder>alphabetical</runOrder>
+                  <forkCount>1</forkCount>
+                  <reuseForks>true</reuseForks>
+                  <systemPropertyVariables>
+                    <arquillian.launch>wildfly81</arquillian.launch>
+                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                    <!-- the maven dependency plugin will have already downloaded the server on /target -->
+                    <jboss.home>${wildfly.home}</jboss.home>
+                  </systemPropertyVariables>
+                  <redirectTestOutputToFile>false</redirectTestOutputToFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.wildfly</groupId>
+          <artifactId>wildfly-arquillian-container-embedded</artifactId>
+          <version>${wildfly.version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.wildfly</groupId>
+          <artifactId>wildfly-embedded</artifactId>
+          <version>${wildfly.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
     </profile>
 
   </profiles>
@@ -1748,47 +1919,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.as</groupId>
-      <artifactId>jboss-as-arquillian-container-managed</artifactId>
-      <version>${jboss.as.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jboss-logmanager</artifactId>
-          <groupId>org.jboss.logmanager</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>log4j-jboss-logmanager</artifactId>
-          <groupId>org.jboss.logmanager</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.as</groupId>
-      <artifactId>jboss-as-arquillian-common</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>
-            log4j-jboss-logmanager
-          </artifactId>
-          <groupId>
-            org.jboss.logmanager
-          </groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.as</groupId>
-      <artifactId>jboss-as-controller-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.as</groupId>
-      <artifactId>jboss-as-controller</artifactId>
-      <scope>test</scope>
-    </dependency>
     <!-- Currently only needed for our override of Arquillian's
     ManagementClient -->
     <dependency>

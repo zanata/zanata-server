@@ -97,7 +97,7 @@
       <dependency>
         <groupId>org.jboss.arquillian</groupId>
         <artifactId>arquillian-bom</artifactId>
-        <version>1.1.1.Final</version>
+        <version>1.1.5.Final</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -1055,6 +1055,18 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <profile>
+      <id>wildfly81</id>
+      <activation>
+        <property>
+          <name>wildfly81</name>
+        </property>
+      </activation>
+      <properties>
+        <wildfly.version>8.1.0.Final</wildfly.version>
+      </properties>
     </profile>
   </profiles>
 
