@@ -20,19 +20,11 @@
  */
 package org.zanata;
 
-import static org.zanata.util.ZanataRestCaller.buildSourceResource;
-import static org.zanata.util.ZanataRestCaller.buildTextFlow;
-import static org.zanata.util.ZanataRestCaller.buildTextFlowTarget;
-import static org.zanata.util.ZanataRestCaller.buildTranslationResource;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.junit.Rule;
-import org.zanata.common.LocaleId;
-import org.zanata.rest.dto.resource.Resource;
-import org.zanata.rest.dto.resource.TranslationsResource;
+import org.junit.Test;
 import org.zanata.util.SampleProjectRule;
-import org.zanata.util.ZanataRestCaller;
 
 /**
  * This is a class for experiment some things i.e. populate cargo instance with
@@ -44,30 +36,8 @@ public class ExperimentTest {
     @Rule
     public SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
-    // @Test
-    public void testPushTranslation() {
-        ZanataRestCaller restCaller =
-                new ZanataRestCaller();
-        String projectSlug = "push-test";
-        String iterationSlug = "master";
-        String projectType = "gettext";
-        restCaller.createProjectAndVersion(projectSlug, iterationSlug,
-                projectType);
-
-        String docId = "messages";
-        Resource sourceResource = buildSourceResource(docId);
-        TranslationsResource transResource = buildTranslationResource();
-        int numOfMessages = 1000;
-        for (int i = 0; i < numOfMessages; i++) {
-            String resId = "res" + i;
-            String content = "content" + i;
-            sourceResource.getTextFlows().add(buildTextFlow(resId, content));
-            transResource.getTextFlowTargets().add(
-                    buildTextFlowTarget(resId, content));
-        }
-        restCaller.postSourceDocResource(projectSlug, iterationSlug,
-                sourceResource, false);
-        restCaller.postTargetDocResource(projectSlug, iterationSlug, docId,
-                new LocaleId("pl"), transResource, "auto");
+    @Test
+    public void test() {
+        // we need at least a test to apply the rule
     }
 }
