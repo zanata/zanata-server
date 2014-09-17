@@ -114,8 +114,6 @@
             <usedDependency>com.google.protobuf:protobuf-java</usedDependency>
             <!-- Used by javamelody for email/pdf support -->
             <usedDependency>com.lowagie:itext</usedDependency>
-            <!-- used for arquillian tests -->
-            <usedDependency>org.jboss.as:jboss-as-controller</usedDependency>
             <!--used to log sql and parameters when debugging Hibernate -->
             <usedDependency>com.googlecode.log4jdbc:log4jdbc</usedDependency>
             <!-- used for org.hibernate:hibernate-core and  org.drools:drools-compiler -->
@@ -143,7 +141,6 @@
             <usedDependency>org.hibernate:hibernate-testing</usedDependency>
             <usedDependency>org.jboss.arquillian.junit:arquillian-junit-container</usedDependency>
             <usedDependency>org.jboss.arquillian.protocol:arquillian-protocol-servlet</usedDependency>
-            <usedDependency>org.jboss.as:jboss-as-arquillian-container-managed</usedDependency>
             <!-- Used by JSON (RestEasy) -->
             <usedDependency>org.jboss.resteasy:resteasy-jackson-provider</usedDependency>
             <usedDependency>org.codehaus.jackson:jackson-xc</usedDependency>
@@ -1006,6 +1003,19 @@
             </executions>
           </plugin>
 
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <configuration>
+              <usedDependencies combine.children="append">
+                <!-- used for arquillian tests -->
+                <usedDependency>org.jboss.as:jboss-as-controller</usedDependency>
+                <usedDependency>org.jboss.as:jboss-as-arquillian-container-managed</usedDependency>
+                <!-- NB: Don't add anything without a comment explaining how the
+                     dependency is used -->
+              </usedDependencies>
+            </configuration>
+          </plugin>
+
           <!-- Configure Failsafe to run in integration-test/verify phase -->
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
@@ -1032,6 +1042,7 @@
               </execution>
             </executions>
           </plugin>
+
         </plugins>
       </build>
 
@@ -1116,6 +1127,15 @@
                 </configuration>
               </execution>
             </executions>
+            <configuration>
+              <usedDependencies combine.children="append">
+                <!-- used for arquillian tests -->
+                <usedDependency>org.wildfly:wildfly-embedded</usedDependency>
+                <usedDependency>org.wildfly:wildfly-arquillian-container-embedded</usedDependency>
+                <!-- NB: Don't add anything without a comment explaining how the
+                     dependency is used -->
+              </usedDependencies>
+            </configuration>
           </plugin>
 
           <plugin>
@@ -1188,10 +1208,22 @@
       </build>
       <dependencies>
         <dependency>
+          <groupId>io.undertow</groupId>
+          <artifactId>undertow-core</artifactId>
+          <version>1.0.15.Final</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
           <groupId>org.wildfly</groupId>
           <artifactId>wildfly-arquillian-container-embedded</artifactId>
           <version>${wildfly.version}</version>
           <scope>test</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.jboss.remoting3</groupId>
+              <artifactId>jboss-remoting</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
           <groupId>org.wildfly</groupId>

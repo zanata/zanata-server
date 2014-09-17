@@ -283,7 +283,6 @@
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-remote-naming</artifactId>
-      <version>1.0.4.Final</version>
       <scope>test</scope>
     </dependency>
 
@@ -308,6 +307,27 @@
 
   <profiles>
     <profile>
+      <id>jbosseap6</id>
+      <activation>
+        <property>
+          <name>jbosseap6</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <configuration>
+              <usedDependencies>
+                <usedDependency>org.jboss.as:jboss-as-ejb-client-bom</usedDependency>
+              </usedDependencies>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <profile>
       <id>wildfly81</id>
       <activation>
         <property>
@@ -324,6 +344,14 @@
       </properties>
       <build>
         <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <configuration>
+              <usedDependencies>
+                <usedDependency>org.wildfly:wildfly-ejb-client-bom</usedDependency>
+              </usedDependencies>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
@@ -357,6 +385,22 @@
           </plugin>
         </plugins>
       </build>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-ejb-client</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>test</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-remote-naming</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>test</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
     <profile>
       <id>run-functional-test</id>
@@ -659,7 +703,7 @@
         <configuration>
           <usedDependencies combine.children="append">
             <usedDependency>mysql:mysql-connector-java</usedDependency>
-            <usedDependency>org.jboss.as:jboss-as-ejb-client-bom</usedDependency>
+            <usedDependency>org.codehaus.groovy:groovy-all</usedDependency>
             <usedDependency>org.jboss.resteasy:resteasy-jaxb-provider</usedDependency>
             <usedDependency>org.projectlombok:lombok</usedDependency>
           </usedDependencies>
