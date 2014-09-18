@@ -517,6 +517,11 @@
                   <extractDir>${cargo.extract.dir}</extractDir>
                 </zipUrlInstaller>
               </container>
+              <configuration>
+                <properties>
+                  <cargo.servlet.port>${cargo.servlet.port}</cargo.servlet.port>
+                </properties>
+              </configuration>
               <deployables>
                 <deployable>
                   <type>war</type>
