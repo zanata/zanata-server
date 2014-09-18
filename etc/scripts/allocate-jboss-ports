@@ -1,4 +1,5 @@
-eval $(etc/scripts/allocate-ports $(cat <<EOF
+#!/bin/sh
+etc/scripts/allocate-ports $(cat <<EOF
 JBOSS_MANAGEMENT_NATIVE_PORT
 JBOSS_MANAGEMENT_HTTP_PORT
 JBOSS_MANAGEMENT_HTTPS_PORT
@@ -11,4 +12,4 @@ JBOSS_TXN_RECOVERY_PORT
 JBOSS_TXN_STATUS_PORT
 SMTP_PORT
 EOF
-))
+)

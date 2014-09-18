@@ -1,4 +1,5 @@
 #!/bin/bash -e
 
-source etc/scripts/allocate-jboss-ports
+set -a # make sure the env vars are exported
+source <(etc/scripts/allocate-jboss-ports)
 exec mvn "$@"
