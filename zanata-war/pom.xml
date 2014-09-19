@@ -1131,8 +1131,7 @@
             <configuration>
               <usedDependencies combine.children="append">
                 <!-- used for arquillian tests -->
-                <usedDependency>org.wildfly:wildfly-embedded</usedDependency>
-                <usedDependency>org.wildfly:wildfly-arquillian-container-embedded</usedDependency>
+                <usedDependency>org.wildfly:wildfly-arquillian-container-managed</usedDependency>
                 <!-- NB: Don't add anything without a comment explaining how the
                      dependency is used -->
               </usedDependencies>
@@ -1216,7 +1215,7 @@
         </dependency>
         <dependency>
           <groupId>org.wildfly</groupId>
-          <artifactId>wildfly-arquillian-container-embedded</artifactId>
+          <artifactId>wildfly-arquillian-container-managed</artifactId>
           <version>${wildfly.version}</version>
           <scope>test</scope>
           <exclusions>
@@ -1225,12 +1224,6 @@
               <artifactId>jboss-remoting</artifactId>
             </exclusion>
           </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.wildfly</groupId>
-          <artifactId>wildfly-embedded</artifactId>
-          <version>${wildfly.version}</version>
-          <scope>test</scope>
         </dependency>
       </dependencies>
     </profile>
