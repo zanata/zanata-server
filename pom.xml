@@ -1063,10 +1063,11 @@
     </profile>
 
     <profile>
-      <id>wildfly81</id>
+      <id>wildfly8</id>
       <activation>
         <property>
-          <name>wildfly81</name>
+          <name>appserver</name>
+          <value>wildfly8</value>
         </property>
       </activation>
       <properties>

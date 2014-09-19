@@ -310,7 +310,8 @@
       <id>jbosseap6</id>
       <activation>
         <property>
-          <name>jbosseap6</name>
+          <name>appserver</name>
+          <value>jbosseap6</value>
         </property>
       </activation>
       <build>
@@ -328,10 +329,11 @@
 
     </profile>
     <profile>
-      <id>wildfly81</id>
+      <id>wildfly8</id>
       <activation>
         <property>
-          <name>wildfly81</name>
+          <name>appserver</name>
+          <value>wildfly8</value>
         </property>
       </activation>
       <properties>
