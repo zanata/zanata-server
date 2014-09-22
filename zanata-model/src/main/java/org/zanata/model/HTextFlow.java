@@ -96,7 +96,7 @@ import com.google.common.collect.ImmutableList;
 @NamedQueries({
         @NamedQuery(
                 name = HTextFlow.QUERY_GET_BY_DOC_AND_RES_ID_BATCH,
-                query = "from HTextFlow tf left join fetch tf.targets tft left join fetch tft.history where tf.document = :document and tf.resId in (:resIds)")
+                query = "select distinct tf from HTextFlow tf left join fetch tf.targets tft left join fetch tft.history where tf.document = :document and tf.resId in (:resIds) and tf.obsolete = false")
 })
 public class HTextFlow extends HTextContainer implements Serializable,
         ITextFlowHistory, HasSimpleComment, HasContents, ITextFlow {

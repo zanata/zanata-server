@@ -194,16 +194,18 @@ public class ZanataRestCaller {
         CopyTransStatus copyTransStatus =
                 resource.startCopyTrans(projectSlug,
                         iterationSlug, docId);
-        while (!copyTransStatus.isInProgress()) {
+        log.info("copyTrans started: {}-{}-{}", projectSlug, iterationSlug, docId);
+        while (copyTransStatus.isInProgress()) {
             try {
                 Thread.sleep(1000);
-                log.info("copyTrans completion: {}", copyTransStatus.getPercentageComplete());
+                log.debug("copyTrans completion: {}", copyTransStatus.getPercentageComplete());
                 copyTransStatus = resource.getCopyTransStatus(projectSlug, iterationSlug, docId);
             }
             catch (InterruptedException e) {
                 throw Throwables.propagate(e);
             }
         }
+        log.info("copyTrans completed: {}-{}-{}", projectSlug, iterationSlug, docId);
     }
 
     public void asyncPushSource(String projectSlug, String iterationSlug,
@@ -214,8 +216,9 @@ public class ZanataRestCaller {
                 sourceResource.getName(), projectSlug, iterationSlug,
                 sourceResource,
                 Sets.<String>newHashSet(), false);
-        waitUntilFinished(resource, processStatus);
-        log.info("finished async source push");
+        processStatus = waitUntilFinished(resource, processStatus);
+        log.info("finished async source push ({}-{}): {}", projectSlug,
+                iterationSlug, processStatus.getStatusCode());
         if (copyTrans) {
             log.info("start copyTrans for {} - {}", projectSlug, iterationSlug);
             ICopyTransResource copyTransResource =
@@ -237,7 +240,8 @@ public class ZanataRestCaller {
         }
     }
 
-    private void waitUntilFinished(IAsynchronousProcessResource resource,
+    private ProcessStatus waitUntilFinished(
+            IAsynchronousProcessResource resource,
             ProcessStatus processStatus) {
         EnumSet<ProcessStatus.ProcessStatusCode> doneStatus =
                 EnumSet.of(ProcessStatus.ProcessStatusCode.Failed,
@@ -245,10 +249,9 @@ public class ZanataRestCaller {
                         ProcessStatus.ProcessStatusCode.NotAccepted);
         String processId = processStatus.getUrl();
         while (!doneStatus.contains(processStatus.getStatusCode())) {
-            if (processStatus.getStatusCode().equals(
-                    ProcessStatus.ProcessStatusCode.Failed)) {
-                throw new RuntimeException(processStatus.getStatusCode().toString());
-            }
+            log.debug("{} percent completed {}, messages: {}", processId,
+                    processStatus.getPercentageComplete(),
+                    processStatus.getMessages());
             try {
                 Thread.sleep(1000);
             }
@@ -257,6 +260,11 @@ public class ZanataRestCaller {
             }
             processStatus = resource.getProcessStatus(processId);
         }
+        if (processStatus.getStatusCode().equals(
+                ProcessStatus.ProcessStatusCode.Failed)) {
+            throw new RuntimeException(processStatus.getStatusCode().toString());
+        }
+        return processStatus;
     }
 
     public void asyncPushTarget(String projectSlug, String iterationSlug,
@@ -268,6 +276,8 @@ public class ZanataRestCaller {
                 resource.startTranslatedDocCreationOrUpdate(docId, projectSlug,
                         iterationSlug, localeId, transResource,
                         Collections.<String>emptySet(), mergeType);
-        waitUntilFinished(resource, processStatus);
+        processStatus = waitUntilFinished(resource, processStatus);
+        log.info("finished async translation({}-{}) push: {}", projectSlug,
+                iterationSlug, processStatus.getStatusCode());
     }
 }
