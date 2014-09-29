@@ -48,23 +48,10 @@ import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
 
-@Name("transUnitStatusService")
+@Name("transUnitService")
 @Path(TransUnitResource.SERVICE_PATH)
 @Transactional
 public class TransUnitService implements TransUnitResource {
-
-    @PathParam("projectSlug")
-    private String projectSlug;
-
-    @PathParam("versionSlug")
-    private String versionSlug;
-
-    @PathParam("docId")
-    private String docId;
-
-    @PathParam("localeId")
-    private String localeId;
-
     @In
     private TextFlowTargetDAO textFlowTargetDAO;
 
@@ -75,7 +62,8 @@ public class TransUnitService implements TransUnitResource {
     private LocaleDAO localeDAO;
 
     @Override
-    public Response getStatus() {
+    public Response getStatus(String projectSlug, String versionSlug,
+            String docId, String localeId) {
 
         HDocument document =
                 documentDAO.getByProjectIterationAndDocId(projectSlug,

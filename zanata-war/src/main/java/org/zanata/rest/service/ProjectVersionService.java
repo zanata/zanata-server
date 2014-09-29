@@ -40,10 +40,10 @@ import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
 
-@Name("versionLocalesService")
-@Path(VersionLocalesResource.SERVICE_PATH)
+@Name("projectVersionService")
+@Path(ProjectVersionResource.SERVICE_PATH)
 @Transactional
-public class VersionLocalesService implements VersionLocalesResource {
+public class ProjectVersionService implements ProjectVersionResource {
 
     @PathParam("projectSlug")
     private String projectSlug;
@@ -58,7 +58,7 @@ public class VersionLocalesService implements VersionLocalesResource {
     private ProjectIterationDAO projectIterationDAO;
 
     @Override
-    public Response get() {
+    public Response getLocales() {
         HProjectIteration version =
                 projectIterationDAO.getBySlug(projectSlug, versionSlug);
         if (version == null) {
