@@ -65,6 +65,8 @@ public class TransUnitService implements TransUnitResource {
     public Response getStatus(String projectSlug, String versionSlug,
             String docId, String localeId) {
 
+        docId = URIHelper.convertFromDocumentURIId(docId);
+
         HDocument document =
                 documentDAO.getByProjectIterationAndDocId(projectSlug,
                         versionSlug, docId);

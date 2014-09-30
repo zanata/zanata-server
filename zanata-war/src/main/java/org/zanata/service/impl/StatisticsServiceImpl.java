@@ -53,6 +53,7 @@ import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
 import org.zanata.rest.service.StatisticsResource;
+import org.zanata.rest.service.URIHelper;
 import org.zanata.rest.service.ZPathService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
@@ -277,6 +278,9 @@ public class StatisticsServiceImpl implements StatisticsResource {
     @Override
     public Response getDocumentStatistics(String projectSlug,
             String versionSlug, String docId, String localeId) {
+
+        docId = URIHelper.convertFromDocumentURIId(docId);
+
         HDocument doc =
                 documentDAO.getByProjectIterationAndDocId(projectSlug,
                         versionSlug, docId);
