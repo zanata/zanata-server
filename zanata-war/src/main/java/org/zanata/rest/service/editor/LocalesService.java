@@ -18,56 +18,52 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.rest.service;
+package org.zanata.rest.service.editor;
+
+import static org.zanata.common.EntityStatus.OBSOLETE;
 
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.model.HLocale;
-import org.zanata.model.HProjectIteration;
+import org.zanata.model.HProject;
+import org.zanata.rest.MediaTypes;
+import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.Locale;
+import org.zanata.rest.dto.Project;
+import org.zanata.rest.service.editor.LocalesResource;
 import org.zanata.service.LocaleService;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
-@Name("projectVersionService")
-@Path(ProjectVersionResource.SERVICE_PATH)
+@Name("localesService")
+@Path(LocalesResource.SERVICE_PATH)
 @Transactional
-public class ProjectVersionService implements ProjectVersionResource {
-
-    @PathParam("projectSlug")
-    private String projectSlug;
-
-    @PathParam("versionSlug")
-    private String versionSlug;
+public class LocalesService implements LocalesResource {
 
     @In
     private LocaleService localeServiceImpl;
 
-    @In
-    private ProjectIterationDAO projectIterationDAO;
-
     @Override
-    public Response getLocales() {
-        HProjectIteration version =
-                projectIterationDAO.getBySlug(projectSlug, versionSlug);
-        if (version == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        List<HLocale> locales =
-                localeServiceImpl.getSupportedLanguageByProjectIteration(
-                        projectSlug, versionSlug);
+    public Response get() {
+        List<HLocale> locales = localeServiceImpl.getAllLocales();
 
         List<Locale> localesRefs =
                 Lists.newArrayListWithExpectedSize(locales.size());
@@ -83,4 +79,5 @@ public class ProjectVersionService implements ProjectVersionResource {
                 new GenericEntity<List<Locale>>(localesRefs, genericType);
         return Response.ok(entity).build();
     }
+
 }
