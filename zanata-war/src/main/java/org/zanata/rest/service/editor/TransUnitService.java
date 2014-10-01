@@ -38,10 +38,10 @@ import org.zanata.rest.dto.resource.TransUnits;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("translationService")
-@Path(TranslationResource.SERVICE_PATH)
+@Name("transUnitService")
+@Path(TransUnitResource.SERVICE_PATH)
 @Transactional
-public class TranslationService implements TranslationResource {
+public class TransUnitService implements TransUnitResource {
     @In
     private TextFlowTargetDAO textFlowTargetDAO;
 
@@ -66,9 +66,10 @@ public class TranslationService implements TranslationResource {
                     textFlowTargetDAO.getTextFlowTarget(id, locale);
             if (hTarget != null) {
                 TransUnit tu =
-                        transUnitUtils.buildTransUnit(hTarget, locale, false,
+                        transUnitUtils.buildTransUnit(hTarget, locale, true,
                                 true);
-                transUnits.addTransUnit(hTarget.getTextFlow().getId().toString(), tu);
+                transUnits.addTransUnit(hTarget.getTextFlow().getId()
+                        .toString(), tu);
             }
         }
         return Response.ok(transUnits).build();

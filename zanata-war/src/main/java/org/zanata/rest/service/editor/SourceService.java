@@ -20,40 +20,22 @@
  */
 package org.zanata.rest.service.editor;
 
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
-import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
-import org.zanata.rest.dto.Locale;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TransUnit;
 import org.zanata.rest.dto.resource.TransUnits;
 import org.zanata.rest.service.ResourceUtils;
-import org.zanata.service.LocaleService;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -62,8 +44,6 @@ import com.google.common.collect.Maps;
 @Path(SourceResource.SERVICE_PATH)
 @Transactional
 public class SourceService implements SourceResource {
-    public static int MAX_ID_SIZE = 200;
-
     @In
     private TextFlowDAO textFlowDAO;
 
@@ -76,19 +56,12 @@ public class SourceService implements SourceResource {
         if (StringUtils.isEmpty(ids)) {
             return Response.ok(transUnits).build();
         }
-        List<String> idList = Lists.newArrayList(ids.split(","));
-        if (idList.size() > MAX_ID_SIZE) {
+        List<Long> idList = TransUnitUtils.filterAndConvertIdsToList(ids);
+        if (idList.size() > TransUnitUtils.MAX_SIZE) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        List<Long> filteredIds = Lists.newArrayList();
-        for(String id: idList) {
-            if(StringUtils.isNumeric(id)) {
-                filteredIds.add(Long.parseLong(id));
-            }
-        }
-
-        List<HTextFlow> hTextFlows = textFlowDAO.findByIdList(filteredIds);
+        List<HTextFlow> hTextFlows = textFlowDAO.findByIdList(idList);
 
         for(HTextFlow htf: hTextFlows) {
             LocaleId localeId = htf.getDocument().getLocale().getLocaleId();
