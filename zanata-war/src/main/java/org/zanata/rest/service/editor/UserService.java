@@ -13,6 +13,9 @@ import org.zanata.model.HPerson;
 import org.zanata.rest.dto.User;
 import org.zanata.service.GravatarService;
 
+/**
+ * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
+ */
 @Name("userService")
 @Path(UserResource.SERVICE_PATH)
 @Transactional

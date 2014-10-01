@@ -20,39 +20,26 @@
  */
 package org.zanata.rest.service.editor;
 
-import static org.zanata.common.EntityStatus.OBSOLETE;
-
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.zanata.model.HLocale;
-import org.zanata.model.HProject;
-import org.zanata.rest.MediaTypes;
-import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.Locale;
-import org.zanata.rest.dto.Project;
-import org.zanata.rest.service.editor.LocalesResource;
 import org.zanata.service.LocaleService;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
+/**
+ * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
+ */
 @Name("localesService")
 @Path(LocalesResource.SERVICE_PATH)
 @Transactional

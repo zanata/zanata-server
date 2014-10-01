@@ -35,7 +35,6 @@ import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.service.ETagUtils;
 import org.zanata.rest.service.ProjectIterationService;
 import org.zanata.rest.service.ResourceUtils;
-import org.zanata.rest.service.SourceDocResourceService;
 import org.zanata.rest.service.URIHelper;
 import org.zanata.service.LocaleService;
 

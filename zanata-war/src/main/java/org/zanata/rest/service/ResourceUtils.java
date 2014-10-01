@@ -1099,6 +1099,7 @@ public class ResourceUtils {
         }
         to.setRevision(from.getRevision());
         to.setPlural(from.isPlural());
+        to.setWordCount(from.getWordCount().intValue());
 
         // TODO HTextFlow should have a lang
         // to.setLang(from.get)
