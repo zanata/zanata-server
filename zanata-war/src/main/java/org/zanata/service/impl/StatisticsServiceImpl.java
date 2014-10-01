@@ -47,8 +47,6 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.Link;
-import org.zanata.rest.dto.Locale;
-import org.zanata.rest.dto.TransUnitStatus;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
@@ -102,7 +100,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -210,7 +208,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);

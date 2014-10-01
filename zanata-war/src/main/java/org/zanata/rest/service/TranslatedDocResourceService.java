@@ -178,7 +178,7 @@ public class TranslatedDocResourceService implements TranslatedDocResource {
         boolean foundData =
                 resourceUtils.transferToTranslationsResource(
                         translationResource, document, hLocale, extensions,
-                        hTargets, Optional.<String> absent());
+                        hTargets);
 
         if (!foundData && !skeletons) {
             return Response.status(Status.NOT_FOUND).build();

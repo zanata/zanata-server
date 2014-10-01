@@ -57,17 +57,24 @@ public class TransUnitUtils {
         HTextFlow htf = hTarget.getTextFlow();
 
         if (includeTf) {
-            TextFlow tf = new TextFlow(htf.getResId(), localeId);
-            resourceUtils.transferToTextFlow(htf, tf);
-            tu.setSource(tf);
+            tu = buildTransUnit(htf, localeId);
         }
 
         if (includeTft) {
             TextFlowTarget target = new TextFlowTarget(htf.getResId());
-            resourceUtils.transferToTextFlowTarget(hTarget, target,
-                    Optional.<String> absent());
+            resourceUtils.transferToTextFlowTarget(hTarget, target);
             tu.addTarget(localeId, target);
         }
+        return tu;
+    }
+
+    public TransUnit buildTransUnit(HTextFlow hTextFlow, LocaleId localeId) {
+        TransUnit tu = new TransUnit();
+
+        TextFlow tf = new TextFlow(hTextFlow.getResId(), localeId);
+        resourceUtils.transferToTextFlow(hTextFlow, tf);
+        tu.setSource(tf);
+
         return tu;
     }
 }

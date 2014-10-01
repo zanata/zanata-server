@@ -30,10 +30,14 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.LocaleId;
+import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.model.HLocale;
+import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.dto.resource.TransUnit;
 import org.zanata.rest.dto.resource.TransUnits;
+import org.zanata.service.LocaleService;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -43,7 +47,10 @@ import org.zanata.rest.dto.resource.TransUnits;
 @Transactional
 public class TransUnitService implements TransUnitResource {
     @In
-    private TextFlowTargetDAO textFlowTargetDAO;
+    private LocaleService localeServiceImpl;
+
+    @In
+    private TextFlowDAO textFlowDAO;
 
     @In
     private TransUnitUtils transUnitUtils;
@@ -59,18 +66,22 @@ public class TransUnitService implements TransUnitResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        LocaleId locale = new LocaleId(localeId);
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
 
-        for (Long id : idList) {
-            HTextFlowTarget hTarget =
-                    textFlowTargetDAO.getTextFlowTarget(id, locale);
-            if (hTarget != null) {
-                TransUnit tu =
-                        transUnitUtils.buildTransUnit(hTarget, locale, true,
-                                true);
-                transUnits.addTransUnit(hTarget.getTextFlow().getId()
-                        .toString(), tu);
+        List<HTextFlow> textFlows = textFlowDAO.findByIdList(idList);
+
+        for (HTextFlow textFlow : textFlows) {
+            TransUnit tu;
+            if (textFlow.getTargets().containsKey(locale.getId())) {
+                tu = transUnitUtils.buildTransUnit(textFlow.getTargets()
+                        .get(locale.getId()), locale.getLocaleId(),
+                        true, true);
+
+            } else {
+                tu = transUnitUtils.buildTransUnit(
+                        textFlow, locale.getLocaleId());
             }
+            transUnits.addTransUnit(textFlow.getId().toString(), tu);
         }
         return Response.ok(transUnits).build();
     }

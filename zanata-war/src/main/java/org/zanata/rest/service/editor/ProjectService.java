@@ -28,11 +28,6 @@ import org.zanata.rest.service.ETagUtils;
 @Transactional
 public class ProjectService implements ProjectResource {
 
-    @HeaderParam(HttpHeaderNames.ACCEPT)
-    @DefaultValue(MediaType.APPLICATION_JSON)
-    @Context
-    private MediaType accept;
-
     @Context
     private Request request;
 
@@ -59,7 +54,7 @@ public class ProjectService implements ProjectResource {
             HProject hProject = projectDAO.getBySlug(projectSlug);
             Project project =
                     org.zanata.rest.service.ProjectService.toResource(hProject,
-                            accept);
+                            MediaType.APPLICATION_JSON_TYPE);
             return Response.ok(project).tag(etag).build();
         } catch (NoSuchEntityException e) {
             return Response.status(Response.Status.NOT_FOUND).build();

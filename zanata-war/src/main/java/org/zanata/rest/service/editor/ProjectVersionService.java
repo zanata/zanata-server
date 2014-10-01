@@ -16,15 +16,18 @@ import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
+import org.zanata.common.ContentState;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.ReadOnlyEntityException;
@@ -49,6 +52,9 @@ import com.google.common.collect.Lists;
 public class ProjectVersionService implements ProjectVersionResource {
     @In
     private TextFlowTargetDAO textFlowTargetDAO;
+
+    @In
+    private TextFlowDAO textFlowDAO;
 
     @In
     private DocumentDAO documentDAO;
@@ -165,22 +171,25 @@ public class ProjectVersionService implements ProjectVersionResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        HLocale hLocale = localeServiceImpl.getByLocaleId(
-                new LocaleId(localeId));
+        HLocale hLocale = localeServiceImpl.getByLocaleId(localeId);
         if (hLocale == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        List<HTextFlowTarget> translations =
-                textFlowTargetDAO.findTranslations(document, hLocale);
+        List<HTextFlow> textFlows =
+                textFlowDAO.getTextFlowsByDocumentId(document.getId(), null,
+                        null);
 
         List<TransUnitStatus> statusList =
-                Lists.newArrayListWithExpectedSize(translations.size());
+                Lists.newArrayListWithExpectedSize(textFlows.size());
 
-        for (HTextFlowTarget target : translations) {
-            statusList.add(new TransUnitStatus(target
-                    .getTextFlow().getId(), target
-                    .getTextFlow().getResId(), target.getState()));
+        for (HTextFlow textFlow : textFlows) {
+            ContentState state = ContentState.New;
+            if (textFlow.getTargets().containsKey(hLocale.getId())) {
+                state = textFlow.getTargets().get(hLocale.getId()).getState();
+            }
+            statusList.add(new TransUnitStatus(textFlow.getId(), textFlow
+                    .getResId(), state));
         }
 
         Type genericType = new GenericType<List<Locale>>() {

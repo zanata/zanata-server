@@ -1249,11 +1249,10 @@ public class ResourceUtils {
      *
      * @param from
      * @param to
-     * @param apiVersion
      * @todo merge with {@link #transferToTextFlowTargetExtensions}
      */
     public void transferToTextFlowTarget(HTextFlowTarget from,
-            TextFlowTarget to, Optional<String> apiVersion) {
+            TextFlowTarget to) {
         if (from.getTextFlow().isPlural()) {
             to.setContents(from.getContents());
         } else if (!from.getContents().isEmpty()) {
@@ -1261,9 +1260,7 @@ public class ResourceUtils {
         } else {
             to.setContents(Collections.<String> emptyList());
         }
-        // TODO rhbz953734 - at the moment we will map review state into old
-        // state for compatibility
-        to.setState(mapContentState(apiVersion, from.getState()));
+        to.setState(from.getState());
         to.setRevision(from.getVersionNum());
         to.setTextFlowRevision(from.getTextFlowRevision());
         HPerson translator = from.getLastModifiedBy();
@@ -1271,22 +1268,6 @@ public class ResourceUtils {
             to.setTranslator(new Person(translator.getEmail(), translator
                     .getName()));
         }
-    }
-
-    private static ContentState mapContentState(Optional<String> apiVersion,
-            ContentState state) {
-        if (!apiVersion.isPresent()) {
-            switch (state) {
-            case Translated:
-                return ContentState.Approved;
-            case Rejected:
-                return ContentState.NeedReview;
-            default:
-                return state;
-            }
-        }
-        // TODO for other apiVersion, we will need to handle differently
-        return state;
     }
 
     public Resource buildResource(HDocument document) {
@@ -1321,15 +1302,13 @@ public class ResourceUtils {
      * @param locale
      * @param enabledExtensions
      * @param hTargets
-     * @param apiVersion
      *            TODO this will take api version in the future
      * @return true only if some data was found (text flow targets, or some
      *         metadata extensions)
      */
     public boolean transferToTranslationsResource(
             TranslationsResource transRes, HDocument document, HLocale locale,
-            Set<String> enabledExtensions, List<HTextFlowTarget> hTargets,
-            Optional<String> apiVersion) {
+            Set<String> enabledExtensions, List<HTextFlowTarget> hTargets) {
         boolean found =
                 this.transferToTranslationsResourceExtensions(document,
                         transRes.getExtensions(true), enabledExtensions,
@@ -1339,7 +1318,7 @@ public class ResourceUtils {
             found = true;
             TextFlowTarget target = new TextFlowTarget();
             target.setResId(hTarget.getTextFlow().getResId());
-            this.transferToTextFlowTarget(hTarget, target, apiVersion);
+            this.transferToTextFlowTarget(hTarget, target);
             this.transferToTextFlowTargetExtensions(hTarget,
                     target.getExtensions(true), enabledExtensions);
             transRes.getTextFlowTargets().add(target);

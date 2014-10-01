@@ -126,12 +126,9 @@ public class ProjectIterationService implements ProjectIterationResource {
 
     @Override
     public Response get() {
-        return getIteration(projectSlug, iterationSlug);
-    }
 
-    public Response getIteration(String projectSlug, String iterationSlug) {
         EntityTag etag =
-            eTagUtils.generateETagForIteration(projectSlug, iterationSlug);
+                eTagUtils.generateETagForIteration(projectSlug, iterationSlug);
 
         ResponseBuilder response = request.evaluatePreconditions(etag);
         if (response != null) {
@@ -139,8 +136,8 @@ public class ProjectIterationService implements ProjectIterationResource {
         }
 
         HProjectIteration hProjectIteration =
-            projectIterationDAO.getBySlug(getProjectSlug(),
-                getIterationSlug());
+                projectIterationDAO.getBySlug(getProjectSlug(),
+                        getIterationSlug());
         if (hProjectIteration == null) {
             return Response.status(Status.NOT_FOUND).build();
         }

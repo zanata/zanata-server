@@ -119,12 +119,7 @@ public class SourceDocResourceService implements SourceDocResource {
 
     @Override
     public Response get(Set<String> extensions) {
-        return getDocuments(projectSlug, iterationSlug);
-    }
-
-    public Response getDocuments(String projectSlug, String iterationSlug) {
-        HProjectIteration hProjectIteration =
-                retrieveAndCheckIteration(projectSlug, iterationSlug, false);
+        HProjectIteration hProjectIteration = retrieveAndCheckIteration(false);
 
         EntityTag etag =
                 projectIterationDAO.getResourcesETag(hProjectIteration);
@@ -389,12 +384,6 @@ public class SourceDocResourceService implements SourceDocResource {
     }
 
     private HProjectIteration retrieveAndCheckIteration(boolean writeOperation) {
-        return retrieveAndCheckIteration(projectSlug, iterationSlug,
-                writeOperation);
-    }
-
-    private HProjectIteration retrieveAndCheckIteration(String projectSlug,
-            String iterationSlug, boolean writeOperation) {
         HProjectIteration hProjectIteration =
                 projectIterationDAO.getBySlug(projectSlug, iterationSlug);
         HProject hProject =
