@@ -1,7 +1,5 @@
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
@@ -10,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.util.HttpHeaderNames;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -19,12 +16,13 @@ import org.zanata.model.HProject;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.Project;
 import org.zanata.rest.service.ETagUtils;
+import org.zanata.rest.editor.service.resource.ProjectResource;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Name("editor.projectService")
-@Path(org.zanata.rest.service.editor.ProjectResource.SERVICE_PATH)
+@Path(ProjectResource.SERVICE_PATH)
 @Transactional
 public class ProjectService implements ProjectResource {
 
@@ -37,11 +35,8 @@ public class ProjectService implements ProjectResource {
     @In
     private ProjectDAO projectDAO;
 
-    @PathParam("projectSlug")
-    String projectSlug;
-
     @Override
-    public Response get() {
+    public Response getProject(@PathParam("projectSlug") String projectSlug) {
         try {
             EntityTag etag = eTagUtils.generateTagForProject(projectSlug);
 
@@ -60,5 +55,4 @@ public class ProjectService implements ProjectResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
-
 }

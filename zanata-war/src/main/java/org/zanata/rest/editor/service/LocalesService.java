@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -32,7 +32,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.zanata.model.HLocale;
-import org.zanata.rest.dto.Locale;
+import org.zanata.rest.editor.dto.Locale;
+import org.zanata.rest.editor.service.resource.LocalesResource;
 import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
@@ -40,7 +41,7 @@ import com.google.common.collect.Lists;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("localesService")
+@Name("editor.localesService")
 @Path(LocalesResource.SERVICE_PATH)
 @Transactional
 public class LocalesService implements LocalesResource {

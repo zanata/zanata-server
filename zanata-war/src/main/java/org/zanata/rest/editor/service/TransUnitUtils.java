@@ -1,7 +1,8 @@
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.util.List;
 
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,12 +14,11 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.rest.dto.resource.TextFlow;
+import org.zanata.rest.editor.dto.TransUnit;
+import org.zanata.rest.editor.dto.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
-import org.zanata.rest.dto.resource.TransUnit;
 import org.zanata.rest.service.ResourceUtils;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 /**
@@ -62,8 +62,9 @@ public class TransUnitUtils {
 
         if (includeTft) {
             TextFlowTarget target = new TextFlowTarget(htf.getResId());
-            resourceUtils.transferToTextFlowTarget(hTarget, target);
-            tu.addTarget(localeId, target);
+            resourceUtils.transferToTextFlowTarget(hTarget, target,
+                Optional.of("Editor"));
+            tu.put(localeId.toString(), target);
         }
         return tu;
     }
@@ -72,9 +73,14 @@ public class TransUnitUtils {
         TransUnit tu = new TransUnit();
 
         TextFlow tf = new TextFlow(hTextFlow.getResId(), localeId);
-        resourceUtils.transferToTextFlow(hTextFlow, tf);
-        tu.setSource(tf);
+        transferToTextFlow(hTextFlow, tf);
+        tu.put(TransUnit.SOURCE, tf);
 
         return tu;
+    }
+
+    public void transferToTextFlow(HTextFlow from, TextFlow to) {
+        resourceUtils.transferToTextFlow(from, to);
+        to.setWordCount(from.getWordCount().intValue());
     }
 }

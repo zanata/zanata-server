@@ -173,7 +173,8 @@ public class ZipFileBuildTask implements
             List<HTextFlowTarget> hTargets =
                     textFlowTargetDAO.findTranslations(document, hLocale);
             resourceUtils.transferToTranslationsResource(translationResource,
-                    document, hLocale, extensions, hTargets);
+                    document, hLocale, extensions, hTargets,
+                    Optional.<String> absent());
 
             Resource res = resourceUtils.buildResource(document);
 

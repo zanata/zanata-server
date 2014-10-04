@@ -1,4 +1,4 @@
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -18,27 +18,25 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.ContentState;
 import org.zanata.common.EntityStatus;
-import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowDAO;
-import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
-import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.ReadOnlyEntityException;
-import org.zanata.rest.dto.Locale;
 import org.zanata.rest.dto.ProjectIteration;
-import org.zanata.rest.dto.TransUnitStatus;
+import org.zanata.rest.editor.dto.Locale;
+import org.zanata.rest.editor.dto.TransUnitStatus;
 import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.service.ETagUtils;
 import org.zanata.rest.service.ProjectIterationService;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.rest.service.URIHelper;
+import org.zanata.rest.editor.service.resource.ProjectVersionResource;
 import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
@@ -46,13 +44,10 @@ import com.google.common.collect.Lists;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("projectVersionService")
+@Name("editor.projectVersionService")
 @Path(ProjectVersionResource.SERVICE_PATH)
 @Transactional
 public class ProjectVersionService implements ProjectVersionResource {
-    @In
-    private TextFlowTargetDAO textFlowTargetDAO;
-
     @In
     private TextFlowDAO textFlowDAO;
 
@@ -75,7 +70,7 @@ public class ProjectVersionService implements ProjectVersionResource {
     private ResourceUtils resourceUtils;
 
     @Override
-    public Response get(@PathParam("projectSlug") String projectSlug,
+    public Response getVersion(@PathParam("projectSlug") String projectSlug,
             @PathParam("versionSlug") String versionSlug) {
         EntityTag etag =
                 eTagUtils.generateETagForIteration(projectSlug, versionSlug);

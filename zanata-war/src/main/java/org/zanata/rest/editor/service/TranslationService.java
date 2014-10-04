@@ -18,19 +18,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.util.List;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.TextFlowDAO;
@@ -38,14 +36,12 @@ import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.rest.dto.resource.TransUnit;
-import org.zanata.rest.dto.resource.TransUnits;
-import org.zanata.rest.dto.resource.TranslationData;
+import org.zanata.rest.editor.dto.TransUnit;
+import org.zanata.rest.editor.dto.TransUnits;
+import org.zanata.rest.editor.dto.TranslationData;
+import org.zanata.rest.editor.service.resource.TranslationResource;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.security.permission.PermissionEvaluator;
-import org.zanata.service.SecurityService;
 import org.zanata.service.TranslationService.TranslationResult;
-import org.zanata.service.impl.TranslationServiceImpl;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 
@@ -96,8 +92,8 @@ public class TranslationService implements TranslationResource {
                 TransUnit tu =
                         transUnitUtils.buildTransUnit(hTarget, locale, false,
                                 true);
-                transUnits.addTransUnit(hTarget.getTextFlow().getId()
-                        .toString(), tu);
+                transUnits.put(hTarget.getTextFlow().getId()
+                    .toString(), tu);
             }
         }
         return Response.ok(transUnits).build();

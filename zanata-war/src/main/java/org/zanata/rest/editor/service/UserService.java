@@ -1,4 +1,4 @@
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -10,13 +10,14 @@ import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
-import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.editor.service.resource.UserResource;
 import org.zanata.service.GravatarService;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("userService")
+@Name("editor.userService")
 @Path(UserResource.SERVICE_PATH)
 @Transactional
 public class UserService implements UserResource {

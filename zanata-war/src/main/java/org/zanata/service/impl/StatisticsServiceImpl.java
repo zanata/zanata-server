@@ -20,18 +20,14 @@
  */
 package org.zanata.service.impl;
 
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -51,14 +47,11 @@ import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
 import org.zanata.rest.service.StatisticsResource;
-import org.zanata.rest.service.URIHelper;
 import org.zanata.rest.service.ZPathService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
-
-import com.google.common.collect.Lists;
 
 /**
  * Default implementation for the
@@ -271,37 +264,6 @@ public class StatisticsServiceImpl implements StatisticsResource {
             }
         }
         return docStatistics;
-    }
-
-    @Override
-    public Response getDocumentStatistics(String projectSlug,
-            String versionSlug, String docId, String localeId) {
-
-        docId = URIHelper.convertFromDocumentURIId(docId);
-
-        HDocument doc =
-                documentDAO.getByProjectIterationAndDocId(projectSlug,
-                        versionSlug, docId);
-
-        if(doc == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        ContainerTranslationStatistics docStats =
-                getDocStatistics(doc.getId(), new LocaleId(localeId));
-
-        TranslationStatistics docWordStatistic =
-                docStats.getStats(localeId, StatUnit.WORD);
-        TranslationStatistics docMsgStatistic =
-                docStats.getStats(localeId, StatUnit.MESSAGE);
-
-        Type genericType = new GenericType<List<TranslationStatistics>>() {
-        }.getGenericType();
-        Object entity =
-                new GenericEntity<List<TranslationStatistics>>(
-                        Lists.newArrayList(docWordStatistic, docMsgStatistic),
-                        genericType);
-        return Response.ok(entity).build();
     }
 
     private TranslationStatistics getWordsStats(TransUnitWords wordCount,

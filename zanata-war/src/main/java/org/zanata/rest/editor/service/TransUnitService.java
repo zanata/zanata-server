@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.util.List;
 
@@ -29,20 +29,18 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
-import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
-import org.zanata.model.HTextFlowTarget;
-import org.zanata.rest.dto.resource.TransUnit;
-import org.zanata.rest.dto.resource.TransUnits;
+import org.zanata.rest.editor.dto.TransUnit;
+import org.zanata.rest.editor.dto.TransUnits;
+import org.zanata.rest.editor.service.resource.TransUnitResource;
 import org.zanata.service.LocaleService;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("transUnitService")
+@Name("editor.transUnitService")
 @Path(TransUnitResource.SERVICE_PATH)
 @Transactional
 public class TransUnitService implements TransUnitResource {
@@ -81,7 +79,7 @@ public class TransUnitService implements TransUnitResource {
                 tu = transUnitUtils.buildTransUnit(
                         textFlow, locale.getLocaleId());
             }
-            transUnits.addTransUnit(textFlow.getId().toString(), tu);
+            transUnits.put(textFlow.getId().toString(), tu);
         }
         return Response.ok(transUnits).build();
     }

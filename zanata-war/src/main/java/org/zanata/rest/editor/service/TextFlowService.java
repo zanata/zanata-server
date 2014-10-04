@@ -18,11 +18,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.rest.service.editor;
+package org.zanata.rest.editor.service;
 
 import java.util.List;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,26 +33,26 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.model.HTextFlow;
-import org.zanata.rest.dto.resource.TextFlow;
-import org.zanata.rest.dto.resource.TransUnit;
-import org.zanata.rest.dto.resource.TransUnits;
-import org.zanata.rest.service.ResourceUtils;
+import org.zanata.rest.editor.dto.TransUnit;
+import org.zanata.rest.editor.dto.TransUnits;
+import org.zanata.rest.editor.dto.TextFlow;
+import org.zanata.rest.editor.service.resource.TextFlowResource;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("sourceService")
-@Path(SourceResource.SERVICE_PATH)
+@Name("editor.textFlowService")
+@Path(TextFlowResource.SERVICE_PATH)
 @Transactional
-public class SourceService implements SourceResource {
+public class TextFlowService implements TextFlowResource {
     @In
     private TextFlowDAO textFlowDAO;
 
     @In
-    private ResourceUtils resourceUtils;
+    private TransUnitUtils transUnitUtils;
 
     @Override
-    public Response get(String ids) {
+    public Response get(@QueryParam("ids") String ids) {
         TransUnits transUnits = new TransUnits();
         if (StringUtils.isEmpty(ids)) {
             return Response.ok(transUnits).build();
@@ -63,11 +64,11 @@ public class SourceService implements SourceResource {
 
         List<HTextFlow> hTextFlows = textFlowDAO.findByIdList(idList);
 
-        for(HTextFlow htf: hTextFlows) {
+        for (HTextFlow htf : hTextFlows) {
             LocaleId localeId = htf.getDocument().getLocale().getLocaleId();
             TextFlow tf = new TextFlow(htf.getResId(), localeId);
-            resourceUtils.transferToTextFlow(htf, tf);
-            transUnits.addTransUnit(htf.getId().toString(), new TransUnit(tf));
+            transUnitUtils.transferToTextFlow(htf, tf);
+            transUnits.put(htf.getId().toString(), new TransUnit(tf));
         }
         return Response.ok(transUnits).build();
     }
