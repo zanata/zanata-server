@@ -41,6 +41,10 @@ public class TranslationData implements Serializable {
     @NotNull
     private ContentState status = ContentState.New;
 
+    public TranslationData() {
+
+    }
+
     private boolean plural;
 
     public Integer getId() {
@@ -112,5 +116,37 @@ public class TranslationData implements Serializable {
                 this.content = null;
                 this.contents = contents;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TranslationData)) return false;
+
+        TranslationData that = (TranslationData) o;
+
+        if (plural != that.plural) return false;
+        if (content != null ? !content.equals(that.content) :
+            that.content != null)
+            return false;
+        if (contents != null ? !contents.equals(that.contents) :
+            that.contents != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (revision != null ? !revision.equals(that.revision) :
+            that.revision != null) return false;
+        if (status != that.status) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (revision != null ? revision.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (contents != null ? contents.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (plural ? 1 : 0);
+        return result;
     }
 }

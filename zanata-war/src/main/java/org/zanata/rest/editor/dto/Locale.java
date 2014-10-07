@@ -25,6 +25,10 @@ public class Locale implements Serializable {
     private LocaleId localeId;
     private String name;
 
+    public Locale() {
+        this(null, null);
+    }
+
     public Locale(LocaleId localeId, String name) {
         this.localeId = localeId;
         this.name = name;
@@ -47,5 +51,27 @@ public class Locale implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Locale)) return false;
+
+        Locale locale = (Locale) o;
+
+        if (localeId != null ? !localeId.equals(locale.localeId) :
+            locale.localeId != null) return false;
+        if (name != null ? !name.equals(locale.name) : locale.name != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = localeId != null ? localeId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 }

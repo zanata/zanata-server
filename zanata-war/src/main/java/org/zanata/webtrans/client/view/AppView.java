@@ -223,7 +223,8 @@ public class AppView extends Composite implements AppDisplay,
         case Editor:
             content.selectTab(EDITOR_VIEW);
             selectedDocumentSpan.setVisible(true);
-            newEditorLink.removeStyleName("is-invisible");
+            // enable when new editor is include
+            newEditorLink.addStyleName("is-invisible");
             setSelectedTab(editorTab);
         }
     }

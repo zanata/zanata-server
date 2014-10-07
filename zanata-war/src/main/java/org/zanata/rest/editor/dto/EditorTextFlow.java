@@ -15,6 +15,10 @@ import org.zanata.rest.dto.resource.TextFlow;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class EditorTextFlow extends TextFlow {
 
+    public EditorTextFlow() {
+        super(null, null, (String) null);
+    }
+
     public EditorTextFlow(String id, LocaleId lang) {
         super(id, lang);
     }

@@ -33,6 +33,10 @@ public class User implements Serializable {
 
     private String gravatarHash;
 
+    public User() {
+        this(null, null, null, null);
+    }
+
     public User(String username, String email, String name,
             String gravatarHash) {
         this.username = username;
@@ -76,5 +80,34 @@ public class User implements Serializable {
 
     public void setGravatarHash(String gravatarHash) {
         this.gravatarHash = gravatarHash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+
+        User user = (User) o;
+
+        if (email != null ? !email.equals(user.email) : user.email != null)
+            return false;
+        if (gravatarHash != null ? !gravatarHash.equals(user.gravatarHash) :
+            user.gravatarHash != null) return false;
+        if (name != null ? !name.equals(user.name) : user.name != null)
+            return false;
+        if (username != null ? !username.equals(user.username) :
+            user.username != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result =
+            31 * result + (gravatarHash != null ? gravatarHash.hashCode() : 0);
+        return result;
     }
 }

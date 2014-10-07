@@ -19,6 +19,10 @@ public class TransUnitStatus implements Serializable {
     private String resId;
     private ContentState status;
 
+    public TransUnitStatus() {
+        this(null, null, null);
+    }
+
     public TransUnitStatus(Long id, String resId, ContentState status) {
         this.id = id;
         this.resId = resId;
@@ -50,5 +54,30 @@ public class TransUnitStatus implements Serializable {
 
     public void setStatus(ContentState status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TransUnitStatus)) return false;
+
+        TransUnitStatus status1 = (TransUnitStatus) o;
+
+        if (id != null ? !id.equals(status1.id) : status1.id != null)
+            return false;
+        if (resId != null ? !resId.equals(status1.resId) :
+            status1.resId != null)
+            return false;
+        if (status != status1.status) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (resId != null ? resId.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        return result;
     }
 }
