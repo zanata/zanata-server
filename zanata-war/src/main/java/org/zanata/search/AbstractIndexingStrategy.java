@@ -2,9 +2,9 @@ package org.zanata.search;
 
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
-import org.zanata.async.AsyncTaskHandle;
 
 import lombok.extern.slf4j.Slf4j;
+import org.zanata.async2.AsyncTaskHandle;
 
 /**
  * Base indexing strategy.
