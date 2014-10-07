@@ -12,7 +12,7 @@
   <container qualifier="jbossas-managed">
     <configuration>
       <!-- We can use the JBOSS_HOME env variable instead of this -->
-      <property name="jbossHome">${arquillian.jboss.home}</property>
+      <property name="jbossHome">/opt/jboss-eap-6.3.0-arquillian</property>
       <!-- We can use the JAVA_HOME env variable instead of this -->
       <!--             <property name="javaHome">/usr/lib/jvm/jre-1.6.0-openjdk.x86_64</property> -->
       <!--
@@ -28,7 +28,7 @@
       <!-- This needs to be here if -Djboss.socket.binding.port-offset is used in javaVmArguments.
            It must match the exact management port to be used-->
       <!-- NB: don't put whitespace around the number -->
-      <property name="managementPort">${jboss.management.native.port,env.JBOSS_MANAGEMENT_NATIVE_PORT:10099}</property>
+      <property name="managementPort">${jboss.management.native.port,env.JBOSS_MANAGEMENT_NATIVE_PORT:9999}</property>
     </configuration>
   </container>
   <container qualifier="wildfly81">
