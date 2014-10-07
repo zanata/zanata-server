@@ -22,6 +22,7 @@ package org.zanata.rest.editor.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -45,6 +46,7 @@ import org.zanata.service.TranslationService.TranslationResult;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
@@ -85,16 +87,13 @@ public class TranslationService implements TranslationResource {
 
         LocaleId locale = new LocaleId(localeId);
 
-        for (Long id : idList) {
-            HTextFlowTarget hTarget =
-                    textFlowTargetDAO.getTextFlowTarget(id, locale);
-            if (hTarget != null) {
-                TransUnit tu =
-                        transUnitUtils.buildTransUnit(hTarget, locale, false,
-                                true);
-                transUnits.put(hTarget.getTextFlow().getId()
-                    .toString(), tu);
-            }
+        List<HTextFlowTarget> targets =
+                textFlowTargetDAO.findByTextFlowIdList(idList, locale);
+
+        for (HTextFlowTarget hTarget : targets) {
+            TransUnit tu =
+                    transUnitUtils.buildTransUnit(hTarget, locale, false, true);
+            transUnits.put(hTarget.getTextFlow().getId().toString(), tu);
         }
         return Response.ok(transUnits).build();
     }

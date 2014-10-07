@@ -97,6 +97,22 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
                 .setResultTransformer(resultTransformer).list();
     }
 
+    public List<Object[]> getTextFlowAndTarget(List<Long> idList, Long localeId) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from HTextFlow tf ")
+                .append("left join tf.targets tft ")
+                .append("where tf.id in (:idList) ")
+                .append("and tft.locale.id = :localeId");
+
+        Query q = getSession().createQuery(queryBuilder.toString());
+        q.setParameterList("idList", idList);
+        q.setParameter("localeId", localeId);
+        q.setCacheable(true);
+        q.setComment("TextFlowTargetDAO.getTextFlowTarget");
+
+        return q.list();
+    }
+
     public int getTotalWords() {
         Query q =
                 getSession()

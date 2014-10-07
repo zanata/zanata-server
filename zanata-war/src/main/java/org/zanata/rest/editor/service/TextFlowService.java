@@ -33,9 +33,9 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.model.HTextFlow;
+import org.zanata.rest.editor.dto.EditorTextFlow;
 import org.zanata.rest.editor.dto.TransUnit;
 import org.zanata.rest.editor.dto.TransUnits;
-import org.zanata.rest.editor.dto.TextFlow;
 import org.zanata.rest.editor.service.resource.TextFlowResource;
 
 /**
@@ -66,7 +66,7 @@ public class TextFlowService implements TextFlowResource {
 
         for (HTextFlow htf : hTextFlows) {
             LocaleId localeId = htf.getDocument().getLocale().getLocaleId();
-            TextFlow tf = new TextFlow(htf.getResId(), localeId);
+            EditorTextFlow tf = new EditorTextFlow(htf.getResId(), localeId);
             transUnitUtils.transferToTextFlow(htf, tf);
             transUnits.put(htf.getId().toString(), new TransUnit(tf));
         }

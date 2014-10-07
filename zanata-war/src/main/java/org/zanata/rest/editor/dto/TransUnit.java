@@ -25,7 +25,7 @@ public class TransUnit implements Map<String, Object>, Serializable {
     public TransUnit() {
     }
 
-    public TransUnit(TextFlow textFlow) {
+    public TransUnit(EditorTextFlow textFlow) {
         this.put(SOURCE, textFlow);
     }
 
@@ -56,7 +56,7 @@ public class TransUnit implements Map<String, Object>, Serializable {
 
     @Override
     public Object put(String key, Object value) {
-        if (StringUtils.equals(SOURCE, key) && value instanceof TextFlow) {
+        if (StringUtils.equals(SOURCE, key) && value instanceof EditorTextFlow) {
             return map.put(key, value);
         } else if (!StringUtils.equals(SOURCE, key)
                 && value instanceof TextFlowTarget) {

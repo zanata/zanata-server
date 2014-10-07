@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
+import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.editor.dto.TransUnit;
 import org.zanata.rest.editor.dto.TransUnits;
 import org.zanata.rest.editor.service.resource.TransUnitResource;
@@ -66,21 +67,26 @@ public class TransUnitService implements TransUnitResource {
 
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);
 
-        List<HTextFlow> textFlows = textFlowDAO.findByIdList(idList);
+        List<Object[]> results =
+                textFlowDAO.getTextFlowAndTarget(idList, locale.getId());
+        for (Object[] result : results) {
 
-        for (HTextFlow textFlow : textFlows) {
+            HTextFlow textFlow = (HTextFlow)result[0];
             TransUnit tu;
-            if (textFlow.getTargets().containsKey(locale.getId())) {
-                tu = transUnitUtils.buildTransUnit(textFlow.getTargets()
-                        .get(locale.getId()), locale.getLocaleId(),
-                        true, true);
 
-            } else {
+            if(result.length < 2 || result[1] == null) {
                 tu = transUnitUtils.buildTransUnit(
                         textFlow, locale.getLocaleId());
             }
+            else {
+                HTextFlowTarget textFlowTarget = (HTextFlowTarget)result[1];
+
+                tu = transUnitUtils.buildTransUnit(textFlowTarget,
+                        locale.getLocaleId(), true, true);
+            }
             transUnits.put(textFlow.getId().toString(), tu);
         }
+
         return Response.ok(transUnits).build();
     }
 }

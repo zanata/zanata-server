@@ -2,6 +2,9 @@ package org.zanata.rest.editor.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,8 +17,8 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.rest.editor.dto.EditorTextFlow;
 import org.zanata.rest.editor.dto.TransUnit;
-import org.zanata.rest.editor.dto.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.service.ResourceUtils;
 
@@ -72,14 +75,14 @@ public class TransUnitUtils {
     public TransUnit buildTransUnit(HTextFlow hTextFlow, LocaleId localeId) {
         TransUnit tu = new TransUnit();
 
-        TextFlow tf = new TextFlow(hTextFlow.getResId(), localeId);
+        EditorTextFlow tf = new EditorTextFlow(hTextFlow.getResId(), localeId);
         transferToTextFlow(hTextFlow, tf);
         tu.put(TransUnit.SOURCE, tf);
 
         return tu;
     }
 
-    public void transferToTextFlow(HTextFlow from, TextFlow to) {
+    public void transferToTextFlow(HTextFlow from, EditorTextFlow to) {
         resourceUtils.transferToTextFlow(from, to);
         to.setWordCount(from.getWordCount().intValue());
     }

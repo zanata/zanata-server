@@ -1,5 +1,7 @@
 package org.zanata.rest.editor.service;
 
+import static org.zanata.webtrans.server.rpc.GetTransUnitsNavigationService.TextFlowResultTransformer;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +31,17 @@ import org.zanata.model.HTextFlow;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.ReadOnlyEntityException;
 import org.zanata.rest.dto.ProjectIteration;
+import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.editor.dto.Locale;
 import org.zanata.rest.editor.dto.TransUnitStatus;
-import org.zanata.rest.dto.resource.ResourceMeta;
+import org.zanata.rest.editor.service.resource.ProjectVersionResource;
 import org.zanata.rest.service.ETagUtils;
 import org.zanata.rest.service.ProjectIterationService;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.rest.service.URIHelper;
-import org.zanata.rest.editor.service.resource.ProjectVersionResource;
+import org.zanata.search.FilterConstraints;
 import org.zanata.service.LocaleService;
+import org.zanata.webtrans.shared.model.DocumentId;
 
 import com.google.common.collect.Lists;
 
@@ -171,18 +175,21 @@ public class ProjectVersionService implements ProjectVersionResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        TextFlowResultTransformer resultTransformer =
+                new TextFlowResultTransformer(hLocale);
+
+        FilterConstraints filterConstraints = FilterConstraints.builder().build();
+
         List<HTextFlow> textFlows =
-                textFlowDAO.getTextFlowsByDocumentId(document.getId(), null,
-                        null);
+                textFlowDAO.getNavigationByDocumentId(
+                        new DocumentId(document.getId(), document.getDocId()),
+                        hLocale, resultTransformer, filterConstraints);
 
         List<TransUnitStatus> statusList =
                 Lists.newArrayListWithExpectedSize(textFlows.size());
 
         for (HTextFlow textFlow : textFlows) {
-            ContentState state = ContentState.New;
-            if (textFlow.getTargets().containsKey(hLocale.getId())) {
-                state = textFlow.getTargets().get(hLocale.getId()).getState();
-            }
+            ContentState state = textFlow.getTargets().get(hLocale.getId()).getState();
             statusList.add(new TransUnitStatus(textFlow.getId(), textFlow
                     .getResId(), state));
         }

@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.zanata.common.LocaleId;
+import org.zanata.rest.dto.resource.TextFlow;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -12,9 +13,9 @@ import org.zanata.common.LocaleId;
     "extensions", "wordCount" })
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class TextFlow extends org.zanata.rest.dto.resource.TextFlow {
+public class EditorTextFlow extends TextFlow {
 
-    public TextFlow(String id, LocaleId lang) {
+    public EditorTextFlow(String id, LocaleId lang) {
         super(id, lang);
     }
     private int wordCount;
