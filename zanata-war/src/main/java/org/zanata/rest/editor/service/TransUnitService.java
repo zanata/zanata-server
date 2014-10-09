@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
@@ -77,7 +76,7 @@ public class TransUnitService implements TransUnitResource {
 
             if(result.length < 2 || result[1] == null) {
                 tu = transUnitUtils.buildTransUnit(
-                        textFlow, locale.getLocaleId());
+                        textFlow, locale.getLocaleId(), true);
             }
             else {
                 HTextFlowTarget textFlowTarget = (HTextFlowTarget)result[1];

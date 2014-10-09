@@ -2,9 +2,6 @@ package org.zanata.rest.editor.service;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,24 +57,28 @@ public class TransUnitUtils {
         HTextFlow htf = hTarget.getTextFlow();
 
         if (includeTf) {
-            tu = buildTransUnit(htf, localeId);
+            tu = buildTransUnit(htf, localeId, false);
         }
 
         if (includeTft) {
             TextFlowTarget target = new TextFlowTarget(htf.getResId());
             resourceUtils.transferToTextFlowTarget(hTarget, target,
-                Optional.of("Editor"));
+                    Optional.of("Editor"));
             tu.put(localeId.toString(), target);
         }
         return tu;
     }
 
-    public TransUnit buildTransUnit(HTextFlow hTextFlow, LocaleId localeId) {
+    public TransUnit buildTransUnit(HTextFlow hTextFlow, LocaleId localeId,
+            boolean includeEmptyTarget) {
         TransUnit tu = new TransUnit();
 
         EditorTextFlow tf = new EditorTextFlow(hTextFlow.getResId(), localeId);
         transferToTextFlow(hTextFlow, tf);
         tu.put(TransUnit.SOURCE, tf);
+        if (includeEmptyTarget) {
+            tu.put(localeId.toString(), new TextFlowTarget());
+        }
 
         return tu;
     }
