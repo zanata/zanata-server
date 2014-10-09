@@ -36,9 +36,11 @@ import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.common.TransUnitWords;
 import org.zanata.dao.DocumentDAO;
+import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
+import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
@@ -46,6 +48,7 @@ import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
+import org.zanata.rest.dto.stats.contribution.ContributionStatistics;
 import org.zanata.rest.service.StatisticsResource;
 import org.zanata.rest.service.ZPathService;
 import org.zanata.service.TranslationStateCache;
@@ -78,6 +81,9 @@ public class StatisticsServiceImpl implements StatisticsResource {
     private ZPathService zPathService;
 
     @In
+    private PersonDAO personDAO;
+
+    @In
     private TranslationStateCache translationStateCacheImpl;
 
     // TODO Need to refactor this method to get Message statistic by default.
@@ -93,7 +99,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                        projectSlug, iterationSlug);
+                            projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -201,7 +207,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                        projectSlug, iterationSlug);
+                            projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -266,6 +272,44 @@ public class StatisticsServiceImpl implements StatisticsResource {
         return docStatistics;
     }
 
+    @Override
+    public ContributionStatistics getContributionStatistics(String projectSlug,
+            String versionSlug, String username, String dateRangeParam) {
+
+        HProjectIteration version =
+                projectIterationDAO.getBySlug(projectSlug, versionSlug);
+        if (version == null) {
+            throw new NoSuchEntityException(projectSlug + "/" + versionSlug);
+        }
+
+        HPerson person = personDAO.findByUsername(username);
+        if (person == null) {
+            throw new NoSuchEntityException(username);
+        }
+
+        String[] dateRange = dateRangeParam.split("..");
+        if (dateRange.length != 2) {
+            throw new InvalidDateParam(dateRangeParam);
+        }
+
+        Date fromDate, toDate;
+
+        try {
+            fromDate = DateUtil.getDate(dateRange[0], DATE_FORMAT);
+            toDate = DateUtil.getDate(dateRange[0], DATE_FORMAT);
+            if (fromDate.after(toDate)) {
+                throw new InvalidDateParam(dateRangeParam);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new InvalidDateParam(dateRangeParam);
+        }
+
+        ContributionStatistics result = new ContributionStatistics();
+        // run query
+
+        return result;
+    }
+
     private TranslationStatistics getWordsStats(TransUnitWords wordCount,
             LocaleId locale, Date lastChanged, String lastModifiedBy) {
         TranslationStatistics stats =
@@ -318,5 +362,14 @@ public class StatisticsServiceImpl implements StatisticsResource {
                 .getRemainingHours(wordStatistics));
 
         return result;
+    }
+
+    private final class InvalidDateParam extends RuntimeException {
+        public InvalidDateParam() {
+        }
+
+        public InvalidDateParam(String message) {
+            super(message);
+        }
     }
 }

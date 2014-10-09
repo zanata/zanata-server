@@ -202,4 +202,12 @@ public class DateUtil {
                         .minusMillis(1);
         return truncateMonth.toDate();
     }
+
+
+    public static Date getDate(String date, String pattern)
+            throws IllegalArgumentException {
+        DateTimeFormatter formatter =
+                DateTimeFormat.forPattern(pattern);
+        return formatter.parseDateTime(date).toDate();
+    }
 }
