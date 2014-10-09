@@ -110,7 +110,6 @@ public class CopyTransServiceImplTest extends ZanataDbunitJpaTest {
                 .useImpl(TranslationStateCacheImpl.class)
                 .useImpl(ValidationServiceImpl.class).ignoreNonResolvable();
 
-        seam.autowire(SearchIndexManager.class).reindex(true, true, false);
         AutowireTransaction.instance().rollback();
     }
 
@@ -205,7 +204,7 @@ public class CopyTransServiceImplTest extends ZanataDbunitJpaTest {
                         execution.getProjectMismatchAction());
         CopyTransService copyTransService =
                 seam.autowire(CopyTransServiceImpl.class);
-        copyTransService.copyTransForIteration(projectIteration, options);
+        copyTransService.copyTransForIteration(projectIteration, options, null);
         getEm().flush();
 
         // Validate execution

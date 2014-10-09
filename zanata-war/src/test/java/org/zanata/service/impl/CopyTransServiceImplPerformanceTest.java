@@ -320,7 +320,8 @@ public class CopyTransServiceImplPerformanceTest {
                         HCopyTransOptions.ConditionRuleAction.DOWNGRADE_TO_FUZZY,
                         HCopyTransOptions.ConditionRuleAction.DOWNGRADE_TO_FUZZY,
                         HCopyTransOptions.ConditionRuleAction.DOWNGRADE_TO_FUZZY);
-        copyTransService.copyTransForDocument(copyTransTargetDoc, options);
+        copyTransService
+                .copyTransForDocument(copyTransTargetDoc, options, null);
 
         Long totalTranslation =
                 getEm().createQuery("select count(*) from HTextFlowTarget",

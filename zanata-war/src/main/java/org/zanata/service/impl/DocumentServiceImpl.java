@@ -198,7 +198,7 @@ public class DocumentServiceImpl implements DocumentService {
      */
     private void copyTranslations(HDocument document) {
         if (applicationConfiguration.isCopyTransEnabled()) {
-            copyTransServiceImpl.copyTransForDocument(document);
+            copyTransServiceImpl.copyTransForDocument(document, null);
         }
     }
 

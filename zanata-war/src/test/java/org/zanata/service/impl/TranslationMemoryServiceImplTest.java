@@ -74,6 +74,7 @@ public class TranslationMemoryServiceImplTest extends ImmutableDbunitJpaTest {
                         .use("entityManagerFactory", getEmf())
                         .use("session", new FullTextSessionImpl(getSession()))
                         .useImpl(AsyncTaskManagerServiceImpl.class)
+                        .useImpl(IndexingServiceImpl.class)
                         .ignoreNonResolvable()
                         .autowire(TranslationMemoryServiceImpl.class);
         seam.autowire(SearchIndexManager.class).reindex(true, true, false);
