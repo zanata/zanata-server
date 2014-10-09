@@ -38,7 +38,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.management.JpaIdentityStore;
-import org.zanata.async.tasks.CopyVersionTask;
+import org.zanata.async2.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.LocaleMemberDAO;
 import org.zanata.dao.ProjectDAO;
@@ -162,7 +162,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public String
             getCopiedDocumentCount(String projectSlug, String versionSlug) {
-        CopyVersionTask.CopyVersionTaskHandle handler =
+        CopyVersionTaskHandle handler =
                 copyVersionManager.getCopyVersionProcessHandle(projectSlug,
                         versionSlug);
 
@@ -181,7 +181,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public String getCopyVersionCompletePercent(String projectSlug,
             String versionSlug) {
-        CopyVersionTask.CopyVersionTaskHandle handler =
+        CopyVersionTaskHandle handler =
                 copyVersionManager.getCopyVersionProcessHandle(projectSlug,
                         versionSlug);
 
@@ -202,7 +202,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public String getCopyVersionTotalDocuments(String projectSlug,
             String versionSlug) {
-        CopyVersionTask.CopyVersionTaskHandle handler =
+        CopyVersionTaskHandle handler =
                 copyVersionManager.getCopyVersionProcessHandle(projectSlug,
                         versionSlug);
 

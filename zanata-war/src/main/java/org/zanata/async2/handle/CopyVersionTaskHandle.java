@@ -25,26 +25,33 @@ import lombok.Setter;
 import org.zanata.async2.AsyncTaskHandle;
 
 /**
+ * Asynchronous task handle for the copy version process.
+ *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public class CopyTransTaskHandle extends AsyncTaskHandle<Void> {
-    @Getter
-    @Setter
+public class CopyVersionTaskHandle extends AsyncTaskHandle<Void> {
+    @Getter @Setter
+    private int documentCopied;
+    @Getter @Setter
+    private int totalDoc;
+    @Getter @Setter
     private String cancelledBy;
-
-    @Getter
-    @Setter
+    @Getter @Setter
     private long cancelledTime;
-
-    @Getter
-    @Setter
+    @Getter @Setter
     private String triggeredBy;
-
     @Getter
     private boolean prepared;
 
     public void setPrepared() {
         this.prepared = true;
+    }
+
+    /**
+     * Increments the processed document count by 1
+     */
+    public void incrementDocumentProcessed() {
+        documentCopied++;
     }
 }
