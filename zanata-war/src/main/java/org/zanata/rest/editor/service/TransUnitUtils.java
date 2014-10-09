@@ -21,6 +21,8 @@ import org.zanata.rest.service.ResourceUtils;
 
 import com.google.common.collect.Lists;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -51,35 +53,42 @@ public class TransUnitUtils {
         return idList;
     }
 
-    public TransUnit buildTransUnit(HTextFlowTarget hTarget,
-            LocaleId localeId, boolean includeTf, boolean includeTft) {
+    public TransUnit buildTransUnitFull(@Nonnull HTextFlow hTf,
+            HTextFlowTarget hTft, LocaleId localeId) {
+
         TransUnit tu = new TransUnit();
-        HTextFlow htf = hTarget.getTextFlow();
 
-        if (includeTf) {
-            tu = buildTransUnit(htf, localeId, false);
-        }
+        // build source
+        tu.putAll(buildSourceTransUnit(hTf, localeId));
 
-        if (includeTft) {
-            TextFlowTarget target = new TextFlowTarget(htf.getResId());
-            resourceUtils.transferToTextFlowTarget(hTarget, target,
-                    Optional.of("Editor"));
-            tu.put(localeId.toString(), target);
-        }
+        // build target
+        tu.putAll(buildTargetTransUnit(hTf, hTft, localeId));
+
         return tu;
     }
 
-    public TransUnit buildTransUnit(HTextFlow hTextFlow, LocaleId localeId,
-            boolean includeEmptyTarget) {
+    public TransUnit buildSourceTransUnit(HTextFlow hTf, LocaleId localeId) {
+        TransUnit tu = new TransUnit();
+        EditorTextFlow tf =
+                new EditorTextFlow(hTf.getResId(), localeId);
+        transferToTextFlow(hTf, tf);
+        tu.put(TransUnit.SOURCE, tf);
+        return tu;
+    }
+
+    public TransUnit buildTargetTransUnit(HTextFlow hTf, HTextFlowTarget hTft,
+            LocaleId localeId) {
         TransUnit tu = new TransUnit();
 
-        EditorTextFlow tf = new EditorTextFlow(hTextFlow.getResId(), localeId);
-        transferToTextFlow(hTextFlow, tf);
-        tu.put(TransUnit.SOURCE, tf);
-        if (includeEmptyTarget) {
-            tu.put(localeId.toString(), new TextFlowTarget());
+        if (hTft != null) {
+            TextFlowTarget target = new TextFlowTarget(hTf.getResId());
+            resourceUtils.transferToTextFlowTarget(hTft, target,
+                    Optional.of("Editor"));
+            tu.put(hTft.getLocaleId().toString(), target);
+        } else {
+            tu.put(localeId.toString(),
+                    new TextFlowTarget(hTf.getResId()));
         }
-
         return tu;
     }
 

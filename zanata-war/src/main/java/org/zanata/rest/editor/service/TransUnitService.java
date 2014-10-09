@@ -71,18 +71,17 @@ public class TransUnitService implements TransUnitResource {
                 textFlowDAO.getTextFlowAndTarget(idList, locale.getId());
 
         for (Object[] result : results) {
-            HTextFlow textFlow = (HTextFlow)result[0];
+            HTextFlow textFlow = (HTextFlow) result[0];
             TransUnit tu;
 
-            if(result.length < 2 || result[1] == null) {
-                tu = transUnitUtils.buildTransUnit(
-                        textFlow, locale.getLocaleId(), true);
+            if (result.length < 2 || result[1] == null) {
+                tu = transUnitUtils.buildTransUnitFull(textFlow, null,
+                        locale.getLocaleId());
             }
             else {
-                HTextFlowTarget textFlowTarget = (HTextFlowTarget)result[1];
-
-                tu = transUnitUtils.buildTransUnit(textFlowTarget,
-                        locale.getLocaleId(), true, true);
+                HTextFlowTarget textFlowTarget = (HTextFlowTarget) result[1];
+                tu = transUnitUtils.buildTransUnitFull(textFlow,
+                        textFlowTarget, locale.getLocaleId());
             }
             transUnits.put(textFlow.getId().toString(), tu);
         }

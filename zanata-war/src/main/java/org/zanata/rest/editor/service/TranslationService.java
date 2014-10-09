@@ -22,7 +22,6 @@ package org.zanata.rest.editor.service;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -33,7 +32,6 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.TextFlowDAO;
-import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
@@ -42,11 +40,11 @@ import org.zanata.rest.editor.dto.TransUnits;
 import org.zanata.rest.editor.dto.TranslationData;
 import org.zanata.rest.editor.service.resource.TranslationResource;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.service.LocaleService;
 import org.zanata.service.TranslationService.TranslationResult;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.TransUnitUpdateRequest;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
@@ -60,9 +58,6 @@ public class TranslationService implements TranslationResource {
     private ZanataIdentity identity;
 
     @In
-    private TextFlowTargetDAO textFlowTargetDAO;
-
-    @In
     private TextFlowDAO textFlowDAO;
 
     @In
@@ -73,6 +68,9 @@ public class TranslationService implements TranslationResource {
 
     @In
     private org.zanata.service.TranslationService translationServiceImpl;
+
+    @In
+    private LocaleService localeServiceImpl;
 
     @Override
     public Response get(String localeId, String ids) {
@@ -85,16 +83,25 @@ public class TranslationService implements TranslationResource {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        LocaleId locale = new LocaleId(localeId);
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
 
-        List<HTextFlowTarget> targets =
-                textFlowTargetDAO.findByTextFlowIdList(idList, locale);
+        List<Object[]> results =
+                textFlowDAO.getTextFlowAndTarget(idList, locale.getId());
 
-        for (HTextFlowTarget hTarget : targets) {
-            TransUnit tu =
-                    transUnitUtils.buildTransUnit(hTarget, locale, false, true);
-            transUnits.put(hTarget.getTextFlow().getId().toString(), tu);
+        for (Object[] result : results) {
+            HTextFlow hTextFlow = (HTextFlow) result[0];
+            TransUnit tu;
+            if (result.length < 2 || result[1] == null) {
+                tu = transUnitUtils.buildTargetTransUnit(
+                        hTextFlow, null, locale.getLocaleId());
+            } else {
+                HTextFlowTarget hTarget = (HTextFlowTarget) result[1];
+                tu = transUnitUtils.buildTargetTransUnit(hTextFlow, hTarget,
+                        locale.getLocaleId());
+            }
+            transUnits.put(hTextFlow.getId().toString(), tu);
         }
+
         return Response.ok(transUnits).build();
     }
 
