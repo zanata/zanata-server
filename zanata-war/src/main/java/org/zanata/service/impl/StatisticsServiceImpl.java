@@ -20,41 +20,52 @@
  */
 package org.zanata.service.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.common.TransUnitWords;
 import org.zanata.dao.DocumentDAO;
+import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.dao.TextFlowTargetHistoryDAO;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics.StatUnit;
 import org.zanata.rest.dto.stats.contribution.ContributionStatistics;
+import org.zanata.rest.dto.stats.contribution.LocaleStatistics;
 import org.zanata.rest.service.StatisticsResource;
 import org.zanata.rest.service.ZPathService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
+
+import com.google.common.collect.Maps;
 
 /**
  * Default implementation for the
@@ -67,12 +78,16 @@ import org.zanata.webtrans.shared.model.DocumentStatus;
 @Name("statisticsServiceImpl")
 @Path(StatisticsResource.SERVICE_PATH)
 @Scope(ScopeType.STATELESS)
+@Slf4j
 public class StatisticsServiceImpl implements StatisticsResource {
     @In
     private ProjectIterationDAO projectIterationDAO;
 
     @In
     private DocumentDAO documentDAO;
+
+    @In
+    private TextFlowTargetHistoryDAO textFlowTargetHistoryDAO;
 
     @In
     private LocaleServiceImpl localeServiceImpl;
@@ -82,6 +97,9 @@ public class StatisticsServiceImpl implements StatisticsResource {
 
     @In
     private PersonDAO personDAO;
+
+    @In
+    private LocaleDAO localeDAO;
 
     @In
     private TranslationStateCache translationStateCacheImpl;
@@ -287,7 +305,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
             throw new NoSuchEntityException(username);
         }
 
-        String[] dateRange = dateRangeParam.split("..");
+        String[] dateRange = dateRangeParam.split("\\.\\.");
         if (dateRange.length != 2) {
             throw new InvalidDateParam(dateRangeParam);
         }
@@ -296,7 +314,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
 
         try {
             fromDate = DateUtil.getDate(dateRange[0], DATE_FORMAT);
-            toDate = DateUtil.getDate(dateRange[0], DATE_FORMAT);
+            toDate = DateUtil.getDate(dateRange[1], DATE_FORMAT);
             if (fromDate.after(toDate)) {
                 throw new InvalidDateParam(dateRangeParam);
             }
@@ -304,8 +322,29 @@ public class StatisticsServiceImpl implements StatisticsResource {
             throw new InvalidDateParam(dateRangeParam);
         }
 
+        LocaleStatistics localeStatistics = new LocaleStatistics();
+
+        List<Object[]> data =
+                textFlowTargetHistoryDAO.getUserTranslationHistoryInVersion(
+                        version.getId(), person.getId(), fromDate, toDate);
+        for(Object[] entry: data) {
+            int count = ((BigDecimal)entry[0]).intValue();
+            ContentState state = ContentState.values()[(int)entry[1]];
+            Long localeId = ((BigInteger)entry[2]).longValue();
+            HLocale locale = localeDAO.findById(localeId);
+
+            Map<ContentState, Integer> stat;
+            if(localeStatistics.containsKey(locale.getLocaleId())) {
+                stat = localeStatistics.get(locale.getLocaleId());
+            }  else {
+                stat = Maps.newHashMap();
+            }
+            stat.put(state, count);
+            localeStatistics.put(locale.getLocaleId(), stat);
+        }
+
         ContributionStatistics result = new ContributionStatistics();
-        // run query
+        result.put(username, localeStatistics);
 
         return result;
     }

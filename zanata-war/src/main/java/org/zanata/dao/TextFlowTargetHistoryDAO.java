@@ -20,6 +20,7 @@
  */
 package org.zanata.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -43,6 +44,67 @@ public class TextFlowTargetHistoryDAO extends
 
     public TextFlowTargetHistoryDAO(Session session) {
         super(HTextFlowTargetHistory.class, session);
+    }
+
+    public List<Object[]> getUserTranslationHistoryInVersion(
+            Long versionId, Long personId, Date from, Date to) {
+
+        /**
+         * Select sum(wordCount), state, locale
+         from (
+         SELECT
+         wordCount, id, state, locale
+         FROM
+         (select h.state, t.id, h.translated_by_id, tf.wordCount, t.locale
+         from HTextFlowTargetHistory h, HTextFlowTarget t, HTextFlow tf
+         where h.target_id = t.id
+         and t.tf_id = tf.id
+         and h.translated_by_id = 42
+         union all
+         select t.state, t.id, t.translated_by_id, tf.wordCount, t.locale
+         from HTextFlowTarget t, HTextFlow tf
+         where t.tf_id = tf.id
+         and t.translated_by_id = 42) as test
+
+         group by state, id, locale, wordCount) as test2
+         group by state,locale;
+         */
+
+        StringBuilder queryString = new StringBuilder();
+        queryString
+                .append("select sum(wordCount), state, locale from ")
+                    .append("(select wordCount, id, state, locale from ")
+                        .append("(select h.state, tft.id, h.translated_by_id, tf.wordCount, tft.locale ")
+                        .append("from HTextFlowTargetHistory h ")
+                        .append("JOIN HTextFlowTarget tft ON tft.id = h.target_id ")
+                        .append("JOIN HTextFlow tf ON tf.id = tft.tf_id ")
+                        .append("JOIN HDocument doc ON doc.id = tf.document_Id ")
+                        .append("JOIN HProjectIteration version ON version.id = doc.project_iteration_id ")
+                        .append("where version.id =:versionId ")
+                        .append("and h.translated_by_id =:personId ")
+                        .append("and h.lastChanged between :from and :to ")
+
+                        .append("union all ")
+
+                        .append("select tft.state, tft.id, tft.translated_by_id, tf.wordCount, tft.locale ")
+                        .append("from HTextFlowTarget tft ")
+                        .append("JOIN HTextFlow tf ON tf.id = tft.tf_id ")
+                        .append("JOIN HDocument doc ON doc.id = tf.document_Id ")
+                        .append("JOIN HProjectIteration version ON version.id = doc.project_iteration_id ")
+                        .append("where version.id =:versionId ")
+                        .append("and tft.translated_by_id =:personId ")
+                        .append("and tft.lastChanged between :from and :to) as test2 ")
+                    .append("group by state, id, locale, wordCount) as test ")
+                .append("group by state, locale");
+
+
+        Query query = getSession().createSQLQuery(queryString.toString());
+        query.setParameter("versionId", versionId);
+        query.setParameter("personId", personId);
+        query.setTimestamp("from", from);
+        query.setTimestamp("to", to);
+        query.setComment("textFlowTargetHistoryDAO.getUserTranslationHistoryInVersion");
+        return query.list();
     }
 
     public boolean findContentInHistory(HTextFlowTarget target,
