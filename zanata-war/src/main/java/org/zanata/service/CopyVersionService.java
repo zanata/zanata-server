@@ -22,7 +22,7 @@ package org.zanata.service;
 
 import javax.annotation.Nonnull;
 
-import org.zanata.async2.handle.CopyVersionTaskHandle;
+import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HRawDocument;

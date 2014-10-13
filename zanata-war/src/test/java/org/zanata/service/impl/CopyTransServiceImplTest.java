@@ -105,7 +105,6 @@ public class CopyTransServiceImplTest extends ZanataDbunitJpaTest {
                         seam.autowire(AccountDAO.class).getByUsername("demo"))
                 .useImpl(LocaleServiceImpl.class)
                 .useImpl(TranslationMemoryServiceImpl.class)
-                .useImpl(AsyncTaskManagerServiceImpl.class)
                 .useImpl(VersionStateCacheImpl.class)
                 .useImpl(TranslationStateCacheImpl.class)
                 .useImpl(ValidationServiceImpl.class).ignoreNonResolvable();

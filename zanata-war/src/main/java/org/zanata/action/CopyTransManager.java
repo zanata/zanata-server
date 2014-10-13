@@ -21,7 +21,6 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -38,9 +37,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.Identity;
-import org.zanata.async2.AsyncTaskHandle;
-import org.zanata.async2.AsyncTaskHandleManager;
-import org.zanata.async2.handle.CopyTransTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandleManager;
+import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProjectIteration;

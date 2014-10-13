@@ -30,7 +30,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
-import org.zanata.async2.handle.CopyTransTaskHandle;
+import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HCopyTransOptions;

@@ -16,7 +16,7 @@ import org.jboss.seam.annotations.security.Restrict;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 import org.zanata.service.SearchIndexManager;
 
 import com.google.common.base.Optional;

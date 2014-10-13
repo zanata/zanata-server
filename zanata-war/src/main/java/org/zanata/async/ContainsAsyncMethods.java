@@ -18,37 +18,20 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.async2;
+package org.zanata.async;
 
-import javax.annotation.Nullable;
-
-import com.google.common.util.concurrent.AbstractFuture;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public class AsyncTaskResult<V> extends AbstractFuture<V> {
-
-    AsyncTaskResult() {
-    }
-
-    public static <T> AsyncTaskResult<T> taskResult(T value) {
-        AsyncTaskResult<T> result = new AsyncTaskResult<T>();
-        result.set(value);
-        return result;
-    }
-
-    public static <T> AsyncTaskResult<T> taskResult() {
-        return taskResult(null);
-    }
-
-    @Override
-    public boolean set(@Nullable V value) {
-        return super.set(value);
-    }
-
-    @Override
-    public boolean setException(Throwable throwable) {
-        return super.setException(throwable);
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@org.jboss.seam.annotations.intercept.Interceptors(AsyncMethodInterceptor.class)
+public @interface ContainsAsyncMethods {
 }

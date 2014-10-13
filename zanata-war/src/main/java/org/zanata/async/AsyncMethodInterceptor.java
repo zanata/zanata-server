@@ -18,11 +18,10 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.async2;
+package org.zanata.async;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.intercept.Interceptor;
 import org.jboss.seam.intercept.InvocationContext;
 import org.jboss.seam.intercept.JavaBeanInterceptor;

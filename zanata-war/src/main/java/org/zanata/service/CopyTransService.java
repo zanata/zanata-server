@@ -20,7 +20,7 @@
  */
 package org.zanata.service;
 
-import org.zanata.async2.handle.CopyTransTaskHandle;
+import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProjectIteration;
@@ -47,7 +47,7 @@ public interface CopyTransService {
 
     /**
      * Similar to
-     * {@link CopyTransService#copyTransForDocument(org.zanata.model.HDocument, org.zanata.async2.handle.CopyTransTaskHandle)}
+     * {@link CopyTransService#copyTransForDocument(org.zanata.model.HDocument, org.zanata.async.handle.CopyTransTaskHandle)}
      * , with custom copy trans options.
      *
      * @param document

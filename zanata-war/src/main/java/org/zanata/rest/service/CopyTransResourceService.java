@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.zanata.action.CopyTransManager;
-import org.zanata.async2.handle.CopyTransTaskHandle;
+import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.model.HDocument;
 import org.zanata.rest.NoSuchEntityException;

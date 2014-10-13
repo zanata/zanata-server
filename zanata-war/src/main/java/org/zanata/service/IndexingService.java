@@ -21,8 +21,8 @@
 package org.zanata.service;
 
 import org.zanata.action.ReindexClassOptions;
-import org.zanata.async2.Async;
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.Async;
+import org.zanata.async.AsyncTaskHandle;
 
 import java.util.Map;
 import java.util.concurrent.Future;

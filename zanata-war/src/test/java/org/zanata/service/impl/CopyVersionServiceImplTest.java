@@ -125,7 +125,6 @@ public class CopyVersionServiceImplTest extends ZanataDbunitJpaTest {
                 .use("identity", identity)
                 .use("filePersistService", fileSystemPersistService)
                 .useImpl(VersionStateCacheImpl.class)
-                .useImpl(AsyncTaskManagerServiceImpl.class)
                 .ignoreNonResolvable()
                 .autowire(CopyVersionServiceImpl.class);
     }

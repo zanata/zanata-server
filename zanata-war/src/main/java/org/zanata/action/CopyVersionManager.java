@@ -13,8 +13,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.Identity;
-import org.zanata.async2.AsyncTaskHandleManager;
-import org.zanata.async2.handle.CopyVersionTaskHandle;
+import org.zanata.async.AsyncTaskHandleManager;
+import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.service.CopyVersionService;
 
 /**

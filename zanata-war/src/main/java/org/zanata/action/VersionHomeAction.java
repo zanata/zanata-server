@@ -43,7 +43,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.util.Hex;
-import org.zanata.async2.handle.CopyVersionTaskHandle;
+import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.DocumentType;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;

@@ -18,11 +18,11 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.async2.handle;
+package org.zanata.async.handle;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 
 /**
  * @author Carlos Munoz <a

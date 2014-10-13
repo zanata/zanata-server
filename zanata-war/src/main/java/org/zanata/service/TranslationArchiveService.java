@@ -24,7 +24,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 
 /**
  * This service deals with the archiving / unarchiving of bundles that may
@@ -56,7 +56,7 @@ public interface TranslationArchiveService {
     /**
      * Asynchronously starts building a project archive. Should have the same
      * result as
-     * {@link org.zanata.service.TranslationArchiveService#buildTranslationFileArchive(String, String, String, String, org.zanata.async2.AsyncTaskHandle)}
+     * {@link org.zanata.service.TranslationArchiveService#buildTranslationFileArchive(String, String, String, String, org.zanata.async.AsyncTaskHandle)}
      * but performed in the background.
      *
      * @param projectSlug
@@ -66,7 +66,7 @@ public interface TranslationArchiveService {
      * @param handle
      * @return
      * @see org.zanata.service.TranslationArchiveService#buildTranslationFileArchive(String,
-     *      String, String, String, org.zanata.async2.AsyncTaskHandle)
+     *      String, String, String, org.zanata.async.AsyncTaskHandle)
      */
     Future<String> startBuildingTranslationFileArchive(
             @Nonnull String projectSlug,

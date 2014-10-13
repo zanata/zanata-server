@@ -66,7 +66,6 @@ public class TranslationFinderTest extends ImmutableDbunitJpaTest {
                         Search.getFullTextEntityManager(getEm()))
                 .use("entityManagerFactory", getEmf())
                 .use("session", new FullTextSessionImpl(getSession()))
-                .useImpl(AsyncTaskManagerServiceImpl.class)
                 .useImpl(IndexingServiceImpl.class)
                 .ignoreNonResolvable();
         seam.autowire(SearchIndexManager.class).reindex(true, true, false);

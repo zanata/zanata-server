@@ -27,7 +27,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.criterion.Projections;
 import org.hibernate.search.FullTextSession;
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 
 /**
  * @author Sean Flanigan <a

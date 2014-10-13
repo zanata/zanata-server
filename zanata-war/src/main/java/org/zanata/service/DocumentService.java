@@ -20,7 +20,7 @@
  */
 package org.zanata.service;
 
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.Resource;
 

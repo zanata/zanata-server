@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.MergeType;
@@ -97,7 +97,7 @@ public interface TranslationService {
      * @see TranslationService#translateAllInDoc(String, String, String,
      * org.zanata.common.LocaleId, org.zanata.rest.dto.resource.TranslationsResource,
      * java.util.Set, org.zanata.common.MergeType,
-     * org.zanata.async2.AsyncTaskHandle)
+     * org.zanata.async.AsyncTaskHandle)
      */
     public Future<List<String>> translateAllInDocAsync(String projectSlug,
             String iterationSlug, String docId, LocaleId locale,

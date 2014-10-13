@@ -189,7 +189,6 @@ public class CopyTransServiceImplPerformanceTest {
                         seam.autowire(AccountDAO.class).getByUsername("demo"))
                 .useImpl(LocaleServiceImpl.class)
                 .useImpl(TranslationMemoryServiceImpl.class)
-                .useImpl(AsyncTaskManagerServiceImpl.class)
                 .useImpl(VersionStateCacheImpl.class)
                 .useImpl(ValidationServiceImpl.class).ignoreNonResolvable();
 

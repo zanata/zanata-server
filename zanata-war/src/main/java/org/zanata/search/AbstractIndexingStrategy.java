@@ -4,7 +4,7 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
 
 import lombok.extern.slf4j.Slf4j;
-import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async.AsyncTaskHandle;
 
 /**
  * Base indexing strategy.
