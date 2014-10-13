@@ -21,6 +21,7 @@
 package org.zanata.service.impl;
 
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -30,6 +31,10 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.async2.Async;
+import org.zanata.async2.AsyncTaskHandle;
+import org.zanata.async2.AsyncTaskResult;
+import org.zanata.async2.ContainsAsyncMethods;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocumentUploadedEvent;
@@ -57,6 +62,7 @@ import org.zanata.service.VersionStateCache;
  */
 @Name("documentServiceImpl")
 @Scope(ScopeType.STATELESS)
+@ContainsAsyncMethods
 public class DocumentServiceImpl implements DocumentService {
     @In
     private ZanataIdentity identity;
@@ -113,6 +119,16 @@ public class DocumentServiceImpl implements DocumentService {
                 lockManagerServiceImpl.release(docLock);
             }
         }
+    }
+    
+    @Override
+    @Async
+    public Future<HDocument> saveDocumentAsync(String projectSlug, String iterationSlug,
+            Resource sourceDoc, Set<String> extensions, boolean copyTrans,
+            boolean lock, AsyncTaskHandle<HDocument> handle) {
+        // TODO Use the pased in handle
+        return AsyncTaskResult.taskResult(saveDocument(projectSlug,
+                iterationSlug, sourceDoc, extensions, copyTrans, lock));
     }
 
     @Override

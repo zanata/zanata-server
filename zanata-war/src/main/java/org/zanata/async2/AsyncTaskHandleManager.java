@@ -21,10 +21,12 @@
 package org.zanata.async2;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Lists;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
@@ -88,5 +90,12 @@ public class AsyncTaskHandleManager {
             return handlesByKey.get(key);
         }
         return finishedTasks.getIfPresent(key);
+    }
+
+    public Collection<AsyncTaskHandle> getAllHandles() {
+        Collection<AsyncTaskHandle> handles = Lists.newArrayList();
+        handles.addAll(handlesByKey.values());
+        handles.addAll(finishedTasks.asMap().values());
+        return handles;
     }
 }
