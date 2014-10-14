@@ -73,7 +73,7 @@ public interface CopyTransService {
             HCopyTransOptions copyTransOptions, CopyTransTaskHandle handle);
 
     /**
-     * 
+     *
      *
      * @param iteration
      *            The project iteration to copy translations into

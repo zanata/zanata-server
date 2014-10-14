@@ -567,7 +567,7 @@ public class TranslationServiceImpl implements TranslationService {
         return translateAllInDoc(projectSlug, iterationSlug, docId, locale,
                 translations, extensions, mergeType, null);
     }
-    
+
     @Override
     public List<String> translateAllInDoc(final String projectSlug,
             final String iterationSlug, final String docId,

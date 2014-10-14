@@ -113,7 +113,7 @@ public class AsyncTaskManager {
         scheduler.execute(runnableOp);
         return taskFuture;
     }
-    
+
     private static <V> V getReturnValue(Future<V> asyncTaskFuture)
             throws Exception {
         // If the async method returns void

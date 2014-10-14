@@ -77,7 +77,7 @@ public class TranslationArchiveServiceImpl implements
 
     @In
     private LocaleDAO localeDAO;
-    
+
     @In
     private ProjectIterationDAO projectIterationDAO;
 

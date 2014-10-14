@@ -62,7 +62,7 @@ public class CopyTransManager implements Serializable {
 
     @In
     private AsyncTaskHandleManager asyncTaskHandleManager;
-    
+
     @In
     private CopyTransService copyTransServiceImpl;
 

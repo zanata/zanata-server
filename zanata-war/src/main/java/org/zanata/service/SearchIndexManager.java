@@ -41,7 +41,7 @@ public class SearchIndexManager implements Serializable {
 
     @In
     AsyncTaskHandleManager asyncTaskHandleManager;
-    
+
     @In
     IndexingService indexingServiceImpl;
 

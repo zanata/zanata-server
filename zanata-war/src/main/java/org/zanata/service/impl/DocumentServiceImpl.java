@@ -120,7 +120,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
     }
-    
+
     @Override
     @Async
     public Future<HDocument> saveDocumentAsync(String projectSlug, String iterationSlug,

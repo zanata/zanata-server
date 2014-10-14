@@ -56,10 +56,10 @@ public class DownloadAllFilesHandler extends
 
     @In
     private ProjectIterationDAO projectIterationDAO;
-    
+
     @In
     private TranslationArchiveService translationArchiveServiceImpl;
-    
+
     @In
     private AsyncTaskHandleManager asyncTaskHandleManager;
 

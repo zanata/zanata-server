@@ -47,8 +47,6 @@ public class AsyncMethodInterceptor implements OptimizedInterceptor {
         }
 
         final AsyncTaskManager taskManager =
-//                new AsyncTaskManager();
-//        taskManager.init();
                 ServiceLocator.instance().getInstance(
                         AsyncTaskManager.class);
 

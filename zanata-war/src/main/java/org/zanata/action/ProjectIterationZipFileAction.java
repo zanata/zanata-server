@@ -34,7 +34,7 @@ public class ProjectIterationZipFileAction implements Serializable {
 
     @In
     private ProjectIterationDAO projectIterationDAO;
-    
+
     @In
     private TranslationArchiveService translationArchiveServiceImpl;
 

@@ -28,7 +28,7 @@
       <!-- This needs to be here if -Djboss.socket.binding.port-offset is used in javaVmArguments.
            It must match the exact management port to be used-->
       <!-- NB: don't put whitespace around the number -->
-      <property name="managementPort">${jboss.management.native.port,env.JBOSS_MANAGEMENT_NATIVE_PORT:9999}</property>
+      <property name="managementPort">${jboss.management.native.port,env.JBOSS_MANAGEMENT_NATIVE_PORT:10099}</property>
     </configuration>
   </container>
   <container qualifier="wildfly81">

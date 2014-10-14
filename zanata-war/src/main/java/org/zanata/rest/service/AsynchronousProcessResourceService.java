@@ -72,13 +72,13 @@ public class AsynchronousProcessResourceService implements
         AsynchronousProcessResource {
     @In
     private LocaleService localeServiceImpl;
-    
+
     @In
     private DocumentService documentServiceImpl;
-    
+
     @In
     private TranslationService translationServiceImpl;
-    
+
     @In
     private AsyncTaskHandleManager asyncTaskHandleManager;
 
@@ -126,10 +126,10 @@ public class AsynchronousProcessResourceService implements
         Serializable taskId = asyncTaskHandleManager.registerTaskHandle(handle);
         documentServiceImpl.saveDocumentAsync(projectSlug, iterationSlug,
                 resource, extensions, copytrans, true, handle);
-        
+
         return getProcessStatus(taskId.toString()); // TODO Change to return 202
                                                     // Accepted,
-                                                    // with a url to get the 
+                                                    // with a url to get the
                                                     // progress
     }
 

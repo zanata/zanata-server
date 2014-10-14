@@ -261,7 +261,7 @@ public class CopyTransServiceImpl implements CopyTransService {
         copyTransForIteration(iteration, copyTransOptions, handle);
         return AsyncTaskResult.taskResult();
     }
-    
+
     @Override
     public void copyTransForIteration(HProjectIteration iteration,
             HCopyTransOptions copyTransOptions,
