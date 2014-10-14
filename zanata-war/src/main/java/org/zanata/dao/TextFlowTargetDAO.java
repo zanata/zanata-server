@@ -47,6 +47,13 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
                 .using("locale", locale).load();
     }
 
+    public HTextFlowTarget getById(Long tftId) {
+        Query q = getSession().createQuery(
+                    "from HTextFlowTarget tft where tft.id =:tftId");
+        q.setParameter("tftId", tftId);
+        return (HTextFlowTarget)q.uniqueResult();
+    }
+
     public List<HTextFlowTarget> getByTextFlowId(Long tfId, int offset,
             int maxResults) {
         Query q =

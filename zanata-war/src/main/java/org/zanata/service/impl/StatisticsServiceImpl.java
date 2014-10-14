@@ -21,27 +21,26 @@
 package org.zanata.service.impl;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URI;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Path;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.BaseTranslationCount;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.common.TransUnitWords;
 import org.zanata.dao.DocumentDAO;
-import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowTargetHistoryDAO;
@@ -50,7 +49,6 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
@@ -64,8 +62,6 @@ import org.zanata.service.TranslationStateCache;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
-
-import com.google.common.collect.Maps;
 
 /**
  * Default implementation for the
@@ -99,10 +95,9 @@ public class StatisticsServiceImpl implements StatisticsResource {
     private PersonDAO personDAO;
 
     @In
-    private LocaleDAO localeDAO;
-
-    @In
     private TranslationStateCache translationStateCacheImpl;
+
+    private static final int MAX_STATS_DAYS = 365;
 
     // TODO Need to refactor this method to get Message statistic by default.
     // This is to be consistance with UI which uses message stats, and for
@@ -117,7 +112,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -225,7 +220,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         if (locales.length == 0) {
             List<HLocale> iterationLocales =
                     localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, iterationSlug);
+                        projectSlug, iterationSlug);
             localeIds = new LocaleId[iterationLocales.size()];
             for (int i = 0, iterationLocalesSize = iterationLocales.size(); i < iterationLocalesSize; i++) {
                 HLocale loc = iterationLocales.get(i);
@@ -315,7 +310,12 @@ public class StatisticsServiceImpl implements StatisticsResource {
         try {
             fromDate = DateUtil.getDate(dateRange[0], DATE_FORMAT);
             toDate = DateUtil.getDate(dateRange[1], DATE_FORMAT);
-            if (fromDate.after(toDate)) {
+
+            fromDate = DateUtil.getStartOfDay(fromDate);
+            toDate = DateUtil.getEndOfTheDay(toDate);
+
+            if (fromDate.after(toDate) || !DateUtil.isDatesInRange(fromDate,
+                    toDate, MAX_STATS_DAYS)) {
                 throw new InvalidDateParam(dateRangeParam);
             }
         } catch (IllegalArgumentException e) {
@@ -327,20 +327,20 @@ public class StatisticsServiceImpl implements StatisticsResource {
         List<Object[]> data =
                 textFlowTargetHistoryDAO.getUserTranslationHistoryInVersion(
                         version.getId(), person.getId(), fromDate, toDate);
-        for(Object[] entry: data) {
-            int count = ((BigDecimal)entry[0]).intValue();
-            ContentState state = ContentState.values()[(int)entry[1]];
-            Long localeId = ((BigInteger)entry[2]).longValue();
-            HLocale locale = localeDAO.findById(localeId);
 
-            Map<ContentState, Integer> stat;
-            if(localeStatistics.containsKey(locale.getLocaleId())) {
-                stat = localeStatistics.get(locale.getLocaleId());
-            }  else {
-                stat = Maps.newHashMap();
+        for (Object[] entry : data) {
+            int count = ((BigDecimal) entry[0]).intValue();
+            ContentState state = ContentState.values()[(int) entry[1]];
+            LocaleId localeId = new LocaleId(entry[2].toString());
+
+            BaseTranslationCount stats;
+            if (localeStatistics.containsKey(localeId)) {
+                stats = localeStatistics.get(localeId);
+            } else {
+                stats = new BaseTranslationCount(0,0,0,0,0);
             }
-            stat.put(state, count);
-            localeStatistics.put(locale.getLocaleId(), stat);
+            stats.set(state, count);
+            localeStatistics.put(localeId, stats);
         }
 
         ContributionStatistics result = new ContributionStatistics();
@@ -403,7 +403,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         return result;
     }
 
-    private final class InvalidDateParam extends RuntimeException {
+    public final class InvalidDateParam extends RuntimeException {
         public InvalidDateParam() {
         }
 

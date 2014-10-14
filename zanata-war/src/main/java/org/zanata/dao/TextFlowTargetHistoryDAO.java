@@ -46,56 +46,34 @@ public class TextFlowTargetHistoryDAO extends
         super(HTextFlowTargetHistory.class, session);
     }
 
+    @NativeQuery
     public List<Object[]> getUserTranslationHistoryInVersion(
             Long versionId, Long personId, Date from, Date to) {
 
-        /**
-         * Select sum(wordCount), state, locale
-         from (
-         SELECT
-         wordCount, id, state, locale
-         FROM
-         (select h.state, t.id, h.translated_by_id, tf.wordCount, t.locale
-         from HTextFlowTargetHistory h, HTextFlowTarget t, HTextFlow tf
-         where h.target_id = t.id
-         and t.tf_id = tf.id
-         and h.translated_by_id = 42
-         union all
-         select t.state, t.id, t.translated_by_id, tf.wordCount, t.locale
-         from HTextFlowTarget t, HTextFlow tf
-         where t.tf_id = tf.id
-         and t.translated_by_id = 42) as test
-
-         group by state, id, locale, wordCount) as test2
-         group by state,locale;
-         */
-
         StringBuilder queryString = new StringBuilder();
         queryString
-                .append("select sum(wordCount), state, locale from ")
-                    .append("(select wordCount, id, state, locale from ")
-                        .append("(select h.state, tft.id, h.translated_by_id, tf.wordCount, tft.locale ")
+                .append("select sum(wordCount), state, localeId from ")
+                    .append("(select wordCount, id, state, localeId from ")
+                        .append("(select h.state, tft.id, h.translated_by_id, tf.wordCount, locale.localeId ")
                         .append("from HTextFlowTargetHistory h ")
                         .append("JOIN HTextFlowTarget tft ON tft.id = h.target_id ")
+                        .append("JOIN HLocale locale ON locale.id = tft.locale ")
                         .append("JOIN HTextFlow tf ON tf.id = tft.tf_id ")
                         .append("JOIN HDocument doc ON doc.id = tf.document_Id ")
-                        .append("JOIN HProjectIteration version ON version.id = doc.project_iteration_id ")
-                        .append("where version.id =:versionId ")
+                        .append("where doc.project_iteration_id =:versionId ")
                         .append("and h.translated_by_id =:personId ")
                         .append("and h.lastChanged between :from and :to ")
-
                         .append("union all ")
-
-                        .append("select tft.state, tft.id, tft.translated_by_id, tf.wordCount, tft.locale ")
+                        .append("select tft.state, tft.id, tft.translated_by_id, tf.wordCount, locale.localeId ")
                         .append("from HTextFlowTarget tft ")
+                        .append("JOIN HLocale locale ON locale.id = tft.locale ")
                         .append("JOIN HTextFlow tf ON tf.id = tft.tf_id ")
                         .append("JOIN HDocument doc ON doc.id = tf.document_Id ")
-                        .append("JOIN HProjectIteration version ON version.id = doc.project_iteration_id ")
-                        .append("where version.id =:versionId ")
+                        .append("where doc.project_iteration_id =:versionId ")
                         .append("and tft.translated_by_id =:personId ")
-                        .append("and tft.lastChanged between :from and :to) as test2 ")
-                    .append("group by state, id, locale, wordCount) as test ")
-                .append("group by state, locale");
+                        .append("and tft.lastChanged between :from and :to) as target_history_union ")
+                    .append("group by state, id, localeId, wordCount) as target_history_group ")
+                .append("group by state, localeId");
 
 
         Query query = getSession().createSQLQuery(queryString.toString());
