@@ -318,4 +318,9 @@
     <!--<welcome-file>home.xhtml</welcome-file>-->
   <!--</welcome-file-list>-->
 
+  <error-page>
+    <error-code>404</error-code>
+    <location>/404.seam</location>
+  </error-page>
+
 </web-app>
