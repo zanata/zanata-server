@@ -123,6 +123,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Async
+    @Transactional
     public Future<HDocument> saveDocumentAsync(String projectSlug, String iterationSlug,
             Resource sourceDoc, Set<String> extensions, boolean copyTrans,
             boolean lock, AsyncTaskHandle<HDocument> handle) {
