@@ -3,6 +3,7 @@ package org.zanata.page.projectversion.versionsettings;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -48,13 +49,15 @@ public class VersionDocumentsTab extends VersionBasePage {
         getDriver()
                 .findElement(By.id("file-upload-component-cancel-upload"))
                 .click();
-        waitForTenSec().until(new Predicate<WebDriver>() {
+        waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply( WebDriver input) {
                 return !getDriver().findElement(By.id("file-upload-component"))
                         .isDisplayed();
             }
         });
+        slightPause();
+        waitForPageSilence();
         return new VersionDocumentsTab(getDriver());
     }
 
@@ -77,7 +80,7 @@ public class VersionDocumentsTab extends VersionBasePage {
 
     public VersionDocumentsTab submitUpload() {
         log.info("Click Submit upload");
-        waitForTenSec().until(new Predicate<WebDriver>() {
+        waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 return getDriver().findElement(
@@ -92,7 +95,7 @@ public class VersionDocumentsTab extends VersionBasePage {
 
     public VersionDocumentsTab clickUploadDone() {
         log.info("Click upload Done button");
-        waitForTenSec().until(new Predicate<WebDriver>() {
+        waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 return getDriver()
@@ -107,12 +110,17 @@ public class VersionDocumentsTab extends VersionBasePage {
 
     public boolean sourceDocumentsContains(String document) {
         log.info("Query source documents contain {}", document);
-        List<WebElement> documentLabelList =
-                getDriver()
+        List<WebElement> documentLabelList = waitForAMoment()
+                .until(new Function<WebDriver, List<WebElement>>() {
+            @Override
+            public List<WebElement> apply(WebDriver input) {
+                return getDriver()
                         .findElement(By.id("settings-document_form"))
                         .findElement(By.tagName("ul"))
                         .findElements(
                                 By.xpath(".//li/label[@class='form__checkbox__label']"));
+            }
+        });
         for (WebElement label : documentLabelList) {
             if (label.getText().contains(document)) {
                 return true;
@@ -152,7 +160,7 @@ public class VersionDocumentsTab extends VersionBasePage {
 
     public String getUploadError() {
         log.info("Query upload error message");
-        waitForTenSec().until(new Predicate<WebDriver>() {
+        waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 return getDriver().findElement(By.id("file-upload-component"))

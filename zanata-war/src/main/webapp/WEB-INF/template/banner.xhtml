@@ -125,11 +125,11 @@
           </li>
         </s:fragment>
         <li>
-          <s:link id="right_menu_sign_out_link" view="/account/logout.seam"
-            propagation="none">
-            #{msgs['jsf.Logout']} <i
-            class="l--float-right i--inline i--logout"></i>
-          </s:link>
+          <a jsfc="s:link" id="right_menu_sign_out_link"
+            view="/home.xhtml"
+            action="#{identity.logout}" propagation="none">
+            #{msgs['jsf.Logout']} <i class="l--float-right i--inline i--logout"/>
+          </a>
         </li>
       </ul>
     </nav>
@@ -157,7 +157,7 @@
 
       <h:form rendered="#{applicationConfigurationAction.singleOpenId}">
         <h:commandLink id="openid_single_signin_link"
-          action="#{loginAction.genericOpenIdLogin(applicationConfiguration.openIdProviderUrl)}"
+          action="#{loginAction.getLoginPageRedirect()}"
           propagation="none" styleClass="l--push-left-half button--primary">
           #{messages['jsf.Login']}
         </h:commandLink>

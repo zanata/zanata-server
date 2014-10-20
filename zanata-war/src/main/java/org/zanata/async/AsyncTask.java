@@ -20,27 +20,30 @@
  */
 package org.zanata.async;
 
-import javax.annotation.Nonnull;
-import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Public common interface for all asynchronous tasks in the system.
+ * Public common class for all asynchronous tasks in the system.
  *
  * @param <V>
  *            The type of value returned by this task once finished.
- * @param <H>
- *            The type of task handler provided by the task to keep callers
- *            informed of progress and/or other task related information.
  *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public interface AsyncTask<V, H extends AsyncTaskHandle<V>> extends Callable<V> {
+public abstract class AsyncTask<V> {
+
+    @Getter @Setter
+    private Future<V> future;
 
     /**
-     * @return The handle used to keep task information. Tasks must always
-     *         return the same instance of a handle.
+     * Computes a result, or throws a Throwable if unable to do so.
+     *
+     * @return computed result
+     * @throws Throwable if unable to compute a result
      */
-    @Nonnull H getHandle();
-
+    abstract V call() throws Throwable;
 }

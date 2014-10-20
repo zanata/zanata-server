@@ -21,7 +21,9 @@
 package org.zanata.dao;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -31,12 +33,16 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
 import org.zanata.search.FilterConstraintToQuery;
 import org.zanata.search.FilterConstraints;
 import org.zanata.webtrans.shared.model.DocumentId;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 @Name("textFlowDAO")
@@ -90,6 +96,21 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
         Query query = getSession().createQuery(hql);
         return constraintToQuery.setQueryParameters(query, hLocale)
                 .setResultTransformer(resultTransformer).list();
+    }
+
+    public List<Object[]> getTextFlowAndTarget(List<Long> idList, Long localeId) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from HTextFlow tf ")
+                .append("left join tf.targets tft with tft.locale.id =:localeId ")
+                .append("where tf.id in (:idList)");
+
+        Query q = getSession().createQuery(queryBuilder.toString());
+        q.setParameterList("idList", idList);
+        q.setParameter("localeId", localeId);
+        q.setCacheable(true);
+        q.setComment("TextFlowTargetDAO.getTextFlowTarget");
+
+        return q.list();
     }
 
     public int getTotalWords() {
@@ -234,4 +255,39 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
                 "TextFlowDAO.countTextFlowsInProjectIteration");
         return (Long) q.uniqueResult();
     }
+
+    /**
+     * This will eagerly fetch HTextFlow properties including targets and target
+     * histories. It will use a literal list in IN clause. Mysql has no limit on
+     * In clause itself but performance wide, IN is only faster when the number
+     * is relatively small i.e. less than 500. We are using this query in
+     * translation batch update which is 100 per batch.
+     *
+     * @see org.zanata.model.HTextFlow
+     * @see <a href="http://stackoverflow.com/a/1532454/345718">MySQL number of
+     *      items within “in clause”/a>
+     *
+     * @param document
+     *            document
+     * @param resIds
+     *            resID list
+     * @return a map with HTextFlow resId as key and HTextFlow as value
+     */
+    public Map<String, HTextFlow> getByDocumentAndResIds(HDocument document,
+            List<String> resIds) {
+        Query query = getSession()
+                .getNamedQuery(HTextFlow.QUERY_GET_BY_DOC_AND_RES_ID_BATCH)
+                .setParameter("document", document)
+                .setParameterList("resIds", resIds)
+                .setComment("TextFlowDAO.getByDocumentAndResIds");
+        @SuppressWarnings("unchecked")
+        List<HTextFlow> results = query.list();
+        ImmutableMap.Builder<String, HTextFlow> builder = ImmutableMap.builder();
+        for (HTextFlow textFlow : results) {
+            builder.put(textFlow.getResId(), textFlow);
+        }
+
+        return builder.build();
+    }
+
 }

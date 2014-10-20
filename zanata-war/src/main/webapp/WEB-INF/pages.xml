@@ -5,6 +5,9 @@
   no-conversation-view-id="/home.xhtml" login-view-id="/account/login.xhtml">
 
   <page view-id="*">
+    <navigation from-action="#{identity.logout}">
+      <redirect view-id="/home.xhtml" />
+    </navigation>
     <navigation>
       <rule if-outcome="home">
         <redirect view-id="/home.xhtml" />
@@ -108,9 +111,9 @@
       value="no-cache, no-store, max-age=0, must-revalidate" />
     <param name="continue" value="#{userRedirect.encodedUrl}" />
 
-    <action execute="#{identity.isLoggedIn()}" />
-    <navigation from-action="#{identity.isLoggedIn()}">
-      <rule if-outcome="true">
+    <action execute="#{loginAction.getLoginPageRedirect()}" />
+    <navigation from-action="#{loginAction.getLoginPageRedirect()}">
+      <rule if-outcome="dashboard">
         <redirect view-id="/dashboard/home.xhtml" />
       </rule>
     </navigation>
@@ -134,13 +137,6 @@
     </navigation>
   </page>
 
-  <page view-id="/account/logout.xhtml">
-    <action execute="#{identity.logout}" if="#{identity.loggedIn}" />
-    <navigation>
-      <redirect view-id="/home.xhtml" />
-    </navigation>
-  </page>
-
   <page view-id="/account/activate.xhtml">
     <param name="key" value="#{activate.activationKey}" />
     <action execute="#{activate.validateActivationKey}" />
@@ -159,15 +155,6 @@
     <action execute="#{breadcrumbs.clear}" />
     <action
       execute="#{breadcrumbs.addLocation('', msgs['jsf.ResetPassword'])}" />
-  </page>
-
-  <page view-id="/account/changepassword.xhtml" login-required="true">
-    <restrict>#{applicationConfiguration.internalAuth}</restrict>
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/profile/view.xhtml', msgs['jsf.MyProfile'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.ChangePassword'])}" />
   </page>
 
   <page view-id="/account/register.xhtml">
@@ -449,22 +436,6 @@
     </navigation>
   </page>
 
-  <!-- Profile -->
-  <page view-id="/profile/edit.xhtml">
-    <restrict>#{identity.preAuthenticated}</restrict>
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/profile/view.xhtml', msgs['jsf.MyProfile'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.EditProfile'])}" />
-    <navigation from-action="#{profileAction.edit}">
-      <redirect view-id="/profile/view.xhtml" />
-    </navigation>
-    <navigation from-action="#{profileAction.cancel}">
-      <redirect view-id="/profile/view.xhtml" />
-    </navigation>
-  </page>
-
   <page view-id="/profile/create_user.xhtml">
     <restrict>#{identity.preAuthenticated}</restrict>
     <navigation from-action="#{newProfileAction.createUser}">
@@ -472,35 +443,6 @@
     </navigation>
     <navigation from-action="#{newProfileAction.cancel}">
       <redirect view-id="/home.xhtml" />
-    </navigation>
-  </page>
-
-  <page view-id="/profile/view.xhtml" login-required="true">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.MyProfile'])}" />
-  </page>
-
-  <page view-id="/profile/identities.xhtml" login-required="true">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/profile/view.xhtml', msgs['jsf.MyProfile'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.identities.Title'])}" />
-    <action execute="#{credentialsAction.loadUserCredentials}" />
-  </page>
-
-  <page view-id="/profile/add_identity.xhtml" login-required="true">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/profile/view.xhtml', msgs['jsf.MyProfile'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/profile/identities.xhtml', msgs['jsf.identities.Title'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.identities.AddIdentity'])}" />
-
-    <navigation from-action="#{credentialsAction.cancel}">
-      <redirect view-id="/profile/identities.xhtml" />
     </navigation>
   </page>
 
