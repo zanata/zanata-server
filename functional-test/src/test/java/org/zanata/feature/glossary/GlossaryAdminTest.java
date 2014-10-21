@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.greaterThan;
 
@@ -87,9 +86,11 @@ public class GlossaryAdminTest extends ZanataTestCase {
         List<String> langs = glossaryPage.getAvailableGlossaryLanguages();
 
         assertThat(langs.size(), greaterThan(0));
-        assertThat(langs, containsInAnyOrder("pl", "hi", "en-US"));
-        assertThat(glossaryPage.getGlossaryEntryCount("pl"), greaterThan(1));
-        assertThat(glossaryPage.getGlossaryEntryCount("hi"), greaterThan(1));
-        assertThat(glossaryPage.getGlossaryEntryCount("en-US"), greaterThan(1));
+        assertThat(langs, containsInAnyOrder("Polish",
+                "Hindi", "English (United States)"));
+        assertThat(glossaryPage.getGlossaryEntryCount("Polish"), greaterThan(1));
+        assertThat(glossaryPage.getGlossaryEntryCount("Hindi"), greaterThan(1));
+        assertThat(glossaryPage.getGlossaryEntryCount("English (United States)"),
+                greaterThan(1));
     }
 }

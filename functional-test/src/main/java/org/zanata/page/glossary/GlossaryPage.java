@@ -20,12 +20,14 @@
  */
 package org.zanata.page.glossary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
 import org.zanata.util.WebElementUtil;
 
@@ -45,17 +47,34 @@ public class GlossaryPage extends BasePage {
     public List<String> getAvailableGlossaryLanguages() {
         log.info("Query available glossary languages");
         return WebElementUtil.getColumnContents(getDriver(), glossaryTable, 0);
+/*        List<String> availableLanguages = new ArrayList<>();
+        for (WebElement element : getListItems()) {
+            availableLanguages.add(element
+                    .findElement(By.className("list__title")).getText().trim());
+        }
+        return availableLanguages;
+*/
     }
 
     public int getGlossaryEntryCount(String lang) {
         log.info("Query number of glossary entries for {}", lang);
-        List<String> langs = getAvailableGlossaryLanguages();
-        int row = langs.indexOf(lang);
+        List<WebElement> langs = getListItems();
+        int row = getAvailableGlossaryLanguages().indexOf(lang);
         if (row >= 0) {
             return Integer
                     .parseInt(WebElementUtil.getColumnContents(getDriver(),
                             glossaryTable, 2).get(row));
+/*            return Integer.parseInt(langs.get(row)
+                    .findElement(By.className("stats__figure")).getText());
+*/
         }
         return -1;
+    }
+
+    private List<WebElement> getListItems() {
+        return getDriver()
+                .findElement(By.id("glossary_form"))
+                .findElement(By.className("list--stats"))
+                .findElements(By.className("list__item--actionable"));
     }
 }
