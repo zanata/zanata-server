@@ -1,6 +1,5 @@
 package org.zanata.page.groups;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.zanata.page.BasePage;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
@@ -52,7 +50,7 @@ public class CreateVersionGroupPage extends BasePage {
     }
 
     private WebElement getGroupSlugField() {
-        return getDriver().findElement(By.id("group-form:slugField:slug"));
+        return waitForWebElement(By.id("group-form:slugField:slug"));
     }
 
     public String getGroupIdValue() {
@@ -67,7 +65,7 @@ public class CreateVersionGroupPage extends BasePage {
     }
 
     private WebElement getGroupNameField() {
-        return getDriver().findElement(By.id("group-form:nameField:name"));
+        return waitForWebElement(By.id("group-form:nameField:name"));
     }
 
     public CreateVersionGroupPage inputGroupDescription(String desc) {
@@ -92,7 +90,7 @@ public class CreateVersionGroupPage extends BasePage {
         getGroupSlugField().clear();
         getGroupNameField().clear();
         groupDescriptionField.clear();
-        waitForTenSec().until(new Predicate<WebDriver>() {
+        waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
                 return getGroupIdValue().equals("") && getGroupNameField().getAttribute("value").equals("");

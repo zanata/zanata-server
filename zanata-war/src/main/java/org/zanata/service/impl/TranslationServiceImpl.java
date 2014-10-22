@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
@@ -46,8 +47,10 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.util.Work;
+import org.zanata.async.Async;
 import org.zanata.async.AsyncTaskHandle;
-import org.zanata.async.AsyncUtils;
+import org.zanata.async.AsyncTaskResult;
+import org.zanata.async.ContainsAsyncMethods;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.MergeType;
@@ -96,6 +99,7 @@ import com.google.common.collect.Lists;
 @Name("translationServiceImpl")
 @Scope(ScopeType.STATELESS)
 @Transactional
+@ContainsAsyncMethods
 @Slf4j
 public class TranslationServiceImpl implements TranslationService {
 
@@ -141,9 +145,6 @@ public class TranslationServiceImpl implements TranslationService {
 
     @In
     private Messages msgs;
-
-    @In
-    private ActivityService activityServiceImpl;
 
     @Override
     public List<TranslationResult> translate(LocaleId localeId,
@@ -250,8 +251,8 @@ public class TranslationServiceImpl implements TranslationService {
                                 + hTextFlowTarget.getVersionNum();
 
                 log.warn(errorMessage);
-
                 result.errorMessage = errorMessage;
+                result.isVersionNumConflict = true;
                 result.isSuccess = false;
             }
             result.translatedTextFlowTarget = hTextFlowTarget;
@@ -491,12 +492,14 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     // This will not run in a transaction. Instead, transactions are controlled
     // within the method itself.
-            @Transactional(TransactionPropagationType.NEVER)
-            public
-            List<String> translateAllInDoc(String projectSlug,
-                    String iterationSlug, String docId, LocaleId locale,
-                    TranslationsResource translations, Set<String> extensions,
-                    MergeType mergeType, boolean lock) {
+    @Transactional(TransactionPropagationType.NEVER)
+    @Async
+    public
+    Future<List<String>> translateAllInDocAsync(String projectSlug,
+            String iterationSlug, String docId, LocaleId locale,
+            TranslationsResource translations, Set<String> extensions,
+            MergeType mergeType, boolean lock,
+            AsyncTaskHandle handle) {
         // Lock this document for push
         Lock transLock = null;
         if (lock) {
@@ -509,13 +512,13 @@ public class TranslationServiceImpl implements TranslationService {
         try {
             messages =
                     this.translateAllInDoc(projectSlug, iterationSlug, docId,
-                            locale, translations, extensions, mergeType);
+                            locale, translations, extensions, mergeType, handle);
         } finally {
             if (lock) {
                 lockManagerServiceImpl.release(transLock);
             }
         }
-        return messages;
+        return AsyncTaskResult.taskResult(messages);
     }
 
     /**
@@ -558,6 +561,16 @@ public class TranslationServiceImpl implements TranslationService {
             final String iterationSlug, final String docId,
             final LocaleId locale, final TranslationsResource translations,
             final Set<String> extensions, final MergeType mergeType) {
+        return translateAllInDoc(projectSlug, iterationSlug, docId, locale,
+                translations, extensions, mergeType, null);
+    }
+
+    @Override
+    public List<String> translateAllInDoc(final String projectSlug,
+            final String iterationSlug, final String docId,
+            final LocaleId locale, final TranslationsResource translations,
+            final Set<String> extensions, final MergeType mergeType,
+            AsyncTaskHandle handle) {
         final HProjectIteration hProjectIteration =
                 projectIterationDAO.getBySlug(projectSlug, iterationSlug);
 
@@ -587,7 +600,7 @@ public class TranslationServiceImpl implements TranslationService {
                 localeServiceImpl.validateLocaleByProjectIteration(locale,
                         projectSlug, iterationSlug);
         final Optional<AsyncTaskHandle> handleOp =
-                AsyncUtils.getEventAsyncHandle(AsyncTaskHandle.class);
+                Optional.fromNullable(handle);
 
         if (handleOp.isPresent()) {
             handleOp.get().setMaxProgress(
@@ -849,6 +862,7 @@ public class TranslationServiceImpl implements TranslationService {
         private HTextFlowTarget translatedTextFlowTarget;
         private boolean isSuccess;
         private boolean targetChanged = false;
+        private boolean isVersionNumConflict = false;
         private int baseVersion;
         private ContentState baseContentState;
         private String errorMessage;
@@ -856,6 +870,11 @@ public class TranslationServiceImpl implements TranslationService {
         @Override
         public boolean isTranslationSuccessful() {
             return isSuccess;
+        }
+
+        @Override
+        public boolean isVersionNumConflict() {
+            return isVersionNumConflict;
         }
 
         @Override
@@ -968,6 +987,7 @@ public class TranslationServiceImpl implements TranslationService {
         result.baseVersion = hTextFlowTarget.getVersionNum();
         result.baseContentState = hTextFlowTarget.getState();
         result.isSuccess = false;
+        result.isVersionNumConflict = false;
         result.translatedTextFlowTarget = hTextFlowTarget;
         result.errorMessage = null;
         return result;
