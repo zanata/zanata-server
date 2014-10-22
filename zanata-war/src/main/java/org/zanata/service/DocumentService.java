@@ -21,8 +21,10 @@
 package org.zanata.service;
 
 import org.zanata.async.AsyncTaskHandle;
+import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.Resource;
+import org.zanata.ui.model.statistic.WordStatistic;
 
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -32,6 +34,9 @@ import java.util.concurrent.Future;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 public interface DocumentService {
+    // milestone for contentState to publish event (percentage)
+    public static final int DOC_EVENT_MILESTONE= 100;
+
     /**
      * Creates or Updates a document.
      *
@@ -104,4 +109,15 @@ public interface DocumentService {
      *            The document to make obsolete.
      */
     public void makeObsolete(HDocument document);
+
+    /**
+     * Post process when statistic in document changes
+     * (on TextFlowTargetStateEvent)
+     *
+     * @param oldStats
+     * @param newStats
+     * @param event
+     */
+    public void documentStatisticUpdated(WordStatistic oldStats,
+            WordStatistic newStats, TextFlowTargetStateEvent event);
 }

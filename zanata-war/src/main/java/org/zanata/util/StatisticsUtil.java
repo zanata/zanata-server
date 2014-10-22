@@ -26,6 +26,18 @@ public class StatisticsUtil {
                 wordsStatistic.getNeedReview() + wordsStatistic.getRejected());
     }
 
+    public static WordStatistic copyWordStatistic(WordStatistic from) {
+        if (from == null) {
+            return null;
+        }
+        WordStatistic copy =
+            new WordStatistic(from.getApproved(), from.getNeedReview(),
+                from.getUntranslated(), from.getTranslated(),
+                from.getRejected());
+        copy.setRemainingHours(from.getRemainingHours());
+        return copy;
+    }
+
     public static double getRemainingHours(
             TranslationStatistics translationStatistics) {
         return getRemainingHours(translationStatistics.getUntranslated(),

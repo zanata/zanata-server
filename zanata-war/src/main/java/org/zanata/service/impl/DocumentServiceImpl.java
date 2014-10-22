@@ -35,14 +35,19 @@ import org.zanata.async.Async;
 import org.zanata.async.AsyncTaskHandle;
 import org.zanata.async.AsyncTaskResult;
 import org.zanata.async.ContainsAsyncMethods;
+import org.zanata.common.ContentState;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.events.DocumentMilestoneEvent;
 import org.zanata.events.DocumentUploadedEvent;
+import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.lock.Lock;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
+import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.WebHook;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.security.ZanataIdentity;
@@ -52,6 +57,10 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.LockManagerService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
+import org.zanata.ui.model.statistic.WordStatistic;
+
+import com.google.common.annotations.VisibleForTesting;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Default implementation of the {@link DocumentService} business service
@@ -63,6 +72,7 @@ import org.zanata.service.VersionStateCache;
 @Name("documentServiceImpl")
 @Scope(ScopeType.STATELESS)
 @ContainsAsyncMethods
+@Slf4j
 public class DocumentServiceImpl implements DocumentService {
     @In
     private ZanataIdentity identity;
@@ -207,6 +217,71 @@ public class DocumentServiceImpl implements DocumentService {
         clearStatsCacheForUpdatedDocument(document);
     }
 
+    @Override
+    public void documentStatisticUpdated(WordStatistic oldStats,
+            WordStatistic newStats, TextFlowTargetStateEvent event) {
+        processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
+                ContentState.Translated, DOC_EVENT_MILESTONE);
+
+        processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
+                ContentState.Approved, DOC_EVENT_MILESTONE);
+    }
+
+    private void processWebHookDocumentMilestoneEvent(WordStatistic oldStats,
+            WordStatistic newStats, TextFlowTargetStateEvent event,
+            ContentState contentState, int percentMilestone) {
+
+        boolean shouldPublish =
+                hasContentStateReachedMilestone(oldStats, newStats,
+                        contentState, percentMilestone);
+
+        if (shouldPublish) {
+            HProjectIteration version =
+                    projectIterationDAO.findById(event.getProjectIterationId());
+            HProject project = version.getProject();
+
+            if (!project.getWebHooks().isEmpty()) {
+                HDocument document = documentDAO.getById(event.getDocumentId());
+                DocumentMilestoneEvent milestoneEvent =
+                        new DocumentMilestoneEvent(project.getSlug(),
+                                version.getSlug(), document.getDocId(),
+                                event.getLocaleId(), percentMilestone,
+                                contentState);
+                for (WebHook webHook: project.getWebHooks()) {
+                    publishDocumentMilestoneEvent(webHook, milestoneEvent);
+                }
+            }
+        }
+    }
+
+    public void publishDocumentMilestoneEvent(WebHook webHook,
+            DocumentMilestoneEvent milestoneEvent) {
+        WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent);
+        log.info("firing webhook: {}:{}:{}:{}",
+                webHook.getUrl(), milestoneEvent.getProject(),
+                milestoneEvent.getVersion(),milestoneEvent.getDocId());
+    }
+
+    /**
+     * Check if contentState in statistic has reached given
+     * milestone(percentage) and not equals to contentState in previous
+     * statistic
+     *
+     * @param oldStats
+     * @param newStats
+     * @param contentState
+     * @param percentMilestone
+     */
+    private boolean hasContentStateReachedMilestone(WordStatistic oldStats,
+            WordStatistic newStats, ContentState contentState,
+            int percentMilestone) {
+        int oldStateCount = oldStats.get(contentState);
+        int newStateCount = newStats.get(contentState);
+        double percent = newStats.getPercentage(contentState);
+        return oldStateCount != newStateCount &&
+                Double.compare(percent, percentMilestone) == 0;
+    }
+
     /**
      * Invoke the copy trans function for a document.
      *
@@ -223,5 +298,12 @@ public class DocumentServiceImpl implements DocumentService {
         versionStateCacheImpl.clearVersionStatsCache(document.getProjectIteration()
                 .getId());
         translationStateCacheImpl.clearDocumentStatistics(document.getId());
+    }
+
+    @VisibleForTesting
+    public void init(ProjectIterationDAO projectIterationDAO,
+        DocumentDAO documentDAO) {
+        this.projectIterationDAO = projectIterationDAO;
+        this.documentDAO = documentDAO;
     }
 }
