@@ -146,9 +146,9 @@ public class DateUtil {
      * @return
      */
     public static Date getEndOfTheDay(Date actionTime) {
-        DateTime truncateMonth = new DateTime(actionTime).plusDays(1)
+        DateTime endOfTheDay = new DateTime(actionTime).plusDays(1)
                 .withTimeAtStartOfDay().minusMillis(1);
-        return truncateMonth.toDate();
+        return endOfTheDay.toDate();
     }
 
     /**

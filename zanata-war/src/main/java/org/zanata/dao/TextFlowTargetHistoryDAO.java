@@ -46,6 +46,17 @@ public class TextFlowTargetHistoryDAO extends
         super(HTextFlowTargetHistory.class, session);
     }
 
+    /**
+     * Query to get total wordCount of a person(translated_by_id) from
+     * HTextFlowTarget union HTextFlowTargetHistory tables
+     * in a project-version, within given date range group by state and locale.
+     *
+     * @param versionId
+     * @param personId
+     * @param from
+     * @param to
+     * @return list of [wordCount][contentState][localeId]
+     */
     @NativeQuery
     public List<Object[]> getUserTranslationHistoryInVersion(
             Long versionId, Long personId, Date from, Date to) {

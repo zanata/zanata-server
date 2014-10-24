@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.common.BaseTranslationCount;
 import org.zanata.common.ContentState;
+import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.common.TransUnitWords;
@@ -45,6 +46,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowTargetHistoryDAO;
+import org.zanata.exception.InvalidDateParamException;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -286,13 +288,36 @@ public class StatisticsServiceImpl implements StatisticsResource {
         return docStatistics;
     }
 
+    /**
+     * Get contribution statistic (translations) from project-version within
+     * given date range.
+     *
+     * Throws NoSuchEntityException if:
+     * - project/version not found or is obsolete,
+     * - user not found
+     *
+     * Throws InvalidDateParamException if:
+     * - dateRangeParam is in wrong format,
+     * - date range is over MAX_STATS_DAYS
+     *
+     * @param projectSlug
+     *            project identifier
+     * @param versionSlug
+     *            version identifier
+     * @param username
+     *            username of contributor
+     * @param dateRangeParam
+     *            from..to (yyyy-mm-dd..yyyy-mm-dd),
+     *            date range maximum: 365 days
+     */
     @Override
     public ContributionStatistics getContributionStatistics(String projectSlug,
             String versionSlug, String username, String dateRangeParam) {
 
         HProjectIteration version =
                 projectIterationDAO.getBySlug(projectSlug, versionSlug);
-        if (version == null) {
+        if (version == null || version.getStatus() == EntityStatus.OBSOLETE ||
+                version.getProject().getStatus() == EntityStatus.OBSOLETE) {
             throw new NoSuchEntityException(projectSlug + "/" + versionSlug);
         }
 
@@ -303,7 +328,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
 
         String[] dateRange = dateRangeParam.split("\\.\\.");
         if (dateRange.length != 2) {
-            throw new InvalidDateParam(dateRangeParam);
+            throw new InvalidDateParamException(dateRangeParam);
         }
 
         Date fromDate, toDate;
@@ -317,10 +342,10 @@ public class StatisticsServiceImpl implements StatisticsResource {
 
             if (fromDate.after(toDate) || !DateUtil.isDatesInRange(fromDate,
                     toDate, MAX_STATS_DAYS)) {
-                throw new InvalidDateParam(dateRangeParam);
+                throw new InvalidDateParamException(dateRangeParam);
             }
         } catch (IllegalArgumentException e) {
-            throw new InvalidDateParam(dateRangeParam);
+            throw new InvalidDateParamException(dateRangeParam);
         }
 
         LocaleStatistics localeStatistics = new LocaleStatistics();
@@ -402,14 +427,5 @@ public class StatisticsServiceImpl implements StatisticsResource {
                 .getRemainingHours(wordStatistics));
 
         return result;
-    }
-
-    public final class InvalidDateParam extends RuntimeException {
-        public InvalidDateParam() {
-        }
-
-        public InvalidDateParam(String message) {
-            super(message);
-        }
     }
 }

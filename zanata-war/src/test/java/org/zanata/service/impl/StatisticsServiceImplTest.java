@@ -43,6 +43,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.exception.InvalidDateParamException;
 import org.zanata.model.HPerson;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
@@ -284,28 +285,28 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
                 "1.0", "non-exist-user", "2013-01-01..2014-01-01");
     }
 
-    @Test(expectedExceptions = StatisticsServiceImpl.InvalidDateParam.class,
+    @Test(expectedExceptions = InvalidDateParamException.class,
             description = "invalid date range separator")
     public void contributionStatsInvalidDateRange1() {
         statisticsService.getContributionStatistics("sample-project",
                 "1.0", "admin", "2013-01-012014-01-01");
     }
 
-    @Test(expectedExceptions = StatisticsServiceImpl.InvalidDateParam.class,
+    @Test(expectedExceptions = InvalidDateParamException.class,
             description = "invalid date format")
     public void contributionStatsInvalidDateRange2() {
         statisticsService.getContributionStatistics("sample-project",
                 "1.0", "admin", "203-01-01..201-01-01");
     }
 
-    @Test(expectedExceptions = StatisticsServiceImpl.InvalidDateParam.class,
+    @Test(expectedExceptions = InvalidDateParamException.class,
             description = "toDate is before fromDate")
     public void contributionStatsInvalidDateRange3() {
         statisticsService.getContributionStatistics("sample-project",
                 "1.0", "admin", "2014-01-01..2013-01-01");
     }
 
-    @Test(expectedExceptions = StatisticsServiceImpl.InvalidDateParam.class,
+    @Test(expectedExceptions = InvalidDateParamException.class,
             description = "date range is more than max-range(365 days)")
     public void contributionStatsInvalidDateRange4() {
         statisticsService.getContributionStatistics("sample-project",
@@ -317,7 +318,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         PersonDAO personDAO = seam.autowire(PersonDAO.class);
 
         // Initial state = needReview
-        HTextFlowTarget target = textFlowTargetDAO.getById(2L);
+        HTextFlowTarget target = textFlowTargetDAO.findById(2L);
 
         int wordCount = target.getTextFlow().getWordCount().intValue();
 
@@ -373,10 +374,10 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         HPerson demoPerson = personDAO.findByUsername(username);
 
         // Initial state = new (en-us)
-        HTextFlowTarget target1 = textFlowTargetDAO.getById(5L);
+        HTextFlowTarget target1 = textFlowTargetDAO.findById(5L);
 
         // Initial state = new (en-us)
-        HTextFlowTarget target2 = textFlowTargetDAO.getById(6L);
+        HTextFlowTarget target2 = textFlowTargetDAO.findById(6L);
 
         LocaleId localeId = target1.getLocaleId(); // same as target2
 
@@ -417,10 +418,10 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         HPerson demoPerson = personDAO.findByUsername(username);
 
         // Initial state = needReview (AS)
-        HTextFlowTarget target1 = textFlowTargetDAO.getById(1L);
+        HTextFlowTarget target1 = textFlowTargetDAO.findById(1L);
 
         // Initial state = needReview (DE)
-        HTextFlowTarget target2 = textFlowTargetDAO.getById(2L);
+        HTextFlowTarget target2 = textFlowTargetDAO.findById(2L);
 
         int wordCount1 = target1.getTextFlow().getWordCount().intValue();
         int wordCount2 = target2.getTextFlow().getWordCount().intValue();
