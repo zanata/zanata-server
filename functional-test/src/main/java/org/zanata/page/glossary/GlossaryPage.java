@@ -38,7 +38,10 @@ import org.zanata.util.WebElementUtil;
 @Slf4j
 public class GlossaryPage extends BasePage {
 
-    private By glossaryTable = By.id("glossary_form:data_table");
+    private By glossaryMain = By.id("glossary_form");
+    private By entryCount = By.className("stats__figure");
+    private By listItem = By.className("list__item--actionable");
+    private By entryName = By.className("list__title");
 
     public GlossaryPage(WebDriver driver) {
         super(driver);
@@ -46,14 +49,13 @@ public class GlossaryPage extends BasePage {
 
     public List<String> getAvailableGlossaryLanguages() {
         log.info("Query available glossary languages");
-        return WebElementUtil.getColumnContents(getDriver(), glossaryTable, 0);
-/*        List<String> availableLanguages = new ArrayList<>();
+        List<String> availableLanguages = new ArrayList<>();
         for (WebElement element : getListItems()) {
-            availableLanguages.add(element
-                    .findElement(By.className("list__title")).getText().trim());
+            availableLanguages.add(element.findElement(entryName)
+                    .getText().trim());
         }
         return availableLanguages;
-*/
+
     }
 
     public int getGlossaryEntryCount(String lang) {
@@ -61,20 +63,16 @@ public class GlossaryPage extends BasePage {
         List<WebElement> langs = getListItems();
         int row = getAvailableGlossaryLanguages().indexOf(lang);
         if (row >= 0) {
-            return Integer
-                    .parseInt(WebElementUtil.getColumnContents(getDriver(),
-                            glossaryTable, 2).get(row));
-/*            return Integer.parseInt(langs.get(row)
-                    .findElement(By.className("stats__figure")).getText());
-*/
+            return Integer.parseInt(langs.get(row)
+                    .findElement(entryCount).getText());
         }
         return -1;
     }
 
     private List<WebElement> getListItems() {
-        return getDriver()
-                .findElement(By.id("glossary_form"))
-                .findElement(By.className("list--stats"))
-                .findElements(By.className("list__item--actionable"));
+        return waitForElementExists(
+                waitForElementExists(glossaryMain),
+                        By.className("list--stats"))
+                .findElements(listItem);
     }
 }

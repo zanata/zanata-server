@@ -306,10 +306,6 @@ public class EditorPage extends BasePage {
         log.info("Query list of text flow sources");
         return WebElementUtil.elementsToText(waitForWebElement(transUnitTable)
                 .findElements(By.className("gwt-HTML")));
-/*        List<WebElement> sources = getDriver().findElement(transUnitTableBy)
-                .findElements(By.className("sourceContentsContainer"));
-        return WebElementUtil.elementsToText(sources);
-*/
     }
 
     /**

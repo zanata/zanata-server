@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TestRule;
+import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.glossary.GlossaryPage;
@@ -58,10 +59,11 @@ public class GlossaryAdminTest extends ZanataTestCase {
      * Validates that a pushed glossary appears in the Glossary table.
      * After pushing, a table with Glossary statistics should be shown.
      * Validate that the the number of glossary entries per language matches
-     * the number of entries pushed from each of the test cases metnioned in the
+     * the number of entries pushed from each of the test cases mentioned in the
      * Setup.
-     * @see TCMS Test Case 181711
      */
+    @Feature(summary = "A user can push glossaries to Zanata",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181711)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void testGlossaryView() {
         // Push a glossary
@@ -70,12 +72,12 @@ public class GlossaryAdminTest extends ZanataTestCase {
         String userConfigPath =
                 ClientWorkFlow.getUserConfigPath("glossaryadmin");
 
-        List<String> result =
-                clientWorkFlow
-                        .callWithTimeout(
-                                projectRootPath,
-                                "mvn --batch-mode zanata:glossary-push -Dglossary.lang=hi -Dzanata.glossaryFile=compendium.csv -Dzanata.userConfig="
-                                        + userConfigPath);
+        List<String> result = clientWorkFlow .callWithTimeout(
+                projectRootPath,
+                "mvn --batch-mode zanata:glossary-push " +
+                        "-Dglossary.lang=hi " +
+                        "-Dzanata.glossaryFile=compendium.csv " +
+                        "-Dzanata.userConfig=" + userConfigPath);
 
         assertThat(clientWorkFlow.isPushSuccessful(result),
                 Matchers.is(true));
