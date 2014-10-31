@@ -24,7 +24,7 @@ package org.zanata.service;
 
 import org.zanata.common.LocaleId;
 import org.zanata.events.TextFlowTargetStateEvent;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 
 /**
  * Defines a Cache Service for project version states.

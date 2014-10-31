@@ -46,8 +46,8 @@ import org.zanata.model.HIterationGroup;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.StatusCount;
-import org.zanata.ui.model.statistic.MessageStatistic;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.MessageStatistic;
+import org.zanata.model.statistic.WordStatistic;
 import org.zanata.util.HashUtil;
 import org.zanata.util.StatisticsUtil;
 

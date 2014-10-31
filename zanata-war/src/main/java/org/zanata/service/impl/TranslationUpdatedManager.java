@@ -2,6 +2,7 @@ package org.zanata.service.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -10,7 +11,7 @@ import org.zanata.dao.TextFlowDAO;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.service.DocumentService;
 import org.zanata.service.TranslationStateCache;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Name("translationUpdatedManager")
 @Scope(ScopeType.STATELESS)
+@AutoCreate
 @Slf4j
 public class TranslationUpdatedManager {
 

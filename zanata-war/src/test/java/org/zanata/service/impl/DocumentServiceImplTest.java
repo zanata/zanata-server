@@ -38,16 +38,13 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.WebHook;
 import org.zanata.service.DocumentService;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import java.util.List;
 
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**

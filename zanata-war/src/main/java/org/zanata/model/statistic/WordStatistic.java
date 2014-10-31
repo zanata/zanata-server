@@ -1,17 +1,24 @@
-package org.zanata.ui.model.statistic;
+package org.zanata.model.statistic;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class MessageStatistic extends AbstractStatistic {
+public class WordStatistic extends AbstractStatistic {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8807499518683834883L;
 
-    public MessageStatistic() {
+    @Getter
+    @Setter
+    private double remainingHours;
+
+    public WordStatistic() {
         super();
     }
 
-    public MessageStatistic(int approved, int needReview, int untranslated,
+    public WordStatistic(int approved, int needReview, int untranslated,
             int translated, int rejected) {
         super(approved, needReview, untranslated, translated, rejected);
     }
@@ -23,6 +30,7 @@ public class MessageStatistic extends AbstractStatistic {
         sb.append("\nneedReview-" + getNeedReview());
         sb.append("\nuntranslated-" + getUntranslated());
         sb.append("\ntotal-" + getTotal());
+        sb.append("\nremainingHours-" + getRemainingHours());
 
         return sb.toString();
     }

@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.service.impl.TranslationStateCacheImpl.DocumentLocaleKey;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentStatus;
 import org.zanata.webtrans.shared.model.ValidationId;

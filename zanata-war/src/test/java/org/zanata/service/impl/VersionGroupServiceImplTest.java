@@ -43,7 +43,7 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.VersionLocaleKey;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>

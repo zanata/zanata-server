@@ -31,7 +31,7 @@ import org.zanata.dao.TextFlowDAO;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.service.DocumentService;
 import org.zanata.service.TranslationStateCache;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import static org.mockito.Mockito.verify;

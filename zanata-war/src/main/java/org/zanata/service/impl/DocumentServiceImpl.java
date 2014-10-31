@@ -59,7 +59,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.LockManagerService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
-import org.zanata.ui.model.statistic.WordStatistic;
+import org.zanata.model.statistic.WordStatistic;
 
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
