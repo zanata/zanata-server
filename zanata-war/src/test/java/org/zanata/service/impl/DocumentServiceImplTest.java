@@ -38,7 +38,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.WebHook;
 import org.zanata.service.DocumentService;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import java.util.List;

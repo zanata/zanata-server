@@ -41,7 +41,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.VersionGroupService;
 import org.zanata.service.VersionLocaleKey;
 import org.zanata.service.VersionStateCache;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import com.google.common.collect.Lists;

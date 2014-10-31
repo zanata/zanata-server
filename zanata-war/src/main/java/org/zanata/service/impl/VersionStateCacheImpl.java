@@ -42,7 +42,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlow;
 import org.zanata.service.VersionLocaleKey;
 import org.zanata.service.VersionStateCache;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ServiceLocator;
 
 import com.google.common.cache.CacheLoader;

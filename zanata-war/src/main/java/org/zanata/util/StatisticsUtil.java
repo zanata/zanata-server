@@ -4,7 +4,7 @@ import org.zanata.common.BaseTranslationCount;
 import org.zanata.common.ContentState;
 import org.zanata.common.TransUnitWords;
 import org.zanata.rest.dto.stats.TranslationStatistics;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 
 /**
  * @author Patrick Huang <a

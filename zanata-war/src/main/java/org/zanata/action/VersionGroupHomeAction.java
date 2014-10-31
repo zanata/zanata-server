@@ -48,7 +48,7 @@ import org.zanata.service.VersionLocaleKey;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.collect.Lists;

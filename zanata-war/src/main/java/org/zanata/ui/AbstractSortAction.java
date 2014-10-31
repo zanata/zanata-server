@@ -24,7 +24,7 @@ package org.zanata.ui;
 import java.util.Date;
 
 import org.zanata.action.SortingType;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.collect.Lists;

@@ -11,7 +11,7 @@ import org.zanata.dao.TextFlowDAO;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.service.DocumentService;
 import org.zanata.service.TranslationStateCache;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Name("translationUpdatedManager")
 @Scope(ScopeType.STATELESS)
-@AutoCreate
 @Slf4j
 public class TranslationUpdatedManager {
 

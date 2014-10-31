@@ -24,7 +24,7 @@ import org.zanata.async.AsyncTaskHandle;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.Resource;
-import org.zanata.model.statistic.WordStatistic;
+import org.zanata.ui.model.statistic.WordStatistic;
 
 import java.util.Set;
 import java.util.concurrent.Future;

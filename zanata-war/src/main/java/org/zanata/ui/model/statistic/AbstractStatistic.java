@@ -1,4 +1,4 @@
-package org.zanata.model.statistic;
+package org.zanata.ui.model.statistic;
 
 import java.io.Serializable;
 
