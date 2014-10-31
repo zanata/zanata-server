@@ -30,6 +30,8 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 
+import java.util.Collection;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -37,7 +39,7 @@ import org.zanata.common.LocaleId;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonPropertyOrder({ "project", "version", "docId", "locale", "milestone", "contentState" })
+@JsonPropertyOrder({ "project", "version", "docId", "locale", "milestone", "contentStates" })
 @EqualsAndHashCode
 public class DocumentMilestoneEvent extends JSONType {
 
@@ -49,7 +51,7 @@ public class DocumentMilestoneEvent extends JSONType {
     private String docId;
     private LocaleId locale;
     private int milestone;
-    private ContentState contentState;
+    private Collection<ContentState> contentStates;
 
     public String getMilestone() {
         return milestone + "%";

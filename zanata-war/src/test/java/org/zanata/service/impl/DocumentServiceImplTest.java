@@ -108,7 +108,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, ContentState.Translated);
+                        localeId, milestone, ContentState.TRANSLATED_STATES);
 
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent);
@@ -127,7 +127,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
             new DocumentMilestoneEvent(projectSlug,
                 versionSlug, docIdString,
-                localeId, milestone, ContentState.Translated);
+                localeId, milestone, ContentState.TRANSLATED_STATES);
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
             webHooks.get(0), milestoneEvent);
@@ -146,7 +146,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, ContentState.Approved);
+                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(1),
@@ -164,7 +164,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, ContentState.Approved);
+                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
@@ -183,7 +183,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, ContentState.Approved);
+                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
@@ -201,7 +201,7 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, ContentState.Translated);
+                        localeId, milestone, Lists.newArrayList(ContentState.Translated));
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(

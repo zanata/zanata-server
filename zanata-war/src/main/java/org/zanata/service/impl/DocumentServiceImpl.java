@@ -20,9 +20,11 @@
  */
 package org.zanata.service.impl;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import com.google.common.collect.Lists;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -221,19 +223,19 @@ public class DocumentServiceImpl implements DocumentService {
     public void documentStatisticUpdated(WordStatistic oldStats,
             WordStatistic newStats, TextFlowTargetStateEvent event) {
         processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
-                ContentState.Translated, DOC_EVENT_MILESTONE);
+                ContentState.TRANSLATED_STATES, DOC_EVENT_MILESTONE);
 
         processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
-                ContentState.Approved, DOC_EVENT_MILESTONE);
+            Lists.newArrayList(ContentState.Approved), DOC_EVENT_MILESTONE);
     }
 
     private void processWebHookDocumentMilestoneEvent(WordStatistic oldStats,
             WordStatistic newStats, TextFlowTargetStateEvent event,
-            ContentState contentState, int percentMilestone) {
+            Collection<ContentState> contentStates, int percentMilestone) {
 
         boolean shouldPublish =
                 hasContentStateReachedMilestone(oldStats, newStats,
-                        contentState, percentMilestone);
+                    contentStates, percentMilestone);
 
         if (shouldPublish) {
             HProjectIteration version =
@@ -246,7 +248,7 @@ public class DocumentServiceImpl implements DocumentService {
                         new DocumentMilestoneEvent(project.getSlug(),
                                 version.getSlug(), document.getDocId(),
                                 event.getLocaleId(), percentMilestone,
-                                contentState);
+                                contentStates);
                 for (WebHook webHook: project.getWebHooks()) {
                     publishDocumentMilestoneEvent(webHook, milestoneEvent);
                 }
@@ -263,21 +265,27 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * Check if contentState in statistic has reached given
-     * milestone(percentage) and not equals to contentState in previous
+     * Check if contentStates in statistic has reached given
+     * milestone(percentage) and not equals to contentStates in previous
      * statistic
      *
      * @param oldStats
      * @param newStats
-     * @param contentState
+     * @param contentStates
      * @param percentMilestone
      */
     private boolean hasContentStateReachedMilestone(WordStatistic oldStats,
-            WordStatistic newStats, ContentState contentState,
+            WordStatistic newStats, Collection<ContentState> contentStates,
             int percentMilestone) {
-        int oldStateCount = oldStats.get(contentState);
-        int newStateCount = newStats.get(contentState);
-        double percent = newStats.getPercentage(contentState);
+        int oldStateCount = 0, newStateCount = 0;
+        double percent = 0;
+
+        for (ContentState contentState : contentStates) {
+            oldStateCount += oldStats.get(contentState);
+            newStateCount += newStats.get(contentState);
+            percent += newStats.getPercentage(contentState);
+        }
+
         return oldStateCount != newStateCount &&
                 Double.compare(percent, percentMilestone) == 0;
     }

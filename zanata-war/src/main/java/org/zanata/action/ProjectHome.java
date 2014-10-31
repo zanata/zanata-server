@@ -542,9 +542,11 @@ public class ProjectHome extends SlugHome<HProject> {
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void addWebHook(String url) {
         if (isValidUrl(url)) {
-            WebHook webhook = new WebHook(this.getInstance(), url);
-            getInstance().getWebHooks().add(webhook);
+            WebHook webHook = new WebHook(this.getInstance(), url);
+            getInstance().getWebHooks().add(webHook);
             update();
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.project.AddNewWebhook", webHook.getUrl()));
         }
     }
 
@@ -552,6 +554,8 @@ public class ProjectHome extends SlugHome<HProject> {
     public void removeWebHook(WebHook webHook) {
         getInstance().getWebHooks().remove(webHook);
         webHookDAO.makeTransient(webHook);
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+            msgs.format("jsf.project.RemoveWebhook", webHook.getUrl()));
     }
 
     private boolean isValidUrl(String url) {

@@ -470,7 +470,7 @@
   <h2 class="l--push-all-0 gamma d--bottom l--push-bottom-half">
       #{msgs['jsf.project.WebHooks']}
   </h2>
-  <h:form  id="settings-webhooks-list">
+  <h:form  id="settings-webhooks-list" onclick="return false">
     <ul class="list--slat list--highlight l--push-top-half">
       <ui:repeat value="#{projectHome.instance.webHooks}" var="webhook">
         <li class="list-item">
@@ -481,18 +481,29 @@
               render="settings-webhooks-list">
               <i class="i--large i--remove"></i>
               <zanata:loader layout="inline" type="loader--small"
-                jsHandle="true" id="loader"/>
+                jsHandle="true" id="loader" visible="false"/>
             </a4j:commandLink>
         </li>
       </ui:repeat>
-      <zanata:loader id="add-url-loader" jsHandle="true"/>
+      <zanata:loader id="add-url-loader" type="loader--large" visible="false"/>
       <li class="list--highlight__item--none">
         <label for="payloadUrlInput">
           #{msgs['jsf.project.AddWebhook']}
         </label>
-        <input type="text" id="payloadUrlInput" autocomplete="off"
-          placeholder="#{msgs['jsf.project.PayloadURL']}"
-          onkeydown="onPayloadInputKeyDown(this, event)"/>
+
+        <div class="form--inline">
+          <input type="text" id="payloadUrlInput" autocomplete="off"
+            placeholder="#{msgs['jsf.project.PayloadURL']}"
+            onkeydown="onPayloadInputKeyDown(this, event)"
+            class="form--inline__input"/>
+
+          <div class="form--inline__suffix">
+            <button class="form--inline__addon button--primary"
+              onclick="addWebhook(jQuery('#payloadUrlInput').val())">
+              #{msgs['jsf.project.AddWebhook']}
+            </button>
+          </div>
+        </div>
       </li>
     </ul>
   </h:form>
