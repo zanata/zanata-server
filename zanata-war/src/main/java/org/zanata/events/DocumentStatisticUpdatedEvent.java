@@ -18,42 +18,27 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+
 package org.zanata.events;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
+import org.zanata.ui.model.statistic.WordStatistic;
 
-import java.util.Collection;
-
-/**
- * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
- */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonPropertyOrder({ "project", "version", "docId", "locale", "milestone"})
-@EqualsAndHashCode
-public class DocumentMilestoneEvent extends JSONType {
-
+@Data
+public final class DocumentStatisticUpdatedEvent {
     public static final String EVENT_NAME =
-        "org.zanata.event.DocumentMilestoneEvent";
+            "org.zanata.event.DocumentStatisticUpdated";
 
-    private String project;
-    private String version;
-    private String docId;
-    private LocaleId locale;
-    private String milestone;
+    private final WordStatistic oldStats;
+    private final WordStatistic newStats;
 
-    @Override
-    public String getEventType() {
-        return EVENT_NAME;
-    }
+    private final Long projectIterationId;
+    private final Long documentId;
+    private final LocaleId localeId;
+
+    private final ContentState previousState;
+    private final ContentState newState;
 }

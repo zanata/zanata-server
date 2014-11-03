@@ -22,18 +22,21 @@
 package org.zanata.service.impl;
 
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
+import org.zanata.events.DocumentStatisticUpdatedEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.service.DocumentService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,9 +50,6 @@ public class TranslationUpdatedManagerTest {
     private TranslationStateCache translationStateCache;
 
     @Mock
-    private DocumentService documentService;
-
-    @Mock
     private TextFlowDAO textFlowDAO;
 
     TranslationUpdatedManager manager;
@@ -58,13 +58,16 @@ public class TranslationUpdatedManagerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         manager = new TranslationUpdatedManager();
-        manager.init(translationStateCache, documentService, textFlowDAO);
+        manager.init(translationStateCache, textFlowDAO);
     }
 
     @Test
     public void onTranslationUpdateTest() {
+        TranslationUpdatedManager spyManager = Mockito.spy(manager);
+
         Long docId = 1L;
         Long tfId = 1L;
+        Long versionId = 1L;
         LocaleId localeId = LocaleId.DE;
         int wordCount = 10;
         ContentState oldState = ContentState.New;
@@ -75,18 +78,17 @@ public class TranslationUpdatedManagerTest {
         oldStats.decrement(newState, wordCount);
         oldStats.increment(oldState, wordCount);
 
-
         when(translationStateCache.getDocumentStatistics(docId, localeId)).
-            thenReturn(stats);
+                thenReturn(stats);
         when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
 
         TextFlowTargetStateEvent event =
-                new TextFlowTargetStateEvent(null, 1L, docId, tfId,
-                    localeId, 1L, newState, oldState);
+                new TextFlowTargetStateEvent(null, versionId, docId, tfId,
+                        localeId, 1L, newState, oldState);
 
-        manager.textFlowStateUpdated(event);
+        spyManager.textFlowStateUpdated(event);
 
         verify(translationStateCache).textFlowStateUpdated(event);
-        verify(documentService).documentStatisticUpdated(oldStats, stats, event);
+        verify(spyManager).publishAsyncEvent(event);
     }
 }

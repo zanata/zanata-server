@@ -21,7 +21,14 @@
 
 package org.zanata.service.impl;
 
-import com.google.common.collect.Lists;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -32,7 +39,8 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocumentMilestoneEvent;
-import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.events.DocumentStatisticUpdatedEvent;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
@@ -41,11 +49,7 @@ import org.zanata.service.DocumentService;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
-import java.util.List;
-
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.Lists;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -58,6 +62,9 @@ public class DocumentServiceImplTest {
 
     @Mock
     private DocumentDAO documentDAO;
+
+    @Mock
+    private Messages msgs;
 
     private DocumentServiceImpl documentService;
 
@@ -75,7 +82,7 @@ public class DocumentServiceImplTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         documentService = new DocumentServiceImpl();
-        documentService.init(projectIterationDAO, documentDAO);
+        documentService.init(projectIterationDAO, documentDAO, msgs);
 
         HProjectIteration version = Mockito.mock(HProjectIteration.class);
         HProject project = Mockito.mock(HProject.class);
@@ -83,7 +90,6 @@ public class DocumentServiceImplTest {
 
         webHooks = Lists.newArrayList();
         webHooks.add(new WebHook(project, "http://test.com"));
-        webHooks.add(new WebHook(project, "http://abc.com"));
 
         when(projectIterationDAO.findById(versionId)).thenReturn(version);
         when(version.getProject()).thenReturn(project);
@@ -92,6 +98,8 @@ public class DocumentServiceImplTest {
         when(project.getWebHooks()).thenReturn(webHooks);
         when(documentDAO.getById(docId)).thenReturn(document);
         when(document.getDocId()).thenReturn(docIdString);
+
+        when(msgs.format(anyString())).thenReturn("test message");
     }
 
     @Test
@@ -99,13 +107,14 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
 
         WordStatistic stats = new WordStatistic(0, 0, 0, 10, 0);
-        runDocumentStatisticUpdatedTest(spyService,ContentState.New,
-            ContentState.Translated, stats);
+        runDocumentStatisticUpdatedTest(spyService, ContentState.New,
+                ContentState.Translated, stats);
 
         DocumentMilestoneEvent milestoneEvent =
-                new DocumentMilestoneEvent(projectSlug,
-                        versionSlug, docIdString,
-                        localeId, milestone, ContentState.TRANSLATED_STATES);
+                new DocumentMilestoneEvent(projectSlug, versionSlug,
+                        docIdString, localeId,
+                        msgs.format("jsf.webhook.response.state", milestone,
+                                ContentState.Translated));
 
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent);
@@ -118,18 +127,19 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
 
         WordStatistic stats = new WordStatistic(0, 1, 0, 9, 0);
-        runDocumentStatisticUpdatedTest(spyService,ContentState.New,
-            ContentState.Translated, stats);
+        runDocumentStatisticUpdatedTest(spyService, ContentState.New,
+                ContentState.Translated, stats);
 
         DocumentMilestoneEvent milestoneEvent =
-            new DocumentMilestoneEvent(projectSlug,
-                versionSlug, docIdString,
-                localeId, milestone, ContentState.TRANSLATED_STATES);
+                new DocumentMilestoneEvent(projectSlug, versionSlug,
+                        docIdString, localeId,
+                        msgs.format("jsf.webhook.response.state", milestone,
+                                ContentState.Translated));
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
-            webHooks.get(0), milestoneEvent);
+                webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-            webHooks.get(1), milestoneEvent);
+                webHooks.get(1), milestoneEvent);
     }
 
     @Test
@@ -137,13 +147,14 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
 
         WordStatistic stats = new WordStatistic(10, 0, 0, 0, 0);
-        runDocumentStatisticUpdatedTest(spyService,ContentState.Translated,
-            ContentState.Approved, stats);
+        runDocumentStatisticUpdatedTest(spyService, ContentState.Translated,
+                ContentState.Approved, stats);
 
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
+                        localeId, msgs.format("jsf.webhook.response.state",
+                                milestone, ContentState.Approved));
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(1),
@@ -155,13 +166,14 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
 
         WordStatistic stats = new WordStatistic(9, 0, 0, 1, 0);
-        runDocumentStatisticUpdatedTest(spyService,ContentState.Translated,
+        runDocumentStatisticUpdatedTest(spyService, ContentState.Translated,
                 ContentState.Approved, stats);
 
         DocumentMilestoneEvent milestoneEvent =
-                new DocumentMilestoneEvent(projectSlug,
-                        versionSlug, docIdString,
-                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
+                new DocumentMilestoneEvent(projectSlug, versionSlug,
+                        docIdString, localeId, msgs.format(
+                                "jsf.webhook.response.state", milestone,
+                                ContentState.Approved));
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
@@ -174,13 +186,14 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
         WordStatistic stats = new WordStatistic(10, 0, 0, 0, 0);
 
-        runDocumentStatisticUpdatedTest(spyService,ContentState.Approved,
-            ContentState.Approved, stats);
+        runDocumentStatisticUpdatedTest(spyService, ContentState.Approved,
+                ContentState.Approved, stats);
 
         DocumentMilestoneEvent milestoneEvent =
-                new DocumentMilestoneEvent(projectSlug,
-                        versionSlug, docIdString,
-                        localeId, milestone, Lists.newArrayList(ContentState.Approved));
+                new DocumentMilestoneEvent(projectSlug, versionSlug,
+                        docIdString, localeId, msgs.format(
+                                "jsf.webhook.response.state", milestone,
+                                ContentState.Approved));
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
@@ -192,20 +205,22 @@ public class DocumentServiceImplTest {
         DocumentServiceImpl spyService = Mockito.spy(documentService);
         WordStatistic stats = new WordStatistic(0, 0, 0, 10, 0);
 
-        runDocumentStatisticUpdatedTest(spyService,ContentState.Translated,
+        runDocumentStatisticUpdatedTest(spyService, ContentState.Translated,
                 ContentState.Translated, stats);
 
         DocumentMilestoneEvent milestoneEvent =
-                new DocumentMilestoneEvent(projectSlug,
-                        versionSlug, docIdString,
-                        localeId, milestone, Lists.newArrayList(ContentState.Translated));
+                new DocumentMilestoneEvent(projectSlug, versionSlug,
+                        docIdString, localeId, msgs.format(
+                                "jsf.webhook.response.state", milestone,
+                                ContentState.Translated));
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(1), milestoneEvent);
     }
 
-    private void runDocumentStatisticUpdatedTest(DocumentServiceImpl spyService,
+    private void runDocumentStatisticUpdatedTest(
+            DocumentServiceImpl spyService,
             ContentState oldState, ContentState newState, WordStatistic stats) {
 
         int wordCount = 10;
@@ -213,10 +228,10 @@ public class DocumentServiceImplTest {
         oldStats.decrement(newState, wordCount);
         oldStats.increment(oldState, wordCount);
 
-        TextFlowTargetStateEvent event =
-                new TextFlowTargetStateEvent(null, versionId, docId, tfId,
-                        localeId, 1L, newState, oldState);
+        DocumentStatisticUpdatedEvent event =
+                new DocumentStatisticUpdatedEvent(oldStats, stats, versionId,
+                        docId, localeId, oldState, newState);
 
-        spyService.documentStatisticUpdated(oldStats, stats, event);
+        spyService.documentStatisticUpdated(event);
     }
 }

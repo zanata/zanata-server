@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Events;
@@ -41,8 +42,9 @@ import org.zanata.common.ContentState;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocumentMilestoneEvent;
+import org.zanata.events.DocumentStatisticUpdatedEvent;
 import org.zanata.events.DocumentUploadedEvent;
-import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.i18n.Messages;
 import org.zanata.lock.Lock;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
@@ -76,7 +78,7 @@ import lombok.extern.slf4j.Slf4j;
 @ContainsAsyncMethods
 @Slf4j
 public class DocumentServiceImpl implements DocumentService {
-    @In
+    @In(required = false)
     private ZanataIdentity identity;
 
     @In
@@ -105,9 +107,13 @@ public class DocumentServiceImpl implements DocumentService {
 
     @In
     private ApplicationConfiguration applicationConfiguration;
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER, scope = ScopeType.SESSION)
+
+    @In(value = JpaIdentityStore.AUTHENTICATED_USER, scope = ScopeType.SESSION,
+            required = false)
     private HAccount authenticatedAccount;
 
+    @In
+    private Messages msgs;
 
     @Override
     @Transactional
@@ -136,7 +142,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Async
     @Transactional
-    public Future<HDocument> saveDocumentAsync(String projectSlug, String iterationSlug,
+    public Future<HDocument> saveDocumentAsync(String projectSlug,
+            String iterationSlug,
             Resource sourceDoc, Set<String> extensions, boolean copyTrans,
             boolean lock, AsyncTaskHandle<HDocument> handle) {
         // TODO Use the pased in handle
@@ -192,7 +199,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         long actorId = authenticatedAccount.getPerson().getId();
         if (changed) {
-            if( Events.exists() ) {
+            if (Events.exists()) {
                 Events.instance().raiseTransactionSuccessEvent(
                         DocumentUploadedEvent.EVENT_NAME,
                         new DocumentUploadedEvent(actorId, document.getId(),
@@ -219,23 +226,27 @@ public class DocumentServiceImpl implements DocumentService {
         clearStatsCacheForUpdatedDocument(document);
     }
 
-    @Override
-    public void documentStatisticUpdated(WordStatistic oldStats,
-            WordStatistic newStats, TextFlowTargetStateEvent event) {
-        processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
-                ContentState.TRANSLATED_STATES, DOC_EVENT_MILESTONE);
+    @Observer(DocumentStatisticUpdatedEvent.EVENT_NAME)
+    public void documentStatisticUpdated(DocumentStatisticUpdatedEvent event) {
+        processWebHookDocumentMilestoneEvent(event,
+                ContentState.TRANSLATED_STATES,
+                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
+                        ContentState.Translated), DOC_EVENT_MILESTONE);
 
-        processWebHookDocumentMilestoneEvent(oldStats, newStats, event,
-            Lists.newArrayList(ContentState.Approved), DOC_EVENT_MILESTONE);
+        processWebHookDocumentMilestoneEvent(event,
+                Lists.newArrayList(ContentState.Approved),
+                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
+                        ContentState.Approved), DOC_EVENT_MILESTONE);
     }
 
-    private void processWebHookDocumentMilestoneEvent(WordStatistic oldStats,
-            WordStatistic newStats, TextFlowTargetStateEvent event,
-            Collection<ContentState> contentStates, int percentMilestone) {
+    private void processWebHookDocumentMilestoneEvent(
+            DocumentStatisticUpdatedEvent event,
+            Collection<ContentState> contentStates, String message,
+            int percentMilestone) {
 
         boolean shouldPublish =
-                hasContentStateReachedMilestone(oldStats, newStats,
-                    contentStates, percentMilestone);
+                hasContentStateReachedMilestone(event.getOldStats(),
+                        event.getNewStats(), contentStates, percentMilestone);
 
         if (shouldPublish) {
             HProjectIteration version =
@@ -247,9 +258,8 @@ public class DocumentServiceImpl implements DocumentService {
                 DocumentMilestoneEvent milestoneEvent =
                         new DocumentMilestoneEvent(project.getSlug(),
                                 version.getSlug(), document.getDocId(),
-                                event.getLocaleId(), percentMilestone,
-                                contentStates);
-                for (WebHook webHook: project.getWebHooks()) {
+                                event.getLocaleId(), message);
+                for (WebHook webHook : project.getWebHooks()) {
                     publishDocumentMilestoneEvent(webHook, milestoneEvent);
                 }
             }
@@ -261,7 +271,7 @@ public class DocumentServiceImpl implements DocumentService {
         WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent);
         log.info("firing webhook: {}:{}:{}:{}",
                 webHook.getUrl(), milestoneEvent.getProject(),
-                milestoneEvent.getVersion(),milestoneEvent.getDocId());
+                milestoneEvent.getVersion(), milestoneEvent.getDocId());
     }
 
     /**
@@ -303,15 +313,17 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void clearStatsCacheForUpdatedDocument(HDocument document) {
-        versionStateCacheImpl.clearVersionStatsCache(document.getProjectIteration()
+        versionStateCacheImpl.clearVersionStatsCache(document
+                .getProjectIteration()
                 .getId());
         translationStateCacheImpl.clearDocumentStatistics(document.getId());
     }
 
     @VisibleForTesting
     public void init(ProjectIterationDAO projectIterationDAO,
-        DocumentDAO documentDAO) {
+            DocumentDAO documentDAO, Messages msgs) {
         this.projectIterationDAO = projectIterationDAO;
         this.documentDAO = documentDAO;
+        this.msgs = msgs;
     }
 }
