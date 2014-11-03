@@ -20,7 +20,6 @@
  */
 package org.zanata.page.account;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -136,18 +135,6 @@ public class RegisterPage extends CorePage {
             .enterEmail(fields.get("email"))
             .enterUserName(fields.get("username"))
             .enterPassword(fields.get("password"));
-    }
-
-    public List<String> waitForErrors() {
-        log.info("Query errors");
-        waitForAMoment().until(new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver driver) {
-                return getDriver().findElement(
-                        By.xpath("//span[@class='errors']"));
-            }
-        });
-        return getErrors();
     }
 
     public String getPageTitle() {
