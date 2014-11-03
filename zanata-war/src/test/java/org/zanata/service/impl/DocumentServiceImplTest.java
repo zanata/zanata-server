@@ -90,6 +90,7 @@ public class DocumentServiceImplTest {
 
         webHooks = Lists.newArrayList();
         webHooks.add(new WebHook(project, "http://test.com"));
+        webHooks.add(new WebHook(project, "http://test1.com"));
 
         when(projectIterationDAO.findById(versionId)).thenReturn(version);
         when(version.getProject()).thenReturn(project);
