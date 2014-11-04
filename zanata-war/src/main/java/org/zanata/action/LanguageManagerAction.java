@@ -20,10 +20,18 @@
  */
 package org.zanata.action;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.ibm.icu.util.ULocale;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+import javax.faces.model.SelectItem;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -37,19 +45,21 @@ import org.zanata.dao.LocaleDAO;
 import org.zanata.model.HLocale;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.service.LocaleService;
+import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.ui.FilterUtil;
+import org.zanata.ui.autocomplete.LocaleAutocomplete;
 
-import javax.annotation.Nullable;
-import javax.faces.model.SelectItem;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.ibm.icu.util.ULocale;
 
 @Name("languageManagerAction")
 @Scope(ScopeType.PAGE)
 @Restrict("#{s:hasRole('admin')}")
-public class LanguageManagerAction implements Serializable {
+public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
+        implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final int LENGTH_LIMIT = 254;
 
@@ -65,56 +75,33 @@ public class LanguageManagerAction implements Serializable {
     @In
     private Map<String, String> msgs;
 
+    @Getter
+    @Setter
     private String language;
 
+    @Getter
+    @Setter
     private ULocale uLocale;
 
+    @Getter
     private List<SelectItem> localeStringList;
 
+    @Getter
+    @Setter
     private boolean enabledByDefault = true;
 
     // cache this so it is called only once
     private List<LocaleId> allLocales;
 
+    @Getter
     private String languageNameValidationMessage;
 
+    @Getter
     private String languageNameWarningMessage;
 
     @Create
     public void onCreate() {
         fectchLocaleFromJava();
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public ULocale getuLocale() {
-        return uLocale;
-    }
-
-    public void setuLocale(ULocale uLocale) {
-        this.uLocale = uLocale;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public boolean isEnabledByDefault() {
-        return enabledByDefault;
-    }
-
-    public void setEnabledByDefault(boolean enabledByDefault) {
-        this.enabledByDefault = enabledByDefault;
-    }
-
-    public String getLanguageNameValidationMessage() {
-        return languageNameValidationMessage;
-    }
-
-    public String getLanguageNameWarningMessage() {
-        return languageNameWarningMessage;
     }
 
     public void updateLanguage() {
@@ -143,32 +130,6 @@ public class LanguageManagerAction implements Serializable {
             localeList.add(op);
         }
         localeStringList = localeList;
-    }
-
-    public List<SelectItem> getLocaleStringList() {
-        return localeStringList;
-    }
-
-    public List<HLocale> suggestLocales(final String query) {
-        if (allLocales == null) {
-            allLocales = localeServiceImpl.getAllJavaLanguages();
-        }
-
-        Collection<LocaleId> filtered =
-                Collections2.filter(allLocales, new Predicate<LocaleId>() {
-                    @Override
-                    public boolean apply(LocaleId input) {
-                        return input.getId().startsWith(query);
-                    }
-                });
-
-        return new ArrayList<HLocale>(Collections2.transform(filtered,
-                new Function<LocaleId, HLocale>() {
-                    @Override
-                    public HLocale apply(@Nullable LocaleId from) {
-                        return new HLocale(from);
-                    }
-                }));
     }
 
     public boolean isLanguageNameValid() {
@@ -220,4 +181,41 @@ public class LanguageManagerAction implements Serializable {
         return true;
     }
 
+    @Override
+    public List<HLocale> suggest() {
+        if (StringUtils.isEmpty(getQuery())) {
+            return Collections.EMPTY_LIST;
+        }
+
+        if (allLocales == null) {
+            allLocales = localeServiceImpl.getAllJavaLanguages();
+        }
+
+        Collection<HLocale> locales = Collections2.transform(allLocales,
+                new Function<LocaleId, HLocale>() {
+                    @Override
+                    public HLocale apply(@Nullable LocaleId from) {
+                        return new HLocale(from);
+                    }
+                });
+
+        Collection<HLocale> filtered =
+                Collections2.filter(locales, new Predicate<HLocale>() {
+                    @Override
+                    public boolean apply(HLocale input) {
+                        return StringUtils.startsWithIgnoreCase(input
+                                .getLocaleId().getId(), getQuery());
+                    }
+                });
+        return Lists.newArrayList(filtered);
+    }
+
+    @Override
+    public void onSelectItemAction() {
+        if (StringUtils.isEmpty(getSelectedItem())) {
+            return;
+        }
+        language = getSelectedItem();
+        updateLanguage();
+    }
 }

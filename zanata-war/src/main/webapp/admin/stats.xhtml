@@ -9,131 +9,115 @@
   <ui:define name="center_content">
     <div class="g--centered">
       <div class="g__item w--1-2-m w--3-8-l w--1-3 l--push-bottom-1">
-        <s:link view="/admin/home.xhtml" propagation="none">
-          <p class="txt--meta l--push-all-0">
-            #{msgs['jsf.Administration']}</p>
-        </s:link>
+        <p class="txt--meta l--push-all-0">
+          <s:link view="/admin/home.xhtml" propagation="none">
+              #{msgs['jsf.Administration']}
+          </s:link>
+        </p>
 
         <h1 class="l--push-all-0">#{msgs['jsf.Statistics']}</h1>
-        <ul class="list--slat l--push-top-half">
-          <li>
-            <div class="l--pad-v-quarter epsilon">
-              <i class="i i--users delta l--push-right-quarter"></i>
-              <span>
-                #{msgs['jsf.TotalTranslators']} <span class="badge">#{adminStatsAction.totalTranslator}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--users delta l--push-right-quarter"></i>
+          #{msgs['jsf.TotalTranslators']} <span class="badge">#{adminStatsAction.totalTranslator}</span>
 
-              <span class="l--push-h-quarter">
-                #{msgs['jsf.TotalReviewers']} <span class="badge">#{adminStatsAction.totalReviewer}</span>
-              </span>
-            </div>
-          </li>
+          <span class="l--push-h-quarter">
+            #{msgs['jsf.TotalReviewers']} <span class="badge">#{adminStatsAction.totalReviewer}</span>
+          </span>
+        </div>
 
-          <li>
-            <div class="l--pad-top-half l--pad-bottom-quarter epsilon epsilon">
-              <i class="i i--project delta l--push-right-quarter"></i>
-              <span>
-                #{msgs['jsf.TotalProjects']} <span class="badge">#{adminStatsAction.totalProjectCount}</span>
-              </span>
-            </div>
-            <div>
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveProjectCount}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--project delta l--push-right-quarter"></i>
+          #{msgs['jsf.TotalProjects']} <span class="badge">#{adminStatsAction.totalProjectCount}</span>
 
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.ReadOnly']} <span class="badge--warning">#{adminStatsAction.totalReadOnlyProjectCount}</span>
-              </span>
+          <div class="l--push-top-quarter">
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveProjectCount}</span>
+            </span>
 
-               <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteProjectCount}</span>
-              </span>
-            </div>
-          </li>
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.ReadOnly']} <span class="badge--warning">#{adminStatsAction.totalReadOnlyProjectCount}</span>
+            </span>
+
+             <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteProjectCount}</span>
+            </span>
+          </div>
+        </div>
 
 
-          <li>
-            <div class="l--pad-top-half l--pad-bottom-quarter epsilon epsilon">
-              <i class="i i--version delta l--push-right-quarter"></i>
-              <span>#{msgs['jsf.Versions']} <span class="badge">#{adminStatsAction.totalProjectIterCount}</span></span>
-            </div>
-            <div>
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveProjectIterCount}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--version delta l--push-right-quarter"></i>
+          #{msgs['jsf.Versions']} <span class="badge">#{adminStatsAction.totalProjectIterCount}</span>
+          <div class="l--push-top-quarter">
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveProjectIterCount}</span>
+            </span>
 
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.ReadOnly']} <span class="badge--warning">#{adminStatsAction.totalReadOnlyProjectIterCount}</span>
-              </span>
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.ReadOnly']} <span class="badge--warning">#{adminStatsAction.totalReadOnlyProjectIterCount}</span>
+            </span>
 
-               <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteProjectIterCount}</span>
-              </span>
-            </div>
-          </li>
+             <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteProjectIterCount}</span>
+            </span>
+          </div>
+        </div>
 
-          <li>
-            <div class="l--pad-top-half l--pad-bottom-quarter epsilon epsilon">
-              <i class="i i--document delta l--push-right-quarter"></i>
-              <span>#{msgs['jsf.TotalDocuments']} <span class="badge">#{adminStatsAction.totalDocuments}</span></span>
-            </div>
-            <div>
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveDocuments}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--document delta l--push-right-quarter"></i>
+          #{msgs['jsf.TotalDocuments']} <span class="badge">#{adminStatsAction.totalDocuments}</span>
+          <div class="l--push-top-quarter">
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveDocuments}</span>
+            </span>
 
-               <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteDocuments}</span>
-              </span>
-            </div>
-          </li>
+             <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteDocuments}</span>
+            </span>
+          </div>
+        </div>
 
-          <li>
-            <div class="l--pad-top-half l--pad-bottom-quarter epsilon epsilon">
-              <i class="i i--translate delta l--push-right-quarter"></i>
-              <span>#{msgs['jsf.TotalTextFlows']} <span class="badge">#{adminStatsAction.totalTextFlows}</span></span>
-            </div>
-            <div>
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveTextFlows}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--translate delta l--push-right-quarter"></i>
+          #{msgs['jsf.TotalTextFlows']} <span class="badge">#{adminStatsAction.totalTextFlows}</span>
+          <div class="l--push-top-quarter">
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveTextFlows}</span>
+            </span>
 
-               <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteTextFlows}</span>
-              </span>
-            </div>
-          </li>
+             <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteTextFlows}</span>
+            </span>
+          </div>
+        </div>
 
-          <li>
-            <div class="l--pad-top-half l--pad-bottom-quarter epsilon epsilon">
-              <i class="i i--translate delta l--push-right-quarter"></i>
-              <span>#{msgs['jsf.TotalTextFlowTargets']} <span class="badge">#{adminStatsAction.totalTextFlowTargets}</span></span>
-            </div>
-            <div>
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveTextFlowTargets}</span>
-              </span>
+        <div class="panel l--pad-all-half l--push-v-half">
+          <i class="i i--translate delta l--push-right-quarter"></i>
+          #{msgs['jsf.TotalTextFlowTargets']} <span class="badge">#{adminStatsAction.totalTextFlowTargets}</span>
+          <div class="l--push-top-quarter">
+            <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Active']} <span class="badge--success">#{adminStatsAction.totalActiveTextFlowTargets}</span>
+            </span>
 
-               <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteTextFlowTargets}</span>
-              </span>
+             <span class="l--push-h-quarter txt--meta">
+              #{msgs['jsf.Obsolete']} <span class="badge--danger">#{adminStatsAction.totalObsoleteTextFlowTargets}</span>
+            </span>
+          </div>
+
+          <div class="l--push-top-half">
+            <div class="l--push-all-quarter txt--meta">
+              #{msgs['jsf.ApprovedOrTranslated']} <span class="badge--success">#{adminStatsAction.totalApprovedOrTranslatedTextFlowTargets}</span>
             </div>
 
-            <div class="l--push-top-half">
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.ApprovedOrTranslated']} <span class="badge--success">#{adminStatsAction.totalApprovedOrTranslatedTextFlowTargets}</span>
-              </span>
-
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.RejectedOrFuzzy']} <span class="badge--unsure">#{adminStatsAction.totalRejectedOrFuzzyTextFlowTargets}</span>
-              </span>
-
-              <span class="l--push-h-quarter txt--meta">
-                #{msgs['jsf.Untranslated']} <span class="badge">#{adminStatsAction.totalUntranslatedTextFlowTargets}</span>
-              </span>
+            <div class="l--push-all-quarter txt--meta">
+              #{msgs['jsf.RejectedOrFuzzy']} <span class="badge--unsure">#{adminStatsAction.totalRejectedOrFuzzyTextFlowTargets}</span>
             </div>
-          </li>
-        </ul>
+
+            <div class="l--push-all-quarter txt--meta">
+              #{msgs['jsf.Untranslated']} <span class="badge">#{adminStatsAction.totalUntranslatedTextFlowTargets}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

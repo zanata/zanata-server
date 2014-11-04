@@ -49,6 +49,9 @@
   <composite:attribute name="onSelectStatus"
     shortDescription="Name of the a4j:status component to activate when selecting an item from the suggestion list"/>
 
+  <composite:attribute name="displayText"
+    shortDescription="Text to display in input field." default=""/>
+
 </composite:interface>
 
 <composite:implementation>
@@ -130,6 +133,7 @@
             <li class="js-autocomplete__result autocomplete__result">
               <h:inputHidden value="#{cc.attrs.fetchValue}"/>
               <composite:insertChildren/>
+              <input type="hidden" value="#{cc.attrs.displayText}"/>
             </li>
           </ui:repeat>
         </ul>

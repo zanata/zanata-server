@@ -36,7 +36,8 @@ public class SortingType implements Serializable {
         ALPHABETICAL("Alphabetical", true), LAST_ACTIVITY("Last activity",
                 false), LAST_SOURCE_UPDATE("Last source updated", false),
         LAST_TRANSLATED("Last translated", false), LAST_UPDATED_BY_YOU(
-                "Last updated by you", false), Entry("Entry", false);
+                "Last updated by you", false), Entry("Entry", false),
+        Name("Name", true), LocaleId("Locale code", true);
 
         @Getter
         String display;
