@@ -71,7 +71,7 @@ public class JndiBackedConfigITCase extends ArquillianTest {
     public void getNonExistentProperty() throws Exception {
         // This value must NOT be provided in the standalone.xml file used for
         // arquillian tests.
-        String val = jndiBackedConfig.getSmtpHostName();
+        String val = jndiBackedConfig.getWebAssetsUrlBase();
         assertThat(val, nullValue());
     }
 }

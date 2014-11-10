@@ -143,6 +143,7 @@
     <property name="name">Administrator</property>
   </component>
 
+  <mail:mail-session session-jndi-name="java:jboss/mail/Default" />
 
   <!-- Remember the locale selected -->
 
