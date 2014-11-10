@@ -238,15 +238,11 @@ public class TestFileGenerator {
     }
 
     public File openTestFile(String filename) {
-        URL url = Thread.currentThread().getContextClassLoader()
-                .getResource(filename);
         File testFile;
-        try {
-            testFile = new File(url.getPath());
-        } catch (NullPointerException npe) {
-            throw new RuntimeException(filename + " not found!");
-        }
-
+        URL url = Thread.currentThread()
+                .getContextClassLoader().getResource(filename);
+        Preconditions.checkNotNull(url, "File %s url is null", filename);
+        testFile = new File(url.getPath());
         Preconditions.checkArgument(testFile.exists(), "%s not found", testFile);
         return testFile;
     }

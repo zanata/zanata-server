@@ -28,6 +28,8 @@ import org.zanata.feature.Feature;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projects.ProjectVersionsPage;
+import org.zanata.util.Constants;
+import org.zanata.util.PropertiesHolder;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.LoginWorkFlow;
@@ -53,7 +55,8 @@ public class VersionFilteringTest extends ZanataTestCase {
     public void versionSearchFiltering() throws Exception {
         String projectName = "versionsearchnums";
         zanataRestCaller = new ZanataRestCaller("translator",
-                "d83882201764f7d339e97c4b087f0806");
+                PropertiesHolder
+                        .getProperty(Constants.zanataTranslatorKey.value()));
         zanataRestCaller.createProjectAndVersion(projectName, "alpha", "file");
         zanataRestCaller.createProjectAndVersion(projectName, "bravo", "file");
 

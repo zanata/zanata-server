@@ -34,6 +34,8 @@ import org.zanata.page.projects.ProjectBasePage;
 import org.zanata.page.projects.ProjectMaintainersPage;
 import org.zanata.page.projects.projectsettings.ProjectPermissionsTab;
 import org.zanata.page.projects.ProjectVersionsPage;
+import org.zanata.util.Constants;
+import org.zanata.util.PropertiesHolder;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.ZanataRestCaller;
 import org.zanata.workflow.LoginWorkFlow;
@@ -116,7 +118,8 @@ public class EditPermissionsTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 199006)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addMaintainerAsMaintainer() throws Exception {
-        new ZanataRestCaller("translator", "d83882201764f7d339e97c4b087f0806")
+        new ZanataRestCaller("translator", PropertiesHolder
+                .getProperty(Constants.zanataTranslatorKey.value()))
                 .createProjectAndVersion("addmaintainer", "addmaintainer", "file");
 
         assertThat(new LoginWorkFlow()
@@ -161,7 +164,8 @@ public class EditPermissionsTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 321234)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void removeMaintainer() throws Exception {
-        new ZanataRestCaller("translator", "d83882201764f7d339e97c4b087f0806")
+        new ZanataRestCaller("translator", PropertiesHolder.getProperty(
+                Constants.zanataTranslatorKey.value()))
                 .createProjectAndVersion("removemaintainer", "removemaintainer",
                         "file");
         assertThat(new LoginWorkFlow()
@@ -197,7 +201,8 @@ public class EditPermissionsTest extends ZanataTestCase {
     @Ignore("rhbz1151935")
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void removeSelfAsMaintainer() throws Exception {
-        new ZanataRestCaller("translator", "d83882201764f7d339e97c4b087f0806")
+        new ZanataRestCaller("translator", PropertiesHolder.getProperty(
+                Constants.zanataTranslatorKey.value()))
                 .createProjectAndVersion(
                         "removemaintainer", "removemaintainer", "file");
 

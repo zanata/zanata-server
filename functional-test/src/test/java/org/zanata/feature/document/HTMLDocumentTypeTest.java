@@ -33,6 +33,8 @@ import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.projectversion.VersionDocumentsPage;
 import org.zanata.page.projectversion.versionsettings.VersionDocumentsTab;
 import org.zanata.page.webtrans.EditorPage;
+import org.zanata.util.Constants;
+import org.zanata.util.PropertiesHolder;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.util.TestFileGenerator;
 import org.zanata.util.ZanataRestCaller;
@@ -55,7 +57,10 @@ public class HTMLDocumentTypeTest extends ZanataTestCase {
 
     @Before
     public void before() {
-        new ZanataRestCaller("translator", "d83882201764f7d339e97c4b087f0806")
+        System.out.println(PropertiesHolder
+                .getProperty(Constants.zanataTranslatorKey.value()));
+        new ZanataRestCaller("translator", PropertiesHolder.getProperty(
+                Constants.zanataTranslatorKey.value()))
                 .createProjectAndVersion("html-project", "html-upload", "file");
         new LoginWorkFlow().signIn("translator", "translator");
     }

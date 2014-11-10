@@ -70,7 +70,8 @@ public class FileTypeUploadTest extends ZanataTestCase {
     }
 
     private static String testString = "Test text 1";
-
+    private static String htmlString = "<html><title>"+testString+"</title>"+
+            "<body/> </html>";
     @DataPoint
     public static File TXT_FILE = new TestFileGenerator()
             .generateTestFileWithContent( "testtxtfile", ".txt", testString);
@@ -111,13 +112,11 @@ public class FileTypeUploadTest extends ZanataTestCase {
 
     @DataPoint
     public static File HTM_FILE = new TestFileGenerator()
-            .generateTestFileWithContent("testhtmfile", ".htm",
-            "<html><title>"+testString+"</title>");
+            .generateTestFileWithContent("testhtmfile", ".htm", htmlString);
 
     @DataPoint
     public static File HTML_FILE = new TestFileGenerator()
-            .generateTestFileWithContent("testhtmlfile", ".html",
-                    "<html><title>"+testString+"</title>");
+            .generateTestFileWithContent("testhtmlfile", ".html", htmlString);
 
     @DataPoint
     public static File IDML_FILE = new TestFileGenerator()
