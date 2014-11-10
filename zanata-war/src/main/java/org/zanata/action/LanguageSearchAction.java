@@ -43,7 +43,6 @@ import org.zanata.ui.InMemoryListFilter;
 
 @Name("languageSearchAction")
 @Scope(ScopeType.PAGE)
-@Restrict("#{s:hasRole('admin')}")
 public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
         Serializable {
     private static final long serialVersionUID = 1L;
@@ -57,8 +56,8 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
 
     @Getter
     private SortingType LanguageSortingList = new SortingType(
-            Lists.newArrayList(SortingType.SortOption.Name,
-                    SortingType.SortOption.LocaleId));
+            Lists.newArrayList(SortingType.SortOption.NAME,
+                    SortingType.SortOption.LOCALE_ID));
 
     private final LanguageComparator languageComparator =
             new LanguageComparator(getLanguageSortingList());
@@ -67,6 +66,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
         return "";
     }
 
+    @Restrict("#{s:hasRole('admin')}")
     public void enable(HLocale locale) {
         locale.setActive(true);
         localeDAO.makePersistent(locale);
@@ -75,6 +75,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
         Events.instance().raiseEvent("enableLanguage");
     }
 
+    @Restrict("#{s:hasRole('admin')}")
     public void disable(HLocale locale) {
         locale.setActive(false);
         localeDAO.makePersistent(locale);
@@ -83,12 +84,14 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
         Events.instance().raiseEvent("disableLanguage");
     }
 
+    @Restrict("#{s:hasRole('admin')}")
     public void enableByDefault(HLocale locale) {
         locale.setEnabledByDefault(true);
         localeDAO.makePersistent(locale);
         localeDAO.flush();
     }
 
+    @Restrict("#{s:hasRole('admin')}")
     public void disableByDefault(HLocale locale) {
         locale.setEnabledByDefault(false);
         localeDAO.makePersistent(locale);
@@ -96,7 +99,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
     }
 
     /**
-     * Sort version list
+     * Sort language list
      */
     public void sortLanguageList() {
         Collections.sort(allLanguages, languageComparator);
@@ -138,7 +141,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
                 o2 = temp;
             }
 
-            if (selectedSortOption.equals(SortingType.SortOption.Name)) {
+            if (selectedSortOption.equals(SortingType.SortOption.NAME)) {
                 return o1.retrieveDisplayName().compareTo(
                         o2.retrieveDisplayName());
             } else {

@@ -505,12 +505,6 @@
 
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageTeamAction.language}" />
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/language/home.xhtml', msgs['jsf.Languages'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', languageTeamAction.language)}" />
-
   </page>
 
   <page view-id="/language/contact_coordinator.xhtml">
