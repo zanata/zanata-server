@@ -53,7 +53,21 @@
             <h2 class="panel__heading">#{msgs['jsf.rolerules.title']}</h2>
           </div>
 
-          <h:form>
+          <s:div styleClass="l--pad-all-half"
+            rendered="#{empty roleAssignmentRuleAction.allRules}">
+            <p class="txt--meta">#{msgs['jsf.rolerules.norules']}</p>
+            <p>
+              <s:link value="#{msgs['jsf.rolerules.CreateRule']}"
+                propagation="none"
+                view="/admin/roleruledetails.xhtml" styleClass="button button--primary">
+                <i class="i i--plus i__item__icon"></i>
+              </s:link>
+            </p>
+          </s:div>
+
+
+          <h:form styleClass="l--push-bottom-0"
+            rendered="#{not empty roleAssignmentRuleAction.allRules}">
             <ul class="list--stats">
               <ui:repeat value="#{roleAssignmentRuleAction.allRules}" var="rule">
                 <li class="list__item--actionable">

@@ -273,14 +273,12 @@
 
   <page view-id="/admin/roleruledetails.xhtml">
     <navigation from-action="#{roleAssignmentRuleAction.update}">
-      <rule if-outcome="persisted">
-        <end-conversation />
-        <redirect view-id="/admin/rolerules.xhtml" />
-      </rule>
-      <rule if-outcome="updated">
-        <end-conversation />
-        <redirect view-id="/admin/rolerules.xhtml" />
-      </rule>
+      <end-conversation />
+      <redirect view-id="/admin/rolerules.xhtml" />
+    </navigation>
+    <navigation from-action="#{roleAssignmentRuleAction.persist}">
+      <end-conversation />
+      <redirect view-id="/admin/rolerules.xhtml" />
     </navigation>
   </page>
 

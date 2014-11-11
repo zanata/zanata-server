@@ -128,7 +128,7 @@
                               action="#{languageSearchAction.disableByDefault(language)}"
                               render="languageForm" styleClass="i__item--right txt--danger">
                               #{msgs['jsf.language.disableByDefault']}
-                              <i class="i i--lock i__item__icon"></i>
+                              <i class="i i--cancel i__item__icon"></i>
                             </a4j:commandLink>
                           </li>
                         </s:fragment>
@@ -156,20 +156,20 @@
                       <div class="list__item__info">
                         <h3 class="list__title">
                           <span
-                            class="#{language.active ? '' : 'txt--danger'}">
+                            class="#{language.active and language.enabledByDefault  ? '' : 'txt--danger'}">
                             <s:fragment
                               rendered="#{not language.active}">
-                              <i class="i i--lock"></i>
+                              <i class="i i--lock" title="#{msgs['jsf.language.disabled.tooltip']}"></i>
+                            </s:fragment>
+                            <s:fragment
+                              rendered="#{not language.enabledByDefault}">
+                              <i class="i i--cancel" title="#{msgs['jsf.language.disabledByDefault.tooltip']}"></i>
                             </s:fragment>
                             #{language.retrieveDisplayName()}
                           </span>
                           <span class="txt--meta l--push-left-quarter l--push-right-half" title="#{msgs['jsf.TeamMembers']}">
                             <i class="i i--users"></i> #{language.members.size}
                           </span>
-                          <s:span styleClass="badge--warning"
-                            rendered="#{not language.enabledByDefault}">
-                            #{msgs['jsf.language.disabledByDefault']}
-                          </s:span>
                         </h3>
                         <span class="list__item__meta">#{language.localeId.id} [#{language.retrieveNativeName()}]</span>
                       </div>
