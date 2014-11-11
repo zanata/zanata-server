@@ -21,8 +21,10 @@
 package org.zanata.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -37,10 +39,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
-import org.zanata.common.BaseTranslationCount;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
-import org.zanata.common.TransUnitCount;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.exception.InvalidDateParamException;
@@ -49,6 +49,7 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.stats.ContainerTranslationStatistics;
 import org.zanata.rest.dto.stats.TranslationStatistics;
+import org.zanata.rest.dto.stats.contribution.BaseContributionStatistic;
 import org.zanata.rest.dto.stats.contribution.ContributionStatistics;
 import org.zanata.rest.dto.stats.contribution.LocaleStatistics;
 import org.zanata.rest.service.StatisticsResource;
@@ -332,7 +333,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
                         "sample-project", "1.0", username, todayDate + ".."
                                 + todayDate);
 
-        BaseTranslationCount stats =
+        BaseContributionStatistic stats =
                 initialStats.get(username).get(target.getLocaleId());
 
         // Should have no stats for user on today
@@ -340,7 +341,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
         // needReview -> approved
         ContributionStatistics expectedStats = new ContributionStatistics();
-        expectedStats.put(username, buildStats(target.getLocaleId(), 0, 0, 0,
+        expectedStats.put(username, buildStats(target.getLocaleId(), 0, 0,
                 wordCount, 0));
         target = executeStateChangeTest(target, "test1", ContentState.Approved,
                 demoPerson, expectedStats);
@@ -354,17 +355,10 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
                 demoPerson, expectedStats);
 
         // approved -> needReview
-        expectedStats.put(username, buildStats(target.getLocaleId(), 0,
-                wordCount, 0, wordCount, 0));
+        expectedStats.put(username, buildStats(target.getLocaleId(), wordCount,
+                0, wordCount, 0));
         target = executeStateChangeTest(target, "test4",
                 ContentState.NeedReview, demoPerson, expectedStats);
-
-        // needReview -> new
-        expectedStats.put(username, buildStats(target.getLocaleId(), wordCount,
-                wordCount, 0, wordCount, 0));
-        target = executeStateChangeTest(target, "", ContentState.New,
-                demoPerson, expectedStats);
-
     }
 
     @Test
@@ -388,25 +382,25 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         ContentState newState = ContentState.Approved;
 
         ContributionStatistics expectedStats = new ContributionStatistics();
-        expectedStats.put(username, buildStats(localeId, 0, 0, 0,
+        expectedStats.put(username, buildStats(localeId, 0, 0,
                 wordCount1, 0));
         target1 = executeStateChangeTest(target1, "test1",
                 newState, demoPerson, expectedStats);
 
-        expectedStats.put(username, buildStats(localeId, 0, 0, 0,
+        expectedStats.put(username, buildStats(localeId, 0, 0,
                 wordCount1 + wordCount2, 0));
         target2 = executeStateChangeTest(target2, "test1",
                 newState, demoPerson, expectedStats);
 
         // approved -> needReview
         newState = ContentState.NeedReview;
-        expectedStats.put(username, buildStats(localeId, 0, wordCount1, 0,
+        expectedStats.put(username, buildStats(localeId, wordCount1, 0,
                 wordCount1 + wordCount2, 0));
         target1 = executeStateChangeTest(target1, "test2",
                 newState, demoPerson, expectedStats);
 
-        expectedStats.put(username, buildStats(localeId, 0,
-                wordCount1 + wordCount2, 0, wordCount1 + wordCount2, 0));
+        expectedStats.put(username, buildStats(localeId, wordCount1 + wordCount2,
+                0, wordCount1 + wordCount2, 0));
         target2 = executeStateChangeTest(target2, "test2",
                 newState, demoPerson, expectedStats);
     }
@@ -430,19 +424,19 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         ContentState newState = ContentState.Approved;
 
         ContributionStatistics expectedStats = new ContributionStatistics();
-        expectedStats.put(username, buildStats(target1.getLocaleId(), 0, 0, 0,
+        expectedStats.put(username, buildStats(target1.getLocaleId(), 0, 0,
                 wordCount1, 0));
         target1 = executeStateChangeTest(target1, "test1",
                 newState, demoPerson, expectedStats);
 
         expectedStats.get(username).putAll(buildStats(target2.getLocaleId(), 0,
-                0, 0, wordCount2, 0));
+                0, wordCount2, 0));
         target2 = executeStateChangeTest(target2, "test1",
                 newState, demoPerson, expectedStats);
 
         // approved -> needReview
         newState = ContentState.NeedReview;
-        BaseTranslationCount localeStat = expectedStats.get(username)
+        BaseContributionStatistic localeStat = expectedStats.get(username)
                 .get(target1.getLocaleId());
         localeStat.set(newState, localeStat.get(newState) + wordCount1);
         target1 = executeStateChangeTest(target1, "test2",
@@ -455,12 +449,12 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
     }
 
-    private LocaleStatistics buildStats(LocaleId localeId, int untranslated,
-            int needReview, int translated, int approved, int rejected) {
+    private LocaleStatistics buildStats(LocaleId localeId, int needReview,
+            int translated, int approved, int rejected) {
         LocaleStatistics localeStatistics = new LocaleStatistics();
 
-        localeStatistics.put(localeId, new TransUnitCount(approved, needReview,
-                untranslated, translated, rejected));
+        localeStatistics.put(localeId, new BaseContributionStatistic(approved,
+                needReview, translated, rejected));
 
         return localeStatistics;
     }
@@ -478,7 +472,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
                                 .getUsername(), todayDate + ".." + todayDate);
 
         assertNotNull(newStats);
-        assertThat(newStats).isEqualTo(expectedStats);
+        assertEquals(newStats, expectedStats);
         return target;
     }
 
