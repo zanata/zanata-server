@@ -3,10 +3,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   template="../WEB-INF/template/template.xhtml">
 
   <ui:define name="page_title">#{msgs['jsf.ProcessManager']}</ui:define>
@@ -49,16 +50,12 @@
             #{msgs['jsf.processmanager.currentStates']}
             </h2>
           </div>
-          <div class="l--pad-all-half l--push-top-quarter">
-            <p class="txt--meta">
-              #{msgs['jsf.processmanager.TotalRunning']} <span class="badge badge--success">
+          <div class="l--pad-all-half txt--meta l--push-top-quarter">
+              #{msgs['jsf.processmanager.TotalRunning']}<span class="l--push-left-quarter l--push-right-half badge badge--highlight">
               #{processManagerAction.runningCount}</span>
-            </p>
 
-            <p class="txt--meta">
-              #{msgs['jsf.processmanager.TotalFinished']} <span class="badge">
+              #{msgs['jsf.processmanager.TotalFinished']}<span class="l--push-left-quarter badge">
               #{processManagerAction.stoppedCount}</span>
-            </p>
           </div>
         </s:div>
       </div>
@@ -79,7 +76,7 @@
                     title="#{handle.done ? msgs['jsf.processmanager.status.Stopped'] : msgs['jsf.processmanager.status.Running']}">
                     <div class="list__item__content">
                       <div class="list__item__info">
-                        <span class="zeta #{handle.done ? 'txt--understated' : 'txt--success'}">
+                        <span class="zeta #{handle.done ? 'txt--understated' : 'txt--highlight'}">
                           #{handle.toString()}
                         </span>
                         <s:span styleClass="txt--meta txt--warning l--push-left-quarter" rendered="#{handle.done}">
@@ -97,13 +94,17 @@
                           enabled="false"/>
                       </div>
                       <div class="list__item__stats">
-                        <span class="#{handle.done ? 'txt--understated' : 'txt--success'}">
+                        <s:fragment rendered="#{not handle.done}">
+                          <zanata:loader type="loader--small" layout="inline"/>
+                        </s:fragment>
+
+                        <s:span styleClass="txt--understated" rendered="#{handle.done}">
                           <span
                             class="txt--hero">#{handle.executingTime}</span>
                           <span class="stats__unit txt--lowercase">
                             #{msgs['jsf.processmanager.miliseconds']}
                           </span>
-                        </span>
+                        </s:span>
                       </div>
                     </div>
                   </li>

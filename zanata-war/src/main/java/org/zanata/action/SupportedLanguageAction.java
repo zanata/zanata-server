@@ -88,13 +88,7 @@ public class SupportedLanguageAction extends InMemoryListFilter<HLocale>
                 return o1.getLocaleId().getId().compareTo(
                         o2.getLocaleId().getId());
             } else {
-                if (o1.getMembers().size() == o2.getMembers().size()) {
-                    return 0;
-                } else if (o1.getMembers().size() > o2.getMembers().size()) {
-                    return 1;
-                } else {
-                    return -1;
-                }
+                return o1.getMembers().size() - o2.getMembers().size();
             }
         }
     }
