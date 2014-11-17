@@ -21,10 +21,8 @@
 package org.zanata.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -356,7 +354,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
         // approved -> needReview
         expectedStats.put(username, buildStats(target.getLocaleId(), wordCount,
-                0, wordCount, 0));
+                0, 0, 0));
         target = executeStateChangeTest(target, "test4",
                 ContentState.NeedReview, demoPerson, expectedStats);
     }
@@ -395,12 +393,12 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         // approved -> needReview
         newState = ContentState.NeedReview;
         expectedStats.put(username, buildStats(localeId, wordCount1, 0,
-                wordCount1 + wordCount2, 0));
+                wordCount1, 0));
         target1 = executeStateChangeTest(target1, "test2",
                 newState, demoPerson, expectedStats);
 
         expectedStats.put(username, buildStats(localeId, wordCount1 + wordCount2,
-                0, wordCount1 + wordCount2, 0));
+                0, 0, 0));
         target2 = executeStateChangeTest(target2, "test2",
                 newState, demoPerson, expectedStats);
     }
@@ -439,14 +437,52 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
         BaseContributionStatistic localeStat = expectedStats.get(username)
                 .get(target1.getLocaleId());
         localeStat.set(newState, localeStat.get(newState) + wordCount1);
+        localeStat.set(ContentState.Approved, 0);
         target1 = executeStateChangeTest(target1, "test2",
                 newState, demoPerson, expectedStats);
 
         localeStat = expectedStats.get(username).get(target2.getLocaleId());
         localeStat.set(newState, localeStat.get(newState) + wordCount2);
+        localeStat.set(ContentState.Approved, 0);
         target2 = executeStateChangeTest(target2, "test2",
                 newState, demoPerson, expectedStats);
 
+    }
+
+    @Test
+    public void getContribStatsDiffUser() {
+        PersonDAO personDAO = seam.autowire(PersonDAO.class);
+
+        String username1 = "demo";
+        String username2 = "admin";
+        HPerson person1 = personDAO.findByUsername(username1);
+        HPerson person2 = personDAO.findByUsername(username2);
+
+        HTextFlowTarget target = textFlowTargetDAO.findById(1L);
+
+        int wordCount = target.getTextFlow().getWordCount().intValue();
+
+        ContentState newState = ContentState.Approved;
+
+        ContributionStatistics expectedStats = new ContributionStatistics();
+        expectedStats.put(username1, buildStats(target.getLocaleId(), 0, 0,
+                wordCount, 0));
+        target = executeStateChangeTest(target, "test1",
+                newState, person1, expectedStats);
+
+        ContributionStatistics expectedStats2 = new ContributionStatistics();
+        expectedStats2.put(username2, buildStats(target.getLocaleId(), 0, 0,
+                wordCount, 0));
+        target = executeStateChangeTest(target, "test2",
+                newState, person2, expectedStats2);
+
+        //Test person1 statistic has not changed
+        String todayDate = formatter.format(today);
+        ContributionStatistics newStats =
+                statisticsService.getContributionStatistics(
+                        "sample-project", "1.0", person1.getAccount()
+                                .getUsername(), todayDate + ".." + todayDate);
+        assertThat(newStats).isEqualTo(expectedStats);
     }
 
     private LocaleStatistics buildStats(LocaleId localeId, int needReview,
@@ -472,7 +508,7 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
                                 .getUsername(), todayDate + ".." + todayDate);
 
         assertNotNull(newStats);
-        assertEquals(newStats, expectedStats);
+        assertThat(newStats).isEqualTo(expectedStats);
         return target;
     }
 

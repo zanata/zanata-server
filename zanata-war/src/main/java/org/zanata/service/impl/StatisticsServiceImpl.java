@@ -350,7 +350,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
         LocaleStatistics localeStatistics = new LocaleStatistics();
 
         List<Object[]> data =
-                textFlowTargetHistoryDAO.getUserTranslationHistoryInVersion(
+                textFlowTargetHistoryDAO.getUserContributionStatisticInVersion(
                         version.getId(), person.getId(), fromDate, toDate);
 
         for (Object[] entry : data) {
