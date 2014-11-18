@@ -13,8 +13,8 @@
     </h:outputLabel>
     <s:decorate id="slugField" template="field.xhtml" enclose="true">
       <h:inputText id="slug" required="true"
-        value="#{translationMemoryAction.instance.slug}"
-        valueChangeListener="#{translationMemoryAction.verifySlugAvailable}">
+        value="#{translationMemoryHome.instance.slug}"
+        valueChangeListener="#{translationMemoryHome.verifySlugAvailable}">
         <a4j:ajax event="blur" render="slugField" execute="@this"/>
       </h:inputText>
     </s:decorate>
@@ -24,20 +24,20 @@
     <h:outputLabel for="description">#{msgs['jsf.Description']}</h:outputLabel>
     <s:decorate id="descriptionField" template="field.xhtml" enclose="true">
       <h:inputTextarea id="description" required="false"
-        value="#{translationMemoryAction.instance.description}"/>
+        value="#{translationMemoryHome.instance.description}"/>
     </s:decorate>
   </div>
 
   <div class="l--push-top-1">
     <h:commandButton id="save"
       value="#{msgs['jsf.Save']}"
-      action="#{translationMemoryAction.persist}"
-      rendered="#{!translationMemoryAction.managed}"
+      action="#{translationMemoryHome.persist}"
+      rendered="#{!translationMemoryHome.managed}"
       styleClass="button--primary button--full"/>
     <h:commandButton id="update"
       value="#{msgs['jsf.Update']}"
-      action="#{translationMemoryAction.update}"
-      rendered="#{translationMemoryAction.managed}"
+      action="#{translationMemoryHome.update}"
+      rendered="#{translationMemoryHome.managed}"
       styleClass="button--primary button--full"/>
   </div>
 

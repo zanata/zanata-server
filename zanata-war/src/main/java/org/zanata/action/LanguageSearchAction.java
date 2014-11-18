@@ -56,7 +56,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
 
     @Getter
     private SortingType LanguageSortingList = new SortingType(
-            Lists.newArrayList(SortingType.SortOption.NAME,
+            Lists.newArrayList(SortingType.SortOption.ALPHABETICAL,
                     SortingType.SortOption.LOCALE_ID));
 
     private final LanguageComparator languageComparator =
@@ -141,7 +141,7 @@ public class LanguageSearchAction extends InMemoryListFilter<HLocale> implements
                 o2 = temp;
             }
 
-            if (selectedSortOption.equals(SortingType.SortOption.NAME)) {
+            if (selectedSortOption.equals(SortingType.SortOption.ALPHABETICAL)) {
                 return o1.retrieveDisplayName().compareTo(
                         o2.retrieveDisplayName());
             } else {

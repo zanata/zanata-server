@@ -30,7 +30,7 @@ public class SupportedLanguageAction extends InMemoryListFilter<HLocale>
 
     @Getter
     private SortingType LanguageSortingList = new SortingType(
-            Lists.newArrayList(SortingType.SortOption.NAME,
+            Lists.newArrayList(SortingType.SortOption.ALPHABETICAL,
                     SortingType.SortOption.LOCALE_ID,
                     SortingType.SortOption.MEMBERS));
 
@@ -80,7 +80,7 @@ public class SupportedLanguageAction extends InMemoryListFilter<HLocale>
                 o2 = temp;
             }
 
-            if (selectedSortOption.equals(SortingType.SortOption.NAME)) {
+            if (selectedSortOption.equals(SortingType.SortOption.ALPHABETICAL)) {
                 return o1.retrieveDisplayName().compareTo(
                         o2.retrieveDisplayName());
             } else if (selectedSortOption

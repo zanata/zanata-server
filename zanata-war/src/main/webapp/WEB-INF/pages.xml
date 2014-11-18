@@ -495,12 +495,6 @@
   </page>
 
   <!-- Language -->
-  <page view-id="/language/home.xhtml">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.Languages'])}" />
-  </page>
-
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageTeamAction.language}" />
   </page>
@@ -569,17 +563,14 @@
   <!-- Translation Memory -->
   <page view-id="/tm/home.xhtml">
     <restrict>#{s:hasRole('admin')}</restrict>
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/tm/home.xhtml', msgs['jsf.transmemory.Title'])}" />
   </page>
 
   <page view-id="/tm/create.xhtml">
     <restrict>#{s:hasRole('admin')}</restrict>
-    <navigation from-action="#{translationMemoryAction.persist}">
+    <navigation from-action="#{translationMemoryHome.persist}">
       <redirect view-id="/tm/home.xhtml" />
     </navigation>
-    <navigation from-action="#{translationMemoryAction.update}">
+    <navigation from-action="#{translationMemoryHome.update}">
       <redirect view-id="/tm/home.xhtml" />
     </navigation>
   </page>
