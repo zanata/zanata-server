@@ -126,11 +126,14 @@
             <a4j:outputPanel id="actions">
                 <table class="bg--pop-highest l--push-bottom-1">
                   <tr>
-                    <th class="l--pad-v-half">#{msgs['jsf.manageSearch.AllActions']}</th>
                     <th class="l--pad-v-half">#{msgs['jsf.manageSearch.Table']}</th>
                     <th class="l--pad-v-half">
-                      <s:span>
-                        #{msgs['jsf.manageSearch.purge']} <i class="i i--info txt--highlight"></i>
+                      <h:selectBooleanCheckbox value="#{reindexAction.purgeAll}"
+                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
+                        <a4j:ajax event="click" render="actions" execute="@this"/>
+                      </h:selectBooleanCheckbox>
+                      <s:span styleClass="l--push-left-half">
+                        #{msgs['jsf.manageSearch.purge']} <i class="i i--info txt--meta"></i>
                         <rich:tooltip showDelay="800" styleClass="leftalign">
                           <p>#{msgs['jsf.manageSearch.purge.Description']}</p>
 
@@ -141,8 +144,12 @@
                       </s:span>
                     </th>
                     <th class="l--pad-v-half">
-                      <s:span>
-                        #{msgs['jsf.manageSearch.reindex']} <i class="i i--info txt--highlight"></i>
+                      <h:selectBooleanCheckbox value="#{reindexAction.reindexAll}" id="reindexAllChk"
+                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
+                        <a4j:ajax event="click" render="actions" execute="@this"/>
+                      </h:selectBooleanCheckbox>
+                      <s:span styleClass="l--push-left-half">
+                        #{msgs['jsf.manageSearch.reindex']} <i class="i i--info txt--meta"></i>
                         <rich:tooltip showDelay="800" styleClass="leftalign">
                           <p>#{msgs['jsf.manageSearch.reindex.Description']}</p>
 
@@ -161,8 +168,12 @@
                       </s:span>
                     </th>
                     <th class="l--pad-v-half">
-                      <s:span>
-                        #{msgs['jsf.manageSearch.optimize']} <i class="i i--info txt--highlight"></i>
+                      <h:selectBooleanCheckbox value="#{reindexAction.optimizeAll}"
+                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
+                        <a4j:ajax event="click" render="actions" execute="@this"/>
+                      </h:selectBooleanCheckbox>
+                      <s:span styleClass="l--push-left-half">
+                        #{msgs['jsf.manageSearch.optimize']} <i class="i i--info txt--meta"></i>
                         <rich:tooltip showDelay="800" styleClass="leftalign">
                           <p>#{msgs['jsf.manageSearch.optimize.Description']}</p>
 
@@ -185,8 +196,8 @@
                             disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                             <a4j:ajax event="click" render="actions" execute="@this"/>
                           </h:selectBooleanCheckbox>
+                          <span class="l--push-left-half"><h:outputText value="#{clazz.className}"/></span>
                         </td>
-                        <td class="l--pad-v-half"><h:outputText value="#{clazz.className}"/></td>
                         <td class="l--pad-v-half">
                           <h:selectBooleanCheckbox value="#{clazz.purge}" execute="@this"
                             disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
@@ -207,30 +218,6 @@
                         </td>
                       </tr>
                     </ui:repeat>
-
-                  <tr class="bg--higher--hover">
-                    <td class="l--pad-v-half">
-                    </td>
-                    <td class="l--pad-v-half">#{msgs['jsf.manageSearch.AllTables']}</td>
-                    <td class="l--pad-v-half">
-                      <h:selectBooleanCheckbox value="#{reindexAction.purgeAll}"
-                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
-                        <a4j:ajax event="click" render="actions" execute="@this"/>
-                      </h:selectBooleanCheckbox>
-                    </td>
-                    <td class="l--pad-v-half">
-                      <h:selectBooleanCheckbox value="#{reindexAction.reindexAll}" id="reindexAllChk"
-                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
-                        <a4j:ajax event="click" render="actions" execute="@this"/>
-                      </h:selectBooleanCheckbox>
-                    </td>
-                    <td class="l--pad-v-half">
-                      <h:selectBooleanCheckbox value="#{reindexAction.optimizeAll}"
-                        disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
-                        <a4j:ajax event="click" render="actions" execute="@this"/>
-                      </h:selectBooleanCheckbox>
-                    </td>
-                  </tr>
                   </tbody>
                 </table>
 

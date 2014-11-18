@@ -576,17 +576,10 @@
 
   <page view-id="/tm/create.xhtml">
     <restrict>#{s:hasRole('admin')}</restrict>
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/tm/home.xhtml', msgs['jsf.transmemory.Title'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.transmemory.title.New'])}" />
     <navigation from-action="#{translationMemoryAction.persist}">
-      <rule if="#{translationMemoryAction.managed}">
-        <redirect view-id="/tm/home.xhtml" />
-      </rule>
+      <redirect view-id="/tm/home.xhtml" />
     </navigation>
-    <navigation from-action="#{translationMemoryAction.cancel}">
+    <navigation from-action="#{translationMemoryAction.update}">
       <redirect view-id="/tm/home.xhtml" />
     </navigation>
   </page>
