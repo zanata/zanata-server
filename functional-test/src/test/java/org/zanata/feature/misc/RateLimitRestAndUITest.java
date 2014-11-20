@@ -71,7 +71,8 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
 
     private static final String TRANSLATOR = "translator";
     private static final String TRANSLATOR_API =
-            "d83882201764f7d339e97c4b087f0806";
+            PropertiesHolder.getProperty(Constants.zanataTranslatorKey
+            .value());
     private String maxConcurrentPathParam = "c/max.concurrent.req.per.apikey";
     private String maxActivePathParam = "c/max.active.req.per.apikey";
 

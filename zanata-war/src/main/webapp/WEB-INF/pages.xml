@@ -497,31 +497,11 @@
   <!-- Language -->
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageTeamAction.language}" />
-  </page>
-
-  <page view-id="/language/contact_coordinator.xhtml">
-    <restrict>#{identity.loggedIn}</restrict>
-    <param name="emailType" value="#{sendEmail.emailType}" />
-    <param name="id" value="#{sendEmail.language}" />
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/language/home.xhtml', msgs['jsf.Languages'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/language/language.xhtml', sendEmail.locale.localeId.id).param('id', sendEmail.locale.localeId.id)}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs.format(
-        'jsf.contactLanguageTeamCoordinatorForLocale',
-        sendEmail.locale.localeId.id, sendEmail.locale.retrieveNativeName()))}" />
 
     <navigation from-action="#{sendEmail.send}">
-      <rule if-outcome="success">
-        <redirect view-id="/language/language.xhtml">
-          <param name="id" value="#{sendEmail.language}" />
-        </redirect>
-      </rule>
-      <rule if-outcome="failure">
-        <redirect view-id="/language/contact_coordinator.xhtml" />
-      </rule>
+      <redirect view-id="/language/language.xhtml">
+        <param name="id" value="#{sendEmail.language}" />
+      </redirect>
     </navigation>
     <navigation from-action="#{sendEmail.cancel}">
       <redirect view-id="/language/language.xhtml">
