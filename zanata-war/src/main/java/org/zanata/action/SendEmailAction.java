@@ -197,8 +197,6 @@ public class SendEmailAction implements Serializable {
                         locale, strategy);
 
                 FacesMessages.instance().add(msg);
-                conversationScopeMessages.setMessage(
-                    FacesMessage.SEVERITY_INFO, msg);
                 return SUCCESS;
             } else if (emailType.equals(EMAIL_TYPE_REQUEST_JOIN)) {
                 String localeNativeName = locale.retrieveNativeName();
