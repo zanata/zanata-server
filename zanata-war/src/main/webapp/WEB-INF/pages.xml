@@ -367,8 +367,14 @@
 
   <!-- Help -->
   <page view-id="/help/view.xhtml">
-    <action execute="#{breadcrumbs.clear}" />
-    <action execute="#{breadcrumbs.addLocation('', msgs['jsf.Help'])}" />
+    <navigation from-action="#{sendEmail.send}">
+      <rule if-outcome="success">
+        <redirect view-id="/help/view.xhtml" />
+      </rule>
+      <rule if-outcome="failure">
+        <redirect view-id="/help/view.xhtml" />
+      </rule>
+    </navigation>
   </page>
 
   <page view-id="/help/edit_help_content.xhtml">
@@ -377,28 +383,6 @@
       execute="#{breadcrumbs.addLocation('/help/view.xhtml', msgs['jsf.Help'])}" />
     <action
       execute="#{breadcrumbs.addLocation('', msgs['jsf.EditHelpPageContent'])}" />
-  </page>
-
-  <page view-id="/help/contact_admin.xhtml">
-    <restrict>#{identity.loggedIn}</restrict>
-    <!-- ideally a literal value should be used for emailType,
-         couldn't figure out a way to do this with seam/jsf.
-         May want to subclass SendEmailAction and set the email template
-         upon construction to achieve this. -->
-    <param name="emailType" value="#{sendEmail.emailType}" />
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('/help/view.xhtml', msgs['jsf.Help'])}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.ContactAdmin'])}" />
-    <navigation from-action="#{sendEmail.send}">
-      <rule if-outcome="success">
-        <redirect view-id="/help/view.xhtml" />
-      </rule>
-      <rule if-outcome="failure">
-        <redirect view-id="/help/contact_admin.xhtml" />
-      </rule>
-    </navigation>
   </page>
 
 
