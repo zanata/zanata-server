@@ -45,17 +45,18 @@ public class JoinLanguageTeamTest extends ZanataTestCase {
     @Feature(summary = "The administrator can add a member to a language team",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181703)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    public void translatorJoinsLanguageTeam() throws Exception {
+    public void addUserToLanguageTeam() throws Exception {
         ManageLanguageTeamMemberPage manageTeamMemberPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToAdministration()
                 .goToManageLanguagePage()
-                .manageTeamMembersFor("pl")
+                .manageTeamMembersFor("Polish")
+                .clickMoreActions()
                 .clickAddTeamMember()
-                .searchPersonAndAddToTeam("translator");
+                .searchPersonAndAddToTeam("glossary-admin");
 
         assertThat(manageTeamMemberPage.getMemberUsernames())
                 .contains("translator")
-                .as("Translator is a listed member of the pl team");
+                .as("Translator is a listed member of the Polish team");
     }
 }

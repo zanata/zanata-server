@@ -51,8 +51,9 @@ public class AddLanguageTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181709)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addLanguageAsEnabled() throws Exception {
-        String language = "Goa'uld";
-        String languageDisplayName = "goa'uld[Goa'uld]";
+        String language = "Afrikaans";
+        String locale = "af";
+        String languageDisplayName = "Afrikaans[af]";
         ManageLanguagePage manageLanguagePage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToHomePage()
@@ -64,8 +65,10 @@ public class AddLanguageTest extends ZanataTestCase {
                 .as("The language is not listed");
 
         manageLanguagePage = manageLanguagePage
+                .clickMoreActions()
                 .addNewLanguage()
-                .inputLanguage(language)
+                .enterSearchLanguage(locale)
+                .selectSearchLanguage(locale)
                 .saveLanguage();
 
         assertThat(manageLanguagePage.getLanguageLocales())
@@ -94,8 +97,9 @@ public class AddLanguageTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181709)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addLanguageAsDisabled() throws Exception {
-        String language = "Klingon";
-        String languageDisplayName = "klingon[Klingon]";
+        String language = "Assamese";
+        String locale = "as";
+        String languageDisplayName = "Assamese[as]";
         ManageLanguagePage manageLanguagePage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToHomePage()
@@ -107,8 +111,10 @@ public class AddLanguageTest extends ZanataTestCase {
                 .as("The language is not listed");
 
         manageLanguagePage = manageLanguagePage
+                .clickMoreActions()
                 .addNewLanguage()
-                .inputLanguage(language)
+                .enterSearchLanguage(locale)
+                .selectSearchLanguage(locale)
                 .disableLanguageByDefault()
                 .saveLanguage();
 
@@ -136,7 +142,8 @@ public class AddLanguageTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 181709)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void addKnownLanguage() throws Exception {
-        String language = "ru-RU";
+        String language = "Russian (Russia)";
+        String locale = "ru-RU";
         ManageLanguagePage manageLanguagePage = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .goToHomePage()
@@ -148,8 +155,10 @@ public class AddLanguageTest extends ZanataTestCase {
                 .as("The language is not listed");
 
         AddLanguagePage addLanguagePage = manageLanguagePage
+                .clickMoreActions()
                 .addNewLanguage()
-                .inputLanguage("ru-RU");
+                .enterSearchLanguage(locale)
+                .selectSearchLanguage(locale);
 
         Map<String, String> languageInfo = addLanguagePage.getLanguageDetails();
 

@@ -26,7 +26,7 @@
 
         <h1 class="l--push-all-0">#{msgs['jsf.CreateSupportedLanguage']}</h1>
 
-        <h:form>
+        <h:form id="addLanguageForm">
           <script type="text/javascript">
             function replaceUnderscores() {
               var langName = #{rich:element('localeName')}.value;

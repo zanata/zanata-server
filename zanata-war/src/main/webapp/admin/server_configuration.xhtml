@@ -213,7 +213,7 @@
             </span>
           </h:outputLabel>
           <s:decorate id="maxFilesPerUploadField" template="../WEB-INF/layout/field.xhtml" enclose="true">
-            <h:inputText id="maxFilesPerUploadFieldInput" value="#{serverConfigurationBean.maxActiveRequestsPerApiKey}">
+            <h:inputText id="maxFilesPerUploadFieldInput" value="#{serverConfigurationBean.maxFilesPerUpload}">
               <a4j:ajax event="blur" render="maxFilesPerUploadField" execute="@this"/>
               <rich:placeholder value="#{msgs['jsf.config.MaxFilesPerUploadDefault']}"
                 styleClass="txt--neutral" />

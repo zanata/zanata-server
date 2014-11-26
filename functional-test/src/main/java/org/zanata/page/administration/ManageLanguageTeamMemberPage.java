@@ -24,13 +24,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
 import org.zanata.util.Checkbox;
-import org.zanata.util.TableRow;
-import org.zanata.util.WebElementUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,42 +41,35 @@ import java.util.List;
 public class ManageLanguageTeamMemberPage extends BasePage {
 
     private By memberPanel = By.id("memberPanel");
-    private By memberPanelRows = By.id("memberPanel:threads");
     private By joinLanguageTeamButton = By.linkText("Join Language Team");
     private By addTeamMemberButton = By.id("addTeamMemberLink");
-    private By addUserPanel = By.id("userAddPanel_container");
     private By addUserSearchInput = By.id("searchForm:searchField");
     private By addUserSearchButton = By.id("searchForm:searchBtn");
-    private By personTable = By.id("resultForm:personTable");
-    private By addSelectedButton = By.id("resultForm:addSelectedBtn");
-    private By closeSearchButton = By.id("searchForm:closeBtn");
-
-    public static final int USERNAME_COLUMN = 0;
-    public static final int SEARCH_RESULT_PERSON_COLUMN = 0;
-    public static final int ISTRANSLATOR_COLUMN = 2;
+    private By personTable = By.id("resultForm:searchResults");
+    private By addSelectedButton = By.id("addSelectedBtn");
 
     public ManageLanguageTeamMemberPage(WebDriver driver) {
         super(driver);
     }
 
-    private String getMembersInfo() {
-        log.info("Query members info");
-        return waitForWebElement(memberPanel)
-                .findElement(By.xpath(".//p")).getText();
+    private String getMemberCount() {
+        log.info("Query member count");
+        return waitForWebElement(By.className("panel__heading"))
+                .findElement(By.className("i--users")).getText().trim();
     }
 
     public List<String> getMemberUsernames() {
         log.info("Query username list");
-        if (getMembersInfo().contains("0 members")) {
-            log.info("no members yet for this language");
+        if (getMemberCount().equals("0")) {
+            log.info("No members yet for this language");
             return Collections.emptyList();
         }
-        List<String> usernameColumn = WebElementUtil.getColumnContents(
-                getDriver(),
-                memberPanelRows,
-                USERNAME_COLUMN);
-        log.info("username column: {}", usernameColumn);
-        return usernameColumn;
+        List<String> names = new ArrayList<>();
+        for (WebElement listEntry : waitForWebElement(memberPanel)
+                .findElements(By.className("list__item--actionable"))) {
+            names.add(listEntry.findElement(By.tagName("h3")).getText().trim());
+        }
+        return names;
     }
 
     public ManageLanguageTeamMemberPage joinLanguageTeam() {
@@ -93,6 +85,14 @@ public class ManageLanguageTeamMemberPage extends BasePage {
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 
+    public ManageLanguageTeamMemberPage clickMoreActions() {
+        log.info("Click actions menu");
+        waitForWebElement(By.className("panel__header__actions"))
+                .findElement(By.className("i--ellipsis"))
+                .click();
+        return new ManageLanguageTeamMemberPage(getDriver());
+    }
+
     public ManageLanguageTeamMemberPage clickAddTeamMember() {
         log.info("Click Add Team Member");
         waitForWebElement(addTeamMemberButton).click();
@@ -103,49 +103,69 @@ public class ManageLanguageTeamMemberPage extends BasePage {
             final String personName) {
         log.info("Enter username search {}", personName);
         // Wait for the search field under the add user panel
-        waitForWebElement(waitForElementExists(addUserPanel), addUserSearchInput)
-                .sendKeys(personName);
-
-        log.info("Click search button");
-        waitForWebElement(addUserSearchButton).click();
-
-        TableRow firstRow = tryGetFirstRowInSearchPersonResult(personName);
-
-        final String personUsername = firstRow.getCellContents()
-                .get(SEARCH_RESULT_PERSON_COLUMN);
-        log.info("Username to be added: {}", personUsername);
+        waitForWebElement(addUserSearchInput).sendKeys(personName);
+        clickSearchDialogSearchButton();
+        WebElement personEntry = getSearchedForUser(personName);
         log.info("Set checked as translator");
-        Checkbox.of(firstRow.getCells()
-                .get(ISTRANSLATOR_COLUMN)
-                .findElement(By.tagName("input")))
-                .check();
-        log.info("Click Add Selected");
-        waitForWebElement(addSelectedButton).click();
-        log.info("Click Close");
-        waitForWebElement(closeSearchButton).click();
+        Checkbox.of(getCheckboxRole(personEntry, "Translator")).check();
+        clickSearchDialogAddSelected();
+        closeSearchDialog();
         return confirmAdded(personName);
     }
 
-    private TableRow tryGetFirstRowInSearchPersonResult(final String personName) {
-        // we want to wait until search result comes back
-        return waitForAMoment().until(new Function<WebDriver, List<TableRow>>() {
+    public ManageLanguageTeamMemberPage clickSearchDialogSearchButton() {
+        log.info("Click search button");
+        waitForWebElement(addUserSearchButton).click();
+        slightPause();
+        waitForPageSilence();
+        return new ManageLanguageTeamMemberPage(getDriver());
+    }
+
+    public ManageLanguageTeamMemberPage clickSearchDialogAddSelected() {
+        log.info("Click Add Selected");
+        waitForWebElement(addSelectedButton).click();
+        return new ManageLanguageTeamMemberPage(getDriver());
+    }
+
+    public ManageLanguageTeamMemberPage closeSearchDialog() {
+        log.info("Click Close button");
+        waitForWebElement(
+                waitForWebElement(By.id("searchUserDialog")),
+                By.className("modal__close")).click();
+        return new ManageLanguageTeamMemberPage(getDriver());
+    }
+
+    private WebElement getSearchedForUser(final String username) {
+        return waitForAMoment().until(new Function<WebDriver, WebElement>() {
             @Override
-            public List<TableRow> apply(WebDriver input) {
-                log.debug("waiting for search result refresh...");
-                List<TableRow> tableRows = WebElementUtil
-                        .getTableRows(getDriver(),
-                                waitForWebElement(personTable));
-                if (tableRows.isEmpty()) {
-                    log.debug("waiting for search result refresh...");
-                    throw new NoSuchElementException("");
+            public WebElement apply(WebDriver input) {
+                WebElement mainTable = waitForWebElement(personTable)
+                        .findElement(By.className("list--slat"));
+                List<WebElement> rows = mainTable
+                        .findElements(By.className("txt--mini"));
+                rows.addAll(mainTable
+                        .findElements(By.className("txt--meta")));
+                for (WebElement row : rows) {
+                    if (row.findElements(
+                            By.className("bx--inline-block"))
+                            .get(0).getText().startsWith(username)) {
+                        return row;
+                    }
                 }
-                if (!tableRows.get(0).getCellContents()
-                        .get(SEARCH_RESULT_PERSON_COLUMN).contains(personName)) {
-                    throw new NoSuchElementException("User not in pos 0");
-                }
-                return tableRows;
+                return null;
             }
-        }).get(0);
+        });
+    }
+
+    private WebElement getCheckboxRole(WebElement listItem, String roleName) {
+        for (WebElement box : listItem
+                .findElement(By.className("list--horizontal"))
+                .findElements(By.tagName("li"))) {
+            if (box.getText().startsWith(roleName)) {
+                return box.findElement(By.tagName("input"));
+            }
+        }
+        throw new RuntimeException("Role " + roleName + " not found");
     }
 
     private ManageLanguageTeamMemberPage confirmAdded(
@@ -154,12 +174,7 @@ public class ManageLanguageTeamMemberPage extends BasePage {
         return refreshPageUntil(this, new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver driver) {
-                List<String> usernameColumn = WebElementUtil
-                        .getColumnContents(getDriver(),
-                        memberPanelRows,
-                        USERNAME_COLUMN);
-                log.info("username column: {}", usernameColumn);
-                return usernameColumn.contains(personUsername);
+                return getMemberUsernames().contains(personUsername);
             }
         });
     }

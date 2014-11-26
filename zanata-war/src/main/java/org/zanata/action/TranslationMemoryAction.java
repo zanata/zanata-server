@@ -183,6 +183,10 @@ public class TranslationMemoryAction implements Serializable {
         return false;
     }
 
+    public boolean isTranslationMemoryEmpty(String tmSlug) {
+        return getTranslationMemorySize(tmSlug) <= 0;
+    }
+
     public long getTranslationMemorySize(String tmSlug) {
         return transMemoryDAO.getTranslationMemorySize(tmSlug);
     }
