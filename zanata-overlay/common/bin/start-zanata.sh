@@ -1,1 +1,2 @@
-./standalone.sh -c standalone-zanata.xml
+#!/bin/sh
+exec ./standalone.sh -c standalone-zanata.xml

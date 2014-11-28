@@ -32,12 +32,12 @@ task 'package'(dependsOn: 'copyToLib') << {
         // Copy extra needed files
         ant.copy(todir: "$distroDir/standalone/deployments") {
             fileset(dir: "$BUILD_DIR/deps") {
-                include(name: "mysql-connector-java-**.jar")
+                include(name: "mysql-connector-java-*.jar")
             }
         }
         ant.copy(todir: "$distroDir/bin/zanata-installer") {
             fileset(dir: "$BUILD_DIR/deps") {
-                include(name: "groovy-all-**.jar")
+                include(name: "groovy-all-*.jar")
             }
         }
         // Download remote dependencies
