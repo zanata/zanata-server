@@ -53,6 +53,12 @@ public class DashboardProfileTab extends DashboardBasePage {
         return new DashboardProfileTab(getDriver());
     }
 
+    public String getDisplayName() {
+        log.info("Query display name");
+        return waitForWebElement(accountNameField).getAttribute("value");
+
+    }
+
     public DashboardProfileTab clickUpdateProfileButton() {
         log.info("Click Update");
         waitForWebElement(updateProfileButton).click();

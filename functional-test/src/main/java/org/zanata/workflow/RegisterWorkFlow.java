@@ -20,6 +20,7 @@
  */
 package org.zanata.workflow;
 
+import lombok.extern.slf4j.Slf4j;
 import org.zanata.page.account.EditProfilePage;
 import org.zanata.page.googleaccount.GoogleAccountPage;
 import org.zanata.page.utility.HomePage;
@@ -28,10 +29,12 @@ import org.zanata.page.utility.HomePage;
  * @author Damian Jansen <a
  *         href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
+@Slf4j
 public class RegisterWorkFlow extends AbstractWebWorkFlow {
 
     public HomePage registerGoogleOpenID(String name, String username,
             String password, String email) {
+        log.info("Register as {}:{}, ({}:{})", username, password, name, email);
         GoogleAccountPage googleAccountPage = new BasicWorkFlow()
                 .goToHome()
                 .clickSignInLink()
@@ -59,5 +62,17 @@ public class RegisterWorkFlow extends AbstractWebWorkFlow {
 
         return editProfilePage.enterName(name).enterUserName(username)
                 .enterEmail(email).clickSave();
+    }
+
+    public HomePage registerInternal(String name, String username,
+            String password, String email) {
+        log.info("Register as {}:{}, ({}:{})", username, password, name, email);
+        return new BasicWorkFlow().goToHome()
+                .goToRegistration()
+                .enterName(name)
+                .enterUserName(username)
+                .enterPassword(password)
+                .enterEmail(email)
+                .register();
     }
 }

@@ -48,6 +48,10 @@ public class DashboardAccountTab extends DashboardBasePage {
     private By newPasswordField = By.id("passwordChangeForm:newPasswordField:newPassword");
     private By changePasswordButton = By.id("passwordChangeForm:changePasswordButton");
 
+    public static final String EMAIL_CHANGED =
+            "You will soon receive an email with a link to activate your " +
+            "email account change.";
+
     public DashboardAccountTab(WebDriver driver) {
         super(driver);
     }
@@ -83,5 +87,10 @@ public class DashboardAccountTab extends DashboardBasePage {
         log.info("Click Update Password");
         waitForWebElement(changePasswordButton).click();
         return new DashboardAccountTab(getDriver());
+    }
+
+    public String getEmailAddress() {
+        log.info("Query email address");
+        return waitForWebElement(emailField).getAttribute("value");
     }
 }
