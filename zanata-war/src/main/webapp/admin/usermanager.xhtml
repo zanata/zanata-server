@@ -16,7 +16,8 @@
     </a4j:jsFunction>
 
     <a4j:jsFunction name="deleteUser"
-      action="#{userAction.deleteUser(username)}" render="usermanagerForm">
+      action="#{userAction.deleteUser(username)}" render="usermanagerForm,
+      userSearch-pager, userSearch-page-info, userSearchBottom-pager, userSearchBottom-page-info">
       <a4j:param name="val1" assignTo="#{username}"/>
     </a4j:jsFunction>
 

@@ -93,9 +93,9 @@
       </s:div>
     </div>
     <h2 class="panel__heading">
-      #{languageTeamAction.locale.localeId}<span
-      class="txt--meta"> [#{languageTeamAction.locale.retrieveNativeName()}] <i
-      class="i i--users" title="#{msgs['jsf.TeamMembers']}"></i> #{languageTeamAction.localeMembers.size}</span>
+      #{languageTeamAction.locale.localeId}<s:span
+      styleClass="txt--meta" id="members-count"> [#{languageTeamAction.locale.retrieveNativeName()}] <i
+      class="i i--users" title="#{msgs['jsf.TeamMembers']}"></i> #{languageTeamAction.localeMembers.size}</s:span>
     </h2>
   </div>
 
@@ -114,7 +114,7 @@
                 <li>
                   <h:commandLink value="#{msgs['jsf.Remove']}"
                     action="#{languageTeamAction.removeMembership(member)}"
-                    render="memberPanel, more-action-form, userAddPanel" execute="@this"
+                    render="memberPanel, more-action-form, userAddPanel, members-count" execute="@this"
                     styleClass="i__item--right txt--danger">
                     <i class="i i--remove i__item__icon"></i>
                   </h:commandLink>

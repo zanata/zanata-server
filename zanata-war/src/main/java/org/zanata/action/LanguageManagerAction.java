@@ -101,7 +101,7 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
 
     @Create
     public void onCreate() {
-        fectchLocaleFromJava();
+        fetchLocaleFromJava();
     }
 
     public void updateLanguage() {
@@ -122,7 +122,7 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
         return "success";
     }
 
-    public void fectchLocaleFromJava() {
+    public void fetchLocaleFromJava() {
         List<LocaleId> locale = localeServiceImpl.getAllJavaLanguages();
         List<SelectItem> localeList = new ArrayList<SelectItem>();
         for (LocaleId var : locale) {
@@ -207,6 +207,11 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
                                 .getLocaleId().getId(), getQuery());
                     }
                 });
+        if(filtered.isEmpty()) {
+            language = getQuery();
+            filtered = Lists.newArrayList(new HLocale(new LocaleId(language)));
+            updateLanguage();
+        }
         return Lists.newArrayList(filtered);
     }
 
