@@ -1,5 +1,7 @@
 import groovy.xml.XmlUtil
 
+import java.nio.file.Files
+
 /**
  * Zanata installer script.
  * Downloads Zanata and configures certain parts of the application for first
@@ -12,7 +14,9 @@ propertiesFile.withInputStream {
     installerProps.load(it)
 }
 def ZANATA_VERSION = installerProps['zanata.version']
-final DS_FILE_LOC = "../../standalone/configuration/standalone-zanata.xml"
+final JBOSS_CFG_DIR = "../../standalone/configuration"
+final CUSTOM_STANDALONE_XML_LOC = "${JBOSS_CFG_DIR}/standalone-zanata.xml"
+final ORIGINAL_STANDALONE_XML_LOC = "${JBOSS_CFG_DIR}/standalone.xml"
 final WAR_FILE_LOC = "../../standalone/deployments/zanata.war"
 
 if( new File(WAR_FILE_LOC).exists() ) {
@@ -25,6 +29,9 @@ if( new File(WAR_FILE_LOC).exists() ) {
 println "====================================================="
 println " Welcome to the Zanata Installer. This will install"
 println " Zanata ${ZANATA_VERSION} onto your JBoss or Wildfly"
+println ""
+println " Note: This installer will change your standalone.xml" +
+println " file."
 println "====================================================="
 
 def dbHost
@@ -71,8 +78,15 @@ try {
     println "Could not download zanata-war-${ZANATA_VERSION}.war"
 }
 
+// Move the original standalone and copy the custom one
+def xmlFile = new File(ORIGINAL_STANDALONE_XML_LOC)
+def xmlBackupFile = new File("${JBOSS_CFG_DIR}/standalone.xml.original")
+def customXmlFile = new File(CUSTOM_STANDALONE_XML_LOC)
+xmlFile.renameTo(xmlBackupFile)
+Files.copy(xmlBackupFile.toPath(), customXmlFile.toPath())
+
 // Update zanata datasource
-def dsXml = new XmlParser().parse(DS_FILE_LOC)
+def dsXml = new XmlParser().parse(CUSTOM_STANDALONE_XML_LOC)
 
 def zanataDs =
     dsXml.profile.subsystem.find { s -> s.datasources }.datasources.datasource
@@ -88,4 +102,4 @@ zanataDs.security.replaceNode { node ->
     }
 }
 
-println XmlUtil.serialize(dsXml, new FileOutputStream(DS_FILE_LOC))
+println XmlUtil.serialize(dsXml, new FileOutputStream(CUSTOM_STANDALONE_XML_LOC))
