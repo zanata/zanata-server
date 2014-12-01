@@ -109,8 +109,6 @@
             <usedDependency>org.opensymphony.quartz:quartz</usedDependency>
             <!-- Used indirectly by org.zanata.arquillian.Deployments -->
             <usedDependency>org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api</usedDependency>
-            <!-- used by REST API interfaces -->
-            <usedDependency>org.jboss.resteasy:resteasy-multipart-provider</usedDependency>
             <!-- Used by javamelody for email/pdf support -->
             <usedDependency>com.lowagie:itext</usedDependency>
             <!--used to log sql and parameters when debugging Hibernate -->
@@ -164,6 +162,7 @@
         <groupId>com.ning.maven.plugins</groupId>
         <artifactId>maven-duplicate-finder-plugin</artifactId>
         <configuration>
+          <checkTestClasspath>false</checkTestClasspath>
           <ignoredDependencies>
             <dependency>
               <groupId>com.google.gwt</groupId>
@@ -2075,10 +2074,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
+      <version>4.2.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <version>4.2.5</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -2292,3 +2293,5 @@
 
 
 </project>
+
+
