@@ -70,11 +70,10 @@ import org.zanata.feature.versionGroup.*;
          */
         ChangePasswordTest.class,
         InactiveUserLoginTest.class,
-        InvalidEmailAddressTest.class,
         ProfileTest.class,
         RegisterTest.class,
         UsernameValidationTest.class,
-        ValidEmailAddressTest.class,
+        EmailValidationTest.class,
 
         /*
          * Administration
@@ -203,7 +202,6 @@ import org.zanata.feature.versionGroup.*;
          * Creation and management of Version Groups
          */
         VersionGroupTest.class,
-        VersionGroupIDValidationTest.class,
         VersionGroupUrlTest.class
 })
 public class TestPlan {

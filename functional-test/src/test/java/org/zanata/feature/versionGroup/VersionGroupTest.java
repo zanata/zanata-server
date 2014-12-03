@@ -194,4 +194,23 @@ public class VersionGroupTest extends ZanataTestCase {
                 .isEqualTo(groupName)
                 .as("The group was created");
     }
+
+    @Feature(summary = "The administrator must use numbers, letters, periods, "
+            + "underscores and hyphens to create a group",
+            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 396261)
+    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
+    public void inputValidationForID() throws Exception {
+        String inputText = "group|name";
+        CreateVersionGroupPage groupPage = dashboardPage
+                .goToGroups()
+                .createNewGroup()
+                .inputGroupId(inputText)
+                .inputGroupName(inputText)
+                .saveGroupFailure();
+
+        assertThat(groupPage.expectError(
+                    CreateVersionGroupPage.VALIDATION_ERROR))
+                .contains(CreateVersionGroupPage.VALIDATION_ERROR)
+                .as("Validation error is displayed for " + inputText);
+    }
 }
