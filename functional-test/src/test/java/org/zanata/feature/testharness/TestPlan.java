@@ -38,7 +38,6 @@ import org.zanata.feature.glossary.GlossaryDeleteTest;
 import org.zanata.feature.glossary.GlossaryPushTest;
 import org.zanata.feature.glossary.InvalidGlossaryPushTest;
 import org.zanata.feature.googleopenid.GoogleOpenIDTest;
-import org.zanata.feature.infrastructure.RetryRuleTest;
 import org.zanata.feature.language.AddLanguageTest;
 import org.zanata.feature.language.ContactLanguageTeamTest;
 import org.zanata.feature.language.JoinLanguageTeamTest;
@@ -144,12 +143,6 @@ import org.zanata.feature.versionGroup.*;
         GoogleOpenIDTest.class,
 
         /*
-         * Infrastructure
-         * Test infrastructure validation
-         */
-        RetryRuleTest.class,
-
-        /*
          * Language
          * Participation in an management of language teams
          */
@@ -175,7 +168,6 @@ import org.zanata.feature.versionGroup.*;
         EditProjectGeneralTest.class,
         EditProjectLanguagesTest.class,
         EditProjectValidationsTest.class,
-
         /*
          * Project Version
          * Creation and management of Project Versions
