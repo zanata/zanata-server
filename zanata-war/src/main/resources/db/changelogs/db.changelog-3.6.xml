@@ -30,4 +30,28 @@
       referencedTableName = "HProject" referencedColumnNames = "id"/>
   </changeSet>
 
+  <changeSet id="1" author="damason@redhat.com">
+    <comment>Create table HProject_LocaleAlias.</comment>
+
+    <createTable tableName="HProject_LocaleAlias">
+      <column name="projectId" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="localeId" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="alias" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addPrimaryKey tableName = "HProject_LocaleAlias"
+      columnNames = "projectId, localeId"/>
+    <addForeignKeyConstraint
+      baseTableName = "HProject_LocaleAlias"
+      baseColumnNames = "projectId"
+      constraintName = "FK_HProject_LocaleAlias_HProject"
+      referencedTableName = "HProject"
+      referencedColumnNames = "id"/>
+  </changeSet>
+
 </databaseChangeLog>
