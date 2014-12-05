@@ -25,6 +25,7 @@ import java.util.List;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountActivationKey;
+import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.model.HDocument;
 import org.zanata.model.HDocumentHistory;
 import org.zanata.model.HGlossaryEntry;
@@ -97,6 +98,7 @@ public class ZanataEntities {
         builder.add(HAccountActivationKey.class, HCredentials.class,
                 HPersonEmailValidationKey.class,
                 HPerson.class,
+                HAccountResetPasswordKey.class,
                 HAccount.class);
 
         entitiesForDelete = builder.build();

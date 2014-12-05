@@ -51,6 +51,7 @@ public class RegisterTest extends ZanataTestCase {
 
     @ClassRule
     public static AddUsersRule addUsersRule = new AddUsersRule();
+
     @ClassRule
     public static HasEmailRule emailRule = new HasEmailRule();
 
