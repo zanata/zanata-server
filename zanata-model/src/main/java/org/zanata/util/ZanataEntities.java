@@ -33,6 +33,7 @@ import org.zanata.model.HIterationGroup;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
+import org.zanata.model.HPersonEmailValidationKey;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTermComment;
@@ -41,6 +42,7 @@ import org.zanata.model.HTextFlowHistory;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.model.HTextFlowTargetReviewComment;
+import org.zanata.model.WebHook;
 import org.zanata.model.po.HPoHeader;
 import org.zanata.model.po.HPoTargetHeader;
 import org.zanata.model.po.HPotEntryData;
@@ -90,9 +92,10 @@ public class ZanataEntities {
         builder.add(HLocaleMember.class, HLocale.class);
         builder.add(HIterationGroup.class);
         // project
-        builder.add(HProjectIteration.class, HProject.class);
+        builder.add(HProjectIteration.class, WebHook.class, HProject.class);
         // account
         builder.add(HAccountActivationKey.class, HCredentials.class,
+                HPersonEmailValidationKey.class,
                 HPerson.class,
                 HAccount.class);
 

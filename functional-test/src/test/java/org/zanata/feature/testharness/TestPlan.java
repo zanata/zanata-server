@@ -168,6 +168,8 @@ import org.zanata.feature.versionGroup.*;
         EditProjectGeneralTest.class,
         EditProjectLanguagesTest.class,
         EditProjectValidationsTest.class,
+        EditWebHooksTest.class,
+        SetProjectVisibilityTest.class,
         /*
          * Project Version
          * Creation and management of Project Versions
