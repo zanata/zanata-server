@@ -128,8 +128,7 @@ public class SearchIndexManager implements Serializable {
         asyncTaskHandleManager.registerTaskHandle(handle);
         try {
             indexingServiceImpl.startIndexing(indexingOptions, handle);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // If this happens, it's because of a problem with the async
             // framework
             throw new RuntimeException(e);
