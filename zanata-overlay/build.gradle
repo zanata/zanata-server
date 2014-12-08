@@ -6,7 +6,8 @@ repositories {
 }
 
 dependencies {
-    runtime "mysql:mysql-connector-java:5.1.34"
+    // NB: Version 5.1.34 does not work for deployment in jboss!
+    runtime "mysql:mysql-connector-java:5.1.28"
     runtime "org.codehaus.groovy:groovy-all:2.1.5"
 }
 
@@ -34,6 +35,8 @@ task 'package'(dependsOn: 'copyToLib') << {
             fileset(dir: "$BUILD_DIR/deps") {
                 include(name: "mysql-connector-java-*.jar")
             }
+            globmapper(from: "mysql-connector-java-*.jar",
+                to: "mysql-connector-java.jar")
         }
         ant.copy(todir: "$distroDir/bin/zanata-installer") {
             fileset(dir: "$BUILD_DIR/deps") {
