@@ -27,7 +27,6 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.zanata.seam.SeamAutowire;
 
 /**
  * @author Carlos Munoz <a
@@ -38,16 +37,13 @@ public class AsyncConfigTest {
 
     private static final String THREAD_POOL_SIZE_VAL = "15";
 
-    private SeamAutowire seam = SeamAutowire.instance();
     private AsyncConfig asyncConfig;
     @Mock private ConfigStore configStore;
 
     @BeforeTest
     public void beforeTest() {
         initMocks(this);
-        seam.reset()
-            .use("systemPropertyConfigStore", configStore);
-        asyncConfig = seam.autowire(AsyncConfig.class);
+        asyncConfig = new AsyncConfig(configStore);
     }
 
     @Test

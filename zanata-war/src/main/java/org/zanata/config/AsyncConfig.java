@@ -20,6 +20,8 @@
  */
 package org.zanata.config;
 
+import com.google.common.annotations.VisibleForTesting;
+import lombok.NoArgsConstructor;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -36,6 +38,7 @@ import org.jboss.seam.annotations.Scope;
 @Name("asyncConfig")
 @Scope(ScopeType.STATELESS)
 @AutoCreate
+@NoArgsConstructor
 public class AsyncConfig {
 
     public static final String THREAD_POOL_SIZE = "async.threadpool.size";
@@ -43,11 +46,14 @@ public class AsyncConfig {
     @In
     private ConfigStore systemPropertyConfigStore;
 
+    public AsyncConfig(ConfigStore systemPropertyConfigStore) {
+        this.systemPropertyConfigStore = systemPropertyConfigStore;
+    }
+
     public int getThreadPoolSize() {
         try {
             return new Integer( systemPropertyConfigStore.get(THREAD_POOL_SIZE) );
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return 10; // Default value
         }
     }
