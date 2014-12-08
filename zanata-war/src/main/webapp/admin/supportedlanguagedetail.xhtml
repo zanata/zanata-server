@@ -11,6 +11,34 @@
 
   <ui:define
     name="page_title">#{msgs['jsf.CreateSupportedLanguage']}</ui:define>
+
+  <ui:define name="head">
+    <script type="text/javascript">
+      function replaceUnderscores() {
+        var input = jQuery("#localeAutocomplete-autocomplete__input");
+        var langName = jQuery(input).val();
+        langName = langName.replace('_', '-');
+        jQuery(input).val(langName);
+        setLanguage(langName);
+        validateLangName();
+      }
+
+    </script>
+
+    <style type="text/css">
+      .checkbox label {
+        padding-right:0.40625em;
+      }
+
+      .checkbox input[type=checkbox] {
+        width: 1em;
+        height: 1em;
+        vertical-align: middle;
+        margin-bottom: 0.20625em;
+      }
+    </style>
+
+  </ui:define>
   <ui:define name="center_content">
     <div class="g--centered">
       <div class="g__item w--3-4-m w--5-8-l w--1-3 l--push-bottom-1">
@@ -27,31 +55,14 @@
         <h1 class="l--push-all-0">#{msgs['jsf.CreateSupportedLanguage']}</h1>
 
         <h:form id="addLanguageForm">
-          <script type="text/javascript">
-            function replaceUnderscores() {
-              var langName = #{rich:element('localeName')}.value;
-              langName = langName.replace('_', '-');
-              #{rich:element('localeName')}.value = langName;
-              validateLangName();
-            }
-          </script>
-
-          <style type="text/css">
-            .checkbox label {
-              padding-right:0.40625em;
-            }
-
-            .checkbox input[type=checkbox] {
-              width: 1em;
-              height: 1em;
-              vertical-align: middle;
-              margin-bottom: 0.20625em;
-            }
-          </style>
 
           <a4j:jsFunction name="validateLangName"
             action="#{languageManagerAction.updateLanguage()}"
-            render="output,localeNameMssgs"/>
+            render="output,localeNameMsgs"/>
+
+          <a4j:jsFunction name="setLanguage">
+            <a4j:param name="val1" assignTo="#{languageManagerAction.language}"/>
+          </a4j:jsFunction>
 
           <div class="form__item l--push-top-1">
             <label
@@ -65,13 +76,14 @@
               minlength="1"
               fetchValue="#{result.localeId}"
               displayText="#{result.localeId}"
-              render="output,localeNameMssgs"
+              render="output,localeNameMsgs"
+              onRenderResultComplete="validateLangName()"
               placeholder="#{msgs['jsf.language.search.placeholder']}">
               #{result.localeId}<span
               class="txt--understated l--push-left-quarter">#{result.retrieveDisplayName()}</span>
             </zanata:autocomplete>
 
-            <s:div id="localeNameMssgs">
+            <s:div id="localeNameMsgs" styleClass="txt--warning">
               <h:outputText
                 value="#{languageManagerAction.languageNameValidationMessage}"
                 rendered="#{not languageManagerAction.language.contains('_')}"

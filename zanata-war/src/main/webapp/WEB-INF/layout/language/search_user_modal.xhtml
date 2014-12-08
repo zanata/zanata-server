@@ -22,8 +22,8 @@
     action="#{languageTeamAction.clearSearchResult}" render="searchResults"/>
 
   <a4j:jsFunction name="addSelected"
-    action="#{languageTeamAction.addSelected}" render="searchResults, memberPanel"
-    oncomplete="jQuery('#cancel').click();"/>
+    action="#{languageTeamAction.addSelected}" render="searchResults, memberPanel, members-count"
+    oncomplete="jQuery('#cancel').click();zanata.modal.hide('#searchUserDialog')"/>
 
   <div class="modal__dialog l--constrain-medium">
     <header class="modal__header">

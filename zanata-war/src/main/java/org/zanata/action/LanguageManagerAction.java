@@ -183,7 +183,8 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
 
     @Override
     public List<HLocale> suggest() {
-        if (StringUtils.isEmpty(getQuery())) {
+        language = getQuery();
+        if (StringUtils.isEmpty(language) || !isLanguageNameValid()) {
             return Collections.EMPTY_LIST;
         }
 
@@ -204,12 +205,12 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
                     @Override
                     public boolean apply(HLocale input) {
                         return StringUtils.startsWithIgnoreCase(input
-                                .getLocaleId().getId(), getQuery());
+                                .getLocaleId().getId(), language);
                     }
                 });
         if(filtered.isEmpty()) {
-            language = getQuery();
-            filtered = Lists.newArrayList(new HLocale(new LocaleId(language)));
+            filtered =
+                    Lists.newArrayList(new HLocale(new LocaleId(language)));
             updateLanguage();
         }
         return Lists.newArrayList(filtered);

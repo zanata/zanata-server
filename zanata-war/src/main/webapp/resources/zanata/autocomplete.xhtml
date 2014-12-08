@@ -43,6 +43,9 @@
   <composite:attribute name="oncomplete"
     shortDescription="The client-side script method to be called after the DOM is updated"/>
 
+  <composite:attribute name="onRenderResultComplete"
+    shortDescription="The client-side script method to be called after suggestions results"/>
+
   <composite:attribute name="inputClass"
     shortDescription="CSS class for input field"/>
 
@@ -62,7 +65,8 @@
     render="#{cc.attrs.id}-result"
     limitRender="true"
     onbegin="#{cc.attrs.id}ShowLoader()"
-    oncomplete="#{cc.attrs.id}HideLoader(); registerMouseEvent('#{cc.attrs.id}', #{cc.attrs.id}SubmitSelected, #{cc.attrs.onSelectItem})">
+    oncomplete="#{cc.attrs.id}HideLoader(); #{cc.attrs.onRenderResultComplete};
+    registerMouseEvent('#{cc.attrs.id}', #{cc.attrs.id}SubmitSelected, #{cc.attrs.onSelectItem})">
     <a4j:param name="val" assignTo="#{cc.attrs.actionBean.query}"/>
   </a4j:jsFunction>
 

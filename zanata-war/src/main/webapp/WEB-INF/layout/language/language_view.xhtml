@@ -25,7 +25,8 @@
               <li>
                 <a4j:commandLink id="Join" action="#{languageTeamAction.joinTribe}"
                   styleClass="i__item--right"
-                  render="memberPanel, more-action-form" value=" #{msgs['jsf.JoinLanguageTeam']}">
+                  render="memberPanel, more-action-form, members-count"
+                  value=" #{msgs['jsf.JoinLanguageTeam']}">
                   <i class="i i--plus i__item__icon"></i>
                   <s:conversationId name="id" value="#{languageTeamAction.language}"/>
                 </a4j:commandLink>
@@ -36,7 +37,8 @@
               <li>
                 <a4j:commandLink id="Leave" styleClass="txt--danger i__item--right"
                   action="#{languageTeamAction.leaveTribe}"
-                  render="memberPanel, more-action-form" value="#{msgs['jsf.LeaveLanguageTeam']}">
+                  render="memberPanel, more-action-form, members-count"
+                  value="#{msgs['jsf.LeaveLanguageTeam']}">
                   <i class="i i--remove i__item__icon"></i>
                   <s:conversationId name="id" value="#{languageTeamAction.language}"/>
                 </a4j:commandLink>
@@ -112,12 +114,12 @@
               </a>
               <ul class="dropdown__content js-dropdown__content">
                 <li>
-                  <h:commandLink value="#{msgs['jsf.Remove']}"
+                  <a4j:commandLink value="#{msgs['jsf.Remove']}"
                     action="#{languageTeamAction.removeMembership(member)}"
                     render="memberPanel, more-action-form, userAddPanel, members-count" execute="@this"
                     styleClass="i__item--right txt--danger">
                     <i class="i i--remove i__item__icon"></i>
-                  </h:commandLink>
+                  </a4j:commandLink>
                 </li>
               </ul>
             </div>
