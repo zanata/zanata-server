@@ -11,14 +11,6 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <ui:define name="page_title">#{msgs['jsf.Languages']}</ui:define>
-  <ui:define name="right_content">
-    <rich:panel rendered="#{identity.loggedIn and s:hasRole('admin')}">
-      <f:facet name="header">#{msgs['jsf.Actions']}</f:facet>
-      <s:link styleClass="action_link"
-        view="/admin/supportedlanguagedetail.xhtml"
-        value="#{msgs['jsf.CreateSupportedLanguage']}"/>
-    </rich:panel>
-  </ui:define>
 
   <ui:define name="center_content">
     <div class="g--centered">
@@ -46,11 +38,12 @@
                 <ul class="dropdown__content js-dropdown__content" role="content"
                   aria-labelledby="dropdownContent">
                   <li>
-                    <s:link view="/admin/supportedlanguagedetail.xhtml"
-                      value="#{msgs['jsf.CreateSupportedLanguage']}"
-                      styleClass="i__item--right">
+                    <a href="#" class="i__item--right"
+                      data-toggle="modal" onclick="return false;"
+                      data-target="#newLanguageDialog">
+                      #{msgs['jsf.CreateSupportedLanguage']}
                       <i class="i i--plus i__item__icon"></i>
-                    </s:link>
+                    </a>
                   </li>
                 </ul>
               </s:div>
@@ -107,5 +100,10 @@
         </div>
       </div>
     </div>
+
+    <s:fragment rendered="#{identity.loggedIn and s:hasRole('admin')}">
+      <ui:include src="../WEB-INF/layout/language/new_language_modal.xhtml"/>
+    </s:fragment>
+
   </ui:define>
 </ui:composition>

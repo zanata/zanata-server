@@ -210,14 +210,6 @@
     </navigation>
   </page>
 
-  <page view-id="/admin/supportedlanguagedetail.xhtml">
-    <navigation from-action="#{languageManagerAction.save}">
-      <rule if-outcome="success">
-        <redirect view-id="/admin/languagemanager.xhtml" />
-      </rule>
-    </navigation>
-  </page>
-
   <page view-id="/admin/rolemanager.xhtml" action="#{roleSearch.loadRoles}">
     <restrict>#{s:hasPermission('seam.role', 'read')}</restrict>
     <navigation from-action="#{roleAction.createRole}">
@@ -257,6 +249,9 @@
       <redirect view-id="/admin/language.xhtml">
         <param name="id" value="#{language.localeId.id}" />
       </redirect>
+    </navigation>
+    <navigation from-action="#{languageManagerAction.save}">
+      <redirect view-id="/admin/languagemanager.xhtml"/>
     </navigation>
   </page>
 
@@ -479,6 +474,12 @@
   </page>
 
   <!-- Language -->
+  <page view-id="/language/home.xhtml">
+    <navigation from-action="#{languageManagerAction.save}">
+      <redirect view-id="/language/home.xhtml"/>
+    </navigation>
+  </page>
+
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageTeamAction.language}" />
 

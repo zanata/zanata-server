@@ -4,24 +4,11 @@
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   template="../WEB-INF/template/template.xhtml">
 
   <ui:define name="page_title">#{msgs['jsf.ProcessManager']}</ui:define>
-  <ui:define name="head">
-    <style type="text/css">
-      .progressbar>div:nth-of-type(1) {
-        width:100% !important;
-        line-height: 1.5em;
-        height: 1.5em;
-      }
-    </style>
-  </ui:define>
-
-
 
   <ui:define name="center_content">
     <a4j:region>
@@ -73,25 +60,24 @@
               <ul class="list--stats">
                 <ui:repeat value="#{processManagerAction.runningProcesses}" var="handle">
                   <li
-                    title="#{handle.done ? msgs['jsf.processmanager.status.Stopped'] : msgs['jsf.processmanager.status.Running']}">
+                    title="#{handle.done ? msgs['jsf.processmanager.status.Finished'] : msgs['jsf.processmanager.status.Running']}">
                     <div class="list__item__content">
                       <div class="list__item__info">
                         <span class="zeta #{handle.done ? 'txt--understated' : 'txt--highlight'}">
                           #{handle.toString()}
                         </span>
-                        <s:span styleClass="txt--meta txt--warning l--push-left-quarter" rendered="#{handle.done}">
-                          #{msgs['jsf.processmanager.status.Stopped']}
-                        </s:span>
                         <a4j:commandButton action="#{processManagerAction.cancel(handle)}"
                           value="#{msgs['jsf.Cancel']}"
                           rendered="#{not handle.done}" styleClass="button button--danger l--push-left-half l--push-bottom-quarter"/>
 
-                        <rich:progressBar styleClass="progressbar"
-                          value="#{handle.currentProgress}"
-                          minValue="#{handle.minProgress}"
-                          maxValue="#{handle.maxProgress}"
-                          rendered="#{not handle.done}"
-                          enabled="false"/>
+                        <span class="list__item__meta txt--warning">
+                          <s:fragment rendered="#{handle.done}">
+                            #{msgs['jsf.processmanager.status.Finished']}
+                          </s:fragment>
+                          <s:fragment rendered="#{not handle.done}">
+                            #{msgs.format('jsf.processmanager.progress', handle.currentProgress, handle.maxProgress)}
+                          </s:fragment>
+                        </span>
                       </div>
                       <div class="list__item__stats">
                         <s:fragment rendered="#{not handle.done}">

@@ -60,11 +60,12 @@
                 <ul class="dropdown__content js-dropdown__content" role="content"
                   aria-labelledby="dropdownContent">
                   <li>
-                    <s:link view="/admin/supportedlanguagedetail.xhtml"
-                      value="#{msgs['jsf.CreateSupportedLanguage']}"
-                      styleClass="i__item--right">
+                    <a href="#" class="i__item--right"
+                      data-toggle="modal" onclick="return false;"
+                      data-target="#newLanguageDialog">
+                      #{msgs['jsf.CreateSupportedLanguage']}
                       <i class="i i--plus i__item__icon"></i>
-                    </s:link>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -190,6 +191,7 @@
         </div>
       </div>
     </div>
-  </ui:define>
 
+    <ui:include src="../WEB-INF/layout/language/new_language_modal.xhtml"/>
+  </ui:define>
 </ui:composition>

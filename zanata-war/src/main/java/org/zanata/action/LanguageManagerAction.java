@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.faces.model.SelectItem;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,7 +58,6 @@ import com.ibm.icu.util.ULocale;
 
 @Name("languageManagerAction")
 @Scope(ScopeType.PAGE)
-@Restrict("#{s:hasRole('admin')}")
 public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
         implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -84,9 +84,6 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
     private ULocale uLocale;
 
     @Getter
-    private List<SelectItem> localeStringList;
-
-    @Getter
     @Setter
     private boolean enabledByDefault = true;
 
@@ -101,20 +98,20 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
 
     @Create
     public void onCreate() {
-        fetchLocaleFromJava();
+        allLocales = localeServiceImpl.getAllJavaLanguages();
     }
 
-    public void updateLanguage() {
-        if (this.language.trim().length() > 0) {
-            this.uLocale = new ULocale(this.language);
-            this.isLanguageNameValid();
+    public void updateLanguage(String language) {
+        if (!StringUtils.isEmpty(language)) {
+            uLocale = new ULocale(language);
+            isLanguageNameValid(language);
         } else {
-            this.uLocale = null;
+            uLocale = null;
         }
     }
 
     public String save() {
-        if (!isLanguageNameValid()) {
+        if (!isLanguageNameValid(language)) {
             return null; // not success
         }
         LocaleId locale = new LocaleId(language);
@@ -122,23 +119,13 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
         return "success";
     }
 
-    public void fetchLocaleFromJava() {
-        List<LocaleId> locale = localeServiceImpl.getAllJavaLanguages();
-        List<SelectItem> localeList = new ArrayList<SelectItem>();
-        for (LocaleId var : locale) {
-            SelectItem op = new SelectItem(var.getId(), var.getId());
-            localeList.add(op);
-        }
-        localeStringList = localeList;
-    }
-
-    public boolean isLanguageNameValid() {
-        this.languageNameValidationMessage = null; // reset
-        this.languageNameWarningMessage = null; // reset
+    public boolean isLanguageNameValid(String language) {
+        languageNameValidationMessage = null; // reset
+        languageNameWarningMessage = null; // reset
 
         if (StringUtils.isEmpty(language) || language.length() > LENGTH_LIMIT) {
-            this.uLocale = null;
-            this.languageNameValidationMessage =
+            uLocale = null;
+            languageNameValidationMessage =
                     msgs.get("jsf.language.validation.Invalid");
             return false;
         }
@@ -152,44 +139,38 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
         try {
             localeId = new LocaleId(language);
         } catch (IllegalArgumentException iaex) {
-            this.languageNameValidationMessage =
+            languageNameValidationMessage =
                     msgs.get("jsf.language.validation.Invalid");
             return false;
         }
 
         // check for already registered languages
         if (localeServiceImpl.localeExists(localeId)) {
-            this.languageNameValidationMessage =
+            languageNameValidationMessage =
                     msgs.get("jsf.language.validation.Existing");
             return false;
         }
 
         // Check for plural forms
         if (resourceUtils.getPluralForms(localeId, false) == null) {
-            this.languageNameWarningMessage =
+            languageNameWarningMessage =
                     msgs.get("jsf.language.validation.UnknownPluralForm");
         }
 
         // Check for similar already registered languages (warning)
         List<HLocale> similarLangs = localeDAO.findBySimilarLocaleId(localeId);
         if (similarLangs.size() > 0) {
-            this.languageNameWarningMessage =
+            languageNameWarningMessage =
                     msgs.get("jsf.language.validation.SimilarLocaleFound")
                             + similarLangs.get(0).getLocaleId().getId();
         }
-
         return true;
     }
 
     @Override
     public List<HLocale> suggest() {
-        language = getQuery();
-        if (StringUtils.isEmpty(language) || !isLanguageNameValid()) {
+        if (StringUtils.isEmpty(getQuery())) {
             return Collections.EMPTY_LIST;
-        }
-
-        if (allLocales == null) {
-            allLocales = localeServiceImpl.getAllJavaLanguages();
         }
 
         Collection<HLocale> locales = Collections2.transform(allLocales,
@@ -204,14 +185,13 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
                 Collections2.filter(locales, new Predicate<HLocale>() {
                     @Override
                     public boolean apply(HLocale input) {
-                        return StringUtils.startsWithIgnoreCase(input
-                                .getLocaleId().getId(), language);
+                        return StringUtils.containsIgnoreCase(input
+                                .getLocaleId().getId(), getQuery());
                     }
                 });
+
         if(filtered.isEmpty()) {
-            filtered =
-                    Lists.newArrayList(new HLocale(new LocaleId(language)));
-            updateLanguage();
+            updateLanguage(getQuery());
         }
         return Lists.newArrayList(filtered);
     }
@@ -222,6 +202,20 @@ public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
             return;
         }
         language = getSelectedItem();
-        updateLanguage();
+        updateLanguage(language);
+    }
+
+    public void replaceUnderscore(String language) {
+        this.language = language;
+        setQuery(language);
+        updateLanguage(language);
+    }
+
+    public void resetValue() {
+        setQuery("");
+        language = null;
+        uLocale = null;
+        languageNameValidationMessage = null; // reset
+        languageNameWarningMessage = null; // reset
     }
 }
