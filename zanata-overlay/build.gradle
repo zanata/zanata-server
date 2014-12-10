@@ -26,6 +26,8 @@ task 'package'(dependsOn: 'copyToLib') << {
         ant.copy(todir: distroDir) {
             fileset(dir: "common")
         }
+        // Make sure executable files have the right permissions
+        ant.chmod(dir: "$distroDir/", perm: "ug+x", includes: "**/*.sh")
         // Copy specific distribution files
         ant.copy(todir: distroDir) {
             fileset(dir: "distros/$distro")

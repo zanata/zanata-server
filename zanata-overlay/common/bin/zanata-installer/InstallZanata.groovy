@@ -35,9 +35,9 @@ println " Note: This installer will change your standalone.xml"
 println " file."
 println "====================================================="
 
-def downloadWarFile
+def downloadWarFile = true
 if( new File(WAR_FILE_LOC).exists() ) {
-    downloadWarFile = askYesNoQuestion("It seems Zanata is already installed. Do you wish to download it again?")
+    downloadWarFile = askYesNoQuestion("It seems Zanata is already installed. Do you wish to download it again? (y/N)")
 }
 
 def dbHost
@@ -70,7 +70,7 @@ def customXmlFile = new File(CUSTOM_STANDALONE_XML_LOC)
 // If the installer has already been ran
 def modifyStandaloneXml = true
 if(xmlBackupFile.exists()) {
-    modifyStandaloneXml = askYesNoQuestion("Looks like you've previosuly ran this installer. " +
+    modifyStandaloneXml = askYesNoQuestion("It looks like you have already run this installer. " +
         "If you continue, your current standalone.xml file will be backed up and modified. " +
         "Do you wish to continue? (y/N)")
 }
@@ -124,6 +124,6 @@ if(modifyStandaloneXml) {
         }
     }
 
-    println XmlUtil.
-        serialize(dsXml, new FileOutputStream(CUSTOM_STANDALONE_XML_LOC))
+    XmlUtil.serialize(dsXml, new FileOutputStream(CUSTOM_STANDALONE_XML_LOC))
+    println "Successfully installed Zanata $ZANATA_VERSION!"
 }
