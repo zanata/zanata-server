@@ -20,6 +20,8 @@
  */
 package org.zanata.action;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +37,7 @@ import javax.persistence.EntityNotFoundException;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
@@ -80,6 +83,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Name("projectHome")
+@Slf4j
 public class ProjectHome extends SlugHome<HProject> {
     private static final long serialVersionUID = 1L;
 
@@ -122,6 +126,16 @@ public class ProjectHome extends SlugHome<HProject> {
     @In
     private CopyTransOptionsModel copyTransOptionsModel;
 
+    /**
+     * A separate map is used, rather than binding the alias map from the
+     * project directly. This is done so that empty values are not added to the
+     * map in every form submission, and so that a value entered in the field
+     * for a row is not automatically updated when a different row is submitted.
+     */
+    @Getter
+    @Setter
+    private Map<LocaleId, String> inputLocaleAliases = Maps.newHashMap();
+
     private Map<String, Boolean> roleRestrictions;
 
     private Map<ValidationId, ValidationAction> availableValidations = Maps
@@ -160,6 +174,7 @@ public class ProjectHome extends SlugHome<HProject> {
     public void createNew() {
         getInstance().setDefaultProjectType(ProjectType.File);
         selectedProjectType = getInstance().getDefaultProjectType().name();
+        inputLocaleAliases.putAll(getInstance().getLocaleAliases());
     }
 
     public void updateSelectedProjectType(ValueChangeEvent e) {
@@ -177,6 +192,11 @@ public class ProjectHome extends SlugHome<HProject> {
         }
     }
 
+    /**
+     * Return the list of active locales for this project, which may be
+     * inherited from global locales. If the project slug is empty, all the
+     * enabled locales for the server are returned.
+     */
     public List<HLocale> getInstanceActiveLocales() {
         List<HLocale> locales;
         if (StringUtils.isNotEmpty(getSlug())) {
@@ -187,6 +207,33 @@ public class ProjectHome extends SlugHome<HProject> {
         }
         Collections.sort(locales, ComparatorUtil.LOCALE_COMPARATOR);
         return locales;
+    }
+
+    /**
+     * Return the locale alias for the given locale in this project, if it
+     * exists, otherwise null.
+     */
+    public String getLocaleAlias(HLocale locale) {
+        return getInstance().getLocaleAliases().get(locale.getLocaleId());
+    }
+
+    /**
+     * Set or remove a locale alias based on form input.
+     *
+     * Uses value from enteredLocaleAlias. If the value is null or empty, the
+     * alias (if any) is removed for the given locale, otherwise the alias is
+     * replaced with the value.
+     */
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void updateLocaleAlias(LocaleId localeId) {
+        HProject instance = getInstance();
+        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        String enteredAlias = inputLocaleAliases.get(localeId);
+        if (isNullOrEmpty(enteredAlias)) {
+            aliases.remove(localeId);
+        } else {
+            aliases.put(localeId, enteredAlias);
+        }
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -204,6 +251,7 @@ public class ProjectHome extends SlugHome<HProject> {
             }
             getInstance().setOverrideLocales(true);
         }
+        getInstance().getLocaleAliases().remove(localeId);
         update();
         conversationScopeMessages.setMessage(
                 FacesMessage.SEVERITY_INFO,
@@ -214,9 +262,22 @@ public class ProjectHome extends SlugHome<HProject> {
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void updateLanguagesFromGlobal() {
         getInstance().setOverrideLocales(false);
+        removeAliasesForInactiveLocales();
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageUpdateFromGlobal"));
+    }
+
+    private void removeAliasesForInactiveLocales() {
+        Map<LocaleId, String> oldAliases = getInstance().getLocaleAliases();
+        Map<LocaleId, String> newAliases = Maps.newHashMap();
+        for (HLocale activeLocale : getInstanceActiveLocales()) {
+            LocaleId key = activeLocale.getLocaleId();
+            if (oldAliases.containsKey(key)) {
+                newAliases.put(key, oldAliases.get(key));
+            }
+        }
+        getInstance().setLocaleAliases(newAliases);
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")

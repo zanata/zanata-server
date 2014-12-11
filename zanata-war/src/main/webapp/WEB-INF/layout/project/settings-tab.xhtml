@@ -22,7 +22,7 @@
   }
 
   function onPayloadInputKeyDown(input, event) {
-      if(event.keyCode == 13) {
+      if(event.keyCode === 13) {
         event.preventDefault();
         if(jQuery(input).val()) {
           addWebhook(jQuery(input).val());
@@ -34,6 +34,36 @@
   function onRemoveWebHook(ele) {
     jQuery(ele).children('i').addClass('is-hidden');
     zanata.loader.activate(jQuery(ele).children('#loader'));
+  }
+
+  function showLocaleAliasInput(localeId, currentAlias) {
+    var input = localeAliasInput(localeId);
+    input.val(currentAlias);
+    localeAliasForm(localeId).removeClass('is-hidden');
+    input.focus();
+  }
+
+  function hideLocaleAliasInput(localeId) {
+    localeAliasForm(localeId).addClass('is-hidden');
+  }
+
+  function localeAliasForm(localeId) {
+    var id = '#locale-alias-form-' + localeId;
+    return jQuery(id);
+  }
+
+  function localeAliasInput(localeId) {
+    return localeAliasForm(localeId).find('input:text');
+  }
+
+  function onLocaleAliasInputKeyDown(localeId, event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      var aliasForm = localeAliasForm(localeId);
+      var submitButton = aliasForm.find('input:submit');
+      submitButton.click();
+      return false;
+    }
   }
 </script>
 
@@ -247,44 +277,131 @@
     #{msgs['jsf.Languages']}
   </h2>
   <h:form id="settings-languages-form" styleClass="l--push-bottom-0">
-    <button styleClass="button--small l--push-bottom-half" jsfc="a4j:commandButton"
-      value="#{msgs['jsf.Language.useGlobal']}"
-      rendered="#{projectHome.instance.overrideLocales}"
-      action="#{projectHome.updateLanguagesFromGlobal()}"
-      render="settings-languages-form"/>
+    <s:div id="settings-languages-list">
 
-    <ul class="list--slat list--highlight l--push-top-half">
-      <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
-        <li class="reveal--list-item">#{locale.retrieveDisplayName()}<span
-          class="txt--understated l--push-left-quarter">[#{locale.localeId}]</span>
-          <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
-            action="#{projectHome.removeLanguage(locale.localeId)}"
-            styleClass="l--float-right txt--danger reveal__target"
-            render="settings-languages-form">
-            <i class="i--large i--remove"></i>
-          </a4j:commandLink>
+      <button styleClass="button--small l--push-bottom-half" jsfc="a4j:commandButton"
+        value="#{msgs['jsf.Language.useGlobal']}"
+        rendered="#{projectHome.instance.overrideLocales}"
+        action="#{projectHome.updateLanguagesFromGlobal()}"
+        render="settings-languages-list"/>
+
+      <button jsfc="a4j:commandButton"
+        styleClass="button--small l--push-bottom-half l--push-left-half"
+        value="#{msgs['jsf.localeAlias.RemoveAllAliases']}"
+        rendered="#{not empty projectHome.instance.localeAliases}"
+        action="#{projectHome.instance.localeAliases.clear()}"
+        render="settings-languages-list"/>
+
+      <ul class="list--slat list--highlight l--push-top-half">
+        <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
+          <li class="reveal--list-item">
+
+            <div
+              class="dropdown dropdown--small dropdown--inline dropdown--single list__item__dropdown js-dropdown">
+              <a href="#" title="#{msgs['jsf.tooltip.options']}"
+                class="dropdown__toggle js-dropdown__toggle txt--meta">
+                <span
+                  class="is-invisible">#{msgs['jsf.tooltip.LocaleOptions']}</span>
+              </a>
+              <ul class="dropdown__content js-dropdown__content">
+                <li>
+                  <h:outputLink id="addLocaleAliasLink"
+                    onclick="showLocaleAliasInput('#{locale.localeId}', '#{projectHome.getLocaleAlias(locale)}'); return false;"
+                    styleClass="i__item--right"
+                    value="#">
+                    #{msgs['jsf.localeAlias.SetLocaleAlias']}
+                    <!-- TODO find a decent icon for this, maybe -->
+                    <i
+                    class="i i--export i__item__icon"></i>
+                  </h:outputLink>
+                </li>
+                <li>
+                  <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
+                    action="#{projectHome.removeLanguage(locale.localeId)}"
+                    styleClass="i__item--right txt--danger"
+                    render="settings-languages-list">
+                    #{msgs['jsf.Remove']}<i class="i--large i--remove"></i>
+                  </a4j:commandLink>
+                </li>
+              </ul>
+            </div>
+
+            #{locale.retrieveDisplayName()}
+            <span class="txt--understated l--push-left-quarter">
+              [#{locale.localeId}]
+              <h:outputFormat
+                value="#{msgs['jsf.localeAlias.AliasLabel']}"
+                rendered="#{projectHome.getLocaleAlias(locale) != null}">
+                <f:param value="#{projectHome.getLocaleAlias(locale)}" />
+              </h:outputFormat>
+            </span>
+
+            <div id="set-alias-loader-#{locale.localeId}"
+              class="loader--small loader--inline l--push-left-half">
+              <span class="loader__spinner">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </div>
+
+            <div class="l--pad-all-quarter bg--high is-hidden"
+                 id="locale-alias-form-#{locale.localeId}">
+              <button type="button"
+                onclick="hideLocaleAliasInput('#{locale.localeId}');return false;"
+                class="button--link l--float-right">
+                #{msgs['jsf.Cancel']}
+              </button>
+              <label for="locale-alias-input">
+                #{msgs['jsf.localeAlias.SetLocaleAlias']}
+              </label>
+              <div class="form--inline">
+                <h:inputText id="locale-alias-input"
+                  required="false"
+                  value="#{projectHome.inputLocaleAliases[locale.localeId]}"
+                  onkeydown="return onLocaleAliasInputKeyDown('#{locale.localeId}', event);"
+                  maxlength="255"
+                  styleClass="form--inline__input">
+                  <rich:placeholder value="e.g. zh_CN"
+                    styleClass="txt--neutral"/>
+                </h:inputText>
+                <div class="form--inline__suffix">
+                  <a4j:commandButton
+                    value="#{msgs['jsf.localeAlias.SetLocaleAlias.brief']}"
+                    onbegin="hideLocaleAliasInput('#{locale.localeId}'); zanata.loader.activate('#set-alias-loader-#{locale.localeId}');"
+                    action="#{projectHome.updateLocaleAlias(locale.localeId)}"
+                    oncomplete="zanata.loader.deactivate('#set-alias-loader-#{locale.localeId}');"
+                    render="settings-languages-list"
+                    styleClass="form--inline__addon button--primary" />
+                </div>
+              </div>
+            </div>
+
+          </li>
+        </ui:repeat>
+        <li class="list--highlight__item--none">
+
+          <label
+            for="#{rich:clientId('languageAutocomplete')}-autocomplete__input">
+            #{msgs['jsf.AddALanguage']}
+          </label>
+
+          <zanata:autocomplete
+            actionBean="#{projectHome.localeAutocomplete}"
+            maxlength="80" searchWhenFocus="true"
+            id="languageAutocomplete"
+            fetchValue="#{result.localeId}"
+            render="settings-languages-list"
+            oncomplete="refreshStatistics();focusCurrentActiveInput()"
+            placeholder="#{msgs['jsf.language.search.placeholder']}">
+
+            #{result.retrieveDisplayName()}<span
+            class="txt--understated l--push-left-quarter">[#{result.localeId}]</span>
+          </zanata:autocomplete>
+
         </li>
-      </ui:repeat>
-      <li class="list--highlight__item--none">
-        <label
-          for="#{rich:clientId('languageAutocomplete')}-autocomplete__input">
-          #{msgs['jsf.AddALanguage']}
-        </label>
-
-        <zanata:autocomplete
-          actionBean="#{projectHome.localeAutocomplete}"
-          maxlength="80" searchWhenFocus="true"
-          id="languageAutocomplete"
-          fetchValue="#{result.localeId}" render="settings-languages-form"
-          oncomplete="refreshStatistics();focusCurrentActiveInput()"
-          placeholder="#{msgs['jsf.language.search.placeholder']}">
-
-          #{result.retrieveDisplayName()}<span
-          class="txt--understated l--push-left-quarter">[#{result.localeId}]</span>
-        </zanata:autocomplete>
-
-      </li>
-    </ul>
+      </ul>
+    </s:div>
   </h:form>
 </li>
 <li id="settings-translation">
