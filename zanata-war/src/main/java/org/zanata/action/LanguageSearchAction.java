@@ -30,8 +30,10 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.core.Events;
 import org.zanata.dao.LocaleDAO;
+import org.zanata.events.LanguageDisabled;
+import org.zanata.events.LanguageEnabled;
+import org.zanata.util.Event;
 import org.zanata.model.HLocale;
 import org.zanata.service.LocaleService;
 
@@ -48,6 +50,13 @@ public class LanguageSearchAction implements Serializable {
     List<HLocale> allLanguages;
     @DataModelSelection
     HLocale selectedLanguage;
+
+    @In("event")
+    private Event<LanguageEnabled> languageEnabledEvent;
+
+    @In("event")
+    private Event<LanguageDisabled> languageDisabledEvent;
+
 
     public void loadSupportedLanguage() {
         allLanguages = localeServiceImpl.getAllLocales();
@@ -71,9 +80,9 @@ public class LanguageSearchAction implements Serializable {
         localeDAO.flush();
 
         if (selectedLanguage.isActive()) {
-            Events.instance().raiseEvent("enableLanguage");
+            languageEnabledEvent.fire(new LanguageEnabled(selectedLanguage.getLocaleId()));
         } else {
-            Events.instance().raiseEvent("disableLanguage");
+            languageDisabledEvent.fire(new LanguageDisabled(selectedLanguage.getLocaleId()));
         }
     }
 
