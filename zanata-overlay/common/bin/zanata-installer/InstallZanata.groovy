@@ -57,6 +57,7 @@ if( downloadWarFile ) {
         def out = new BufferedOutputStream(file)
         out << new URL(fileUrl).openStream()
         out.close()
+        println "Downloaded Zanata ${ZANATA_VERSION}..."
     } catch (Exception ex) {
         println "Could not download zanata-war-${ZANATA_VERSION}.war"
     }
@@ -82,22 +83,22 @@ if(modifyStandaloneXml) {
 
     def reader = new BufferedReader(new InputStreamReader(System.in))
 
-    println "Database Host (default: 'localhost'): "
+    println "Database Host (default: 'localhost'):"
     dbHost = reader.readLine()
     if(dbHost.isEmpty()) dbHost = 'localhost'
 
-    println "Database port (default: '3306'): "
+    println "Database port (default: '3306'):"
     dbPort = reader.readLine()
     if(dbPort.isEmpty()) dbPort = '3306'
 
-    println "Database schema (default: 'zanata'): "
+    println "Database schema (default: 'zanata'):"
     dbSchema = reader.readLine()
     if(dbSchema.isEmpty()) dbSchema = 'zanata'
 
-    println "Database Username (default: ''): "
+    println "Database Username (default: ''):"
     dbUsername = reader.readLine()
 
-    println "Database Password: (default: '')"
+    println "Database Password (default: ''):"
     dbPassword = reader.readLine()
 
     xmlFile.renameTo(xmlBackupFile) // backup original file
@@ -125,5 +126,6 @@ if(modifyStandaloneXml) {
     }
 
     XmlUtil.serialize(dsXml, new FileOutputStream(CUSTOM_STANDALONE_XML_LOC))
-    println "Successfully installed Zanata $ZANATA_VERSION!"
+    println "Configured zanata in $CUSTOM_STANDALONE_XML_LOC"
 }
+println "Done!"

@@ -6,8 +6,7 @@ repositories {
 }
 
 dependencies {
-    // NB: Version 5.1.34 does not work for deployment in jboss!
-    runtime "mysql:mysql-connector-java:5.1.28"
+    runtime "mysql:mysql-connector-java:5.1.34"
     runtime "org.codehaus.groovy:groovy-all:2.1.5"
 }
 
