@@ -292,6 +292,131 @@
         action="#{projectHome.instance.localeAliases.clear()}"
         render="settings-languages-list"/>
 
+      <!-- TODO add enabled section -->
+      <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
+
+      <div class="w--5-12 form--search js-form--search">
+        <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
+        <!-- TODO make this filter the list -->
+        <input type="search"
+          placeholder="#{msgs['jsf.languages.FilterLanguages']}"
+          class="form--search__input js-form--search__input l--push-bottom-quarter" />
+        <!-- TODO make this clear the filter textbox -->
+        <button
+          class="button--link form--search__clear js-form--search__clear is-hidden">
+          <i class="i i--remove"></i>
+        </button>
+      </div>
+
+      <!-- Header for enabled languages list -->
+      <!-- TODO add todo notes for functionality -->
+      <div class="is-hidden--s l--pad-v-quarter">
+        <div class="form__checkbox js-form__checkbox">
+          <!-- TODO select all enabled languages on click -->
+          <input type="checkbox"
+            class="form__checkbox__input js-form__checkbox__input"
+            name="form-checkbox"/>
+        </div>
+        <div class="l--pad-left-1half">
+          <!-- TODO check if this should be hidden when any enabled languages are selected -->
+          <div class="g g--tight">
+            <div class="g__item w--5-12"><h4 class="zeta">
+              #{msgs['jsf.NativeName.short']}</h4></div>
+            <div class="g__item w--2-12"><h4 class="zeta">
+              #{msgs['jsf.LocaleCode.short']}</h4></div>
+            <div class="g__item w--2-12"><h4 class="zeta">
+              #{msgs['jsf.LocaleAlias.short']}
+              <i class="i i--info" title="#{msgs['jsf.LocaleAlias.tooltip']}"></i>
+            </h4></div>
+            <div class="g__item w--3-12"></div>
+          </div>
+          <!-- TODO show when any enabled languages selected -->
+          <div class="is-hidden">
+            <!-- TODO remove selected languages on click -->
+            <button class="button--link link--danger">
+              <i class="i i--remove"></i>
+              #{msgs['jsf.languages.DisableLanguages.short']}
+            </button>
+            <!-- TODO remove aliases for selected languages on click -->
+            <button class="button--link link--danger l--push-left-half">
+              <i class="i i--trash"></i>
+              #{msgs['jsf.LocaleAlias.DeleteAliases']}
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <ul class="list--slat list--highlight d--top">
+        <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
+
+          <!-- TODO might want to add a class to bind to all these things in the row -->
+
+          <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
+            <!-- TODO append localeid to checkbox name for mapping -->
+            <input type="checkbox"
+              class="form__checkbox__input js-form__checkbox__input"
+              name="form-checkbox"/>
+            <div class="js-form__checkbox__label l--pad-left-1half">
+              <div class="g g--tight">
+                <div class="g__item w--5-12 w--1-s">
+                  #{locale.retrieveDisplayName()}
+                </div>
+                <div class="g__item w--2-12 w--3-10-s">
+                  <span class="txt--understated">#{locale.localeId}</span>
+                </div>
+                <div class="g__item w--2-12 w--3-10-s">
+                  <span class="txt--understated">
+                    #{projectHome.getLocaleAlias(locale)}
+                  </span>
+                </div>
+                <div class="g__item w--3-12 w--4-10-s reveal__target txt--align-right txt--align-right-s">
+                  <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
+                    <div class="button--group">
+                      <!-- TODO make this button disable the language -->
+                      <button class="button button--small">
+                        #{msgs['jsf.languages.DisableLanguage.short']}
+                      </button>
+                      <button class="button button--small js-dropdown__toggle">
+                        <i class="i i--arrow-down"></i>
+                      </button>
+                    </div>
+                    <ul class="dropdown__content js-dropdown__content">
+                      <!-- TODO make the next two buttons open the alias edit form -->
+                      <!-- TODO only show when no alias exists for this localeId -->
+                      <li>
+                        <button class="dropdown__content__link button--link i__item--left">
+                          <i class="i i--plus i__item__icon"></i>
+                          #{msgs['jsf.languages.AddAlias']}
+                        </button>
+                      </li>
+                      <!-- TODO only show when an alias exists for this localeId -->
+                      <li>
+                        <button class="dropdown__content__link button--link i__item--left">
+                          <i class="i i--edit i__item__icon"></i>
+                          #{msgs['jsf.languages.EditAlias']}
+                        </button>
+                      </li>
+                      <!-- TODO only visible if there is an alias -->
+                      <li>
+                        <!-- TODO make this remove the alias -->
+                        <button class="dropdown__content__link button--link txt--danger i__item--left">
+                          <i class="i i--trash i__item__icon"></i>
+                          #{msgs['jsf.languages.DeleteAlias']}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ui:repeat>
+      </ul>
+
+
+      <!-- TODO add disabled section -->
+
       <ul class="list--slat list--highlight l--push-top-half">
         <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
           <li class="reveal--list-item">
