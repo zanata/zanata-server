@@ -34,12 +34,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.LocaleMemberDAO;
 import org.zanata.dao.PersonDAO;
+import org.zanata.events.JoinedLanguageTeam;
+import org.zanata.events.LeftLanguageTeam;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
@@ -47,6 +48,7 @@ import org.zanata.model.HPerson;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.faces.FacesMessages;
+import org.zanata.util.Event;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -76,6 +78,12 @@ public class LanguageTeamAction implements Serializable {
 
     @In("jsfMessages")
     private FacesMessages facesMessages;
+
+    @In("event")
+    private Event<JoinedLanguageTeam> joinLanguageTeamEvent;
+
+    @In("event")
+    private Event<LeftLanguageTeam> leaveLanguageTeamEvent;
 
     @Getter
     @Setter
@@ -143,7 +151,7 @@ public class LanguageTeamAction implements Serializable {
             languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
                     this.language, authenticatedAccount.getPerson().getId(),
                     true, true, true);
-            Events.instance().raiseEvent("personJoinedTribe");
+            joinLanguageTeamEvent.fire(new JoinedLanguageTeam(authenticatedAccount.getUsername(), new LocaleId(language)));
             log.info("{} joined tribe {}",
                     authenticatedAccount.getUsername(), this.language);
             // FIXME use localizable string
@@ -164,7 +172,7 @@ public class LanguageTeamAction implements Serializable {
         }
         languageTeamServiceImpl.leaveLanguageTeam(this.language,
                 authenticatedAccount.getPerson().getId());
-        Events.instance().raiseEvent("personLeftTribe");
+        leaveLanguageTeamEvent.fire(new LeftLanguageTeam(authenticatedAccount.getUsername(), new LocaleId(language)));
         log.info("{} left tribe {}", authenticatedAccount.getUsername(),
                 this.language);
         // FIXME use localizable string
