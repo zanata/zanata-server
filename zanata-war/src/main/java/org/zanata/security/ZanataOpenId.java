@@ -34,7 +34,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesManager;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.security.Credentials;
@@ -62,6 +61,7 @@ import org.zanata.security.openid.OpenIdAuthenticationResult;
 import org.zanata.security.openid.OpenIdProvider;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.security.openid.YahooOpenIdProvider;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 
 @Name("org.jboss.seam.security.zanataOpenId")
@@ -76,6 +76,9 @@ public class ZanataOpenId implements OpenIdAuthCallback {
 
     private ZanataIdentity identity;
     private ApplicationConfiguration applicationConfiguration;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In
     private Credentials credentials;
@@ -185,8 +188,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
                 // TODO This should be done at a higher level. i.e. instead of
                 // returning a string, return an
                 // object that holds more information for the UI to render
-                FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                        "Authentication Request Cancelled");
+                facesMessages.addGlobal("Authentication Request Cancelled");
             }
 
             // examine the verification result and extract the verified

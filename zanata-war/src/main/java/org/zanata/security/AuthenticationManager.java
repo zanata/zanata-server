@@ -29,7 +29,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.CredentialsDAO;
@@ -38,6 +37,7 @@ import org.zanata.model.security.HCredentials;
 import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.UserAccountService;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 
 /**
@@ -72,6 +72,9 @@ public class AuthenticationManager {
 
     @In
     private ZanataOpenId zanataOpenId;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In
     private UserAccountService userAccountServiceImpl;
@@ -387,8 +390,8 @@ public class AuthenticationManager {
                                 + " has been disabled. Please contact server admin.";
             }
 
-            FacesMessages.instance().clear();
-            FacesMessages.instance().add(message);
+            facesMessages.clear();
+            facesMessages.addGlobal(message);
 
             // identity.setPreAuthenticated(false);
             // identity.unAuthenticate();

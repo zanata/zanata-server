@@ -20,7 +20,7 @@
  */
 package org.zanata.action;
 
-import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,7 +39,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.zanata.async.AsyncTaskHandle;
 import org.zanata.async.AsyncTaskHandleManager;
@@ -48,6 +47,7 @@ import org.zanata.exception.EntityMissingException;
 import org.zanata.model.tm.TransMemory;
 import org.zanata.rest.service.TranslationMemoryResourceService;
 import org.zanata.service.SlugEntityService;
+import org.zanata.ui.faces.FacesMessages;
 
 /**
  * Controller class for the Translation Memory UI.
@@ -59,6 +59,9 @@ import org.zanata.service.SlugEntityService;
 @Restrict("#{s:hasRole('admin')}")
 @Slf4j
 public class TranslationMemoryAction extends EntityHome<TransMemory> {
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
+
     @In
     private TransMemoryDAO transMemoryDAO;
 
@@ -99,7 +102,7 @@ public class TranslationMemoryAction extends EntityHome<TransMemory> {
 
     public boolean validateSlug(String slug, String componentId) {
         if (!slugEntityServiceImpl.isSlugAvailable(slug, TransMemory.class)) {
-            FacesMessages.instance().addToControl(componentId,
+            facesMessages.addToControl(componentId,
                     "This Id is not available");
             return false;
         }
@@ -158,7 +161,7 @@ public class TranslationMemoryAction extends EntityHome<TransMemory> {
             translationMemoryResource.deleteTranslationMemory(transMemorySlug);
             transMemoryList = null; // Force refresh next time list is requested
         } catch (EntityMissingException e) {
-            FacesMessages.instance().addFromResourceBundle(ERROR,
+            facesMessages.addFromResourceBundle(SEVERITY_ERROR,
                     "jsf.transmemory.TransMemoryNotFound");
         }
     }

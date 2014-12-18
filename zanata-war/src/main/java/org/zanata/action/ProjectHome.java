@@ -45,8 +45,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -70,6 +68,7 @@ import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -78,6 +77,8 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Name("projectHome")
 public class ProjectHome extends SlugHome<HProject> {
@@ -106,6 +107,9 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @In
     private EntityManager entityManager;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In
     private Messages msgs;
@@ -275,7 +279,7 @@ public class ProjectHome extends SlugHome<HProject> {
 
     public boolean validateSlug(String slug, String componentId) {
         if (!isSlugAvailable(slug)) {
-            FacesMessages.instance().addToControl(componentId,
+            facesMessages.addToControl(componentId,
                     "This Project ID is not available");
             return false;
         }
@@ -306,14 +310,14 @@ public class ProjectHome extends SlugHome<HProject> {
 
         if (StringUtils.isEmpty(selectedProjectType)
                 || selectedProjectType.equals("null")) {
-            FacesMessages.instance().add(StatusMessage.Severity.ERROR,
+            facesMessages.addGlobal(SEVERITY_ERROR,
                     "Project type not selected");
             return null;
         }
 
         if (StringUtils.isEmpty(selectedProjectType)
                 || selectedProjectType.equals("null")) {
-            FacesMessages.instance().add(StatusMessage.Severity.ERROR,
+            facesMessages.addGlobal(SEVERITY_ERROR,
                     "Project type not selected");
             return null;
         }
@@ -545,7 +549,7 @@ public class ProjectHome extends SlugHome<HProject> {
             WebHook webHook = new WebHook(this.getInstance(), url);
             getInstance().getWebHooks().add(webHook);
             update();
-            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+            facesMessages.addGlobal(
                 msgs.format("jsf.project.AddNewWebhook", webHook.getUrl()));
         }
     }
@@ -554,19 +558,19 @@ public class ProjectHome extends SlugHome<HProject> {
     public void removeWebHook(WebHook webHook) {
         getInstance().getWebHooks().remove(webHook);
         webHookDAO.makeTransient(webHook);
-        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+        facesMessages.addGlobal(
             msgs.format("jsf.project.RemoveWebhook", webHook.getUrl()));
     }
 
     private boolean isValidUrl(String url) {
         if (!UrlUtil.isValidUrl(url)) {
-            FacesMessages.instance().add(StatusMessage.Severity.ERROR,
+            facesMessages.addGlobal(SEVERITY_ERROR,
                     msgs.format("jsf.project.InvalidUrl", url));
             return false;
         }
         for(WebHook webHook: getInstance().getWebHooks()) {
             if(StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
-                FacesMessages.instance().add(StatusMessage.Severity.ERROR,
+                facesMessages.addGlobal(SEVERITY_ERROR,
                         msgs.format("jsf.project.DuplicateUrl", url));
                 return false;
             }

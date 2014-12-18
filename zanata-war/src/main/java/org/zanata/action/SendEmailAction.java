@@ -24,10 +24,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
 import javax.faces.application.FacesMessage;
 
-import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.hibernate.validator.constraints.Email;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
@@ -35,11 +39,15 @@ import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
+import org.zanata.email.ContactAdminEmailStrategy;
+import org.zanata.email.ContactLanguageCoordinatorEmailStrategy;
 import org.zanata.email.EmailStrategy;
+import org.zanata.email.RequestRoleLanguageEmailStrategy;
+import org.zanata.email.RequestToJoinLanguageEmailStrategy;
+import org.zanata.email.RequestToJoinVersionGroupEmailStrategy;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -47,19 +55,10 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 
-import org.zanata.email.ContactAdminEmailStrategy;
-import org.zanata.email.ContactLanguageCoordinatorEmailStrategy;
-
-import org.zanata.email.RequestRoleLanguageEmailStrategy;
-
-import org.zanata.email.RequestToJoinLanguageEmailStrategy;
-import org.zanata.email.RequestToJoinVersionGroupEmailStrategy;
+import com.google.common.collect.Lists;
 
 /**
  * Sends an email to a specified role.
@@ -104,6 +103,9 @@ public class SendEmailAction implements Serializable {
 
     @In
     private LocaleSelector localeSelector;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @Getter
     @Setter
@@ -182,7 +184,7 @@ public class SendEmailAction implements Serializable {
 
                 String msg = emailServiceImpl.sendToAdmins(strategy);
 
-                FacesMessages.instance().add(msg);
+                facesMessages.addGlobal(msg);
                 conversationScopeMessages.setMessage(
                     FacesMessage.SEVERITY_INFO, msg);
                 return SUCCESS;
@@ -196,7 +198,7 @@ public class SendEmailAction implements Serializable {
                 String msg = emailServiceImpl.sendToLanguageCoordinators(
                         locale, strategy);
 
-                FacesMessages.instance().add(msg);
+                facesMessages.addGlobal(msg);
                 conversationScopeMessages.setMessage(
                     FacesMessage.SEVERITY_INFO, msg);
                 return SUCCESS;
@@ -212,7 +214,7 @@ public class SendEmailAction implements Serializable {
                         languageJoinUpdateRoleAction.getRequestAsCoordinator());
                 String msg = emailServiceImpl.sendToLanguageCoordinators(
                         locale, strategy);
-                FacesMessages.instance().add(msg);
+                facesMessages.addGlobal(msg);
                 conversationScopeMessages.setMessage(
                     FacesMessage.SEVERITY_INFO, msg);
                 return SUCCESS;
@@ -228,7 +230,7 @@ public class SendEmailAction implements Serializable {
                         languageJoinUpdateRoleAction.requestingCoordinator());
                 String msg = emailServiceImpl.sendToLanguageCoordinators(
                         locale, strategy);
-                FacesMessages.instance().add(msg);
+                facesMessages.addGlobal(msg);
                 conversationScopeMessages.setMessage(
                     FacesMessage.SEVERITY_INFO, msg);
                 return SUCCESS;
@@ -263,7 +265,7 @@ public class SendEmailAction implements Serializable {
                 throw new Exception("Invalid email type: " + emailType);
             }
         } catch (Exception e) {
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "There was a problem sending the message: "
                             + e.getMessage());
             log.error(
@@ -283,7 +285,7 @@ public class SendEmailAction implements Serializable {
         log.info(
                 "Canceled sending email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'",
                 fromName, fromLoginName, replyEmail, subject, htmlMessage);
-        FacesMessages.instance().add("Sending message canceled");
+        facesMessages.addGlobal("Sending message canceled");
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
             "Sending message canceled");
     }
