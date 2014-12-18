@@ -34,8 +34,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage.Severity;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
@@ -49,7 +47,10 @@ import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.Event;
+
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Name("languageTeamAction")
 @Scope(ScopeType.PAGE)
@@ -74,6 +75,9 @@ public class LanguageTeamAction implements Serializable {
 
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In("event")
     private Event<JoinedLanguageTeam> joinLanguageTeamEvent;
@@ -151,11 +155,11 @@ public class LanguageTeamAction implements Serializable {
             log.info("{} joined tribe {}",
                     authenticatedAccount.getUsername(), this.language);
             // FIXME use localizable string
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "You are now a member of the {0} language team",
                     getLocale().retrieveNativeName());
         } catch (Exception e) {
-            FacesMessages.instance().add(Severity.ERROR, e.getMessage());
+            facesMessages.addGlobal(SEVERITY_ERROR, e.getMessage());
         }
     }
 
@@ -172,7 +176,7 @@ public class LanguageTeamAction implements Serializable {
         log.info("{} left tribe {}", authenticatedAccount.getUsername(),
                 this.language);
         // FIXME use localizable string
-        FacesMessages.instance().add("You have left the {0} language team",
+        facesMessages.addGlobal("You have left the {0} language team",
                 getLocale().retrieveNativeName());
     }
 
@@ -181,12 +185,12 @@ public class LanguageTeamAction implements Serializable {
         this.localeDAO.makePersistent(getLocale());
         this.localeDAO.flush();
         if (member.isCoordinator()) {
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "{0} has been made a Team Coordinator",
                     member.getPerson().getAccount().getUsername());
         } else {
             // TODO i18n
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "{0} has been removed as Team Coordinator",
                     member.getPerson().getAccount().getUsername());
         }
@@ -197,11 +201,11 @@ public class LanguageTeamAction implements Serializable {
         this.localeDAO.makePersistent(getLocale());
         this.localeDAO.flush();
         if (member.isReviewer()) {
-            FacesMessages.instance().add("{0} has been made a Team Reviewer",
+            facesMessages.addGlobal("{0} has been made a Team Reviewer",
                     member.getPerson().getAccount().getUsername());
         } else {
             // TODO i18n
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "{0} has been removed from as Team Reviewer",
                     member.getPerson().getAccount().getUsername());
         }
@@ -212,11 +216,11 @@ public class LanguageTeamAction implements Serializable {
         this.localeDAO.makePersistent(getLocale());
         this.localeDAO.flush();
         if (member.isReviewer()) {
-            FacesMessages.instance().add("{0} has been made a Team Translator",
+            facesMessages.addGlobal("{0} has been made a Team Translator",
                     member.getPerson().getAccount().getUsername());
         } else {
             // TODO i18n
-            FacesMessages.instance().add(
+            facesMessages.addGlobal(
                     "{0} has been removed from as Team Translator",
                     member.getPerson().getAccount().getUsername());
         }
