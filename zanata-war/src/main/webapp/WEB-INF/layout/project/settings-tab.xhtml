@@ -292,7 +292,6 @@
         action="#{projectHome.instance.localeAliases.clear()}"
         render="settings-languages-list"/>
 
-      <!-- TODO add enabled section -->
       <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
 
       <div class="w--5-12 form--search js-form--search">
@@ -308,8 +307,6 @@
         </button>
       </div>
 
-      <!-- Header for enabled languages list -->
-      <!-- TODO add todo notes for functionality -->
       <div class="is-hidden--s l--pad-v-quarter">
         <div class="form__checkbox js-form__checkbox">
           <!-- TODO select all enabled languages on click -->
@@ -350,13 +347,12 @@
       <ul class="list--slat list--highlight d--top">
         <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
 
-          <!-- TODO might want to add a class to bind to all these things in the row -->
+          <!-- TODO might want to add an entity to bind to all these properties in the row -->
 
           <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
-            <!-- TODO append localeid to checkbox name for mapping -->
             <input type="checkbox"
               class="form__checkbox__input js-form__checkbox__input"
-              name="form-checkbox"/>
+              name="form-checkbox-#{locale.localeId}"/>
             <div class="js-form__checkbox__label l--pad-left-1half">
               <div class="g g--tight">
                 <div class="g__item w--5-12 w--1-s">
@@ -383,28 +379,31 @@
                     </div>
                     <ul class="dropdown__content js-dropdown__content">
                       <!-- TODO make the next two buttons open the alias edit form -->
-                      <!-- TODO only show when no alias exists for this localeId -->
-                      <li>
-                        <button class="dropdown__content__link button--link i__item--left">
-                          <i class="i i--plus i__item__icon"></i>
-                          #{msgs['jsf.languages.AddAlias']}
-                        </button>
-                      </li>
-                      <!-- TODO only show when an alias exists for this localeId -->
-                      <li>
-                        <button class="dropdown__content__link button--link i__item--left">
-                          <i class="i i--edit i__item__icon"></i>
-                          #{msgs['jsf.languages.EditAlias']}
-                        </button>
-                      </li>
-                      <!-- TODO only visible if there is an alias -->
-                      <li>
-                        <!-- TODO make this remove the alias -->
-                        <button class="dropdown__content__link button--link txt--danger i__item--left">
-                          <i class="i i--trash i__item__icon"></i>
-                          #{msgs['jsf.languages.DeleteAlias']}
-                        </button>
-                      </li>
+                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) == null}">
+                        <li>
+                          <button class="dropdown__content__link button--link i__item--left">
+                            <i class="i i--plus i__item__icon"></i>
+                            #{msgs['jsf.languages.AddAlias']}
+                          </button>
+                        </li>
+                      </s:fragment>
+                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
+                        <li>
+                          <button class="dropdown__content__link button--link i__item--left">
+                            <i class="i i--edit i__item__icon"></i>
+                            #{msgs['jsf.languages.EditAlias']}
+                          </button>
+                        </li>
+                      </s:fragment>
+                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
+                        <li>
+                          <!-- TODO make this remove the alias -->
+                          <button class="dropdown__content__link button--link txt--danger i__item--left">
+                            <i class="i i--trash i__item__icon"></i>
+                            #{msgs['jsf.languages.DeleteAlias']}
+                          </button>
+                        </li>
+                      </s:fragment>
                     </ul>
                   </div>
                 </div>
