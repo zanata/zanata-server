@@ -25,14 +25,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filter;
+import org.jboss.shrinkwrap.api.Filters;
+import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.asset.FileAsset;
+import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.strategy.RejectDependenciesStrategy;
@@ -44,6 +48,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.strategy.RejectDependenciesStrate
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@ArquillianSuiteDeployment
 public class Deployments {
     public static final String DEPLOYMENT_NAME = "zanata-tests";
 
@@ -105,11 +110,14 @@ public class Deployments {
                 "src/main/webapp-jboss/WEB-INF/jboss-deployment-structure.xml"));
         archive.setWebXML("arquillian/test-web.xml");
 
+        // JSF facelets
+        addFacelets(archive);
+        // Remote Test helpers
         addRemoteHelpers(archive);
 
         // Export (to actually see what is being deployed)
-        // archive.as(ZipExporter.class).exportTo(new
-        // File("/home/camunoz/temp/archive.war"), true);
+        //archive.as(org.jboss.shrinkwrap.api.exporter.ZipExporter.class).exportTo(new
+        //File("/home/camunoz/temp/archive.war"), true);
 
         return archive;
     }
@@ -118,5 +126,14 @@ public class Deployments {
         archive.addPackages(true, "org.zanata.rest.helper");
         archive.addPackages(true, "org.zanata.arquillian");
         archive.addAsResource("org/zanata/test/model/");
+    }
+
+    private static void addFacelets(WebArchive archive) {
+        archive
+                .merge(ShrinkWrap.create(GenericArchive.class)
+                        .as(ExplodedImporter.class)
+                        .importDirectory("src/main/webapp")
+                        .as(GenericArchive.class),
+                        "/", Filters.exclude(".*/web\\.xml$"));
     }
 }
