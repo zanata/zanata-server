@@ -40,6 +40,7 @@
     var input = localeAliasInput(localeId);
     input.val(currentAlias);
     localeAliasForm(localeId).removeClass('is-hidden');
+    showLocaleAliasCancelEdit(localeId);
     input.focus();
   }
 
@@ -63,6 +64,41 @@
       var submitButton = aliasForm.find('input:submit');
       submitButton.click();
       return false;
+    }
+  }
+
+  function showLocaleActions(localeId) {
+    var localeActions = '#language-actions-' + localeId;
+    showOnlyOneOfLocaleActionStatus(localeId)(localeActions)
+  }
+  function showLocaleAliasLoader(localeId) {
+    var aliasLoader = '#language-processing-' + localeId;
+    showOnlyOneOfLocaleActionStatus(localeId)(aliasLoader)
+  }
+  function showLocaleAliasCancelEdit(localeId) {
+    var cancelEdit = '#edit-alias-cancel-' + localeId;
+    showOnlyOneOfLocaleActionStatus(localeId)(cancelEdit)
+  }
+
+  // FIXME do this with children of an element rather than specifying all manually by id
+  function showOnlyOneOfLocaleActionStatus (localeId) {
+    return showOnlyOneOf('#language-actions-' + localeId,
+                         '#language-processing-' + localeId,
+                         '#edit-alias-cancel-' + localeId)
+  }
+
+  /**
+   * Given any number of jQuery selectors, returns a function that will reveal
+   * a given element and ensure that all other selectors passed to this function
+   * are hidden.
+   */
+  function showOnlyOneOf() {
+    var i, selectors = Array.prototype.slice.call(arguments);
+    return function (show) {
+      selectors.forEach(function (selector) {
+        jQuery(selector).addClass('is-hidden');
+      });
+      jQuery(show).removeClass('is-hidden');
     }
   }
 </script>
@@ -366,117 +402,91 @@
                     #{projectHome.getLocaleAlias(locale)}
                   </span>
                 </div>
+
+                <!-- FIXME wrap the next 3 divs in a container with most of the styles -->
                 <div class="g__item w--3-12 w--4-10-s reveal__target txt--align-right txt--align-right-s">
-                  <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
-                    <div class="button--group">
-                      <!-- TODO make this button disable the language -->
-                      <button class="button button--small">
-                        #{msgs['jsf.languages.DisableLanguage.short']}
-                      </button>
-                      <button class="button button--small js-dropdown__toggle">
-                        <i class="i i--arrow-down"></i>
-                      </button>
+                  <div id="language-actions-#{locale.localeId}"
+                    class="g__item w--3-12 w--4-10-s reveal__target txt--align-right txt--align-right-s">
+                    <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
+                      <div class="button--group">
+                        <!-- TODO make this button disable the language -->
+                        <button class="button button--small">
+                          #{msgs['jsf.languages.DisableLanguage.short']}
+                        </button>
+                        <button class="button button--small js-dropdown__toggle">
+                          <i class="i i--arrow-down"></i>
+                        </button>
+                      </div>
+                      <ul class="dropdown__content js-dropdown__content">
+                        <!-- TODO make the next two buttons open the alias edit form -->
+                        <s:fragment rendered="#{projectHome.getLocaleAlias(locale) == null}">
+                          <li>
+                            <h:outputLink id="addLocaleAliasLink"
+                              styleClass="dropdown__content__link button--link i__item--left"
+                              onclick="showLocaleAliasInput('#{locale.localeId}', '#{projectHome.getLocaleAlias(locale)}'); return false;"
+                              value="#">
+                              <i class="i i--plus i__item__icon"></i>
+                              #{msgs['jsf.languages.AddAlias']}
+                            </h:outputLink>
+                          </li>
+                        </s:fragment>
+                        <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
+                          <li>
+                            <h:outputLink id="editLocaleAliasLink"
+                              styleClass="dropdown__content__link button--link i__item--left"
+                              onclick="showLocaleAliasInput('#{locale.localeId}', '#{projectHome.getLocaleAlias(locale)}'); return false;"
+                              value="#">
+                              <i class="i i--edit i__item__icon"></i>
+                              #{msgs['jsf.languages.EditAlias']}
+                            </h:outputLink>
+                          </li>
+                        </s:fragment>
+                        <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
+                          <li>
+                            <!-- TODO make this remove the alias -->
+                            <button class="dropdown__content__link button--link txt--danger i__item--left">
+                              <i class="i i--trash i__item__icon"></i>
+                              #{msgs['jsf.languages.DeleteAlias']}
+                            </button>
+                          </li>
+                        </s:fragment>
+                      </ul>
                     </div>
-                    <ul class="dropdown__content js-dropdown__content">
-                      <!-- TODO make the next two buttons open the alias edit form -->
-                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) == null}">
-                        <li>
-                          <button class="dropdown__content__link button--link i__item--left">
-                            <i class="i i--plus i__item__icon"></i>
-                            #{msgs['jsf.languages.AddAlias']}
-                          </button>
-                        </li>
-                      </s:fragment>
-                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
-                        <li>
-                          <button class="dropdown__content__link button--link i__item--left">
-                            <i class="i i--edit i__item__icon"></i>
-                            #{msgs['jsf.languages.EditAlias']}
-                          </button>
-                        </li>
-                      </s:fragment>
-                      <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
-                        <li>
-                          <!-- TODO make this remove the alias -->
-                          <button class="dropdown__content__link button--link txt--danger i__item--left">
-                            <i class="i i--trash i__item__icon"></i>
-                            #{msgs['jsf.languages.DeleteAlias']}
-                          </button>
-                        </li>
-                      </s:fragment>
-                    </ul>
                   </div>
-                </div>
+
+                  <div id="language-processing-#{locale.localeId}"
+                    class="g__item w--3-12 w--4-10-s txt--align-right txt--align-right-s is-hidden">
+                    <!-- FIXME the div this is in is only revealed on mouseover -->
+                    <!-- actually just shove this in place of the dropdown form maybe -->
+                    <div id="set-alias-loader-#{locale.localeId}"
+                      class="loader--small loader--inline l--push-left-half">
+                      <span class="loader__spinner">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div id="edit-alias-cancel-#{locale.localeId}"
+                    class="g__item w--3-12 w--4-10-s txt--align-right txt--align-right-s is-hidden">
+                    <button type="button"
+                      onclick="hideLocaleAliasInput('#{locale.localeId}');showLocaleActions('#{locale.localeId}');return false;"
+                      class="button--link l--float-right l--push-right-half">
+                      #{msgs['jsf.Cancel']}
+                    </button>
+                  </div>
+
+
               </div>
-            </div>
-          </li>
-        </ui:repeat>
-      </ul>
 
-
-      <!-- TODO add disabled section -->
-
-      <ul class="list--slat list--highlight l--push-top-half">
-        <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
-          <li class="reveal--list-item">
-
-            <div
-              class="dropdown dropdown--small dropdown--inline dropdown--single list__item__dropdown js-dropdown">
-              <a href="#" title="#{msgs['jsf.tooltip.options']}"
-                class="dropdown__toggle js-dropdown__toggle txt--meta">
-                <span
-                  class="is-invisible">#{msgs['jsf.tooltip.LocaleOptions']}</span>
-              </a>
-              <ul class="dropdown__content js-dropdown__content">
-                <li>
-                  <h:outputLink id="addLocaleAliasLink"
-                    onclick="showLocaleAliasInput('#{locale.localeId}', '#{projectHome.getLocaleAlias(locale)}'); return false;"
-                    styleClass="i__item--right"
-                    value="#">
-                    #{msgs['jsf.localeAlias.SetLocaleAlias']}
-                    <!-- TODO find a decent icon for this, maybe -->
-                    <i
-                    class="i i--export i__item__icon"></i>
-                  </h:outputLink>
-                </li>
-                <li>
-                  <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
-                    action="#{projectHome.removeLanguage(locale.localeId)}"
-                    styleClass="i__item--right txt--danger"
-                    render="settings-languages-list">
-                    #{msgs['jsf.Remove']}<i class="i--large i--remove"></i>
-                  </a4j:commandLink>
-                </li>
-              </ul>
             </div>
 
-            #{locale.retrieveDisplayName()}
-            <span class="txt--understated l--push-left-quarter">
-              [#{locale.localeId}]
-              <h:outputFormat
-                value="#{msgs['jsf.localeAlias.AliasLabel']}"
-                rendered="#{projectHome.getLocaleAlias(locale) != null}">
-                <f:param value="#{projectHome.getLocaleAlias(locale)}" />
-              </h:outputFormat>
-            </span>
-
-            <div id="set-alias-loader-#{locale.localeId}"
-              class="loader--small loader--inline l--push-left-half">
-              <span class="loader__spinner">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </div>
-
+            <!-- TODO this looks a bit out-of-place, needs fix -->
             <div class="l--pad-all-quarter bg--high is-hidden"
                  id="locale-alias-form-#{locale.localeId}">
-              <button type="button"
-                onclick="hideLocaleAliasInput('#{locale.localeId}');return false;"
-                class="button--link l--float-right">
-                #{msgs['jsf.Cancel']}
-              </button>
-              <label for="locale-alias-input">
+              <!-- make for screenreader only -->
+              <label for="locale-alias-input" class="is-sr-only">
                 #{msgs['jsf.localeAlias.SetLocaleAlias']}
               </label>
               <div class="form--inline">
@@ -492,9 +502,9 @@
                 <div class="form--inline__suffix">
                   <a4j:commandButton
                     value="#{msgs['jsf.localeAlias.SetLocaleAlias.brief']}"
-                    onbegin="hideLocaleAliasInput('#{locale.localeId}'); zanata.loader.activate('#set-alias-loader-#{locale.localeId}');"
+                    onbegin="hideLocaleAliasInput('#{locale.localeId}'); showLocaleAliasLoader('#{locale.localeId}'); zanata.loader.activate('#set-alias-loader-#{locale.localeId}');"
                     action="#{projectHome.updateLocaleAlias(locale.localeId)}"
-                    oncomplete="zanata.loader.deactivate('#set-alias-loader-#{locale.localeId}');"
+                    oncomplete="zanata.loader.deactivate('#set-alias-loader-#{locale.localeId}'); showLocaleActions('#{locale.localeId}');"
                     render="settings-languages-list"
                     styleClass="form--inline__addon button--primary" />
                 </div>
@@ -503,6 +513,15 @@
 
           </li>
         </ui:repeat>
+      </ul>
+
+
+      <!-- TODO add disabled section -->
+      <!-- TODO move the "add default languages" next to filter for disabled -->
+
+
+      <!-- TODO move alias input to new section -->
+      <ul class="list--slat list--highlight l--push-top-half">
         <li class="list--highlight__item--none">
 
           <label
