@@ -5,6 +5,44 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
 
+  <!-- RichFaces -->
+  <context-param>
+    <param-name>org.richfaces.skin</param-name>
+    <param-value>classic</param-value>
+  </context-param>
+
+  <!-- We already implemented custom filter controls, so disable built-ins -->
+  <context-param>
+    <param-name>org.richfaces.builtin.filter.enabled</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <!-- Suppress spurious stylesheets -->
+
+  <context-param>
+    <param-name>org.richfaces.enableControlSkinning</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>org.richfaces.enableControlSkinningClasses</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <!--
+    Change load strategy to DEFAULT to disable sending scripts/styles as
+    packs
+  -->
+
+  <context-param>
+    <param-name>org.richfaces.resourceOptimization.enabled</param-name>
+    <!--
+      TODO: When this is set to all, css from custom Richfaces components
+      such as zanata-richfaces-ui components are not loaded.
+    -->
+    <param-value>true</param-value>
+  </context-param>
+
   <listener>
     <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
   </listener>
@@ -29,5 +67,64 @@
     <url-pattern>/seam/resource/*</url-pattern>
   </servlet-mapping>
 
+  <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+    <init-param>
+      <param-name>logLevel</param-name>
+      <param-value>INFO</param-value>
+    </init-param>
+    <init-param>
+      <param-name>statusPath</param-name>
+      <param-value>/rwstatus</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>statusEnabled</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
+  </filter>
+
+  <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <context-param>
+    <param-name>facelets.DEVELOPMENT</param-name>
+    <param-value>true</param-value>
+  </context-param>
+
+  <!-- JSF -->
+
+  <context-param>
+    <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+    <param-value>.xhtml</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>javax.faces.FACELETS_VIEW_MAPPINGS</param-name>
+    <param-value>*.xhtml</param-value>
+  </context-param>
+
+  <!-- This would eliminate ViewExpiredException when sessions expire, but may hurt performance:
+    <context-param>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>client</param-value>
+    </context-param>
+  -->
+
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <!-- Seam must start after ZanataBlockingServlet/Errai -->
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.seam</url-pattern>
+  </servlet-mapping>
 
 </web-app>

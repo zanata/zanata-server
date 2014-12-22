@@ -46,8 +46,12 @@
     <property name="seamVersion">2.3.1.Final</property>
     <property name="autoPackage">false</property>
   </extension>
-  <extension qualifier="suite">
-    <property name="deploymentClass"
-      xml:space="preserve">org.zanata.arquillian.Deployments</property>
+  <extension qualifier="webdriver">
+    <property name="browser">chrome</property>
+    <property name="chromeDriverBinary">/home/camunoz/bin/chromedriver</property>
   </extension>
+  <!--<extension qualifier="suite">-->
+    <!--<property name="deploymentClass"-->
+      <!--xml:space="preserve">org.zanata.arquillian.Deployments</property>-->
+  <!--</extension>-->
 </arquillian>
