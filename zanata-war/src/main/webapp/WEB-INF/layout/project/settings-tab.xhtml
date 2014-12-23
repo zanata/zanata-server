@@ -403,10 +403,9 @@
                   </span>
                 </div>
 
-                <!-- FIXME wrap the next 3 divs in a container with most of the styles -->
-                <div class="g__item w--3-12 w--4-10-s reveal__target txt--align-right txt--align-right-s">
+                <div class="g__item w--3-12 w--4-10-s l--pad-right-half txt--align-right txt--align-right-s">
                   <div id="language-actions-#{locale.localeId}"
-                    class="g__item w--3-12 w--4-10-s reveal__target txt--align-right txt--align-right-s">
+                    class="l--push-right-quarter reveal__target">
                     <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
                       <div class="button--group">
                         <!-- TODO make this button disable the language -->
@@ -455,9 +454,7 @@
                   </div>
 
                   <div id="language-processing-#{locale.localeId}"
-                    class="g__item w--3-12 w--4-10-s txt--align-right txt--align-right-s is-hidden">
-                    <!-- FIXME the div this is in is only revealed on mouseover -->
-                    <!-- actually just shove this in place of the dropdown form maybe -->
+                    class="is-hidden l--push-right-half">
                     <div id="set-alias-loader-#{locale.localeId}"
                       class="loader--small loader--inline l--push-left-half">
                       <span class="loader__spinner">
@@ -469,17 +466,15 @@
                   </div>
 
                   <div id="edit-alias-cancel-#{locale.localeId}"
-                    class="g__item w--3-12 w--4-10-s txt--align-right txt--align-right-s is-hidden">
+                    class="is-hidden">
                     <button type="button"
                       onclick="hideLocaleAliasInput('#{locale.localeId}');showLocaleActions('#{locale.localeId}');return false;"
                       class="button--link l--float-right l--push-right-half">
                       #{msgs['jsf.Cancel']}
                     </button>
                   </div>
-
-
+                </div>
               </div>
-
             </div>
 
             <!-- TODO this looks a bit out-of-place, needs fix -->
