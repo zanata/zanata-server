@@ -187,7 +187,9 @@
         console.log('this is a list recheck');
         // look at all the items in the list to see their selection thingy.
         var totalElements = targetList.children().size();
-        var selectedElements = targetList.children('.selected').size();
+        var selectedElements = targetList.children('.is-checked').size();
+
+        console.log('found %i elements selected out of %i', selectedElements, totalElements);
 
         var none = selectedElements === 0;
         var one = selectedElements === 1;
@@ -201,6 +203,10 @@
         var some = selectedElements &gt; 0 &amp;&amp; selectedElements &lt; totalElements;
         var any = selectedElements &gt; 0;
         var all = selectedElements === totalElements;
+
+        console.log('none: %s, one: %s, multiple: %s, some: %s, any: %s, all: %s', none, one, multiple, some, any, all);
+
+
 
 
         // All the attributes...
@@ -246,17 +252,19 @@
 
         var $element = $(element)
 
+        console.log('dealing with element %o', element);
+
         // if they have the data attribute, one of the 2 toggle operations will
         // be happening, otherwise nothing.
 
 
         function checkCondition(condition, state) {
-          if ($element.attr('data-' + condition + '-selected-add-class')) {
-            $element.toggleClass($element.data(condition + '-selected-add-class'),
+          if ($element.attr('data-' + condition + '-selected-class')) {
+            $element.toggleClass($element.data(condition + '-selected-class'),
               state);
           }
-          if ($element.attr('data-not-' + condition + '-selected-add-class')) {
-            $element.toggleClass($element.data('not-' + condition + '-selected-add-class'),
+          if ($element.attr('data-not-' + condition + '-selected-class')) {
+            $element.toggleClass($element.data('not-' + condition + '-selected-class'),
               !state);
           }
         }
@@ -548,7 +556,9 @@
         </div>
         <div class="l--pad-left-1half">
           <!-- TODO check if this should be hidden when any enabled languages are selected -->
-          <div class="g g--tight">
+          <div class="g g--tight js-list-operation"
+            data-target-list="#settings-active-locales"
+            data-any-selected-class="is-hidden">
             <div class="g__item w--5-12"><h4 class="zeta">
               #{msgs['jsf.NativeName.short']}</h4></div>
             <div class="g__item w--2-12"><h4 class="zeta">
