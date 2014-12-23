@@ -8,6 +8,7 @@
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata">
 
 <script type="text/javascript">
+  //<![CDATA[
   function onValidationOptionChange(validationId) {
     var value = validationId.split('-');
     bindValidationValue(value[0], value[1]);
@@ -105,160 +106,142 @@
 
 
 
-  // FIXME all of this should move to assets soon.
-
-  // The list should be found and parsed each time so that refreshing items
-  // will not mess it up. Problem if the elements to show and hide are reloaded
-  // through ajax, behaviour would not be attached.
-
-  // zanata-assets tabs.js does like:
-
-  // $('.js-foo') and attaches its behaviour.
-
-  // my only problem is the ajax refresh. There may be a solution on this answer
-  // http://stackoverflow.com/a/17683987/297938 which suggests delegating the
-  // events to a static ancestor - not easy to do in a general way for all ajax
-  // areas, but maybe with an additional option for the element that should handle
-  // the actual events.
-  // This answer http://stackoverflow.com/a/13767985/297938 shows probably the
-  // same thing. I could just make a class that indicates that something is a
-  // static element, and have the code search up from the element that wants the
-  // behaviour for the first thing tagged as a static element. I presume it
-  // would be faster the more specific it is - the fallback would be the document.
+  // FIXME move initListOperations into assets.
 
   $(document).ready(initListOperations);
 
-
   /**
-   * Attach events for controlling visibility of elements in response to list
+   * Attach events for controlling appearance of elements in response to list
    * selections.
+   *
+   * To make an element's appearance depend on selections in a list, add a data
+   * attribute to indicate which list should be used, and a data attribute for
+   * each quantity of selections you wish to appearance to change with, and
+   * which css classes should be added or removed.
+   *
+   * Indicate the target list using the attribute data-target-list, with a
+   * jQuery selector that matches the list of interest.
+   * 
+   * Classes to toggle are specified as the value of a data attribute. The data
+   * attribute name includes the quantifier that determines when the class is
+   * present or absent. The data attribute name is in the form
+   * data-[quantifier]-selected-class.
+   *
+   * The following quantifiers are available. Note that an item is considered
+   * selected if it has the class 'is-checked':
+   *
+   *  - none: no items in the list are selected
+   *  - one: exactly 1 item in the list is selected
+   *  - multiple: 2 or more items in the list are selected
+   *  - some: 1 or more items in the list are selected, but not all items.
+   *  - any: 1 or more items in the list are selected
+   *  - all: there are 1 or more items in the list and all of them are selected
+   *
+   * Quantifiers can also be prefixed with not- to invert their meaning.
+   * e.g. not-any has the same meaning as none.
+   *
+   * Multiple quantifiers may be used in separate data attributes on the same
+   * element. If two quantifiers toggle the same css class, the quantifier with
+   * the highest precedence will determine the toggle state (the other is
+   * essentially ignored, but may toggle other css classes too). Quantifiers
+   * from highest to lowest precedence are:
+   *
+   *  - not-none
+   *  - none
+   *  - not-one
+   *  - one
+   *  - not-all
+   *  - all
+   *  - not-some
+   *  - some
+   *  - not-multiple
+   *  - multiple
+   *  - not-any
+   *  - any
+   *
+   *
+   * Example: show a button only when items are selected, and change its label
+   *          to singular or plural depending on the number selected. The button
+   *          should be highlighted and have red text if all the items are
+   *          selected. Assume that all the css classes used are defined and
+   *          have the obvious effect.
+   *
+   *   <button data-target-list="#my-list"
+   *           data-none-selected-class="is-hidden"
+   *           data-all-selected-class="highlighted red-text">
+   *     <span data-target-list="#my-list"
+   *           data-not-one-selected-class="is-hidden">
+   *       Delete Selected Item</span>
+   *     <span data-target-list="#my-list"
+   *           data-not-multiple-selected-class="is-hidden">
+   *       Delete Selected Items</span>
+   *   </button>
+   *   <ul id="my-list">
+   *     <li />
+   *     <li />
+   *     <li />
+   *   </ul>
+   *
    */
   function initListOperations() {
     var $ = jQuery;
+    var listOperations = $('[data-target-list]');
 
-    // select .js-list-operation (list operations apply to items in lists, so will
-    //                            be valid for some selection states only)
-    $('.js-list-operation').each(bindOperationToList);
+    while (listOperations.length > 0) {
+      listOperations.first().each(function () {
+        var targetListSelector = $(this).data('target-list');
+        bindOperationToList(targetListSelector);
+        // All operations for a list are discovered dynamically, so each target
+        // list only needs to be registered once.
+        listOperations = listOperations.not('[data-target-list="' + targetListSelector + '"]');
+      });
+    }
 
-    function bindOperationToList (index, element) {
-      // find data-target-list as the element that will determine the selection state
-      var targetListSelector = $(this).data('target-list');
-      var targetList = $(targetListSelector);
-      console.log('used selector %s to find %o', targetListSelector, targetList);
 
-      // search up from the list operation to find .js-static-element
-      // FIXME this is triggering when anywhere on the form is clicked
-      var eventHolder = $(this).closest('.js-static-element'); // closest includes itself in the search
-      console.log('found static element %o', eventHolder)
+    function bindOperationToList (targetListSelector) {
+      // Event handlers are lost if they are in a region that is refreshed from
+      // an ajax call. They are instead delegated to an ancestor element that is
+      // marked as static by the developer, using the body as a fallback.
+      var eventHolder = $(targetListSelector).closest('.js-static-element--s, body');
       eventHolder.on('click', targetListSelector, delayedTriggerListRecheck);
 
+      // FIXME this waits for the script that changes the is-checked class on the
+      //       item, but this should be triggered directly by that script when
+      //       this code is moved to assets.
       function delayedTriggerListRecheck () {
         console.log('delayedTriggerListRecheck');
         setTimeout(triggerListRecheck, 20);
       }
 
-      // attach event to selection of any list item
-      //   event:
-      //     - figure out how many items are in the list vs. selected
-      //     - generate boolean for each selection category (none, one, some, any, all)
-      //     - add or remove classes that are listed in the data attributes of
-      //       the .js-list-operation.
-      // This would be best in zanata-assets/src/assets/js/components.form.js
-      // extend around :145 where it actually sets the selected class... or not.
-      // probably in setCheckRadioStatus since that is where the class is actually
-      // toggled, so it is easy to make sure the value is ready.
-
-      // temporarily, I will just add another click event with a setTimeout so
-      // that it will happen after the class setting.
-      // $(this).closest('.js-static-element')
-      //        .on('click', '.js-form__checkbox', function (e) {
-      //           var clickedElement = $(this);
-      //           if (targetList.children().is(clickedElement)) {
-      //             setTimeout(function () {
-      //               // check all the element selection states on the list.
-      //               // only do so for visible elements
-      //               console.log('Triggering list recheck, not sure if I am calling this right.');
-      //               triggerListRecheck();
-      //             }, 20); // FIXME definitely don't want to really have this much delay (fix it when code is incorporated into place that changes the state, so I can get the timing right).
-      //           }
-      //         });
-
       function triggerListRecheck() {
-        console.log('this is a list recheck');
-        // look at all the items in the list to see their selection thingy.
+        var targetList = $(targetListSelector);
         var totalElements = targetList.children().size();
         var selectedElements = targetList.children('.is-checked').size();
 
-        console.log('found %i elements selected out of %i', selectedElements, totalElements);
-
         var none = selectedElements === 0;
         var one = selectedElements === 1;
-        var multiple = selectedElements &gt; 1;
+        var multiple = selectedElements > 1;
+        var some = selectedElements > 0 && selectedElements < totalElements;
+        var any = selectedElements > 0;
+        // all is purposely false for an empty list
+        var all = selectedElements === totalElements && totalElements > 0;
 
-        // wait, is it the greater-than sign that is making it think I have closed something?
+        // $('.js-list-operation[data-target-list="' + targetListSelector + '"]')
+        $('[data-target-list="' + targetListSelector + '"]')
+          .each(function () {
+            var $element = $(this);
 
-        // jsf fails if I use the short-circuit AND operator - it thinks I am
-        // trying to make an xml entity. Stupid thing.
-        // var some = (selectedElements &gt; 0 ? selectedElements &lt; totalElements : false);
-        var some = selectedElements &gt; 0 &amp;&amp; selectedElements &lt; totalElements;
-        var any = selectedElements &gt; 0;
-        var all = selectedElements === totalElements;
+            // specifically ordered so that items dealing with the same class
+            // will have the desired precedence.
+            updateClassesForCondition($element, 'any', any);
+            updateClassesForCondition($element, 'multiple', multiple);
+            updateClassesForCondition($element, 'some', some);
+            updateClassesForCondition($element, 'all', all);
+            updateClassesForCondition($element, 'one', one);
+            updateClassesForCondition($element, 'none', none);
+          });
 
-        console.log('none: %s, one: %s, multiple: %s, some: %s, any: %s, all: %s', none, one, multiple, some, any, all);
-
-
-
-
-        // All the attributes...
-        // The class given as the attribute will be present when the condition
-        // is matched, and will be absent when the condition is not matched
-        // (with the exception of higher precedence rules overriding).
-        // The other thing I could do is just make multiple attributes with the
-        // same class count as AND or OR. That would get around precendence.
-        // AND might not be so useful, OR is probably best.
-
-
-// none || some = !all
-// none || one is unique
-// any AND !one = multiple
-
-
-
-
-        // data-none-selected-class=""
-        // data-one-selected-class=""
-        // data-multiple-selected-class=""
-        // data-some-selected-class=""
-        // data-any-selected-class=""
-        // data-all-selected-class=""
-
-        // data-not-none-selected-class="" (== any-selected)
-        // data-not-one-selected-class=""
-        // data-not-multiple-selected-class=""
-        // data-not-some-selected-class=""
-        // data-not-any-selected-class=""  (== none-selected)
-        // data-not-all-selected-class=""
-
-        // e.g. some not-one
-
-
-        // TODO ensure classes are applied in the correct order so that their
-        //      precedence is correct.
-
-
-
-        // Then a bunch of if statements or something to deal with the
-        // actual setting of classes on some elements.
-
-        var $element = $(element)
-
-        console.log('dealing with element %o', element);
-
-        // if they have the data attribute, one of the 2 toggle operations will
-        // be happening, otherwise nothing.
-
-
-        function checkCondition(condition, state) {
+        function updateClassesForCondition($element, condition, state) {
           if ($element.attr('data-' + condition + '-selected-class')) {
             $element.toggleClass($element.data(condition + '-selected-class'),
               state);
@@ -268,43 +251,11 @@
               !state);
           }
         }
-
-        // TODO could put these in a map (string to boolean) and just iterate the
-        //      map keys.
-        checkCondition('none', none);
-        checkCondition('one', one);
-        checkCondition('multiple', multiple);
-        checkCondition('some', some);
-        checkCondition('any', any);
-        checkCondition('all', all);
-
-
-        // if (none) {
-        //   if ($element.attr('data-none-selected-add-class'))
-        // }
-
-        // // element is the element to do it to
-        // if ($element.attr('data-foobar') || $element.attr('data-antifoobar')) {
-        // }
       }
-
     }
-
-
-    //complication: if something has conflicting rules, such as add 'is-hidden'
-    //              for one, and remove 'is-hidden' for any (both triggered by
-    //              one selected), what takes precedence?
-    //    Could make a specific hierarchy:
-    //     - none is mutually exclusive from all the others, so no probalo
-    //     - one is very specific, so it should win over everything else
-    //     - some and all are mutually exclusive, so either can be between any
-    //       and some
-    //     - any is most general, it should be last
   }
 
-
-
-
+  //]]>
 </script>
 
 <a4j:jsFunction name="addWebhook"
@@ -569,7 +520,6 @@
             </h4></div>
             <div class="g__item w--3-12"></div>
           </div>
-          <!-- TODO show when any enabled languages selected -->
           <div class="js-list-operation is-hidden"
             data-target-list="#settings-active-locales"
             data-none-selected-class="is-hidden">
