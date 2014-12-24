@@ -645,10 +645,12 @@
                     class="l--push-right-quarter reveal__target">
                     <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
                       <div class="button--group">
-                        <!-- TODO make this button disable the language -->
-                        <button class="button button--small">
+                        <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
+                          action="#{projectHome.removeLanguage(locale.localeId)}"
+                          styleClass="button button--small"
+                          render="settings-languages-list">
                           #{msgs['jsf.languages.DisableLanguage.short']}
-                        </button>
+                        </a4j:commandLink>
                         <button class="button button--small js-dropdown__toggle">
                           <i class="i i--arrow-down"></i>
                         </button>
