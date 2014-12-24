@@ -68,6 +68,15 @@
     }
   }
 
+  function deleteLocaleAlias(localeId) {
+    var aliasForm = localeAliasForm(localeId);
+    var input = aliasForm.find('input:text');
+    input.val('');
+    var submitButton = aliasForm.find('input:submit');
+    submitButton.click();
+    return false;
+  }
+
   function showLocaleActions(localeId) {
     var localeActions = '#language-actions-' + localeId;
     showOnlyOneOfLocaleActionStatus(localeId)(localeActions)
@@ -656,7 +665,6 @@
                         </button>
                       </div>
                       <ul class="dropdown__content js-dropdown__content">
-                        <!-- TODO make the next two buttons open the alias edit form -->
                         <s:fragment rendered="#{projectHome.getLocaleAlias(locale) == null}">
                           <li>
                             <h:outputLink id="addLocaleAliasLink"
@@ -681,8 +689,9 @@
                         </s:fragment>
                         <s:fragment rendered="#{projectHome.getLocaleAlias(locale) != null}">
                           <li>
-                            <!-- TODO make this remove the alias -->
-                            <button class="dropdown__content__link button--link txt--danger i__item--left">
+                            <button
+                              class="dropdown__content__link button--link txt--danger i__item--left"
+                              onclick="deleteLocaleAlias('#{locale.localeId}')">
                               <i class="i i--trash i__item__icon"></i>
                               #{msgs['jsf.languages.DeleteAlias']}
                             </button>
