@@ -103,6 +103,123 @@
     }
   }
 
+  /**
+   * Get an element to which events can be attached for the given element.
+   * The returned element will be one which is not refreshed by ajax calls.
+   */
+  function getSafeEventHolder(jqueryElement) {
+    return jqueryElement.closest('.js-static-element, body');
+  }
+
+  $(document).ready(initSelectAllCheckboxes);
+
+  function initSelectAllCheckboxes() {
+    var $ = jQuery;
+    // find anything with the data attribute for the list to respond to and control
+    var selectAllCheckboxes = $('[data-select-all-for-list]');
+
+    // set up event on static element for behaviour when clicked to check or uncheck
+    selectAllCheckboxes.each(function (index) {
+      var selectAllCheckbox = $(this);
+      var selector = '[data-select-all-for-list]:eq(' + index + ')';
+      console.log('index is %i, for selector %s', index, selector);
+      var eventHolder = getSafeEventHolder($(this));
+      console.log('eventHolder: %o', eventHolder);
+      eventHolder.on('click', selector, function (event) {
+        // problem is that there is a fake checkbox span in front of the checkbox
+        // that is probably added programmatically?
+        // The real checkbox still seems to have the checked attribute properly.
+
+
+        // The event doesn't fire if the fake front checkbox is clicked.
+        // What does trigger?
+
+
+        // ok, I put the data attribute on the div that contains the checkbox,
+        // that could be better.
+
+        console.dir(event);
+
+        var containingDiv = event.currentTarget;
+
+        console.log('containingDiv: %O', containingDiv);
+
+        var checkbox = $(containingDiv).find('input')[0];
+
+
+
+        console.log('checkbox: %o', checkbox);
+        // this is a click on the checkbox
+        console.log('is checkbox checked? %s', checkbox.checked);
+
+        // this is getting the element, but the state is wrong - it is probably
+        // happening before the element is ready.
+
+        setImmediate(function () {
+          // This prints the correct state, use it.
+          console.log('later, the checkbox state was %s', checkbox.checked);
+
+          var checked = checkbox.checked;
+
+          // TODO set all the checkboxes in the list to this state.
+          // get all checkboxes in the list
+          var listSelector = selectAllCheckbox.data('select-all-for-list');
+          $(listSelector).find('.js-form__checkbox').each(function () {
+            $this = $(this);
+            $this.find('.js-form__checkbox__input').prop('checked', checked);
+            setCheckRadioStatus($this);
+          });
+
+          // .children().each(function () {
+          //   // This works for the underlying checkbox states, but
+          //   // does not trigger the overlay checkboxes to display
+          //   // as checked.
+          //   $(this).find('.js-form__checkbox__input').first().prop('checked', checked);
+          //   $(this).find('.js-form__checkbox').each(function () {
+          //     setCheckRadioStatus($(this));
+          //   });
+
+
+          //   // OK, it is done in zanata-assxets/src/assets/js/components/form.js:22, but it is wrapped up in a scope.
+          // });
+
+
+
+
+          // change state
+        });
+      });
+    });
+
+    // set up click event on list children to recheck and show state based on
+    // selection.
+
+    // re-use the list checking function, may need to have it return an object
+    // with each quantifier as a parameter.
+
+    // DO THIS! call zanata.form.appendCheckboxes(refreshedcomponent)
+
+
+
+    // FIXME copied from zanata-assxets/src/assets/js/components/form.js:22
+    // That must be rewritten to survive ajax refresh anyway, so
+    // find a solution to this when doing that.
+    function setCheckRadioStatus ($this) {
+      var $input = $this.find('.js-form__checkbox__input,.js-form__radio__input'),
+          $item = $this.find('.js-form__checkbox__item, .js-form__radio__item');
+
+      // Wait until checkbox/radio change has propagated
+      setImmediate(function () {
+        var checked = $input.is(':checked');
+        $this.toggleClass('is-checked', checked);
+        $item.toggleClass('is-checked', checked);
+      });
+    }
+
+    function setImmediate (fun) {
+      return setTimeout(fun, 0);
+    }
+  }
 
 
 
@@ -202,7 +319,7 @@
       // Event handlers are lost if they are in a region that is refreshed from
       // an ajax call. They are instead delegated to an ancestor element that is
       // marked as static by the developer, using the body as a fallback.
-      var eventHolder = $(targetListSelector).closest('.js-static-element--s, body');
+      var eventHolder = getSafeEventHolder($(targetListSelector));
       eventHolder.on('click', targetListSelector, delayedTriggerListRecheck);
 
       // FIXME this waits for the script that changes the is-checked class on the
@@ -254,6 +371,7 @@
       }
     }
   }
+
 
   //]]>
 </script>
@@ -499,7 +617,8 @@
       </div>
 
       <div class="is-hidden--s l--pad-v-quarter">
-        <div class="form__checkbox js-form__checkbox">
+        <div class="form__checkbox js-form__checkbox"
+          data-select-all-for-list="#settings-active-locales">
           <!-- TODO select all enabled languages on click -->
           <input type="checkbox"
             class="form__checkbox__input js-form__checkbox__input"
