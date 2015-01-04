@@ -572,6 +572,12 @@
         action="#{projectHome.instance.localeAliases.clear()}"
         render="settings-languages-list"/>
 
+      <!-- This is just to test if I can get ANY checkbox working, let alone
+           a map of them. This does seem to work. -->
+      <h:selectBooleanCheckbox
+        value="#{projectHome.selectedCheckbox}"/>
+      
+
       <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
 
       <div class="w--5-12 form--search js-form--search">
@@ -612,10 +618,18 @@
             data-target-list="#settings-active-locales"
             data-none-selected-class="is-hidden">
             <!-- TODO remove selected languages on click -->
-            <button class="button--link link--danger">
+            <!-- I could iterate the list, but can't just click every item.
+                 I think the correct way to do this would be to submit the form,
+                 including selection information, with an action on the java
+                 class to remove the selected languages. -->
+            <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
+              action="#{projectHome.removeSelectedLanguages()}"
+              styleClass="button--link link--danger"
+              render="settings-languages-list">
               <i class="i i--remove"></i>
               #{msgs['jsf.languages.DisableLanguages.short']}
-            </button>
+            </a4j:commandLink>
+
             <!-- TODO remove aliases for selected languages on click -->
             <button class="button--link link--danger l--push-left-half">
               <i class="i i--trash"></i>
@@ -632,9 +646,17 @@
           <!-- TODO might want to add an entity to bind to all these properties in the row -->
 
           <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
-            <input type="checkbox"
-              class="form__checkbox__input js-form__checkbox__input"
-              name="form-checkbox-#{locale.localeId}"/>
+
+            <!-- this does not seem to be picking up the checked value, even
+                 though this seems identical to how the alias strings are
+                 working, except that this is a checkbox rather than a text
+                 input? -->
+            <h:selectBooleanCheckbox
+              value="#{projectHome.activeLocaleSelections[locale.localeId]}"
+              styleClass="form__checkbox__input js-form__checkbox__input"/>
+
+              <!-- name="form-checkbox-#{locale.localeId}"/> -->
+
             <div class="js-form__checkbox__label l--pad-left-1half">
               <div class="g g--tight">
                 <div class="g__item w--5-12 w--1-s">

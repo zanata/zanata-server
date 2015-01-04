@@ -136,10 +136,41 @@ public class ProjectHome extends SlugHome<HProject> {
     @Setter
     private Map<LocaleId, String> inputLocaleAliases = Maps.newHashMap();
 
+    // @Getter
+    @Setter
+    private Map<LocaleId, Boolean> activeLocaleSelections = Maps.newHashMap();
+
+    public Map<LocaleId, Boolean> getActiveLocaleSelections() {
+        log.info("getActiveLocaleSelections()");
+        if (activeLocaleSelections == null) {
+            activeLocaleSelections = Maps.newHashMap();
+
+            // TODO try setting booleans for all the selection checkboxes
+            // iterate the active languages, putting Boolean.FALSE for each
+            // why don't I need that for setting and printing the aliases?
+
+            // This definitely looks like it is not outputting the values
+            // It does not look as though this is even running at all, based on
+            // the logs.
+            log.info("Was null, creating...", activeLocaleSelections.size());
+            for (HLocale locale : getInstanceActiveLocales()) {
+                // Trying true just to see if they will start checked.
+                activeLocaleSelections.put(locale.getLocaleId(), Boolean.FALSE);
+            }
+            log.info("selected {} rows", activeLocaleSelections.size());
+        }
+        return activeLocaleSelections;
+    }
+
+    @Getter
+    @Setter
+    private Boolean selectedCheckbox = Boolean.TRUE;
+
     private Map<String, Boolean> roleRestrictions;
 
     private Map<ValidationId, ValidationAction> availableValidations = Maps
             .newHashMap();
+
 
     @Getter(lazy = true)
     private final List<HProjectIteration> versions = fetchVersions();
@@ -172,9 +203,12 @@ public class ProjectHome extends SlugHome<HProject> {
             };
 
     public void createNew() {
+        log.info("createNew()");
         getInstance().setDefaultProjectType(ProjectType.File);
         selectedProjectType = getInstance().getDefaultProjectType().name();
         inputLocaleAliases.putAll(getInstance().getLocaleAliases());
+        // force get so it will create and populate the hashmap
+        getActiveLocaleSelections();
     }
 
     public void updateSelectedProjectType(ValueChangeEvent e) {
@@ -258,6 +292,19 @@ public class ProjectHome extends SlugHome<HProject> {
                 msgs.format("jsf.project.LanguageRemoved",
                         locale.retrieveDisplayName()));
     }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void removeSelectedLanguages() {
+        log.info("removeSelectedLanguages()");
+        log.info("selected {} rows", getActiveLocaleSelections().size());
+        for (Map.Entry<LocaleId, Boolean> entry : getActiveLocaleSelections().entrySet()) {
+            log.info("mapping with {} {}", entry.getKey(), entry.getValue());
+            if (entry.getValue()) {
+                removeLanguage(entry.getKey());
+            }
+        }
+    }
+
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void updateLanguagesFromGlobal() {
