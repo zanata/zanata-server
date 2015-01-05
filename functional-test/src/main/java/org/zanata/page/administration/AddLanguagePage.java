@@ -26,7 +26,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
-import org.zanata.util.WebElementUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,42 +34,25 @@ import java.util.Map;
 @Slf4j
 public class AddLanguagePage extends BasePage {
 
+    public static final int NAME_ROW = 3;
+    private static final int NAME_COLUMN = 0;
+    private static final int VALUE_COLUMN = 1;
+
+    private By languageInputField = By.xpath(
+            "//input[@type='text' and contains(@id, 'localeName')]");
     private By saveButton = By.xpath("//input[@value='Save']");
-    private By enabledByDefaultCheckbox = By.id("addLanguageForm:enabled");
-    private By languageDetailPanel = By.id("addLanguageForm:output");
+    private By enabledByDefaultCheckbox = By.xpath(
+            "//input[@type='checkbox' and contains(@name, 'enabledByDefault')]");
+
     public AddLanguagePage(final WebDriver driver) {
         super(driver);
     }
 
-    public AddLanguagePage enterSearchLanguage(
-            String languageQuery) {
-        log.info("Enter language search {}", languageQuery);
-        WebElementUtil.searchAutocomplete(getDriver(),
-                "localeAutocomplete", languageQuery);
-        return new AddLanguagePage(getDriver());
-    }
-
-    public AddLanguagePage selectSearchLanguage(final String language) {
-        log.info("Select language {}", language);
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver driver) {
-                List<WebElement> searchResults =
-                        WebElementUtil.getSearchAutocompleteResults(
-                                driver,
-                                "addLanguageForm",
-                                "localeAutocomplete");
-                boolean clickedUser = false;
-                for (WebElement searchResult : searchResults) {
-                    if (searchResult.getText().contains(language)) {
-                        searchResult.click();
-                        clickedUser = true;
-                        break;
-                    }
-                }
-                return clickedUser;
-            }
-        });
+    public AddLanguagePage inputLanguage(String language) {
+        log.info("Enter language {}", language);
+        waitForWebElement(languageInputField).sendKeys(language);
+        defocus();
+        waitForPageSilence();
         return new AddLanguagePage(getDriver());
     }
 
@@ -97,22 +79,18 @@ public class AddLanguagePage extends BasePage {
         waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
-                return !waitForWebElement(languageDetailPanel)
-                        .findElement(By.className("l--push-top-half"))
-                        .findElement(By.className("txt--meta"))
-                        .getText()
-                        .isEmpty();
+                List<WebElement> thisElement = getDriver()
+                        .findElements(By.className("prop"));
+                return !thisElement.get(NAME_ROW)
+                        .findElements(By.tagName("span"))
+                        .get(VALUE_COLUMN).getText().isEmpty();
             }
         });
-        for (WebElement item : waitForWebElement(languageDetailPanel)
-                .findElements(By.className("l--push-top-half"))) {
-            String key = item.getText().trim();
-            String value = item.findElement(By.className("txt--meta")).getText();
-            if (value.isEmpty()) {
-                map.put(key, "");
-            } else {
-                map.put(key.substring(0, key.lastIndexOf(value)), value);
-            }
+        for (WebElement item : getDriver().findElements(By.className("prop"))) {
+            map.put(item.findElements(By.tagName("span"))
+                            .get(NAME_COLUMN).getText(),
+                    item.findElements(By.tagName("span"))
+                            .get(VALUE_COLUMN).getText());
         }
         return map;
     }
