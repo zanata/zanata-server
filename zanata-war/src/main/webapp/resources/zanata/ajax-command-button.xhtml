@@ -2,11 +2,17 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:composite="http://java.sun.com/jsf/composite"
-  xmlns:a4j="http://richfaces.org/a4j">
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html">
 
-<composite:interface shortDescription="Generates a command link that is capable of disaplaying its working status">
+<composite:interface
+  shortDescription="Generates a command button that is capable of disaplaying its working status.
+  This component differs from a4j:commandButton in that it generates an actual button element instead of an input element.">
   <composite:facet name="loading"
     shortDescription="Content to be shown when loading"/>
+
+  <composite:attribute name="id" type="java.lang.String"
+    shortDescription="Unique identifier for this component (java naming, i.e. no dashes)." required="true"/>
 
   <composite:attribute name="render" type="java.lang.String"
     shortDescription="List of component ids to render after completion"/>
@@ -24,12 +30,8 @@
 </composite:interface>
 
 <composite:implementation>
-  <a4j:commandLink
-    action="#{cc.attrs.action}"
-    styleClass="#{cc.attrs.styleClass}"
-    onbegin="$(this).find('.js-default').addClass('is-hidden'); $(this).find('.js-in-progress').removeClass('is-hidden'); zanata.loader.activate($(this).find('.js-loader'));"
-    oncomplete="$(this).find('.js-in-progress').addClass('is-hidden'); $(this).find('.js-default').removeClass('is-hidden'); zanata.loader.deactivate($(this).find('.js-loader')); #{cc.attrs.oncomplete}"
-    render="#{cc.attrs.render}">
+  <button id="#{cc.attrs.id}" class="#{cc.attrs.styleClass}"
+    onclick="event.preventDefault(); #{cc.attrs.id}OnClick($(this));">
     <div
       class="loader--mini loader--inline l--push-left-half js-loader">
     </div>
@@ -39,6 +41,13 @@
     <span class="js-default">
       <composite:insertChildren/>
     </span>
-  </a4j:commandLink>
+  </button>
+  <a4j:jsFunction name="#{cc.attrs.id}OnClick"
+    execute="@form"
+    action="#{cc.attrs.action}"
+    render="#{cc.attrs.render}"
+    onbegin="$('##{cc.attrs.id}').find('.js-default').addClass('is-hidden'); $('##{cc.attrs.id}').find('.js-in-progress').removeClass('is-hidden'); zanata.loader.activate($('##{cc.attrs.id}').find('.js-loader'));"
+    oncomplete="$('##{cc.attrs.id}').find('.js-in-progress').addClass('is-hidden'); $('##{cc.attrs.id}').find('.js-default').removeClass('is-hidden'); zanata.loader.deactivate($('##{cc.attrs.id}').find('.js-loader')); #{cc.attrs.oncomplete}">
+  </a4j:jsFunction>
 </composite:implementation>
 </html>
