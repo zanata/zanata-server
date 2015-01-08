@@ -27,12 +27,13 @@
   <a4j:commandLink
     action="#{cc.attrs.action}"
     styleClass="#{cc.attrs.styleClass}"
-    onbegin="$(this).find('.js-default').addClass('is-hidden'); $(this).find('.js-in-progress').removeClass('is-hidden'); zanata.loader.activate($(this).find('.js-loader'));"
+    onclick="event.stopPropagation();"
+    onbegin="zanata.loader.activate($(this).find('.js-loader')); $(this).find('.js-default').addClass('is-hidden'); $(this).find('.js-in-progress').removeClass('is-hidden');"
     oncomplete="$(this).find('.js-in-progress').addClass('is-hidden'); $(this).find('.js-default').removeClass('is-hidden'); zanata.loader.deactivate($(this).find('.js-loader')); #{cc.attrs.oncomplete}"
     render="#{cc.attrs.render}">
-    <div
+    <span
       class="loader--mini loader--inline l--push-left-half js-loader">
-    </div>
+    </span>
     <span class="js-in-progress is-hidden">
       <composite:renderFacet name="loading" />
     </span>

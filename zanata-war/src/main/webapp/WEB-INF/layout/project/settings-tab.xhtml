@@ -622,19 +622,32 @@
                  I think the correct way to do this would be to submit the form,
                  including selection information, with an action on the java
                  class to remove the selected languages. -->
-            <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
+            <zanata:ajax-command-link
               action="#{projectHome.removeSelectedLanguages()}"
+              oncomplete="refreshStatistics()"
               styleClass="button--link link--danger"
               render="settings-languages-list">
+              <f:facet name="loading">
+                <span class="txt--neutral">
+                  #{msgs['jsf.project.DisableLanguages.inProgress.label']}
+                </span>
+              </f:facet>
               <i class="i i--remove"></i>
               #{msgs['jsf.languages.DisableLanguages.short']}
-            </a4j:commandLink>
+            </zanata:ajax-command-link>
 
-            <!-- TODO remove aliases for selected languages on click -->
-            <button class="button--link link--danger l--push-left-half">
+            <zanata:ajax-command-link
+              action="#{projectHome.removeSelectedAliases}"
+              styleClass="button--link link--danger l--push-left-half"
+              render="settings-languages-list">
+              <f:facet name="loading">
+                <span class="txt--neutral">
+                  #{msgs['jsf.LocaleAlias.DeleteAliases.inProgress.label']}
+                </span>
+              </f:facet>
               <i class="i i--trash"></i>
               #{msgs['jsf.LocaleAlias.DeleteAliases']}
-            </button>
+            </zanata:ajax-command-link>
           </div>
         </div>
       </div>
@@ -676,12 +689,13 @@
                     class="l--push-right-quarter reveal__target">
                     <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
                       <div class="button--group">
-                        <a4j:commandLink oncomplete="refreshStatistics()" execute="@this"
+                        <zanata:ajax-command-button
+                          oncomplete="refreshStatistics();"
                           action="#{projectHome.removeLanguage(locale.localeId)}"
                           styleClass="button button--small"
                           render="settings-languages-list">
                           #{msgs['jsf.languages.DisableLanguage.short']}
-                        </a4j:commandLink>
+                        </zanata:ajax-command-button>
                         <button class="button button--small js-dropdown__toggle">
                           <i class="i i--arrow-down"></i>
                         </button>

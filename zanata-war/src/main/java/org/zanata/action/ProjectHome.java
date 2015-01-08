@@ -293,6 +293,18 @@ public class ProjectHome extends SlugHome<HProject> {
                         locale.retrieveDisplayName()));
     }
 
+    private void removeAlias(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+
+        if (getInstance().isOverrideLocales()) {
+            getInstance().getLocaleAliases().remove(localeId);
+        } else {
+            // If the project instance is not overriding locales, there
+            // are no aliases
+        }
+        update();
+    }
+
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedLanguages() {
         log.info("removeSelectedLanguages()");
@@ -303,6 +315,23 @@ public class ProjectHome extends SlugHome<HProject> {
                 removeLanguage(entry.getKey());
             }
         }
+        activeLocaleSelections.clear();
+    }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void removeSelectedAliases() {
+        log.info("removeSelectedAliases()");
+        log.info("selected {} rows", getActiveLocaleSelections().size());
+        for (Map.Entry<LocaleId, Boolean> entry : getActiveLocaleSelections().entrySet()) {
+            log.info("mapping with {} {}", entry.getKey(), entry.getValue());
+            if (entry.getValue()) {
+                removeAlias(entry.getKey());
+            }
+        }
+        activeLocaleSelections.clear();
+        conversationScopeMessages.setMessage(
+                FacesMessage.SEVERITY_INFO,
+                msgs.get("jsf.project.LanguageAliasesRemoved"));
     }
 
 
