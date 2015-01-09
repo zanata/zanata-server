@@ -12,9 +12,9 @@
   <container qualifier="jbossas-managed">
     <configuration>
       <!-- We can use the JBOSS_HOME env variable instead of this -->
-      <property name="jbossHome">${arquillian.jboss.home}</property>
+      <property name="jbossHome">/home/djansen/bin/jboss/jboss-eap-6.3</property>
       <!-- We can use the JAVA_HOME env variable instead of this -->
-      <!--             <property name="javaHome">/usr/lib/jvm/jre-1.6.0-openjdk.x86_64</property> -->
+      <property name="javaHome">/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.71-2.5.3.3.fc20.x86_64</property>
       <!--
                   <property name="javaVmArguments">-Xms1536m -Xmx1536m -XX:MaxPermSize=256m -Dorg.jboss.as.logging.per-deployment=false -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787</property>
       -->
@@ -48,7 +48,10 @@
   </extension>
   <extension qualifier="webdriver">
     <property name="browser">chrome</property>
-    <property name="chromeDriverBinary">/home/camunoz/bin/chromedriver</property>
+    <property name="chromeDriverBinary">/home/djansen/bin/chromedriver</property>
+  </extension>
+  <extension qualifier="persistence">
+    <property name="defaultDataSource">java:jboss/datasources/zanataTestDatasource</property>
   </extension>
   <!--<extension qualifier="suite">-->
     <!--<property name="deploymentClass"-->

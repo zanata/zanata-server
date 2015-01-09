@@ -1078,7 +1078,6 @@
             </exclusion>
           </exclusions>
         </dependency>
-
         <dependency>
           <groupId>org.jboss.as</groupId>
           <artifactId>jboss-as-controller-client</artifactId>
@@ -1894,6 +1893,24 @@
     <dependency>
       <groupId>org.jboss.shrinkwrap.resolver</groupId>
       <artifactId>shrinkwrap-resolver-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-persistence-core</artifactId>
+      <version>1.0.0.Alpha7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-persistence-api</artifactId>
+      <version>1.0.0.Alpha7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-persistence-dbunit</artifactId>
+      <version>1.0.0.Alpha7</version>
       <scope>test</scope>
     </dependency>
 

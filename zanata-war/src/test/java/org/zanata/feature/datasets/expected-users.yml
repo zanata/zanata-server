@@ -1,0 +1,9 @@
+HAccount:
+  -
+    username: admin
+  -
+    username: translator
+  -
+    username: glossarist
+  -
+    username: glossaryadmin

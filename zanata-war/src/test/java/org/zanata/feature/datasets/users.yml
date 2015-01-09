@@ -1,0 +1,130 @@
+HAccount:
+  -
+    id: 1
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 0
+    apiKey: b6d7044e9ee3b2447c28fb7c50d86d98
+    enabled: 1
+    passwordHash: Eyox7xbNQ09MkIfRyH+rjg==
+    username: admin
+    mergedInto: 
+  -
+    id: 2
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 0
+    apiKey: d83882201764f7d339e97c4b087f0806
+    enabled: 1
+    passwordHash: Fr5JHlcaEqKLSHjnBm4gXg==
+    username: translator
+    mergedInto: 
+  -
+    id: 3
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 0
+    apiKey: b1e3daa18e41c0ce79829e87ce66b201
+    enabled: 1
+    passwordHash: fRIeiPDPlSMtHbBNoqDjNQ==
+    username: glossarist
+    mergedInto: 
+  -
+    id: 4
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 0
+    apiKey: 5a6a34d28d39ff90ea47402311f339d4
+    enabled: 1
+    passwordHash: /W0YpteXk+WtymQ7H84kPQ==
+    username: glossaryadmin
+    mergedInto: 
+
+HAccountMembership:
+  -
+    accountId: 2
+    memberOf: 1
+  -
+    accountId: 3
+    memberOf: 2
+  -
+    accountId: 4
+    memberOf: 3
+  -
+    accountId: 1
+    memberOf: 4
+
+HAccountRole:
+  -
+    id: 1
+    conditional: 0
+    name: user
+    roleType: M
+  -
+    id: 2
+    conditional: 0
+    name: glossarist
+    roleType: M
+  -
+    id: 3
+    conditional: 0
+    name: glossary-admin
+    roleType: M
+  -
+    id: 4
+    conditional: 0
+    name: admin
+    roleType: M
+
+HAccountRoleGroup:
+  -
+    roleId: 4
+    memberOf: 1
+  -
+    roleId: 3
+    memberOf: 2
+  -
+    roleId: 4
+    memberOf: 3
+
+HPerson:
+  -
+    id: 1
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 1
+    email: admin@example.com
+    name: Administrator
+    accountId: 1
+  -
+    id: 2
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 1
+    email: translator@example.com
+    name: translator
+    accountId: 2
+  -
+    id: 3
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 1
+    email: glossarist@example.com
+    name: glossarist
+    accountId: 3
+  -
+    id: 4
+    creationDate: 2014-12-23 14:44:28
+    lastChanged: 2014-12-23 14:44:28
+    versionNum: 1
+    email: glossary-admin@example.com
+    name: glossary-admin
+    accountId: 4
+  -
+    id: 5
+    creationDate: 2014-12-23 14:44:29
+    lastChanged: 2014-12-23 14:44:29
+    versionNum: 0
+    email: DEADT@nowhere.org
+    name: AfGidgUKSW
+    accountId: 

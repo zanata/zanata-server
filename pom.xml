@@ -112,6 +112,30 @@
       </dependency>
 
       <dependency>
+        <groupId>org.jboss.arquillian.extension</groupId>
+        <artifactId>arquillian-persistence-core</artifactId>
+        <version>1.0.0.Alpha7</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.arquillian.extension</groupId>
+        <artifactId>arquillian-persistence-api</artifactId>
+        <version>1.0.0.Alpha7</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.arquillian.extension</groupId>
+        <artifactId>arquillian-persistence-dbunit</artifactId>
+        <version>1.0.0.Alpha7</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
         <groupId>org.jboss.arquillian.selenium</groupId>
         <artifactId>selenium-bom</artifactId>
         <version>2.43.1</version>
