@@ -109,6 +109,8 @@ public enum WebDriverFactory {
 
     private WebDriver configureChromeDriver() {
         // TODO can we use this? it will use less code, but it will use DISPLAY rather than webdriver.display
+//        System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY,
+//                getChromeDriver().getAbsolutePath()));
 //        System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY,
 //                PropertiesHolder.getProperty("webdriver.log"));
 //        driverService = ChromeDriverService.createDefaultService();
@@ -162,7 +164,10 @@ public enum WebDriverFactory {
             exeName = CommandLine.find(exeName);
         }
         if (exeName == null) {
-            throw new RuntimeException("Please ensure chromedriver is on your system PATH.  Get it here: http://chromedriver.storage.googleapis.com/index.html");
+            throw new RuntimeException("Please ensure chromedriver is on " +
+                    "your system PATH or specified by the property " +
+                    "'webdriver.chrome.driver'.  Get it here: " +
+                    "http://chromedriver.storage.googleapis.com/index.html");
         }
         return new File(exeName);
     }
