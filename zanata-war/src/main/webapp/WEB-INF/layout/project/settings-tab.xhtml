@@ -124,7 +124,7 @@
     return jqueryElement.closest('.js-static-element, body');
   }
 
-  $(document).ready(initSelectAllCheckboxes);
+  //$(document).ready(initSelectAllCheckboxes);
 
   /**
    * Attach events for checkboxes that control the checked state of all items in
@@ -146,9 +146,9 @@
     selectAllCheckboxes.each(function (index) {
       var selectAllCheckbox = $(this);
       var selector = '[data-select-all-for-list]:eq(' + index + ')';
-      console.log('index is %i, for selector %s', index, selector);
+      //console.log('index is %i, for selector %s', index, selector);
       var eventDelegate = getStaticAncestor($(this));
-      console.log('eventDelegate: %o', eventDelegate);
+      //console.log('eventDelegate: %o', eventDelegate);
       eventDelegate.on('click', selector, function (event) {
         var containingDiv = event.currentTarget;
         var checkbox = $(containingDiv).find('input')[0];
@@ -156,11 +156,8 @@
         setImmediate(function () {
           var checked = checkbox.checked;
           var listSelector = selectAllCheckbox.data('select-all-for-list');
-          $(listSelector).find('.js-form__checkbox').each(function () {
-            $this = $(this);
-            $this.find('.js-form__checkbox__input').prop('checked', checked);
-            setCheckRadioStatus($this);
-          });
+          // Only click visible ones
+          $(listSelector).find('.js-form__checkbox:visible').click();
         });
       });
     });
@@ -171,25 +168,22 @@
 
     // DO THIS! call zanata.form.appendCheckboxes(refreshedcomponent)
 
-
-
-    // FIXME copied from zanata-assxets/src/assets/js/components/form.js:22
-    // The function is not accessible outside that scope.
-    function setCheckRadioStatus ($this) {
-      var $input = $this.find('.js-form__checkbox__input,.js-form__radio__input'),
-          $item = $this.find('.js-form__checkbox__item, .js-form__radio__item');
-
-      // Wait until checkbox/radio change has propagated
-      setImmediate(function () {
-        var checked = $input.is(':checked');
-        $this.toggleClass('is-checked', checked);
-        $item.toggleClass('is-checked', checked);
-      });
-    }
-
     function setImmediate (fun) {
       return setTimeout(fun, 0);
     }
+  }
+
+  function selectAllClicked($this) {
+    // The checked state does not update until the next loop.
+    setTimeout(function() {
+      var listContainerSelector = $this.data('select-all-for-list');
+      var checked = $this.find('.js-form__checkbox__input').prop('checked');
+      if(checked) {
+        $(listContainerSelector).find('.js-form__checkbox:visible:not(.is-checked)').click();
+      } else {
+        $(listContainerSelector).find('.js-form__checkbox.is-checked').click();
+      }
+    }, 0)
   }
 
 
@@ -297,14 +291,14 @@
       //       item, but this should be triggered directly by that script when
       //       this code is moved to assets.
       function delayedTriggerListRecheck () {
-        console.log('delayedTriggerListRecheck');
+        //console.log('delayedTriggerListRecheck');
         setTimeout(triggerListRecheck, 20);
       }
 
       function triggerListRecheck() {
         var targetList = $(targetListSelector);
-        var totalElements = targetList.children().size();
-        var selectedElements = targetList.children('.is-checked').size();
+        var totalElements = targetList.find('.js-form__checkbox__input').size();
+        var selectedElements = targetList.find('.js-form__checkbox__input:checked').size();
 
         var none = selectedElements === 0;
         var one = selectedElements === 1;
@@ -343,6 +337,12 @@
     }
   }
 
+  function searchEnabledLocales(query) {
+    $('#settings-active-locales').find('li:contains(' + query +
+    ')').removeClass('is-hidden');
+    $('#settings-active-locales').find('li:not(:contains(' + query +
+    '))').addClass('is-hidden');
+  }
 
   //]]>
 </script>
@@ -572,30 +572,26 @@
         action="#{projectHome.instance.localeAliases.clear()}"
         render="settings-languages-list"/>
 
-      <!-- This is just to test if I can get ANY checkbox working, let alone
-           a map of them. This does seem to work. -->
-      <h:selectBooleanCheckbox
-        value="#{projectHome.selectedCheckbox}"/>
-      
-
       <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
 
       <div class="w--5-12 form--search js-form--search">
         <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
-        <!-- TODO make this filter the list -->
         <input type="search"
           placeholder="#{msgs['jsf.languages.FilterLanguages']}"
+          onkeyup="searchEnabledLocales($(this).val())"
           class="form--search__input js-form--search__input l--push-bottom-quarter" />
         <!-- TODO make this clear the filter textbox -->
         <button
-          class="button--link form--search__clear js-form--search__clear is-hidden">
+          class="button--link form--search__clear js-form--search__clear is-hidden"
+          onclick="event.preventDefault()">
           <i class="i i--remove"></i>
         </button>
       </div>
 
       <div class="is-hidden--s l--pad-v-quarter">
         <div class="form__checkbox js-form__checkbox"
-          data-select-all-for-list="#settings-active-locales">
+          data-select-all-for-list="#settings-active-locales"
+          onclick="selectAllClicked($(this))">
           <input type="checkbox"
             class="form__checkbox__input js-form__checkbox__input"
             name="form-checkbox"/>
@@ -617,11 +613,6 @@
           <div class="js-list-operation is-hidden"
             data-target-list="#settings-active-locales"
             data-none-selected-class="is-hidden">
-            <!-- TODO remove selected languages on click -->
-            <!-- I could iterate the list, but can't just click every item.
-                 I think the correct way to do this would be to submit the form,
-                 including selection information, with an action on the java
-                 class to remove the selected languages. -->
             <zanata:ajax-command-link
               action="#{projectHome.removeSelectedLanguages()}"
               oncomplete="refreshStatistics()"
@@ -654,21 +645,16 @@
 
 
       <ul id="settings-active-locales" class="list--slat list--highlight d--top">
+        <h:outputScript>
+          zanata.form.appendCheckboxes($('#settings-active-locales'));
+        </h:outputScript>
         <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
-
-          <!-- TODO might want to add an entity to bind to all these properties in the row -->
 
           <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
 
-            <!-- this does not seem to be picking up the checked value, even
-                 though this seems identical to how the alias strings are
-                 working, except that this is a checkbox rather than a text
-                 input? -->
             <h:selectBooleanCheckbox
               value="#{projectHome.activeLocaleSelections[locale.localeId]}"
               styleClass="form__checkbox__input js-form__checkbox__input"/>
-
-              <!-- name="form-checkbox-#{locale.localeId}"/> -->
 
             <div class="js-form__checkbox__label l--pad-left-1half">
               <div class="g g--tight">
@@ -761,7 +747,6 @@
               </div>
             </div>
 
-            <!-- TODO this looks a bit out-of-place, needs fix -->
             <div class="l--pad-all-quarter bg--high is-hidden"
                  id="locale-alias-form-#{locale.localeId}">
               <!-- make for screenreader only -->
@@ -795,40 +780,92 @@
       </ul>
 
 
-      <!-- TODO add disabled section -->
-      <!-- TODO move the "add default languages" next to filter for disabled -->
+      <ui:remove><!-- Available Locale list --></ui:remove>
 
+      <hr/>
+      <h3 class="heading--secondary">Available</h3>
+      <zanata:text-search searchValue="#{projectHome.availableLocaleSearchQuery}"
+        placeholder="Filter languages" render="availableLocaleResults"/>
+      <div class="is-hidden--s l--pad-v-quarter">
+        <div class="form__checkbox js-form__checkbox"
+          data-select-all-for-list="#settings-available-locales">
+          <input type="checkbox" class="form__checkbox__input js-form__checkbox__input" name="form-checkbox"/>
+        </div>
+        <div class="l--pad-left-1half">
+          <div class="g g--tight js-list-operation"
+            data-target-list="#settings-available-locales"
+            data-any-selected-class="is-hidden">
+            <div class="g__item w--5-12">
+              <h4 class="zeta">#{msgs['jsf.NativeName.short']}</h4>
+            </div>
+            <div class="g__item w--2-12">
+              <h4 class="zeta">#{msgs['jsf.LocaleCode.short']}</h4>
+            </div>
+            <div class="g__item w--5-12"></div>
+          </div>
+          <div class="js-list-operation is-hidden"
+            data-target-list="#settings-available-locales"
+            data-none-selected-class="is-hidden">
+            <zanata:ajax-command-button
+              action="#{projectHome.addSelectedAvailableLanguages}"
+              styleClass="button--link link--success"
+              render="settings-languages-list">
+              <f:facet name="loading">
+                <span class="txt--neutral">
+                  ${msgs['jsf.languages.EnableLanguages.inProgress.label']}
+                </span>
+              </f:facet>
+              ${msgs['jsf.languages.EnableLanguages.label']}
+            </zanata:ajax-command-button>
+          </div>
+        </div>
+      </div>
+      <a4j:outputPanel id="availableLocaleResults">
+        <h:outputScript>
+          zanata.form.appendCheckboxes('#' + jqSelector("#{rich:clientId('availableLocaleResults')}"));
+        </h:outputScript>
+        <ul id="settings-available-locales" class="list--slat d--top">
+          <ui:repeat value="#{projectHome.availableLocaleResults}"
+            var="availableLocale">
 
-      <!-- TODO move alias input to new section -->
-      <ul class="list--slat list--highlight l--push-top-half">
-        <li class="list--highlight__item--none">
+            <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
+              <!--<input type="checkbox" class="form__checkbox__input js-form__checkbox__input" name="form-checkbox"/>-->
+              <h:selectBooleanCheckbox
+                value="#{projectHome.availableLocaleSelections[availableLocale.localeId]}"
+                styleClass="form__checkbox__input js-form__checkbox__input"/>
+              <div class="js-form__checkbox__label l--pad-left-1half">
+                <div class="g g--tight">
+                  <div class="g__item w--5-12 w--1-s">
+                    #{availableLocale.retrieveDisplayName()}
+                  </div>
+                  <div class="g__item w--2-12 w--3-10-s">
+                    <span class="txt--understated">
+                      #{availableLocale.localeId.id}
+                    </span>
+                  </div>
+                  <div class="g__item w--5-12 w--7-10-s reveal__target txt--align-right txt--align-right-s">
+                    <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
+                      <div class="button--group">
+                        <zanata:ajax-command-button
+                          oncomplete="refreshStatistics();"
+                          action="#{projectHome.addLanguage(locale.localeId)}"
+                          styleClass="button button--small"
+                          render="settings-languages-list">
+                          Enable
+                        </zanata:ajax-command-button>
+                      </div>
+                      <ul class="dropdown__content js-dropdown__content">
+                        <li><button class="dropdown__content__link button--link i__item--left"><i class="i i--plus i__item__icon"></i> Add alias</button></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
 
-          <label
-            for="#{rich:clientId('languageAutocomplete')}-autocomplete__input">
-            #{msgs['jsf.AddALanguage']}
-          </label>
-
-          <zanata:autocomplete
-            actionBean="#{projectHome.localeAutocomplete}"
-            maxlength="80" searchWhenFocus="true"
-            id="languageAutocomplete"
-            fetchValue="#{result.localeId}"
-            render="settings-languages-list"
-            oncomplete="refreshStatistics();focusCurrentActiveInput()"
-            placeholder="#{msgs['jsf.language.search.placeholder']}">
-
-            #{result.retrieveDisplayName()}<span
-            class="txt--understated l--push-left-quarter">[#{result.localeId}]</span>
-          </zanata:autocomplete>
-
-        </li>
-      </ul>
-
-      <!-- Placed here so that it runs when this panel reloads -->
-      <script type="text/javascript">
-        // refresh checkbox facades on language lists
-        zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
-      </script>
+          </ui:repeat>
+        </ul>
+      </a4j:outputPanel>
     </s:div>
   </h:form>
 </li>

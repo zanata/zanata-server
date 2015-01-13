@@ -35,6 +35,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,7 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountRoleDAO;
+import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
@@ -69,11 +72,15 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
+import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.AbstractListFilter;
+import org.zanata.ui.AbstractTextSearch;
+import org.zanata.ui.FilterUtil;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.util.ComparatorUtil;
+import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -101,6 +108,9 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @In
     private LocaleService localeServiceImpl;
+
+    @In
+    private LocaleDAO localeDAO;
 
     @In
     private SlugEntityService slugEntityServiceImpl;
@@ -136,9 +146,14 @@ public class ProjectHome extends SlugHome<HProject> {
     @Setter
     private Map<LocaleId, String> inputLocaleAliases = Maps.newHashMap();
 
-    // @Getter
+    @Getter
     @Setter
     private Map<LocaleId, Boolean> activeLocaleSelections = Maps.newHashMap();
+
+    @Getter
+    @Setter
+    private Map<LocaleId, Boolean> availableLocaleSelections = Maps
+            .newHashMap();
 
     public Map<LocaleId, Boolean> getActiveLocaleSelections() {
         log.info("getActiveLocaleSelections()");
@@ -166,6 +181,12 @@ public class ProjectHome extends SlugHome<HProject> {
     @Setter
     private Boolean selectedCheckbox = Boolean.TRUE;
 
+    @Getter
+    @Setter
+    private String availableLocaleSearchQuery;
+
+    private List<HLocale> availableLocaleResults;
+
     private Map<String, Boolean> roleRestrictions;
 
     private Map<ValidationId, ValidationAction> availableValidations = Maps
@@ -182,10 +203,6 @@ public class ProjectHome extends SlugHome<HProject> {
     @Getter
     private ProjectMaintainersAutocomplete maintainerAutocomplete =
             new ProjectMaintainersAutocomplete();
-
-    @Getter
-    private ProjectLocaleAutocomplete localeAutocomplete =
-            new ProjectLocaleAutocomplete();
 
     @Getter
     private AbstractListFilter<HPerson> maintainerFilter =
@@ -287,6 +304,7 @@ public class ProjectHome extends SlugHome<HProject> {
         }
         getInstance().getLocaleAliases().remove(localeId);
         update();
+        availableLocaleResults = null;
         conversationScopeMessages.setMessage(
                 FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.project.LanguageRemoved",
@@ -329,6 +347,36 @@ public class ProjectHome extends SlugHome<HProject> {
             }
         }
         activeLocaleSelections.clear();
+        conversationScopeMessages.setMessage(
+                FacesMessage.SEVERITY_INFO,
+                msgs.get("jsf.project.LanguageAliasesRemoved"));
+    }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void addLanguage(LocaleId localeId) {
+        HLocale locale =
+                localeServiceImpl.getByLocaleId(localeId);
+
+        if (!getInstance().isOverrideLocales()) {
+            getInstance().setOverrideLocales(true);
+            getInstance().getCustomizedLocales().clear();
+            getInstance().getCustomizedLocales().addAll(
+                    localeServiceImpl
+                            .getSupportedLocales());
+        }
+        availableLocaleResults = null;
+        getInstance().getCustomizedLocales().add(locale);
+    }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void addSelectedAvailableLanguages() {
+        for (Map.Entry<LocaleId, Boolean> entry : availableLocaleSelections
+                .entrySet()) {
+            if (entry.getValue()) {
+                addLanguage(entry.getKey());
+            }
+        }
+        availableLocaleSelections.clear();
         conversationScopeMessages.setMessage(
                 FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageAliasesRemoved"));
@@ -735,6 +783,48 @@ public class ProjectHome extends SlugHome<HProject> {
         return Arrays.asList(ValidationAction.State.values());
     }
 
+    /**
+     * @return The list of available locales after filtering out the ones
+     *         already in the project and based on the available locale search
+     *         filter.
+     */
+    public void searchAvailableLocales() {
+        Collection<HLocale> filtered =
+                Collections2.filter(localeDAO.findAllActive(),
+                        new Predicate<HLocale>() {
+                            @Override
+                            public boolean apply(HLocale input) {
+                                String query =
+                                        availableLocaleSearchQuery == null ? ""
+                                                : availableLocaleSearchQuery;
+                                // only include those not already in
+                                // the project and
+                                // that match the search query
+                                return (input
+                                        .asULocale()
+                                        .getDisplayName()
+                                        .toLowerCase()
+                                        .contains(
+                                                query.toLowerCase()) ||
+                                        input.getLocaleId()
+                                                .getId()
+                                                .toLowerCase()
+                                                .contains(
+                                                        query.toLowerCase()))
+                                        && !getInstanceActiveLocales()
+                                        .contains(input);
+                            }
+                        });
+        availableLocaleResults = Lists.newArrayList(filtered);
+    }
+
+    public List<HLocale> getAvailableLocaleResults() {
+        if(availableLocaleResults == null) {
+            searchAvailableLocales();
+        }
+        return availableLocaleResults;
+    }
+
 
     /**
      * This is for autocomplete components of which ConversationScopeMessages
@@ -779,39 +869,6 @@ public class ProjectHome extends SlugHome<HProject> {
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.project.MaintainerAdded",
                             maintainer.getName()));
-        }
-    }
-
-    private class ProjectLocaleAutocomplete extends LocaleAutocomplete {
-
-        @Override
-        protected Collection<HLocale> getLocales() {
-            return localeServiceImpl.getSupportedLanguageByProject(getSlug());
-        }
-
-        /**
-         * Action when an item is selected
-         */
-        @Override
-        public void onSelectItemAction() {
-            if (StringUtils.isEmpty(getSelectedItem())) {
-                return;
-            }
-
-            HLocale locale = localeServiceImpl.getByLocaleId(getSelectedItem());
-
-            if (!getInstance().isOverrideLocales()) {
-                getInstance().setOverrideLocales(true);
-                getInstance().getCustomizedLocales().clear();
-                getInstance().getCustomizedLocales().addAll(supportedLocales);
-            }
-            getInstance().getCustomizedLocales().add(locale);
-
-            update(conversationScopeMessages);
-            reset();
-            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.project.LanguageAdded",
-                            locale.retrieveDisplayName()));
         }
     }
 
