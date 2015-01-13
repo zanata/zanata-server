@@ -23,27 +23,18 @@
 </composite:interface>
 
 <composite:implementation>
-
-  <h:outputScript library="script" name="jquery.typing-0.2.0.min.js" target="body"/>
-
-  <div class="w--5-12 form--search js-form--search">
+  <div id="#{cc.clientId}"
+    class="w--5-12 form--search js-form--search l--push-bottom-quarter">
     <label class="is-sr-only">#{cc.attrs.placeholder}</label>
     <h:inputText placeholder="#{cc.attrs.placeholder}"
       value="#{cc.attrs.searchValue}"
-      class="form--search__input js-form--search__input l--push-bottom-quarter #{cc.attrs.styleClass}">
+      class="form--search__input js-form--search__input js-form__input--clear #{cc.attrs.styleClass}">
       <a4j:ajax event="keyup" render="#{cc.attrs.render}"
-        onbegin="zanata.loader.activate($(this).parent().find('.js-loader'))"
-        oncomplete="zanata.loader.deactivate($(this).parent().find('.js-loader'))">
+        onbegin="zanata.form.activateInputLoading(this)"
+        oncomplete="zanata.form.deactivateInputLoading(this)">
         <a4j:attachQueue requestDelay="400"/>
       </a4j:ajax>
     </h:inputText>
-    <button class="button--link form--search__clear js-form--search__clear is-hidden"
-      onclick="event.preventDefault();">
-      <i class="i i--remove"></i>
-    </button>
-    <span style="position: absolute; left: 0; top: 0"
-      class="loader--small loader--inline l--push-left-half js-loader">
-    </span>
   </div>
 </composite:implementation>
 </html>
