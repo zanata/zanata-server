@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:composite="http://java.sun.com/jsf/composite"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<composite:interface
+  shortDescription="A search field that allows for an action to be performed
+  when typing on it.">
+  <composite:attribute name="render" type="java.lang.String" default=""
+    shortDescription="List of component ids to render after a search query is submitted."/>
+
+  <composite:attribute name="styleClass" type="java.lang.String" default=""
+    shortDescription="css style for the generated button"/>
+
+  <composite:attribute name="placeholder" type="java.lang.String" default=""
+    shortDescription="Placeholder text for the search field."/>
+
+  <composite:attribute name="searchValue" type="java.lang.String" required="true"
+    shortDescription="The value where the search string will be stored."/>
+</composite:interface>
+
+<composite:implementation>
+
+  <h:outputScript library="script" name="jquery.typing-0.2.0.min.js" target="body"/>
+
+  <div class="w--5-12 form--search js-form--search">
+    <label class="is-sr-only">#{cc.attrs.placeholder}</label>
+    <h:inputText placeholder="#{cc.attrs.placeholder}"
+      value="#{cc.attrs.searchValue}"
+      class="form--search__input js-form--search__input l--push-bottom-quarter #{cc.attrs.styleClass}">
+      <a4j:ajax event="keyup" render="#{cc.attrs.render}"
+        onbegin="zanata.loader.activate($(this).parent().find('.js-loader'))"
+        oncomplete="zanata.loader.deactivate($(this).parent().find('.js-loader'))">
+        <a4j:attachQueue requestDelay="400"/>
+      </a4j:ajax>
+    </h:inputText>
+    <button class="button--link form--search__clear js-form--search__clear is-hidden"
+      onclick="event.preventDefault();">
+      <i class="i i--remove"></i>
+    </button>
+    <span style="position: absolute; left: 0; top: 0"
+      class="loader--small loader--inline l--push-left-half js-loader">
+    </span>
+  </div>
+</composite:implementation>
+</html>
