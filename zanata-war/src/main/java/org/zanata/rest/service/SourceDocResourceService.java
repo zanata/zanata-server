@@ -421,7 +421,7 @@ public class SourceDocResourceService implements SourceDocResource {
         } catch (ZanataServiceException e) {
             log.warn(
                     "Exception validating target locale {} in proj {} iter {}",
-                    e, locale, projectSlug, iterationSlug);
+                    locale, projectSlug, iterationSlug);
             throw new WebApplicationException(Response
                     .status(Response.Status.FORBIDDEN).entity(e.getMessage())
                     .build());
