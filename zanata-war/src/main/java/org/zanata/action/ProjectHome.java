@@ -310,12 +310,7 @@ public class ProjectHome extends SlugHome<HProject> {
             getInstance().setOverrideLocales(true);
         }
         getInstance().getLocaleAliases().remove(localeId);
-        update();
         availableLocaleResults = null;
-        conversationScopeMessages.setMessage(
-                FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.project.LanguageRemoved",
-                        locale.retrieveDisplayName()));
     }
 
     private void removeAlias(LocaleId localeId) {

@@ -285,7 +285,7 @@
       // an ajax call. They are instead delegated to an ancestor element that is
       // marked as static by the developer, using the body as a fallback.
       var eventDelegate = getStaticAncestor($(targetListSelector));
-      eventDelegate.on('click', targetListSelector, delayedTriggerListRecheck);
+      eventDelegate.on('change', targetListSelector, delayedTriggerListRecheck);
 
       // FIXME this waits for the script that changes the is-checked class on the
       //       item, but this should be triggered directly by that script when
@@ -591,13 +591,7 @@
       </div>
 
       <div class="is-hidden--s l--pad-v-quarter">
-        <div class="form__checkbox js-form__checkbox"
-          data-select-all-for-list="#settings-active-locales"
-          onclick="selectAllClicked($(this))">
-          <input type="checkbox"
-            class="form__checkbox__input js-form__checkbox__input"
-            name="form-checkbox"/>
-        </div>
+        <zanata:select-all-checkbox listSelector="#settings-active-locales"/>
         <div class="l--pad-left-1half">
           <div class="g g--tight js-list-operation"
             data-target-list="#settings-active-locales"
@@ -789,10 +783,8 @@
       <zanata:text-search searchValue="#{projectHome.availableLocaleSearchQuery}"
         placeholder="Filter languages" render="availableLocaleResults"/>
       <div class="is-hidden--s l--pad-v-quarter">
-        <div class="form__checkbox js-form__checkbox"
-          data-select-all-for-list="#settings-available-locales">
-          <input type="checkbox" class="form__checkbox__input js-form__checkbox__input" name="form-checkbox"/>
-        </div>
+        <zanata:select-all-checkbox label=""
+          listSelector="#settings-available-locales"/>
         <div class="l--pad-left-1half">
           <div class="g g--tight js-list-operation"
             data-target-list="#settings-available-locales"
@@ -817,6 +809,7 @@
                   ${msgs['jsf.languages.EnableLanguages.inProgress.label']}
                 </span>
               </f:facet>
+              <i class="i i--checkmark"></i>
               ${msgs['jsf.languages.EnableLanguages.label']}
             </zanata:ajax-command-button>
           </div>
