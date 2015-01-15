@@ -182,7 +182,6 @@ public class ProjectHome extends SlugHome<HProject> {
     private Boolean selectedCheckbox = Boolean.TRUE;
 
     @Getter
-    @Setter
     private String availableLocaleSearchQuery;
 
     private List<HLocale> availableLocaleResults;
@@ -241,6 +240,14 @@ public class ProjectHome extends SlugHome<HProject> {
         } else {
             getInstance().setDefaultProjectType(null);
         }
+    }
+
+    public void setAvailableLocaleSearchQuery(String query) {
+        if(!query.equals(availableLocaleSearchQuery)) {
+            // do the search again
+            availableLocaleResults = null;
+        }
+        availableLocaleSearchQuery = query;
     }
 
     /**

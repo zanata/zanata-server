@@ -20,6 +20,12 @@
 
   <composite:attribute name="searchValue" type="java.lang.String" required="true"
     shortDescription="The value where the search string will be stored."/>
+
+  <composite:attribute name="onbegin" type="java.lang.String"
+    shortDescription="Scripts to be executed after an ajax call has begun."/>
+
+  <composite:attribute name="oncomplete" type="java.lang.String"
+    shortDescription="Scripts to be executed after an ajax call has completed."/>
 </composite:interface>
 
 <composite:implementation>
@@ -30,8 +36,8 @@
       value="#{cc.attrs.searchValue}"
       class="form--search__input js-form--search__input js-form__input--clear #{cc.attrs.styleClass}">
       <a4j:ajax event="keyup" render="#{cc.attrs.render}"
-        onbegin="zanata.form.activateInputLoading(this)"
-        oncomplete="zanata.form.deactivateInputLoading(this)">
+        onbegin="zanata.form.activateInputLoading(this); #{cc.attrs.onbegin}"
+        oncomplete="zanata.form.deactivateInputLoading(this); #{cc.attrs.oncomplete}">
         <a4j:attachQueue requestDelay="400"/>
       </a4j:ajax>
     </h:inputText>

@@ -574,6 +574,8 @@
 
       <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
 
+      <ui:remove><!-- Available Languages --></ui:remove>
+
       <div class="w--5-12 form--search js-form--search">
         <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
         <input type="search"
@@ -820,7 +822,7 @@
           </div>
         </div>
       </div>
-      <a4j:outputPanel id="availableLocaleResults">
+      <a4j:outputPanel id="availableLocaleResults" ajaxRendered="true">
         <h:outputScript>
           zanata.form.appendCheckboxes('#' + jqSelector("#{rich:clientId('availableLocaleResults')}"));
         </h:outputScript>
