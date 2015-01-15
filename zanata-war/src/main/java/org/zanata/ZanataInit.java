@@ -67,6 +67,8 @@ import org.jboss.seam.core.Events;
 import org.zanata.exception.ZanataInitializationException;
 import org.zanata.rest.dto.VersionInfo;
 import org.zanata.util.VersionUtility;
+import org.zanata.util.ZanataDatabaseDriverMetadata;
+import org.zanata.util.ZanataDatabaseMetaData;
 
 /**
  * This class handles various tasks at startup.  It disables warnings for a
@@ -117,11 +119,8 @@ public class ZanataInit {
         Attributes atts = null;
         if (manifestFile.canRead()) {
             Manifest mf = new Manifest();
-            final FileInputStream fis = new FileInputStream(manifestFile);
-            try {
+            try (FileInputStream fis = new FileInputStream(manifestFile)) {
                 mf.read(fis);
-            } finally {
-                fis.close();
             }
             atts = mf.getMainAttributes();
         }
@@ -426,6 +425,8 @@ public class ZanataInit {
         if (appServerVersion.eapVersion.isPresent()) {
             log.info("  EAP version: " + appServerVersion.eapVersion.get());
         }
+        log.info("  Database: {}", ZanataDatabaseMetaData.instance);
+        log.info("  JDBC Driver: {}", ZanataDatabaseDriverMetadata.instance);
         log.info("  AS version: " + appServerVersion.asVersion.orNull());
         log.info("  SCM: " + ver.getScmDescribe());
         log.info("  Red Hat Inc 2008-2014");
