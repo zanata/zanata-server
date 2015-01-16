@@ -36,10 +36,37 @@ public interface ProjectResource {
      *         INTERNAL SERVER ERROR(500) - If there is an unexpected error in
      *         the server while performing this operation.
      */
-
     @GET
     @Produces({ MediaTypes.APPLICATION_ZANATA_PROJECT_JSON,
             MediaType.APPLICATION_JSON })
     @Path(PROJECT_SLUG_TEMPLATE)
     public Response getProject(@PathParam("projectSlug") String projectSlug);
+
+    /**
+     * Return user read/write/review permission on project of current
+     * authenticated user
+     *
+     * @param projectSlug
+     *            project identifier
+     * @param localeId
+     *            locale identifier
+     *
+     * @return The following response status codes will be returned from this
+     *         operation:<br>
+     *         OK(200) - Response containing user permission.<br>
+     *         NOT FOUND(404) - If no authenticated user found. <br>
+     *         NOT FOUND(404) - If a Project could not be found for the given
+     *         parameters.<br>
+     *         NOT FOUND(404) - If a locale could not be found for the given
+     *         parameters.<br>
+     *         INTERNAL SERVER ERROR(500) - If there is an unexpected error in
+     *         the server while performing this operation.
+     *
+     */
+    @GET
+    @Produces({ MediaTypes.APPLICATION_ZANATA_PROJECT_JSON,
+        MediaType.APPLICATION_JSON })
+    @Path(PROJECT_SLUG_TEMPLATE + "/permission/{localeId}")
+    public Response getPermission(@PathParam("projectSlug") String projectSlug,
+        @PathParam("localeId") String localeId);
 }
