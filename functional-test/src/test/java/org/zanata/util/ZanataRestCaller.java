@@ -168,7 +168,7 @@ public class ZanataRestCaller {
             String idNoSlash, LocaleId localeId,
             TranslationsResource translationsResource, String mergeType) {
         asyncPushTarget(projectSlug, iterationSlug, idNoSlash, localeId,
-                translationsResource, mergeType);
+                translationsResource, mergeType, false);
     }
 
     public static TranslationsResource buildTranslationResource(

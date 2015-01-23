@@ -386,6 +386,8 @@
               <!--TODO move all gwt wrapper class under specific package. i.e boundary-->
               <!--<exclude>**/boundary/**/*</exclude>-->
               <exclude>**/test/**/*</exclude>
+              <exclude>**/Sample*</exclude>
+              <exclude>**/dto/**</exclude>
               <!--<exclude>**/supersource/**/*</exclude>-->
               <exclude>**/client/**/*View</exclude>
               <exclude>**/client/Application*</exclude>
@@ -395,6 +397,7 @@
               <exclude>**/client/rpc/**</exclude>
               <exclude>**/client/ui/**</exclude>
               <exclude>**/client/view/**</exclude>
+              <exclude>**/client/util/**</exclude>
               <exclude>**/EventWrapperImpl*</exclude>
               <exclude>**/*DataProvider*</exclude>
               <exclude>**/*SelectionModel*</exclude>
@@ -402,6 +405,9 @@
               <exclude>**/shared/auth/**</exclude>
               <exclude>**/shared/model/**</exclude>
               <exclude>**/shared/rpc/**</exclude>
+              <exclude>**/shared/util/**</exclude>
+              <!--hard to test due to environment dependent-->
+              <exclude>org/zanata/security/**</exclude>
 
               <!--Server exclusion-->
               <exclude>**/job/**</exclude>
