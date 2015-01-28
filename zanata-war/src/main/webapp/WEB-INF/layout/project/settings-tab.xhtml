@@ -781,9 +781,6 @@
 
         <ul id="settings-active-locales" class="list--slat list--highlight d--top"
           data-empty-results-indicator="#settings-active-locales-none">
-          <h:outputScript>
-            zanata.form.appendCheckboxes($('#settings-active-locales'));
-          </h:outputScript>
           <ui:repeat value="#{projectHome.getInstanceActiveLocales()}" var="locale">
 
             <li class="reveal form__checkbox form__checkbox--spaced js-form__checkbox">
@@ -1009,6 +1006,13 @@
           </ui:repeat>
         </ul>
       </a4j:outputPanel>
+
+      <!-- Placed at the end of the re-loaded panel so that it runs when the
+           new content of the panel is present in the DOM -->
+      <script type="text/javascript">
+        // refresh checkbox facades on language lists
+        zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
+      </script>
     </s:div>
   </h:form>
 </li>
