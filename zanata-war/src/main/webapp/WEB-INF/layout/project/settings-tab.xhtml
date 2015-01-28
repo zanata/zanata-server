@@ -959,11 +959,6 @@
         </div>
       </div>
       <a4j:outputPanel id="availableLocaleResults" ajaxRendered="true">
-        <h:outputScript>
-          zanata.form.appendCheckboxes('#' + jqSelector("#{rich:clientId('availableLocaleResults')}"));
-          /* ensure active locales filter is applied correctly after items are refreshed */
-          filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');
-        </h:outputScript>
         <ul id="settings-available-locales" class="list--slat d--top">
           <ui:repeat value="#{projectHome.availableLocaleResults}"
             var="availableLocale">
@@ -1007,11 +1002,13 @@
         </ul>
       </a4j:outputPanel>
 
-      <!-- Placed at the end of the re-loaded panel so that it runs when the
-           new content of the panel is present in the DOM -->
+      <!-- Placed at the end of the re-loaded panel so that it runs when all the
+           new panel content from ajax is present in the DOM -->
       <script type="text/javascript">
         // refresh checkbox facades on language lists
         zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
+        // ensure active locales filter is applied correctly after items are refreshed */
+        filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');
       </script>
     </s:div>
   </h:form>
