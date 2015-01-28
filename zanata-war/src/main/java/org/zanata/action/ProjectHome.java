@@ -136,6 +136,12 @@ public class ProjectHome extends SlugHome<HProject> {
     @In
     private CopyTransOptionsModel copyTransOptionsModel;
 
+    // This property is present to keep the filter in place when the region with
+    // the filter box is refreshed.
+    @Getter
+    @Setter
+    private String activeLocaleFilter = "";
+
     /**
      * A separate map is used, rather than binding the alias map from the
      * project directly. This is done so that empty values are not added to the
