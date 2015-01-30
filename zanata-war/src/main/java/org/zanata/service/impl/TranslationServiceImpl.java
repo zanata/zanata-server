@@ -834,8 +834,7 @@ public class TranslationServiceImpl implements TranslationService {
                             hTarget.setTranslator(hPerson);
                             hTarget.setLastModifiedBy(hPerson);
                             actorId = hPerson.getId();
-                        }
-                        else {
+                        } else {
                             hTarget.setTranslator(null);
                             hTarget.setLastModifiedBy(authenticatedAccount.getPerson());
                             actorId = null;
