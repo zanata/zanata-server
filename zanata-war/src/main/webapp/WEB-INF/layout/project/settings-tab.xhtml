@@ -353,6 +353,16 @@
     }
   }
 
+  /**
+   * Attach to keypress event to prevent submission of form when enter is
+   * pressed in a textbox.
+   */
+  function doNotSubmit(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+    }
+  }
+
   /*
    * Filter a given locale list based on the value of a given textbox.
    */
@@ -682,19 +692,20 @@
         value="#{msgs['jsf.Language.useGlobal']}"
         rendered="#{projectHome.instance.overrideLocales}"
         action="#{projectHome.updateLanguagesFromGlobal()}"
-        render="settings-languages-list"/>
+        render="settings-languages-form"/>
 
       <button jsfc="a4j:commandButton"
         styleClass="button--small l--push-bottom-half l--push-left-half"
         value="#{msgs['jsf.localeAlias.RemoveAllAliases']}"
         rendered="#{not empty projectHome.instance.localeAliases}"
         action="#{projectHome.instance.localeAliases.clear()}"
-        render="settings-languages-list"/>
+        render="settings-languages-form"/>
 
       <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
 
       <ui:remove><!-- Active Languages --></ui:remove>
 
+      <ui:remove><!-- TODO consider making this a component --></ui:remove>
       <div class="w--5-12 form--search js-form--search">
         <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
         <h:inputText id="filter-active-locales-input"
@@ -702,6 +713,7 @@
           placeholder="#{msgs['jsf.languages.FilterLanguages']}"
           value="#{projectHome.activeLocaleFilter}"
           onkeyup="return onFilterLocalesTextboxKeyUp('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales', event);"
+          onkeypress="doNotSubmit(event);"
           maxlength="255"
           styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
         </h:inputText>
@@ -717,12 +729,11 @@
       <s:fragment rendered="#{empty projectHome.getInstanceActiveLocales()}">
         <!-- TODO fix style -->
         <div id="settings-active-locales-no-results">
-          #{msgs['jsf.NoActiveLanguages']}
+          #{msgs['jsf.languages.NoActiveLanguages']}
         </div>
       </s:fragment>
 
-      <s:fragment rendered="#{not empty projectHome.getInstanceActiveLocales()}">
-
+      <div class="#{ empty projectHome.getInstanceActiveLocales() ? 'is-hidden' : ''}">
 
         <div class="is-hidden--s l--pad-v-quarter">
           <zanata:select-all-checkbox listSelector="#settings-active-locales"/>
@@ -911,55 +922,86 @@
             </li>
           </ui:repeat>
         </ul>
-      </s:fragment>
+      </div>
 
 
       <ui:remove><!-- Available Locale list --></ui:remove>
 
       <hr/>
-      <h3 class="heading--secondary">Available</h3>
-      <!-- This uses ajax, which is problematic since it slows the search
-      depending on network speed. It also means selections are cleared as soon
-      as the filter is changed at all. Better to do it all locally.
-      Perhaps I can make a component that does this (although that might
-      duplicate the javascript). -->
-      <zanata:text-search searchValue="#{projectHome.availableLocaleSearchQuery}"
-        placeholder="Filter languages" render="availableLocaleResults"/>
-      <div class="is-hidden--s l--pad-v-quarter">
-        <zanata:select-all-checkbox label=""
-          listSelector="#settings-available-locales"/>
-        <div class="l--pad-left-1half">
-          <div class="g g--tight js-list-operation"
-            data-target-list="#settings-available-locales"
-            data-any-selected-class="is-hidden">
-            <div class="g__item w--5-12">
-              <h4 class="zeta">#{msgs['jsf.NativeName.short']}</h4>
+      <h3 class="heading--secondary">#{msgs['jsf.languages.Available']}</h3>
+
+      <div class="w--5-12 form--search js-form--search">
+        <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
+        <h:inputText id="filter-available-locales-input"
+          required="false"
+          placeholder="#{msgs['jsf.languages.FilterLanguages']}"
+          value="#{projectHome.availableLocaleSearchQuery}"
+          onkeyup="return onFilterLocalesTextboxKeyUp('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales', event);"
+          onkeypress="doNotSubmit(event);"
+          maxlength="255"
+          styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
+        </h:inputText>
+
+        <!-- TODO make this clear the filter textbox -->
+        <button
+          class="button--link form--search__clear js-form--search__clear is-hidden"
+          onclick="event.preventDefault()">
+          <i class="i i--remove"></i>
+        </button>
+      </div>
+
+      <s:fragment rendered="#{empty projectHome.availableLocaleResults}">
+        <!-- TODO fix style -->
+        <div id="settings-active-locales-no-results">
+          #{msgs['jsf.languages.NoLanguagesAvailable']}
+        </div>
+      </s:fragment>
+
+
+      <div class="#{ empty projectHome.availableLocaleResults ? 'is-hidden' : ''}">
+
+        <div class="is-hidden--s l--pad-v-quarter">
+          <zanata:select-all-checkbox label=""
+            listSelector="#settings-available-locales"/>
+          <div class="l--pad-left-1half">
+            <div class="g g--tight js-list-operation"
+              data-target-list="#settings-available-locales"
+              data-any-selected-class="is-hidden">
+              <div class="g__item w--5-12">
+                <h4 class="zeta">#{msgs['jsf.NativeName.short']}</h4>
+              </div>
+              <div class="g__item w--2-12">
+                <h4 class="zeta">#{msgs['jsf.LocaleCode.short']}</h4>
+              </div>
+              <div class="g__item w--5-12"></div>
             </div>
-            <div class="g__item w--2-12">
-              <h4 class="zeta">#{msgs['jsf.LocaleCode.short']}</h4>
+            <div class="js-list-operation is-hidden"
+              data-target-list="#settings-available-locales"
+              data-none-selected-class="is-hidden">
+              <zanata:ajax-command-button
+                action="#{projectHome.addSelectedAvailableLanguages}"
+                styleClass="button--link link--success"
+                render="settings-languages-list">
+                <f:facet name="loading">
+                  <span class="txt--neutral">
+                    ${msgs['jsf.languages.EnableLanguages.inProgress.label']}
+                  </span>
+                </f:facet>
+                <i class="i i--checkmark"></i>
+                ${msgs['jsf.languages.EnableLanguages.label']}
+              </zanata:ajax-command-button>
             </div>
-            <div class="g__item w--5-12"></div>
-          </div>
-          <div class="js-list-operation is-hidden"
-            data-target-list="#settings-available-locales"
-            data-none-selected-class="is-hidden">
-            <zanata:ajax-command-button
-              action="#{projectHome.addSelectedAvailableLanguages}"
-              styleClass="button--link link--success"
-              render="settings-languages-list">
-              <f:facet name="loading">
-                <span class="txt--neutral">
-                  ${msgs['jsf.languages.EnableLanguages.inProgress.label']}
-                </span>
-              </f:facet>
-              <i class="i i--checkmark"></i>
-              ${msgs['jsf.languages.EnableLanguages.label']}
-            </zanata:ajax-command-button>
           </div>
         </div>
-      </div>
-      <a4j:outputPanel id="availableLocaleResults" ajaxRendered="true">
-        <ul id="settings-available-locales" class="list--slat d--top">
+
+        <!-- TODO fix style -->
+        <div id="settings-available-locales-none" class="is-hidden">
+          <h:outputText escape="false"
+            value="#{msgs['jsf.languages.NoLanguagesMatchSearch']}" />
+        </div>
+
+        <ul id="settings-available-locales" class="list--slat d--top"
+          data-empty-results-indicator="#settings-available-locales-none">
           <ui:repeat value="#{projectHome.availableLocaleResults}"
             var="availableLocale">
 
@@ -970,11 +1012,11 @@
                 styleClass="form__checkbox__input js-form__checkbox__input"/>
               <div class="js-form__checkbox__label l--pad-left-1half">
                 <div class="g g--tight">
-                  <div class="g__item w--5-12 w--1-s">
+                  <div class="g__item w--5-12 w--1-s js-locale-name">
                     #{availableLocale.retrieveDisplayName()}
                   </div>
                   <div class="g__item w--2-12 w--3-10-s">
-                    <span class="txt--understated">
+                    <span class="txt--understated js-locale-id">
                       #{availableLocale.localeId.id}
                     </span>
                   </div>
@@ -1000,7 +1042,7 @@
 
           </ui:repeat>
         </ul>
-      </a4j:outputPanel>
+      </div>
 
       <!-- Placed at the end of the re-loaded panel so that it runs when all the
            new panel content from ajax is present in the DOM -->
@@ -1009,6 +1051,7 @@
         zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
         // ensure active locales filter is applied correctly after items are refreshed */
         filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');
+        filterLocalesFromTextBox('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales');
       </script>
     </s:div>
   </h:form>

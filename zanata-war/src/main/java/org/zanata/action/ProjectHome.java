@@ -187,7 +187,9 @@ public class ProjectHome extends SlugHome<HProject> {
     @Setter
     private Boolean selectedCheckbox = Boolean.TRUE;
 
+    // TODO move up next to the activelocalefilter, and rename to match.
     @Getter
+    @Setter
     private String availableLocaleSearchQuery;
 
     private List<HLocale> availableLocaleResults;
@@ -246,14 +248,6 @@ public class ProjectHome extends SlugHome<HProject> {
         } else {
             getInstance().setDefaultProjectType(null);
         }
-    }
-
-    public void setAvailableLocaleSearchQuery(String query) {
-        if(!query.equals(availableLocaleSearchQuery)) {
-            // do the search again
-            availableLocaleResults = null;
-        }
-        availableLocaleSearchQuery = query;
     }
 
     /**
@@ -395,6 +389,7 @@ public class ProjectHome extends SlugHome<HProject> {
     public void updateLanguagesFromGlobal() {
         getInstance().setOverrideLocales(false);
         removeAliasesForInactiveLocales();
+        availableLocaleResults = null;
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageUpdateFromGlobal"));
@@ -802,24 +797,9 @@ public class ProjectHome extends SlugHome<HProject> {
                         new Predicate<HLocale>() {
                             @Override
                             public boolean apply(HLocale input) {
-                                String query =
-                                        availableLocaleSearchQuery == null ? ""
-                                                : availableLocaleSearchQuery;
                                 // only include those not already in
-                                // the project and
-                                // that match the search query
-                                return (input
-                                        .asULocale()
-                                        .getDisplayName()
-                                        .toLowerCase()
-                                        .contains(
-                                                query.toLowerCase()) ||
-                                        input.getLocaleId()
-                                                .getId()
-                                                .toLowerCase()
-                                                .contains(
-                                                        query.toLowerCase()))
-                                        && !getInstanceActiveLocales()
+                                // the project
+                                return !getInstanceActiveLocales()
                                         .contains(input);
                             }
                         });
