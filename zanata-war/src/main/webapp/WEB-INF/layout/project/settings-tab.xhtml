@@ -124,8 +124,6 @@
     return jqueryElement.closest('.js-static-element, body');
   }
 
-  //$(document).ready(initSelectAllCheckboxes);
-
   /**
    * Attach events for checkboxes that control the checked state of all items in
    * a list.
@@ -1049,9 +1047,13 @@
       <script type="text/javascript">
         // refresh checkbox facades on language lists
         zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
-        // ensure active locales filter is applied correctly after items are refreshed */
+        // ensure active locales filter is applied correctly after items are refreshed
         filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');
         filterLocalesFromTextBox('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales');
+
+        // Triggers appropriate button visibility.
+        jQuery('#settings-active-locales').change();
+        jQuery('#settings-available-locales').change();
       </script>
     </s:div>
   </h:form>
