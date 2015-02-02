@@ -364,7 +364,7 @@ public class ProjectHome extends SlugHome<HProject> {
             getInstance().getCustomizedLocales().clear();
             getInstance().getCustomizedLocales().addAll(
                     localeServiceImpl
-                            .getSupportedLocales());
+                            .getSupportedAndEnabledLocales());
         }
         availableLocaleResults = null;
         getInstance().getCustomizedLocales().add(locale);
