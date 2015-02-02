@@ -123,14 +123,14 @@
                           disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                           <a4j:ajax event="click" render="actions" execute="@this"/>
                         </h:selectBooleanCheckbox>
-                        #{msgs['jsf.manageSearch.Table']}
+                        <span class="l--push-left-quarter">#{msgs['jsf.manageSearch.Table']}</span>
                       </th>
                       <th class="l--pad-v-half">
                         <h:selectBooleanCheckbox value="#{reindexAction.purgeAll}"
                           disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                           <a4j:ajax event="click" render="actions" execute="@this"/>
                         </h:selectBooleanCheckbox>
-                        <s:span styleClass="l--push-left-half">
+                        <s:span styleClass="l--push-left-quarter">
                           #{msgs['jsf.manageSearch.purge']} <i class="i i--info txt--meta"></i>
                           <rich:tooltip showDelay="800">
                             <p>#{msgs['jsf.manageSearch.purge.Description']}</p>
@@ -146,7 +146,7 @@
                           disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                           <a4j:ajax event="click" render="actions" execute="@this"/>
                         </h:selectBooleanCheckbox>
-                        <s:span styleClass="l--push-left-half">
+                        <s:span styleClass="l--push-left-quarter">
                           #{msgs['jsf.manageSearch.reindex']} <i class="i i--info txt--meta"></i>
                           <rich:tooltip showDelay="800">
                             <p>#{msgs['jsf.manageSearch.reindex.Description']}</p>
@@ -170,7 +170,7 @@
                           disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                           <a4j:ajax event="click" render="actions" execute="@this"/>
                         </h:selectBooleanCheckbox>
-                        <s:span styleClass="l--push-left-half">
+                        <s:span styleClass="l--push-left-quarter">
                           #{msgs['jsf.manageSearch.optimize']} <i class="i i--info txt--meta"></i>
                           <rich:tooltip showDelay="800">
                             <p>#{msgs['jsf.manageSearch.optimize.Description']}</p>
@@ -195,7 +195,7 @@
                             disabled="#{not reindexAction.canceled and reindexAction.inProgress}">
                             <a4j:ajax event="click" render="actions" execute="@this"/>
                           </h:selectBooleanCheckbox>
-                          <span class="l--push-left-half"><h:outputText value="#{clazz.className}"/></span>
+                          <span class="l--push-left-quarter"><h:outputText value="#{clazz.className}"/></span>
                         </td>
                         <td class="l--pad-v-half">
                           <h:selectBooleanCheckbox value="#{clazz.purge}" execute="@this"
@@ -220,12 +220,12 @@
                   </tbody>
                 </table>
 
-                <button id="clearSelection" onclick="clearAllSelection();return false;"
-                  class="button--link l--push-right-half">
-                  #{msgs['jsf.ManageSearch.SelectNone']}
-                </button>
-
                 <s:fragment rendered="#{not reindexAction.isAnyOptionSelected() or (not reindexAction.canceled and reindexAction.inProgress)}">
+                  <button id="clearSelection" onclick="return false;"
+                    class="button--link l--push-right-half" disabled="disabled">
+                    #{msgs['jsf.ManageSearch.SelectNone']}
+                  </button>
+
                   <button id="reindex" onclick="return false;"
                     class="button button--primary" disabled="disabled">
                     #{msgs['jsf.ManageSearch.PerformSelectedActions']}
@@ -233,6 +233,11 @@
                 </s:fragment>
 
                 <s:fragment rendered="#{reindexAction.isAnyOptionSelected() and (reindexAction.canceled or not reindexAction.inProgress)}">
+                  <button id="clearSelection" onclick="clearAllSelection();return false;"
+                    class="button--link l--push-right-half">
+                    #{msgs['jsf.ManageSearch.SelectNone']}
+                  </button>
+
                   <button id="reindex" onclick="executeSelection();return false;"
                     class="button button--primary ">
                     #{msgs['jsf.ManageSearch.PerformSelectedActions']}
