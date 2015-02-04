@@ -749,13 +749,6 @@
           maxlength="255"
           styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
         </h:inputText>
-
-        <!-- TODO make this clear the filter textbox -->
-        <button
-          class="button--link form--search__clear js-form--search__clear is-hidden"
-          onclick="event.preventDefault()">
-          <i class="i i--remove"></i>
-        </button>
       </div>
 
       <s:fragment rendered="#{empty projectHome.getInstanceActiveLocales()}">
@@ -974,13 +967,6 @@
           maxlength="255"
           styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
         </h:inputText>
-
-        <!-- TODO make this clear the filter textbox -->
-        <button
-          class="button--link form--search__clear js-form--search__clear is-hidden"
-          onclick="event.preventDefault()">
-          <i class="i i--remove"></i>
-        </button>
       </div>
 
       <s:fragment rendered="#{empty projectHome.availableLocaleResults}">
