@@ -39,8 +39,18 @@ public class TextInputRenderer extends TextRenderer {
     public static final String RENDERER_TYPE =
             "org.zanata.TextInputRenderer";
 
+    /**
+     * Extra attributes that should be written directly as attributes on the
+     * generated HTML input tag.
+     *
+     * A list of attributes for a HTML input tag can be found at
+     * https://developer.mozilla.org/en/docs/Web/HTML/Element/Input
+     */
     private enum ExtraAttributes {
         placeholder,
+        // Triggered by any change in value, see
+        // https://developer.mozilla.org/en-US/docs/Web/Events/input
+        oninput
     }
 
     @Override
