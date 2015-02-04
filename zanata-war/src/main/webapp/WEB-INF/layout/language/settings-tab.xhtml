@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:s="http://jboss.org/schema/seam/taglib"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <a4j:jsFunction name="saveSettings"
+    onbegin="jQuery('#save-button').addClass('is-hidden')"
+    oncomplete="jQuery('#save-button').removeClass('is-hidden')"
+    status="settingsTab-savingLoader"
+    action="#{languageTeamAction.saveSettings()}"/>
+
+  <div class="panel">
+    <div class="panel__header">
+      <h2 class="panel__heading">#{msgs['jsf.Settings']}</h2>
+    </div>
+
+    <h:form styleClass="l--push-bottom-0">
+      <div class="l--pad-all-half">
+        <div class="l--push-top-quarter form__item">
+          <label>#{msgs['jsf.Name']}</label>
+          <span class="l--push-h-quarter txt--understated">
+            #{languageTeamAction.locale.retrieveDisplayName()}
+          </span>
+        </div>
+
+        <div class="l--push-top-quarter form__item">
+          <label>#{msgs['jsf.LanguageCode']}</label>
+          <span class="l--push-h-quarter txt--understated">
+            #{languageTeamAction.locale.asULocale().language eq '' ? msgs['jsf.notAvailable'] : languageTeamAction.locale.asULocale().language}
+          </span>
+        </div>
+
+        <div class="quarter form__item">
+          <label>#{msgs['jsf.NativeName']}</label>
+          <span class="l--push-h-quarter txt--understated">
+            #{languageTeamAction.locale.retrieveNativeName() eq '' ? msgs['jsf.notAvailable'] : languageTeamAction.locale.retrieveNativeName()}
+          </span>
+        </div>
+
+        <div class="l--push-top-quarter form__item">
+          <label>#{msgs['jsf.CountryCode']}</label>
+          <span class="l--push-h-quarter txt--understated">
+            #{languageTeamAction.locale.asULocale().country eq '' ? msgs['jsf.notAvailable'] : languageTeamAction.locale.asULocale().country}
+          </span>
+        </div>
+
+        <div class="l--push-top-quarter form__item">
+          <label>#{msgs['jsf.Variant']}</label>
+          <span class="l--push-h-quarter txt--understated">
+            #{languageTeamAction.locale.asULocale().variant eq '' ? msgs['jsf.notAvailable'] : languageTeamAction.locale.asULocale().variant}
+          </span>
+        </div>
+
+        <div class="l--push-top-quarter form__item">
+          <h:outputLabel for="plurals">#{msgs['jsf.language.plurals']}</h:outputLabel>
+          <a href="http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms"
+            title="#{msgs['jsf.language.plurals.help']}" target="_blank">
+            <i class="i i--help"></i>
+          </a>
+          <s:decorate id="pluralsField" template="../field.xhtml" enclose="true">
+            <h:inputText maxlength="10" id="plurals" value="#{languageTeamAction.locale.pluralForms}">
+              <rich:placeholder value="#{languageTeamAction.pluralsPlaceholder}" styleClass="txt--neutral"/>
+            </h:inputText>
+          </s:decorate>
+        </div>
+
+        <div class="l--push-top-1">
+          <button id="save-button" onclick="saveSettings();return false;" class="button button--primary">
+            #{msgs['jsf.Save']}
+          </button>
+
+          <a4j:status name="settingsTab-savingLoader">
+            <f:facet name="start">
+              <zanata:loader layout="inline"/>
+            </f:facet>
+          </a4j:status>
+        </div>
+
+      </div>
+    </h:form>
+  </div>
+</ui:composition>

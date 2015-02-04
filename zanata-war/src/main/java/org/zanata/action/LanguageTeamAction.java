@@ -23,11 +23,9 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.event.ValueChangeEvent;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -48,8 +46,16 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
+import org.zanata.rest.service.ResourceUtils;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
+import org.zanata.ui.AbstractListFilter;
+import org.zanata.ui.InMemoryListFilter;
+import org.zanata.util.ServiceLocator;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.zanata.events.LanguageTeamPermissionChangedEvent.LANGUAGE_TEAM_PERMISSION_CHANGED;
 
@@ -80,6 +86,9 @@ public class LanguageTeamAction implements Serializable {
     @In
     private Messages msgs;
 
+    @In
+    private ResourceUtils resourceUtils;
+
     @Getter
     @Setter
     private String language;
@@ -87,7 +96,31 @@ public class LanguageTeamAction implements Serializable {
     @Getter
     @Setter
     private String searchTerm;
+
+    private HLocale locale;
+
     private List<SelectablePerson> searchResults;
+
+    @Getter
+    private AbstractListFilter<HLocaleMember> membersFilter =
+            new InMemoryListFilter<HLocaleMember>() {
+                @Override
+                protected List<HLocaleMember> fetchAll() {
+                    ServiceLocator serviceLocator = ServiceLocator.instance();
+                    LocaleMemberDAO localeMemberDAO =
+                            serviceLocator.getInstance(LocaleMemberDAO.class);
+
+                    return localeMemberDAO.findAllByLocale(
+                            new LocaleId(language));
+                }
+
+                @Override
+                protected boolean include(HLocaleMember elem,
+                        String filter) {
+                    return StringUtils.containsIgnoreCase(
+                            elem.getPerson().getName(), filter);
+                }
+            };
 
     public List<SelectablePerson> getSearchResults() {
         if (searchResults == null) {
@@ -95,6 +128,10 @@ public class LanguageTeamAction implements Serializable {
         }
 
         return searchResults;
+    }
+
+    public void reset() {
+        membersFilter.reset();
     }
 
     public boolean isUserInTeam() {
@@ -114,6 +151,16 @@ public class LanguageTeamAction implements Serializable {
         }
     }
 
+    public String getPluralsPlaceholder() {
+        String pluralForms = resourceUtils.getPluralForms(new LocaleId(language));
+        return msgs.format("jsf.language.plurals.placeholder", pluralForms);
+    }
+
+    public void saveSettings() {
+        localeDAO.makePersistent(locale);
+        FacesMessages.instance().add(msgs.format("jsf.language.updated", locale.getLocaleId()));
+    }
+
     public HLocale getLocale() {
         /*
          * Preload the HLocaleMember objects. This line is needed as Hibernate
@@ -122,10 +169,11 @@ public class LanguageTeamAction implements Serializable {
          * to access the 'members' collection from inside the security
          * listener's postLoad method to evaluate rules.
          */
-        HLocale locale =
-                localeServiceImpl.getByLocaleId(new LocaleId(language));
-        if (locale != null) {
-            locale.getMembers();
+        if(locale == null) {
+            locale = localeServiceImpl.getByLocaleId(new LocaleId(language));
+            if (locale != null) {
+                locale.getMembers();
+            }
         }
         return locale;
     }
