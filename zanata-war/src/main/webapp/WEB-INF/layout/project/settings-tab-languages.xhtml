@@ -521,14 +521,10 @@
         <!-- TODO remove when language list is colocated with filter textbox -->
         <ui:param name="languageListSelector" value="#settings-active-locales" />
         <ui:param name="filterText" value="#{projectHome.activeLocaleFilter}" />
-      </ui:decorate>
 
-      <s:fragment rendered="#{empty projectHome.getInstanceActiveLocales()}">
-        <!-- TODO fix style -->
-        <div id="settings-active-locales-no-results">
-          #{msgs['jsf.languages.NoActiveLanguages']}
-        </div>
-      </s:fragment>
+        <ui:param name="languages" value="#{projectHome.getInstanceActiveLocales()}" />
+        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoActiveLanguages']}" />
+      </ui:decorate>
 
       <div class="#{ empty projectHome.getInstanceActiveLocales() ? 'is-hidden' : ''}">
 
@@ -732,15 +728,10 @@
 
         <ui:param name="languageListSelector" value="#settings-available-locales" />
         <ui:param name="filterText" value="#{projectHome.availableLocaleSearchQuery}" />
+
+        <ui:param name="languages" value="#{projectHome.availableLocaleResults}" />
+        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesAvailable']}" />
       </ui:decorate>
-
-      <s:fragment rendered="#{empty projectHome.availableLocaleResults}">
-        <!-- TODO fix style -->
-        <div id="settings-active-locales-no-results">
-          #{msgs['jsf.languages.NoLanguagesAvailable']}
-        </div>
-      </s:fragment>
-
 
       <div class="#{ empty projectHome.availableLocaleResults ? 'is-hidden' : ''}">
 

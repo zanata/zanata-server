@@ -29,6 +29,13 @@
     </h:inputText>
   </div>
 
+  <s:fragment rendered="#{empty languages}">
+    <!-- TODO fix style -->
+    <div id="#{id}-no-results">
+      #{noLanguagesPlaceholder}
+    </div>
+  </s:fragment>
+
 </ui:composition>
 
   <!-- EXAMPLES:
