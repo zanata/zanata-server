@@ -500,26 +500,28 @@
         action="#{projectHome.instance.localeAliases.clear()}"
         render="settings-languages-form"/>
 
-      <h3 class="heading--secondary">#{msgs['jsf.Enabled']}</h3>
-
       <ui:remove><!-- Active Languages --></ui:remove>
 
-      <ui:remove><!-- TODO consider making this a component --></ui:remove>
-      <div class="w--5-12 form--search js-form--search">
-        <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
-        <!-- FIXME should this be here if there are no active locales?
-                   maybe disable it or something? -->
-        <h:inputText id="filter-active-locales-input"
-          required="false"
-          placeholder="#{msgs['jsf.languages.FilterLanguages']}"
-          value="#{projectHome.activeLocaleFilter}"
-          oninput="return filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');"
-          onkeyup="return onFilterLocalesTextboxKeyUp('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales', event);"
-          onkeypress="doNotSubmit(event);"
-          maxlength="255"
-          styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
-        </h:inputText>
-      </div>
+        <!-- EXAMPLES:
+          <ui:param name="test2" value="this is in ui:param" />
+          <ui:param name="repeatme" value="#{projectHome.getInstanceActiveLocales()}" />
+          <ui:define name="test1">
+            <h3 class="heading- -secondary">this is in ui:define</h3>
+          </ui:define>
+          <ui:define name="repeat-content">
+            <p>#{repeated.retrieveDisplayName()}</p>
+          </ui:define>
+        -->
+
+      <ui:decorate template="languages-list.xhtml" >
+        <!-- TODO make sure to prevent prepending id on this. -->
+        <ui:param name="id" value="active-locales" />
+        <ui:param name="heading" value="#{msgs['jsf.Enabled']}" />
+
+        <!-- TODO remove when language list is colocated with filter textbox -->
+        <ui:param name="languageListSelector" value="#settings-active-locales" />
+        <ui:param name="filterText" value="#{projectHome.activeLocaleFilter}" />
+      </ui:decorate>
 
       <s:fragment rendered="#{empty projectHome.getInstanceActiveLocales()}">
         <!-- TODO fix style -->
@@ -720,25 +722,17 @@
         </ul>
       </div>
 
+      <hr/>
 
       <ui:remove><!-- Available Locale list --></ui:remove>
 
-      <hr/>
-      <h3 class="heading--secondary">#{msgs['jsf.languages.Available']}</h3>
+      <ui:decorate template="languages-list.xhtml" >
+        <ui:param name="id" value="available-locales" />
+        <ui:param name="heading" value="#{msgs['jsf.languages.Available']}" />
 
-      <div class="w--5-12 form--search js-form--search">
-        <label class="is-sr-only">#{msgs['jsf.languages.FilterLanguages']}</label>
-        <h:inputText id="filter-available-locales-input"
-          required="false"
-          placeholder="#{msgs['jsf.languages.FilterLanguages']}"
-          value="#{projectHome.availableLocaleSearchQuery}"
-          oninput="return filterLocalesFromTextBox('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales');"
-          onkeyup="return onFilterLocalesTextboxKeyUp('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales', event);"
-          onkeypress="doNotSubmit(event);"
-          maxlength="255"
-          styleClass="form--search__input js-form--search__input l--push-bottom-quarter">
-        </h:inputText>
-      </div>
+        <ui:param name="languageListSelector" value="#settings-available-locales" />
+        <ui:param name="filterText" value="#{projectHome.availableLocaleSearchQuery}" />
+      </ui:decorate>
 
       <s:fragment rendered="#{empty projectHome.availableLocaleResults}">
         <!-- TODO fix style -->
@@ -840,8 +834,10 @@
         // refresh checkbox facades on language lists
         zanata.form.appendCheckboxes(jQuery('#settings-languages-list').element);
         // ensure active locales filter is applied correctly after items are refreshed
-        filterLocalesFromTextBox('#settings-languages-form\\:filter-active-locales-input', '#settings-active-locales');
-        filterLocalesFromTextBox('#settings-languages-form\\:filter-available-locales-input', '#settings-available-locales');
+
+        // TODO move this to languages-list.xhtml and adjust parent id
+        filterLocalesFromTextBox('#settings-languages-form\\:active-locales-filter-input', '#settings-active-locales');
+        filterLocalesFromTextBox('#settings-languages-form\\:available-locales-filter-input', '#settings-available-locales');
 
         // Triggers appropriate button visibility.
         jQuery('#settings-active-locales').change();
