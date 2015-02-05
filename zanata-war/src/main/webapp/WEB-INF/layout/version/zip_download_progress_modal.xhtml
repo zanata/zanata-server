@@ -1,7 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:s="http://jboss.org/schema/seam/taglib"
-  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   xmlns:a4j="http://richfaces.org/a4j"
   class="modal" id="zipDownloadProgressDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
@@ -13,11 +12,12 @@
 
     function enableDownload(enable) {
       if(enable) {
-        jQuery('#download-button').removeClass('is-hidden');
-        zanata.loader.deactivate('#download-zip-loader');
+        jQuery('#download-button').removeClass('is-active');
+        jQuery('#download-button').removeAttr('disabled');
       } else {
-        jQuery('#download-button').addClass('is-hidden');
-        zanata.loader.activate('#download-zip-loader');
+        jQuery('#download-button').addClass('is-active');
+        jQuery('#download-button').attr('disabled', true);
+
       }
     }
   </script>
@@ -94,12 +94,11 @@
                 data-dismiss="modal">
                 #{msgs['jsf.Cancel']}
               </button>
-              <button id="download-button" onclick="enableDownload(false);downloadZip();return false"
-                class="button--primary">
-                #{msgs['jsf.iteration.files.Download']}
-              </button>
-              <zanata:loader type="loader--small" jsHandle="true"
-                layout="inline"  id="download-zip-loader"/>
+
+              <a id="download-button" class="button loader" onclick="downloadZip();return false">
+                <span class="loader__label">#{msgs['jsf.iteration.files.Download']}</span>
+              </a>
+
             </div>
           </div>
         </footer>
