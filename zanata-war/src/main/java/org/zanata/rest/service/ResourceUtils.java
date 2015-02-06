@@ -111,7 +111,7 @@ public class ResourceUtils {
     private static final String PLURALS_FILE = "pluralforms.properties";
     private static final String DEFAULT_PLURAL_FORM = "nplurals=1; plural=0";
 
-    // private static int MAX_TARGET_CONTENTS = 6;
+    public static final int MAX_TARGET_CONTENTS = 6;
 
     private static Properties pluralForms;
 
@@ -959,10 +959,10 @@ public class ResourceUtils {
      * default value if there is no plural form information for the provided
      * locale id.
      *
-     * @see {@link ResourceUtils#getPluralForms(org.zanata.common.LocaleId, boolean)}
+     * @see {@link ResourceUtils#getPluralForms(org.zanata.common.LocaleId, boolean, boolean)}
      */
     public String getPluralForms(LocaleId localeId) {
-        return getPluralForms(localeId, true);
+        return getPluralForms(localeId, true, true);
     }
 
     /**
@@ -973,10 +973,12 @@ public class ResourceUtils {
      *
      * @return A default value if useDefault is True. Otherwise, null.
      */
-    public String getPluralForms(LocaleId localeId, boolean useDefault) {
-        String dbPluralForms = getPluralFormsFromDB(localeId);
-        if(StringUtils.isNotEmpty(dbPluralForms)) {
-            return dbPluralForms;
+    public String getPluralForms(LocaleId localeId, boolean checkDB, boolean useDefault) {
+        if(checkDB) {
+            String dbPluralForms = getPluralFormsFromDB(localeId);
+            if (StringUtils.isNotEmpty(dbPluralForms)) {
+                return dbPluralForms;
+            }
         }
 
         final char[] alternateSeparators = { '.', '@' };
@@ -1112,10 +1114,36 @@ public class ResourceUtils {
             nPluralsString = nPluralsValueMatcher.replaceAll("");
             break;
         }
-        if (nPluralsString != null && !nPluralsString.isEmpty()) {
+        if (StringUtils.isNotEmpty(nPluralsString)) {
             nPlurals = Integer.parseInt(nPluralsString);
         }
         return nPlurals;
+    }
+
+    /**
+     * Return if pluralForms is valid (positive value)
+     *
+     * @param pluralForms
+     */
+    public boolean isValidPluralForms(@Nonnull String pluralForms) {
+        Matcher nPluralsMatcher = NPLURALS_PATTERN.matcher(pluralForms);
+        String nPluralsString = "";
+        while (nPluralsMatcher.find()) {
+            nPluralsString = nPluralsMatcher.group();
+            Matcher nPluralsValueMatcher =
+                NPLURALS_TAG_PATTERN.matcher(nPluralsString);
+            nPluralsString = nPluralsValueMatcher.replaceAll("");
+            break;
+        }
+        try {
+            if (StringUtils.isNotEmpty(nPluralsString)) {
+                int count = Integer.parseInt(nPluralsString);
+                return count >= 1 && count <= MAX_TARGET_CONTENTS;
+            }
+        } catch (Exception e) {
+            //invalid string for integer
+        }
+        return false;
     }
 
     /**

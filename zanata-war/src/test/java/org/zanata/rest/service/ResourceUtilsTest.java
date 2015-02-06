@@ -346,7 +346,7 @@ public class ResourceUtilsTest {
         for (Object key : properties.keySet()) {
             String propKey = (String) key;
             LocaleId localeId = LocaleId.fromJavaName(propKey);
-            resourceUtils.getPluralForms(localeId, false);
+            resourceUtils.getPluralForms(localeId, true, false);
             verify(mockLocaleDAO).findByLocaleId(localeId);
             resourceUtils.getNPluralForms(null, localeId);
         }
@@ -397,7 +397,6 @@ public class ResourceUtilsTest {
     public void pluralFormsTestUseDBEntryTest() {
 
         //given mock data
-        String testPluralForms = "testPluralForms";
         HLocale mockHLocale = new HLocale(LocaleId.ES);
         when(mockLocaleDAO.findByLocaleId(LocaleId.ES)).thenReturn(mockHLocale);
 
@@ -407,5 +406,29 @@ public class ResourceUtilsTest {
         //verify and assert
         verify(mockLocaleDAO).findByLocaleId(LocaleId.ES);
         assertThat(pluralForms, notNullValue());
+    }
+
+    @Test
+    public void isValidPluralFormsTest() {
+        String invalidPluralForms = "testPluralForms";
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(false));
+
+        invalidPluralForms = "nplurals=notinteger";
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(false));
+
+        invalidPluralForms = "nplurals=-1";
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(false));
+
+        invalidPluralForms = "nplurals=" + resourceUtils.MAX_TARGET_CONTENTS + 1;
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(false));
+
+        invalidPluralForms = "nplurals=0";
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(false));
+
+        invalidPluralForms = "nplurals=1";
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(true));
+
+        invalidPluralForms = "nplurals=" + resourceUtils.MAX_TARGET_CONTENTS;
+        assertThat(resourceUtils.isValidPluralForms(invalidPluralForms), is(true));
     }
 }
