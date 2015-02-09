@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -272,13 +273,26 @@ public class ProjectHome extends SlugHome<HProject> {
      */
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void updateLocaleAlias(LocaleId localeId) {
+        String enteredAlias = inputLocaleAliases.get(localeId);
+        setLocaleAlias(localeId, enteredAlias);
+    }
+
+    private void setLocaleAlias(LocaleId localeId, String alias) {
         HProject instance = getInstance();
         Map<LocaleId, String> aliases = instance.getLocaleAliases();
-        String enteredAlias = inputLocaleAliases.get(localeId);
-        if (isNullOrEmpty(enteredAlias)) {
-            aliases.remove(localeId);
+        if (isNullOrEmpty(alias)) {
+            if (aliases.containsKey(localeId)) {
+                aliases.remove(localeId);
+                FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
+            } else {
+                FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
+            }
         } else {
-            aliases.put(localeId, enteredAlias);
+            aliases.put(localeId, alias);
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
         }
     }
 
@@ -305,23 +319,18 @@ public class ProjectHome extends SlugHome<HProject> {
     }
 
     private void removeAlias(LocaleId localeId) {
-        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-
         if (getInstance().isOverrideLocales()) {
-            getInstance().getLocaleAliases().remove(localeId);
+            setLocaleAlias(localeId, "");
         } else {
             // If the project instance is not overriding locales, there
-            // are no aliases
+            // are no aliases to remove
         }
-        update();
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedLanguages() {
-        log.info("removeSelectedLanguages()");
-        log.info("selected {} rows", getActiveLocaleSelections().size());
-        for (Map.Entry<LocaleId, Boolean> entry : getActiveLocaleSelections().entrySet()) {
-            log.info("mapping with {} {}", entry.getKey(), entry.getValue());
+        for (Map.Entry<LocaleId, Boolean> entry :
+            getActiveLocaleSelections().entrySet()) {
             if (entry.getValue()) {
                 removeLanguage(entry.getKey());
             }
@@ -331,19 +340,23 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedAliases() {
-        for (Map.Entry<LocaleId, Boolean> entry : getActiveLocaleSelections().entrySet()) {
+        for (Map.Entry<LocaleId, Boolean> entry :
+            getActiveLocaleSelections().entrySet()) {
             if (entry.getValue()) {
-                // FIXME this triggers a message 'successfully updated' that I don't want
                 removeAlias(entry.getKey());
             }
         }
-        activeLocaleSelections.clear();
+    }
 
-        // FIXME should list the locales from which aliases were removed,
-        //       or have a message each.
-        conversationScopeMessages.setMessage(
-                FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.project.LanguageAliasesRemoved"));
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void clearLocaleAliases() {
+        if (getInstance().isOverrideLocales()) {
+            List<LocaleId> aliasedLocales =
+                new ArrayList(getInstance().getLocaleAliases().keySet());
+            for (LocaleId aliasedLocale : aliasedLocales) {
+                removeAlias(aliasedLocale);
+            }
+        }
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
