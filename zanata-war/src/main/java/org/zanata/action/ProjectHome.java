@@ -162,23 +162,11 @@ public class ProjectHome extends SlugHome<HProject> {
             .newHashMap();
 
     public Map<LocaleId, Boolean> getActiveLocaleSelections() {
-        log.info("getActiveLocaleSelections()");
         if (activeLocaleSelections == null) {
             activeLocaleSelections = Maps.newHashMap();
-
-            // TODO try setting booleans for all the selection checkboxes
-            // iterate the active languages, putting Boolean.FALSE for each
-            // why don't I need that for setting and printing the aliases?
-
-            // This definitely looks like it is not outputting the values
-            // It does not look as though this is even running at all, based on
-            // the logs.
-            log.info("Was null, creating...", activeLocaleSelections.size());
             for (HLocale locale : getInstanceActiveLocales()) {
-                // Trying true just to see if they will start checked.
                 activeLocaleSelections.put(locale.getLocaleId(), Boolean.FALSE);
             }
-            log.info("selected {} rows", activeLocaleSelections.size());
         }
         return activeLocaleSelections;
     }
@@ -311,6 +299,9 @@ public class ProjectHome extends SlugHome<HProject> {
         }
         getInstance().getLocaleAliases().remove(localeId);
         availableLocaleResults = null;
+
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+            msgs.format("jsf.project.LanguageRemoved", locale.getLocaleId()));
     }
 
     private void removeAlias(LocaleId localeId) {
@@ -340,15 +331,16 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedAliases() {
-        log.info("removeSelectedAliases()");
-        log.info("selected {} rows", getActiveLocaleSelections().size());
         for (Map.Entry<LocaleId, Boolean> entry : getActiveLocaleSelections().entrySet()) {
-            log.info("mapping with {} {}", entry.getKey(), entry.getValue());
             if (entry.getValue()) {
+                // FIXME this triggers a message 'successfully updated' that I don't want
                 removeAlias(entry.getKey());
             }
         }
         activeLocaleSelections.clear();
+
+        // FIXME should list the locales from which aliases were removed,
+        //       or have a message each.
         conversationScopeMessages.setMessage(
                 FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageAliasesRemoved"));
@@ -368,6 +360,8 @@ public class ProjectHome extends SlugHome<HProject> {
         }
         availableLocaleResults = null;
         getInstance().getCustomizedLocales().add(locale);
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+            msgs.format("jsf.project.LanguageAdded", locale.getLocaleId()));
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -379,9 +373,7 @@ public class ProjectHome extends SlugHome<HProject> {
             }
         }
         availableLocaleSelections.clear();
-        conversationScopeMessages.setMessage(
-                FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.project.LanguageAliasesRemoved"));
+        // no message shown, there are messages for each language individually
     }
 
 
