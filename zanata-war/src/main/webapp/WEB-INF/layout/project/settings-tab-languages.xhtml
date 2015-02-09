@@ -31,11 +31,17 @@
   }
 
   function onLocaleAliasInputKeyDown(localeId, event) {
+
+    // Enter
     if (event.keyCode === 13) {
       event.preventDefault();
-      var aliasForm = localeAliasForm(localeId);
-      var submitButton = aliasForm.find('input:submit');
-      submitButton.click();
+      localeAliasForm(localeId).find('input:submit').click();
+      return false;
+    }
+    // Esc
+    if (event.keyCode === 27) {
+      event.preventDefault();
+      jQuery('#edit-alias-cancel-' + localeId).find('button').click();
       return false;
     }
   }
@@ -658,12 +664,10 @@
               <h:inputText id="locale-alias-input"
                 required="false"
                 value="#{projectHome.inputLocaleAliases[locale.localeId]}"
+                placeholder="e.g. zh_CN"
                 onkeydown="return onLocaleAliasInputKeyDown('#{locale.localeId}', event);"
                 maxlength="255"
                 styleClass="form--inline__input">
-                <!-- TODO use placeholder attribute -->
-                <rich:placeholder value="e.g. zh_CN"
-                  styleClass="txt--neutral"/>
               </h:inputText>
               <div class="form--inline__suffix">
                 <a4j:commandButton
