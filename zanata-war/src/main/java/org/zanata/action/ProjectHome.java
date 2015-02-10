@@ -239,6 +239,14 @@ public class ProjectHome extends SlugHome<HProject> {
         }
     }
 
+    public boolean isOverrideLocales() {
+        return getInstance().isOverrideLocales();
+    }
+
+    public void setOverrideLocales(boolean overrideLocales) {
+        getInstance().setOverrideLocales(overrideLocales);
+    }
+
     /**
      * Return the list of active locales for this project, which may be
      * inherited from global locales. If the project slug is empty, all the
@@ -308,7 +316,7 @@ public class ProjectHome extends SlugHome<HProject> {
     public void removeLanguage(LocaleId localeId) {
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);
 
-        if (getInstance().isOverrideLocales()) {
+        if (isOverrideLocales()) {
             getInstance().getCustomizedLocales().remove(locale);
         } else {
             getInstance().getCustomizedLocales().clear();
@@ -317,7 +325,7 @@ public class ProjectHome extends SlugHome<HProject> {
                     getInstance().getCustomizedLocales().add(activeLocale);
                 }
             }
-            getInstance().setOverrideLocales(true);
+            setOverrideLocales(true);
         }
         getLocaleAliases().remove(localeId);
         availableLocaleResults = null;
@@ -327,7 +335,7 @@ public class ProjectHome extends SlugHome<HProject> {
     }
 
     private void removeAlias(LocaleId localeId) {
-        if (getInstance().isOverrideLocales()) {
+        if (isOverrideLocales()) {
             setLocaleAlias(localeId, "");
         } else {
             // If the project instance is not overriding locales, there
@@ -358,7 +366,7 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void clearLocaleAliases() {
-        if (getInstance().isOverrideLocales()) {
+        if (isOverrideLocales()) {
             List<LocaleId> aliasedLocales =
                 new ArrayList(getLocaleAliases().keySet());
             for (LocaleId aliasedLocale : aliasedLocales) {
@@ -372,8 +380,8 @@ public class ProjectHome extends SlugHome<HProject> {
         HLocale locale =
                 localeServiceImpl.getByLocaleId(localeId);
 
-        if (!getInstance().isOverrideLocales()) {
-            getInstance().setOverrideLocales(true);
+        if (!isOverrideLocales()) {
+            setOverrideLocales(true);
             getInstance().getCustomizedLocales().clear();
             getInstance().getCustomizedLocales().addAll(
                     localeServiceImpl
@@ -400,7 +408,7 @@ public class ProjectHome extends SlugHome<HProject> {
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void updateLanguagesFromGlobal() {
-        getInstance().setOverrideLocales(false);
+        setOverrideLocales(false);
         removeAliasesForInactiveLocales();
         availableLocaleResults = null;
         update();
