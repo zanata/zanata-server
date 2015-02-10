@@ -281,6 +281,13 @@ public class ProjectHome extends SlugHome<HProject> {
     }
 
     /**
+     * Return true if the given locale has an alias, otherwise false.
+     */
+    public boolean hasLocaleAlias(HLocale locale) {
+        return getLocaleAliases().containsKey(locale.getLocaleId());
+    }
+
+    /**
      * Set or remove a locale alias based on form input.
      *
      * Uses value from enteredLocaleAlias. If the value is null or empty, the
