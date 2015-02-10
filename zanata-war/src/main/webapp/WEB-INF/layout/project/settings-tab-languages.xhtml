@@ -500,7 +500,7 @@
       <button jsfc="a4j:commandButton"
         styleClass="button--small l--push-bottom-half l--push-left-half"
         value="#{msgs['jsf.localeAlias.RemoveAllAliases']}"
-        rendered="#{not empty projectHome.instance.localeAliases}"
+        rendered="#{not empty projectHome.localeAliases}"
         action="#{projectHome.clearLocaleAliases()}"
         render="settings-languages-form"/>
 

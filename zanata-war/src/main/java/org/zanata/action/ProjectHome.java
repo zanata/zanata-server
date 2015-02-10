@@ -219,7 +219,7 @@ public class ProjectHome extends SlugHome<HProject> {
         log.info("createNew()");
         getInstance().setDefaultProjectType(ProjectType.File);
         selectedProjectType = getInstance().getDefaultProjectType().name();
-        inputLocaleAliases.putAll(getInstance().getLocaleAliases());
+        inputLocaleAliases.putAll(getLocaleAliases());
         // force get so it will create and populate the hashmap
         getActiveLocaleSelections();
     }
@@ -256,12 +256,20 @@ public class ProjectHome extends SlugHome<HProject> {
         return locales;
     }
 
+    public Map<LocaleId, String> getLocaleAliases() {
+        return getInstance().getLocaleAliases();
+    }
+
+    public void setLocaleAliases(Map<LocaleId, String> localeAliases) {
+        getInstance().setLocaleAliases(localeAliases);
+    }
+
     /**
      * Return the locale alias for the given locale in this project, if it
      * exists, otherwise null.
      */
     public String getLocaleAlias(HLocale locale) {
-        return getInstance().getLocaleAliases().get(locale.getLocaleId());
+        return getLocaleAliases().get(locale.getLocaleId());
     }
 
     /**
@@ -311,7 +319,7 @@ public class ProjectHome extends SlugHome<HProject> {
             }
             getInstance().setOverrideLocales(true);
         }
-        getInstance().getLocaleAliases().remove(localeId);
+        getLocaleAliases().remove(localeId);
         availableLocaleResults = null;
 
         FacesMessages.instance().add(StatusMessage.Severity.INFO,
@@ -352,7 +360,7 @@ public class ProjectHome extends SlugHome<HProject> {
     public void clearLocaleAliases() {
         if (getInstance().isOverrideLocales()) {
             List<LocaleId> aliasedLocales =
-                new ArrayList(getInstance().getLocaleAliases().keySet());
+                new ArrayList(getLocaleAliases().keySet());
             for (LocaleId aliasedLocale : aliasedLocales) {
                 removeAlias(aliasedLocale);
             }
@@ -401,7 +409,7 @@ public class ProjectHome extends SlugHome<HProject> {
     }
 
     private void removeAliasesForInactiveLocales() {
-        Map<LocaleId, String> oldAliases = getInstance().getLocaleAliases();
+        Map<LocaleId, String> oldAliases = getLocaleAliases();
         Map<LocaleId, String> newAliases = Maps.newHashMap();
         for (HLocale activeLocale : getInstanceActiveLocales()) {
             LocaleId key = activeLocale.getLocaleId();
@@ -409,7 +417,7 @@ public class ProjectHome extends SlugHome<HProject> {
                 newAliases.put(key, oldAliases.get(key));
             }
         }
-        getInstance().setLocaleAliases(newAliases);
+        setLocaleAliases(newAliases);
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
