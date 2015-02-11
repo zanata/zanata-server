@@ -493,7 +493,7 @@
 
       <button styleClass="button--small l--push-bottom-half" jsfc="a4j:commandButton"
         value="#{msgs['jsf.Language.useGlobal']}"
-        rendered="#{projectHome.instance.overrideLocales}"
+        rendered="#{projectHome.overrideLocales}"
         action="#{projectHome.useServerDefaultLocales()}"
         render="settings-languages-form"/>
 
