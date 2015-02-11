@@ -92,7 +92,9 @@ import com.google.common.collect.Maps;
 
 @Name("projectHome")
 @Slf4j
-public class ProjectHome extends SlugHome<HProject> {
+public class ProjectHome extends SlugHome<HProject> implements
+    HasLanguageSettings {
+
     private static final long serialVersionUID = 1L;
 
     public static final String PROJECT_UPDATE = "project.update";
