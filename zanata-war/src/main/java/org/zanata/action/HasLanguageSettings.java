@@ -46,8 +46,8 @@ public interface HasLanguageSettings {
     boolean isOverrideLocales();
     void setOverrideLocales(boolean overrideLocales);
 
-    public Map<LocaleId, String> getLocaleAliases();
-    public void setLocaleAliases(Map<LocaleId, String> localeAliases);
+    Map<LocaleId, String> getLocaleAliases();
+    void setLocaleAliases(Map<LocaleId, String> localeAliases);
 
     void removeAllLocaleAliases();
 

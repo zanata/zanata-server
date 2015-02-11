@@ -69,7 +69,8 @@ import java.util.Map;
 
 @Name("versionHome")
 @Slf4j
-public class VersionHome extends SlugHome<HProjectIteration> {
+public class VersionHome extends SlugHome<HProjectIteration> implements
+    HasLanguageSettings {
 
     private static final long serialVersionUID = 1L;
 
@@ -560,4 +561,101 @@ public class VersionHome extends SlugHome<HProjectIteration> {
         Collections.sort(projectTypes, ComparatorUtil.PROJECT_TYPE_COMPARATOR);
         return projectTypes;
     }
+
+
+
+
+    // Copied directly from HasLanguageSettings.java
+
+
+    public boolean isOverrideLocales() {
+        // FIXME stub
+        return false;
+    }
+    public void setOverrideLocales(boolean overrideLocales) {
+        // FIXME stub
+    }
+    public Map<LocaleId, String> getLocaleAliases() {
+        // FIXME stub
+        return Maps.newHashMap();
+    }
+    public void setLocaleAliases(Map<LocaleId, String> localeAliases) {
+        // FIXME stub
+    }
+    public void removeAllLocaleAliases() {
+        // FIXME stub
+    }
+    public void removeSelectedLocaleAliases() {
+        // FIXME stub
+    }
+    public String getLocaleAlias(HLocale locale) {
+        // FIXME stub
+        return null;
+    }
+    public boolean hasLocaleAlias(HLocale locale) {
+        // FIXME stub
+        return false;
+    }
+    public Map<LocaleId, String> getEnteredLocaleAliases() {
+        // FIXME stub
+        return Maps.newHashMap();
+    }
+    public void setEnteredLocaleAliases(Map<LocaleId, String> enteredLocaleAliases) {
+        // FIXME stub
+    }
+    public void updateToEnteredLocaleAlias(LocaleId localeId) {
+        // FIXME stub
+    }
+    public void useServerDefaultLocales() {
+        // FIXME stub
+    }
+    public String getEnabledLocalesFilter() {
+        // FIXME stub
+        return "";
+    }
+    public void setEnabledLocalesFilter(String enabledLocalesFilter) {
+        // FIXME stub
+    }
+    public List<HLocale> getEnabledLocales() {
+        // FIXME stub
+        return Lists.newArrayList();
+    }
+    public Map<LocaleId, Boolean> getSelectedEnabledLocales() {
+        // FIXME stub
+        return Maps.newHashMap();
+    }
+    public void setSelectedEnabledLocales(Map<LocaleId, Boolean> selectedEnabledLocales) {
+        // FIXME stub
+    }
+    public void disableSelectedLocales() {
+        // FIXME stub
+    }
+    public void disableLocale(HLocale locale) {
+        // FIXME stub
+    }
+    public String getDisabledLocalesFilter() {
+        // FIXME stub
+        return "";
+    }
+    public void setDisabledLocalesFilter(String disabledLocalesFilter) {
+        // FIXME stub
+    }
+    public List<HLocale> getDisabledLocales() {
+        // FIXME stub
+        return Lists.newArrayList();
+    }
+    public Map<LocaleId, Boolean> getSelectedDisabledLocales() {
+        // FIXME stub
+        return Maps.newHashMap();
+    }
+    public void setSelectedDisabledLocales(Map<LocaleId, Boolean> selectedDisabledLocales) {
+        // FIXME stub
+    }
+    public void enableSelectedLocales() {
+        // FIXME stub
+    }
+    public void enableLocale(HLocale locale) {
+        // FIXME stub
+    }
+
 }
