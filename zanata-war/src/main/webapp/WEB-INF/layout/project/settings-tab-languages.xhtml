@@ -509,11 +509,7 @@
       <ui:decorate template="languages-list.xhtml" >
         <ui:param name="id" value="active-locales" />
         <ui:param name="heading" value="#{msgs['jsf.Enabled']}" />
-
-        <!-- TODO remove when language list is colocated with filter textbox -->
-        <ui:param name="languageListSelector" value="#settings-active-locales" />
         <ui:param name="filterText" value="#{projectHome.enabledLocalesFilter}" />
-
         <ui:param name="languages" value="#{projectHome.enabledLocales}" />
         <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoActiveLanguages']}" />
 
@@ -688,10 +684,7 @@
       <ui:decorate template="languages-list.xhtml" >
         <ui:param name="id" value="available-locales" />
         <ui:param name="heading" value="#{msgs['jsf.languages.Available']}" />
-
-        <ui:param name="languageListSelector" value="#settings-available-locales" />
         <ui:param name="filterText" value="#{projectHome.disabledLocalesFilter}" />
-
         <ui:param name="languages" value="#{projectHome.disabledLocales}" />
         <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesAvailable']}" />
 
@@ -736,7 +729,7 @@
               </div>
               <div class="g__item w--5-12 w--7-10-s reveal__target txt--align-right txt--align-right-s">
                 <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
-                  <div class="button--group">
+                  <div class="button--group l--push-right-quarter">
                     <zanata:ajax-command-button
                       oncomplete="refreshStatistics();"
                       action="#{projectHome.enableLocale(locale)}"
