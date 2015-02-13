@@ -21,8 +21,14 @@
  */
 package org.zanata.action;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
+import java.util.ArrayList;
+
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
@@ -38,11 +44,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.dao.LocaleDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
@@ -87,6 +95,9 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @In
     private ProjectIterationDAO projectIterationDAO;
+
+    @In
+    private LocaleDAO localeDAO;
 
     @In
     private ConversationScopeMessages conversationScopeMessages;
@@ -173,6 +184,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             }
             copyFromVersionSlug = "";
         }
+        enteredLocaleAliases.putAll(getLocaleAliases());
     }
 
     public HProject getProject() {
@@ -569,93 +581,203 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
 
     public boolean isOverrideLocales() {
-        // FIXME stub
-        return false;
+        log.info("isOverrideLocales()");
+        return getInstance().isOverrideLocales();
     }
     public void setOverrideLocales(boolean overrideLocales) {
-        // FIXME stub
+        log.info("setOverrideLocales({})", overrideLocales);
+        getInstance().setOverrideLocales(overrideLocales);
     }
+
+
+
     public Map<LocaleId, String> getLocaleAliases() {
-        // FIXME stub
-        return Maps.newHashMap();
+        return getInstance().getLocaleAliases();
     }
+
     public void setLocaleAliases(Map<LocaleId, String> localeAliases) {
-        // FIXME stub
+        getInstance().setLocaleAliases(localeAliases);
     }
+
+    // FIXME restrict
     public void removeAllLocaleAliases() {
-        // FIXME stub
+        if (isOverrideLocales()) {
+            List<LocaleId> aliasedLocales =
+                new ArrayList(getLocaleAliases().keySet());
+            for (LocaleId aliasedLocale : aliasedLocales) {
+                removeAlias(aliasedLocale);
+            }
+        }
     }
+
+    // TODO restrict
     public void removeSelectedLocaleAliases() {
-        // FIXME stub
+        for (Map.Entry<LocaleId, Boolean> entry :
+            getSelectedEnabledLocales().entrySet()) {
+            if (entry.getValue()) {
+                removeAlias(entry.getKey());
+            }
+        }
     }
+
+    private void removeAlias(LocaleId localeId) {
+        if (isOverrideLocales()) {
+            setLocaleAlias(localeId, "");
+        } else {
+            // If the project instance is not overriding locales, there
+            // are no aliases to remove
+            // TODO check if this is really true.
+        }
+    }
+
     public String getLocaleAlias(HLocale locale) {
-        // FIXME stub
-        return null;
+        return getLocaleAliases().get(locale.getLocaleId());
     }
     public boolean hasLocaleAlias(HLocale locale) {
-        // FIXME stub
-        return false;
+        return getLocaleAliases().containsKey(locale.getLocaleId());
     }
-    public Map<LocaleId, String> getEnteredLocaleAliases() {
-        // FIXME stub
-        return Maps.newHashMap();
-    }
-    public void setEnteredLocaleAliases(Map<LocaleId, String> enteredLocaleAliases) {
-        // FIXME stub
-    }
+
+    /**
+     * A separate map is used, rather than binding the alias map from the
+     * project directly. This is done so that empty values are not added to the
+     * map in every form submission, and so that a value entered in the field
+     * for a row is not automatically updated when a different row is submitted.
+     */
+    @Getter
+    @Setter
+    private Map<LocaleId, String> enteredLocaleAliases = Maps.newHashMap();
+
+    // TODO add restriction
     public void updateToEnteredLocaleAlias(LocaleId localeId) {
-        // FIXME stub
+        String enteredAlias = enteredLocaleAliases.get(localeId);
+        setLocaleAlias(localeId, enteredAlias);
     }
+
+    private void setLocaleAlias(LocaleId localeId, String alias) {
+        HProjectIteration instance = getInstance();
+        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        if (isNullOrEmpty(alias)) {
+            if (aliases.containsKey(localeId)) {
+                aliases.remove(localeId);
+                FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
+            } else {
+                FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
+            }
+        } else {
+            aliases.put(localeId, alias);
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
+        }
+    }
+
     public void useServerDefaultLocales() {
         // FIXME stub
     }
-    public String getEnabledLocalesFilter() {
-        // FIXME stub
-        return "";
-    }
-    public void setEnabledLocalesFilter(String enabledLocalesFilter) {
-        // FIXME stub
-    }
+
+    @Getter
+    @Setter
+    private String enabledLocalesFilter = "";
+
+    @Getter
+    @Setter
+    private String disabledLocalesFilter;
+
     public List<HLocale> getEnabledLocales() {
-        // FIXME stub
-        return Lists.newArrayList();
+        // FIXME inline this method, and add security restriction.
+        return getInstanceActiveLocales();
     }
+
+    @Getter
+    @Setter
+    private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
+
+    // Not sure if this is necessary, seems to work ok on selected disabled
+    // locales without this.
     public Map<LocaleId, Boolean> getSelectedEnabledLocales() {
-        // FIXME stub
-        return Maps.newHashMap();
+        if (selectedEnabledLocales == null) {
+            selectedEnabledLocales = Maps.newHashMap();
+            for (HLocale locale : getEnabledLocales()) {
+                selectedEnabledLocales.put(locale.getLocaleId(), Boolean.FALSE);
+            }
+        }
+        return selectedEnabledLocales;
     }
-    public void setSelectedEnabledLocales(Map<LocaleId, Boolean> selectedEnabledLocales) {
-        // FIXME stub
-    }
+
+    // TODO restrict
     public void disableSelectedLocales() {
-        // FIXME stub
+        for (Map.Entry<LocaleId, Boolean> entry :
+            getSelectedEnabledLocales().entrySet()) {
+            if (entry.getValue()) {
+                disableLocaleById(entry.getKey());
+            }
+        }
+        selectedEnabledLocales.clear();
     }
+
+    private void disableLocaleById(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+        disableLocale(locale);
+    }
+
     public void disableLocale(HLocale locale) {
-        // FIXME stub
+        removeLanguage(locale.getLocaleId());
+        // clear disabled locales list so it will be regenerated
+        disabledLocales = null;
     }
-    public String getDisabledLocalesFilter() {
-        // FIXME stub
-        return "";
-    }
-    public void setDisabledLocalesFilter(String disabledLocalesFilter) {
-        // FIXME stub
-    }
+
+    private List<HLocale> disabledLocales;
+
     public List<HLocale> getDisabledLocales() {
-        // FIXME stub
-        return Lists.newArrayList();
+        if(disabledLocales == null) {
+            disabledLocales = findActiveNotEnabledLocales();
+        }
+        return disabledLocales;
     }
-    public Map<LocaleId, Boolean> getSelectedDisabledLocales() {
-        // FIXME stub
-        return Maps.newHashMap();
+
+    /**
+     * Populate the list of available locales after filtering out the locales
+     * already in the project.
+     */
+    private List<HLocale> findActiveNotEnabledLocales() {
+        Collection<HLocale> filtered =
+                Collections2.filter(localeDAO.findAllActive(),
+                        new Predicate<HLocale>() {
+                            @Override
+                            public boolean apply(HLocale input) {
+                                // only include those not already in the project
+                                return !getEnabledLocales().contains(input);
+                            }
+                        });
+        return Lists.newArrayList(filtered);
     }
-    public void setSelectedDisabledLocales(Map<LocaleId, Boolean> selectedDisabledLocales) {
-        // FIXME stub
-    }
+
+    @Getter
+    @Setter
+    private Map<LocaleId, Boolean> selectedDisabledLocales = Maps.newHashMap();
+
+    // TODO restrict
     public void enableSelectedLocales() {
-        // FIXME stub
+        for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
+                .entrySet()) {
+            if (entry.getValue()) {
+                enableLocaleById(entry.getKey());
+            }
+        }
+        selectedDisabledLocales.clear();
+        // no message shown, there are messages for each language individually
     }
+
+    private void enableLocaleById(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+        enableLocale(locale);
+    }
+
     public void enableLocale(HLocale locale) {
-        // FIXME stub
+        getInstance().getCustomizedLocales().add(locale);
+        // clear disabled locales so that it will be refreshed when needed.
+        disabledLocales = null;
     }
 
 }

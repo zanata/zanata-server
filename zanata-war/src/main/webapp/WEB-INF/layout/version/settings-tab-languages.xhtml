@@ -511,11 +511,7 @@
       <ui:decorate template="../project/languages-list.xhtml" >
         <ui:param name="id" value="active-locales" />
         <ui:param name="heading" value="#{msgs['jsf.Enabled']}" />
-
-        <!-- TODO remove when language list is colocated with filter textbox -->
-        <ui:param name="languageListSelector" value="#settings-active-locales" />
         <ui:param name="filterText" value="#{versionHome.enabledLocalesFilter}" />
-
         <ui:param name="languages" value="#{versionHome.enabledLocales}" />
         <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoActiveLanguages']}" />
 
@@ -690,10 +686,7 @@
       <ui:decorate template="../project/languages-list.xhtml" >
         <ui:param name="id" value="available-locales" />
         <ui:param name="heading" value="#{msgs['jsf.languages.Available']}" />
-
-        <ui:param name="languageListSelector" value="#settings-available-locales" />
         <ui:param name="filterText" value="#{versionHome.disabledLocalesFilter}" />
-
         <ui:param name="languages" value="#{versionHome.disabledLocales}" />
         <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesAvailable']}" />
 
@@ -738,7 +731,7 @@
               </div>
               <div class="g__item w--5-12 w--7-10-s reveal__target txt--align-right txt--align-right-s">
                 <div class="dropdown dropdown--small dropdown--right dropdown--single js-dropdown">
-                  <div class="button--group">
+                  <div class="button--group l--push-right-quarter">
                     <zanata:ajax-command-button
                       oncomplete="refreshStatistics();"
                       action="#{versionHome.enableLocale(locale)}"
@@ -757,56 +750,6 @@
 
     </s:div>
   </h:form>
-
-<!-- here lie the entire contents of the old settings tab, for reference -->
-<!--   <h2 class="l- -push-all-0 gamma d- -bottom l- -push-bottom-half">
-    #{msgs['jsf.Languages']}
-  </h2>
-
-  <h:form id="settings-languages-form" styleClass="l- -push-bottom-0">
-
-    <zanata:checkbox onValueChanged="bindCustomizedLocales"
-      checked="#{!versionHome.instance.overrideLocales}"
-      value="inheritesLanguage"
-      label="#{msgs['jsf.iteration.inheriteLanguage.label']}"
-      styleClass="l- -push-bottom-half" labelStyle="l- -push-bottom-0"/>
-
-    <s:fragment rendered="#{versionHome.instance.overrideLocales}">
-      <ul class="list- -slat list- -highlight l- -push-top-half">
-        <ui:repeat value="#{versionHome.getInstanceActiveLocales()}"
-          var="locale">
-          <li class="reveal- -list-item">#{locale.retrieveDisplayName()}<span
-            class="txt- -understated l- -push-left-quarter">[#{locale.localeId}]</span>
-            <a4j:commandLink
-              oncomplete="refreshStatistics();zanata.form.appendCheckboxes('#settings-languages-form')"
-              action="#{versionHome.removeLanguage(locale.localeId)}"
-              styleClass="l- -float-right txt- -danger reveal__target"
-              render="settings-languages-form" execute="@this">
-              <i class="i- -large i- -remove"></i>
-            </a4j:commandLink>
-          </li>
-        </ui:repeat>
-        <li class="list- -highlight__item- -none">
-          <label
-            for="#{rich:clientId('languageAutocomplete')}-autocomplete__input">
-            #{msgs['jsf.AddALanguage']}
-          </label>
-
-          <zanata:autocomplete
-            actionBean="#{versionHome.localeAutocomplete}"
-            maxlength="80" searchWhenFocus="true"
-            id="languageAutocomplete"
-            fetchValue="#{result.localeId}" render="settings-languages-form"
-            oncomplete="refreshStatistics();focusCurrentActiveInput();zanata.form.appendCheckboxes('#settings-languages-form')"
-            placeholder="#{msgs['jsf.language.search.placeholder']}">
-            #{result.retrieveDisplayName()}<span
-            class="txt- -understated l- -push-left-quarter">[#{result.localeId}]</span>
-          </zanata:autocomplete>
-        </li>
-      </ul>
-    </s:fragment>
-  </h:form> -->
-
 
 </ui:composition>
 
