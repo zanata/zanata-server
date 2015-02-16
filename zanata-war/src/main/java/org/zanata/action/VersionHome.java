@@ -133,11 +133,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     private String selectedProjectType;
 
     @Getter
-    private VersionLocaleAutocomplete localeAutocomplete =
-            new VersionLocaleAutocomplete();
-
-
-    @Getter
     @Setter
     private boolean copyFromVersion = true;
 
@@ -347,11 +342,15 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         HProject project = getProject();
         project.addIteration(getInstance());
 
+        // FIXME this looks only to be used when copying a version.
+        //       so it should copy the setting for isOverrideLocales,
+        //       and all enabled locales and locale alias data if it is
+        //       overriding.
         List<HLocale> projectLocales =
                 localeServiceImpl
                         .getSupportedLanguageByProject(projectSlug);
-
         getInstance().getCustomizedLocales().addAll(projectLocales);
+
 
         getInstance().getCustomizedValidations().putAll(
                 project.getCustomizedValidations());
@@ -715,29 +714,16 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     public void disableLocale(HLocale locale) {
         if (getEnabledLocales().contains(locale)) {
             ensureOverridingLocales();
-            // FIXME inline this
-            removeLanguage(locale.getLocaleId());
+            getInstance().getCustomizedLocales().remove(locale);
             refreshDisabledLocales();
+            update();
+            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
+                    msgs.format("jsf.iteration.LanguageRemoved",
+                            locale.retrieveDisplayName()));
         } else {
             // already disabled, nothing to do
         }
     }
-
-
-
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
-    public void removeLanguage(LocaleId localeId) {
-        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-        getInstance().getCustomizedLocales().remove(locale);
-
-        update();
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.iteration.LanguageRemoved",
-                        locale.retrieveDisplayName()));
-    }
-
-
-
 
     private List<HLocale> disabledLocales;
 
