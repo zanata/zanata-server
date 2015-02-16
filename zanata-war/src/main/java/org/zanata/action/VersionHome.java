@@ -222,12 +222,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         private HProjectIteration version;
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
-    public void updateCustomisedLocales(String key, boolean checked) {
-        getInstance().setOverrideLocales(!checked);
-        update();
-    }
-
     @Override
     protected HProjectIteration loadInstance() {
         Session session = (Session) getEntityManager().getDelegate();
@@ -427,17 +421,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
-    public void removeLanguage(LocaleId localeId) {
-        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-        getInstance().getCustomizedLocales().remove(locale);
-
-        update();
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.iteration.LanguageRemoved",
-                        locale.retrieveDisplayName()));
-    }
-
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateStatus(char initial) {
         getInstance().setStatus(EntityStatus.valueOf(initial));
         update();
@@ -524,55 +507,17 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
-    private class VersionLocaleAutocomplete extends LocaleAutocomplete {
-
-        @Override
-        protected Collection<HLocale> getLocales() {
-            if (StringUtils.isNotEmpty(projectSlug)
-                    && StringUtils.isNotEmpty(slug)) {
-                return localeServiceImpl
-                        .getSupportedLanguageByProjectIteration(projectSlug,
-                                slug);
-            }
-            return Collections.EMPTY_LIST;
-        }
-
-        /**
-         * Action when an item is selected
-         */
-        @Override
-        public void onSelectItemAction() {
-            if (StringUtils.isEmpty(getSelectedItem())) {
-                return;
-            }
-            HLocale locale = localeServiceImpl.getByLocaleId(getSelectedItem());
-
-            getInstance().getCustomizedLocales().add(locale);
-
-            update(conversationScopeMessages);
-            reset();
-            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.iteration.LanguageAdded",
-                            locale.retrieveDisplayName()));
-
-        }
-    }
-
     public List<ProjectType> getProjectTypeList() {
         List<ProjectType> projectTypes = Arrays.asList(ProjectType.values());
         Collections.sort(projectTypes, ComparatorUtil.PROJECT_TYPE_COMPARATOR);
         return projectTypes;
     }
 
-
-
-
-    // Copied directly from HasLanguageSettings.java
-
-
     public boolean isOverrideLocales() {
         return getInstance().isOverrideLocales();
     }
+
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void setOverrideLocales(boolean overrideLocales) {
         getInstance().setOverrideLocales(overrideLocales);
     }
@@ -585,7 +530,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
-    // FIXME restrict
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
         List<LocaleId> aliasedLocales =
             new ArrayList(getLocaleAliases().keySet());
@@ -630,6 +575,9 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         getInstance().getLocaleAliases().clear();
         getInstance().getLocaleAliases().putAll(localeAliases);
 
+        enteredLocaleAliases.clear();
+        enteredLocaleAliases.putAll(localeAliases);
+
         refreshDisabledLocales();
     }
 
@@ -641,7 +589,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         disabledLocales = null;
     }
 
-    // TODO restrict
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeSelectedLocaleAliases() {
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
@@ -658,6 +606,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     public String getLocaleAlias(HLocale locale) {
         return getLocaleAliases().get(locale.getLocaleId());
     }
+
     public boolean hasLocaleAlias(HLocale locale) {
         return getLocaleAliases().containsKey(locale.getLocaleId());
     }
@@ -672,7 +621,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @Setter
     private Map<LocaleId, String> enteredLocaleAliases = Maps.newHashMap();
 
-    // TODO add restriction
+
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateToEnteredLocaleAlias(LocaleId localeId) {
         String enteredAlias = enteredLocaleAliases.get(localeId);
         setLocaleAlias(localeId, enteredAlias);
@@ -704,6 +654,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void useDefaultLocales() {
         setOverrideLocales(false);
         refreshDisabledLocales();
@@ -744,7 +695,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return selectedEnabledLocales;
     }
 
-    // TODO restrict
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableSelectedLocales() {
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
@@ -760,15 +711,33 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         disableLocale(locale);
     }
 
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableLocale(HLocale locale) {
         if (getEnabledLocales().contains(locale)) {
             ensureOverridingLocales();
+            // FIXME inline this
             removeLanguage(locale.getLocaleId());
             refreshDisabledLocales();
         } else {
             // already disabled, nothing to do
         }
     }
+
+
+
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
+    public void removeLanguage(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+        getInstance().getCustomizedLocales().remove(locale);
+
+        update();
+        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.iteration.LanguageRemoved",
+                        locale.retrieveDisplayName()));
+    }
+
+
+
 
     private List<HLocale> disabledLocales;
 
@@ -800,7 +769,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @Setter
     private Map<LocaleId, Boolean> selectedDisabledLocales = Maps.newHashMap();
 
-    // TODO restrict
+
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableSelectedLocales() {
         for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
                 .entrySet()) {
@@ -817,6 +787,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         enableLocale(locale);
     }
 
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableLocale(HLocale locale) {
         if (getDisabledLocales().contains(locale)) {
             ensureOverridingLocales();
