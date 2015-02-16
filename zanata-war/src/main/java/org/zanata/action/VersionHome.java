@@ -146,7 +146,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                 public VersionItem apply(HProjectIteration input) {
                     boolean selected = StringUtils.isNotEmpty(
                             copyFromVersionSlug) && copyFromVersionSlug
-                            .equals(input.getSlug()) ? true : false;
+                            .equals(input.getSlug());
                     return new VersionItem(selected, input);
                 }
             };
@@ -405,20 +405,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return state;
     }
 
-    /**
-     * This is for autocomplete components of which ConversationScopeMessages
-     * will be null
-     *
-     * @param conversationScopeMessages
-     * @return
-     */
-    private String update(ConversationScopeMessages conversationScopeMessages) {
-        if (this.conversationScopeMessages == null) {
-            this.conversationScopeMessages = conversationScopeMessages;
-        }
-        return update();
-    }
-
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateStatus(char initial) {
         getInstance().setStatus(EntityStatus.valueOf(initial));
@@ -467,24 +453,24 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateValidationOption(String name, String state) {
-        ValidationId validatationId = ValidationId.valueOf(name);
+        ValidationId validationId = ValidationId.valueOf(name);
 
         for (Map.Entry<ValidationId, ValidationAction> entry : getValidations()
                 .entrySet()) {
             if (entry.getKey().name().equals(name)) {
-                getValidations().get(validatationId).setState(
+                getValidations().get(validationId).setState(
                         ValidationAction.State.valueOf(state));
                 getInstance().getCustomizedValidations().put(
                         entry.getKey().name(),
                         entry.getValue().getState().name());
-                ensureMutualExclusivity(getValidations().get(validatationId));
+                ensureMutualExclusivity(getValidations().get(validationId));
                 break;
             }
         }
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.validation.updated",
-                        validatationId.getDisplayName(), state));
+                        validationId.getDisplayName(), state));
     }
 
     /**
@@ -532,15 +518,14 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
         List<LocaleId> aliasedLocales =
-            new ArrayList(getLocaleAliases().keySet());
-        if (aliasedLocales.isEmpty()) {
-            // No locales to remove, nothing to do.
-        } else {
+            new ArrayList<>(getLocaleAliases().keySet());
+        if (!aliasedLocales.isEmpty()) {
             ensureOverridingLocales();
             for (LocaleId aliasedLocale : aliasedLocales) {
                 removeAlias(aliasedLocale);
             }
         }
+        // else no locales to remove, nothing to do.
     }
 
 
@@ -642,12 +627,11 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                     msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
             }
         } else {
-            if (alias.equals(aliases.get(localeId))) {
-                // no change to make
-            } else {
+            if (!alias.equals(aliases.get(localeId))) {
                 ensureOverridingLocales();
                 aliases.put(localeId, alias);
             }
+            // else no change to make
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                 msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
         }
@@ -720,9 +704,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.iteration.LanguageRemoved",
                             locale.retrieveDisplayName()));
-        } else {
-            // already disabled, nothing to do
         }
+        // else already disabled, nothing to do
     }
 
     private List<HLocale> disabledLocales;
@@ -779,9 +762,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             ensureOverridingLocales();
             getInstance().getCustomizedLocales().add(locale);
             refreshDisabledLocales();
-        } else {
-            // locale already enabled, nothing to do.
         }
+        // else locale already enabled, nothing to do.
     }
 
 }

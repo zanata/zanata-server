@@ -370,10 +370,9 @@ public class ProjectHome extends SlugHome<HProject> implements
     private void removeAlias(LocaleId localeId) {
         if (isOverrideLocales()) {
             setLocaleAlias(localeId, "");
-        } else {
-            // If the project instance is not overriding locales, there
-            // are no aliases to remove
         }
+        // else the project instance is not overriding locales, there
+        // are no aliases to remove
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -406,7 +405,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void removeAllLocaleAliases() {
         if (isOverrideLocales()) {
             List<LocaleId> aliasedLocales =
-                new ArrayList(getLocaleAliases().keySet());
+                new ArrayList<>(getLocaleAliases().keySet());
             for (LocaleId aliasedLocale : aliasedLocales) {
                 removeAlias(aliasedLocale);
             }
@@ -761,17 +760,17 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void updateValidationOption(String name, String state) {
-        ValidationId validatationId = ValidationId.valueOf(name);
+        ValidationId validationId = ValidationId.valueOf(name);
 
         for (Map.Entry<ValidationId, ValidationAction> entry : getValidations()
                 .entrySet()) {
             if (entry.getKey().name().equals(name)) {
-                getValidations().get(validatationId).setState(
+                getValidations().get(validationId).setState(
                         ValidationAction.State.valueOf(state));
                 getInstance().getCustomizedValidations().put(
                         entry.getKey().name(),
                         entry.getValue().getState().name());
-                ensureMutualExclusivity(getValidations().get(validatationId));
+                ensureMutualExclusivity(getValidations().get(validationId));
                 break;
             }
         }
@@ -779,7 +778,7 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.validation.updated",
-                        validatationId.getDisplayName(), state));
+                        validationId.getDisplayName(), state));
     }
 
     public List<ValidationAction> getValidationList() {
