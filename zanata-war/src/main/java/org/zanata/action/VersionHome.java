@@ -31,6 +31,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -379,17 +380,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return slug != null && projectSlug != null;
     }
 
-    public List<HLocale> getInstanceActiveLocales() {
-        if (StringUtils.isNotEmpty(projectSlug) && StringUtils.isNotEmpty(slug)) {
-            List<HLocale> locales =
-                    localeServiceImpl.getSupportedLanguageByProjectIteration(
-                            projectSlug, slug);
-            Collections.sort(locales, ComparatorUtil.LOCALE_COMPARATOR);
-            return locales;
-        }
-        return localeServiceImpl.getSupportedAndEnabledLocales();
-    }
-
     public boolean isValidationsSameAsProject() {
 
         Collection<ValidationAction> versionValidations =
@@ -581,33 +571,74 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
 
     public boolean isOverrideLocales() {
-        log.info("isOverrideLocales()");
         return getInstance().isOverrideLocales();
     }
     public void setOverrideLocales(boolean overrideLocales) {
-        log.info("setOverrideLocales({})", overrideLocales);
         getInstance().setOverrideLocales(overrideLocales);
     }
 
-
-
     public Map<LocaleId, String> getLocaleAliases() {
-        return getInstance().getLocaleAliases();
-    }
-
-    public void setLocaleAliases(Map<LocaleId, String> localeAliases) {
-        getInstance().setLocaleAliases(localeAliases);
+        if (isOverrideLocales()) {
+            return getInstance().getLocaleAliases();
+        } else {
+            return getProject().getLocaleAliases();
+        }
     }
 
     // FIXME restrict
     public void removeAllLocaleAliases() {
-        if (isOverrideLocales()) {
-            List<LocaleId> aliasedLocales =
-                new ArrayList(getLocaleAliases().keySet());
+        List<LocaleId> aliasedLocales =
+            new ArrayList(getLocaleAliases().keySet());
+        if (aliasedLocales.isEmpty()) {
+            // No locales to remove, nothing to do.
+        } else {
+            ensureOverridingLocales();
             for (LocaleId aliasedLocale : aliasedLocales) {
                 removeAlias(aliasedLocale);
             }
         }
+    }
+
+
+    /**
+     * Ensure that isOverrideLocales is true, and copy data if necessary.
+     */
+    private void ensureOverridingLocales() {
+        if (!isOverrideLocales()) {
+            startOverridingLocales();
+        }
+    }
+
+    /**
+     * Copy locale data from project and set overrideLocales, in preparation for
+     * making customizations to the locales.
+     */
+    private void startOverridingLocales() {
+        // Copied before setOverrideLocales(true) so that the currently returned
+        // values will be used as the basis for any customization.
+        List<HLocale> enabledLocales = getEnabledLocales();
+        Map<LocaleId, String> localeAliases = getLocaleAliases();
+
+        setOverrideLocales(true);
+
+        // Replace contents rather than entire collections to avoid confusion
+        // with reference to the collections that are bound before this runs.
+
+        getInstance().getCustomizedLocales().clear();
+        getInstance().getCustomizedLocales().addAll(enabledLocales);
+
+        getInstance().getLocaleAliases().clear();
+        getInstance().getLocaleAliases().putAll(localeAliases);
+
+        refreshDisabledLocales();
+    }
+
+    /**
+     * Update disabled locales to be consistent with enabled locales.
+     */
+    private void refreshDisabledLocales() {
+        // will be re-generated with correct values next time it is fetched.
+        disabledLocales = null;
     }
 
     // TODO restrict
@@ -621,13 +652,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     private void removeAlias(LocaleId localeId) {
-        if (isOverrideLocales()) {
-            setLocaleAlias(localeId, "");
-        } else {
-            // If the project instance is not overriding locales, there
-            // are no aliases to remove
-            // TODO check if this is really true.
-        }
+        setLocaleAlias(localeId, "");
     }
 
     public String getLocaleAlias(HLocale locale) {
@@ -656,8 +681,10 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     private void setLocaleAlias(LocaleId localeId, String alias) {
         HProjectIteration instance = getInstance();
         Map<LocaleId, String> aliases = instance.getLocaleAliases();
+
         if (isNullOrEmpty(alias)) {
             if (aliases.containsKey(localeId)) {
+                ensureOverridingLocales();
                 aliases.remove(localeId);
                 FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
@@ -666,14 +693,20 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                     msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
             }
         } else {
-            aliases.put(localeId, alias);
+            if (alias.equals(aliases.get(localeId))) {
+                // no change to make
+            } else {
+                ensureOverridingLocales();
+                aliases.put(localeId, alias);
+            }
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                 msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
         }
     }
 
-    public void useServerDefaultLocales() {
-        // FIXME stub
+    public void useDefaultLocales() {
+        setOverrideLocales(false);
+        refreshDisabledLocales();
     }
 
     @Getter
@@ -685,8 +718,14 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     private String disabledLocalesFilter;
 
     public List<HLocale> getEnabledLocales() {
-        // FIXME inline this method, and add security restriction.
-        return getInstanceActiveLocales();
+        if (StringUtils.isNotEmpty(projectSlug) && StringUtils.isNotEmpty(slug)) {
+            List<HLocale> locales =
+                    localeServiceImpl.getSupportedLanguageByProjectIteration(
+                            projectSlug, slug);
+            Collections.sort(locales, ComparatorUtil.LOCALE_COMPARATOR);
+            return locales;
+        }
+        return Lists.newArrayList();
     }
 
     @Getter
@@ -722,9 +761,13 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public void disableLocale(HLocale locale) {
-        removeLanguage(locale.getLocaleId());
-        // clear disabled locales list so it will be regenerated
-        disabledLocales = null;
+        if (getEnabledLocales().contains(locale)) {
+            ensureOverridingLocales();
+            removeLanguage(locale.getLocaleId());
+            refreshDisabledLocales();
+        } else {
+            // already disabled, nothing to do
+        }
     }
 
     private List<HLocale> disabledLocales;
@@ -775,9 +818,13 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public void enableLocale(HLocale locale) {
-        getInstance().getCustomizedLocales().add(locale);
-        // clear disabled locales so that it will be refreshed when needed.
-        disabledLocales = null;
+        if (getDisabledLocales().contains(locale)) {
+            ensureOverridingLocales();
+            getInstance().getCustomizedLocales().add(locale);
+            refreshDisabledLocales();
+        } else {
+            // locale already enabled, nothing to do.
+        }
     }
 
 }

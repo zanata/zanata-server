@@ -163,6 +163,8 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
 
+    // Not sure if this is necessary, seems to work ok on selected disabled
+    // locales without this.
     public Map<LocaleId, Boolean> getSelectedEnabledLocales() {
         if (selectedEnabledLocales == null) {
             selectedEnabledLocales = Maps.newHashMap();
@@ -292,7 +294,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         return getInstance().getLocaleAliases();
     }
 
-    public void setLocaleAliases(Map<LocaleId, String> localeAliases) {
+    private void setLocaleAliases(Map<LocaleId, String> localeAliases) {
         getInstance().setLocaleAliases(localeAliases);
     }
 
@@ -447,7 +449,7 @@ public class ProjectHome extends SlugHome<HProject> implements
 
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
-    public void useServerDefaultLocales() {
+    public void useDefaultLocales() {
         setOverrideLocales(false);
         removeAliasesForDisabledLocales();
         disabledLocales = null;

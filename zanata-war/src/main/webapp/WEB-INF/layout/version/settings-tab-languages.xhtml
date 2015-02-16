@@ -491,12 +491,10 @@
   <h:form id="settings-languages-form" styleClass="l--push-bottom-0">
     <s:div id="settings-languages-list">
 
-      <!-- FIXME useServerDefaultLocales is too specific, change to indicate
-                 whether it is  -->
       <button styleClass="button--small l--push-bottom-half" jsfc="a4j:commandButton"
         value="#{msgs['jsf.Language.useGlobal']}"
         rendered="#{versionHome.overrideLocales}"
-        action="#{versionHome.useServerDefaultLocales()}"
+        action="#{versionHome.useDefaultLocales()}"
         render="settings-languages-form"/>
 
       <button jsfc="a4j:commandButton"

@@ -47,7 +47,6 @@ public interface HasLanguageSettings {
     void setOverrideLocales(boolean overrideLocales);
 
     Map<LocaleId, String> getLocaleAliases();
-    void setLocaleAliases(Map<LocaleId, String> localeAliases);
 
     void removeAllLocaleAliases();
 
@@ -79,13 +78,13 @@ public interface HasLanguageSettings {
     void updateToEnteredLocaleAlias(LocaleId localeId);
 
     /**
-     * Ensure that only all the server default locales are active.
+     * Ensure that only all the default locales are active.
      *
-     * When this has run, overrideLocales will return false.
+     * After this has run, overrideLocales will return false.
      *
      * This will remove locale aliases from any locales that are deactivated.
      */
-    void useServerDefaultLocales();
+    void useDefaultLocales();
 
     /**
      * Filter text that is being used to determine which enabled locales are
