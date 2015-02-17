@@ -20,53 +20,51 @@
  */
 package org.zanata.rest.service;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.zanata.common.LocaleId;
-import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.model.HLocale;
-import org.zanata.model.HProject;
-import org.zanata.rest.dto.LocaleDetails;
-import org.zanata.rest.service.ProjectLocalesResource;
+import org.zanata.model.HProjectIteration;
 import org.zanata.service.LocaleService;
+import org.zanata.service.impl.LocaleServiceImpl;
 
-import com.google.common.collect.Lists;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
+import java.util.Map;
 
-@Name("projectLocalesService")
-@Path(ProjectLocalesResource.SERVICE_PATH)
-public class ProjectLocalesService extends LocalesService implements ProjectLocalesResource {
+@Name("projectIterationLocalesService")
+@Path(ProjectIterationLocalesService.SERVICE_PATH)
+public class ProjectIterationLocalesService extends LocalesService implements ProjectIterationLocalesResource {
     @PathParam("projectSlug")
     String projectSlug;
 
+    @PathParam("iterationSlug")
+    String iterationSlug;
+
     @In
-    private ProjectDAO projectDAO;
+    private ProjectIterationDAO projectIterationDAO;
 
     @In
     private LocaleService localeServiceImpl;
 
     @Override
     public Response get() {
-        HProject project = projectDAO.getBySlug(projectSlug);
-        if (project == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        HProjectIteration iteration = projectIterationDAO.getBySlug(projectSlug, iterationSlug);
+
+        if (iteration == null) {
+            return Response.status(Status.NOT_FOUND).build();
         }
 
         List<HLocale> supportedLocales =
-                localeServiceImpl.getSupportedLanguageByProject(projectSlug);
-        Map<LocaleId, String> localeAliases = project.getLocaleAliases();
+                localeServiceImpl.getSupportedLanguageByProjectIteration(projectSlug, iterationSlug);
+        Map<LocaleId, String> localeAliases = LocaleServiceImpl.getLocaleAliasesByIteration(iteration);
 
         Object entity = buildLocaleDetailsListEntity(supportedLocales, localeAliases);
         return Response.ok(entity).build();
     }
+
 }

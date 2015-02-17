@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, Red Hat, Inc. and individual contributors
+ * Copyright 2015, Red Hat, Inc. and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -20,16 +20,7 @@
  */
 package org.zanata.rest.service;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import com.google.common.collect.Lists;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -38,35 +29,36 @@ import org.zanata.dao.ProjectDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 import org.zanata.rest.dto.LocaleDetails;
-import org.zanata.rest.service.ProjectLocalesResource;
 import org.zanata.service.LocaleService;
 
-import com.google.common.collect.Lists;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
-@Name("projectLocalesService")
-@Path(ProjectLocalesResource.SERVICE_PATH)
-public class ProjectLocalesService extends LocalesService implements ProjectLocalesResource {
-    @PathParam("projectSlug")
-    String projectSlug;
+/**
+ * Parent class for endpoints that return a list of locales.
+ */
+public abstract class LocalesService {
 
-    @In
-    private ProjectDAO projectDAO;
+    protected Object buildLocaleDetailsListEntity(List<HLocale> locales, Map<LocaleId, String> localeAliases) {
+        List<LocaleDetails> localeDetails =
+                Lists.newArrayListWithExpectedSize(locales.size());
 
-    @In
-    private LocaleService localeServiceImpl;
-
-    @Override
-    public Response get() {
-        HProject project = projectDAO.getBySlug(projectSlug);
-        if (project == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        for (HLocale hLocale : locales) {
+            LocaleId id = hLocale.getLocaleId();
+            String name = hLocale.retrieveDisplayName();
+            String alias = localeAliases.get(id);
+            localeDetails.add(new LocaleDetails(id, name, alias));
         }
 
-        List<HLocale> supportedLocales =
-                localeServiceImpl.getSupportedLanguageByProject(projectSlug);
-        Map<LocaleId, String> localeAliases = project.getLocaleAliases();
-
-        Object entity = buildLocaleDetailsListEntity(supportedLocales, localeAliases);
-        return Response.ok(entity).build();
+        Type genericType = new GenericType<List<LocaleDetails>>() {
+        }.getGenericType();
+        return new GenericEntity<List<LocaleDetails>>(localeDetails, genericType);
     }
+
 }

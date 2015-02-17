@@ -60,6 +60,7 @@ import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
+import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -508,11 +509,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public Map<LocaleId, String> getLocaleAliases() {
-        if (isOverrideLocales()) {
-            return getInstance().getLocaleAliases();
-        } else {
-            return getProject().getLocaleAliases();
-        }
+        return LocaleServiceImpl.getLocaleAliasesByIteration(getInstance());
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
