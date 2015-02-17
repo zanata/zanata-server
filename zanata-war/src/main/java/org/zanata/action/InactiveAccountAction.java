@@ -78,8 +78,10 @@ public class InactiveAccountAction implements Serializable {
 
     public void sendActivationEmail() {
         HAccount account = getAccount();
-        if(account != null) {
-            HAccountActivationKey key = account.getAccountActivationKey();
+        if (account != null) {
+            HAccountActivationKey key = accountActivationKeyDAO
+                .findByAccountIdAndKeyHash(account.getId(),
+                    account.getAccountActivationKey().getKeyHash());
             key.setCreationDate(new Date());
 
             accountActivationKeyDAO.makePersistent(key);
@@ -115,7 +117,7 @@ public class InactiveAccountAction implements Serializable {
     private boolean validateEmail(String email) {
         if (StringUtils.isEmpty(email)) {
             FacesMessages.instance().addToControl("email",
-                    "#{msgs['javax.faces.component.UIInput.REQUIRED']}");
+                "#{msgs['javax.faces.component.UIInput.REQUIRED']}");
             return false;
         }
 
@@ -123,7 +125,7 @@ public class InactiveAccountAction implements Serializable {
 
         if (person != null && !person.getAccount().equals(getAccount())) {
             FacesMessages.instance().addToControl("email",
-                    "This email address is already taken");
+                "This email address is already taken");
             return false;
         }
         return true;
