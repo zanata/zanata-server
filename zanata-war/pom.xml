@@ -124,7 +124,6 @@
             <!-- Needed by ui rendering on runtime -->
             <usedDependency>javax.el:el-api</usedDependency>
             <usedDependency>javax.servlet.jsp:jsp-api</usedDependency>
-            <usedDependency>com.sun.faces:jsf-impl</usedDependency>
             <!-- Used for different content analyzers based on langugage for search. -->
             <usedDependency>org.apache.solr:solr-core</usedDependency>
             <usedDependency>org.apache.solr:solr-solrj</usedDependency>
