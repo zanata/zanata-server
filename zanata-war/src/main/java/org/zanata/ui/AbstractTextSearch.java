@@ -47,7 +47,7 @@ public abstract class AbstractTextSearch<E> {
 
     public synchronized void search() {
         // only search if it's necessary
-        if( !query.equals(searchedQuery) ) {
+        if(!query.equals(searchedQuery)) {
             results = getSearchResults();
             searchedQuery = query;
         }

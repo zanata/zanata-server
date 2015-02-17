@@ -71,7 +71,7 @@ public class TextInputRenderer extends TextRenderer {
                     // Add the extra attributes
                     for(ExtraAttributes att : ExtraAttributes.values()) {
                         Object value = component.getAttributes().get(att.name());
-                        if( value != null ) {
+                        if(value != null) {
                             super.writeAttribute(att.name(), value, null);
                         }
                     }
