@@ -180,8 +180,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                 selectedProjectType = versionProjectType.name();
             }
             copyFromVersionSlug = "";
+            enteredLocaleAliases.putAll(getLocaleAliases());
         }
-        enteredLocaleAliases.putAll(getLocaleAliases());
     }
 
     public HProject getProject() {
