@@ -92,6 +92,39 @@ function clearHTML(listId) {
   jQuery('#' + listId).empty();
 }
 
+/**
+ * Given any number of jQuery selectors, returns a function that will reveal
+ * a given element and ensure that all other selectors passed to this function
+ * are hidden.
+ */
+function showOnlyOneOf() {
+    var i, selectors = Array.prototype.slice.call(arguments);
+    return function (show) {
+        selectors.forEach(function (selector) {
+            jQuery(selector).addClass('is-hidden');
+        });
+        jQuery(show).removeClass('is-hidden');
+    }
+}
+
+/**
+ * Get an ancestor that will not be removed by dynamic element replacement.
+ *
+ * To indicate that an element is static, add the class 'js-static-element'.
+ * This class should only be applied to elements that are not moved or
+ * removed dynamically such as in response to user activity or an ajax
+ * request.
+ *
+ * The ancestor can be used as an event delegate for elements that
+ * will be refreshed with ajax.
+ *
+ * return: the static ancestor as a jQuery object.
+ */
+function getStaticAncestor(jqueryElement) {
+    return jqueryElement.closest('.js-static-element, body');
+}
+
+
 /* ----------------------------------------------------------- */
 /*----------------zanata-autocomplete component----------------*/
 /* ----------------------------------------------------------- */

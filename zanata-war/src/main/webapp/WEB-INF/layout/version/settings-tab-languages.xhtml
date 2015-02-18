@@ -74,33 +74,6 @@
   }
 
   /**
-   * Given any number of jQuery selectors, returns a function that will reveal
-   * a given element and ensure that all other selectors passed to this function
-   * are hidden.
-   */
-  function showOnlyOneOf() {
-    var i, selectors = Array.prototype.slice.call(arguments);
-    return function (show) {
-      selectors.forEach(function (selector) {
-        jQuery(selector).addClass('is-hidden');
-      });
-      jQuery(show).removeClass('is-hidden');
-    }
-  }
-
-  /**
-   * Get an ancestor that will not be removed by dynamic element replacement.
-   *
-   * The ancestor can be used as an event delegate for elements that
-   * will be refreshed with ajax.
-   *
-   * return: the static ancestor as a jQuery object.
-   */
-  function getStaticAncestor(jqueryElement) {
-    return jqueryElement.closest('.js-static-element, body');
-  }
-
-  /**
    * Attach events for checkboxes that control the checked state of all items in
    * a list.
    *
