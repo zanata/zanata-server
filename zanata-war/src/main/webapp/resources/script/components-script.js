@@ -1,3 +1,5 @@
+
+
 // Escapes special characters and returns a valid jQuery selector
 function jqSelector(str) {
   if (str) {
@@ -26,7 +28,7 @@ function registerUrlModifiers() {
 }
 
 function validateTab(tab, currentSection, defaultSection) {
-  if (jQuery(tab).length == 0) {
+  if (jQuery(tab).length === 0) {
     window.location.href = window.location.href.replace(currentSection,
         defaultSection);
     return defaultSection;
@@ -119,20 +121,20 @@ function onResultKeyPressed(autocomplete, event, selectItemAction,
     if (currentSelected.length != 0) {
       onSelectItem(currentSelected, selectItemAction, selectItemFunction);
     }
-  } else if (event.keyCode == 40) {
+  } else if (event.keyCode === 40) {
     // key: down
     deselectRow(currentSelected);
-    if (currentSelected.length == 0
-        || jQuery(currentSelected).next().length == 0) {
+    if (currentSelected.length === 0
+        || jQuery(currentSelected).next().length === 0) {
       selectRow(jQuery(autocomplete).find('.js-autocomplete__results')
           .children('li').first());
     } else {
       selectRow(jQuery(currentSelected).next("li"));
     }
-  } else if (event.keyCode == 38) {
+  } else if (event.keyCode === 38) {
     // key: up
     deselectRow(currentSelected);
-    if (currentSelected.length == 0) {
+    if (currentSelected.length === 0) {
       selectRow(jQuery(autocomplete).find('.js-autocomplete__results')
           .children('li').last());
     } else {
@@ -159,11 +161,11 @@ function deselectRow(row) {
 }
 
 function isArrowKey(keyCode) {
-  return keyCode == 38 || keyCode == 40 || keyCode == 39 || keyCode == 37;
+  return keyCode === 38 || keyCode === 40 || keyCode === 39 || keyCode === 37;
 }
 
 function isEnterKey(event) {
-  return event.keyCode == 13;
+  return event.keyCode === 13;
 }
 
 function onInputFocus(inputField, renderResultFn) {
@@ -173,7 +175,7 @@ function onInputFocus(inputField, renderResultFn) {
 }
 
 function onValueChange(inputField, event, renderResultFn, resetFn) {
-  if (event.keyCode == 27) {
+  if (event.keyCode === 27) {
     // key: ESC
     jQuery(inputField).select().parent().find('.js-autocomplete__results').remove();
   } else if (hasValueChanged(inputField)) {
@@ -190,7 +192,7 @@ function onValueChange(inputField, event, renderResultFn, resetFn) {
 function hasValueChanged(element) {
   var $elem = jQuery(element);
   originalValue = $elem.attr('data-original-value');
-  if($elem.val() == originalValue) {
+  if($elem.val() === originalValue) {
     return false;
   }
   else {
