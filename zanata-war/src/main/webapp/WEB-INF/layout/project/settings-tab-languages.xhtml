@@ -32,14 +32,12 @@
 
   function onLocaleAliasInputKeyDown(localeId, event) {
 
-    // Enter
     if (isEnterKey(event)) {
       event.preventDefault();
       localeAliasForm(localeId).find('input:submit').click();
       return false;
     }
-    // Esc
-    if (event.keyCode === 27) {
+    if (isEscapeKey(event)) {
       event.preventDefault();
       jQuery('#edit-alias-cancel-' + localeId).find('button').click();
       return false;

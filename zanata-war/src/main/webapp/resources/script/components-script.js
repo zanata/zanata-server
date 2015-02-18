@@ -169,6 +169,10 @@ function isEnterKey(event) {
   return event.keyCode === 13;
 }
 
+function isEscapeKey(event) {
+  return event.keyCode === 27;
+}
+
 function onInputFocus(inputField, renderResultFn) {
   if (jQuery(inputField).next('input').next('input').val() == 'true') {
     renderResultFn(jQuery(inputField).val());
