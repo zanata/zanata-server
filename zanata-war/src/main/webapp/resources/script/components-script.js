@@ -1,4 +1,4 @@
-
+/* global zanata */
 
 // Escapes special characters and returns a valid jQuery selector
 function jqSelector(str) {
@@ -41,23 +41,23 @@ function updateStateFromUrl() {
 }
 
 function changeBrowserUrl(url, refresh) {
-  refresh = refresh || false
+  refresh = refresh || false;
 
   var status = {
     path : url
-  }
-  window.history.pushState(status, document.title, url)
+  };
+  window.history.pushState(status, document.title, url);
   if (refresh)
     updateStateFromUrl();
 }
 
 jQuery(function() {
   jQuery(window).on("popstate", function(event) {
-    var state = event.originalEvent.state
+    var state = event.originalEvent.state;
     if (state)
       crossroads.parse(state.path)
   })
-})
+});
 
 function updateActiveRow(clickedElement) {
   var parent = jQuery(clickedElement).parent();
@@ -74,8 +74,9 @@ function toggleColumn(tabId) {
 }
 
 function removeActiveRows(listId) {
-  jQuery('#' + listId).children('li').removeClass('is-active');
-  jQuery('#' + listId).children('li').children("a").removeClass('is-active');
+  var items = jQuery('#' + listId).children('li');
+  items.removeClass('is-active');
+  items.children("a").removeClass('is-active');
 }
 
 function focusCurrentActiveInput() {
@@ -203,8 +204,9 @@ function hasValueChanged(element) {
 
 function registerMouseEvent(autocompleteId, selectItemAction,
     selectItemFunction) {
-  jQuery("[id='" + autocompleteId + "']").find('.js-autocomplete__results')
-      .children('.js-autocomplete__result').each(function() {
+  var results = jQuery("[id='" + autocompleteId + "']")
+      .find('.js-autocomplete__results').children('.js-autocomplete__result');
+  results.each(function() {
         jQuery(this).mouseover(function() {
           selectRow(this);
         });
@@ -218,8 +220,7 @@ function registerMouseEvent(autocompleteId, selectItemAction,
         });
       });
 
-  var firstResult = jQuery("[id='" + autocompleteId + "']").find(
-      '.js-autocomplete__results').children('.js-autocomplete__result').first();
+  var firstResult = results.first();
   if (firstResult.length != 0) {
     selectRow(firstResult);
   }
