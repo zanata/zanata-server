@@ -135,6 +135,152 @@ function doNotSubmit(event) {
     }
 }
 
+$(document).ready(initListOperations);
+
+/**
+ * Attach events for controlling appearance of elements in response to list
+ * selections.
+ *
+ * To make an element's appearance depend on selections in a list, add a data
+ * attribute to indicate which list should be used, and a data attribute for
+ * each quantity of selections you wish to appearance to change with, and
+ * which css classes should be added or removed.
+ *
+ * Indicate the target list using the attribute data-target-list, with a
+ * jQuery selector that matches the list of interest.
+ *
+ * Classes to toggle are specified as the value of a data attribute. The data
+ * attribute name includes the quantifier that determines when the class is
+ * present or absent. The data attribute name is in the form
+ * data-[quantifier]-selected-class.
+ *
+ * The following quantifiers are available. Note that an item is considered
+ * selected if it has the class 'is-checked':
+ *
+ *  - none: no items in the list are selected
+ *  - one: exactly 1 item in the list is selected
+ *  - multiple: 2 or more items in the list are selected
+ *  - some: 1 or more items in the list are selected, but not all items.
+ *  - any: 1 or more items in the list are selected
+ *  - all: there are 1 or more items in the list and all of them are selected
+ *
+ * Quantifiers can also be prefixed with not- to invert their meaning.
+ * e.g. not-any has the same meaning as none.
+ *
+ * Multiple quantifiers may be used in separate data attributes on the same
+ * element. If two quantifiers toggle the same css class, the quantifier with
+ * the highest precedence will determine the toggle state (the other is
+ * essentially ignored, but may toggle other css classes too). Quantifiers
+ * from highest to lowest precedence are:
+ *
+ *  - not-none
+ *  - none
+ *  - not-one
+ *  - one
+ *  - not-all
+ *  - all
+ *  - not-some
+ *  - some
+ *  - not-multiple
+ *  - multiple
+ *  - not-any
+ *  - any
+ *
+ *
+ * Example: show a button only when items are selected, and change its label
+ *          to singular or plural depending on the number selected. The button
+ *          should be highlighted and have red text if all the items are
+ *          selected. Assume that all the css classes used are defined and
+ *          have the obvious effect.
+ *
+ *   <button data-target-list="#my-list"
+ *           data-none-selected-class="is-hidden"
+ *           data-all-selected-class="highlighted red-text">
+ *     <span data-target-list="#my-list"
+ *           data-not-one-selected-class="is-hidden">
+ *       Delete Selected Item</span>
+ *     <span data-target-list="#my-list"
+ *           data-not-multiple-selected-class="is-hidden">
+ *       Delete Selected Items</span>
+ *   </button>
+ *   <ul id="my-list">
+ *     <li />
+ *     <li />
+ *     <li />
+ *   </ul>
+ *
+ */
+function initListOperations() {
+    var $ = jQuery;
+    var listOperations = $('[data-target-list]');
+
+    while (listOperations.length > 0) {
+        listOperations.first().each(function () {
+            var targetListSelector = $(this).data('target-list');
+            bindOperationToList(targetListSelector);
+            // All operations for a list are discovered dynamically, so each target
+            // list only needs to be registered once.
+            listOperations = listOperations.not('[data-target-list="' + targetListSelector + '"]');
+        });
+    }
+
+    function bindOperationToList (targetListSelector) {
+        // Event handlers are lost if they are in a region that is refreshed from
+        // an ajax call. They are instead delegated to an ancestor element that is
+        // marked as static by the developer, using the body as a fallback.
+        var eventDelegate = getStaticAncestor($(targetListSelector));
+        eventDelegate.on('change', targetListSelector, delayedTriggerListRecheck);
+
+        // FIXME this waits for the script that changes the is-checked class on the
+        //       item, but this should be triggered directly by that script when
+        //       this code is moved to assets.
+        function delayedTriggerListRecheck () {
+            //console.log('delayedTriggerListRecheck');
+            setTimeout(triggerListRecheck, 20);
+        }
+
+        function triggerListRecheck() {
+            var targetList = $(targetListSelector);
+            var totalElements = targetList.find('.js-form__checkbox__input').size();
+            var selectedElements = targetList.find('.js-form__checkbox__input:checked').size();
+
+            var none = selectedElements === 0;
+            var one = selectedElements === 1;
+            var multiple = selectedElements > 1;
+            var some = selectedElements > 0 && selectedElements < totalElements;
+            var any = selectedElements > 0;
+            // all is purposely false for an empty list
+            var all = selectedElements === totalElements && totalElements > 0;
+
+            // $('.js-list-operation[data-target-list="' + targetListSelector + '"]')
+            $('[data-target-list="' + targetListSelector + '"]')
+                .each(function () {
+                    var $element = $(this);
+
+                    // specifically ordered so that items dealing with the same class
+                    // will have the desired precedence.
+                    updateClassesForCondition($element, 'any', any);
+                    updateClassesForCondition($element, 'multiple', multiple);
+                    updateClassesForCondition($element, 'some', some);
+                    updateClassesForCondition($element, 'all', all);
+                    updateClassesForCondition($element, 'one', one);
+                    updateClassesForCondition($element, 'none', none);
+                });
+
+            function updateClassesForCondition($element, condition, state) {
+                if ($element.attr('data-' + condition + '-selected-class')) {
+                    $element.toggleClass($element.data(condition + '-selected-class'),
+                        state);
+                }
+                if ($element.attr('data-not-' + condition + '-selected-class')) {
+                    $element.toggleClass($element.data('not-' + condition + '-selected-class'),
+                        !state);
+                }
+            }
+        }
+    }
+}
+
 /* ----------------------------------------------------------- */
 /*----------------zanata-autocomplete component----------------*/
 /* ----------------------------------------------------------- */
