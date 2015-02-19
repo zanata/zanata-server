@@ -125,6 +125,16 @@ function getStaticAncestor(jqueryElement) {
 }
 
 
+/**
+ * Attach to keypress event to prevent submission of form when Enter is
+ * pressed in a textbox.
+ */
+function doNotSubmit(event) {
+    if (isEnterKey(event)) {
+        event.preventDefault();
+    }
+}
+
 /* ----------------------------------------------------------- */
 /*----------------zanata-autocomplete component----------------*/
 /* ----------------------------------------------------------- */
