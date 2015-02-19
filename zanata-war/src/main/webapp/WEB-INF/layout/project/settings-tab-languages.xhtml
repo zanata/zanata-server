@@ -11,68 +11,6 @@
 <script type="text/javascript">
   //<![CDATA[
 
-  /**
-   * Attach events for checkboxes that control the checked state of all items in
-   * a list.
-   *
-   * The checkboxes are identified by having an attribute
-   * "data-select-all-for-list", and the value for that attribute is a selector
-   * for the list to control.
-   *
-   * This assumes that the list has checkboxes with class
-   * js-form__checkbox__input each in a container with class js-form__checkbox.
-   */
-  function initSelectAllCheckboxes() {
-    var $ = jQuery;
-    // find anything with the data attribute for the list to respond to and control
-    var selectAllCheckboxes = $('[data-select-all-for-list]');
-
-    // set up event on static element for behaviour when clicked to check or uncheck
-    selectAllCheckboxes.each(function (index) {
-      var selectAllCheckbox = $(this);
-      var selector = '[data-select-all-for-list]:eq(' + index + ')';
-      //console.log('index is %i, for selector %s', index, selector);
-      var eventDelegate = getStaticAncestor($(this));
-      //console.log('eventDelegate: %o', eventDelegate);
-      eventDelegate.on('click', selector, function (event) {
-        var containingDiv = event.currentTarget;
-        var checkbox = $(containingDiv).find('input')[0];
-        // The checked state does not update until the next loop.
-        setImmediate(function () {
-          var checked = checkbox.checked;
-          var listSelector = selectAllCheckbox.data('select-all-for-list');
-          // Only click visible ones
-          $(listSelector).find('.js-form__checkbox:visible').click();
-        });
-      });
-    });
-
-    // TODO set up click event on list children to recheck and show state based
-    // on selection. Re-use the list checking function, may need to have it
-    // return an object with each quantifier as a parameter.
-
-    // DO THIS! call zanata.form.appendCheckboxes(refreshedcomponent)
-
-    function setImmediate (fun) {
-      return setTimeout(fun, 0);
-    }
-  }
-
-  function selectAllClicked($this) {
-    // The checked state does not update until the next loop.
-    setTimeout(function() {
-      var listContainerSelector = $this.data('select-all-for-list');
-      var checked = $this.find('.js-form__checkbox__input').prop('checked');
-      if(checked) {
-        $(listContainerSelector).find('.js-form__checkbox:visible:not(.is-checked)').click();
-      } else {
-        $(listContainerSelector).find('.js-form__checkbox.is-checked').click();
-      }
-    }, 0)
-  }
-
-
-
   // FIXME move initListOperations into assets.
 
   $(document).ready(initListOperations);
