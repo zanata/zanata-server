@@ -2,82 +2,20 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:rich="http://richfaces.org/rich"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata">
 
+  <h:outputScript library="script" name="settings-tab-languages.js" />
+
 <script type="text/javascript">
   //<![CDATA[
-  function showLocaleAliasInput(localeId, currentAlias) {
-    var input = localeAliasInput(localeId);
-    input.val(currentAlias);
-    localeAliasForm(localeId).removeClass('is-hidden');
-    showLocaleAliasCancelEdit(localeId);
-    input.focus();
-  }
-
-  function hideLocaleAliasInput(localeId) {
-    localeAliasForm(localeId).addClass('is-hidden');
-  }
-
-  function localeAliasForm(localeId) {
-    var id = '#locale-alias-form-' + localeId;
-    return jQuery(id);
-  }
-
-  function localeAliasInput(localeId) {
-    return localeAliasForm(localeId).find('input:text');
-  }
-
-  function onLocaleAliasInputKeyDown(localeId, event) {
-
-    if (isEnterKey(event)) {
-      event.preventDefault();
-      localeAliasForm(localeId).find('input:submit').click();
-      return false;
-    }
-    if (isEscapeKey(event)) {
-      event.preventDefault();
-      jQuery('#edit-alias-cancel-' + localeId).find('button').click();
-      return false;
-    }
-  }
-
-  function deleteLocaleAlias(localeId) {
-    var aliasForm = localeAliasForm(localeId);
-    var input = aliasForm.find('input:text');
-    input.val('');
-    var submitButton = aliasForm.find('input:submit');
-    submitButton.click();
-    return false;
-  }
-
-  function showLocaleActions(localeId) {
-    var localeActions = '#language-actions-' + localeId;
-    showOnlyOneOfLocaleActionStatus(localeId)(localeActions)
-  }
-  function showLocaleAliasLoader(localeId) {
-    var aliasLoader = '#language-processing-' + localeId;
-    showOnlyOneOfLocaleActionStatus(localeId)(aliasLoader)
-  }
-  function showLocaleAliasCancelEdit(localeId) {
-    var cancelEdit = '#edit-alias-cancel-' + localeId;
-    showOnlyOneOfLocaleActionStatus(localeId)(cancelEdit)
-  }
-
-  // FIXME do this with children of an element rather than specifying all manually by id
-  function showOnlyOneOfLocaleActionStatus (localeId) {
-    return showOnlyOneOf('#language-actions-' + localeId,
-                         '#language-processing-' + localeId,
-                         '#edit-alias-cancel-' + localeId)
-  }
 
   /**
    * Attach events for checkboxes that control the checked state of all items in
    * a list.
    *
-   * The checkboxes are idenfied by having an attribute
+   * The checkboxes are identified by having an attribute
    * "data-select-all-for-list", and the value for that attribute is a selector
    * for the list to control.
    *
@@ -97,6 +35,7 @@
       var eventDelegate = getStaticAncestor($(this));
       //console.log('eventDelegate: %o', eventDelegate);
       eventDelegate.on('click', selector, function (event) {
+        console.log('IT IS RUNNING (the code for the select all checkboxes');
         var containingDiv = event.currentTarget;
         var checkbox = $(containingDiv).find('input')[0];
         // The checked state does not update until the next loop.
@@ -410,9 +349,9 @@
         showAny = showAny || show;
       });
 
-      emptyMessageSelector = targetList.data('empty-results-indicator');
-      emptyMessage = $(emptyMessageSelector);
-      searchTextHolder = emptyMessage.find('.js-search-term');
+      var emptyMessageSelector = targetList.data('empty-results-indicator');
+      var emptyMessage = $(emptyMessageSelector);
+      var searchTextHolder = emptyMessage.find('.js-search-term');
       // filterText is defined in the parent scope of this function.
       searchTextHolder.text(filterText);
       emptyMessage.toggleClass('is-hidden', showAny);
@@ -453,7 +392,6 @@
 
   //]]>
 </script>
-
 
   <h2 class="l--push-all-0 gamma d--bottom l--push-bottom-half">
     #{msgs['jsf.Languages']}
