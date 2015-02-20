@@ -28,18 +28,12 @@
   </div>
 
   <s:fragment rendered="#{empty languages}">
-    <!-- TODO fix style -->
-    <div id="#{id}-no-languages">
+    <div id="#{id}-no-languages" class="txt--meta">
       #{noLanguagesPlaceholder}
     </div>
   </s:fragment>
 
   <div class="#{ empty languages ? 'is-hidden' : ''}">
-    <!-- TODO fix style -->
-    <div id="#{id}-no-results" class="is-hidden">
-      <h:outputText escape="false"
-        value="#{msgs['jsf.languages.NoLanguagesMatchSearch']}" />
-    </div>
 
     <div class="is-hidden--s l--pad-v-quarter">
       <zanata:select-all-checkbox listSelector="##{id}-list"/>
@@ -55,6 +49,11 @@
           <ui:insert name="listOperations"/>
         </div>
       </div>
+    </div>
+
+    <div id="#{id}-no-results" class="is-hidden txt--meta">
+      <h:outputText escape="false"
+        value="#{msgs['jsf.languages.NoLanguagesMatchSearch']}" />
     </div>
 
     <ul id="#{id}-list" class="list--slat list--highlight d--top"
