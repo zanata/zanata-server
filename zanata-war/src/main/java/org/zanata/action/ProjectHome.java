@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
@@ -73,15 +74,10 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
-import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.AbstractListFilter;
-import org.zanata.ui.AbstractTextSearch;
-import org.zanata.ui.FilterUtil;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.util.ComparatorUtil;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -345,28 +341,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
-    public void disableLocale(HLocale locale) {
-        LocaleId localeId = locale.getLocaleId();
-
-        if (isOverrideLocales()) {
-            getInstance().getCustomizedLocales().remove(locale);
-        } else {
-            getInstance().getCustomizedLocales().clear();
-            for (HLocale enabledLocale : getEnabledLocales()) {
-                if (!enabledLocale.equals(locale)) {
-                    getInstance().getCustomizedLocales().add(enabledLocale);
-                }
-            }
-            setOverrideLocales(true);
-        }
-        getLocaleAliases().remove(localeId);
-        disabledLocales = null;
-
-        FacesMessages.instance().add(StatusMessage.Severity.INFO,
-            msgs.format("jsf.project.LanguageRemoved", localeId));
-    }
-
     private void removeAlias(LocaleId localeId) {
         if (isOverrideLocales()) {
             setLocaleAlias(localeId, "");
@@ -376,25 +350,9 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
-    public void disableSelectedLocales() {
-        for (Map.Entry<LocaleId, Boolean> entry :
-            getSelectedEnabledLocales().entrySet()) {
-            if (entry.getValue()) {
-                disableLocaleById(entry.getKey());
-            }
-        }
-        selectedEnabledLocales.clear();
-    }
-
-    private void disableLocaleById(LocaleId localeId) {
-        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-        disableLocale(locale);
-    }
-
-    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedLocaleAliases() {
         for (Map.Entry<LocaleId, Boolean> entry :
-            getSelectedEnabledLocales().entrySet()) {
+                getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
                 removeAlias(entry.getKey());
             }
@@ -405,11 +363,64 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void removeAllLocaleAliases() {
         if (isOverrideLocales()) {
             List<LocaleId> aliasedLocales =
-                new ArrayList<>(getLocaleAliases().keySet());
+                    new ArrayList<>(getLocaleAliases().keySet());
             for (LocaleId aliasedLocale : aliasedLocales) {
                 removeAlias(aliasedLocale);
             }
         }
+    }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void disableLocale(HLocale locale) {
+        disableLocaleSilently(locale);
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.project.LanguageDisabled", locale.getLocaleId()));
+    }
+
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void disableSelectedLocales() {
+        List<LocaleId> removedLocales = new ArrayList<>();
+        for (Map.Entry<LocaleId, Boolean> entry :
+                getSelectedEnabledLocales().entrySet()) {
+            if (entry.getValue()) {
+                boolean wasEnabled = disableLocaleSilentlyById(entry.getKey());
+                if (wasEnabled) {
+                    removedLocales.add(entry.getKey());
+                }
+            }
+        }
+        selectedEnabledLocales.clear();
+
+        if (removedLocales.isEmpty()) {
+            // This should not be possible in the UI, but maybe if multiple users are editing it.
+        } else if (removedLocales.size() == 1) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.project.LanguageDisabled", removedLocales.get(0)));
+        } else {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.project.LanguagesDisabled", StringUtils.join(removedLocales, ", ")));
+        }
+    }
+
+    private boolean disableLocaleSilentlyById(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+        return disableLocaleSilently(locale);
+    }
+
+    /**
+     * Disable a locale without printing any message.
+     *
+     * @param locale locale that should be disabled.
+     * @return false if the locale was already disabled, true otherwise.
+     */
+    private boolean disableLocaleSilently(HLocale locale) {
+        final Set<HLocale> customizedLocales = getInstance().getCustomizedLocales();
+        ensureOverridingLocales();
+        boolean localeWasEnabled = customizedLocales.remove(locale);
+        getLocaleAliases().remove(locale.getLocaleId());
+        refreshDisabledLocales();
+        return localeWasEnabled;
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -423,7 +434,7 @@ public class ProjectHome extends SlugHome<HProject> implements
                     localeServiceImpl
                             .getSupportedAndEnabledLocales());
         }
-        disabledLocales = null;
+        refreshDisabledLocales();
         getInstance().getCustomizedLocales().add(locale);
         FacesMessages.instance().add(StatusMessage.Severity.INFO,
             msgs.format("jsf.project.LanguageAdded", localeId));
@@ -446,12 +457,11 @@ public class ProjectHome extends SlugHome<HProject> implements
         enableLocale(locale);
     }
 
-
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void useDefaultLocales() {
         setOverrideLocales(false);
         removeAliasesForDisabledLocales();
-        disabledLocales = null;
+        refreshDisabledLocales();
         update();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageUpdateFromGlobal"));
@@ -467,6 +477,45 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         setLocaleAliases(newAliases);
+    }
+
+    /**
+     * Ensure that isOverrideLocales is true, and copy data if necessary.
+     */
+    private void ensureOverridingLocales() {
+        if (!isOverrideLocales()) {
+            startOverridingLocales();
+        }
+    }
+
+    /**
+     * Copy locale data from project and set overrideLocales, in preparation for
+     * making customizations to the locales.
+     */
+    private void startOverridingLocales() {
+        // Copied before setOverrideLocales(true) so that the currently returned
+        // values will be used as the basis for any customization.
+        List<HLocale> enabledLocales = getEnabledLocales();
+
+        setOverrideLocales(true);
+
+        // Replace contents rather than entire collections to avoid confusion
+        // with reference to the collections that are bound before this runs.
+
+        getInstance().getCustomizedLocales().clear();
+        getInstance().getCustomizedLocales().addAll(enabledLocales);
+
+        enteredLocaleAliases.clear();
+
+        refreshDisabledLocales();
+    }
+
+    /**
+     * Update disabled locales to be consistent with enabled locales.
+     */
+    private void refreshDisabledLocales() {
+        // will be re-generated with correct values next time it is fetched.
+        disabledLocales = null;
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
