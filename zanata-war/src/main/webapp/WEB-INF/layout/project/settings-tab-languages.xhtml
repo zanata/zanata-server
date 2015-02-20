@@ -35,7 +35,7 @@
         <ui:param name="heading" value="#{msgs['jsf.Enabled']}" />
         <ui:param name="filterText" value="#{projectHome.enabledLocalesFilter}" />
         <ui:param name="languages" value="#{projectHome.enabledLocales}" />
-        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoActiveLanguages']}" />
+        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesEnabled']}" />
 
         <ui:define name="listOperations">
           <zanata:ajax-command-link
@@ -207,10 +207,10 @@
 
       <ui:decorate template="languages-list.xhtml" >
         <ui:param name="id" value="available-locales" />
-        <ui:param name="heading" value="#{msgs['jsf.languages.Available']}" />
+        <ui:param name="heading" value="#{msgs['jsf.languages.Disabled']}" />
         <ui:param name="filterText" value="#{projectHome.disabledLocalesFilter}" />
         <ui:param name="languages" value="#{projectHome.disabledLocales}" />
-        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesAvailable']}" />
+        <ui:param name="noLanguagesPlaceholder" value="#{msgs['jsf.languages.NoLanguagesDisabled']}" />
 
         <ui:define name="listHeader">
           <div class="g__item w--5-12">
