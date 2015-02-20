@@ -6,6 +6,13 @@ function jqSelector(str) {
   return str;
 }
 
+function escapeSingleQuote(str) {
+  if(str) {
+    return str.replace(/'/g, '\'');
+  }
+  return str;
+}
+
 jQuery(document).ready(function() {
   registerUrlModifiers();
 });
