@@ -322,11 +322,9 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     private void setLocaleAlias(LocaleId localeId, String alias) {
-        HProject instance = getInstance();
-        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        boolean hadAlias = setLocaleAliasSilently(localeId, alias);
         if (isNullOrEmpty(alias)) {
-            if (aliases.containsKey(localeId)) {
-                aliases.remove(localeId);
+            if (hadAlias) {
                 FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
             } else {
@@ -334,38 +332,94 @@ public class ProjectHome extends SlugHome<HProject> implements
                     msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
             }
         } else {
-            aliases.put(localeId, alias);
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                 msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
         }
     }
 
-    private void removeAlias(LocaleId localeId) {
+    /**
+     * Set or remove a locale alias without showing any message.
+     *
+     * @param localeId for which to set alias
+     * @param alias new alias to use. Use empty string to remove alias.
+     * @return true if there was already an alias, otherwise false.
+     */
+    private boolean setLocaleAliasSilently(LocaleId localeId, String alias) {
+        HProject instance = getInstance();
+        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        boolean hadAlias = aliases.containsKey(localeId);
+        if (isNullOrEmpty(alias)) {
+            aliases.remove(localeId);
+        } else {
+            aliases.put(localeId, alias);
+        }
+        return hadAlias;
+    }
+
+    /**
+     * Remove a locale alias without showing any message.
+     *
+     * @param localeId that will have its locale alias removed.
+     * @return true if the locale had an alias, otherwise false.
+     */
+    private boolean removeAliasSilently(LocaleId localeId) {
         if (isOverrideLocales()) {
-            setLocaleAlias(localeId, "");
+            return setLocaleAliasSilently(localeId, "");
         }
         // else the project instance is not overriding locales, there
         // are no aliases to remove
+        return false;
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeSelectedLocaleAliases() {
+        List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
                 getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
-                removeAlias(entry.getKey());
+                boolean hadAlias = removeAliasSilently(entry.getKey());
+                if (hadAlias) {
+                    removed.add(entry.getKey());
+                }
             }
         }
+        showRemovedAliasesMessage(removed);
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
+        List<LocaleId> removed = new ArrayList<>();
         if (isOverrideLocales()) {
             List<LocaleId> aliasedLocales =
                     new ArrayList<>(getLocaleAliases().keySet());
             for (LocaleId aliasedLocale : aliasedLocales) {
-                removeAlias(aliasedLocale);
+                boolean hadAlias = removeAliasSilently(aliasedLocale);
+                if (hadAlias) {
+                    removed.add(aliasedLocale);
+                }
             }
+        }
+        showRemovedAliasesMessage(removed);
+    }
+
+    /**
+     * Show an appropriate message for the removal of aliases from locales
+     * with the given IDs.
+     *
+     * No message is shown if the list is empty.
+     *
+     * @param removed ids of locales that had aliases removed
+     */
+    private void showRemovedAliasesMessage(List<LocaleId> removed) {
+        if (removed.isEmpty()) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.NoAliasesToRemove"));
+        } else if (removed.size() == 1) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasRemoved", removed.get(0)));
+        } else {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasesRemoved", StringUtils.join(removed, ", ")));
         }
     }
 
