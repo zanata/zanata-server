@@ -481,7 +481,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         enableLocaleSilently(locale);
         LocaleId localeId = locale.getLocaleId();
         FacesMessages.instance().add(StatusMessage.Severity.INFO,
-            msgs.format("jsf.project.LanguageEnabled", localeId));
+            msgs.format("jsf.languageSettings.LanguageEnabled", localeId));
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -497,16 +497,15 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         selectedDisabledLocales.clear();
-        // no message shown, there are messages for each language individually
 
         if (addedLocales.isEmpty()) {
             // This should not be possible in the UI, but maybe if multiple users are editing it.
         } else if (addedLocales.size() == 1) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.project.LanguageEnabled", addedLocales.get(0)));
+                    msgs.format("jsf.languageSettings.LanguageEnabled", addedLocales.get(0)));
         } else {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.project.LanguagesEnabled", StringUtils.join(addedLocales, ", ")));
+                    msgs.format("jsf.languageSettings.LanguagesEnabled", StringUtils.join(addedLocales, ", ")));
         }
     }
 

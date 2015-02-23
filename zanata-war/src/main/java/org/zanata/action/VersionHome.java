@@ -41,7 +41,6 @@ import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -691,7 +690,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
-                boolean wasEnabled = disableLocaleSilentlyById(entry.getKey());
+                boolean wasEnabled = disableLocaleSilently(entry.getKey());
                 if (wasEnabled) {
                     removed.add(entry.getKey());
                 }
@@ -710,7 +709,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
-    private boolean disableLocaleSilentlyById(LocaleId localeId) {
+    private boolean disableLocaleSilently(LocaleId localeId) {
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);
         return disableLocaleSilently(locale);
     }
@@ -780,29 +779,56 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableSelectedLocales() {
+        List<LocaleId> enabled = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
                 .entrySet()) {
             if (entry.getValue()) {
-                enableLocaleById(entry.getKey());
+                boolean wasDisabled = enableLocaleSilently(entry.getKey());
+                if (wasDisabled) {
+                    enabled.add(entry.getKey());
+                }
             }
         }
         selectedDisabledLocales.clear();
-        // no message shown, there are messages for each language individually
-    }
 
-    private void enableLocaleById(LocaleId localeId) {
-        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-        enableLocale(locale);
+        if (enabled.isEmpty()) {
+            // This should not be possible in the UI, but maybe if multiple users are editing it.
+        } else if (enabled.size() == 1) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguageEnabled", enabled.get(0)));
+        } else {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguagesEnabled", StringUtils.join(enabled, ", ")));
+        }
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableLocale(HLocale locale) {
-        if (getDisabledLocales().contains(locale)) {
+        boolean wasDisabled = enableLocaleSilently(locale);
+
+        if (wasDisabled) {
+            LocaleId localeId = locale.getLocaleId();
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguageEnabled", localeId));
+        }
+        // TODO consider printing message like "Locale {0} was already enabled"
+    }
+
+    private boolean enableLocaleSilently(LocaleId localeId) {
+        HLocale locale = localeServiceImpl.getByLocaleId(localeId);
+        return enableLocaleSilently(locale);
+    }
+
+    private boolean enableLocaleSilently(HLocale locale) {
+        final boolean wasDisabled = getDisabledLocales().contains(locale);
+        if (wasDisabled) {
             ensureOverridingLocales();
             getInstance().getCustomizedLocales().add(locale);
             refreshDisabledLocales();
+            update();
         }
         // else locale already enabled, nothing to do.
+        return wasDisabled;
     }
 
 }
