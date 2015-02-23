@@ -406,14 +406,12 @@ public class ProjectHome extends SlugHome<HProject> implements
      * Show an appropriate message for the removal of aliases from locales
      * with the given IDs.
      *
-     * No message is shown if the list is empty.
-     *
      * @param removed ids of locales that had aliases removed
      */
     private void showRemovedAliasesMessage(List<LocaleId> removed) {
         if (removed.isEmpty()) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.LocaleAlias.NoAliasesToRemove"));
+                    msgs.get("jsf.LocaleAlias.NoAliasesToRemove"));
         } else if (removed.size() == 1) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.format("jsf.LocaleAlias.AliasRemoved", removed.get(0)));

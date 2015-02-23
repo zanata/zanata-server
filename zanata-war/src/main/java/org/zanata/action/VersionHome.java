@@ -523,15 +523,20 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
+        List<LocaleId> removed = new ArrayList<>();
         List<LocaleId> aliasedLocales =
             new ArrayList<>(getLocaleAliases().keySet());
         if (!aliasedLocales.isEmpty()) {
             ensureOverridingLocales();
             for (LocaleId aliasedLocale : aliasedLocales) {
-                removeAlias(aliasedLocale);
+                boolean hadAlias = removeAliasSilently(aliasedLocale);
+                if (hadAlias) {
+                    removed.add(aliasedLocale);
+                }
             }
         }
         // else no locales to remove, nothing to do.
+        showRemovedAliasesMessage(removed);
     }
 
 
@@ -581,16 +586,40 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeSelectedLocaleAliases() {
+        List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
-                removeAlias(entry.getKey());
+                boolean hadAlias = removeAliasSilently(entry.getKey());
+                if (hadAlias) {
+                    removed.add(entry.getKey());
+                }
             }
+        }
+        showRemovedAliasesMessage(removed);
+    }
+
+    /**
+     * Show an appropriate message for the removal of aliases from locales
+     * with the given IDs.
+     *
+     * @param removed ids of locales that had aliases removed
+     */
+    private void showRemovedAliasesMessage(List<LocaleId> removed) {
+        if (removed.isEmpty()) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.get("jsf.LocaleAlias.NoAliasesToRemove"));
+        } else if (removed.size() == 1) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasRemoved", removed.get(0)));
+        } else {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.LocaleAlias.AliasesRemoved", StringUtils.join(removed, ", ")));
         }
     }
 
-    private void removeAlias(LocaleId localeId) {
-        setLocaleAlias(localeId, "");
+    private boolean removeAliasSilently(LocaleId localeId) {
+        return setLocaleAliasSilently(localeId, "");
     }
 
     public String getLocaleAlias(HLocale locale) {
@@ -619,13 +648,10 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     private void setLocaleAlias(LocaleId localeId, String alias) {
-        HProjectIteration instance = getInstance();
-        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        boolean hadAlias = setLocaleAliasSilently(localeId, alias);
 
         if (isNullOrEmpty(alias)) {
-            if (aliases.containsKey(localeId)) {
-                ensureOverridingLocales();
-                aliases.remove(localeId);
+            if (hadAlias) {
                 FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
             } else {
@@ -633,14 +659,28 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                     msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
             }
         } else {
-            if (!alias.equals(aliases.get(localeId))) {
-                ensureOverridingLocales();
-                aliases.put(localeId, alias);
-            }
-            // else no change to make
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                 msgs.format("jsf.LocaleAlias.AliasSet", localeId, alias));
         }
+    }
+
+    /**
+     * Set or remove a locale alias without showing any message.
+     *
+     * @param localeId for which to set alias
+     * @param alias new alias to use. Use empty string to remove alias.
+     * @return true if there was already an alias, otherwise false.
+     */
+    private boolean setLocaleAliasSilently(LocaleId localeId, String alias) {
+        HProjectIteration instance = getInstance();
+        Map<LocaleId, String> aliases = instance.getLocaleAliases();
+        boolean hadAlias = aliases.containsKey(localeId);
+        if (isNullOrEmpty(alias)) {
+            aliases.remove(localeId);
+        } else {
+            aliases.put(localeId, alias);
+        }
+        return hadAlias;
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
