@@ -427,7 +427,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void disableLocale(HLocale locale) {
         disableLocaleSilently(locale);
         FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                msgs.format("jsf.project.LanguageDisabled", locale.getLocaleId()));
+                msgs.format("jsf.languageSettings.LanguageDisabled", locale.getLocaleId()));
     }
 
 
@@ -449,10 +449,10 @@ public class ProjectHome extends SlugHome<HProject> implements
             // This should not be possible in the UI, but maybe if multiple users are editing it.
         } else if (removedLocales.size() == 1) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.project.LanguageDisabled", removedLocales.get(0)));
+                    msgs.format("jsf.languageSettings.LanguageDisabled", removedLocales.get(0)));
         } else {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.project.LanguagesDisabled", StringUtils.join(removedLocales, ", ")));
+                    msgs.format("jsf.languageSettings.LanguagesDisabled", StringUtils.join(removedLocales, ", ")));
         }
     }
 

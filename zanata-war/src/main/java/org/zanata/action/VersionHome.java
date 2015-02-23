@@ -31,7 +31,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +41,7 @@ import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -61,7 +61,6 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
 import org.zanata.service.impl.LocaleServiceImpl;
-import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -398,12 +397,23 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                                 "jsf.iteration.CopyProjectValidations.message"));
     }
 
+    /**
+     * Flush changes to the database, and raise an event to communicate that
+     * the version has been changed.
+     *
+     * @return the String "updated"
+     */
     @Override
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public String update() {
         String state = super.update();
         Events.instance().raiseEvent(PROJECT_ITERATION_UPDATE, getInstance());
         return state;
+    }
+
+    @Override
+    protected void updatedMessage() {
+        // Disable the default message from Seam
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
@@ -677,32 +687,64 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableSelectedLocales() {
+        List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
-                disableLocaleById(entry.getKey());
+                boolean wasEnabled = disableLocaleSilentlyById(entry.getKey());
+                if (wasEnabled) {
+                    removed.add(entry.getKey());
+                }
             }
         }
         selectedEnabledLocales.clear();
+
+        if (removed.isEmpty()) {
+            // This should not be possible in the UI, but maybe if multiple users are editing it.
+        } else if (removed.size() == 1) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguageDisabled", removed.get(0)));
+        } else {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguagesDisabled", StringUtils.join(removed, ", ")));
+        }
     }
 
-    private void disableLocaleById(LocaleId localeId) {
+    private boolean disableLocaleSilentlyById(LocaleId localeId) {
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);
-        disableLocale(locale);
+        return disableLocaleSilently(locale);
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableLocale(HLocale locale) {
+        boolean wasEnabled = disableLocaleSilently(locale);
+        if (wasEnabled) {
+            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                    msgs.format("jsf.languageSettings.LanguageDisabled",
+                            locale.getLocaleId()));
+        }
+        // TODO consider showing a message like "Locale {0} was already disabled."
+    }
+
+    /**
+     * Disable a locale without printing any message.
+     *
+     * @param locale to disable
+     * @return true if the locale was enabled before this call, false otherwise.
+     */
+    private boolean disableLocaleSilently(HLocale locale) {
+        boolean wasEnabled;
         if (getEnabledLocales().contains(locale)) {
             ensureOverridingLocales();
-            getInstance().getCustomizedLocales().remove(locale);
+            wasEnabled = getInstance().getCustomizedLocales().remove(locale);
+            // TODO consider using alias from project as default rather than none.
+            getLocaleAliases().remove(locale.getLocaleId());
             refreshDisabledLocales();
             update();
-            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.iteration.LanguageRemoved",
-                            locale.retrieveDisplayName()));
+        } else {
+            wasEnabled = false;
         }
-        // else already disabled, nothing to do
+        return wasEnabled;
     }
 
     private List<HLocale> disabledLocales;
