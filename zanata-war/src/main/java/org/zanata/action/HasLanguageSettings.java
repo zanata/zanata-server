@@ -50,6 +50,9 @@ public interface HasLanguageSettings {
 
     void removeAllLocaleAliases();
 
+    // TODO rename to onAliasesRemoved
+    void showRemovedAliasesMessage(List<LocaleId> removed);
+
     /**
      * Remove locale aliases from any enabled locale that is selected.
      *

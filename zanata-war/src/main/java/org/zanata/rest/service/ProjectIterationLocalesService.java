@@ -27,7 +27,6 @@ import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProjectIteration;
 import org.zanata.service.LocaleService;
-import org.zanata.service.impl.LocaleServiceImpl;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -61,7 +60,7 @@ public class ProjectIterationLocalesService extends LocalesService implements Pr
 
         List<HLocale> supportedLocales =
                 localeServiceImpl.getSupportedLanguageByProjectIteration(projectSlug, iterationSlug);
-        Map<LocaleId, String> localeAliases = LocaleServiceImpl.getLocaleAliasesByIteration(iteration);
+        Map<LocaleId, String> localeAliases = localeServiceImpl.getLocaleAliasesByIteration(iteration);
 
         Object entity = buildLocaleDetailsListEntity(supportedLocales, localeAliases);
         return Response.ok(entity).build();

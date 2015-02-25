@@ -59,7 +59,6 @@ import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
-import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -518,7 +517,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public Map<LocaleId, String> getLocaleAliases() {
-        return LocaleServiceImpl.getLocaleAliasesByIteration(getInstance());
+        return localeServiceImpl.getLocaleAliasesByIteration(getInstance());
     }
 
     @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
@@ -605,7 +604,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
      *
      * @param removed ids of locales that had aliases removed
      */
-    private void showRemovedAliasesMessage(List<LocaleId> removed) {
+    public void showRemovedAliasesMessage(List<LocaleId> removed) {
         if (removed.isEmpty()) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.get("jsf.LocaleAlias.NoAliasesToRemove"));
@@ -852,6 +851,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                     msgs.format("jsf.languageSettings.LanguageEnabled", localeId));
         }
         // TODO consider printing message like "Locale {0} was already enabled"
+        // TODO consider printing an idempotent message just saying that it is enabled now.
     }
 
     private boolean enableLocaleSilently(LocaleId localeId) {
@@ -871,4 +871,50 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return wasDisabled;
     }
 
+    class VersionLanguageSettingsHandler extends LanguageSettingsHandler<HProjectIteration> {
+
+        @Override
+        HProjectIteration getInstance() {
+            return VersionHome.this.getInstance();
+        }
+
+        @Override
+        Messages msgs() {
+            return VersionHome.this.msgs;
+        }
+
+        @Override
+        LocaleDAO getLocaleDAO() {
+            return VersionHome.this.localeDAO;
+        }
+
+        @Override
+        LocaleService getLocaleService() {
+            return VersionHome.this.localeServiceImpl;
+        }
+
+        @Override
+        void update() {
+            VersionHome.this.update();
+        }
+
+
+        @Override
+        public Map<LocaleId, String> getLocaleAliases() {
+            return localeServiceImpl.getLocaleAliasesByIteration(getInstance());
+        }
+
+        @Override
+        public void useDefaultLocales() {
+            // TODO inline this
+            VersionHome.this.useDefaultLocales();
+        }
+
+        @Override
+        public List<HLocale> getEnabledLocales() {
+            // TODO inline this
+            return VersionHome.this.getEnabledLocales();
+        }
+
+    }
 }

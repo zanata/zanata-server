@@ -87,7 +87,7 @@ import com.google.common.collect.Sets;
 @NoArgsConstructor
 @ToString(callSuper = true, of = { "project" })
 public class HProjectIteration extends SlugEntityBase implements
-        Iterable<DocumentWithId>, HasEntityStatus, IsEntityWithType {
+        Iterable<DocumentWithId>, HasEntityStatus, HasLanguages, IsEntityWithType {
     private static final long serialVersionUID = 182037127575991478L;
 
     @ManyToOne

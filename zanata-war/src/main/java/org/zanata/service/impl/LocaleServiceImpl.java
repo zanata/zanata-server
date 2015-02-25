@@ -20,14 +20,7 @@
  */
 package org.zanata.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 import org.jboss.seam.ScopeType;
@@ -88,7 +81,20 @@ public class LocaleServiceImpl implements LocaleService {
         setVersionGroupDAO(versionGroupDAO);
     }
 
-    public static Map<LocaleId, String> getLocaleAliasesByIteration(HProjectIteration iteration) {
+    @Override
+    public Map<LocaleId, String> getLocaleAliasesByProject(HProject project) {
+        Map<LocaleId, String> localeAliases;
+        if (project.isOverrideLocales()) {
+            localeAliases = project.getLocaleAliases();
+        } else {
+            // there are no global locale aliases
+            localeAliases = new HashMap<>();
+        }
+        return localeAliases;
+    }
+
+    @Override
+    public Map<LocaleId, String> getLocaleAliasesByIteration(HProjectIteration iteration) {
         Map<LocaleId, String> localeAliases;
         if (iteration.isOverrideLocales()) {
             localeAliases = iteration.getLocaleAliases();

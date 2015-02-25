@@ -61,13 +61,7 @@ import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
-import org.zanata.model.HAccount;
-import org.zanata.model.HAccountRole;
-import org.zanata.model.HLocale;
-import org.zanata.model.HPerson;
-import org.zanata.model.HProject;
-import org.zanata.model.HProjectIteration;
-import org.zanata.model.WebHook;
+import org.zanata.model.*;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
@@ -286,7 +280,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     public Map<LocaleId, String> getLocaleAliases() {
-        return getInstance().getLocaleAliases();
+        return localeServiceImpl.getLocaleAliasesByProject(getInstance());
     }
 
     private void setLocaleAliases(Map<LocaleId, String> localeAliases) {
@@ -408,7 +402,7 @@ public class ProjectHome extends SlugHome<HProject> implements
      *
      * @param removed ids of locales that had aliases removed
      */
-    private void showRemovedAliasesMessage(List<LocaleId> removed) {
+    public void showRemovedAliasesMessage(List<LocaleId> removed) {
         if (removed.isEmpty()) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs.get("jsf.LocaleAlias.NoAliasesToRemove"));
@@ -1016,4 +1010,55 @@ public class ProjectHome extends SlugHome<HProject> implements
         Collections.sort(projectTypes, ComparatorUtil.PROJECT_TYPE_COMPARATOR);
         return projectTypes;
     }
+
+    /**
+     * Provides project-specific implementations for language settings.
+     */
+    class ProjectLanguageSettingsHandler extends LanguageSettingsHandler<HProject> {
+
+        @Override
+        HProject getInstance() {
+            return ProjectHome.this.getInstance();
+        }
+
+        @Override
+        Messages msgs() {
+            return ProjectHome.this.msgs;
+        }
+
+        @Override
+        LocaleDAO getLocaleDAO() {
+            return ProjectHome.this.localeDAO;
+        }
+
+        @Override
+        LocaleService getLocaleService() {
+            return ProjectHome.this.localeServiceImpl;
+        }
+
+        @Override
+        void update() {
+            // TODO override the same thing as in VersionHome to stop the update message
+            ProjectHome.this.update();
+        }
+
+        @Override
+        public Map<LocaleId, String> getLocaleAliases() {
+            return localeServiceImpl.getLocaleAliasesByProject(getInstance());
+        }
+
+        @Override
+        public void useDefaultLocales() {
+            // TODO inline this.
+            ProjectHome.this.useDefaultLocales();
+        }
+
+        @Override
+        public List<HLocale> getEnabledLocales() {
+            // TODO inline this
+            return ProjectHome.this.getEnabledLocales();
+        }
+
+    }
+
 }

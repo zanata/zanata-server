@@ -29,9 +29,12 @@ import javax.annotation.Nonnull;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HLocale;
+import org.zanata.model.HProject;
+import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
 
 public interface LocaleService {
+
     List<HLocale> getAllLocales();
 
     void save(@Nonnull LocaleId localeId, boolean enabledByDefault);
@@ -53,6 +56,10 @@ public interface LocaleService {
     HLocale getByLocaleId(@Nonnull LocaleId locale);
 
     HLocale getByLocaleId(@Nonnull String localeId);
+
+    Map<LocaleId, String> getLocaleAliasesByProject(HProject project);
+
+    Map<LocaleId, String> getLocaleAliasesByIteration(HProjectIteration iteration);
 
     @Nonnull
     HLocale validateLocaleByProjectIteration(@Nonnull LocaleId locale,

@@ -97,7 +97,7 @@ import com.google.common.collect.Sets;
 @Indexed
 @ToString(callSuper = true, of = "name")
 public class HProject extends SlugEntityBase implements Serializable,
-        HasEntityStatus {
+        HasEntityStatus, HasLanguages {
     private static final long serialVersionUID = 1L;
 
     @Size(max = 80)
