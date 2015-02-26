@@ -67,10 +67,12 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
+import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.util.ComparatorUtil;
+import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -127,6 +129,9 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @In
     private CopyTransOptionsModel copyTransOptionsModel;
+
+    @Getter
+    private ProjectLanguageSettingsHandler languageSettings = new ProjectLanguageSettingsHandler();
 
     // This property is present to keep the filter in place when the region with
     // the filter box is refreshed.
@@ -1011,52 +1016,65 @@ public class ProjectHome extends SlugHome<HProject> implements
         return projectTypes;
     }
 
+    @Override
+    protected void updatedMessage() {
+        // Disable the default message from Seam
+    }
+
     /**
      * Provides project-specific implementations for language settings.
      */
     class ProjectLanguageSettingsHandler extends LanguageSettingsHandler<HProject> {
 
+        private <T> T in(Class<T> clazz) {
+            return ServiceLocator.instance().getInstance(clazz);
+        }
+
+        private ProjectHome getHome() {
+            return in(ProjectHome.class);
+        }
+
         @Override
         HProject getInstance() {
-            return ProjectHome.this.getInstance();
+            return getHome().getInstance();
         }
 
         @Override
         Messages msgs() {
-            return ProjectHome.this.msgs;
+            return in(Messages.class);
         }
 
         @Override
         LocaleDAO getLocaleDAO() {
-            return ProjectHome.this.localeDAO;
+            return in(LocaleDAO.class);
         }
 
         @Override
         LocaleService getLocaleService() {
-            return ProjectHome.this.localeServiceImpl;
+            return in(LocaleServiceImpl.class);
         }
 
         @Override
         void update() {
             // TODO override the same thing as in VersionHome to stop the update message
-            ProjectHome.this.update();
+            getHome().update();
         }
 
         @Override
         public Map<LocaleId, String> getLocaleAliases() {
-            return localeServiceImpl.getLocaleAliasesByProject(getInstance());
+            return getLocaleService().getLocaleAliasesByProject(getInstance());
         }
 
         @Override
         public void useDefaultLocales() {
             // TODO inline this.
-            ProjectHome.this.useDefaultLocales();
+            getHome().useDefaultLocales();
         }
 
         @Override
         public List<HLocale> getEnabledLocales() {
             // TODO inline this
-            return ProjectHome.this.getEnabledLocales();
+            return getHome().getEnabledLocales();
         }
 
     }

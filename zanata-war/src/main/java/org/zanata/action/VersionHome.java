@@ -123,6 +123,9 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             .newHashMap();
 
     @Getter
+    private VersionLanguageSettingsHandler languageSettings = new VersionLanguageSettingsHandler();
+
+    @Getter
     @Setter
     private boolean isNewInstance = false;
 
