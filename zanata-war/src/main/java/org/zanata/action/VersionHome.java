@@ -880,61 +880,65 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         // No body, this method is just to trigger the permission check
     }
 
-    class VersionLanguageSettingsHandler extends LanguageSettingsHandler<HProjectIteration> {
+    class VersionLanguageSettingsHandler extends LanguageSettingsHandler<HProjectIteration, VersionHome> {
 
-        private VersionHome getHome() {
+        protected VersionHome getHome() {
             return in(VersionHome.class);
         }
 
         // TODO may be able to instead do a manual check that does
         // hasPermission(getHome.instance, 'update') after adding getHome to the abstract class
         // so that the others do not need to override it.
-        @Override
-        protected void restrict() {
-            org.jboss.seam.security.Identity.instance().hasPermission(getHome().getInstance(), "update");
-        }
+//        @Override
+//        protected void restrict() {
+//            org.jboss.seam.security.Identity.instance().hasPermission(getHome().getInstance(), "update");
+//        }
 
-        @Override
-        HProjectIteration getInstance() {
-            return VersionHome.this.getInstance();
-        }
+//        @Override
+//        HProjectIteration getInstance() {
+//            return VersionHome.this.getInstance();
+//        }
 
-        @Override
-        Messages msgs() {
-            return VersionHome.this.msgs;
-        }
+//        @Override
+//        Messages msgs() {
+//            return VersionHome.this.msgs;
+//        }
 
-        @Override
-        LocaleDAO getLocaleDAO() {
-            return VersionHome.this.localeDAO;
-        }
+//        @Override
+//        LocaleDAO getLocaleDAO() {
+//            return VersionHome.this.localeDAO;
+//        }
 
-        @Override
-        LocaleService getLocaleService() {
-            return VersionHome.this.localeServiceImpl;
-        }
+//        @Override
+//        LocaleService getLocaleService() {
+//            return VersionHome.this.localeServiceImpl;
+//        }
 
-        @Override
-        void update() {
-            VersionHome.this.update();
-        }
+//        @Override
+//        void update() {
+//            VersionHome.this.update();
+//        }
 
 
         @Override
         public Map<LocaleId, String> getLocaleAliases() {
-            return localeServiceImpl.getLocaleAliasesByIteration(getInstance());
+            return getLocaleService().getLocaleAliasesByIteration(getInstance());
         }
 
         @Override
         public void useDefaultLocales() {
             // TODO inline this
-            VersionHome.this.useDefaultLocales();
+            // OR see if it can share code with Project? They are both deferring to the home class,
+            //    but nothing is gained there - might as well just move the stuff from the home
+            //    class to the languages subclasses and have shorter call stack.
+            getHome().useDefaultLocales();
         }
 
         @Override
         public List<HLocale> getEnabledLocales() {
             // TODO inline this
-            return VersionHome.this.getEnabledLocales();
+            // OR check for common code
+            return getHome().getEnabledLocales();
         }
 
     }

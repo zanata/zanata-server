@@ -1023,51 +1023,20 @@ public class ProjectHome extends SlugHome<HProject> implements
         // Disable the default message from Seam
     }
 
-    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
-    private void restrict() {
-        // No body, this method is just to trigger the permission check
-    }
-
     /**
      * Provides project-specific implementations for language settings.
      */
-    class ProjectLanguageSettingsHandler extends LanguageSettingsHandler<HProject> {
+    class ProjectLanguageSettingsHandler extends LanguageSettingsHandler<HProject, ProjectHome> {
 
-
-
-        private ProjectHome getHome() {
+        protected ProjectHome getHome() {
             return in(ProjectHome.class);
         }
 
-        @Override
-        protected void restrict() {
-//            getHome().restrict();
-            log.info("About to check permission manually");
-            Identity.instance().checkPermission(getHome().getInstance(), "update");
-            log.info("Finished checking permission manually");
-        }
-
-        @Override
-        HProject getInstance() {
-            return getHome().getInstance();
-        }
-
-        @Override
-        Messages msgs() {
-            return in(Messages.class);
-        }
-
-        @Override
-        LocaleDAO getLocaleDAO() {
-            return in(LocaleDAO.class);
-        }
-
         // TODO can probably move this to super
-        @Override
-        void update() {
-            // TODO override the same thing as in VersionHome to stop the update message
-            getHome().update();
-        }
+//        @Override
+//        void update() {
+//            getHome().update();
+//        }
 
         @Override
         public Map<LocaleId, String> getLocaleAliases() {
@@ -1076,16 +1045,14 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         @Override
         public void useDefaultLocales() {
-            log.info("about to restrict");
             restrict();
-            log.info("after restrict");
             getHome().useDefaultLocales();
-            log.info("after call to useDefaultLocales()");
         }
 
         @Override
         public List<HLocale> getEnabledLocales() {
             // TODO inline this
+            // OR see if any can be shared between the two.
             return getHome().getEnabledLocales();
         }
 

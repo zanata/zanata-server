@@ -28,6 +28,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.framework.EntityHome;
+import org.jboss.seam.framework.Home;
 import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.security.Identity;
 import org.zanata.common.LocaleId;
@@ -47,22 +49,23 @@ import java.util.Map;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-public abstract class LanguageSettingsHandler<E extends HasLanguages> implements HasLanguageSettings {
+public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends EntityHome<E>> implements HasLanguageSettings {
 
     // FIXME make sure to call getInstance().update() or whatever. May need to make abstract method update()
     //       so that it can pick up the special override thing that I recently added.
 
+    protected abstract H getHome();
 
     /**
      * Restrict an operation to users who have permission to update the entity
      * that holds these language settings.
      *
-     * This is provided as a convenience since the @Restrict annotation will
-     * be ignored when called on non-bean methods. The implementation should
-     * call a restricted bean method.
+     * This is provided as an alternative to the @Restrict annotation since it
+     * will be ignored when called on non-bean methods.
      */
-    protected abstract void restrict();
-
+    protected void restrict() {
+        Identity.instance().checkPermission(getHome().getInstance(), "update");
+    }
 
     /**
      * Inject a dependency.
@@ -75,18 +78,26 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages> implements
         return ServiceLocator.instance().getInstance(clazz);
     }
 
-    abstract E getInstance();
+    protected E getInstance() {
+        return getHome().getInstance();
+    }
 
-    abstract Messages msgs();
+    Messages msgs() {
+        return in(Messages.class);
+    }
 
-    abstract LocaleDAO getLocaleDAO();
+    LocaleDAO getLocaleDAO() {
+        return in(LocaleDAO.class);
+    }
 
     // FIXME if this is just used in 1 place, might as well have a method do that 1 thing rather than pass in the whole service
     LocaleService getLocaleService() {
         return in(LocaleServiceImpl.class);
     }
 
-    abstract void update();
+    private void update() {
+        getHome().update();
+    }
 
 
     // FIXME this should be handled completely by LanguageSettingsHandler, just need to change the EL to get  it.
