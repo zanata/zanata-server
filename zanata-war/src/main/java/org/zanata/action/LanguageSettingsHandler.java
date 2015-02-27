@@ -51,9 +51,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends EntityHome<E>> implements HasLanguageSettings {
 
-    // FIXME make sure to call getInstance().update() or whatever. May need to make abstract method update()
-    //       so that it can pick up the special override thing that I recently added.
-
     protected abstract H getHome();
 
     /**
@@ -90,12 +87,12 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
         return in(LocaleDAO.class);
     }
 
-    // FIXME if this is just used in 1 place, might as well have a method do that 1 thing rather than pass in the whole service
     LocaleService getLocaleService() {
         return in(LocaleServiceImpl.class);
     }
 
     private void update() {
+        restrict();
         getHome().update();
     }
 
@@ -118,6 +115,7 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
 
     @Override
     public void setOverrideLocales(boolean overrideLocales) {
+        restrict();
         getInstance().setOverrideLocales(overrideLocales);
     }
 
@@ -126,6 +124,7 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
 
     @Override
     public void removeAllLocaleAliases() {
+        restrict();
         List<LocaleId> removed = new ArrayList<>();
         List<LocaleId> aliasedLocales =
                 new ArrayList<>(getLocaleAliases().keySet());
@@ -145,6 +144,7 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
     //       The annotations are different for the two things, so I will need to wrap
     //       calls to this. At least the duplicate code is split off separately now.
     public void removeSelectedLocaleAliases() {
+        restrict();
         List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
                 getSelectedEnabledLocales().entrySet()) {
@@ -192,9 +192,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
         return getLocaleAliases().containsKey(locale.getLocaleId());
     }
 
-    // FIXME must wrap in restriction
     @Override
     public void updateToEnteredLocaleAlias(LocaleId localeId) {
+        restrict();
         String enteredAlias = enteredLocaleAliases.get(localeId);
         setLocaleAlias(localeId, enteredAlias);
     }
@@ -262,9 +262,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
         return selectedEnabledLocales;
     }
 
-    // TODO wrap in security restriction
     @Override
     public void disableSelectedLocales() {
+        restrict();
         List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
                 getSelectedEnabledLocales().entrySet()) {
@@ -288,9 +288,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
         }
     }
 
-    // TODO wrap in restrictions
     @Override
     public void disableLocale(HLocale locale) {
+        restrict();
         boolean wasEnabled = disableLocaleSilently(locale);
         if (wasEnabled) {
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
@@ -335,9 +335,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
     @Setter
     private Map<LocaleId, Boolean> selectedDisabledLocales = Maps.newHashMap();
 
-    // TODO wrap in restriction method
     @Override
     public void enableSelectedLocales() {
+        restrict();
         List<LocaleId> enabled = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
                 .entrySet()) {
@@ -361,10 +361,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
         }
     }
 
-
-    // TODO wrap in restriction method
     @Override
     public void enableLocale(HLocale locale) {
+        restrict();
         boolean wasDisabled = enableLocaleSilently(locale);
 
         if (wasDisabled) {

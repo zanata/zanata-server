@@ -1032,12 +1032,6 @@ public class ProjectHome extends SlugHome<HProject> implements
             return in(ProjectHome.class);
         }
 
-        // TODO can probably move this to super
-//        @Override
-//        void update() {
-//            getHome().update();
-//        }
-
         @Override
         public Map<LocaleId, String> getLocaleAliases() {
             return getLocaleService().getLocaleAliasesByProject(getInstance());

@@ -886,40 +886,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             return in(VersionHome.class);
         }
 
-        // TODO may be able to instead do a manual check that does
-        // hasPermission(getHome.instance, 'update') after adding getHome to the abstract class
-        // so that the others do not need to override it.
-//        @Override
-//        protected void restrict() {
-//            org.jboss.seam.security.Identity.instance().hasPermission(getHome().getInstance(), "update");
-//        }
-
-//        @Override
-//        HProjectIteration getInstance() {
-//            return VersionHome.this.getInstance();
-//        }
-
-//        @Override
-//        Messages msgs() {
-//            return VersionHome.this.msgs;
-//        }
-
-//        @Override
-//        LocaleDAO getLocaleDAO() {
-//            return VersionHome.this.localeDAO;
-//        }
-
-//        @Override
-//        LocaleService getLocaleService() {
-//            return VersionHome.this.localeServiceImpl;
-//        }
-
-//        @Override
-//        void update() {
-//            VersionHome.this.update();
-//        }
-
-
         @Override
         public Map<LocaleId, String> getLocaleAliases() {
             return getLocaleService().getLocaleAliasesByIteration(getInstance());
