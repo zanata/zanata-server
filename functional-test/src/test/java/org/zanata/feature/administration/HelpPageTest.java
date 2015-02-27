@@ -1,7 +1,9 @@
-package org.zanata.feature.misc;
+package org.zanata.feature.administration;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.zanata.feature.testharness.TestPlan;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.utility.HomePage;
 import org.zanata.util.AddUsersRule;
@@ -13,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Damian Jansen
  * <a href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
+@Category(TestPlan.DetailedTest.class)
 public class HelpPageTest extends ZanataTestCase {
 
     @Rule

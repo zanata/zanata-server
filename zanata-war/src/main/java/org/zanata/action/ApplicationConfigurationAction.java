@@ -66,7 +66,7 @@ public class ApplicationConfigurationAction {
         return ServerConfigurationBean.DEFAULT_HELP_URL;
     }
 
-    public String getTermUrl() {
+    public String getTermOfUseUrl() {
         if(!StringUtils.isEmpty(applicationConfiguration.getTermsOfUseUrl())) {
             return applicationConfiguration.getTermsOfUseUrl();
         }
