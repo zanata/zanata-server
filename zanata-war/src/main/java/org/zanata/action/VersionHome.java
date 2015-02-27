@@ -60,6 +60,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
 import org.zanata.util.ComparatorUtil;
+import org.zanata.webtrans.shared.auth.Identity;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
@@ -874,7 +875,24 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return wasDisabled;
     }
 
+    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
+    private void restrict() {
+        // No body, this method is just to trigger the permission check
+    }
+
     class VersionLanguageSettingsHandler extends LanguageSettingsHandler<HProjectIteration> {
+
+        private VersionHome getHome() {
+            return in(VersionHome.class);
+        }
+
+        // TODO may be able to instead do a manual check that does
+        // hasPermission(getHome.instance, 'update') after adding getHome to the abstract class
+        // so that the others do not need to override it.
+        @Override
+        protected void restrict() {
+            org.jboss.seam.security.Identity.instance().hasPermission(getHome().getInstance(), "update");
+        }
 
         @Override
         HProjectIteration getInstance() {

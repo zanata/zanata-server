@@ -53,6 +53,7 @@ import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -530,6 +531,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         removeAliasesForDisabledLocales();
         refreshDisabledLocales();
         update();
+        // FIXME can this just use FacesMessages?
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.LanguageUpdateFromGlobal"));
     }
@@ -1021,17 +1023,28 @@ public class ProjectHome extends SlugHome<HProject> implements
         // Disable the default message from Seam
     }
 
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    private void restrict() {
+        // No body, this method is just to trigger the permission check
+    }
+
     /**
      * Provides project-specific implementations for language settings.
      */
     class ProjectLanguageSettingsHandler extends LanguageSettingsHandler<HProject> {
 
-        private <T> T in(Class<T> clazz) {
-            return ServiceLocator.instance().getInstance(clazz);
-        }
+
 
         private ProjectHome getHome() {
             return in(ProjectHome.class);
+        }
+
+        @Override
+        protected void restrict() {
+//            getHome().restrict();
+            log.info("About to check permission manually");
+            Identity.instance().checkPermission(getHome().getInstance(), "update");
+            log.info("Finished checking permission manually");
         }
 
         @Override
@@ -1049,11 +1062,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             return in(LocaleDAO.class);
         }
 
-        @Override
-        LocaleService getLocaleService() {
-            return in(LocaleServiceImpl.class);
-        }
-
+        // TODO can probably move this to super
         @Override
         void update() {
             // TODO override the same thing as in VersionHome to stop the update message
@@ -1067,8 +1076,11 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         @Override
         public void useDefaultLocales() {
-            // TODO inline this.
+            log.info("about to restrict");
+            restrict();
+            log.info("after restrict");
             getHome().useDefaultLocales();
+            log.info("after call to useDefaultLocales()");
         }
 
         @Override

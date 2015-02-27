@@ -29,6 +29,7 @@ import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.jboss.seam.security.Identity;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.i18n.Messages;
@@ -36,6 +37,8 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HasLanguages;
 import org.zanata.service.LocaleService;
+import org.zanata.service.impl.LocaleServiceImpl;
+import org.zanata.util.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +53,28 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages> implements
     //       so that it can pick up the special override thing that I recently added.
 
 
+    /**
+     * Restrict an operation to users who have permission to update the entity
+     * that holds these language settings.
+     *
+     * This is provided as a convenience since the @Restrict annotation will
+     * be ignored when called on non-bean methods. The implementation should
+     * call a restricted bean method.
+     */
+    protected abstract void restrict();
+
+
+    /**
+     * Inject a dependency.
+     *
+     * @param clazz class of dependency to inject
+     * @param <T> type of the dependency (should not need to be specified)
+     * @return the injected dependency.
+     */
+    protected <T> T in(Class<T> clazz) {
+        return ServiceLocator.instance().getInstance(clazz);
+    }
+
     abstract E getInstance();
 
     abstract Messages msgs();
@@ -57,7 +82,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages> implements
     abstract LocaleDAO getLocaleDAO();
 
     // FIXME if this is just used in 1 place, might as well have a method do that 1 thing rather than pass in the whole service
-    abstract LocaleService getLocaleService();
+    LocaleService getLocaleService() {
+        return in(LocaleServiceImpl.class);
+    }
 
     abstract void update();
 
