@@ -84,8 +84,7 @@ import com.google.common.collect.Maps;
 
 @Name("projectHome")
 @Slf4j
-public class ProjectHome extends SlugHome<HProject> implements
-    HasLanguageSettings {
+public class ProjectHome extends SlugHome<HProject> {
 
     private static final long serialVersionUID = 1L;
 
@@ -274,14 +273,19 @@ public class ProjectHome extends SlugHome<HProject> implements
      * enabled locales for the server are returned.
      */
     public List<HLocale> getEnabledLocales() {
+        log.info("ProjectHome.getEnabledLocales()");
         List<HLocale> locales;
         if (StringUtils.isNotEmpty(getSlug())) {
+            log.info("    have slug, using proper form");
             locales =
                     localeServiceImpl.getSupportedLanguageByProject(getSlug());
         } else {
-            locales = localeServiceImpl.getSupportedAndEnabledLocales();
+            throw new RuntimeException("Tried to get enabled locales without a project slug.");
+//            log.info("    no slug, using wrong form");
+//            locales = localeServiceImpl.getSupportedAndEnabledLocales();
         }
         Collections.sort(locales, ComparatorUtil.LOCALE_COMPARATOR);
+        log.info("returning {} locales", locales.size());
         return locales;
     }
 
@@ -482,30 +486,30 @@ public class ProjectHome extends SlugHome<HProject> implements
             msgs.format("jsf.languageSettings.LanguageEnabled", localeId));
     }
 
-    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
-    public void enableSelectedLocales() {
-        List<LocaleId> addedLocales = new ArrayList<>();
-        for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
-                .entrySet()) {
-            if (entry.getValue()) {
-                boolean wasDisabled = enableLocaleSilently(entry.getKey());
-                if (wasDisabled) {
-                    addedLocales.add(entry.getKey());
-                }
-            }
-        }
-        selectedDisabledLocales.clear();
-
-        if (addedLocales.isEmpty()) {
-            // This should not be possible in the UI, but maybe if multiple users are editing it.
-        } else if (addedLocales.size() == 1) {
-            FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.languageSettings.LanguageEnabled", addedLocales.get(0)));
-        } else {
-            FacesMessages.instance().add(StatusMessage.Severity.INFO,
-                    msgs.format("jsf.languageSettings.LanguagesEnabled", StringUtils.join(addedLocales, ", ")));
-        }
-    }
+//    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+//    public void enableSelectedLocales() {
+//        List<LocaleId> addedLocales = new ArrayList<>();
+//        for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
+//                .entrySet()) {
+//            if (entry.getValue()) {
+//                boolean wasDisabled = enableLocaleSilently(entry.getKey());
+//                if (wasDisabled) {
+//                    addedLocales.add(entry.getKey());
+//                }
+//            }
+//        }
+//        selectedDisabledLocales.clear();
+//
+//        if (addedLocales.isEmpty()) {
+//            // This should not be possible in the UI, but maybe if multiple users are editing it.
+//        } else if (addedLocales.size() == 1) {
+//            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+//                    msgs.format("jsf.languageSettings.LanguageEnabled", addedLocales.get(0)));
+//        } else {
+//            FacesMessages.instance().add(StatusMessage.Severity.INFO,
+//                    msgs.format("jsf.languageSettings.LanguagesEnabled", StringUtils.join(addedLocales, ", ")));
+//        }
+//    }
 
     private boolean enableLocaleSilently(LocaleId localeId) {
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);

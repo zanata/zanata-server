@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
@@ -49,6 +50,7 @@ import java.util.Map;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends EntityHome<E>> implements HasLanguageSettings {
 
     protected abstract H getHome();
@@ -246,12 +248,9 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
     @Setter
     private String enabledLocalesFilter = "";
 
-    @Getter
     @Setter
-    private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
+    private Map<LocaleId, Boolean> selectedEnabledLocales;
 
-    // TODO remove this and see if it works with just a default one.
-    //      It seems to work ok on selected disabled locales without this.
     public Map<LocaleId, Boolean> getSelectedEnabledLocales() {
         if (selectedEnabledLocales == null) {
             selectedEnabledLocales = Maps.newHashMap();
@@ -275,7 +274,7 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
                 }
             }
         }
-        selectedEnabledLocales.clear();
+        selectedEnabledLocales = null;
 
         if (removed.isEmpty()) {
             // This should not be possible in the UI, but maybe if multiple users are editing it.
@@ -331,31 +330,50 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
     @Setter
     private String disabledLocalesFilter;
 
-    @Getter
     @Setter
-    private Map<LocaleId, Boolean> selectedDisabledLocales = Maps.newHashMap();
+    private Map<LocaleId, Boolean> selectedDisabledLocales;
+
+    public Map<LocaleId, Boolean> getSelectedDisabledLocales() {
+        if (selectedDisabledLocales == null) {
+            selectedDisabledLocales = Maps.newHashMap();
+            for (HLocale locale : getDisabledLocales()) {
+                selectedDisabledLocales.put(locale.getLocaleId(), Boolean.FALSE);
+            }
+        }
+        return selectedDisabledLocales;
+    }
 
     @Override
     public void enableSelectedLocales() {
+        log.info("enableSelectedLocales()");
         restrict();
         List<LocaleId> enabled = new ArrayList<>();
-        for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
-                .entrySet()) {
+        log.info("selectedDisabledLocales.size(): {}", getSelectedDisabledLocales().size());
+        for (Map.Entry<LocaleId, Boolean> entry : getSelectedDisabledLocales().entrySet()) {
+            log.info("    entry {}, {}", entry.getKey(), entry.getValue());
             if (entry.getValue()) {
                 boolean wasDisabled = enableLocaleSilently(entry.getKey());
                 if (wasDisabled) {
+                    log.info("was disabled, now enabled: {}", entry.getKey());
                     enabled.add(entry.getKey());
                 }
             }
         }
-        selectedDisabledLocales.clear();
+        selectedDisabledLocales = null;
+
+        update();
+
+        log.info("{} locales were enabled.", enabled.size());
 
         if (enabled.isEmpty()) {
+            log.info("enabled was empty");
             // This should not be possible in the UI, but maybe if multiple users are editing it.
         } else if (enabled.size() == 1) {
+            log.info("enabled has 1 item");
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs().format("jsf.languageSettings.LanguageEnabled", enabled.get(0)));
         } else {
+            log.info("enabled has more than 1 item");
             FacesMessages.instance().add(StatusMessage.Severity.INFO,
                     msgs().format("jsf.languageSettings.LanguagesEnabled", StringUtils.join(enabled, ", ")));
         }
@@ -457,6 +475,7 @@ public abstract class LanguageSettingsHandler<E extends HasLanguages, H extends 
      * already in the project.
      */
     private List<HLocale> findActiveNotEnabledLocales() {
+        log.info("findActiveNotEnabledLocales()");
         Collection<HLocale> filtered =
                 Collections2.filter(getLocaleDAO().findAllActive(),
                         new Predicate<HLocale>() {
