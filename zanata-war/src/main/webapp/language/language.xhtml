@@ -109,6 +109,7 @@
                 </s:div>
                 <ui:include src="../WEB-INF/layout/language/contact_coordinator_modal.xhtml">
                   <ui:param name="id" value="#{languageAction.language}" />
+                  <ui:param name="displayName" value="#{languageAction.locale.retrieveDisplayName()}" />
                 </ui:include>
               </li>
             </s:fragment>

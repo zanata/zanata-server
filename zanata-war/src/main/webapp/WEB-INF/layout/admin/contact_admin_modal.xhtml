@@ -7,11 +7,15 @@
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
-    function cancelEmail() {
-      document.getElementById('#{rich:clientId('subject')}').value = '';
-      document.getElementById('#{rich:clientId('message')}').value = '';
+    $(document).ready(function() {
+      document.getElementById('#{rich:clientId('subject')}').value =
+        '#{msgs['jsf.message.admin.inquiry.subject']}';
+    });
 
-      jQuery('#{rich:clientId('send')}').removeClass('is-active');
+
+    function cancelEmail() {
+      document.getElementById('#{rich:clientId('message')}').value = '';
+      jQuery('#send').removeClass('is-active');
       return false;
     }
   </script>
@@ -19,7 +23,7 @@
   <div class="modal__dialog l--constrain-medium">
     <header class="modal__header">
       <h2 class="modal__title">
-        #{msgs['jsf.ContactAdmin']}
+        #{msgs['jsf.message.admin.inquiry.title']}
       </h2>
       <button type="button"
         class="modal__close button--link"
@@ -29,42 +33,17 @@
     </header>
 
     <h:form id="contactAdminForm" styleClass="l--push-bottom-0">
-      <div class="modal__content l--pad-all-quarter">
-        <div class="l--push-top-half form__item">
-          <div class="txt--understated">
-            #{msgs['jsf.email.ReplyAddress']} <span class="txt--meta  l--push-right-quarter">
-          #{msgs['jsf.email.ReplyAddress.description']}</span>
-            #{contactAdminAction.replyEmail}
-          </div>
-        </div>
-
-        <div class="l--push-top-half form__item">
-          <h:outputLabel for="subject">
-            #{msgs['jsf.email.Subject']}
-          </h:outputLabel>
-          <s:decorate id="subjectField" template="../field.xhtml">
-            <h:inputText id="subject" value="#{contactAdminAction.subject}"
-              required="true">
-              <a4j:ajax event="blur" render="subjectField" execute="@this"/>
-            </h:inputText>
-          </s:decorate>
-        </div>
-
-
-        <div class="l--push-top-half form__item">
-          <h:outputLabel for="message">
-            #{msgs['jsf.email.MessageBody']}
-          </h:outputLabel>
-          <s:decorate id="messageField" template="../field.xhtml">
-            <h:inputTextarea id="message" value="#{contactAdminAction.htmlMessage}"
-              required="true">
-              <a4j:ajax event="blur" render="messageField" execute="@this"/>
-            </h:inputTextarea>
-          </s:decorate>
-        </div>
+      <h:inputHidden id="subject" value="#{contactAdminAction.subject}"/>
+      <div class="modal__content l--pad-all-1">
+        <s:decorate id="messageField" template="../field.xhtml">
+          <h:inputTextarea id="message" value="#{contactAdminAction.htmlMessage}"
+            required="true">
+            <a4j:ajax event="blur" render="messageField" execute="@this"/>
+          </h:inputTextarea>
+        </s:decorate>
       </div>
 
-      <a4j:jsFunction name="sendEmail" action="#{contactAdminAction.send}"
+      <a4j:jsFunction name="sendContactAdminEmail" action="#{contactAdminAction.send}"
         oncomplete="jQuery('#cancel').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
@@ -78,7 +57,7 @@
             </button>
 
             <button id="send" class="button loader button--primary"
-              onclick="sendEmail()">
+              onclick="sendContactAdminEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
           </div>

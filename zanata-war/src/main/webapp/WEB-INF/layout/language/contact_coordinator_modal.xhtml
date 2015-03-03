@@ -13,13 +13,14 @@
 
     $(document).ready(function() {
       document.getElementById('#{rich:clientId('emailType')}').value = EMAIL_TYPE;
+      document.getElementById('#{rich:clientId('subject')}').value =
+        '#{msgs.format('jsf.message.coordinator.inquiry.subject', id, displayName)}';
       document.getElementById('#{rich:clientId('id')}').value = '#{id}';
     });
 
     function cancelEmail() {
       document.getElementById('#{rich:clientId('emailType')}').value = '';
       document.getElementById('#{rich:clientId('id')}').value = '';
-      document.getElementById('#{rich:clientId('subject')}').value = '';
       document.getElementById('#{rich:clientId('message')}').value = '';
 
       jQuery('#{rich:clientId('send')}').removeClass('is-active');
@@ -30,7 +31,7 @@
   <div class="modal__dialog l--constrain-medium">
     <header class="modal__header">
       <h2 class="modal__title">
-        #{msgs.format('jsf.email.ContactCoordinatorTitle',id)}
+        #{msgs.format('jsf.message.coordinator.inquiry.title',id, displayName)}
       </h2>
       <button type="button"
         class="modal__close button--link"
@@ -42,40 +43,19 @@
     <h:form id="contactCoordinatorForm" styleClass="l--push-bottom-0">
       <h:inputHidden id="emailType" value="#{sendEmail.emailType}"/>
       <h:inputHidden id="id" value="#{sendEmail.language}" />
+      <h:inputHidden id="subject" value="#{sendEmail.subject}"/>
 
-      <div class="modal__content l--pad-all-quarter">
-        <div class="l--push-top-half form__item">
-          <div class="txt--understated">
-            #{msgs['jsf.email.ReplyAddress']} <span class="txt--meta  l--push-right-quarter">
-          #{msgs['jsf.email.ReplyAddress.description']}</span>
-            #{sendEmail.replyEmail}
-          </div>
-        </div>
-
-        <div class="l--push-top-half form__item">
-          <h:outputLabel for="subject">
-            #{msgs['jsf.email.Subject']}
-          </h:outputLabel>
-          <s:decorate id="subjectField" template="../field.xhtml">
-            <h:inputText id="subject" value="#{sendEmail.subject}"
-              required="true">
-              <a4j:ajax event="blur" render="subjectField" execute="@this"/>
-            </h:inputText>
-          </s:decorate>
-        </div>
-
-        <div class="l--push-top-half form__item">
-          <h:outputLabel for="message">
-            #{msgs['jsf.email.MessageBody']}
-          </h:outputLabel>
-          <s:decorate id="messageField" template="../field.xhtml">
-            <h:inputTextarea id="message" value="#{sendEmail.htmlMessage}"
-              required="true">
-              <a4j:ajax event="blur" render="messageField" execute="@this"/>
-            </h:inputTextarea>
-          </s:decorate>
-        </div>
+      <div class="modal__content l--pad-all-1">
+        <s:decorate id="messageField" template="../field.xhtml">
+          <h:inputTextarea id="message" value="#{sendEmail.htmlMessage}"
+            required="true" styleClass="l--push-bottom-0">
+            <a4j:ajax event="blur" render="messageField" execute="@this"/>
+          </h:inputTextarea>
+        </s:decorate>
       </div>
+
+      <a4j:jsFunction name="sendContactCoordinatorEmail" action="#{sendEmail.send}"
+        oncomplete="jQuery('#cancel').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
@@ -87,8 +67,10 @@
               #{msgs['jsf.Cancel']}
             </button>
 
-            <h:commandButton id="send" styleClass="button--primary"
-              action="#{sendEmail.send}" value="#{msgs['jsf.email.Send']}"/>
+            <button id="send" class="button loader button--primary"
+              onclick="sendContactCoordinatorEmail()">
+              <span class="loader__label">#{msgs['jsf.email.Send']}</span>
+            </button>
           </div>
         </div>
       </footer>

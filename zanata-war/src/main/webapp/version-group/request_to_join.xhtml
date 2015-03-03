@@ -57,8 +57,7 @@
         </s:decorate>
 
         <s:decorate id="replyEmailField" template="../WEB-INF/layout/display.xhtml">
-          <ui:define name="label">#{msgs['jsf.email.ReplyAddress']}
-            <br/>#{msgs['jsf.email.ReplyAddress.description']}</ui:define>
+          <ui:define name="label">#{msgs['jsf.email.ReplyAddress']}</ui:define>
           <h:outputText id="email" value="#{sendEmail.replyEmail}"
             required="true"/>
         </s:decorate>
