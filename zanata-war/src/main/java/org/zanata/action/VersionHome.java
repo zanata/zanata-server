@@ -675,11 +675,20 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         HProjectIteration instance = getInstance();
         Map<LocaleId, String> aliases = instance.getLocaleAliases();
         boolean hadAlias = aliases.containsKey(localeId);
+
         if (isNullOrEmpty(alias)) {
-            aliases.remove(localeId);
+            if (hadAlias) {
+                ensureOverridingLocales();
+                aliases.remove(localeId);
+            }
         } else {
-            aliases.put(localeId, alias);
+            final boolean sameAlias = hadAlias && alias.equals(aliases.get(localeId));
+            if (!sameAlias) {
+                ensureOverridingLocales();
+                aliases.put(localeId, alias);
+            }
         }
+        update();
         return hadAlias;
     }
 
@@ -736,7 +745,6 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                 }
             }
         }
-        selectedEnabledLocales.clear();
 
         if (removed.isEmpty()) {
             // This should not be possible in the UI, but maybe if multiple users are editing it.
@@ -776,9 +784,10 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         if (getEnabledLocales().contains(locale)) {
             ensureOverridingLocales();
             wasEnabled = getInstance().getCustomizedLocales().remove(locale);
+            refreshDisabledLocales();
             // TODO consider using alias from project as default rather than none.
             getLocaleAliases().remove(locale.getLocaleId());
-            refreshDisabledLocales();
+            getSelectedEnabledLocales().remove(locale.getLocaleId());
             update();
         } else {
             wasEnabled = false;
@@ -864,6 +873,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         if (wasDisabled) {
             ensureOverridingLocales();
             getInstance().getCustomizedLocales().add(locale);
+            getSelectedEnabledLocales().put(locale.getLocaleId(), Boolean.FALSE);
             refreshDisabledLocales();
             update();
         }

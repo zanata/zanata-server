@@ -349,10 +349,18 @@ public class ProjectHome extends SlugHome<HProject> implements
         Map<LocaleId, String> aliases = instance.getLocaleAliases();
         boolean hadAlias = aliases.containsKey(localeId);
         if (isNullOrEmpty(alias)) {
-            aliases.remove(localeId);
+            if (hadAlias) {
+                ensureOverridingLocales();
+                aliases.remove(localeId);
+            }
         } else {
-            aliases.put(localeId, alias);
+            final boolean sameAlias = hadAlias && alias.equals(aliases.get(localeId));
+            if (!sameAlias) {
+                ensureOverridingLocales();
+                aliases.put(localeId, alias);
+            }
         }
+        update();
         return hadAlias;
     }
 
