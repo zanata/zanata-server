@@ -966,6 +966,11 @@ public class ProjectHome extends SlugHome<HProject> implements
         return Arrays.asList(ValidationAction.State.values());
     }
 
+    @Override
+    protected void updatedMessage() {
+        // Disable the default message from Seam
+    }
+
     /**
      * This is for autocomplete components of which ConversationScopeMessages
      * will be null
