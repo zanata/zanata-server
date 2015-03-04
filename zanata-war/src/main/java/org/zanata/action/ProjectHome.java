@@ -350,13 +350,13 @@ public class ProjectHome extends SlugHome<HProject> implements
         boolean hadAlias = aliases.containsKey(localeId);
         if (isNullOrEmpty(alias)) {
             if (hadAlias) {
-                ensureOverridingLocales();
+                // no need to ensure overriding locales, aliases are independent
                 aliases.remove(localeId);
             }
         } else {
             final boolean sameAlias = hadAlias && alias.equals(aliases.get(localeId));
             if (!sameAlias) {
-                ensureOverridingLocales();
+                // no need to ensure overriding locales, aliases are independent
                 aliases.put(localeId, alias);
             }
         }
@@ -371,12 +371,7 @@ public class ProjectHome extends SlugHome<HProject> implements
      * @return true if the locale had an alias, otherwise false.
      */
     private boolean removeAliasSilently(LocaleId localeId) {
-        if (isOverrideLocales()) {
-            return setLocaleAliasSilently(localeId, "");
-        }
-        // else the project instance is not overriding locales, there
-        // are no aliases to remove
-        return false;
+        return setLocaleAliasSilently(localeId, "");
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -397,14 +392,12 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
         List<LocaleId> removed = new ArrayList<>();
-        if (isOverrideLocales()) {
-            List<LocaleId> aliasedLocales =
-                    new ArrayList<>(getLocaleAliases().keySet());
-            for (LocaleId aliasedLocale : aliasedLocales) {
-                boolean hadAlias = removeAliasSilently(aliasedLocale);
-                if (hadAlias) {
-                    removed.add(aliasedLocale);
-                }
+        List<LocaleId> aliasedLocales =
+                new ArrayList<>(getLocaleAliases().keySet());
+        for (LocaleId aliasedLocale : aliasedLocales) {
+            boolean hadAlias = removeAliasSilently(aliasedLocale);
+            if (hadAlias) {
+                removed.add(aliasedLocale);
             }
         }
         showRemovedAliasesMessage(removed);
