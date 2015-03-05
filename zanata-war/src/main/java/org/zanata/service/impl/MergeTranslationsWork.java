@@ -19,6 +19,7 @@ import org.zanata.model.HTextFlowTargetReviewComment;
 import org.zanata.service.CopyVersionService;
 import org.zanata.util.JPACopier;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
 /**
@@ -50,10 +51,17 @@ public class MergeTranslationsWork extends Work<Integer> {
 
     @Override
     protected Integer work() throws Exception {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        Stopwatch queryStopwatch = Stopwatch.createStarted();
         List<HTextFlowTarget[]> matches =
                 textFlowTargetDAO.getTranslationsByMatchedContext(
                         sourceVersionId, targetVersionId, batchStart,
                         batchLength, ContentState.TRANSLATED_STATES);
+        queryStopwatch.stop();
+        log.info("query time {}", queryStopwatch);
+
+        log.info("start merge translation from version {} to {} batch {}", sourceVersionId, targetVersionId, batchStart + " to " + batchLength);
 
         for(HTextFlowTarget[] results : matches) {
             HTextFlowTarget sourceTft = results[0];
@@ -82,6 +90,8 @@ public class MergeTranslationsWork extends Work<Integer> {
                         .getId(), targetTft.getState(), oldState));
             }
         }
+        stopwatch.stop();
+        log.info("Complete merge translation of {} in {}", matches.size(), stopwatch);
         textFlowTargetDAO.flush();
         return matches.size();
     }

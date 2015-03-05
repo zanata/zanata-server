@@ -910,6 +910,13 @@ public class VersionHomeAction extends AbstractSortAction implements
         return UrlUtil.decodeString(docId);
     }
 
+    @In
+    private MergeTranslationsManager mergeTranslationsManager;
+
+    public void test() {
+        mergeTranslationsManager.startMergeTranslations("abrt", "test16", "abrt", "test1", true);
+    }
+
     public void uploadTranslationFile(HLocale hLocale) {
         identity.checkPermission("modify-translation", hLocale, getVersion()
                 .getProject());
