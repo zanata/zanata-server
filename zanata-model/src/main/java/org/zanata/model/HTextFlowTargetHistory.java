@@ -46,6 +46,8 @@ import org.hibernate.annotations.Type;
 import org.zanata.common.ContentState;
 
 import com.google.common.base.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Immutable
@@ -105,6 +107,10 @@ public class HTextFlowTargetHistory extends HTextContainer implements
 
     private HPerson reviewer;
 
+    @Getter
+    @Setter
+    private String revisionComment;
+
     public HTextFlowTargetHistory() {
     }
 
@@ -115,9 +121,10 @@ public class HTextFlowTargetHistory extends HTextContainer implements
         this.textFlowRevision = target.getTextFlowRevision();
         this.textFlowTarget = target;
         this.versionNum = target.getVersionNum();
-        translator = target.getTranslator();
         reviewer = target.getReviewer();
         this.setContents(target.getContents());
+        this.revisionComment = target.getRevisionComment();
+
     }
 
     @Id
