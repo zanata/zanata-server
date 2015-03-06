@@ -8,19 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.util.Work;
 import org.zanata.common.ContentState;
-import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.TextFlowTargetStateEvent;
-import org.zanata.model.HDocument;
 import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.model.HTextFlowTargetReviewComment;
-import org.zanata.service.CopyVersionService;
-import org.zanata.util.JPACopier;
+import org.zanata.service.TranslationStateCache;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
+import org.zanata.util.MessageGenerator;
 
 /**
  * Merge translation and persist in trasaction.
@@ -44,15 +40,17 @@ public class MergeTranslationsWork extends Work<Integer> {
     private final Long targetVersionId;
     private final int batchStart;
     private final int batchLength;
-
     private final boolean useLatestTranslatedString;
 
     private final TextFlowTargetDAO textFlowTargetDAO;
+
+    private final TranslationStateCache translationStateCacheImpl;
 
     @Override
     protected Integer work() throws Exception {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
+        //TODO: remove this stopwatch
         Stopwatch queryStopwatch = Stopwatch.createStarted();
         List<HTextFlowTarget[]> matches =
                 textFlowTargetDAO.getTranslationsByMatchedContext(
@@ -61,7 +59,9 @@ public class MergeTranslationsWork extends Work<Integer> {
         queryStopwatch.stop();
         log.info("query time {}", queryStopwatch);
 
-        log.info("start merge translation from version {} to {} batch {}", sourceVersionId, targetVersionId, batchStart + " to " + batchLength);
+        log.info("start merge translation from version {} to {} batch {}",
+                sourceVersionId, targetVersionId, batchStart + " to "
+                        + batchLength);
 
         for(HTextFlowTarget[] results : matches) {
             HTextFlowTarget sourceTft = results[0];
@@ -70,48 +70,43 @@ public class MergeTranslationsWork extends Work<Integer> {
 
                 ContentState oldState = targetTft.getState();
 
-                //should merge target.content, state only
                 targetTft.setContents(sourceTft.getContents());
                 targetTft.setState(sourceTft.getState());
                 targetTft.setLastChanged(sourceTft.getLastChanged());
                 targetTft.setLastModifiedBy(sourceTft.getLastModifiedBy());
                 targetTft.setTranslator(sourceTft.getTranslator());
-                targetTft.setComment(sourceTft.getComment());
-                targetTft.setRevisionComment(createComment(sourceTft));
+
+                HSimpleComment hComment = targetTft.getComment();
+                if (hComment == null) {
+                    hComment = new HSimpleComment();
+                    targetTft.setComment(hComment);
+                }
+                hComment.setComment(sourceTft.getComment().getComment());
+
+
+                targetTft.setRevisionComment(MessageGenerator
+                        .getMergeTranslationMessage(sourceTft));
 
                 textFlowTargetDAO.makePersistent(targetTft);
 
                 HTextFlow tf = targetTft.getTextFlow();
-                Events.instance().raiseTransactionSuccessEvent(
-                    TextFlowTargetStateEvent.EVENT_NAME,
-                    new TextFlowTargetStateEvent(null, targetVersionId,
-                        tf.getDocument().getId(), tf.getId(), targetTft
-                        .getLocale().getLocaleId(), targetTft
-                        .getId(), targetTft.getState(), oldState));
+                if(Events.exists()) {
+                    Events.instance().raiseTransactionSuccessEvent(
+                        TextFlowTargetStateEvent.EVENT_NAME,
+                        new TextFlowTargetStateEvent(null, targetVersionId,
+                            tf.getDocument().getId(), tf.getId(), targetTft
+                            .getLocale().getLocaleId(), targetTft
+                            .getId(), targetTft.getState(), oldState));
+                }
+
+                translationStateCacheImpl.clearDocumentStatistics(targetTft
+                    .getTextFlow().getDocument().getId());
             }
         }
         stopwatch.stop();
         log.info("Complete merge translation of {} in {}", matches.size(), stopwatch);
         textFlowTargetDAO.flush();
         return matches.size();
-    }
-
-    private String createComment(HTextFlowTarget sourceTft) {
-        StringBuilder comment = new StringBuilder();
-        HDocument document = sourceTft.getTextFlow().getDocument();
-
-        comment.append("translation auto-copied from project ")
-            .append(document.getProjectIteration().getProject().getName())
-            .append(", version ")
-            .append(document.getProjectIteration().getSlug())
-            .append(", document ")
-            .append(document.getDocId());
-
-        if (sourceTft.getLastModifiedBy() != null) {
-            comment.append(", author ")
-                .append(sourceTft.getLastModifiedBy().getName());
-        }
-        return comment.toString();
     }
 
     // @formatter:off

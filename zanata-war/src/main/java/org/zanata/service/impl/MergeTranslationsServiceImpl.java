@@ -37,12 +37,13 @@ import org.zanata.common.ContentState;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HProjectIteration;
-import org.zanata.model.HTextFlowTarget;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.MergeTranslationsService;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
+import org.zanata.service.TranslationStateCache;
+import org.zanata.service.VersionStateCache;
 
 /**
  * Service provider for merge translations task.
@@ -65,6 +66,13 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     @In
     private ZanataIdentity identity;
 
+    @In
+    private VersionStateCache versionStateCacheImpl;
+
+    @In
+    private TranslationStateCache translationStateCacheImpl;
+
+
     private final static int TRANSLATION_BATCH_SIZE = 50;
 
     @Override
@@ -76,11 +84,23 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         HProjectIteration sourceVersion =
             projectIterationDAO.getBySlug(sourceProjectSlug, sourceVersionSlug);
 
+        if (sourceVersion == null) {
+            log.error("Cannot find source version of {}:{}", sourceProjectSlug,
+                sourceVersionSlug);
+            return null;
+        }
+
         HProjectIteration targetVersion =
             projectIterationDAO.getBySlug(targetProjectSlug, targetVersionSlug);
 
-        if(!verifyVersions(sourceVersion, targetVersion)) {
+        if (targetVersion == null) {
+            log.error("Cannot find target version of {}:{}", targetProjectSlug,
+                targetVersionSlug);
             return null;
+        }
+
+        if(isVersionsEmpty(sourceVersion, targetVersion)) {
+           return null;
         }
 
         Optional<MergeTranslationsTaskHandle> taskHandleOpt =
@@ -113,6 +133,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
             startCount += TRANSLATION_BATCH_SIZE;
         }
 
+        versionStateCacheImpl.clearVersionStatsCache(targetVersion.getId());
         log.info("merge translation end: from {} to {}, {}", sourceProjectSlug
                 + ":" + sourceVersionSlug, targetProjectSlug + ":"
                 + targetVersionSlug, overallStopwatch);
@@ -120,13 +141,13 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         return AsyncTaskResult.taskResult();
     }
 
-    private int mergeTranslationBatch(Long sourceVersionId,
+    protected int mergeTranslationBatch(Long sourceVersionId,
             Long targetVersionId, boolean useLatestTranslatedString,
             int offset, int batchSize) {
         try {
             return new MergeTranslationsWork(sourceVersionId, targetVersionId,
                     offset, batchSize, useLatestTranslatedString,
-                    textFlowTargetDAO).workInTransaction();
+                    textFlowTargetDAO, translationStateCacheImpl).workInTransaction();
         } catch (Exception e) {
             log.warn("exception during copy text flow target", e);
             return 0;
@@ -134,36 +155,25 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     }
 
     /**
-     * Check if sourceVersion or targetVersion exists and there's document in
-     * both
+     * Check if sourceVersion or targetVersion has source document.
      * 
      * @param sourceVersion
      * @param targetVersion
      * @return
      */
-    private boolean verifyVersions(HProjectIteration sourceVersion,
+    private boolean isVersionsEmpty(HProjectIteration sourceVersion,
             HProjectIteration targetVersion) {
-        if (sourceVersion == null) {
-            log.error("Cannot find source version of {}:{}", sourceVersion
-                    .getProject().getSlug(), sourceVersion.getSlug());
-            return false;
-        }
-        if (targetVersion == null) {
-            log.error("Cannot find target version of {}:{}", targetVersion
-                    .getProject().getSlug(), targetVersion.getSlug());
-            return false;
-        }
         if(sourceVersion.getDocuments().isEmpty()) {
             log.error("No documents in source version {}:{}", sourceVersion
                 .getProject().getSlug(), sourceVersion.getSlug());
-            return false;
+            return true;
         }
         if(targetVersion.getDocuments().isEmpty()) {
             log.error("No documents in target version {}:{}", targetVersion
                 .getProject().getSlug(), targetVersion.getSlug());
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void prepareMergeTranslationsHandle(

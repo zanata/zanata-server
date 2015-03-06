@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -490,38 +491,9 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
             Long targetVersionId, int offset, int maxResults, Collection<ContentState> states) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
-                .append("select * from HTextFlowTarget tft, HTextFlowTarget tft2 ")
-                .append("where tft.textFlow.document.version.id = :sourceVersionId ")
-                .append("and tft2.textFlow.document.version.id = :targetVersionId")
-                .append("and tft.textFlow.obsolete = false ")
-                .append("and tft.textFlow.document.obsolete = false ")
-                .append("and tft.state in :states ")
-                .append("and tft2.textFlow.obsolete = false ")
-                .append("and tft2.textFlow.document.obsolete = false ")
-                .append("and tft.textFlow.contentHash = tft2.textFlow.contentHash ")
-                .append("and tft.textFlow.document.docId = tft2.textFlow.document.docId");
-
-        Query query = getSession()
-            .createQuery(queryBuilder.toString())
-            .setParameter("sourceVersionId", sourceVersionId)
-            .setParameter("targetVersionId", targetVersionId)
-            .setParameter("states", states)
-            .setMaxResults(maxResults)
-            .setFirstResult(offset)
-            .setCacheable(true)
-            .setComment("TextFlowTargetDAO.getTranslationsByMatchedContext");
-
-        List<HTextFlowTarget[]> results = query.list();
-        return results;
-    }
-
-    public int getTranslationsByMatchedContextCount(Long sourceVersionId,
-        Long targetVersionId, Collection<ContentState> states) {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder
-            .append("select count(*) from HTextFlowTarget tft, HTextFlowTarget tft2 ")
-            .append("where tft.textFlow.document.version.id = :sourceVersionId ")
-            .append("and tft2.textFlow.document.version.id = :targetVersionId")
+            .append("select tft, tft2 from HTextFlowTarget tft, HTextFlowTarget tft2 ")
+            .append("where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
+            .append("and tft2.textFlow.document.projectIteration.id = :targetVersionId ")
             .append("and tft.textFlow.obsolete = false ")
             .append("and tft.textFlow.document.obsolete = false ")
             .append("and tft.state in :states ")
@@ -534,10 +506,43 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
             .createQuery(queryBuilder.toString())
             .setParameter("sourceVersionId", sourceVersionId)
             .setParameter("targetVersionId", targetVersionId)
-            .setParameter("states", states)
+            .setParameterList("states", states)
+            .setMaxResults(maxResults)
+            .setFirstResult(offset)
+            .setCacheable(true)
+            .setComment("TextFlowTargetDAO.getTranslationsByMatchedContext");
+
+        List<HTextFlowTarget[]> results = Lists.newArrayList();
+        for(Object result: query.list()) {
+            Object[] castResults = (Object[])result;
+            results.add(new HTextFlowTarget[] { (HTextFlowTarget) castResults[0],
+                (HTextFlowTarget) castResults[1] });
+        }
+        return results;
+    }
+
+    public int getTranslationsByMatchedContextCount(Long sourceVersionId,
+        Long targetVersionId, Collection<ContentState> states) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder
+            .append("select count(tft.id) from HTextFlowTarget tft, HTextFlowTarget tft2 ")
+            .append("where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
+            .append("and tft2.textFlow.document.projectIteration.id = :targetVersionId ")
+            .append("and tft.textFlow.obsolete = false ")
+            .append("and tft.textFlow.document.obsolete = false ")
+            .append("and tft.state in :states ")
+            .append("and tft2.textFlow.obsolete = false ")
+            .append("and tft2.textFlow.document.obsolete = false ")
+            .append("and tft.textFlow.contentHash = tft2.textFlow.contentHash ")
+            .append("and tft.textFlow.document.docId = tft2.textFlow.document.docId");
+
+        Query query = getSession()
+            .createQuery(queryBuilder.toString())
+            .setParameter("sourceVersionId", sourceVersionId)
+            .setParameter("targetVersionId", targetVersionId)
+            .setParameterList("states", states)
             .setCacheable(true)
             .setComment("TextFlowTargetDAO.getTranslationsByMatchedContextCount");
-
         Long count = (Long) query.uniqueResult();
         return count == null ? 0 : count.intValue();
     }
