@@ -248,13 +248,16 @@ class CopyTransWork extends Work<Integer> {
             }
             hTarget.setContents(matchingTarget.getContents());
             hTarget.setState(copyState);
-            HSimpleComment hComment = hTarget.getComment();
-            if (hComment == null) {
-                hComment = new HSimpleComment();
-                hTarget.setComment(hComment);
+            if(matchingTarget.getComment() == null) {
+                hTarget.setComment(null);
+            } else {
+                HSimpleComment hComment = hTarget.getComment();
+                if (hComment == null) {
+                    hComment = new HSimpleComment();
+                    hTarget.setComment(hComment);
+                }
+                hComment.setComment(matchingTarget.getComment().getComment());
             }
-            hComment.setComment(matchingTarget.getComment().getComment());
-
             hTarget.setRevisionComment(MessageGenerator
                 .getCopyTransMessage(matchingTarget));
 

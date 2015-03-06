@@ -35,9 +35,9 @@ public class MessageGenerator {
     /**
      * Prefix of action type for generated message
      */
-    private static final String PREFIX_MERGE_TRANS = "Merge translations";
-    private static final String PREFIX_COPY_TRANS = "Copy translation";
-    private static final String PREFIX_COPY_VERSION = "Copy version";
+    public static final String PREFIX_MERGE_TRANS = "Merge translations";
+    public static final String PREFIX_COPY_TRANS = "Copy translation";
+    public static final String PREFIX_COPY_VERSION = "Copy version";
 
     /**
      * Create Zanata generated comment for merge translation

@@ -22,8 +22,7 @@ import org.zanata.util.MessageGenerator;
  * Merge translation and persist in trasaction.
  *
  * Merge HTextFlowTargets from HProjectIteration(id=sourceVersionId) to
- * HProjectIteration(id=targetVersionId) in batches(batchStart,
- * batchLength)
+ * HProjectIteration(id=targetVersionId) in batches(batchStart, batchLength)
  *
  * @see org.zanata.service.impl.MergeTranslationsServiceImpl#startMergeTranslations
  * @see #shouldMerge
@@ -50,20 +49,20 @@ public class MergeTranslationsWork extends Work<Integer> {
     protected Integer work() throws Exception {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        //TODO: remove this stopwatch
+        // TODO: remove this stopwatch
         Stopwatch queryStopwatch = Stopwatch.createStarted();
         List<HTextFlowTarget[]> matches =
                 textFlowTargetDAO.getTranslationsByMatchedContext(
                         sourceVersionId, targetVersionId, batchStart,
                         batchLength, ContentState.TRANSLATED_STATES);
         queryStopwatch.stop();
-        log.info("query time {}", queryStopwatch);
+        System.out.println("query time " + queryStopwatch);
 
         log.info("start merge translation from version {} to {} batch {}",
                 sourceVersionId, targetVersionId, batchStart + " to "
                         + batchLength);
 
-        for(HTextFlowTarget[] results : matches) {
+        for (HTextFlowTarget[] results : matches) {
             HTextFlowTarget sourceTft = results[0];
             HTextFlowTarget targetTft = results[1];
             if (shouldMerge(sourceTft, targetTft, useLatestTranslatedString)) {
@@ -76,36 +75,40 @@ public class MergeTranslationsWork extends Work<Integer> {
                 targetTft.setLastModifiedBy(sourceTft.getLastModifiedBy());
                 targetTft.setTranslator(sourceTft.getTranslator());
 
-                HSimpleComment hComment = targetTft.getComment();
-                if (hComment == null) {
-                    hComment = new HSimpleComment();
-                    targetTft.setComment(hComment);
+                if (sourceTft.getComment() == null) {
+                    targetTft.setComment(null);
+                } else {
+                    HSimpleComment hComment = targetTft.getComment();
+                    if (hComment == null) {
+                        hComment = new HSimpleComment();
+                        targetTft.setComment(hComment);
+                    }
+                    hComment.setComment(sourceTft.getComment().getComment());
                 }
-                hComment.setComment(sourceTft.getComment().getComment());
-
-
                 targetTft.setRevisionComment(MessageGenerator
                         .getMergeTranslationMessage(sourceTft));
 
                 textFlowTargetDAO.makePersistent(targetTft);
 
                 HTextFlow tf = targetTft.getTextFlow();
-                if(Events.exists()) {
+                if (Events.exists()) {
                     Events.instance().raiseTransactionSuccessEvent(
-                        TextFlowTargetStateEvent.EVENT_NAME,
-                        new TextFlowTargetStateEvent(null, targetVersionId,
-                            tf.getDocument().getId(), tf.getId(), targetTft
-                            .getLocale().getLocaleId(), targetTft
-                            .getId(), targetTft.getState(), oldState));
+                            TextFlowTargetStateEvent.EVENT_NAME,
+                            new TextFlowTargetStateEvent(null,
+                                    targetVersionId,
+                                    tf.getDocument().getId(), tf.getId(),
+                                    targetTft.getLocale().getLocaleId(),
+                                    targetTft.getId(), targetTft.getState(),
+                                    oldState));
                 }
-
                 translationStateCacheImpl.clearDocumentStatistics(targetTft
-                    .getTextFlow().getDocument().getId());
+                        .getTextFlow().getDocument().getId());
             }
         }
-        stopwatch.stop();
-        log.info("Complete merge translation of {} in {}", matches.size(), stopwatch);
         textFlowTargetDAO.flush();
+        stopwatch.stop();
+        log.info("Complete merge translation of {} in {}", matches.size(),
+                stopwatch);
         return matches.size();
     }
 
@@ -133,12 +136,12 @@ public class MergeTranslationsWork extends Work<Integer> {
      */
     // @formatter:on
     public boolean shouldMerge(HTextFlowTarget sourceTft,
-        HTextFlowTarget targetTft, boolean useLatestTranslatedString) {
-        if(!sourceTft.getState().isTranslated()) {
+            HTextFlowTarget targetTft, boolean useLatestTranslatedString) {
+        if (sourceTft.getState().isTranslated()) {
             return true;
-        } else if(useLatestTranslatedString) {
+        } else if (useLatestTranslatedString) {
             return sourceTft.getLastChanged().after(
-                targetTft.getLastChanged());
+                    targetTft.getLastChanged());
         }
         return false;
     }

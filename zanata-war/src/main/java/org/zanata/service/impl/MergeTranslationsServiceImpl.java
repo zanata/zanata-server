@@ -131,8 +131,8 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
             }
 
             startCount += TRANSLATION_BATCH_SIZE;
+            textFlowTargetDAO.clear();
         }
-
         versionStateCacheImpl.clearVersionStatsCache(targetVersion.getId());
         log.info("merge translation end: from {} to {}, {}", sourceProjectSlug
                 + ":" + sourceVersionSlug, targetProjectSlug + ":"

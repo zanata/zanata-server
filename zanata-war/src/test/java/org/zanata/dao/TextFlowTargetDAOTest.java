@@ -96,6 +96,8 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest {
                     result[1].getTextFlow().getContentHash());
             assertThat(result[0].getTextFlow().getDocument().getDocId())
                     .isEqualTo(result[1].getTextFlow().getDocument().getDocId());
+            assertThat(result[0].getLocale()).isEqualTo(result[1].getLocale());
+            assertThat(result[0]).isNotEqualTo(result[1]);
         }
     }
 

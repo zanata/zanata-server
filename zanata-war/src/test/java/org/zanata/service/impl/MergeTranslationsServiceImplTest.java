@@ -25,6 +25,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.dbunit.operation.DatabaseOperation;
@@ -34,12 +35,14 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.common.ContentState;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowTargetDAO;
-import org.zanata.file.FileSystemPersistService;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HTextFlowTarget;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.util.MessageGenerator;
 
 @Test(groups = { "business-tests" })
 public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
@@ -47,9 +50,6 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Mock
     private ZanataIdentity identity;
-
-    @Mock
-    private FileSystemPersistService fileSystemPersistService;
 
     private ProjectIterationDAO projectIterationDAO;
 
@@ -95,7 +95,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
     }
 
     @Test
-    public void testCopyVersionNotExist() {
+    public void testMergeVersionNotExist() {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "non-exist-version";
         Future<Void> future = service.startMergeTranslations(projectSlug,
@@ -105,7 +105,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
     }
 
     @Test
-    public void testCopyVersionEmptyDoc() {
+    public void testMergeEmptyDoc() {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "3.0";
         Future<Void> future = service.startMergeTranslations(projectSlug,
@@ -115,7 +115,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
     }
 
     @Test
-    public void testCopyVersion() {
+    public void testMergeTranslations() {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "2.0";
         boolean useLatestTranslatedString = false;
@@ -139,9 +139,27 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                 Matchers.eq(useLatestTranslatedString),
                 Matchers.anyInt(), Matchers.anyInt());
 
-        // check generated comments
-        // check use latest translated if enabled
+        List<HTextFlowTarget[]> results =
+                textFlowTargetDAO.getTranslationsByMatchedContext(
+                        expectedSourceVersion.getId(),
+                        expectedTargetVersion.getId(), 0,
+                        100, ContentState.TRANSLATED_STATES);
+
+        // check all results has same contents and states
+        // check generated comments in [1]
         // check non translated/approved is not being used
+        // check use latest translated if enabled
+        for(HTextFlowTarget[] result: results) {
+            assertThat(result[0].getState()).isIn(
+                ContentState.TRANSLATED_STATES);
+            assertThat(result[1].getState()).isIn(
+                ContentState.TRANSLATED_STATES);
+            assertThat(result[0].getState()).isEqualTo(result[1].getState());
+            assertThat(result[0].getContents()).isEqualTo(
+                result[1].getContents());
+            assertThat(result[1].getRevisionComment()).contains(
+                MessageGenerator.PREFIX_MERGE_TRANS);
+        }
     }
 
     @Test

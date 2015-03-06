@@ -123,4 +123,34 @@
     tf_revision="1" content0="bonjour tout le monde3" comment_id="10"
     translated_by_id="2" reviewed_by_id="3" />
 
+  <HSimpleComment id="1" comment="Text Flow Target Comment 1"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="2" comment="Text Flow Target Comment 2"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="3" comment="Text Flow Target Comment 3"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="4" comment="Text Flow Target Comment 4"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="5" comment="Text Flow Target Comment 5"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="6" comment="Text Flow Target Comment 6"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="7" comment="Text Flow Target Comment 7"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="8" comment="Text Flow Target Comment 8"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="9" comment="Text Flow Target Comment 9"
+    lastChanged="2010-09-01 20:30:16" />
+
+  <HSimpleComment id="10" comment="Text Flow Target Comment 10"
+    lastChanged="2010-09-01 20:30:16" />
+
 </dataset>

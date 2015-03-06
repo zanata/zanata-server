@@ -492,13 +492,16 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
             .append("select tft, tft2 from HTextFlowTarget tft, HTextFlowTarget tft2 ")
-            .append("where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
+            .append(
+                "where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
             .append("and tft2.textFlow.document.projectIteration.id = :targetVersionId ")
             .append("and tft.textFlow.obsolete = false ")
             .append("and tft.textFlow.document.obsolete = false ")
             .append("and tft.state in :states ")
             .append("and tft2.textFlow.obsolete = false ")
             .append("and tft2.textFlow.document.obsolete = false ")
+            .append("and tft.locale = tft2.locale ")
+            .append("and tft <> tft2 ")
             .append("and tft.textFlow.contentHash = tft2.textFlow.contentHash ")
             .append("and tft.textFlow.document.docId = tft2.textFlow.document.docId");
 
@@ -526,13 +529,16 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
             .append("select count(tft.id) from HTextFlowTarget tft, HTextFlowTarget tft2 ")
-            .append("where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
+            .append(
+                "where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
             .append("and tft2.textFlow.document.projectIteration.id = :targetVersionId ")
             .append("and tft.textFlow.obsolete = false ")
             .append("and tft.textFlow.document.obsolete = false ")
             .append("and tft.state in :states ")
             .append("and tft2.textFlow.obsolete = false ")
             .append("and tft2.textFlow.document.obsolete = false ")
+            .append("and tft.locale = tft2.locale ")
+            .append("and tft <> tft2 ")
             .append("and tft.textFlow.contentHash = tft2.textFlow.contentHash ")
             .append("and tft.textFlow.document.docId = tft2.textFlow.document.docId");
 
