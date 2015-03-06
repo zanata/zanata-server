@@ -31,5 +31,8 @@ pages:
 - ['user-guide/projects/project-settings.md', 'User Guide', 'Project settings']
 - ['user-guide/projects/create-version.md', 'User Guide', 'Creating a Version']
 - ['user-guide/projects/upload-strings.md', 'User Guide', 'Upload Strings']
+- ['user-guide/projects/project-view.md', 'User Guide', 'The Project view']
+## Version
+- ['user-guide/versions/version-view.md', 'User Guide', 'The Version view']
 
 copyright: Copyright &copy; 2015, <a href="http//www.redhat.com">Red Hat</a>.
