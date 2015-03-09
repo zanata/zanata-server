@@ -121,9 +121,21 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Getter
     private String revisionComment;
 
+    private boolean revisionCommentChanged = false;
+
     // Only for internal use (persistence transient)
     @Setter(AccessLevel.PRIVATE)
     private Integer oldVersionNum;
+
+    public void setRevisionComment(String revisionComment) {
+        this.revisionComment = revisionComment;
+        revisionCommentChanged = true;
+    }
+
+    @Transient
+    boolean isRevisionCommentChanged() {
+        return revisionCommentChanged;
+    }
 
     // Only for internal use (persistence transient)
     @Setter(AccessLevel.PRIVATE)
@@ -415,7 +427,9 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
             // insert history if this has changed from its initial state
             if (tft.initialState != null && tft.initialState.hasChanged(tft)) {
                 tft.getHistory().put(tft.oldVersionNum, tft.initialState);
-                tft.setRevisionComment(null);
+                if(!tft.isRevisionCommentChanged()) {
+                    tft.setRevisionComment(null);
+                }
             }
         }
 

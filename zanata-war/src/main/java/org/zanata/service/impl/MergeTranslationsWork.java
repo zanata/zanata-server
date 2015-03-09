@@ -14,18 +14,18 @@ import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.service.TranslationStateCache;
-
-import com.google.common.base.Stopwatch;
 import org.zanata.util.MessageGenerator;
 
+import com.google.common.base.Stopwatch;
+
 /**
- * Merge translation and persist in trasaction.
+ * Merge translation and persist in transaction.
  *
  * Merge HTextFlowTargets from HProjectIteration(id=sourceVersionId) to
  * HProjectIteration(id=targetVersionId) in batches(batchStart, batchLength)
  *
  * @see org.zanata.service.impl.MergeTranslationsServiceImpl#startMergeTranslations
- * @see #shouldMerge
+ * @see org.zanata.service.impl.MergeTranslationsServiceImpl#shouldMerge
  *
  * @return count of processed translations.
  *
@@ -65,7 +65,9 @@ public class MergeTranslationsWork extends Work<Integer> {
         for (HTextFlowTarget[] results : matches) {
             HTextFlowTarget sourceTft = results[0];
             HTextFlowTarget targetTft = results[1];
-            if (shouldMerge(sourceTft, targetTft, useLatestTranslatedString)) {
+            if (MergeTranslationsServiceImpl
+                    .shouldMerge(sourceTft, targetTft,
+                            useLatestTranslatedString)) {
 
                 ContentState oldState = targetTft.getState();
 
@@ -83,7 +85,8 @@ public class MergeTranslationsWork extends Work<Integer> {
                         hComment = new HSimpleComment();
                         targetTft.setComment(hComment);
                     }
-                    hComment.setComment(sourceTft.getComment().getComment());
+                    hComment
+                            .setComment(sourceTft.getComment().getComment());
                 }
                 targetTft.setRevisionComment(MessageGenerator
                         .getMergeTranslationMessage(sourceTft));
@@ -110,39 +113,5 @@ public class MergeTranslationsWork extends Work<Integer> {
         log.info("Complete merge translation of {} in {}", matches.size(),
                 stopwatch);
         return matches.size();
-    }
-
-    // @formatter:off
-    /**
-     * Rule of which translation should merge
-     * |          from         |       to         |   copy?   |
-     * |-----------------------|------------------|-----------|
-     * |fuzzy/untranslated     |       any        |     no    |
-     * |-----------------------|------------------|-----------|
-     * |different source text/ |                  |           |
-     * |document id            |       any        |     no    |
-     * |-----------------------|------------------|-----------|
-     * |translated/approved    |   untranslated   |    yes    |
-     * |-----------------------|------------------|-----------|
-     * |translated/approved    |       fuzzy      |    yes    |
-     * |-----------------------|------------------|-----------|
-     * |translated/approved    |   same as from   | copy if from is newer
-     *                                              and option says to copy
-     *
-     * @param sourceTft - matched documentId, source text,
-     *                    translated/approved HTextFlowTarget.
-     *     @see org.zanata.dao.TextFlowTargetDAO#getTranslationsByMatchedContext
-     * @param targetTft - HTextFlowTarget from target version
-     */
-    // @formatter:on
-    public boolean shouldMerge(HTextFlowTarget sourceTft,
-            HTextFlowTarget targetTft, boolean useLatestTranslatedString) {
-        if (sourceTft.getState().isTranslated()) {
-            return true;
-        } else if (useLatestTranslatedString) {
-            return sourceTft.getLastChanged().after(
-                    targetTft.getLastChanged());
-        }
-        return false;
     }
 }

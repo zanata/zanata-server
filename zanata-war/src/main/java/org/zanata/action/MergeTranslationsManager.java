@@ -43,12 +43,12 @@ public class MergeTranslationsManager implements Serializable {
      * @param sourceVersionSlug - source version identifier
      * @param targetProjectSlug - target project identifier
      * @param targetVersionSlug - target version identifier
-     * @param useLatestTranslatedString - to override translated/approved string
+     * @param useNewerTranslation - to override translated/approved string
      *                                 in target with newer entry in source
      */
     public void startMergeTranslations(String sourceProjectSlug,
             String sourceVersionSlug, String targetProjectSlug,
-            String targetVersionSlug, boolean useLatestTranslatedString) {
+            String targetVersionSlug, boolean useNewerTranslation) {
 
         MergeTranslationsKey key =
                 MergeTranslationsKey.getKey(targetProjectSlug,
@@ -58,7 +58,7 @@ public class MergeTranslationsManager implements Serializable {
         asyncTaskHandleManager.registerTaskHandle(handle, key);
         mergeTranslationsServiceImpl.startMergeTranslations(sourceProjectSlug,
                 sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-                useLatestTranslatedString, handle);
+            useNewerTranslation, handle);
     }
 
     /**

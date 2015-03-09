@@ -121,7 +121,7 @@ public class HTextFlowTargetHistory extends HTextContainer implements
         this.textFlowRevision = target.getTextFlowRevision();
         this.textFlowTarget = target;
         this.versionNum = target.getVersionNum();
-        reviewer = target.getReviewer();
+        this.reviewer = target.getReviewer();
         this.setContents(target.getContents());
         this.revisionComment = target.getRevisionComment();
 
@@ -259,6 +259,7 @@ public class HTextFlowTargetHistory extends HTextContainer implements
                 || !Objects.equal(current.getLastChanged(), this.lastChanged)
                 || !Objects.equal(current.getTextFlow().getId(),
                         this.textFlowTarget.getId())
-                || !Objects.equal(current.getVersionNum(), this.versionNum);
+                || !Objects.equal(current.getVersionNum(), this.versionNum)
+                || !Objects.equal(current.getRevisionComment(), this.revisionComment);
     }
 }

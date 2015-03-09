@@ -103,23 +103,18 @@
     tf_revision="1" content0="hola mundo2" comment_id="6" translated_by_id="3"
     reviewed_by_id="1" />
 
-  <HTextFlowTarget id="9" versionNum="2" creationDate="2010-09-01 20:30:16"
-    lastChanged="2010-09-01 20:30:16" locale="6" state="3" tf_id="5"
-    tf_revision="1" content0="bonjour tout le monde2" comment_id="7"
-    translated_by_id="1" reviewed_by_id="2" />
-
-  <HTextFlowTarget id="10" versionNum="1" creationDate="2010-09-01 20:30:16"
+  <HTextFlowTarget id="10" versionNum="1" creationDate="2011-09-01 20:30:16"
     lastChanged="2010-09-01 20:30:16" locale="6" state="1" tf_id="6"
     tf_revision="1" content0="bonjour tout le monde" comment_id="8"
     translated_by_id="1" reviewed_by_id="2" />
 
-  <HTextFlowTarget id="11" versionNum="4" creationDate="2010-09-01 20:30:16"
+  <HTextFlowTarget id="11" versionNum="4" creationDate="2011-09-01 20:30:16"
     lastChanged="2010-09-01 20:30:16" locale="5" state="2" tf_id="7"
     tf_revision="1" content0="hola mundo3" comment_id="9"
     translated_by_id="2" reviewed_by_id="3" />
 
-  <HTextFlowTarget id="12" versionNum="1" creationDate="2010-09-01 20:30:16"
-    lastChanged="2010-09-01 20:30:16" locale="6" state="2" tf_id="8"
+  <HTextFlowTarget id="12" versionNum="1" creationDate="2011-09-01 20:30:16"
+    lastChanged="2010-09-01 20:30:16" locale="6" state="2" tf_id="7"
     tf_revision="1" content0="bonjour tout le monde3" comment_id="10"
     translated_by_id="2" reviewed_by_id="3" />
 

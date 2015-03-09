@@ -34,13 +34,13 @@ public interface MergeTranslationsService {
      * @param sourceVersionSlug - source version identifier
      * @param targetProjectSlug - target project identifier
      * @param targetVersionSlug - target version identifier
-     * @param useLatestTranslatedString - to override translated/approved string in target with newer entry in source
+     * @param useNewerTranslation - to override translated/approved string in target with newer entry in source
      * @param handle - task handler for merge translation
      */
     //@formatter:on
     Future<Void> startMergeTranslations(String sourceProjectSlug,
         String sourceVersionSlug, String targetProjectSlug,
-        String targetVersionSlug, boolean useLatestTranslatedString,
+        String targetVersionSlug, boolean useNewerTranslation,
         MergeTranslationsTaskHandle handle);
 
     /**

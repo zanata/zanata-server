@@ -25,6 +25,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -43,6 +46,8 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.util.MessageGenerator;
+
+import com.google.common.collect.Lists;
 
 @Test(groups = { "business-tests" })
 public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
@@ -99,7 +104,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "non-exist-version";
         Future<Void> future = service.startMergeTranslations(projectSlug,
-            sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
+                sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
         verifyZeroInteractions(identity);
         assertThat(future).isEqualTo(null);
     }
@@ -109,57 +114,147 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "3.0";
         Future<Void> future = service.startMergeTranslations(projectSlug,
-            sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
+                sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
         verifyZeroInteractions(identity);
         assertThat(future).isEqualTo(null);
     }
 
     @Test
-    public void testMergeTranslations() {
+    public void testMergeTranslations1() {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "2.0";
-        boolean useLatestTranslatedString = false;
+        boolean useNewerTranslation = false;
 
-        HProjectIteration expectedSourceVersion = projectIterationDAO.getBySlug(
-            projectSlug, sourceVersionSlug);
+        HProjectIteration expectedSourceVersion =
+                projectIterationDAO.getBySlug(projectSlug, sourceVersionSlug);
         assertThat(expectedSourceVersion).isNotNull();
 
-        HProjectIteration expectedTargetVersion = projectIterationDAO.getBySlug(
-            projectSlug, targetVersionSlug);
+        HProjectIteration expectedTargetVersion =
+                projectIterationDAO.getBySlug(projectSlug, targetVersionSlug);
         assertThat(expectedTargetVersion).isNotNull();
 
+        List<HTextFlowTarget[]> preMergeData =
+            textFlowTargetDAO.getTranslationsByMatchedContext(
+                expectedSourceVersion.getId(), expectedTargetVersion.getId(), 0,
+                100, ContentState.TRANSLATED_STATES);
+        
+        List<HTextFlowTarget[]> expectedMergeData = Lists.newArrayList();
+        for (HTextFlowTarget[] data : preMergeData) {
+            if (MergeTranslationsServiceImpl.shouldMerge(data[0], data[1],
+                    useNewerTranslation)) {
+                expectedMergeData.add(new HTextFlowTarget[] { data[0], data[1]});
+            }
+        }
 
         MergeTranslationsServiceImpl spyService = spy(service);
         spyService.startMergeTranslations(projectSlug, sourceVersionSlug,
-                projectSlug, targetVersionSlug, useLatestTranslatedString, null);
+            projectSlug, targetVersionSlug, useNewerTranslation, null);
+
+        //entity in preMergeData should be updated after merge process
 
         verify(spyService).mergeTranslationBatch(Matchers.eq(
                 expectedSourceVersion.getId()),
                 Matchers.eq(expectedTargetVersion.getId()),
-                Matchers.eq(useLatestTranslatedString),
+                Matchers.eq(useNewerTranslation),
                 Matchers.anyInt(), Matchers.anyInt());
-
-        List<HTextFlowTarget[]> results =
-                textFlowTargetDAO.getTranslationsByMatchedContext(
-                        expectedSourceVersion.getId(),
-                        expectedTargetVersion.getId(), 0,
-                        100, ContentState.TRANSLATED_STATES);
 
         // check all results has same contents and states
         // check generated comments in [1]
         // check non translated/approved is not being used
         // check use latest translated if enabled
-        for(HTextFlowTarget[] result: results) {
-            assertThat(result[0].getState()).isIn(
-                ContentState.TRANSLATED_STATES);
-            assertThat(result[1].getState()).isIn(
-                ContentState.TRANSLATED_STATES);
-            assertThat(result[0].getState()).isEqualTo(result[1].getState());
-            assertThat(result[0].getContents()).isEqualTo(
-                result[1].getContents());
-            assertThat(result[1].getRevisionComment()).contains(
+        for(HTextFlowTarget[] data: expectedMergeData) {
+            assertThat(data[0].getState()).isIn(ContentState.TRANSLATED_STATES);
+            assertThat(data[1].getState()).isIn(ContentState.TRANSLATED_STATES);
+            assertThat(data[0].getContents()).isEqualTo(data[1].getContents());
+            assertThat(data[0].getState()).isEqualTo(data[1].getState());
+            assertThat(data[1].getRevisionComment()).contains(
                 MessageGenerator.PREFIX_MERGE_TRANS);
         }
+    }
+
+    @Test
+    public void testMergeTranslationWorkIsNotTranslated1() {
+        Date now = new Date();
+        HTextFlowTarget target1 = generateTarget(ContentState.NeedReview, now, "string1");
+        HTextFlowTarget target2 = generateTarget(ContentState.Translated, now, "string2");
+
+        testShouldMergeCondition(target1, target2, false, false);
+    }
+
+    @Test
+    public void testMergeTranslationWorkIsNotTranslated2() {
+        Date now = new Date();
+        HTextFlowTarget target1 = generateTarget(ContentState.Translated, now, "string1");
+        HTextFlowTarget target2 = generateTarget(ContentState.NeedReview, now, "string2");
+
+        testShouldMergeCondition(target1, target2, false, true);
+    }
+
+    // target tft is has same modify date as source tft
+    @Test
+    public void testMergeTranslationWorkCheckDate1() {
+        Date now = new Date();
+        HTextFlowTarget target1 = generateTarget(ContentState.Translated, now, "string1");
+        HTextFlowTarget target2 = generateTarget(ContentState.Translated, now, "string2");
+
+        testShouldMergeCondition(target1, target2, false, false);
+    }
+
+    // target tft is newer than source tft
+    @Test
+    public void testMergeTranslationWorkCheckDate2() {
+        Calendar c = new GregorianCalendar();
+        HTextFlowTarget target1 =
+                generateTarget(ContentState.Translated, c.getTime(), "string1");
+        c.add(Calendar.DATE, 30);
+        HTextFlowTarget target2 =
+                generateTarget(ContentState.Translated, c.getTime(), "string2");
+
+        testShouldMergeCondition(target1, target2, true, false);
+    }
+
+    // target tft is older than source tft
+    @Test
+    public void testMergeTranslationWorkCheckDate3() {
+        Calendar c = new GregorianCalendar();
+        HTextFlowTarget target2 =
+                generateTarget(ContentState.Translated, c.getTime(), "string1");
+        c.add(Calendar.DATE, 30);
+        HTextFlowTarget target1 =
+                generateTarget(ContentState.Translated, c.getTime(), "string2");
+
+        testShouldMergeCondition(target1, target2, true, true);
+    }
+
+    // target tft is older than source tft, but same content
+    @Test
+    public void testMergeTranslationWorkSameStateAndContent() {
+        String content = "content0";
+        Calendar c = new GregorianCalendar();
+        HTextFlowTarget target2 =
+            generateTarget(ContentState.Translated, c.getTime(), content);
+        c.add(Calendar.DATE, 30);
+        HTextFlowTarget target1 =
+            generateTarget(ContentState.Translated, c.getTime(), content);
+        testShouldMergeCondition(target1, target2, false, false);
+    }
+
+    private HTextFlowTarget generateTarget(ContentState state,
+            Date lastChanged, String content) {
+        HTextFlowTarget target = new HTextFlowTarget();
+        target.setState(state);
+        target.setLastChanged(lastChanged);
+        target.setContents(content);
+        return target;
+    }
+
+    private void testShouldMergeCondition(HTextFlowTarget target1,
+            HTextFlowTarget target2, boolean useNewerTranslation,
+            boolean expectedResult) {
+        boolean result =
+                MergeTranslationsServiceImpl.shouldMerge(target1, target2,
+                        useNewerTranslation);
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -168,8 +263,8 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
          * this test is covered by @see org.zanata.dao.TextFlowTargetDAOTest#
          * testGetTranslationsByMatchedContext
          *
-         * check different docId won't copy
-         * check different tf.contentHash won't copy
+         * check different docId won't copy check different tf.contentHash won't
+         * copy
          */
     }
 }

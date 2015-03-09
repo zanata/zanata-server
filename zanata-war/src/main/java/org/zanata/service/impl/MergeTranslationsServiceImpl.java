@@ -37,6 +37,7 @@ import org.zanata.common.ContentState;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HTextFlowTarget;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.MergeTranslationsService;
 
@@ -78,7 +79,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     @Override
     public Future<Void> startMergeTranslations(String sourceProjectSlug,
         String sourceVersionSlug, String targetProjectSlug,
-        String targetVersionSlug, boolean useLatestTranslatedString,
+        String targetVersionSlug, boolean useNewerTranslation,
         MergeTranslationsTaskHandle handle) {
 
         HProjectIteration sourceVersion =
@@ -123,7 +124,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         while (startCount < totalCount) {
             int processedCount =
                     mergeTranslationBatch(sourceVersion.getId(),
-                            targetVersion.getId(), useLatestTranslatedString,
+                            targetVersion.getId(), useNewerTranslation,
                             startCount, TRANSLATION_BATCH_SIZE);
 
             if (taskHandleOpt.isPresent()) {
@@ -142,11 +143,11 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     }
 
     protected int mergeTranslationBatch(Long sourceVersionId,
-            Long targetVersionId, boolean useLatestTranslatedString,
+            Long targetVersionId, boolean useNewerTranslation,
             int offset, int batchSize) {
         try {
             return new MergeTranslationsWork(sourceVersionId, targetVersionId,
-                    offset, batchSize, useLatestTranslatedString,
+                    offset, batchSize, useNewerTranslation,
                     textFlowTargetDAO, translationStateCacheImpl).workInTransaction();
         } catch (Exception e) {
             log.warn("exception during copy text flow target", e);
@@ -192,5 +193,51 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     public int getTotalProgressCount(Long sourceVersionId, Long targetVersionId) {
         return textFlowTargetDAO.getTranslationsByMatchedContextCount(
             sourceVersionId, targetVersionId, ContentState.TRANSLATED_STATES);
+    }
+
+    // @formatter:off
+    /**
+     * Rule of which translation should merge
+     * |          from         |       to         |   copy?   |
+     * |-----------------------|------------------|-----------|
+     * |fuzzy/untranslated     |       any        |     no    |
+     * |-----------------------|------------------|-----------|
+     * |different source text/ |                  |           |
+     * |document id            |       any        |     no    |
+     * |-----------------------|------------------|-----------|
+     * |translated/approved    |   untranslated   |    yes    |
+     * |-----------------------|------------------|-----------|
+     * |translated/approved    |       fuzzy      |    yes    |
+     * |-----------------------|------------------|-----------|
+     * |translated/approved    |   same as from   | copy if from is newer
+     *                                              and option says to copy
+     *
+     * @param sourceTft - matched documentId, source text,
+     *                    translated/approved HTextFlowTarget.
+     *     @see org.zanata.dao.TextFlowTargetDAO#getTranslationsByMatchedContext
+     * @param targetTft - HTextFlowTarget from target version
+     */
+    // @formatter:on
+    public static final boolean shouldMerge(HTextFlowTarget sourceTft,
+        HTextFlowTarget targetTft, boolean useNewerTranslation) {
+        // should NOT merge is source tft is not translated/approved
+        if (!sourceTft.getState().isTranslated()) {
+            return false;
+        }
+
+        // should merge if target is not in translated/approved state
+        if(!targetTft.getState().isTranslated()) {
+            return true;
+        }
+
+        // should NOT merge if both state and contents are the same
+        if (sourceTft.getState().equals(targetTft.getState())
+            && sourceTft.getContents().equals(targetTft.getContents())) {
+            return false;
+        }
+
+        // if both in translated state return latest if enabled
+        return useNewerTranslation ? sourceTft.getLastChanged().after(
+            targetTft.getLastChanged()) : false;
     }
 }
