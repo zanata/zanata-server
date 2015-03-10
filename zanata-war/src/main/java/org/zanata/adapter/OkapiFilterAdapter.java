@@ -249,7 +249,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         if (addedResources.containsKey(id)) {
             if (!hc.getContents().equals(addedResources.get(id).getContents())) {
                 throw new FileFormatAdapterException(
-                        "Same id but different contents for text text flow, "
+                        "Same id but different contents for text flow, "
                                 + "not suitable for eliding.");
             }
             return false;
