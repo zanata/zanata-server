@@ -108,6 +108,12 @@ public class VersionHomeAction extends AbstractSortAction implements
     private CopyVersionManager copyVersionManager;
 
     @In
+    private MergeTranslationsManager mergeTranslationsManager;
+
+    @In
+    private CopyTransManager copyTransManager;
+
+    @In
     private ProjectIterationDAO projectIterationDAO;
 
     @In
@@ -908,6 +914,16 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public String decodeDocId(String docId) {
         return UrlUtil.decodeString(docId);
+    }
+
+    // Check if copy-trans, copy version or merge-trans is running for given
+    // version
+    public boolean isCopyActionsRunning() {
+        return mergeTranslationsManager.isMergeTranslationsRunning(
+            projectSlug, versionSlug)
+            || copyVersionManager.isCopyVersionRunning(projectSlug,
+            versionSlug) ||
+            copyTransManager.isCopyTransRunning(getVersion());
     }
 
     public void uploadTranslationFile(HLocale hLocale) {

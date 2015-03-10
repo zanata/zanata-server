@@ -101,6 +101,10 @@
       refreshStatistics();
     }
   }
+
+  function onCancelMergeTrans() {
+    refreshStatistics();
+  }
 </script>
 
   <h:form styleClass="l--push-bottom-0">
@@ -331,13 +335,13 @@
           href="#{request.contextPath}/iteration/view/#{versionHomeAction.projectSlug}/#{versionHomeAction.versionSlug}/documents"
           class="js-url-mod" data-content="#documents">
           <i class="i i--document"></i>
-                <span class="is-hidden--s i__text--right">
-                  #{msgs['jsf.Documents']}
-                  <s:span styleClass="txt--neutral"
-                    id="documents-size">
-                    #{versionHomeAction.getDocuments().size}
-                  </s:span>
-                </span>
+          <span class="is-hidden--s i__text--right">
+            #{msgs['jsf.Documents']}
+            <s:span styleClass="txt--neutral"
+              id="documents-size">
+              #{versionHomeAction.getDocuments().size}
+            </s:span>
+          </span>
         </a>
       </li>
       <s:fragment rendered="#{not empty versionHomeAction.groups}">
@@ -346,12 +350,12 @@
             href="#{request.contextPath}/iteration/view/#{versionHomeAction.projectSlug}/#{versionHomeAction.versionSlug}/groups"
             class="js-url-mod" data-content="#groups">
             <i class="i i--group"></i>
-                <span class="is-hidden--s i__text--right">
-                  #{msgs['jsf.Groups']}
-                  <s:span styleClass="txt--neutral" id="groups-size">
-                    #{versionHomeAction.groups.size}
-                  </s:span>
-                </span>
+            <span class="is-hidden--s i__text--right">
+              #{msgs['jsf.Groups']}
+              <s:span styleClass="txt--neutral" id="groups-size">
+                #{versionHomeAction.groups.size}
+              </s:span>
+            </span>
           </a>
         </li>
       </s:fragment>
@@ -361,36 +365,47 @@
             styleClass="dropdown dropdown--tab dropdown--small dropdown--right dropdown--inline js-dropdown"
             id="version-more-actions">
             <s:fragment
-              rendered="#{identity.loggedIn and not versionHomeAction.copyVersionHandler.inProgress}">
+              rendered="#{identity.loggedIn}">
               <a class="dropdown__toggle js-dropdown__toggle"
                 title="#{msgs['jsf.tooltip.MoreActions']}" href="#">
                 <i class="i i--ellipsis"></i>
               </a>
               <ul class="dropdown__content js-dropdown__content"
                 role="content" aria-labelledby="dropdownContent">
-                <s:fragment
-                  rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
-                  <li>
-                    <a href="javascript:void(0)" class="i__item--right"
-                      onclick="zanata.modal.show('#copy-trans-modal')">
-                      #{msgs['jsf.CopyTrans']}
-                      <i class="i i--translate i__item__icon"></i>
-                    </a>
-                  </li>
-                </s:fragment>
-                <s:fragment
-                  rendered="#{s:hasPermission(versionHome.instance, 'insert')}">
-                  <li>
-                    <s:link view="/project/add_iteration.xhtml"
-                      styleClass="i__item--right" propagation="none"
-                      value="#{msgs['jsf.copyVersion.versionPage.label']}">
-                      <f:param name="projectSlug"
-                        value="#{versionHome.projectSlug}"/>
-                      <f:param name="copyFromVersionSlug"
-                        value="#{versionHome.slug}"/>
-                      <i class="i i--plus i__item__icon"></i>
-                    </s:link>
-                  </li>
+                <s:fragment rendered="#{not versionHomeAction.isCopyActionsRunning()}">
+                  <s:fragment
+                    rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
+                    <li>
+                      <a href="javascript:void(0)" class="i__item--right"
+                        onclick="zanata.modal.show('#copy-trans-modal')">
+                        #{msgs['jsf.CopyTrans']}
+                        <i class="i i--translate i__item__icon"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#" class="i__item--right"
+                        title="#{msgs['jsf.iteration.mergeTrans.header']}"
+                        data-toggle="modal"
+                        data-target="#mergeTransDialog">
+                        #{msgs['jsf.iteration.mergeTrans']}
+                        <i class="i i--import i__item__icon"></i>
+                      </a>
+                    </li>
+                  </s:fragment>
+                  <s:fragment
+                    rendered="#{s:hasPermission(versionHome.instance, 'insert')}">
+                    <li>
+                      <s:link view="/project/add_iteration.xhtml"
+                        styleClass="i__item--right" propagation="none"
+                        value="#{msgs['jsf.copyVersion.versionPage.label']}">
+                        <f:param name="projectSlug"
+                          value="#{versionHome.projectSlug}"/>
+                        <f:param name="copyFromVersionSlug"
+                          value="#{versionHome.slug}"/>
+                        <i class="i i--plus i__item__icon"></i>
+                      </s:link>
+                    </li>
+                  </s:fragment>
                 </s:fragment>
                 <li>
                   <h:commandLink title="#{msgs['jsf.GenerateProjectConfig']}"
@@ -463,6 +478,11 @@
   </div>
 </div>
 </div>
+
+  <s:fragment
+    rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
+    <ui:include src="../WEB-INF/layout/version/merge_trans_modal.xhtml"/>
+  </s:fragment>
 
 <rich:popupPanel id="uploadSourcePanel"
   moveable="#{false}"

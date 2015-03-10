@@ -492,8 +492,7 @@ public class TextFlowTargetDAO extends AbstractDAOImpl<HTextFlowTarget, Long>
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
             .append("select tft, tft2 from HTextFlowTarget tft, HTextFlowTarget tft2 ")
-            .append(
-                "where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
+            .append("where tft.textFlow.document.projectIteration.id = :sourceVersionId ")
             .append("and tft2.textFlow.document.projectIteration.id = :targetVersionId ")
             .append("and tft.textFlow.obsolete = false ")
             .append("and tft.textFlow.document.obsolete = false ")
