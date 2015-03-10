@@ -18,7 +18,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.email;
+package org.zanata.util;
 
 import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Segment;
@@ -33,7 +33,7 @@ import static org.owasp.html.Sanitizers.LINKS;
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
-public class EmailUtil {
+public class HtmlUtil {
     // Don't allow CSS styles, scripts, etc
     public static final PolicyFactory SANITIZER =
             BLOCKS.and(FORMATTING).and(IMAGES).and(LINKS);
