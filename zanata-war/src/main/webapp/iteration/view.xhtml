@@ -94,17 +94,6 @@
       fileInput.value === "";
     submitButton.disabled = noFileSelected;
   }
-
-  function onCancelCopyVersion() {
-    if(confirm('#{msgs['jsf.copyVersion.cancel.confirm']}')) {
-      cancelCopyVersion();
-      refreshStatistics();
-    }
-  }
-
-  function onCancelMergeTrans() {
-    refreshStatistics();
-  }
 </script>
 
   <h:form styleClass="l--push-bottom-0">
@@ -144,6 +133,9 @@
     <a4j:jsFunction name="cancelCopyVersion" limitRender="true"
       action="#{versionHomeAction.cancelCopyVersion()}"
       render="version-info, version-more-actions, version-settings, copy-version, messages"/>
+
+    <a4j:jsFunction name="cancelMergeTrans" action="#{mergeTransAction.cancel}"
+      render="merge-trans-buttons"/>
   </h:form>
 
 
@@ -228,90 +220,38 @@
     <zanata:loader type="loader--large"
       rendered="#{!versionHomeAction.pageRendered}"/>
   </s:div>
+  <zanata:version-copy-action-loader id="copy-trans"
+    onCompleteRender="copy-trans-buttons"
+    onComplete="refreshStatistics()"
+    canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
+    header="#{msgs['jsf.CopyTrans']}"
+    actionBean="#{copyTransAction}"
+    progressBarActionBean="#{copyTransAction}"
+    cancelTooltip="#{msgs['jsf.CopyTrans.cancel']}"
+    onCancel="cancelCopyTrans()"
+    cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
-  <s:div id="copy-trans"
-    styleClass="panel l--push-top-1 #{copyTransAction.inProgress ? '' : 'is-hidden'}">
-    <s:div styleClass="panel__header" rendered="#{copyTransAction.inProgress}">
-      <s:div
-        styleClass="panel__header__actions l--push-right-half l--push-bottom-0"
-        rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
+  <zanata:version-copy-action-loader id="copy-version"
+    onCompleteRender="version-info, version-more-actions, version-settings"
+    onComplete="refreshStatistics()"
+    canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
+    header="#{msgs['jsf.CopyVersion']}"
+    actionBean="#{versionHomeAction.copyVersionHandler}"
+    progressBarActionBean="#{versionHomeAction.copyVersionHandler}"
+    onCancel="cancelCopyVersion()"
+    cancelTooltip="#{msgs['jsf.copyVersion.cancel.message']}"
+    cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
-        <a href="javascript:void(0)" onclick="if(confirm('#{msgs['jsf.copyVersion.cancel.confirm']}')) {cancelCopyTrans()};"
-          title="#{msgs['jsf.CopyTrans.cancel']}"
-          class="button--small button--link">#{msgs['jsf.Cancel']}</a>
-
-      </s:div>
-
-      <h2 class="panel__heading--small">#{msgs['jsf.CopyTrans']}</h2>
-    </s:div>
-
-    <div class="l--pad-all-half l--push-top-quarter">
-      <zanata:progressBar id="copy-trans-progress-bar"
-        actionBean="#{copyTransAction}" interval="5000"
-        render="copy-trans-progress-messages" oncomplete="refreshStatistics()"
-        onCompleteRender="copy-trans-buttons, copy-trans"/>
-
-      <s:div id="copy-trans-progress-messages"
-        styleClass="txt--meta l--push-top-quarter">
-        <zanata:loader layout="inline" type="loader--small"
-          rendered="#{copyTransAction.inProgress}"/>
-        <span>
-          <h:outputText
-            value="#{msgs.format('jsf.iteration.CopyTrans.processedItems',
-              copyTransAction.currentProgress, copyTransAction.maxProgress)}"/>
-          ,
-          <h:outputText
-            value="#{msgs.format(
-              'jsf.iteration.CopyTrans.estimatedTimeRemaining',
-              copyTransAction.copyTransEstimatedTimeLeft)}"/>
-        </span>
-      </s:div>
-    </div>
-  </s:div>
-
-  <s:div id="copy-version"
-    styleClass="panel l--push-top-1 #{versionHomeAction.copyVersionHandler.inProgress ? '' : 'is-hidden'}">
-    <s:div styleClass="panel__header"
-      rendered="#{versionHomeAction.copyVersionHandler.inProgress}">
-      <s:div
-        styleClass="panel__header__actions l--push-right-half l--push-bottom-0"
-        rendered="#{s:hasPermission(versionHomeAction.version, 'update')}">
-
-        <a href="javascript:void(0)"
-          onclick="onCancelCopyVersion();"
-          title="#{msgs['jsf.copyVersion.cancel.message']}"
-          class="button--small button--link">#{msgs['jsf.Cancel']}</a>
-
-      </s:div>
-
-      <h2 class="panel__heading--small">#{msgs['jsf.CopyVersion']}</h2>
-    </s:div>
-
-    <div class="l--pad-all-half l--push-top-quarter">
-      <zanata:progressBar id="copy-version-progress-bar"
-        actionBean="#{versionHomeAction.copyVersionHandler}"
-        render="copy-version-progress-messages"
-        oncomplete="refreshStatistics();"
-        oncompleteAction="#{versionHomeAction.onCopyVersionComplete()}"
-        onCompleteRender="version-info, version-more-actions, version-settings, copy-version, messages"/>
-
-      <s:div id="copy-version-progress-messages"
-        styleClass="txt--meta l--push-top-quarter">
-        <zanata:loader layout="inline" type="loader--small"
-          rendered="#{versionHomeAction.copyVersionHandler.inProgress}"/>
-        <span>
-          <h:outputFormat
-            value="#{msgs['jsf.copyVersion.processedDocuments']}">
-            <f:param
-              value="#{versionHomeAction.copyVersionHandler.getProcessedDocuments()}"/>
-            <f:param
-              value="#{versionHomeAction.copyVersionHandler.getTotalDocuments()}"/>
-          </h:outputFormat>
-        </span>
-      </s:div>
-    </div>
-
-  </s:div>
+  <zanata:version-copy-action-loader id="merge-trans"
+    onCompleteRender="merge-trans-buttons"
+    onComplete="refreshStatistics()"
+    canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
+    header="#{msgs['jsf.iteration.mergeTrans']}"
+    actionBean="#{mergeTransAction}"
+    progressBarActionBean="#{mergeTransAction}"
+    onCancel="cancelMergeTrans()"
+    cancelTooltip="#{msgs['jsf.copyVersion.cancel.message']}"
+    cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 </div>
 
 <div class="g__item w--1-m w--5-8-l w--2-3">

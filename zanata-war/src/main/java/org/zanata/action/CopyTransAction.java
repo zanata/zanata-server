@@ -37,6 +37,7 @@ import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.service.impl.CopyTransOptionFactory;
+import org.zanata.ui.CopyAction;
 import org.zanata.ui.ProgressBar;
 import org.zanata.util.DateUtil;
 import com.google.common.base.Optional;
@@ -52,7 +53,7 @@ import lombok.Setter;
  */
 @Name("copyTransAction")
 @Scope(ScopeType.CONVERSATION)
-public class CopyTransAction implements Serializable, ProgressBar {
+public class CopyTransAction implements Serializable, ProgressBar, CopyAction {
     private static final long serialVersionUID = 1L;
 
     @In
@@ -89,6 +90,25 @@ public class CopyTransAction implements Serializable, ProgressBar {
     @Override
     public boolean isInProgress() {
         return copyTransManager.isCopyTransRunning(getProjectIteration());
+    }
+
+    @Override
+    public String getProgressMessage() {
+        StringBuilder message = new StringBuilder();
+        message.append(
+                msgs.format("jsf.iteration.CopyTrans.processedItems",
+                        getCurrentProgress(), getMaxProgress()))
+                .append(", ")
+                .append(msgs.format(
+                        "jsf.iteration.CopyTrans.estimatedTimeRemaining",
+                        getCopyTransEstimatedTimeLeft()));
+
+        return message.toString();
+    }
+
+    @Override
+    public void onComplete() {
+        //do nothing
     }
 
     @Begin(join = true)

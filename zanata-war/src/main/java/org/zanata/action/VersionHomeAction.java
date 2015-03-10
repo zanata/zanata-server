@@ -77,6 +77,7 @@ import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
+import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.ProgressBar;
 import org.zanata.ui.model.statistic.WordStatistic;
@@ -303,11 +304,6 @@ public class VersionHomeAction extends AbstractSortAction implements
         copyVersionHandler.setProjectSlug(projectSlug);
     }
 
-    public void onCopyVersionComplete() {
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.copyVersion.Completed", versionSlug));
-    }
-
     public void cancelCopyVersion() {
         copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
@@ -315,7 +311,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     @NoArgsConstructor
-    public static class CopyVersionHandler implements ProgressBar {
+    public static class CopyVersionHandler implements ProgressBar, CopyAction {
 
         @Setter
         private String projectSlug;
@@ -327,6 +323,19 @@ public class VersionHomeAction extends AbstractSortAction implements
         public boolean isInProgress() {
             return getCopyVersionManager().isCopyVersionRunning(projectSlug,
                     versionSlug);
+        }
+
+        @Override
+        public String getProgressMessage() {
+            return getMessages().format("jsf.copyVersion.processedDocuments",
+                    getProcessedDocuments(), getTotalDocuments());
+        }
+
+        @Override
+        public void onComplete() {
+            getConversationScopeMessages().setMessage(
+                FacesMessage.SEVERITY_INFO,
+                getMessages().format("jsf.copyVersion.Completed", versionSlug));
         }
 
         @Override
@@ -356,6 +365,15 @@ public class VersionHomeAction extends AbstractSortAction implements
                 return handle.getTotalDoc();
             }
             return 0;
+        }
+
+        private Messages getMessages() {
+            return ServiceLocator.instance().getInstance(Messages.class);
+        }
+
+        private ConversationScopeMessages getConversationScopeMessages() {
+            return ServiceLocator.instance().getInstance(
+                ConversationScopeMessages.class);
         }
 
         private CopyVersionManager getCopyVersionManager() {

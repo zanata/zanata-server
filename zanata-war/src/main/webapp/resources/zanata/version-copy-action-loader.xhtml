@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:composite="http://java.sun.com/jsf/composite"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:s="http://jboss.org/schema/seam/taglib"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<composite:interface>
+  <composite:attribute name="actionBean" type="org.zanata.ui.CopyAction"
+    shortDescription="action bean for copy process"
+    required="true"/>
+
+  <composite:attribute name="progressBarActionBean" required="true"
+    shortDescription="action bean for progress bar"
+    type="org.zanata.ui.ProgressBar"/>
+
+  <composite:attribute name="canCancelProcess" type="java.lang.Boolean"
+    default="false" required="true"
+    shortDescription="Flag indicating copy process can be cancel. This flag is set to 'false' by default"/>
+
+  <composite:attribute name="cancelTooltip" type="java.lang.String"
+    shortDescription="tooltip for cancel button"/>
+
+  <composite:attribute name="header" type="java.lang.String"
+    shortDescription="header for panel" required="true"/>
+
+  <composite:attribute name="cancelConfirmationMessage" type="java.lang.String"
+    shortDescription="confirmation message for cancel action"/>
+
+  <composite:attribute name="onCompleteRender" required="true"
+    shortDescription="Ids of component to render after complete or cancel"/>
+
+  <composite:attribute name="onComplete" required="true"
+    shortDescription="The client-side script method to be called after complete"/>
+
+  <composite:attribute name="onCancel" required="true"
+    shortDescription="The client-side script method to be called when cancel is clicked"/>
+
+</composite:interface>
+
+<composite:implementation>
+  <div id="#{cc.clientId}">
+    <s:div id="#{cc.clientId}-content" styleClass="panel l--push-top-1 #{cc.attrs.actionBean.inProgress ? '' : 'is-hidden'}">
+      <s:div styleClass="panel__header"
+        rendered="#{cc.attrs.actionBean.inProgress}">
+        <s:div
+          styleClass="panel__header__actions l--push-right-half l--push-bottom-0"
+          rendered="#{cc.attrs.canCancelProcess}">
+          <a href="javascript:void(0)"
+            onclick="if(confirm('#{cc.attrs.cancelConfirmationMessage}')) {#{cc.attrs.onCancel}};"
+            title="#{cc.attrs.cancelTooltip}"
+            class="button--small button--link">#{msgs['jsf.Cancel']}</a>
+        </s:div>
+
+        <h2 class="panel__heading--small">#{cc.attrs.header}</h2>
+      </s:div>
+
+      <div class="l--pad-all-half l--push-top-quarter">
+        <zanata:progressBar id="#{cc.clientId}-progress-bar"
+          actionBean="#{cc.attrs.progressBarActionBean}" interval="5000"
+          render="#{cc.clientId}-progress-messages"
+          oncomplete="#{cc.attrs.onComplete}"
+          oncompleteAction="#{cc.attrs.actionBean.onComplete()}"
+          oncompleteRender="#{cc.attrs.onCompleteRender}, #{cc.clientId}-content"/>
+
+        <s:div id="#{cc.clientId}-progress-messages"
+          styleClass="txt--meta l--push-top-quarter">
+          <zanata:loader layout="inline" type="loader--small"
+            rendered="#{cc.attrs.actionBean.inProgress}"/>
+        <span>
+          <h:outputText value="#{cc.attrs.actionBean.progressMessage}"/>
+        </span>
+        </s:div>
+      </div>
+    </s:div>
+  </div>
+</composite:implementation>
+</html>

@@ -1,26 +1,27 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.faces.application.FacesMessage;
 
-import org.apache.commons.lang.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
-
-import lombok.Getter;
-import lombok.Setter;
+import org.zanata.ui.CopyAction;
+import org.zanata.ui.ProgressBar;
 
 /**
  * Handles action from merge_trans_modal.xhtml
@@ -29,7 +30,7 @@ import lombok.Setter;
  */
 @Name("mergeTransAction")
 @Scope(ScopeType.PAGE)
-public class MergeTransAction implements Serializable {
+public class MergeTransAction implements Serializable, CopyAction, ProgressBar {
 
     @Getter
     @Setter
@@ -64,6 +65,9 @@ public class MergeTransAction implements Serializable {
 
     @In
     private CopyVersionManager copyVersionManager;
+    
+    @In
+    private Messages msgs;
     
     private HProjectIteration targetVersion;
 
@@ -128,5 +132,60 @@ public class MergeTransAction implements Serializable {
                 || copyVersionManager.isCopyVersionRunning(targetProjectSlug,
                         targetVersionSlug) ||
                 copyTransManager.isCopyTransRunning(getTargetVersion());
+    }
+
+    @Override
+    public boolean isInProgress() {
+        return mergeTranslationsManager.isMergeTranslationsRunning(
+            targetProjectSlug, targetVersionSlug);
+    }
+
+    @Override
+    public String getCompletedPercentage() {
+        MergeTranslationsTaskHandle handle = getHandle();
+        if (handle != null) {
+            double completedPercent =
+                (double) handle.getCurrentProgress() / (double) handle
+                    .getMaxProgress() * 100;
+            if (Double.compare(completedPercent, 100) == 0) {
+                onComplete();
+            }
+            return PERCENT_FORMAT.format(completedPercent);
+        } else {
+            return "0";
+        }
+    }
+
+    @Override
+    public String getProgressMessage() {
+        MergeTranslationsTaskHandle handle = getHandle();
+        if(handle != null) {
+            return msgs.format("jsf.iteration.mergeTrans.progress.message",
+                    handle.getTotalTranslations(), handle.getCurrentProgress());
+        }
+        return "";
+    }
+
+    @Override
+    public void onComplete() {
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.iteration.mergeTrans.completed.message",
+                        sourceProjectSlug, sourceVersionSlug,
+                        targetProjectSlug, targetVersionSlug));
+    }
+
+    public void cancel() {
+        mergeTranslationsManager.cancelMergeTranslations(targetProjectSlug,
+                targetVersionSlug);
+        FacesMessages.instance().add(
+                FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.iteration.mergeTrans.cancel.message",
+                        sourceProjectSlug, sourceVersionSlug,
+                        targetProjectSlug, targetVersionSlug));
+    }
+
+    private MergeTranslationsTaskHandle getHandle() {
+        return mergeTranslationsManager.getMergeTranslationsProcessHandle(
+            targetProjectSlug, targetVersionSlug);
     }
 }
