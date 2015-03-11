@@ -2,7 +2,6 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:composite="http://java.sun.com/jsf/composite"
-  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   xmlns:h="http://java.sun.com/jsf/html">
@@ -58,7 +57,7 @@
       </s:div>
 
       <div class="l--pad-all-half l--push-top-quarter">
-        <zanata:progressBar id="#{cc.clientId}-progress-bar"
+        <zanata:progressBar id="#{cc.clientId}ProgressBar"
           actionBean="#{cc.attrs.progressBarActionBean}" interval="5000"
           render="#{cc.clientId}-progress-messages"
           oncomplete="#{cc.attrs.onComplete}"

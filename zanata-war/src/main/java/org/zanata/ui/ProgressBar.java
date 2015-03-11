@@ -25,6 +25,9 @@ package org.zanata.ui;
 import java.text.DecimalFormat;
 
 /**
+ *
+ * Interface for Seam component - progressBar.xhtml
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public interface ProgressBar {
@@ -34,4 +37,6 @@ public interface ProgressBar {
     boolean isInProgress();
 
     String getCompletedPercentage();
+
+    void onComplete();
 }
