@@ -38,12 +38,12 @@
 </composite:interface>
 <composite:implementation>
 
-  <a4j:jsFunction name="onCompleteFunction" action="#{cc.attrs.oncompleteAction}" rendered="#{not empty cc.attrs.oncompleteAction}"
+  <a4j:jsFunction name="#{cc.attrs.id}OnCompleteFunction" action="#{cc.attrs.oncompleteAction}" rendered="#{not empty cc.attrs.oncompleteAction}"
     render="poll-#{cc.attrs.id}, #{cc.attrs.oncompleteRender}" oncomplete="#{cc.attrs.oncomplete}" onbegin="console.info('begin1')"/>
 
-  <a4j:jsFunction name="onCompleteFunction" rendered="#{empty cc.attrs.oncompleteAction}" limitRender="true"
+  <a4j:jsFunction name="#{cc.attrs.id}OnCompleteFunction" rendered="#{empty cc.attrs.oncompleteAction}" limitRender="true"
     render="poll-#{cc.attrs.id}, #{cc.attrs.oncompleteRender}" oncomplete="#{cc.attrs.oncomplete}" onbegin="console.info('begin2')"/>
-  
+
   <a4j:poll id="poll-#{cc.attrs.id}" interval="#{cc.attrs.interval}"
     enabled="#{cc.attrs.actionBean.inProgress}"
     limitRender="true" oncomplete="onPollComplete();"
@@ -65,7 +65,7 @@
 
       var inProgress = jQuery("[id='#{cc.attrs.id}-inProgress']").val();
       if (inProgress == 'false' || completedPercentage == '100') {
-        onCompleteFunction();
+        #{cc.attrs.id}OnCompleteFunction();
       }
     }
     //]]>

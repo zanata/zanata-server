@@ -125,17 +125,17 @@
       action="#{versionHomeAction.setPageRendered(true)}"/>
 
     <a4j:jsFunction name="runCopyTrans" action="#{copyTransAction.startCopyTrans}"
-      render="copy-trans, copy-trans-buttons"/>
+      render="copyTrans, copy-trans-buttons"/>
 
     <a4j:jsFunction name="cancelCopyTrans" action="#{copyTransAction.cancel}"
-      render="copy-trans, copy-trans-buttons"/>
+      render="copyTrans, copy-trans-buttons"/>
 
     <a4j:jsFunction name="cancelCopyVersion" limitRender="true"
       action="#{versionHomeAction.cancelCopyVersion()}"
-      render="version-info, version-more-actions, version-settings, copy-version, messages"/>
+      render="version-info, version-more-actions, version-settings, copyVersion, messages"/>
 
     <a4j:jsFunction name="cancelMergeTrans" action="#{mergeTransAction.cancel}"
-      render="merge-trans-buttons"/>
+      render="merge-trans-buttons, mergeTrans"/>
   </h:form>
 
 
@@ -220,7 +220,7 @@
     <zanata:loader type="loader--large"
       rendered="#{!versionHomeAction.pageRendered}"/>
   </s:div>
-  <zanata:version-copy-action-loader id="copy-trans"
+  <zanata:version-copy-action-loader id="copyTrans"
     onCompleteRender="copy-trans-buttons"
     onComplete="refreshStatistics()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
@@ -231,7 +231,7 @@
     onCancel="cancelCopyTrans()"
     cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
-  <zanata:version-copy-action-loader id="copy-version"
+  <zanata:version-copy-action-loader id="copyVersion"
     onCompleteRender="version-info, version-more-actions, version-settings"
     onComplete="refreshStatistics()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
@@ -242,7 +242,7 @@
     cancelTooltip="#{msgs['jsf.copyVersion.cancel.message']}"
     cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
-  <zanata:version-copy-action-loader id="merge-trans"
+  <zanata:version-copy-action-loader id="mergeTrans"
     onCompleteRender="merge-trans-buttons"
     onComplete="refreshStatistics()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
