@@ -93,35 +93,27 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
     public void execute(Database database) throws CustomChangeException {
 
         try {
-            prepareStatements((JdbcConnection) database.getConnection());
-            // could use try-with-resources to define the PreparedStatements here
-            // but making them fields allows for cleaner code.
-            try {
+            final JdbcConnection conn = (JdbcConnection) database.getConnection();
+            try (PreparedStatement cdot = conn.prepareStatement(countDocumentsOfTypeSql,
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                PreparedStatement sdot = selectDocumentsOfType = conn.prepareStatement(selectDocumentsOfTypeSql,
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                PreparedStatement stf = conn.prepareStatement(selectTextFlowsSql,
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
+
+                // binding to fields to allow cleaner parameter lists.
+                countDocumentsOfType = cdot;
+                selectDocumentsOfType = sdot;
+                selectTextFlows = stf;
+
                 for (DocumentType type : documentTypes) {
                     migrateResId(type);
                 }
-            } finally {
-                closeStatements();
             }
         } catch (DatabaseException | SQLException e) {
             throw new CustomChangeException(e);
         }
         // connection is not closed in a finally clause since doing so causes liquibase to throw exceptions.
-    }
-
-    private void prepareStatements(JdbcConnection conn) throws DatabaseException {
-        countDocumentsOfType = conn.prepareStatement(countDocumentsOfTypeSql,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        selectDocumentsOfType = conn.prepareStatement(selectDocumentsOfTypeSql,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        selectTextFlows = conn.prepareStatement(selectTextFlowsSql,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
-    }
-
-    private void closeStatements() throws SQLException {
-        countDocumentsOfType.close();
-        selectDocumentsOfType.close();
-        selectTextFlows.close();
     }
 
     /**
@@ -155,6 +147,7 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
                 }
                 totalDocs++;
             }
+            log.info("    processed " + docsProcessed + " of " + docsOfType);
         }
     }
 
