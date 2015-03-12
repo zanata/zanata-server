@@ -70,7 +70,13 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
      * Determines how TextFlow ids are assigned for Okapi TextUnits
      */
     public enum IdSource {
-        /** use ID of TextUnit as is (only unique if no sub-documents) */
+        /**
+         * Use ID of TextUnit as is (only unique if no sub-documents).
+         *
+         * Note: if the underlying filter gives inconsistent ids (e.g.
+         * positional identifiers when paragraphs are inserted),
+         * Zanata's merge algorithm is too weak to handle this well.
+         */
         textUnitId,
         /**
          * use 'name' attribute of TextUnit, if any. Not guaranteed to be
@@ -83,8 +89,12 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
          */
         contentHash,
         /**
-         * concatenate name of sub-document and ID of TextUnit. Should be unique
+         * Concatenate name of sub-document and ID of TextUnit. Should be unique
          * (assuming sub-document names are).
+         *
+         * Note: if the underlying filter gives inconsistent ids (e.g.
+         * positional identifiers when paragraphs are inserted),
+         * Zanata's merge algorithm is too weak to handle this well.
          */
         subDocNameAndTextUnitId
     };
