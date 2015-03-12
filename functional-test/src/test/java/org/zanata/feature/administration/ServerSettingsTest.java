@@ -21,6 +21,7 @@
 package org.zanata.feature.administration;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -51,6 +52,7 @@ public class ServerSettingsTest extends ZanataTestCase {
     public AddUsersRule addUsersRule = new AddUsersRule();
 
     @Test
+    @Ignore("RHBZ1201080")
     public void setServerURLTest() {
         new LoginWorkFlow()
                 .signIn("admin", "admin")
