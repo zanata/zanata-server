@@ -8,8 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.util.Work;
 import org.zanata.common.ContentState;
-import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.dao.TextFlowDAO;
 import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.model.HLocale;
 import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
@@ -27,8 +28,7 @@ import com.google.common.base.Stopwatch;
  * @see org.zanata.service.impl.MergeTranslationsServiceImpl#startMergeTranslations
  * @see org.zanata.service.impl.MergeTranslationsServiceImpl#shouldMerge
  *
- * @return count of processed translations.
- *
+ * returns count of processed translations.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -39,79 +39,99 @@ public class MergeTranslationsWork extends Work<Integer> {
     private final Long targetVersionId;
     private final int batchStart;
     private final int batchLength;
-    private final boolean useLatestTranslatedString;
+    private final boolean useNewerTranslation;
+    private final List<HLocale> supportedLocales;
 
-    private final TextFlowTargetDAO textFlowTargetDAO;
+    private final TextFlowDAO textFlowDAO;
 
     private final TranslationStateCache translationStateCacheImpl;
 
+    private final Stopwatch stopwatch = Stopwatch.createUnstarted();
+
     @Override
     protected Integer work() throws Exception {
-        Stopwatch stopwatch = Stopwatch.createStarted();
+        stopwatch.start();
 
-        // TODO: remove this stopwatch
-        Stopwatch queryStopwatch = Stopwatch.createStarted();
-        List<HTextFlowTarget[]> matches =
-                textFlowTargetDAO.getTranslationsByMatchedContext(
+        List<HTextFlow[]> matches =
+                textFlowDAO.getSourceByMatchedContext(
                         sourceVersionId, targetVersionId, batchStart,
-                        batchLength, ContentState.TRANSLATED_STATES);
-        queryStopwatch.stop();
-        System.out.println("query time " + queryStopwatch);
+                        batchLength);
 
-        log.info("start merge translation from version {} to {} batch {}",
-                sourceVersionId, targetVersionId, batchStart + " to "
-                        + batchLength);
+        for (HTextFlow[] results : matches) {
+            HTextFlow sourceTf = results[0];
+            HTextFlow targetTf = results[1];
+            boolean hasChanged = false;
 
-        for (HTextFlowTarget[] results : matches) {
-            HTextFlowTarget sourceTft = results[0];
-            HTextFlowTarget targetTft = results[1];
-            if (MergeTranslationsServiceImpl
-                    .shouldMerge(sourceTft, targetTft,
-                            useLatestTranslatedString)) {
+            for (HLocale hLocale : supportedLocales) {
+                HTextFlowTarget sourceTft =
+                        sourceTf.getTargets().get(hLocale.getId());
+                // only process translated state
+                if (sourceTft == null || !sourceTft.getState().isTranslated()) {
+                    continue;
+                }
 
-                ContentState oldState = targetTft.getState();
+                HTextFlowTarget targetTft =
+                        targetTf.getTargets().get(hLocale.getId());
+                if (targetTft == null) {
+                    targetTft = new HTextFlowTarget(targetTf, hLocale);
+                    targetTft.setVersionNum(0);
+                    targetTf.getTargets().put(hLocale.getId(), targetTft);
+                }
 
-                targetTft.setContents(sourceTft.getContents());
-                targetTft.setState(sourceTft.getState());
-                targetTft.setLastChanged(sourceTft.getLastChanged());
-                targetTft.setLastModifiedBy(sourceTft.getLastModifiedBy());
-                targetTft.setTranslator(sourceTft.getTranslator());
+                if (MergeTranslationsServiceImpl.shouldMerge(sourceTft,
+                        targetTft, useNewerTranslation)) {
+                    hasChanged = true;
+                    ContentState oldState = targetTft.getState();
 
-                if (sourceTft.getComment() == null) {
-                    targetTft.setComment(null);
-                } else {
-                    HSimpleComment hComment = targetTft.getComment();
-                    if (hComment == null) {
-                        hComment = new HSimpleComment();
-                        targetTft.setComment(hComment);
+                    targetTft.setContents(sourceTft.getContents());
+                    targetTft.setState(sourceTft.getState());
+                    targetTft.setLastChanged(sourceTft.getLastChanged());
+                    targetTft.setLastModifiedBy(sourceTft.getLastModifiedBy());
+                    targetTft.setTranslator(sourceTft.getTranslator());
+
+                    if (sourceTft.getComment() == null) {
+                        targetTft.setComment(null);
+                    } else {
+                        HSimpleComment hComment = targetTft.getComment();
+                        if (hComment == null) {
+                            hComment = new HSimpleComment();
+                            targetTft.setComment(hComment);
+                        }
+                        hComment
+                                .setComment(sourceTft.getComment()
+                                    .getComment());
                     }
-                    hComment
-                            .setComment(sourceTft.getComment().getComment());
-                }
-                targetTft.setRevisionComment(MessageGenerator
-                        .getMergeTranslationMessage(sourceTft));
+                    targetTft.setRevisionComment(MessageGenerator
+                            .getMergeTranslationMessage(sourceTft));
 
-                textFlowTargetDAO.makePersistent(targetTft);
-
-                HTextFlow tf = targetTft.getTextFlow();
-                if (Events.exists()) {
-                    Events.instance().raiseTransactionSuccessEvent(
-                            TextFlowTargetStateEvent.EVENT_NAME,
-                            new TextFlowTargetStateEvent(null,
-                                    targetVersionId,
-                                    tf.getDocument().getId(), tf.getId(),
-                                    targetTft.getLocale().getLocaleId(),
-                                    targetTft.getId(), targetTft.getState(),
-                                    oldState));
+                    raiseSuccessEvent(targetTft, oldState);
                 }
-                translationStateCacheImpl.clearDocumentStatistics(targetTft
-                        .getTextFlow().getDocument().getId());
+            }
+            if (hasChanged) {
+                translationStateCacheImpl.clearDocumentStatistics(targetTf
+                        .getDocument().getId());
+                textFlowDAO.makePersistent(targetTf);
+                textFlowDAO.flush();
             }
         }
-        textFlowTargetDAO.flush();
         stopwatch.stop();
-        log.info("Complete merge translation of {} in {}", matches.size(),
-                stopwatch);
-        return matches.size();
+        log.info("Complete merge translations of {} in {}", matches.size()
+                * supportedLocales.size(), stopwatch);
+        return matches.size() * supportedLocales.size();
+    }
+    
+    private void raiseSuccessEvent(HTextFlowTarget targetTft,
+            ContentState oldState) {
+        if (Events.exists()) {
+            TextFlowTargetStateEvent event =
+                    new TextFlowTargetStateEvent(null, targetVersionId,
+                            targetTft.getTextFlow().getDocument().getId(),
+                            targetTft.getTextFlow().getId(),
+                            targetTft.getLocale().getLocaleId(),
+                            targetTft.getId(), targetTft.getState(), oldState);
+
+            Events.instance().raiseTransactionSuccessEvent(
+                    TextFlowTargetStateEvent.EVENT_NAME, event);
+        }
     }
 }

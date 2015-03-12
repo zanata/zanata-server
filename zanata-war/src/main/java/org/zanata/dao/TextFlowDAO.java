@@ -21,6 +21,7 @@
 package org.zanata.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
@@ -298,6 +300,75 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
         }
 
         return builder.build();
+    }
+
+    /**
+     * Return text flows from HProjectIteration#id=sourceVersionId and
+     * HProjectIteration#id=targetVersionId which has matching content
+     * hash and document id.
+     *
+     * @param sourceVersionId
+     * @param targetVersionId
+     * @param offset
+     * @param maxResults
+     */
+    public List<HTextFlow[]> getSourceByMatchedContext(Long sourceVersionId,
+        Long targetVersionId, int offset, int maxResults) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder
+            .append("select fromTF, toTF from HTextFlow fromTF, HTextFlow toTF ")
+            .append("where fromTF.document.projectIteration.id = :sourceVersionId ")
+            .append("and toTF.document.projectIteration.id = :targetVersionId ")
+            .append("and fromTF.obsolete = false ")
+            .append("and fromTF.document.obsolete = false ")
+            .append("and toTF.obsolete = false ")
+            .append("and toTF.document.obsolete = false ")
+            .append("and fromTF <> toTF ")
+            .append("and fromTF.contentHash = toTF.contentHash ")
+            .append("and fromTF.document.docId = toTF.document.docId");
+
+        Query query = getSession()
+            .createQuery(queryBuilder.toString())
+            .setParameter("sourceVersionId", sourceVersionId)
+            .setParameter("targetVersionId" , targetVersionId)
+            .setMaxResults(maxResults)
+            .setFirstResult(offset)
+            .setCacheable(true)
+            .setComment("TextFlowDAO.getTranslationsByMatchedContext");
+
+        List<HTextFlow[]> results = Lists.newArrayList();
+        for(Object result: query.list()) {
+            Object[] castResults = (Object[])result;
+            results.add(new HTextFlow[] { (HTextFlow) castResults[0],
+                (HTextFlow) castResults[1] });
+        }
+        return results;
+    }
+
+    public int getSourceByMatchedContextCount(Long sourceVersionId,
+        Long targetVersionId) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder
+            .append("select count(fromTF.id) from HTextFlow fromTF, HTextFlow toTF ")
+            .append(
+                "where fromTF.document.projectIteration.id = :sourceVersionId ")
+            .append("and toTF.document.projectIteration.id = :targetVersionId ")
+            .append("and fromTF.obsolete = false ")
+            .append("and fromTF.document.obsolete = false ")
+            .append("and toTF.obsolete = false ")
+            .append("and toTF.document.obsolete = false ")
+            .append("and fromTF <> toTF ")
+            .append("and fromTF.contentHash = toTF.contentHash ")
+            .append("and fromTF.document.docId = toTF.document.docId");
+
+        Query query = getSession()
+            .createQuery(queryBuilder.toString())
+            .setParameter("sourceVersionId", sourceVersionId)
+            .setParameter("targetVersionId" , targetVersionId)
+            .setCacheable(true)
+            .setComment("TextFlowDAO.getTranslationsByMatchedContextCount");
+        Long count = (Long) query.uniqueResult();
+        return count == null ? 0 : count.intValue();
     }
 
 }

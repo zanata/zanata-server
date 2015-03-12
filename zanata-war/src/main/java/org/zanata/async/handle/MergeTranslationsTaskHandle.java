@@ -39,10 +39,4 @@ public class MergeTranslationsTaskHandle extends AsyncTaskHandle<Void> {
     private long cancelledTime;
     @Getter @Setter
     private String triggeredBy;
-    @Getter
-    private boolean prepared;
-
-    public void setPrepared() {
-        this.prepared = true;
-    }
 }

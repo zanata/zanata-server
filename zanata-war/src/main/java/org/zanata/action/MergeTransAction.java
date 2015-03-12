@@ -21,7 +21,6 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.ui.CopyAction;
-import org.zanata.ui.ProgressBar;
 
 /**
  * Handles action from merge_trans_modal.xhtml
@@ -30,7 +29,7 @@ import org.zanata.ui.ProgressBar;
  */
 @Name("mergeTransAction")
 @Scope(ScopeType.PAGE)
-public class MergeTransAction implements Serializable, CopyAction, ProgressBar {
+public class MergeTransAction implements Serializable, CopyAction {
 
     @Getter
     @Setter
@@ -113,9 +112,10 @@ public class MergeTransAction implements Serializable, CopyAction, ProgressBar {
     
     public void startMergeTranslations() {
         if (isCopyActionsRunning()) {
-            FacesMessages.instance().add(StatusMessage.Severity.WARN,
-                    "Another copy process is in progress for this version. " +
-                            "Please try again after it is completed.");
+            FacesMessages.instance()
+                    .add(StatusMessage.Severity.WARN,
+                        msgs.format(
+                            "jsf.iteration.mergeTrans.hasCopyActionRunning"));
             return;
         }
         mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
@@ -127,8 +127,7 @@ public class MergeTransAction implements Serializable, CopyAction, ProgressBar {
     // version
     public boolean isCopyActionsRunning() {
         return mergeTranslationsManager.isMergeTranslationsRunning(
-                targetProjectSlug,
-                targetVersionSlug)
+                targetProjectSlug, targetVersionSlug)
                 || copyVersionManager.isCopyVersionRunning(targetProjectSlug,
                         targetVersionSlug) ||
                 copyTransManager.isCopyTransRunning(getTargetVersion());
@@ -161,7 +160,7 @@ public class MergeTransAction implements Serializable, CopyAction, ProgressBar {
         MergeTranslationsTaskHandle handle = getHandle();
         if(handle != null) {
             return msgs.format("jsf.iteration.mergeTrans.progress.message",
-                    handle.getTotalTranslations(), handle.getCurrentProgress());
+                handle.getCurrentProgress(), handle.getTotalTranslations());
         }
         return "";
     }

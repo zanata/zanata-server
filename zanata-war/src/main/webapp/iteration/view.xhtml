@@ -136,6 +136,22 @@
 
     <a4j:jsFunction name="cancelMergeTrans" action="#{mergeTransAction.cancel}"
       render="merge-trans-buttons, mergeTrans"/>
+
+    <a4j:jsFunction name="onCopyTransComplete"
+      action="#{copyTransAction.onComplete()}"
+      render="copyTrans, copy-trans-buttons"
+      oncomplete="refreshStatistics();"/>
+
+    <a4j:jsFunction name="onCopyVersionComplete"
+      action="#{versionHomeAction.copyVersionHandler.onComplete()}"
+      render="copyVersion, version-info, version-more-actions, version-settings"
+      oncomplete="refreshStatistics();"/>
+
+    <a4j:jsFunction name="onMergeTransComplete"
+      action="#{mergeTransAction.onComplete()}"
+      render="mergeTrans, version-more-actions, merge-trans-buttons"
+      oncomplete="refreshStatistics();"/>
+
   </h:form>
 
 
@@ -221,34 +237,28 @@
       rendered="#{!versionHomeAction.pageRendered}"/>
   </s:div>
   <zanata:version-copy-action-loader id="copyTrans"
-    onCompleteRender="copy-trans-buttons"
-    onComplete="refreshStatistics()"
+    oncomplete="onCopyTransComplete()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
     header="#{msgs['jsf.CopyTrans']}"
     actionBean="#{copyTransAction}"
-    progressBarActionBean="#{copyTransAction}"
     cancelTooltip="#{msgs['jsf.CopyTrans.cancel']}"
     onCancel="cancelCopyTrans()"
     cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
   <zanata:version-copy-action-loader id="copyVersion"
-    onCompleteRender="version-info, version-more-actions, version-settings"
-    onComplete="refreshStatistics()"
+    oncomplete="onCopyVersionComplete()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
     header="#{msgs['jsf.CopyVersion']}"
     actionBean="#{versionHomeAction.copyVersionHandler}"
-    progressBarActionBean="#{versionHomeAction.copyVersionHandler}"
     onCancel="cancelCopyVersion()"
     cancelTooltip="#{msgs['jsf.copyVersion.cancel.message']}"
     cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>
 
   <zanata:version-copy-action-loader id="mergeTrans"
-    onCompleteRender="merge-trans-buttons"
-    onComplete="refreshStatistics()"
+    oncomplete="onMergeTransComplete()"
     canCancelProcess="#{s:hasPermission(versionHomeAction.version, 'update')}"
     header="#{msgs['jsf.iteration.mergeTrans']}"
     actionBean="#{mergeTransAction}"
-    progressBarActionBean="#{mergeTransAction}"
     onCancel="cancelMergeTrans()"
     cancelTooltip="#{msgs['jsf.copyVersion.cancel.message']}"
     cancelConfirmationMessage="#{msgs['jsf.copyVersion.cancel.confirm']}"/>

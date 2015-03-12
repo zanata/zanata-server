@@ -4,7 +4,6 @@
   xmlns:composite="http://java.sun.com/jsf/composite"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:rich="http://richfaces.org/rich">
 <composite:interface>
   <composite:attribute name="id" type="java.lang.String"
@@ -23,14 +22,8 @@
   <composite:attribute name="render"
     shortDescription="Ids of component to render on pull request"/>
 
-  <composite:attribute name="oncomplete"
+  <composite:attribute name="oncomplete" required="true"
     shortDescription="The client-side script method to be called after complete"/>
-
-  <composite:attribute name="oncompleteAction"
-    shortDescription="MethodExpression representing the application action to invoke on complete"/>
-
-  <composite:attribute name="oncompleteRender"
-    shortDescription="Ids of component to render on complete"/>
 
   <composite:attribute name="type"
     shortDescription="Type of statistic bar, 'large', 'full' or leave empty for default"
@@ -38,13 +31,6 @@
 
 </composite:interface>
 <composite:implementation>
-
-  <h:form>
-    <a4j:jsFunction name="#{cc.attrs.id}OnCompleteFunction"
-      action="#{cc.attrs.actionBean.onComplete()}"
-      render="poll-#{cc.attrs.id}, #{cc.attrs.oncompleteRender}"
-      oncomplete="#{cc.attrs.oncomplete}"/>
-  </h:form>
 
   <a4j:poll id="poll-#{cc.attrs.id}" interval="#{cc.attrs.interval}"
     enabled="#{cc.attrs.actionBean.inProgress}"
@@ -67,7 +53,7 @@
 
       var inProgress = jQuery("[id='#{cc.attrs.id}-inProgress']").val();
       if (inProgress == 'false' || completedPercentage == '100') {
-        #{cc.attrs.id}OnCompleteFunction();
+        #{cc.attrs.oncomplete};
       }
     }
 

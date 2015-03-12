@@ -37,6 +37,4 @@ public interface ProgressBar {
     boolean isInProgress();
 
     String getCompletedPercentage();
-
-    void onComplete();
 }

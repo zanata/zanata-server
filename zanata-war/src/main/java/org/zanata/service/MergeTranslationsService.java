@@ -44,10 +44,11 @@ public interface MergeTranslationsService {
         MergeTranslationsTaskHandle handle);
 
     /**
-     * Return total count of documents in HProjectIteration
+     * Return total count of translations to be processed.
      *
      * @param sourceVersionId - source HProjectIteration id
      * @param targetVersionId - target HProjectIteration id
      */
-    int getTotalProgressCount(Long sourceVersionId, Long targetVersionId);
+    int getTotalProgressCount(HProjectIteration sourceVersion,
+        HProjectIteration targetVersion);
 }

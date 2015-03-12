@@ -30,6 +30,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
@@ -38,7 +40,6 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.service.impl.CopyTransOptionFactory;
 import org.zanata.ui.CopyAction;
-import org.zanata.ui.ProgressBar;
 import org.zanata.util.DateUtil;
 import com.google.common.base.Optional;
 
@@ -53,7 +54,7 @@ import lombok.Setter;
  */
 @Name("copyTransAction")
 @Scope(ScopeType.CONVERSATION)
-public class CopyTransAction implements Serializable, ProgressBar, CopyAction {
+public class CopyTransAction implements Serializable, CopyAction {
     private static final long serialVersionUID = 1L;
 
     @In
@@ -108,7 +109,9 @@ public class CopyTransAction implements Serializable, ProgressBar, CopyAction {
 
     @Override
     public void onComplete() {
-        //do nothing
+        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+                msgs.format("jsf.iteration.CopyTrans.Completed",
+                        getProjectSlug(), getIterationSlug()));
     }
 
     @Begin(join = true)
@@ -126,10 +129,7 @@ public class CopyTransAction implements Serializable, ProgressBar, CopyAction {
                     (double) handle.getCurrentProgress() / (double) handle
                             .getMaxProgress() * 100;
             if (Double.compare(completedPercent, 100) == 0) {
-                conversationScopeMessages
-                        .setMessage(
-                                FacesMessage.SEVERITY_INFO,
-                                msgs.get("jsf.iteration.CopyTrans.Completed"));
+                onComplete();
             }
             return PERCENT_FORMAT.format(completedPercent);
         } else {

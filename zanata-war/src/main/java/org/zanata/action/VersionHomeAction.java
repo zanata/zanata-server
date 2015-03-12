@@ -42,6 +42,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.util.Hex;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.DocumentType;
@@ -79,7 +80,6 @@ import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.ui.ProgressBar;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
@@ -311,7 +311,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     @NoArgsConstructor
-    public static class CopyVersionHandler implements ProgressBar, CopyAction {
+    public static class CopyVersionHandler implements CopyAction {
 
         @Setter
         private String projectSlug;
@@ -333,8 +333,7 @@ public class VersionHomeAction extends AbstractSortAction implements
 
         @Override
         public void onComplete() {
-            getConversationScopeMessages().setMessage(
-                FacesMessage.SEVERITY_INFO,
+            FacesMessages.instance().add(FacesMessage.SEVERITY_INFO,
                 getMessages().format("jsf.copyVersion.Completed", versionSlug));
         }
 
@@ -345,6 +344,9 @@ public class VersionHomeAction extends AbstractSortAction implements
                 double completedPercent =
                         (double) handle.getCurrentProgress() / (double) handle
                                 .getMaxProgress() * 100;
+                if (Double.compare(completedPercent, 100) == 0) {
+                    onComplete();
+                }
                 return PERCENT_FORMAT.format(completedPercent);
             } else {
                 return "0";
@@ -369,11 +371,6 @@ public class VersionHomeAction extends AbstractSortAction implements
 
         private Messages getMessages() {
             return ServiceLocator.instance().getInstance(Messages.class);
-        }
-
-        private ConversationScopeMessages getConversationScopeMessages() {
-            return ServiceLocator.instance().getInstance(
-                ConversationScopeMessages.class);
         }
 
         private CopyVersionManager getCopyVersionManager() {

@@ -11,10 +11,6 @@
     shortDescription="action bean for copy process"
     required="true"/>
 
-  <composite:attribute name="progressBarActionBean" required="true"
-    shortDescription="action bean for progress bar"
-    type="org.zanata.ui.ProgressBar"/>
-
   <composite:attribute name="canCancelProcess" type="java.lang.Boolean"
     default="false" required="true"
     shortDescription="Flag indicating copy process can be cancel. This flag is set to 'false' by default"/>
@@ -28,10 +24,7 @@
   <composite:attribute name="cancelConfirmationMessage" type="java.lang.String"
     shortDescription="confirmation message for cancel action"/>
 
-  <composite:attribute name="onCompleteRender" required="true"
-    shortDescription="Ids of component to render after complete or cancel"/>
-
-  <composite:attribute name="onComplete" required="true"
+  <composite:attribute name="oncomplete" required="true"
     shortDescription="The client-side script method to be called after complete"/>
 
   <composite:attribute name="onCancel" required="true"
@@ -58,11 +51,9 @@
 
       <div class="l--pad-all-half l--push-top-quarter">
         <zanata:progressBar id="#{cc.clientId}ProgressBar"
-          actionBean="#{cc.attrs.progressBarActionBean}" interval="5000"
+          actionBean="#{cc.attrs.actionBean}" interval="5000"
           render="#{cc.clientId}-progress-messages"
-          oncomplete="#{cc.attrs.onComplete}"
-          oncompleteAction="#{cc.attrs.actionBean.onComplete()}"
-          oncompleteRender="#{cc.attrs.onCompleteRender}, #{cc.clientId}-content"/>
+          oncomplete="#{cc.attrs.oncomplete}"/>
 
         <s:div id="#{cc.clientId}-progress-messages"
           styleClass="txt--meta l--push-top-quarter">
