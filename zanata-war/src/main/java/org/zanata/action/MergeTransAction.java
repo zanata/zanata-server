@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIOutput;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +18,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.zanata.async.handle.MergeTranslationsTaskHandle;
+import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
@@ -40,6 +44,7 @@ public class MergeTransAction implements Serializable, CopyAction {
     private String targetVersionSlug;
 
     @Getter
+    @Setter
     private String sourceProjectSlug;
 
     @Getter
@@ -72,10 +77,10 @@ public class MergeTransAction implements Serializable, CopyAction {
 
     private HProject sourceProject;
 
-    public void setSourceProjectSlug(String sourceProjectSlug) {
+    public void updateSourceProject(AjaxBehaviorEvent e) {
+        sourceProjectSlug = (String) ((UIOutput)e.getSource()).getValue();
         sourceProject = null;
         sourceVersionSlug = null;
-        this.sourceProjectSlug = sourceProjectSlug;
     }
 
     public HProjectIteration getTargetVersion() {
@@ -98,10 +103,11 @@ public class MergeTransAction implements Serializable, CopyAction {
         List<HProjectIteration> versions =
                 getSourceProject().getProjectIterations();
         
-        //remove target version if both are the same project
+        //remove target version if both are the same project or obsolete
         if (sourceProjectSlug.equals(targetProjectSlug)) {
             for (HProjectIteration version : versions) {
-                if (version.getSlug().equals(targetVersionSlug)) {
+                if (version.getSlug().equals(targetVersionSlug)
+                        || version.getStatus().equals(EntityStatus.OBSOLETE)) {
                     versions.remove(version);
                     break;
                 }
@@ -109,18 +115,22 @@ public class MergeTransAction implements Serializable, CopyAction {
         }
         return versions;
     }
+
+    public List<HProject> getProjects() {
+        return projectDAO.getProjects(EntityStatus.ACTIVE,
+                EntityStatus.READONLY);
+    }
     
     public void startMergeTranslations() {
         if (isCopyActionsRunning()) {
-            FacesMessages.instance()
-                    .add(StatusMessage.Severity.WARN,
-                        msgs.format(
-                            "jsf.iteration.mergeTrans.hasCopyActionRunning"));
+            FacesMessages.instance().add(StatusMessage.Severity.WARN,
+                msgs.get("jsf.iteration.mergeTrans.hasCopyActionRunning"));
             return;
         }
-        mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
-                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-                !keepExistingTranslation);
+        System.out.println(sourceProjectSlug + ":" + sourceVersionSlug + ":" + targetProjectSlug + ":" + targetVersionSlug);
+//        mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
+//                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
+//                !keepExistingTranslation);
     }
     
     // Check if copy-trans, copy version or merge-trans is running for given

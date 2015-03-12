@@ -3,7 +3,7 @@
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:rich="http://richfaces.org/rich"
+  xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core"
   class="modal" id="mergeTransDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
 
@@ -15,6 +15,16 @@
     function bindKeepExistingTranslated(key, checked) {
       jQuery(getKeepExistingTranslatedChk()).val(checked);
     }
+
+    function displayProjectSelector(display) {
+      if(display) {
+        jQuery('#project-selector').removeClass('is-hidden');
+        jQuery('#project-static').addClass('is-hidden');
+      } else {
+        jQuery('#project-selector').addClass('is-hidden');
+        jQuery('#project-static').removeClass('is-hidden');
+      }
+    }
   </script>
 
   <div class="modal__dialog l--constrain-medium">
@@ -24,7 +34,7 @@
       </h2>
       <button type="button"
         class="modal__close button--link"
-        data-dismiss="modal" onclick="return false;">
+        data-dismiss="modal" onclick="displayProjectSelector(false);return false;">
         <i class="i i--huge i--cancel"></i>
       </button>
     </header>
@@ -63,11 +73,25 @@
               escape="false"/>
           </h3>
           <div>
-            <div>
+            <s:div id="source-project-section" styleClass="l--push-bottom-quarter">
               <i class="i i--project l--push-right-quarter"></i>
-              #{mergeTransAction.sourceProject.name}
-              <a href="#" class="txt--mini l--push-left-1">Choose another project</a>
-            </div>
+              <div id="project-static" class="bx--inline-block">
+                #{mergeTransAction.sourceProject.name}
+                <a href="#" class="txt--mini l--push-left-1"
+                  onclick="displayProjectSelector(true)">
+                  #{msgs['jsf.iteration.mergeTrans.chooseAnotherProject']}
+                </a>
+              </div>
+              <div id="project-selector" class="is-hidden bx--inline-block">
+                <h:selectOneMenu id="sourceProjects" required="true"
+                  value="#{mergeTransAction.sourceProjectSlug}" styleClass="w--1-4">
+                  <f:selectItems value="#{mergeTransAction.projects}" var="project"
+                    itemLabel="#{project.name} [#{project.slug}]" itemValue="#{projectSlug}"
+                    itemLabelEscaped="true"/>
+                  <f:ajax listener="#{mergeTransAction.updateSourceProject}" render="sourceVersions"/>
+                </h:selectOneMenu>
+              </div>
+            </s:div>
             <i class="i i--version l--push-right-quarter"></i>
             <h:selectOneMenu id="sourceVersions" required="true"
               value="#{mergeTransAction.sourceVersionSlug}" styleClass="w--1-4">

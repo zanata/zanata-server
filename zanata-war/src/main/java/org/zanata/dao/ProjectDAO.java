@@ -31,6 +31,8 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 
+import com.google.common.collect.Lists;
+
 @Name("projectDAO")
 @AutoCreate
 @Scope(ScopeType.STATELESS)
@@ -432,5 +434,23 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
                         .setParameter("maintainer", maintainer)
                         .setParameter("filter", "%" + sqlFilter + "%");
         return ((Long) q.uniqueResult()).intValue();
+    }
+
+    public List<HProject> getProjects(EntityStatus... includeStatus) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("from HProject ");
+        if (includeStatus != null) {
+            sb.append("where status in :includesStatus ");
+        }
+        sb.append("order by UPPER(name) ");
+
+        Query q = getSession().createQuery(sb.toString());
+
+        if (includeStatus != null) {
+            q.setParameterList("includesStatus",
+                Lists.newArrayList(includeStatus));
+        }
+        q.setComment("ProjectDAO.getProjects");
+        return (List<HProject>)q.list();
     }
 }

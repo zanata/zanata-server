@@ -135,7 +135,7 @@
       render="version-info, version-more-actions, version-settings, copyVersion, messages"/>
 
     <a4j:jsFunction name="cancelMergeTrans" action="#{mergeTransAction.cancel}"
-      render="merge-trans-buttons, mergeTrans"/>
+      render="mergeTrans, version-more-actions, merge-trans-buttons, source-project-section"/>
 
     <a4j:jsFunction name="onCopyTransComplete"
       action="#{copyTransAction.onComplete()}"
@@ -149,7 +149,7 @@
 
     <a4j:jsFunction name="onMergeTransComplete"
       action="#{mergeTransAction.onComplete()}"
-      render="mergeTrans, version-more-actions, merge-trans-buttons"
+      render="mergeTrans, version-more-actions, merge-trans-buttons, source-project-section"
       oncomplete="refreshStatistics();"/>
 
   </h:form>
