@@ -9,6 +9,7 @@ pages:
 - ['index.md', 'Home']
 
 # Configuration Guide
+- ['configuration/installation.md', 'Configuration', 'Installation']
 - ['configuration/authentication.md', 'Configuration', 'Authentication']
 - ['configuration/document-storage-directory.md', 'Configuration', 'Document Storage Directory']
 # Once pull request https://github.com/zanata/zanata-server/pull/633 is integrated, this can be uncommented
