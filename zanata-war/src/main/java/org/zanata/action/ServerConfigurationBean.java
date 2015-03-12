@@ -41,10 +41,12 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.action.validator.EmailList;
 import org.zanata.dao.ApplicationConfigurationDAO;
+import org.zanata.events.HomeContentChangedEvent;
 import org.zanata.model.HApplicationConfiguration;
 import org.zanata.model.validator.Url;
 import org.zanata.rest.service.ServerConfigurationService;
@@ -167,6 +169,7 @@ public class ServerConfigurationBean implements Serializable {
         applicationConfigurationDAO.flush();
 
         FacesMessages.instance().add("Home content was successfully updated.");
+        Events.instance().raiseTransactionSuccessEvent(HomeContentChangedEvent.EVENT_NAME);
         return "/home.xhtml";
     }
 

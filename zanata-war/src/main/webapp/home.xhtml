@@ -10,34 +10,9 @@
 
   <ui:define name="page_title">#{msgs['jsf.Home']}</ui:define>
   <ui:define name="center_content">
-    <noscript>
-      <div>
-        Note: the following CommonMark text can only be rendered if
-        JavaScript is enabled.
-      </div>
-    </noscript>
-    <ui:remove>
-      This will be rendered to HTML in JavaScript and replaced by a div.
-      TODO render CM to HTML on the server side.
-    </ui:remove>
-    <pre class="js-commonmark" id="project-home-content">#{applicationConfiguration.homeContent}</pre>
-    <div id="project-home-content-rendered"></div>
-
-    <h:outputScript target="body" library="script" name="commonmark-0.18.1.min.js"/>
-
-    <script type="text/javascript">
-      $(function() {
-        var reader = new commonmark.Parser();
-        var writer = new commonmark.HtmlRenderer();
-        function mdRender(src) {
-          return writer.render(reader.parse(src));
-        }
-        var rendered = mdRender($('#project-home-content').text());
-        $('#project-home-content-rendered').html(rendered);
-        $('#project-home-content').remove();
-      });
-    </script>
-
+    <div id="home-content-rendered" class="prose">
+      <h:outputText value="#{homePage.html}" escape="false" />
+    </div>
   </ui:define>
 
   <ui:define name="right_content">
