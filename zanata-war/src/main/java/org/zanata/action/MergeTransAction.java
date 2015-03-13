@@ -1,6 +1,7 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -11,7 +12,9 @@ import javax.faces.event.ValueChangeEvent;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,7 +39,6 @@ import org.zanata.ui.CopyAction;
 public class MergeTransAction implements Serializable, CopyAction {
 
     @Getter
-    @Setter
     private String targetProjectSlug;
 
     @Getter
@@ -44,7 +46,6 @@ public class MergeTransAction implements Serializable, CopyAction {
     private String targetVersionSlug;
 
     @Getter
-    @Setter
     private String sourceProjectSlug;
 
     @Getter
@@ -77,10 +78,28 @@ public class MergeTransAction implements Serializable, CopyAction {
 
     private HProject sourceProject;
 
-    public void updateSourceProject(AjaxBehaviorEvent e) {
-        sourceProjectSlug = (String) ((UIOutput)e.getSource()).getValue();
-        sourceProject = null;
-        sourceVersionSlug = null;
+    public void setTargetProjectSlug(String targetProjectSlug) {
+        this.targetProjectSlug = targetProjectSlug;
+
+        /**
+         * This should only true during first instantiation. See pages.xml
+         * for setter of mergeTransAction.targetProjectSlug
+         */
+        if(sourceProjectSlug == null) {
+            setSourceProjectSlug(targetProjectSlug);
+        }
+    }
+
+    public void setSourceProjectSlug(String sourceProjectSlug) {
+        if(!StringUtils.equals(this.sourceProjectSlug, sourceProjectSlug)) {
+            this.sourceProjectSlug = sourceProjectSlug;
+            sourceProject = null;
+            if (!getSourceProject().getProjectIterations().isEmpty()) {
+                sourceVersionSlug =
+                        getSourceProject().getProjectIterations().get(0)
+                                .getSlug();
+            }
+        }
     }
 
     public HProjectIteration getTargetVersion() {
@@ -102,9 +121,13 @@ public class MergeTransAction implements Serializable, CopyAction {
     public List<HProjectIteration> getSourceVersions() {
         List<HProjectIteration> versions =
                 getSourceProject().getProjectIterations();
-        
+
+        if(versions.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         //remove target version if both are the same project or obsolete
-        if (sourceProjectSlug.equals(targetProjectSlug)) {
+        if (StringUtils.equals(sourceProjectSlug, targetProjectSlug)) {
             for (HProjectIteration version : versions) {
                 if (version.getSlug().equals(targetVersionSlug)
                         || version.getStatus().equals(EntityStatus.OBSOLETE)) {
@@ -122,15 +145,22 @@ public class MergeTransAction implements Serializable, CopyAction {
     }
     
     public void startMergeTranslations() {
+        if (StringUtils.isEmpty(sourceProjectSlug)
+                || StringUtils.isEmpty(sourceVersionSlug)
+                || StringUtils.isEmpty(targetProjectSlug)
+                || StringUtils.isEmpty(targetVersionSlug)) {
+            FacesMessages.instance().add(StatusMessage.Severity.WARN,
+                msgs.get("jsf.iteration.mergeTrans.noSourceAndTarget"));
+            return;
+        }
         if (isCopyActionsRunning()) {
             FacesMessages.instance().add(StatusMessage.Severity.WARN,
                 msgs.get("jsf.iteration.mergeTrans.hasCopyActionRunning"));
             return;
         }
-        System.out.println(sourceProjectSlug + ":" + sourceVersionSlug + ":" + targetProjectSlug + ":" + targetVersionSlug);
-//        mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
-//                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-//                !keepExistingTranslation);
+        mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
+                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
+                !keepExistingTranslation);
     }
     
     // Check if copy-trans, copy version or merge-trans is running for given

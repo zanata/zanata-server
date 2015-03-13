@@ -408,7 +408,6 @@
     <param name="iterationSlug" value="#{copyTransAction.iterationSlug}" />
 
     <param name="projectSlug" value="#{mergeTransAction.targetProjectSlug}" />
-    <param name="projectSlug" value="#{mergeTransAction.sourceProjectSlug}" />
     <param name="iterationSlug" value="#{mergeTransAction.targetVersionSlug}" />
 
     <action execute="#{versionHome.init(false)}" />
