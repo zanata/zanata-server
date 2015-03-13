@@ -63,7 +63,7 @@ public class MergeTranslationsManager implements Serializable {
 
     /**
      * Cancel running merge translations task
-     * 
+     *
      * @param projectSlug - target project identifier
      * @param versionSlug - target version identifier
      */
@@ -94,7 +94,7 @@ public class MergeTranslationsManager implements Serializable {
 
     /**
      * Key used for copy version task
-     * 
+     *
      */
     @EqualsAndHashCode
     @Getter

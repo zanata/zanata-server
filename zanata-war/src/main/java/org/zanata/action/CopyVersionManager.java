@@ -57,7 +57,7 @@ public class CopyVersionManager implements Serializable {
 
     /**
      * Cancel running copy version task
-     * 
+     *
      * @param projectSlug
      *            - target project identifier
      * @param versionSlug
@@ -89,7 +89,7 @@ public class CopyVersionManager implements Serializable {
 
     /**
      * Key used for copy version task
-     * 
+     *
      * @param projectSlug
      *            - target project identifier
      * @param versionSlug

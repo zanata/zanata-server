@@ -427,7 +427,7 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
             // insert history if this has changed from its initial state
             if (tft.initialState != null && tft.initialState.hasChanged(tft)) {
                 tft.getHistory().put(tft.oldVersionNum, tft.initialState);
-                if(!tft.isRevisionCommentChanged()) {
+                if (!tft.isRevisionCommentChanged()) {
                     tft.setRevisionComment(null);
                 }
             }

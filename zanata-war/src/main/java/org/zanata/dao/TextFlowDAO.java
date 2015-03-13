@@ -338,7 +338,7 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
 
         List<HTextFlow[]> results = Lists.newArrayList();
         for(Object result: query.list()) {
-            Object[] castResults = (Object[])result;
+            Object[] castResults = (Object[]) result;
             results.add(new HTextFlow[] { (HTextFlow) castResults[0],
                 (HTextFlow) castResults[1] });
         }

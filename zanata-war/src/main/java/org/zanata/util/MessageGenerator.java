@@ -42,7 +42,7 @@ public class MessageGenerator {
     /**
      * Create Zanata generated comment for merge translation
      * @see org.zanata.service.MergeTranslationsService
-     * 
+     *
      * @param tft - HTextFlowTarget to copy from
      */
     public static final String getMergeTranslationMessage(

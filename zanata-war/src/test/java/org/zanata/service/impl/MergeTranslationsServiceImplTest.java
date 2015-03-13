@@ -192,7 +192,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
         //entity in preMergeData should be updated after merge process
 
         verify(spyService).mergeTranslationBatch(Matchers.eq(
-                expectedSourceVersion), Matchers.eq(expectedTargetVersion), 
+                expectedSourceVersion), Matchers.eq(expectedTargetVersion),
                 Matchers.anyList(), Matchers.eq(useNewerTranslation),
                 Matchers.anyInt(), Matchers.anyInt());
 

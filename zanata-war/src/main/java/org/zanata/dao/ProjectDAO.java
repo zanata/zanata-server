@@ -451,6 +451,6 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
                 Lists.newArrayList(includeStatus));
         }
         q.setComment("ProjectDAO.getProjects");
-        return (List<HProject>)q.list();
+        return (List<HProject>) q.list();
     }
 }

@@ -119,7 +119,7 @@ public class MergeTranslationsWork extends Work<Integer> {
                 * supportedLocales.size(), stopwatch);
         return matches.size() * supportedLocales.size();
     }
-    
+
     private void raiseSuccessEvent(HTextFlowTarget targetTft,
             ContentState oldState) {
         if (Events.exists()) {

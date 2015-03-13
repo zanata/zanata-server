@@ -31,7 +31,7 @@ import org.zanata.ui.CopyAction;
 
 /**
  * Handles action from merge_trans_modal.xhtml
- * 
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Name("mergeTransAction")
@@ -58,10 +58,10 @@ public class MergeTransAction implements Serializable, CopyAction {
 
     @In
     private ProjectDAO projectDAO;
-    
+
     @In
     private ProjectIterationDAO projectIterationDAO;
-    
+
     @In
     private MergeTranslationsManager mergeTranslationsManager;
 
@@ -70,10 +70,10 @@ public class MergeTransAction implements Serializable, CopyAction {
 
     @In
     private CopyVersionManager copyVersionManager;
-    
+
     @In
     private Messages msgs;
-    
+
     private HProjectIteration targetVersion;
 
     private HProject sourceProject;
@@ -143,7 +143,7 @@ public class MergeTransAction implements Serializable, CopyAction {
         return projectDAO.getProjects(EntityStatus.ACTIVE,
                 EntityStatus.READONLY);
     }
-    
+
     public void startMergeTranslations() {
         if (StringUtils.isEmpty(sourceProjectSlug)
                 || StringUtils.isEmpty(sourceVersionSlug)
@@ -162,7 +162,7 @@ public class MergeTransAction implements Serializable, CopyAction {
                 sourceVersionSlug, targetProjectSlug, targetVersionSlug,
                 !keepExistingTranslation);
     }
-    
+
     // Check if copy-trans, copy version or merge-trans is running for given
     // version
     public boolean isCopyActionsRunning() {

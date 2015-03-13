@@ -51,7 +51,7 @@ import org.zanata.service.VersionStateCache;
 
 /**
  * Service provider for merge translations task.
- * 
+ *
  * @see org.zanata.action.MergeTranslationsManager
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -176,7 +176,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
     /**
      * Check if sourceVersion or targetVersion has source document.
-     * 
+     *
      * @param sourceVersion
      * @param targetVersion
      */
@@ -223,7 +223,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         return textFlowDAO.getSourceByMatchedContextCount(
             sourceVersionId, targetVersionId);
     }
-    
+
     public List<HLocale> getSupportedLocales(String projectSlug,
             String versionSlug) {
         return localeServiceImpl.getSupportedLanguageByProjectIteration(
