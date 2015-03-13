@@ -41,6 +41,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.common.ContentState;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowDAO;
@@ -105,6 +106,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                 .use("entityManager" , getEm())
                 .use("session" , getSession())
                 .use("identity" , identity)
+                .use("cacheContainer", new InfinispanTestCacheContainer())
                 .useImpl(LocaleServiceImpl.class)
                 .useImpl(VersionStateCacheImpl.class)
                 .useImpl(TranslationStateCacheImpl.class)

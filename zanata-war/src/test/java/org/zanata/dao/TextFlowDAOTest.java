@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import org.assertj.core.api.Assertions;
@@ -48,9 +49,6 @@ public class TextFlowDAOTest extends ZanataDbunitJpaTest {
         beforeTestOperations.add(new DataSetOperation(
                 "org/zanata/test/model/AccountData.dbunit.xml",
                 DatabaseOperation.CLEAN_INSERT));
-        beforeTestOperations.add(new DataSetOperation(
-            "org/zanata/test/model/MergeTranslationsData.dbunit.xml",
-            DatabaseOperation.CLEAN_INSERT));
     }
 
     @BeforeMethod(firstTimeOnly = true)
@@ -222,6 +220,27 @@ public class TextFlowDAOTest extends ZanataDbunitJpaTest {
 
     @Test
     public void testGetTranslationsByMatchedContext() {
+
+        List<DataSetOperation> testOperations = Lists.newArrayList();
+
+        testOperations.add(new DataSetOperation(
+            "org/zanata/test/model/ClearAllTables.dbunit.xml",
+            DatabaseOperation.CLEAN_INSERT));
+        testOperations.add(new DataSetOperation(
+            "org/zanata/test/model/AccountData.dbunit.xml",
+            DatabaseOperation.CLEAN_INSERT));
+        testOperations.add(new DataSetOperation(
+            "org/zanata/test/model/LocalesData.dbunit.xml",
+            DatabaseOperation.CLEAN_INSERT));
+        testOperations.add(new DataSetOperation(
+            "org/zanata/test/model/MergeTranslationsData.dbunit.xml",
+            DatabaseOperation.CLEAN_INSERT));
+
+        for(DataSetOperation operation: testOperations) {
+            operation.prepare(this);
+        }
+
+        executeOperations(testOperations);
 
         String projectSlug = "sample-project";
 

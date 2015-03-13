@@ -30,7 +30,13 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.ui.CopyAction;
 
 /**
- * Handles action from merge_trans_modal.xhtml
+ * Handles user interaction from merge_trans_modal.xhtml.
+ * - start merge translation process.
+ * - cancel merge translation process.
+ * - gives progress data of merge translation.
+ * - provides projects and versions for user selection.
+ *
+ * @see merge_trans_modal.xhtml for all actions.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -82,8 +88,10 @@ public class MergeTransAction implements Serializable, CopyAction {
         this.targetProjectSlug = targetProjectSlug;
 
         /**
-         * This should only true during first instantiation. See pages.xml
-         * for setter of mergeTransAction.targetProjectSlug
+         * This should only true during first instantiation to make sure
+         * sourceProject from selection are the same as targetProject on load.
+         *
+         * See pages.xml for setter of mergeTransAction.targetProjectSlug.
          */
         if(sourceProjectSlug == null) {
             setSourceProjectSlug(targetProjectSlug);
@@ -93,13 +101,17 @@ public class MergeTransAction implements Serializable, CopyAction {
     public void setSourceProjectSlug(String sourceProjectSlug) {
         if(!StringUtils.equals(this.sourceProjectSlug, sourceProjectSlug)) {
             this.sourceProjectSlug = sourceProjectSlug;
-            sourceProject = null;
+            refreshSourceProject();
+            this.sourceVersionSlug = null;
             if (!getSourceProject().getProjectIterations().isEmpty()) {
-                sourceVersionSlug =
-                        getSourceProject().getProjectIterations().get(0)
-                                .getSlug();
+                this.sourceVersionSlug =
+                    getSourceProject().getProjectIterations().get(0).getSlug();
             }
         }
+    }
+
+    private void refreshSourceProject() {
+        sourceProject = null;
     }
 
     public HProjectIteration getTargetVersion() {
