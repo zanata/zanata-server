@@ -4,6 +4,12 @@
 
 Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](configuration/infinispan) section for more information.
 
+
+<h5>Bugfixes</h5>
+* [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
+
+-----------------------
+
 ## 3.6
 
 <h5>New Editor (Alpha)</h5>
