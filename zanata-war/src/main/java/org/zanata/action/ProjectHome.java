@@ -113,6 +113,9 @@ public class ProjectHome extends SlugHome<HProject> implements
     @In
     private SlugEntityService slugEntityServiceImpl;
 
+    @In("commonMarkRenderer")
+    private CommonMarkRenderer renderer;
+
     @In
     private ConversationScopeMessages conversationScopeMessages;
 
@@ -700,6 +703,12 @@ public class ProjectHome extends SlugHome<HProject> implements
             Events.instance().raiseEvent("projectAdded");
         }
         return retValue;
+    }
+
+    public String getAboutHtml() {
+        // we could cache this, but it may not be worth it
+        String text = getInstance().getHomeContent();
+        return renderer.renderToHtmlSafe(text);
     }
 
     public List<HPerson> getInstanceMaintainers() {
