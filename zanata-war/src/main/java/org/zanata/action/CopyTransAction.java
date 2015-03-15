@@ -54,7 +54,7 @@ import lombok.Setter;
  */
 @Name("copyTransAction")
 @Scope(ScopeType.CONVERSATION)
-public class CopyTransAction implements Serializable, CopyAction {
+public class CopyTransAction extends CopyAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In
@@ -88,7 +88,6 @@ public class CopyTransAction implements Serializable, CopyAction {
                 .getExplicitOptions());
     }
 
-    @Override
     public boolean isInProgress() {
         return copyTransManager.isCopyTransRunning(getProjectIteration());
     }
@@ -120,21 +119,9 @@ public class CopyTransAction implements Serializable, CopyAction {
     }
 
     @Override
-    public String getCompletedPercentage() {
-       CopyTransTaskHandle handle =
-                copyTransManager
-                        .getCopyTransProcessHandle(getProjectIteration());
-        if (handle != null) {
-            double completedPercent =
-                    (double) handle.getCurrentProgress() / (double) handle
-                            .getMaxProgress() * 100;
-            if (Double.compare(completedPercent, 100) == 0) {
-                onComplete();
-            }
-            return PERCENT_FORMAT.format(completedPercent);
-        } else {
-            return "0";
-        }
+    protected CopyTransTaskHandle getHandle() {
+        return copyTransManager
+                .getCopyTransProcessHandle(getProjectIteration());
     }
 
     public HProjectIteration getProjectIteration() {

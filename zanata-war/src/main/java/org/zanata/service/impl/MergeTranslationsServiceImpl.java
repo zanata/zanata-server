@@ -238,7 +238,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
      * |fuzzy/untranslated     |       any        |     no    |
      * |-----------------------|------------------|-----------|
      * |different source text/ |                  |           |
-     * |document id            |       any        |     no    |
+     * |document id/locale     |       any        |     no    |
      * |-----------------------|------------------|-----------|
      * |translated/approved    |   untranslated   |    yes    |
      * |-----------------------|------------------|-----------|

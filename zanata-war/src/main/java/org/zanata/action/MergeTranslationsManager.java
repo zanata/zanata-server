@@ -18,7 +18,7 @@ import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.service.MergeTranslationsService;
 
 /**
- * Manages copy translations from existing version to another tasks.
+ * Manages tasks to copy translations from one existing version to another.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -46,12 +46,12 @@ public class MergeTranslationsManager implements Serializable {
      * @param useNewerTranslation - to override translated/approved string
      *                                 in target with newer entry in source
      */
-    public void startMergeTranslations(String sourceProjectSlug,
-            String sourceVersionSlug, String targetProjectSlug,
-            String targetVersionSlug, boolean useNewerTranslation) {
+    public void start(String sourceProjectSlug, String sourceVersionSlug,
+        String targetProjectSlug, String targetVersionSlug,
+        boolean useNewerTranslation) {
 
-        MergeTranslationsKey key =
-                MergeTranslationsKey.getKey(targetProjectSlug,
+        Key key =
+                Key.getKey(targetProjectSlug,
                     targetVersionSlug);
 
         MergeTranslationsTaskHandle handle = new MergeTranslationsTaskHandle();
@@ -67,10 +67,10 @@ public class MergeTranslationsManager implements Serializable {
      * @param projectSlug - target project identifier
      * @param versionSlug - target version identifier
      */
-    public void cancelMergeTranslations(String projectSlug, String versionSlug) {
-        if (isMergeTranslationsRunning(projectSlug, versionSlug)) {
+    public void cancel(String projectSlug, String versionSlug) {
+        if (isRunning(projectSlug, versionSlug)) {
             MergeTranslationsTaskHandle handle =
-                getMergeTranslationsProcessHandle(projectSlug, versionSlug);
+                    getProcessHandle(projectSlug, versionSlug);
             handle.cancel(true);
             handle.setCancelledTime(System.currentTimeMillis());
             handle.setCancelledBy(identity.getCredentials().getUsername());
@@ -80,15 +80,16 @@ public class MergeTranslationsManager implements Serializable {
         }
     }
 
-    public MergeTranslationsTaskHandle getMergeTranslationsProcessHandle(
-            String projectSlug, String versionSlug) {
+    public MergeTranslationsTaskHandle getProcessHandle(
+        String projectSlug, String versionSlug) {
         return (MergeTranslationsTaskHandle) asyncTaskHandleManager
-                .getHandleByKey(MergeTranslationsKey.getKey(projectSlug, versionSlug));
+                .getHandleByKey(
+                    Key.getKey(projectSlug, versionSlug));
     }
 
-    public boolean isMergeTranslationsRunning(String projectSlug, String versionSlug) {
+    public boolean isRunning(String projectSlug, String versionSlug) {
         MergeTranslationsTaskHandle handle =
-            getMergeTranslationsProcessHandle(projectSlug, versionSlug);
+            getProcessHandle(projectSlug, versionSlug);
         return handle != null && !handle.isDone();
     }
 
@@ -99,15 +100,15 @@ public class MergeTranslationsManager implements Serializable {
     @EqualsAndHashCode
     @Getter
     @AllArgsConstructor
-    public static final class MergeTranslationsKey implements Serializable {
+    public static final class Key implements Serializable {
         // target project identifier
         private final String projectSlug;
         // target version identifier
         private final String versionSlug;
 
-        public static MergeTranslationsKey getKey(String projectSlug,
+        public static Key getKey(String projectSlug,
                 String versionSlug) {
-            return new MergeTranslationsKey(projectSlug, versionSlug);
+            return new Key(projectSlug, versionSlug);
         }
     }
 }

@@ -311,7 +311,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     @NoArgsConstructor
-    public static class CopyVersionHandler implements CopyAction {
+    public static class CopyVersionHandler extends CopyAction {
 
         @Setter
         private String projectSlug;
@@ -335,22 +335,6 @@ public class VersionHomeAction extends AbstractSortAction implements
         public void onComplete() {
             FacesMessages.instance().add(FacesMessage.SEVERITY_INFO,
                 getMessages().format("jsf.copyVersion.Completed", versionSlug));
-        }
-
-        @Override
-        public String getCompletedPercentage() {
-            CopyVersionTaskHandle handle = getHandle();
-            if (handle != null) {
-                double completedPercent =
-                        (double) handle.getCurrentProgress() / (double) handle
-                                .getMaxProgress() * 100;
-                if (Double.compare(completedPercent, 100) == 0) {
-                    onComplete();
-                }
-                return PERCENT_FORMAT.format(completedPercent);
-            } else {
-                return "0";
-            }
         }
 
         public int getProcessedDocuments() {
@@ -378,7 +362,7 @@ public class VersionHomeAction extends AbstractSortAction implements
                     CopyVersionManager.class);
         }
 
-        private CopyVersionTaskHandle getHandle() {
+        protected CopyVersionTaskHandle getHandle() {
             CopyVersionManager copyVersionManager = ServiceLocator
                     .instance().getInstance(CopyVersionManager.class);
 
@@ -934,7 +918,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     // Check if copy-trans, copy version or merge-trans is running for given
     // version
     public boolean isCopyActionsRunning() {
-        return mergeTranslationsManager.isMergeTranslationsRunning(
+        return mergeTranslationsManager.isRunning(
             projectSlug, versionSlug)
             || copyVersionManager.isCopyVersionRunning(projectSlug,
             versionSlug) ||

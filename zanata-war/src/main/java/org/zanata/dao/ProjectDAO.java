@@ -73,11 +73,11 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
     @SuppressWarnings("unchecked")
     public List<HProject>
             getOffsetListOrderByName(int offset, int count,
-                    boolean filterActive, boolean filterReadOnly,
-                    boolean filterObsolete) {
+                    boolean filterOutActive, boolean filterOutReadOnly,
+                    boolean filterOutObsolete) {
         String condition =
-                constructFilterCondition(filterActive, filterReadOnly,
-                        filterObsolete);
+                constructFilterCondition(filterOutActive, filterOutReadOnly,
+                    filterOutObsolete);
         Query q =
                 getSession().createQuery(
                         "from HProject p " + condition
@@ -87,12 +87,12 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
         return q.list();
     }
 
-    public int getFilterProjectSize(boolean filterActive,
-            boolean filterReadOnly, boolean filterObsolete) {
+    public int getFilterProjectSize(boolean filterOutActive,
+            boolean filterOutReadOnly, boolean filterOutObsolete) {
         String query =
                 "select count(*) from HProject p "
-                        + constructFilterCondition(filterActive,
-                                filterReadOnly, filterObsolete);
+                        + constructFilterCondition(filterOutActive,
+                                filterOutReadOnly, filterOutObsolete);
         Query q = getSession().createQuery(query.toString());
         q.setCacheable(true).setComment("ProjectDAO.getFilterProjectSize");
         Long totalCount = (Long) q.uniqueResult();
@@ -102,21 +102,21 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
         return totalCount.intValue();
     }
 
-    private String constructFilterCondition(boolean filterActive,
-            boolean filterReadOnly, boolean filterObsolete) {
+    private String constructFilterCondition(boolean filterOutActive,
+            boolean filterOutReadOnly, boolean filterOutObsolete) {
         StringBuilder condition = new StringBuilder();
-        if (filterActive || filterReadOnly || filterObsolete) {
+        if (filterOutActive || filterOutReadOnly || filterOutObsolete) {
             condition.append("where ");
         }
 
-        if (filterActive) {
+        if (filterOutActive) {
             // TODO bind this as a parameter
             condition.append("p.status <> '" + EntityStatus.ACTIVE.getInitial()
                     + "' ");
         }
 
-        if (filterReadOnly) {
-            if (filterActive) {
+        if (filterOutReadOnly) {
+            if (filterOutActive) {
                 condition.append("and ");
             }
 
@@ -125,8 +125,8 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
                     + EntityStatus.READONLY.getInitial() + "' ");
         }
 
-        if (filterObsolete) {
-            if (filterActive || filterReadOnly) {
+        if (filterOutObsolete) {
+            if (filterOutActive || filterOutReadOnly) {
                 condition.append("and ");
             }
 
@@ -434,23 +434,5 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
                         .setParameter("maintainer", maintainer)
                         .setParameter("filter", "%" + sqlFilter + "%");
         return ((Long) q.uniqueResult()).intValue();
-    }
-
-    public List<HProject> getProjects(EntityStatus... includeStatus) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("from HProject ");
-        if (includeStatus != null) {
-            sb.append("where status in :includesStatus ");
-        }
-        sb.append("order by UPPER(name) ");
-
-        Query q = getSession().createQuery(sb.toString());
-
-        if (includeStatus != null) {
-            q.setParameterList("includesStatus",
-                Lists.newArrayList(includeStatus));
-        }
-        q.setComment("ProjectDAO.getProjects");
-        return (List<HProject>) q.list();
     }
 }

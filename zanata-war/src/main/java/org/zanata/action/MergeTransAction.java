@@ -5,16 +5,12 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIOutput;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.ValueChangeEvent;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,13 +32,13 @@ import org.zanata.ui.CopyAction;
  * - gives progress data of merge translation.
  * - provides projects and versions for user selection.
  *
- * @see merge_trans_modal.xhtml for all actions.
+ * see merge_trans_modal.xhtml for all actions.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Name("mergeTransAction")
 @Scope(ScopeType.PAGE)
-public class MergeTransAction implements Serializable, CopyAction {
+public class MergeTransAction extends CopyAction implements Serializable {
 
     @Getter
     private String targetProjectSlug;
@@ -124,7 +120,7 @@ public class MergeTransAction implements Serializable, CopyAction {
     }
 
     public HProject getSourceProject() {
-        if(sourceProject == null) {
+        if(sourceProject == null && StringUtils.isNotEmpty(sourceProjectSlug)) {
             sourceProject = projectDAO.getBySlug(sourceProjectSlug);
         }
         return sourceProject;
@@ -138,22 +134,20 @@ public class MergeTransAction implements Serializable, CopyAction {
             return Collections.emptyList();
         }
 
-        //remove target version if both are the same project or obsolete
-        if (StringUtils.equals(sourceProjectSlug, targetProjectSlug)) {
-            for (HProjectIteration version : versions) {
-                if (version.getSlug().equals(targetVersionSlug)
-                        || version.getStatus().equals(EntityStatus.OBSOLETE)) {
-                    versions.remove(version);
-                    break;
-                }
+        //remove obsolete version and target version if both are the same project
+        for (HProjectIteration version : versions) {
+            if (version.getStatus().equals(EntityStatus.OBSOLETE) ||
+                (StringUtils.equals(sourceProjectSlug, targetProjectSlug) &&
+                    version.getSlug().equals(targetVersionSlug))) {
+                versions.remove(version);
             }
         }
         return versions;
     }
 
     public List<HProject> getProjects() {
-        return projectDAO.getProjects(EntityStatus.ACTIVE,
-                EntityStatus.READONLY);
+        return projectDAO.getOffsetListOrderByName(0, Integer.MAX_VALUE, false,
+                false, true);
     }
 
     public void startMergeTranslations() {
@@ -161,7 +155,7 @@ public class MergeTransAction implements Serializable, CopyAction {
                 || StringUtils.isEmpty(sourceVersionSlug)
                 || StringUtils.isEmpty(targetProjectSlug)
                 || StringUtils.isEmpty(targetVersionSlug)) {
-            FacesMessages.instance().add(StatusMessage.Severity.WARN,
+            FacesMessages.instance().add(StatusMessage.Severity.ERROR,
                 msgs.get("jsf.iteration.mergeTrans.noSourceAndTarget"));
             return;
         }
@@ -170,16 +164,16 @@ public class MergeTransAction implements Serializable, CopyAction {
                 msgs.get("jsf.iteration.mergeTrans.hasCopyActionRunning"));
             return;
         }
-        mergeTranslationsManager.startMergeTranslations(sourceProjectSlug,
-                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-                !keepExistingTranslation);
+        mergeTranslationsManager.start(sourceProjectSlug,
+            sourceVersionSlug, targetProjectSlug, targetVersionSlug,
+            !keepExistingTranslation);
     }
 
-    // Check if copy-trans, copy version or merge-trans is running for given
-    // version
+    // Check if copy-trans, copy version or merge-trans is running for the
+    // target version
     public boolean isCopyActionsRunning() {
-        return mergeTranslationsManager.isMergeTranslationsRunning(
-                targetProjectSlug, targetVersionSlug)
+        return mergeTranslationsManager.isRunning(
+            targetProjectSlug, targetVersionSlug)
                 || copyVersionManager.isCopyVersionRunning(targetProjectSlug,
                         targetVersionSlug) ||
                 copyTransManager.isCopyTransRunning(getTargetVersion());
@@ -187,24 +181,8 @@ public class MergeTransAction implements Serializable, CopyAction {
 
     @Override
     public boolean isInProgress() {
-        return mergeTranslationsManager.isMergeTranslationsRunning(
+        return mergeTranslationsManager.isRunning(
             targetProjectSlug, targetVersionSlug);
-    }
-
-    @Override
-    public String getCompletedPercentage() {
-        MergeTranslationsTaskHandle handle = getHandle();
-        if (handle != null) {
-            double completedPercent =
-                (double) handle.getCurrentProgress() / (double) handle
-                    .getMaxProgress() * 100;
-            if (Double.compare(completedPercent, 100) == 0) {
-                onComplete();
-            }
-            return PERCENT_FORMAT.format(completedPercent);
-        } else {
-            return "0";
-        }
     }
 
     @Override
@@ -226,8 +204,8 @@ public class MergeTransAction implements Serializable, CopyAction {
     }
 
     public void cancel() {
-        mergeTranslationsManager.cancelMergeTranslations(targetProjectSlug,
-                targetVersionSlug);
+        mergeTranslationsManager.cancel(targetProjectSlug,
+            targetVersionSlug);
         FacesMessages.instance().add(
                 FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.iteration.mergeTrans.cancel.message",
@@ -235,8 +213,9 @@ public class MergeTransAction implements Serializable, CopyAction {
                         targetProjectSlug, targetVersionSlug));
     }
 
-    private MergeTranslationsTaskHandle getHandle() {
-        return mergeTranslationsManager.getMergeTranslationsProcessHandle(
+    @Override
+    protected MergeTranslationsTaskHandle getHandle() {
+        return mergeTranslationsManager.getProcessHandle(
             targetProjectSlug, targetVersionSlug);
     }
 }

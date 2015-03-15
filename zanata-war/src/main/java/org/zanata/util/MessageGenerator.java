@@ -40,7 +40,9 @@ public class MessageGenerator {
     public static final String PREFIX_COPY_VERSION = "Copy version";
 
     /**
-     * Create Zanata generated comment for merge translation
+     * Create revision comment for translation that is copied by merge
+     * translation
+     *
      * @see org.zanata.service.MergeTranslationsService
      *
      * @param tft - HTextFlowTarget to copy from
@@ -60,7 +62,7 @@ public class MessageGenerator {
     }
 
     /**
-     * Create Zanata generated comment for copy trans
+     * Create revision comment for translation that is copied by copy trans
      * @see org.zanata.service.CopyTransService
      *
      * @param tft - HTextFlowTarget to copy from
@@ -78,7 +80,7 @@ public class MessageGenerator {
     }
 
     /**
-     * Create Zanata generated comment for copy version
+     * Create revision comment for translation that is copied by copy version
      * @see org.zanata.service.CopyVersionService
      *
      * @param tft - HTextFlowTarget to copy from

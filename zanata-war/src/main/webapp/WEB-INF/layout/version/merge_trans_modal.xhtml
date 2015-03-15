@@ -14,13 +14,8 @@
     }
 
     function displayProjectSelector(display) {
-      if(display) {
-        jQuery(getProjectSelector()).removeClass('is-hidden');
-        jQuery('#project-static').addClass('is-hidden');
-      } else {
-        jQuery(getProjectSelector()).addClass('is-hidden');
-        jQuery('#project-static').removeClass('is-hidden');
-      }
+      jQuery(getProjectSelector()).toggleClass('is-hidden', !display);
+      jQuery('#project-static').toggleClass('is-hidden', !display);
     }
 
     function getProjectSelector() {

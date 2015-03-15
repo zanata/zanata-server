@@ -303,9 +303,8 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
     }
 
     /**
-     * Return text flows from HProjectIteration#id=sourceVersionId and
-     * HProjectIteration#id=targetVersionId which has matching content
-     * hash and document id.
+     * Return text flows that have matching document id and content between the
+     * given source and target version
      *
      * @param sourceVersionId
      * @param targetVersionId
@@ -314,21 +313,10 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
      */
     public List<HTextFlow[]> getSourceByMatchedContext(Long sourceVersionId,
         Long targetVersionId, int offset, int maxResults) {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder
-            .append("select fromTF, toTF from HTextFlow fromTF, HTextFlow toTF ")
-            .append("where fromTF.document.projectIteration.id = :sourceVersionId ")
-            .append("and toTF.document.projectIteration.id = :targetVersionId ")
-            .append("and fromTF.obsolete = false ")
-            .append("and fromTF.document.obsolete = false ")
-            .append("and toTF.obsolete = false ")
-            .append("and toTF.document.obsolete = false ")
-            .append("and fromTF <> toTF ")
-            .append("and fromTF.contentHash = toTF.contentHash ")
-            .append("and fromTF.document.docId = toTF.document.docId");
+        String queryString = generateSourceByMatchedContext(false);
 
         Query query = getSession()
-            .createQuery(queryBuilder.toString())
+            .createQuery(queryString)
             .setParameter("sourceVersionId", sourceVersionId)
             .setParameter("targetVersionId" , targetVersionId)
             .setMaxResults(maxResults)
@@ -347,11 +335,36 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
 
     public int getSourceByMatchedContextCount(Long sourceVersionId,
         Long targetVersionId) {
+        String queryString = generateSourceByMatchedContext(true);
+        Query query = getSession()
+            .createQuery(queryString)
+            .setParameter("sourceVersionId", sourceVersionId)
+            .setParameter("targetVersionId" , targetVersionId)
+            .setCacheable(true)
+            .setComment("TextFlowDAO.getTranslationsByMatchedContextCount");
+        Long count = (Long) query.uniqueResult();
+        return count == null ? 0 : count.intValue();
+    }
+
+    /**
+     * Generate query string for text flows that have matching document id and
+     * content between the given source and target version
+     *
+     * @param getRecordCount - if true, generate select count(*) hql.
+     *
+     */
+    private String generateSourceByMatchedContext(boolean getRecordCount) {
         StringBuilder queryBuilder = new StringBuilder();
+
+        if(getRecordCount) {
+            queryBuilder.append(
+                "select count(fromTF.id) from HTextFlow fromTF, HTextFlow toTF ");
+        } else {
+            queryBuilder.append(
+                "select fromTF, toTF from HTextFlow fromTF, HTextFlow toTF ");
+        }
         queryBuilder
-            .append("select count(fromTF.id) from HTextFlow fromTF, HTextFlow toTF ")
-            .append(
-                "where fromTF.document.projectIteration.id = :sourceVersionId ")
+            .append("where fromTF.document.projectIteration.id = :sourceVersionId ")
             .append("and toTF.document.projectIteration.id = :targetVersionId ")
             .append("and fromTF.obsolete = false ")
             .append("and fromTF.document.obsolete = false ")
@@ -361,14 +374,8 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
             .append("and fromTF.contentHash = toTF.contentHash ")
             .append("and fromTF.document.docId = toTF.document.docId");
 
-        Query query = getSession()
-            .createQuery(queryBuilder.toString())
-            .setParameter("sourceVersionId", sourceVersionId)
-            .setParameter("targetVersionId" , targetVersionId)
-            .setCacheable(true)
-            .setComment("TextFlowDAO.getTranslationsByMatchedContextCount");
-        Long count = (Long) query.uniqueResult();
-        return count == null ? 0 : count.intValue();
+        return queryBuilder.toString();
+
     }
 
 }

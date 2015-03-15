@@ -295,15 +295,4 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                 service.shouldMerge(target1, target2, useNewerTranslation);
         assertThat(result).isEqualTo(expectedResult);
     }
-
-    @Test
-    public void testDocIdAndContentHash() {
-        /**
-         * this test is covered by @see org.zanata.dao.TextFlowTargetDAOTest#
-         * testGetTranslationsByMatchedContext
-         *
-         * check different docId won't copy check different tf.contentHash won't
-         * copy
-         */
-    }
 }
