@@ -15,7 +15,7 @@
 
     function displayProjectSelector(display) {
       jQuery(getProjectSelector()).toggleClass('is-hidden', !display);
-      jQuery('#project-static').toggleClass('is-hidden', !display);
+      jQuery('#project-static').toggleClass('is-hidden', display);
     }
 
     function getProjectSelector() {

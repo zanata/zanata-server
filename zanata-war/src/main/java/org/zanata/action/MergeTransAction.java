@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.faces.application.FacesMessage;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -134,15 +135,19 @@ public class MergeTransAction extends CopyAction implements Serializable {
             return Collections.emptyList();
         }
 
+        List<HProjectIteration> results = Lists.newArrayList();
         //remove obsolete version and target version if both are the same project
         for (HProjectIteration version : versions) {
-            if (version.getStatus().equals(EntityStatus.OBSOLETE) ||
-                (StringUtils.equals(sourceProjectSlug, targetProjectSlug) &&
-                    version.getSlug().equals(targetVersionSlug))) {
-                versions.remove(version);
+            if (version.getStatus().equals(EntityStatus.OBSOLETE)) {
+                continue;
             }
+            if(StringUtils.equals(sourceProjectSlug, targetProjectSlug) &&
+                version.getSlug().equals(targetVersionSlug)) {
+                continue;
+            }
+            results.add(version);
         }
-        return versions;
+        return results;
     }
 
     public List<HProject> getProjects() {
