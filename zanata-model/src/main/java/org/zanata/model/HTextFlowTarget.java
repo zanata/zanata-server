@@ -84,7 +84,7 @@ import com.google.common.collect.Lists;
  */
 @Entity
 @EntityListeners({ HTextFlowTarget.EntityListener.class })
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Indexed
 @Setter
 @NoArgsConstructor
