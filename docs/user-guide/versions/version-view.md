@@ -13,6 +13,6 @@ When a project version is selected, you will be shown specific details about the
 
 The different tabs for a version offer more information about it.
 
-- **Documents** Similar to the languages tab, this view lest you select a single document to view detailed progress information for each language.
+- **Documents** Similar to the languages tab, this view lets you select a single document to view detailed progress information for each language.
 - **Groups** Shows if there are any groups that the version belongs to.
 - **Settings** _(This is only available to Project Maintainers)_ allows the user to change version settings.

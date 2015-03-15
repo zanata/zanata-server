@@ -39,7 +39,7 @@ $ ./install.sh
 
 ## Some advanced configuration
 
-Beginning with version 2.0, Zanata no longer creates an admin user by default. You need to register specific users to have administrative privileges.
+Zanata does not create an admin user by default. You need to register specific users to have administrative privileges.
 
  1. Open the `<JBOSS>/standalone/configuration/standalone.xml` file.
 
