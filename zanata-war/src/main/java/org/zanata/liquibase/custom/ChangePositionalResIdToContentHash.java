@@ -106,6 +106,8 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
                 selectDocumentsOfType = sdot;
                 selectTextFlows = stf;
 
+                log.info("Changing resource id from positional to content hash for text flows in some document types.");
+
                 for (DocumentType type : documentTypes) {
                     migrateResId(type);
                 }
@@ -129,7 +131,7 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
         try (ResultSet countOfType = countDocumentsOfType.executeQuery()) {
             if (countOfType.next()) {
                 docsOfType = countOfType.getLong(1);
-                log.info("processing " + docsOfType + " documents of type " + type.name());
+                log.info("preparing to process " + docsOfType + " documents of type " + type.name());
             } else {
                 // unexpected error, but does not have to destroy everything.
                 throw new SQLException("Count query returned no rows.");
@@ -140,14 +142,12 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
         try (ResultSet documentIds = selectDocumentsOfType.executeQuery()) {
             while (documentIds.next()) {
                 Long documentId = documentIds.getLong(1);
-                migrateResIdForDocument(documentId);
+                int textFlowsInDocument = migrateResIdForDocument(documentId);
                 docsProcessed++;
-                if (docsProcessed % 100 == 0) {
-                    log.info("    processed " + docsProcessed + " of " + docsOfType);
-                }
+                log.info("        processed " + textFlowsInDocument + " text flows in document " + docsProcessed + " of " + docsOfType);
                 totalDocs++;
             }
-            log.info("    processed " + docsProcessed + " of " + docsOfType);
+            log.info("    finished processing " + docsProcessed + " documents of type " + type.name());
         }
     }
 
@@ -156,7 +156,7 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
      *
      * @param docId database id for the document
      */
-    private void migrateResIdForDocument(Long docId) throws SQLException {
+    private int migrateResIdForDocument(Long docId) throws SQLException {
         selectTextFlows.setLong(1, docId);
         try (ResultSet textFlows = selectTextFlows.executeQuery()) {
 
@@ -188,18 +188,16 @@ public class ChangePositionalResIdToContentHash implements CustomTaskChange {
                     }
                 }
                 processed++;
-                if (processed % 500 == 0) {
-                    log.info("        processed " + processed + " text flows");
-                }
                 totalTextFlows++;
             }
+            return processed;
         }
     }
 
     @Override
     public String getConfirmationMessage() {
         return "Finished ChangePositionalResIdToContentHash. Updated resource ID for " + totalTextFlows +
-                " text flows in " + totalDocs + "documents.";
+                " text flows in " + totalDocs + " documents.";
     }
 
     @Override
