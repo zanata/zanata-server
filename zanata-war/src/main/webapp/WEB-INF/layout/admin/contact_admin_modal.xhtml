@@ -8,15 +8,20 @@
 
   <script>
     $(document).ready(function() {
-      document.getElementById('#{rich:clientId('subject')}').value =
-        '#{msgs['jsf.message.admin.inquiry.subject']}';
+      jQuery(getContactAdminForm()).find('#' + jqSelector('#{rich:clientId('subject')}')).
+        val('#{msgs['jsf.message.admin.inquiry.subject']}');
     });
 
+    function cancelContactAdmin() {
+      jQuery(getContactAdminForm()).find('#' + jqSelector('#{rich:clientId('message')}')).
+        val('');
 
-    function cancelEmail() {
-      document.getElementById('#{rich:clientId('message')}').value = '';
-      jQuery('#send').removeClass('is-active');
+      jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
       return false;
+    }
+
+    function getContactAdminForm() {
+      return jQuery('#' + jqSelector('#{rich:clientId('contactAdminForm')}'));
     }
   </script>
 
@@ -27,7 +32,7 @@
       </h2>
       <button type="button"
         class="modal__close button--link"
-        data-dismiss="modal" onclick="cancelEmail();return false;">
+        data-dismiss="modal" onclick="cancelContactAdmin();return false;">
         <i class="i i--huge i--cancel"></i>
       </button>
     </header>
@@ -44,19 +49,20 @@
       </div>
 
       <a4j:jsFunction name="sendContactAdminEmail" action="#{contactAdminAction.send}"
-        oncomplete="jQuery('#cancel').click()"/>
+        execute="@form"
+        oncomplete="jQuery(getContactAdminForm()).find('#cancel-button').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel" onclick="cancelEmail();return false;"
+            <button id="cancel-button" onclick="cancelContactAdmin();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send" class="button loader button--primary"
+            <button id="send-button" class="button loader button--primary"
               onclick="sendContactAdminEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>

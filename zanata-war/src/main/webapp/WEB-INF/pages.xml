@@ -438,12 +438,6 @@
 
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageAction.language}" />
-
-    <navigation from-action="#{sendEmail.send}">
-      <redirect view-id="/language/language.xhtml">
-        <param name="id" value="#{sendEmail.language}" />
-      </redirect>
-    </navigation>
   </page>
 
   <page view-id="/language/request_to_join_update_role.xhtml">

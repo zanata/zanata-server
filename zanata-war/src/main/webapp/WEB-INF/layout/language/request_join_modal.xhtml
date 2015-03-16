@@ -3,42 +3,36 @@
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j"
-  class="modal" id="contactCoordinatorDialog" tabindex="-1" role="dialog"
+  class="modal" id="requestJoinLanguageDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
+    //USED to determine email type for sendEmail bean
+    var EMAIL_TYPE = 'request_join_language';
+
     $(document).ready(function() {
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('emailType')}')).
-        val('contact_coordinator');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('subject')}')).
-        val('#{msgs.format('jsf.message.coordinator.inquiry.subject', id, displayName)}');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('id')}')).
-        val('#{id}');
+      document.getElementById('#{rich:clientId('emailType')}').value = EMAIL_TYPE;
+      document.getElementById('#{rich:clientId('id')}').value = '#{id}';
     });
 
-    function cancelContactCoordinator() {
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('id')}')).
-        val('');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('message')}')).
-        val('');
-      jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
+    function cancelEmail() {
+      document.getElementById('#{rich:clientId('emailType')}').value = '';
+      document.getElementById('#{rich:clientId('id')}').value = '';
+      document.getElementById('#{rich:clientId('message')}').value = '';
 
+      jQuery('#{rich:clientId('send')}').removeClass('is-active');
       return false;
-    }
-
-    function getContactCoordinatorForm() {
-      return jQuery('#' + jqSelector('#{rich:clientId('contactCoordinatorForm')}'));
     }
   </script>
 
   <div class="modal__dialog l--constrain-medium">
     <header class="modal__header">
       <h2 class="modal__title">
-        #{msgs.format('jsf.message.coordinator.inquiry.title',id, displayName)}
+        #{msgs.format('jsf.email.RequestToJoinLanguageTeam.title',id, displayName)}
       </h2>
       <button type="button"
         class="modal__close button--link"
-        data-dismiss="modal" onclick="cancelContactCoordinator();return false;">
+        data-dismiss="modal" onclick="cancelEmail();return false;">
         <i class="i i--huge i--cancel"></i>
       </button>
     </header>
@@ -57,21 +51,20 @@
         </s:decorate>
       </div>
 
-      <a4j:jsFunction name="sendContactCoordinatorEmail" execute="@form"
-        action="#{sendEmail.send}"
-        oncomplete="jQuery(getContactCoordinatorForm()).find('#cancel-button').click()"/>
+      <a4j:jsFunction name="sendContactCoordinatorEmail" action="#{sendEmail.send}"
+        oncomplete="jQuery('#cancel').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel-button" onclick="cancelContactCoordinator();return false;"
+            <button id="cancel" onclick="cancelEmail();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send-button" class="button loader button--primary"
+            <button id="send" class="button loader button--primary"
               onclick="sendContactCoordinatorEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
@@ -80,5 +73,4 @@
       </footer>
     </h:form>
   </div>
-
 </div>
