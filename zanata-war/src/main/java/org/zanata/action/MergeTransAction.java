@@ -112,7 +112,8 @@ public class MergeTransAction extends CopyAction implements Serializable {
     }
 
     public HProjectIteration getTargetVersion() {
-        if(targetVersion == null) {
+        if (targetVersion == null && StringUtils.isNotEmpty(targetProjectSlug)
+                && StringUtils.isNotEmpty(targetVersionSlug)) {
             targetVersion =
                     projectIterationDAO.getBySlug(targetProjectSlug,
                             targetVersionSlug);

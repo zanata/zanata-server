@@ -65,11 +65,11 @@
     obsolete="0" plural="false" wordCount="11"
     contentHash="5eb63bbbe01eeed093cb22bb8f5acdc5" content0="hello world2" />
 
-  <HTextFlow id="6" document_id="3" resId="tf9" revision="1" pos="0"
+  <HTextFlow id="6" document_id="3" resId="tf1" revision="1" pos="0"
     obsolete="0" plural="false" wordCount="11"
     contentHash="5eb63bbbe01eeed093cb22bb8f5acdc1" content0="hello world" />
 
-  <HTextFlow id="7" document_id="3" resId="tf10" revision="1" pos="1"
+  <HTextFlow id="7" document_id="3" resId="tf2" revision="1" pos="1"
     obsolete="0" plural="false" wordCount="11"
     contentHash="5eb63bbbe01eeed093cb22bb8f5acdc2" content0="hello world2" />
 

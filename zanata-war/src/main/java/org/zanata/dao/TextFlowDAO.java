@@ -303,8 +303,8 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
     }
 
     /**
-     * Return text flows that have matching document id and content between the
-     * given source and target version
+     * Return text flows that have matching document id and content, resId
+     * between the given source and target version
      *
      * @param sourceVersionId
      * @param targetVersionId
@@ -372,6 +372,7 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
             .append("and toTF.document.obsolete = false ")
             .append("and fromTF <> toTF ")
             .append("and fromTF.contentHash = toTF.contentHash ")
+            .append("and fromTF.resId = toTF.resId ")
             .append("and fromTF.document.docId = toTF.document.docId");
 
         return queryBuilder.toString();

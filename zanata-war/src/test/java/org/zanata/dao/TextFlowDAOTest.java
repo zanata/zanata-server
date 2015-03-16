@@ -270,6 +270,9 @@ public class TextFlowDAOTest extends ZanataDbunitJpaTest {
             Assertions
                 .assertThat(result[0].getDocument().getDocId())
                 .isEqualTo(result[1].getDocument().getDocId());
+            Assertions
+                .assertThat(result[0].getResId())
+                .isEqualTo(result[1].getResId());
             Assertions.assertThat(result[0]).isNotEqualTo(result[1]);
         }
     }
