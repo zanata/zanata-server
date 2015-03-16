@@ -44,7 +44,7 @@
       </a4j:jsFunction>
 
       <a4j:jsFunction name="bindSourceProjectSlug" limitRender="true"
-        render="sourceVersions">
+        render="sourceVersions, merge-button">
         <a4j:param name="va1" assignTo="#{mergeTransAction.sourceProjectSlug}"/>
       </a4j:jsFunction>
 
@@ -108,9 +108,14 @@
           </div>
           <s:div id="sourceVersions">
             <i class="i i--version l--push-right-quarter"></i>
-            <s:span rendered="#{empty mergeTransAction.sourceVersions}">
-              #{msgs['jsf.NoVersions']}
-            </s:span>
+            <s:fragment rendered="#{empty mergeTransAction.sourceVersions}">
+              <div class="bg--pop-highest l--pad-all-quarter bx--inline-block">
+                #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.heading']}
+                <span class="txt--meta bx--block">
+                  #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.description']}
+                </span>
+              </div>
+            </s:fragment>
             <h:selectOneMenu rendered="#{not empty mergeTransAction.sourceVersions}"
               styleClass="w--1-2" onchange="bindSourceVersionSlug(this.value)">
               <f:selectItems value="#{mergeTransAction.sourceVersions}"
@@ -140,7 +145,7 @@
             id="merge-trans-buttons">
             <a4j:commandButton id="merge-button"
               rendered="#{not mergeTransAction.isCopyActionsRunning(mergeTransAction.targetProjectSlug, mergeTransAction.targetVersionSlug)}"
-              styleClass="button button--primary"
+              styleClass="button button--primary" disabled="#{empty mergeTransAction.sourceVersions}"
               action="#{mergeTransAction.startMergeTranslations}"
               value="#{msgs['jsf.iteration.mergeTrans']}"/>
 
