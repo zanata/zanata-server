@@ -1,22 +1,22 @@
+// Seam Text implementation copied and adapted from Seam 2.3.1
+// (package org.jboss.seam.text).
+
 // $ANTLR 2.7.6 (2005-12-22): "seam-text.g" -> "SeamTextParser.java"$
 
 package org.zanata.seam.text;
 
-import antlr.TokenBuffer;
-import antlr.TokenStreamException;
-import antlr.TokenStreamIOException;
-import antlr.ANTLRException;
-import antlr.LLkParser;
-import antlr.Token;
-import antlr.TokenStream;
-import antlr.RecognitionException;
 import antlr.NoViableAltException;
-import antlr.MismatchedTokenException;
-import antlr.SemanticException;
 import antlr.ParserSharedInputState;
+import antlr.RecognitionException;
+import antlr.SemanticException;
+import antlr.Token;
+import antlr.TokenBuffer;
+import antlr.TokenStream;
+import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
 
-public class SeamTextParser extends antlr.LLkParser       implements SeamTextParserTokenTypes
+public class SeamTextParser extends antlr.LLkParser       implements
+        SeamTextParserTokenTypes
  {
 
     public class Macro {
@@ -60,7 +60,7 @@ public class SeamTextParser extends antlr.LLkParser       implements SeamTextPar
          *
          * @param element the token of the parse tree, here the ">" symbol which comes after the "="
          * @param uri the user-entered link text
-         * @throws SemanticException thrown if the URI is not syntactically or semantically valid
+         * @throws antlr.SemanticException thrown if the URI is not syntactically or semantically valid
          */
         public void validateLinkTagURI(Token element, String uri) throws SemanticException;
 
@@ -68,7 +68,7 @@ public class SeamTextParser extends antlr.LLkParser       implements SeamTextPar
          * Called by the SeamTextParser when a plain HTML element is parsed.
          *
          * @param element the token of the parse tree, call <tt>getText()</tt> to access the HTML tag name
-         * @throws SemanticException thrown when the HTML tag is not valid
+         * @throws antlr.SemanticException thrown when the HTML tag is not valid
          */
         public void validateHtmlElement(Token element) throws SemanticException;
 
@@ -77,7 +77,7 @@ public class SeamTextParser extends antlr.LLkParser       implements SeamTextPar
          *
          * @param element the token of the parse tree that represents the HTML tag
          * @param attribute the token of the parse tree that represents the HTML attribute
-         * @throws SemanticException thrown if the attribute is not valid for the given HTML tag
+         * @throws antlr.SemanticException thrown if the attribute is not valid for the given HTML tag
          */
         public void validateHtmlAttribute(Token element, Token attribute) throws SemanticException;
 
@@ -87,14 +87,17 @@ public class SeamTextParser extends antlr.LLkParser       implements SeamTextPar
          * @param element the token of the parse tree that represents the HTML tag
          * @param attribute the token of the parse tree that represents the HTML attribute
          * @param attributeValue the plain string value of the HTML attribute
-         * @throws SemanticException thrown if the attribute value is not valid for the given HTML attribute and element
+         * @throws antlr.SemanticException thrown if the attribute value is not valid for the given HTML attribute and element
          */
-        public void validateHtmlAttributeValue(Token element, Token attribute, String attributeValue) throws SemanticException;
+        public void validateHtmlAttributeValue(Token element, Token attribute,
+                String attributeValue) throws SemanticException;
 
         public String getInvalidURIMessage(String uri);
         public String getInvalidElementMessage(String elementName);
-        public String getInvalidAttributeMessage(String elementName, String attributeName);
-        public String getInvalidAttributeValueMessage(String elementName, String attributeName, String value);
+        public String getInvalidAttributeMessage(String elementName,
+                String attributeName);
+        public String getInvalidAttributeValueMessage(String elementName,
+                String attributeName, String value);
     }
 
     /**
@@ -658,8 +661,12 @@ public SeamTextParser(ParserSharedInputState state) {
 
 		n = LT(1);
 		match(NEWLINE);
-		append( n.getText() );
+		append( newline(n.getText()) );
 	}
+
+     protected String newline(String text) {
+         return text;
+     }
 
 	public final void heading() throws RecognitionException, TokenStreamException {
 
@@ -761,7 +768,7 @@ public SeamTextParser(ParserSharedInputState state) {
 		}
 	}
 
-	public final void paragraph() throws RecognitionException, TokenStreamException {
+	public void paragraph() throws RecognitionException, TokenStreamException {
 
 
 		append( paragraphOpenTag() );
@@ -780,11 +787,15 @@ public SeamTextParser(ParserSharedInputState state) {
 			_cnt20++;
 		} while (true);
 		}
-		append("</p>\n");
+		append(paragraphCloseTag());
 		newlineOrEof();
 	}
 
-	public final void preformatted() throws RecognitionException, TokenStreamException {
+     protected String paragraphCloseTag() {
+         return "</p>\n";
+     }
+
+     public final void preformatted() throws RecognitionException, TokenStreamException {
 
 
 		match(BACKTICK);
@@ -915,10 +926,14 @@ public SeamTextParser(ParserSharedInputState state) {
 		}
 		match(DOUBLEQUOTE);
 		newlineOrEof();
-		append("</blockquote>\n");
+		append(blockquoteCloseTag());
 	}
 
-	public final void list() throws RecognitionException, TokenStreamException {
+     protected String blockquoteCloseTag() {
+         return "</blockquote>\n";
+     }
+
+     public final void list() throws RecognitionException, TokenStreamException {
 
 
 		{
@@ -1168,7 +1183,7 @@ public SeamTextParser(ParserSharedInputState state) {
 
 
 		match(DOUBLEQUOTE);
-		append("<q>");
+		append(quotedOpenTag());
 		{
 		int _cnt68=0;
 		_loop68:
@@ -1225,10 +1240,18 @@ public SeamTextParser(ParserSharedInputState state) {
 		} while (true);
 		}
 		match(DOUBLEQUOTE);
-		append("</q>");
+		append(quotedCloseTag());
 	}
 
-	public final void word() throws RecognitionException, TokenStreamException {
+     protected String quotedOpenTag() {
+         return "<q>";
+     }
+
+     protected String quotedCloseTag() {
+         return "</q>";
+     }
+
+     public final void word() throws RecognitionException, TokenStreamException {
 
 		Token  an = null;
 		Token  uc = null;
@@ -1582,7 +1605,7 @@ public SeamTextParser(ParserSharedInputState state) {
 
 
 		match(UNDERSCORE);
-		append("<u>");
+		append(underlineOpenTag());
 		{
 		int _cnt56=0;
 		_loop56:
@@ -1634,10 +1657,18 @@ public SeamTextParser(ParserSharedInputState state) {
 		} while (true);
 		}
 		match(UNDERSCORE);
-		append("</u>");
+		append(underlineCloseTag());
 	}
 
-	public final void emphasis() throws RecognitionException, TokenStreamException {
+     protected String underlineOpenTag() {
+         return "<u>";
+     }
+
+     protected String underlineCloseTag() {
+         return "</u>";
+     }
+
+     public final void emphasis() throws RecognitionException, TokenStreamException {
 
 
 		match(STAR);
@@ -1708,7 +1739,7 @@ public SeamTextParser(ParserSharedInputState state) {
 		Token  u = null;
 
 		match(BAR);
-		append("<tt>");
+		append(monospaceOpenTag());
 		{
 		int _cnt59=0;
 		_loop59:
@@ -1816,14 +1847,22 @@ public SeamTextParser(ParserSharedInputState state) {
 		} while (true);
 		}
 		match(BAR);
-		append("</tt>");
+		append(monospaceCloseTag());
 	}
 
-	public final void superscript() throws RecognitionException, TokenStreamException {
+     protected String monospaceOpenTag() {
+         return "<tt>";
+     }
+
+     protected String monospaceCloseTag() {
+         return "</tt>";
+     }
+
+     public final void superscript() throws RecognitionException, TokenStreamException {
 
 
 		match(HAT);
-		append("<sup>");
+		append(superscriptOpenTag());
 		{
 		int _cnt62=0;
 		_loop62:
@@ -1875,14 +1914,22 @@ public SeamTextParser(ParserSharedInputState state) {
 		} while (true);
 		}
 		match(HAT);
-		append("</sup>");
+		append(superscriptCloseTag());
 	}
 
-	public final void deleted() throws RecognitionException, TokenStreamException {
+     protected String superscriptOpenTag() {
+         return "<sup>";
+     }
+
+     protected String superscriptCloseTag() {
+         return "</sup>";
+     }
+
+     public final void deleted() throws RecognitionException, TokenStreamException {
 
 
 		match(TWIDDLE);
-		append("<del>");
+		append(deletedOpenTag());
 		{
 		int _cnt65=0;
 		_loop65:
@@ -1934,10 +1981,18 @@ public SeamTextParser(ParserSharedInputState state) {
 		} while (true);
 		}
 		match(TWIDDLE);
-		append("</del>");
+		append(deletedCloseTag());
 	}
 
-	public final void evenMoreSpecialChars() throws RecognitionException, TokenStreamException {
+     protected String deletedOpenTag() {
+         return "<del>";
+     }
+
+     protected String deletedCloseTag() {
+         return "</del>";
+     }
+
+     public final void evenMoreSpecialChars() throws RecognitionException, TokenStreamException {
 
 		Token  q = null;
 
@@ -2202,10 +2257,14 @@ public SeamTextParser(ParserSharedInputState state) {
 			_cnt79++;
 		} while (true);
 		}
-		append("</ol>\n");
+		append(orderedListCloseTag());
 	}
 
-	public final void ulist() throws RecognitionException, TokenStreamException {
+     protected String orderedListCloseTag() {
+         return "</ol>\n";
+     }
+
+     public final void ulist() throws RecognitionException, TokenStreamException {
 
 
 		append( unorderedListOpenTag() );
@@ -2224,25 +2283,37 @@ public SeamTextParser(ParserSharedInputState state) {
 			_cnt83++;
 		} while (true);
 		}
-		append("</ul>\n");
+		append(unorderedListCloseTag());
 	}
 
-	public final void olistLine() throws RecognitionException, TokenStreamException {
+     protected String unorderedListCloseTag() {
+         return "</ul>\n";
+     }
+
+     public final void olistLine() throws RecognitionException, TokenStreamException {
 
 
 		match(HASH);
 		append( orderedListItemOpenTag() );
 		line();
-		append("</li>");
+		append(orderedListItemCloseTag());
 	}
 
-	public final void ulistLine() throws RecognitionException, TokenStreamException {
+     protected String orderedListItemCloseTag() {
+         return "</li>";
+     }
+
+     protected String unorderedListItemCloseTag() {
+         return "</li>";
+     }
+
+     public final void ulistLine() throws RecognitionException, TokenStreamException {
 
 
 		match(EQ);
 		append( unorderedListItemOpenTag() );
 		line();
-		append("</li>");
+		append(unorderedListItemCloseTag());
 	}
 
 	public final void openTag() throws RecognitionException, TokenStreamException {
@@ -2256,8 +2327,7 @@ public SeamTextParser(ParserSharedInputState state) {
 
 			htmlElementStack.push(name);
 			sanitizer.validateHtmlElement(name);
-			append("<");
-			append(name.getText());
+			append(openTagBegin(name));
 
 		}
 		catch (RecognitionException ex) {
@@ -2275,7 +2345,11 @@ public SeamTextParser(ParserSharedInputState state) {
 		}
 	}
 
-	public final void attribute() throws RecognitionException, TokenStreamException {
+     protected String openTagBegin(Token name) {
+         return "<" + name.getText();
+     }
+
+     public final void attribute() throws RecognitionException, TokenStreamException {
 
 		Token  att = null;
 
@@ -2345,7 +2419,7 @@ public SeamTextParser(ParserSharedInputState state) {
 
 		try {      // for error handling
 			match(GT);
-			append(">");
+			append(openTagEnd());
 		}
 		catch (RecognitionException ex) {
 
@@ -2362,7 +2436,11 @@ public SeamTextParser(ParserSharedInputState state) {
 		}
 	}
 
-	public final void body() throws RecognitionException, TokenStreamException {
+     protected String openTagEnd() {
+         return ">";
+     }
+
+     public final void body() throws RecognitionException, TokenStreamException {
 
 
 		{
@@ -2433,26 +2511,32 @@ public SeamTextParser(ParserSharedInputState state) {
 		match(ALPHANUMERICWORD);
 		match(GT);
 
-		append("</");
-		append(name.getText());
-		append(">");
+		append(closeTag(name));
 		htmlElementStack.pop();
 
 	}
 
-	public final void closeTagWithNoBody() throws RecognitionException, TokenStreamException {
+     protected String closeTag(Token name) {
+         return "</" + name.getText() + ">";
+     }
+
+     public final void closeTagWithNoBody() throws RecognitionException, TokenStreamException {
 
 
 		match(SLASH);
 		match(GT);
 
-		append("/>");
+		append(closeOpenTag());
 		htmlElementStack.pop();
 
 	}
 
+     protected String closeOpenTag() {
+         return "/>";
+     }
 
-	public static final String[] _tokenNames = {
+
+     public static final String[] _tokenNames = {
 		"<0>",
 		"the end of the text",
 		"<2>",

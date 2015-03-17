@@ -1,3 +1,6 @@
+// Seam Text implementation copied and adapted from Seam 2.3.1
+// (package org.jboss.seam.text).
+
 // $ANTLR 2.7.6 (2005-12-22): "seam-text.g" -> "SeamTextLexer.java"$
 
 package org.zanata.seam.text;
