@@ -114,8 +114,6 @@
             <usedDependency>com.lowagie:itext</usedDependency>
             <!--used to log sql and parameters when debugging Hibernate -->
             <usedDependency>com.googlecode.log4jdbc:log4jdbc</usedDependency>
-            <!-- used for org.hibernate:hibernate-core and  org.drools:drools-compiler -->
-            <usedDependency>antlr:antlr</usedDependency>
             <!-- required for guava in gwt -->
             <usedDependency>com.google.guava:guava-gwt</usedDependency>
             <!-- Used for StringUtils lib -->
@@ -1448,6 +1446,7 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- used for org.hibernate:hibernate-core, org.drools:drools-compiler, and Seam Text converter -->
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
