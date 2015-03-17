@@ -35,9 +35,8 @@ public class HomePage extends BasePage {
             "with a link to activate your account.";
     public static final String EMAILCHANGED_MESSAGE = "Email updated.";
 
-    private By mainBodyContent = By.id("main_body_content");
+    private By mainBodyContent = By.id("home-content-rendered");
     private By editPageContentButton = By.linkText("Edit Page Content");
-    private By editPageCodeButton = By.linkText("Edit Page Code");
 
     public HomePage(final WebDriver driver) {
         super(driver);
@@ -47,12 +46,6 @@ public class HomePage extends BasePage {
         log.info("Click Edit Page Content");
         waitForWebElement(editPageContentButton).click();
         return new EditHomeContentPage(getDriver());
-    }
-
-    public EditHomeCodePage goToEditPageCode() {
-        log.info("Click Edit Page Code");
-        waitForWebElement(editPageCodeButton).click();
-        return new EditHomeCodePage(getDriver());
     }
 
     public String getMainBodyContent() {

@@ -37,6 +37,7 @@ import javax.script.ScriptException;
 import javax.servlet.ServletContext;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -93,8 +94,7 @@ public class CommonMarkRenderer {
 
     private Invocable getInvocable() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                servletContext.getResourceAsStream(
-                        "/resources/script/" + commonMarkImpl)))) {
+                getScriptAsStream(commonMarkImpl)))) {
 
             ScriptEngine engine = newEngine();
             engine.eval("window = this;");
@@ -112,6 +112,11 @@ public class CommonMarkRenderer {
         } catch (IOException | ScriptException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    protected InputStream getScriptAsStream(String scriptName) {
+        return servletContext.getResourceAsStream(
+                "/resources/script/" + scriptName);
     }
 
     private ScriptEngine newEngine() {
