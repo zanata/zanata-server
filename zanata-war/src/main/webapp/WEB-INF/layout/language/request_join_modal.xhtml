@@ -3,24 +3,28 @@
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j"
-  class="modal" id="requestJoinLanguageDialog" tabindex="-1" role="dialog"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  class="modal" id="joinLanguageDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
-    //USED to determine email type for sendEmail bean
-    var EMAIL_TYPE = 'request_join_language';
-
     $(document).ready(function() {
-      document.getElementById('#{rich:clientId('emailType')}').value = EMAIL_TYPE;
-      document.getElementById('#{rich:clientId('id')}').value = '#{id}';
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-emailType')}')).
+        val('request_join_language');
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-subject')}')).
+        val('#{languageJoinUpdateRoleAction.getSubject('request_join_language')}');
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-id')}')).val('#{id}');
     });
 
-    function cancelEmail() {
-      document.getElementById('#{rich:clientId('emailType')}').value = '';
-      document.getElementById('#{rich:clientId('id')}').value = '';
-      document.getElementById('#{rich:clientId('message')}').value = '';
+    function getJoinLanguageForm() {
+      return jQuery('#' + jqSelector('#{rich:clientId('joinLanguageForm')}'));
+    }
 
-      jQuery('#{rich:clientId('send')}').removeClass('is-active');
+    function cancelJoinLanguage() {
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-id')}')).val('');
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
+      jQuery(getJoinLanguageForm()).find('#send-button').removeClass('is-active');
+      //reset all checkboxes
       return false;
     }
   </script>
@@ -32,43 +36,74 @@
       </h2>
       <button type="button"
         class="modal__close button--link"
-        data-dismiss="modal" onclick="cancelEmail();return false;">
+        data-dismiss="modal" onclick="cancelJoinLanguage();return false;">
         <i class="i i--huge i--cancel"></i>
       </button>
     </header>
 
-    <h:form id="contactCoordinatorForm" styleClass="l--push-bottom-0">
-      <h:inputHidden id="emailType" value="#{sendEmail.emailType}"/>
-      <h:inputHidden id="id" value="#{sendEmail.language}" />
-      <h:inputHidden id="subject" value="#{sendEmail.subject}"/>
+    <h:form id="joinLanguageForm" styleClass="l--push-bottom-0">
+      <h:inputHidden id="request-join-emailType" value="#{sendEmail.emailType}"/>
+      <h:inputHidden id="request-join-id" value="#{sendEmail.language}" />
+      <h:inputHidden id="request-join-subject" value="#{sendEmail.subject}"/>
+
+      <a4j:jsFunction name="bindRole" action="#{languageJoinUpdateRoleAction.bindRole(key, checked)}"
+        limitRender="true" render="request-join-buttons">
+        <a4j:param name="val1" assignTo="#{key}"/>
+        <a4j:param name="val2" assignTo="#{checked}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="sendJoinLanguageEmail" action="#{sendEmail.send}"
+        execute="@form" oncomplete="jQuery(getJoinLanguageForm()).find('#cancel-button').click()"/>
 
       <div class="modal__content l--pad-all-1">
+        <div class="form__item">
+          <span class="l--push-bottom-quarter">#{msgs['jsf.RequestRoleAs']}</span>
+          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isTranslator()}">
+            <zanata:checkbox id="translatorChk" value="translator"
+              checked="#{languageJoinUpdateRoleAction.requestAsTranslator}"
+              onValueChanged="bindRole" label="#{msgs['jsf.Translator']}"/>
+          </s:fragment>
+
+          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isReviewer()}">
+            <zanata:checkbox value="reviewer" checked="#{languageJoinUpdateRoleAction.requestAsReviewer}"
+              onValueChanged="bindRole" label="#{msgs['jsf.Reviewer']}"/>
+          </s:fragment>
+
+          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isCoordinator()}">
+            <zanata:checkbox value="coordinator" checked="#{languageJoinUpdateRoleAction.requestAsCoordinator}"
+              onValueChanged="bindRole" label="#{msgs['jsf.Coordinator']}"/>
+          </s:fragment>
+        </div>
+
         <s:decorate id="messageField" template="../field.xhtml">
-          <h:inputTextarea id="message" value="#{sendEmail.htmlMessage}"
+          <h:inputTextarea id="request-join-message" value="#{sendEmail.htmlMessage}"
             required="true" styleClass="l--push-bottom-0">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
           </h:inputTextarea>
         </s:decorate>
       </div>
 
-      <a4j:jsFunction name="sendContactCoordinatorEmail" action="#{sendEmail.send}"
-        oncomplete="jQuery('#cancel').click()"/>
-
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
-          <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel" onclick="cancelEmail();return false;"
+          <s:div id="request-join-buttons" styleClass="g__item w--1-3 txt--align-right">
+            <h:outputScript rendered="#{not languageJoinUpdateRoleAction.hasSelectedRole()}">
+              $(document).ready(function() {
+                jQuery(getJoinLanguageForm()).find('#send-button').attr('disabled', true);
+              });
+            </h:outputScript>
+
+            <button id="cancel-button" onclick="cancelJoinLanguage();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send" class="button loader button--primary"
-              onclick="sendContactCoordinatorEmail()">
+            <button id="send-button" class="button loader button--primary"
+              onclick="sendJoinLanguageEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
-          </div>
+          </s:div>
         </div>
       </footer>
     </h:form>

@@ -438,6 +438,7 @@
 
   <page view-id="/language/language.xhtml">
     <param name="id" value="#{languageAction.language}" />
+    <param name="id" value="#{languageJoinUpdateRoleAction.language}" />
   </page>
 
   <page view-id="/language/request_to_join_update_role.xhtml">

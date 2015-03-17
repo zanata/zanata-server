@@ -225,11 +225,11 @@ public class SendEmailAction implements Serializable {
                                     locale.getLocaleId().getId(),
                                     localeNativeName, htmlMessage,
                                     languageJoinUpdateRoleAction
-                                            .getRequestAsTranslator(),
+                                            .isRequestAsTranslator(),
                                     languageJoinUpdateRoleAction
-                                            .getRequestAsReviewer(),
+                                            .isRequestAsReviewer(),
                                     languageJoinUpdateRoleAction
-                                            .getRequestAsCoordinator());
+                                            .isRequestAsCoordinator());
                     String msg = emailServiceImpl.sendToLanguageCoordinators(
                             locale, strategy);
                     FacesMessages.instance().add(msg);

@@ -53,76 +53,67 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
             "request_role_language";
 
     @In
-    private SendEmailAction sendEmail;
-    @In
     private Messages msgs;
 
     @In
     private LocaleMemberDAO localeMemberDAO;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
-    private HAccount authenticatedAccount;
+    @Getter
+    @Setter
+    private boolean requestAsTranslator;
 
     @Getter
     @Setter
-    private Boolean requestAsTranslator;
+    private boolean requestAsReviewer;
 
     @Getter
     @Setter
-    private Boolean requestAsReviewer;
-
-    @Getter
-    @Setter
-    private Boolean requestAsCoordinator;
-
-    @Getter
-    @Setter
-    private String emailType;
+    private boolean requestAsCoordinator;
 
     @Setter
     @Getter
     private String language;
 
-    private String title;
+    @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
+    private HAccount authenticatedAccount;
 
-    private String subject;
-
-    public boolean hasRoleRequest() {
+    public boolean hasSelectedRole() {
         return requestAsTranslator || requestAsReviewer || requestAsCoordinator;
     }
 
-    public String getSubject() {
-        if (emailType.equals(EMAIL_TYPE_REQUEST_JOIN)) {
-            subject =
-                    msgs.format("jsf.email.joinrequest.Subject",
-                            sendEmail.getFromLoginName(),
-                            sendEmail.getLocale().getLocaleId().getId());
-        } else {
-            subject =
-                    msgs.format("jsf.email.rolerequest.Subject",
-                            sendEmail.getFromLoginName(),
-                            sendEmail.getLocale().getLocaleId().getId());
+    public void bindRole(String role, boolean checked) {
+        if(role.equals("translator")) {
+            requestAsTranslator = checked;
+        } else if(role.equals("reviewer")) {
+            requestAsReviewer = checked;
+        } else if(role.equals("coordinator")) {
+            requestAsCoordinator = checked;
         }
-        return subject;
     }
 
-    public String getTitle() {
+    public String getSubject(String emailType) {
         if (emailType.equals(EMAIL_TYPE_REQUEST_JOIN)) {
-            title =
-                    msgs
-                            .format("jsf.RequestToJoinLanguageTeamTitle",
-                                    sendEmail.getLocale().getLocaleId().getId());
+            return msgs.format("jsf.email.joinrequest.Subject",
+                getLoginName(), getLocaleId().getId());
         } else {
-            title =
-                    msgs
-                            .format("jsf.RequestRoleLanguageTeamTitle",
-                                    sendEmail.getLocale().getLocaleId().getId());
+            return msgs.format("jsf.email.rolerequest.Subject",
+                getLoginName(), getLocaleId().getId());
         }
-        return title;
+    }
+
+    private String getLoginName() {
+        if(authenticatedAccount != null) {
+            return authenticatedAccount.getUsername();
+        }
+        return "";
+    }
+
+    private LocaleId getLocaleId() {
+        return new LocaleId(language);
     }
 
     public boolean requestingTranslator() {
-        return requestAsTranslator != null && requestAsTranslator && !isTranslator();
+        return requestAsTranslator && !isTranslator();
     }
 
     public boolean isTranslator() {
@@ -134,7 +125,7 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
     }
 
     public boolean requestingReviewer() {
-        return requestAsReviewer != null && requestAsReviewer && !isReviewer();
+        return requestAsReviewer && !isReviewer();
     }
 
     public boolean isReviewer() {
@@ -146,7 +137,7 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
     }
 
     public boolean requestingCoordinator() {
-        return requestAsCoordinator != null && requestAsCoordinator && !isCoordinator();
+        return requestAsCoordinator && !isCoordinator();
     }
 
     public boolean isCoordinator() {

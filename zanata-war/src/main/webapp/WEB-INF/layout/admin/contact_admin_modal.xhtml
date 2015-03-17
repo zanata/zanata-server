@@ -8,13 +8,12 @@
 
   <script>
     $(document).ready(function() {
-      jQuery(getContactAdminForm()).find('#' + jqSelector('#{rich:clientId('subject')}')).
+      jQuery('#' + jqSelector('#{rich:clientId('contact-admin-subject')}')).
         val('#{msgs['jsf.message.admin.inquiry.subject']}');
     });
 
     function cancelContactAdmin() {
-      jQuery(getContactAdminForm()).find('#' + jqSelector('#{rich:clientId('message')}')).
-        val('');
+      jQuery('#' + jqSelector('#{rich:clientId('contact-admin-message')}')).val('');
 
       jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
       return false;
@@ -38,10 +37,10 @@
     </header>
 
     <h:form id="contactAdminForm" styleClass="l--push-bottom-0">
-      <h:inputHidden id="subject" value="#{contactAdminAction.subject}"/>
+      <h:inputHidden id="contact-admin-subject" value="#{contactAdminAction.subject}"/>
       <div class="modal__content l--pad-all-1">
         <s:decorate id="messageField" template="../field.xhtml">
-          <h:inputTextarea id="message" value="#{contactAdminAction.htmlMessage}"
+          <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.htmlMessage}"
             required="true">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
           </h:inputTextarea>

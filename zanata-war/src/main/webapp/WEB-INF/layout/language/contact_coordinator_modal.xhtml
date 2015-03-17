@@ -8,19 +8,16 @@
 
   <script>
     $(document).ready(function() {
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('emailType')}')).
+      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-emailType')}')).
         val('contact_coordinator');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('subject')}')).
+      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-subject')}')).
         val('#{msgs.format('jsf.message.coordinator.inquiry.subject', id, displayName)}');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('id')}')).
-        val('#{id}');
+      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-id')}')).val('#{id}');
     });
 
     function cancelContactCoordinator() {
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('id')}')).
-        val('');
-      jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('message')}')).
-        val('');
+      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-id')}')).val('');
+      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val('');
       jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
 
       return false;
@@ -44,13 +41,13 @@
     </header>
 
     <h:form id="contactCoordinatorForm" styleClass="l--push-bottom-0">
-      <h:inputHidden id="emailType" value="#{sendEmail.emailType}"/>
-      <h:inputHidden id="id" value="#{sendEmail.language}" />
-      <h:inputHidden id="subject" value="#{sendEmail.subject}"/>
+      <h:inputHidden id="contact-coordinator-emailType" value="#{sendEmail.emailType}"/>
+      <h:inputHidden id="contact-coordinator-id" value="#{sendEmail.language}" />
+      <h:inputHidden id="contact-coordinator-subject" value="#{sendEmail.subject}"/>
 
       <div class="modal__content l--pad-all-1">
         <s:decorate id="messageField" template="../field.xhtml">
-          <h:inputTextarea id="message" value="#{sendEmail.htmlMessage}"
+          <h:inputTextarea id="contact-coordinator-message" value="#{sendEmail.htmlMessage}"
             required="true" styleClass="l--push-bottom-0">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
           </h:inputTextarea>
