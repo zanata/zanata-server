@@ -25,6 +25,8 @@
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
       jQuery(getJoinLanguageForm()).find('#send-button').removeClass('is-active');
       //reset all checkboxes
+      jQuery(getJoinLanguageForm()).find('#roles').
+        find('input.js-form__checkbox__input').prop('checked', false).change();
       return false;
     }
   </script>
@@ -56,7 +58,7 @@
         execute="@form" oncomplete="jQuery(getJoinLanguageForm()).find('#cancel-button').click()"/>
 
       <div class="modal__content l--pad-all-1">
-        <div class="form__item">
+        <div class="form__item" id="roles">
           <span class="l--push-bottom-quarter">#{msgs['jsf.RequestRoleAs']}</span>
           <s:fragment rendered="#{!languageJoinUpdateRoleAction.isTranslator()}">
             <zanata:checkbox id="translatorChk" value="translator"
