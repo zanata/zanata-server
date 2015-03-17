@@ -17,11 +17,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
+import org.zanata.model.HAccount;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.ui.CopyAction;
@@ -76,6 +78,9 @@ public class MergeTransAction extends CopyAction implements Serializable {
 
     @In
     private Messages msgs;
+
+    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    private HAccount authenticatedAccount;
 
     private HProjectIteration targetVersion;
 
@@ -151,9 +156,15 @@ public class MergeTransAction extends CopyAction implements Serializable {
         return results;
     }
 
+    /**
+     * Only display user maintained project to merge translation from in this
+     * UI. TODO: implement filterable drop down and allow users to select any
+     * available project.
+     *
+     */
     public List<HProject> getProjects() {
-        return projectDAO.getOffsetListOrderByName(0, Integer.MAX_VALUE, false,
-                false, true);
+        return projectDAO.getProjectsForMaintainer(
+                authenticatedAccount.getPerson(), null, 0, Integer.MAX_VALUE);
     }
 
     public void startMergeTranslations() {

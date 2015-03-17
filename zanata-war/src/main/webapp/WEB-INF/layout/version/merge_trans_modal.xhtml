@@ -94,34 +94,42 @@
             <i class="i i--project l--push-right-quarter"></i>
             <div id="project-static" class="bx--inline-block">
               #{mergeTransAction.sourceProject.name}
-              <a href="#" class="txt--mini l--push-left-1"
-                onclick="displayProjectSelector(true)">
-                #{msgs['jsf.iteration.mergeTrans.chooseAnotherProject']}
-              </a>
+              <s:fragment rendered="#{not empty mergeTransAction.projects}">
+                <a href="#" class="txt--mini l--push-left-1"
+                  onclick="displayProjectSelector(true)">
+                  #{msgs['jsf.iteration.mergeTrans.chooseAnotherProject']}
+                </a>
+              </s:fragment>
             </div>
-            <h:selectOneMenu id="projectSelector" styleClass="w--1-2 is-hidden"
-              onchange="bindSourceProjectSlug(this.value)">
+            <h:selectOneMenu id="projectSelector" rendered="#{not empty mergeTransAction.projects}"
+              styleClass="w--1-2 is-hidden" onchange="bindSourceProjectSlug(this.value)">
               <f:selectItems value="#{mergeTransAction.projects}" var="project"
                 itemLabel="#{project.name} [#{project.slug}]"
                 itemValue="#{project.slug}" itemLabelEscaped="true"/>
             </h:selectOneMenu>
           </div>
           <s:div id="sourceVersions">
-            <i class="i i--version l--push-right-quarter"></i>
             <s:fragment rendered="#{empty mergeTransAction.sourceVersions}">
-              <div class="bg--pop-highest l--pad-all-quarter bx--inline-block">
-                #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.heading']}
-                <span class="txt--meta bx--block">
-                  #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.description']}
-                </span>
+              <div class="bg--neutral l--pad-all-half">
+                <h3 class="epsilon">
+                  #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.heading']}
+                </h3>
+                <s:fragment rendered="#{not empty mergeTransAction.projects}">
+                  <p class="txt--meta">
+                    #{msgs['jsf.iteration.mergeTrans.noVersionToMerge.description']}
+                  </p>
+                </s:fragment>
               </div>
             </s:fragment>
-            <h:selectOneMenu rendered="#{not empty mergeTransAction.sourceVersions}"
-              styleClass="w--1-2" onchange="bindSourceVersionSlug(this.value)">
-              <f:selectItems value="#{mergeTransAction.sourceVersions}"
-                var="version" itemLabel="#{version.slug}"
-                itemValue="#{version.slug}" itemLabelEscaped="true"/>
-            </h:selectOneMenu>
+            <s:fragment rendered="#{not empty mergeTransAction.sourceVersions}">
+              <i class="i i--version l--push-right-quarter"></i>
+              <h:selectOneMenu styleClass="w--1-2"
+                onchange="bindSourceVersionSlug(this.value)">
+                <f:selectItems value="#{mergeTransAction.sourceVersions}"
+                  var="version" itemLabel="#{version.slug}"
+                  itemValue="#{version.slug}" itemLabelEscaped="true"/>
+              </h:selectOneMenu>
+            </s:fragment>
           </s:div>
 
           <div class="l--push-top-half">
