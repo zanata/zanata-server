@@ -42,15 +42,13 @@ import org.zanata.model.HLocaleMember;
  */
 
 @AutoCreate
-@Name("languageJoinUpdateRoleAction")
+@Name("languageJoinAction")
 @Scope(ScopeType.PAGE)
-public class LanguageJoinUpdateRoleAction implements Serializable {
+public class LanguageJoinAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String EMAIL_TYPE_REQUEST_JOIN =
-            "request_join_language";
-    private static final String EMAIL_TYPE_REQUEST_ROLE =
-            "request_role_language";
+        "request_join_language";
 
     @In
     private Messages msgs;
@@ -77,6 +75,10 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
     @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
+    public String getEmailType() {
+        return EMAIL_TYPE_REQUEST_JOIN;
+    }
+
     public boolean hasSelectedRole() {
         return requestAsTranslator || requestAsReviewer || requestAsCoordinator;
     }
@@ -91,14 +93,9 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
         }
     }
 
-    public String getSubject(String emailType) {
-        if (emailType.equals(EMAIL_TYPE_REQUEST_JOIN)) {
-            return msgs.format("jsf.email.joinrequest.Subject",
-                getLoginName(), getLocaleId().getId());
-        } else {
-            return msgs.format("jsf.email.rolerequest.Subject",
-                getLoginName(), getLocaleId().getId());
-        }
+    public String getSubject() {
+        return msgs.format("jsf.email.joinrequest.Subject",
+            getLoginName(), getLocaleId().getId());
     }
 
     private String getLoginName() {
@@ -112,40 +109,19 @@ public class LanguageJoinUpdateRoleAction implements Serializable {
         return new LocaleId(language);
     }
 
-    public boolean requestingTranslator() {
-        return requestAsTranslator && !isTranslator();
-    }
-
     public boolean isTranslator() {
         HLocaleMember member = getLocaleMember();
-        if (member != null) {
-            return getLocaleMember().isTranslator();
-        }
-        return false;
-    }
-
-    public boolean requestingReviewer() {
-        return requestAsReviewer && !isReviewer();
+        return member == null ? false : getLocaleMember().isTranslator();
     }
 
     public boolean isReviewer() {
         HLocaleMember member = getLocaleMember();
-        if (member != null) {
-            return getLocaleMember().isReviewer();
-        }
-        return false;
-    }
-
-    public boolean requestingCoordinator() {
-        return requestAsCoordinator && !isCoordinator();
+        return member == null ? false : getLocaleMember().isReviewer();
     }
 
     public boolean isCoordinator() {
         HLocaleMember member = getLocaleMember();
-        if (member != null) {
-            return getLocaleMember().isCoordinator();
-        }
-        return false;
+        return member == null ? false : getLocaleMember().isCoordinator();
     }
 
     private HLocaleMember getLocaleMember() {

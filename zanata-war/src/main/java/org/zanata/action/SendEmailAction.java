@@ -60,8 +60,6 @@ import org.zanata.webtrans.shared.model.ProjectIterationId;
 import org.zanata.email.ContactAdminEmailStrategy;
 import org.zanata.email.ContactLanguageCoordinatorEmailStrategy;
 
-import org.zanata.email.RequestRoleLanguageEmailStrategy;
-
 import org.zanata.email.RequestToJoinLanguageEmailStrategy;
 import org.zanata.email.RequestToJoinVersionGroupEmailStrategy;
 
@@ -84,13 +82,11 @@ public class SendEmailAction implements Serializable {
             "contact_coordinator";
     private static final String EMAIL_TYPE_REQUEST_JOIN =
             "request_join_language";
-    private static final String EMAIL_TYPE_REQUEST_ROLE =
-            "request_role_language";
     private static final String EMAIL_TYPE_REQUEST_TO_JOIN_GROUP =
             "request_to_join_group";
 
     @In
-    private LanguageJoinUpdateRoleAction languageJoinUpdateRoleAction;
+    private LanguageJoinAction languageJoinAction;
 
     @In
     private VersionGroupJoinAction versionGroupJoinAction;
@@ -224,33 +220,12 @@ public class SendEmailAction implements Serializable {
                                     fromLoginName, fromName, replyEmail,
                                     locale.getLocaleId().getId(),
                                     localeNativeName, htmlMessage,
-                                    languageJoinUpdateRoleAction
+                                    languageJoinAction
                                             .isRequestAsTranslator(),
-                                    languageJoinUpdateRoleAction
+                                    languageJoinAction
                                             .isRequestAsReviewer(),
-                                    languageJoinUpdateRoleAction
+                                    languageJoinAction
                                             .isRequestAsCoordinator());
-                    String msg = emailServiceImpl.sendToLanguageCoordinators(
-                            locale, strategy);
-                    FacesMessages.instance().add(msg);
-                    conversationScopeMessages.setMessage(
-                            FacesMessage.SEVERITY_INFO, msg);
-                    return SUCCESS;
-                }
-                case EMAIL_TYPE_REQUEST_ROLE: {
-                    String localeNativeName = locale.retrieveNativeName();
-
-                    EmailStrategy strategy =
-                            new RequestRoleLanguageEmailStrategy(
-                                    fromLoginName, fromName, replyEmail,
-                                    locale.getLocaleId().getId(),
-                                    localeNativeName, htmlMessage,
-                                    languageJoinUpdateRoleAction
-                                            .requestingTranslator(),
-                                    languageJoinUpdateRoleAction
-                                            .requestingReviewer(),
-                                    languageJoinUpdateRoleAction
-                                            .requestingCoordinator());
                     String msg = emailServiceImpl.sendToLanguageCoordinators(
                             locale, strategy);
                     FacesMessages.instance().add(msg);

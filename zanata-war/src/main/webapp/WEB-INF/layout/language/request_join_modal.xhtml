@@ -10,9 +10,9 @@
   <script>
     $(document).ready(function() {
       jQuery('#' + jqSelector('#{rich:clientId('request-join-emailType')}')).
-        val('request_join_language');
+        val('#{languageJoinAction.emailType}');
       jQuery('#' + jqSelector('#{rich:clientId('request-join-subject')}')).
-        val('#{languageJoinUpdateRoleAction.getSubject('request_join_language')}');
+        val('#{languageJoinAction.subject}');
       jQuery('#' + jqSelector('#{rich:clientId('request-join-id')}')).val('#{id}');
     });
 
@@ -21,7 +21,6 @@
     }
 
     function cancelJoinLanguage() {
-      jQuery('#' + jqSelector('#{rich:clientId('request-join-id')}')).val('');
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
       jQuery(getJoinLanguageForm()).find('#send-button').removeClass('is-active');
       //reset all checkboxes
@@ -48,7 +47,7 @@
       <h:inputHidden id="request-join-id" value="#{sendEmail.language}" />
       <h:inputHidden id="request-join-subject" value="#{sendEmail.subject}"/>
 
-      <a4j:jsFunction name="bindRole" action="#{languageJoinUpdateRoleAction.bindRole(key, checked)}"
+      <a4j:jsFunction name="bindRole" action="#{languageJoinAction.bindRole(key, checked)}"
         limitRender="true" render="request-join-buttons">
         <a4j:param name="val1" assignTo="#{key}"/>
         <a4j:param name="val2" assignTo="#{checked}"/>
@@ -60,24 +59,26 @@
       <div class="modal__content l--pad-all-1">
         <div class="form__item" id="roles">
           <span class="l--push-bottom-quarter">#{msgs['jsf.RequestRoleAs']}</span>
-          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isTranslator()}">
+          <s:fragment rendered="#{!languageJoinAction.isTranslator()}">
             <zanata:checkbox id="translatorChk" value="translator"
-              checked="#{languageJoinUpdateRoleAction.requestAsTranslator}"
+              checked="#{languageJoinAction.requestAsTranslator}"
               onValueChanged="bindRole" label="#{msgs['jsf.Translator']}"/>
           </s:fragment>
 
-          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isReviewer()}">
-            <zanata:checkbox value="reviewer" checked="#{languageJoinUpdateRoleAction.requestAsReviewer}"
+          <s:fragment rendered="#{!languageJoinAction.isReviewer()}">
+            <zanata:checkbox value="reviewer" checked="#{languageJoinAction.requestAsReviewer}"
               onValueChanged="bindRole" label="#{msgs['jsf.Reviewer']}"/>
           </s:fragment>
 
-          <s:fragment rendered="#{!languageJoinUpdateRoleAction.isCoordinator()}">
-            <zanata:checkbox value="coordinator" checked="#{languageJoinUpdateRoleAction.requestAsCoordinator}"
+          <s:fragment rendered="#{!languageJoinAction.isCoordinator()}">
+            <zanata:checkbox value="coordinator" checked="#{languageJoinAction.requestAsCoordinator}"
               onValueChanged="bindRole" label="#{msgs['jsf.Coordinator']}"/>
           </s:fragment>
         </div>
 
         <s:decorate id="messageField" template="../field.xhtml">
+          <span>#{msgs['jsf.AdditionalInfo']}</span>
+          <span class="txt--meta bx--block">#{msgs['jsf.email.AdditionalInfoMessage']}</span>
           <h:inputTextarea id="request-join-message" value="#{sendEmail.htmlMessage}"
             required="true" styleClass="l--push-bottom-0">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
@@ -89,7 +90,7 @@
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <s:div id="request-join-buttons" styleClass="g__item w--1-3 txt--align-right">
-            <h:outputScript rendered="#{not languageJoinUpdateRoleAction.hasSelectedRole()}">
+            <h:outputScript rendered="#{not languageJoinAction.hasSelectedRole()}">
               $(document).ready(function() {
                 jQuery(getJoinLanguageForm()).find('#send-button').attr('disabled', true);
               });
