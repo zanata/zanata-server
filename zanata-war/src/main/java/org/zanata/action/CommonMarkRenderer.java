@@ -34,7 +34,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.servlet.ServletContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,9 +56,6 @@ public class CommonMarkRenderer {
     // access to it.
     // Please ensure any methods which use this Invocable are synchronized!
     private Invocable invocable;
-
-    @In
-    private ServletContext servletContext;
 
     @Create
     public void onCreate() {
@@ -115,8 +111,8 @@ public class CommonMarkRenderer {
     }
 
     protected InputStream getScriptAsStream(String scriptName) {
-        return servletContext.getResourceAsStream(
-                "/resources/script/" + scriptName);
+        return getClass().getClassLoader().getResourceAsStream(
+                "META-INF/resources/script/" + scriptName);
     }
 
     private ScriptEngine newEngine() {
