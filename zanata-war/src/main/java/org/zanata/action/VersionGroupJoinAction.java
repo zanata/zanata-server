@@ -40,6 +40,7 @@ import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.VersionGroupDAO;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
@@ -72,6 +73,9 @@ public class VersionGroupJoinAction implements Serializable {
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
+    @In
+    private Messages msgs;
+
     @Getter
     @Setter
     private String slug;
@@ -97,6 +101,15 @@ public class VersionGroupJoinAction implements Serializable {
                         false));
             }
         }
+    }
+
+    public boolean hasSelectedVersion() {
+        for (SelectableProject projectVersion : projectVersions) {
+            if (projectVersion.isSelected()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getGroupName() {
@@ -125,34 +138,24 @@ public class VersionGroupJoinAction implements Serializable {
     }
 
     public String send() {
-        boolean isAnyVersionSelected = false;
-        for (SelectableProject projectVersion : projectVersions) {
-            if (projectVersion.isSelected()) {
-                isAnyVersionSelected = true;
-                break;
-            }
-        }
-        if (isAnyVersionSelected) {
-            List<HPerson> maintainers = new ArrayList<HPerson>();
+        if (hasSelectedVersion()) {
+            List<HPerson> maintainers = Lists.newArrayList();
             for (HPerson maintainer : versionGroupServiceImpl
                     .getMaintainersBySlug(slug)) {
                 maintainers.add(maintainer);
             }
             return sendEmail.sendToVersionGroupMaintainer(maintainers);
         } else {
-            FacesMessages.instance().add(
-                    "#{msgs['jsf.NoProjectVersionSelected']}");
+            FacesMessages.instance().add(msgs.get("jsf.NoProjectVersionSelected"));
             return "failure";
         }
     }
 
     @AllArgsConstructor
+    @Getter
     public final class SelectableProject {
-
-        @Getter
         private HProjectIteration projectIteration;
 
-        @Getter
         @Setter
         private boolean selected;
     }

@@ -1,0 +1,81 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:s="http://jboss.org/schema/seam/taglib"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  class="modal" id="joinGroupDialog" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel" aria-hidden="true">
+
+  <script>
+    function getJoinGroupForm() {
+      return jQuery('#' + jqSelector('#{rich:clientId('joinGroupForm')}'));
+    }
+
+    function cancelJoinGroup() {
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
+      //clear results
+      jQuery(getJoinGroupForm()).find('#send-button').removeClass('is-active');
+      return false;
+    }
+  </script>
+
+  <div class="modal__dialog l--constrain-medium">
+    <header class="modal__header">
+      <h2 class="modal__title">
+        <h:outputFormat
+          value="#{msgs.format('jsf.RequestToAddProjectVersionToGroup', versionGroupJoinAction.groupName)}">
+        </h:outputFormat>
+      </h2>
+      <button type="button"
+        class="modal__close button--link"
+        data-dismiss="modal" onclick="cancelJoinGroup();return false;">
+        <i class="i i--huge i--cancel"></i>
+      </button>
+    </header>
+
+    <h:form id="joinGroupForm" styleClass="l--push-bottom-0">
+      <a4j:jsFunction name="sendJoinGroupEmail" action="#{versionGroupJoinAction.send}"
+        execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#cancel-button').click()"/>
+
+      <div class="modal__content l--pad-all-1">
+        <div class="form__item" id="roles">
+
+        </div>
+
+        <s:decorate id="messageField" template="../field.xhtml">
+          <span>#{msgs['jsf.AdditionalInfo']}</span>
+          <span class="txt--meta bx--block">#{msgs['jsf.group.email.AdditionalInfoMessage']}</span>
+          <h:inputTextarea id="request-join-message" value="#{sendEmail.htmlMessage}"
+            required="true" styleClass="l--push-bottom-0">
+            <a4j:ajax event="blur" render="messageField" execute="@this"/>
+          </h:inputTextarea>
+        </s:decorate>
+      </div>
+
+      <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
+        <div class="g--tight">
+          <div class="g__item w--2-3"/>
+          <s:div id="request-join-buttons" styleClass="g__item w--1-3 txt--align-right">
+            <h:outputScript rendered="#{not versionGroupJoinAction.hasSelectedVersion()}">
+              $(document).ready(function() {
+                jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', true);
+              });
+            </h:outputScript>
+
+            <button id="cancel-button" onclick="cancelJoinGroup();return false;"
+              class="cancel button--link l--push-right-half"
+              data-dismiss="modal">
+              #{msgs['jsf.Cancel']}
+            </button>
+
+            <button id="send-button" class="button loader button--primary"
+              onclick="sendJoinGroupEmail()">
+              <span class="loader__label">#{msgs['jsf.email.Send']}</span>
+            </button>
+          </s:div>
+        </div>
+      </footer>
+    </h:form>
+  </div>
+</div>

@@ -280,7 +280,7 @@ public class EmailStrategyTest {
 
         checkFromAndTo(message);
         assertThat(message.getSubject()).isEqualTo(msgs.format(
-                "jsf.email.joinrequest.Subject", fromLoginName, localeId));
+                "jsf.language.email.joinrequest.Subject", fromLoginName, localeId));
 
         String html = extractHtmlPart(message);
         checkGenericTemplate(html);

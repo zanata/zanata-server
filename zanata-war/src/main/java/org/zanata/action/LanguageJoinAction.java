@@ -94,7 +94,7 @@ public class LanguageJoinAction implements Serializable {
     }
 
     public String getSubject() {
-        return msgs.format("jsf.email.joinrequest.Subject",
+        return msgs.format("jsf.language.email.joinrequest.Subject",
             getLoginName(), getLocaleId().getId());
     }
 
