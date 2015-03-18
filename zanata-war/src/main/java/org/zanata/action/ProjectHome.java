@@ -706,6 +706,10 @@ public class ProjectHome extends SlugHome<HProject> implements
         return retValue;
     }
 
+    /**
+     * Returns the rendered, sanitised HTML for the about page content set by the project maintainer.
+     * @return
+     */
     public String getAboutHtml() {
         // we could cache this, but it may not be worth it
         String text = getInstance().getHomeContent();

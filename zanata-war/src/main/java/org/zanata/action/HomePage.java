@@ -32,6 +32,8 @@ import org.zanata.events.HomeContentChangedEvent;
 import org.zanata.util.CommonMarkRenderer;
 
 /**
+ * This component caches the latest HTML version of the home page's content.
+ *
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 @AutoCreate
@@ -48,6 +50,10 @@ public class HomePage {
 
     private String html;
 
+    /**
+     * Returns the rendered, sanitised HTML for the home page content set by admin.
+     * @return
+     */
     public String getHtml() {
         if (html == null) {
             updateHtml();
@@ -56,6 +62,9 @@ public class HomePage {
     }
 
     @Observer(HomeContentChangedEvent.EVENT_NAME)
+    /**
+     * Event handler to update the cached HTML based on the latest CommonMark home content.
+     */
     public void updateHtml() {
         String text = applicationConfiguration.getHomeContent();
         if (text == null) {
