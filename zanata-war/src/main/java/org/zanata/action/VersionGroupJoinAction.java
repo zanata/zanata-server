@@ -21,10 +21,7 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,7 +40,6 @@ import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.VersionGroupDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
-import org.zanata.model.HIterationGroup;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
@@ -66,10 +62,10 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     private ProjectDAO projectDAO;
 
     @In
-    private VersionGroupDAO versionGroupDAO;
+    private ProjectIterationDAO projectIterationDAO;
 
     @In
-    private ProjectIterationDAO projectIterationDAO;
+    private VersionGroupDAO versionGroupDAO;
 
     @In(create = true)
     private SendEmailAction sendEmail;
@@ -97,6 +93,10 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
             }
         }
         return false;
+    }
+
+    public String getGroupName() {
+        return versionGroupDAO.getBySlug(slug).getName();
     }
 
     public List<SelectableProject> getVersions() {
@@ -127,6 +127,7 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
                     .getMaintainersBySlug(slug)) {
                 maintainers.add(maintainer);
             }
+            sendEmail.setEmailType(SendEmailAction.EMAIL_TYPE_REQUEST_TO_JOIN_GROUP);
             return sendEmail.sendToVersionGroupMaintainer(maintainers);
         } else {
             FacesMessages.instance().add(msgs.get("jsf.NoProjectVersionSelected"));

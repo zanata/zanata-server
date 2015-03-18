@@ -284,6 +284,7 @@
       value="no-cache, no-store, max-age=0, must-revalidate" />
     <param name="versionGroupSlug" value="#{versionGroupHomeAction.slug}" />
     <param name="versionGroupSlug" value="#{versionGroupHome.slug}" />
+    <param name="versionGroupSlug" value="#{versionGroupJoinAction.slug}" />
     <action execute="#{versionGroupHome.validateSuppliedId}" />
   </page>
 

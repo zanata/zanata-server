@@ -82,7 +82,7 @@ public class SendEmailAction implements Serializable {
             "contact_coordinator";
     private static final String EMAIL_TYPE_REQUEST_JOIN =
             "request_join_language";
-    private static final String EMAIL_TYPE_REQUEST_TO_JOIN_GROUP =
+    public static final String EMAIL_TYPE_REQUEST_TO_JOIN_GROUP =
             "request_to_join_group";
 
     @In
