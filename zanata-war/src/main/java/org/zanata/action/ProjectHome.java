@@ -76,6 +76,7 @@ import org.zanata.service.ValidationService;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
+import org.zanata.util.CommonMarkRenderer;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;

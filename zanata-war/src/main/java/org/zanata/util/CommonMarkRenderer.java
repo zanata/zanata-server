@@ -18,17 +18,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.action;
+package org.zanata.util;
 
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.zanata.util.HtmlUtil;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -55,12 +52,7 @@ public class CommonMarkRenderer {
     // one for every thread.  Instead, we keep one around, and synchronise
     // access to it.
     // Please ensure any methods which use this Invocable are synchronized!
-    private Invocable invocable;
-
-    @Create
-    public void onCreate() {
-        invocable = getInvocable();
-    }
+    private Invocable invocable = getInvocable();
 
     /**
      * Return the name of the implementation script, available under "scripts/"
