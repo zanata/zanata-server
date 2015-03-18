@@ -125,7 +125,7 @@ public class RateLimitManager implements Introspectable {
                 });
     }
 
-    public RestCallLimiter getLimiter(final String apiKey) {
+    public RestCallLimiter getLimiter(final String key) {
 
         if (getMaxConcurrent() == 0 && getMaxActive() == 0) {
             if (activeCallers.size() > 0) {
@@ -135,10 +135,10 @@ public class RateLimitManager implements Introspectable {
             return NoLimitLimiter.INSTANCE;
         }
         try {
-            return activeCallers.get(apiKey, new Callable<RestCallLimiter>() {
+            return activeCallers.get(key, new Callable<RestCallLimiter>() {
                 @Override
                 public RestCallLimiter call() throws Exception {
-                    log.debug("creating rate limiter for api key: {}", apiKey);
+                    log.debug("creating rate limiter for key: {}", key);
                     return new RestCallLimiter(getMaxConcurrent(),
                             getMaxActive());
                 }

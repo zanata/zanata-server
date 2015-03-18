@@ -36,6 +36,16 @@ public class RateLimitingProcessor {
         process(apiKey, response, taskToRun);
     }
 
+    public void processUsername(String username, HttpResponse response,
+        Runnable taskToRun) throws IOException {
+        process(username, response, taskToRun);
+    }
+
+    public void processClientIp(String ip, HttpResponse response,
+        Runnable taskToRun) throws IOException {
+        process(ip, response, taskToRun);
+    }
+
     private void process(String key, HttpResponse response, Runnable taskToRun)
             throws IOException {
         RestCallLimiter rateLimiter = rateLimitManager.getLimiter(key);
@@ -54,10 +64,5 @@ public class RateLimitingProcessor {
                             rateLimiter.getMaxConcurrentPermits());
             response.sendError(TOO_MANY_REQUEST, errorMessage);
         }
-    }
-
-    public void processUsername(String username, HttpResponse response,
-            Runnable taskToRun) throws IOException {
-        process(username, response, taskToRun);
     }
 }

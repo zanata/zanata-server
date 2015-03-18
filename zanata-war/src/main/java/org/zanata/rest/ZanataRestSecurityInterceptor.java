@@ -13,7 +13,9 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
+import org.zanata.exception.InvalidApiKeyException;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.util.HttpUtil;
 
 @SecurityPrecedence
 @ServerInterceptor
@@ -25,21 +27,18 @@ public class ZanataRestSecurityInterceptor implements PreProcessInterceptor {
             preProcess(HttpRequest request, ResourceMethod method)
                     throws Failure, WebApplicationException {
 
-        String username =
-                HeaderHelper.getUserName(request);
-        String apiKey =
-                HeaderHelper.getApiKey(request);
+        String username = HttpUtil.getUserName(request);
+        String apiKey = HttpUtil.getApiKey(request);
 
         if (username != null && apiKey != null) {
             ZanataIdentity.instance().getCredentials().setUsername(username);
             ZanataIdentity.instance().setApiKey(apiKey);
             ZanataIdentity.instance().tryLogin();
             if (!ZanataIdentity.instance().isLoggedIn()) {
-                log.info(
-                        "Failed attempt to authenticate REST request for user {}",
-                        username);
+                log.info(InvalidApiKeyException.getMessage(username, apiKey));
                 return ServerResponse.copyIfNotServerResponse(Response.status(
-                        Status.UNAUTHORIZED).build());
+                    Status.UNAUTHORIZED).entity(
+                    InvalidApiKeyException.getMessage(username, apiKey)).build());
             }
         }
         return null;

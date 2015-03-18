@@ -17,6 +17,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.limits.RateLimitingProcessor;
 import org.zanata.model.HAccount;
+import org.zanata.util.HttpUtil;
 
 import static org.mockito.Mockito.*;
 
@@ -52,7 +53,7 @@ public class RestLimitingSynchronousDispatcherTest {
 
         when(request.getHttpHeaders().getRequestHeaders()).thenReturn(headers);
         when(request.getHttpMethod()).thenReturn("GET");
-        when(headers.getFirst(HeaderHelper.X_AUTH_TOKEN_HEADER)).thenReturn(
+        when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
                 API_KEY);
 
         dispatcher =
@@ -69,7 +70,7 @@ public class RestLimitingSynchronousDispatcherTest {
     @Test
     public void willSkipIfAPIkeyNotPresent() throws IOException,
             ServletException {
-        when(headers.getFirst(HeaderHelper.X_AUTH_TOKEN_HEADER)).thenReturn(
+        when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
                 null);
         when(request.getUri().getPath()).thenReturn("/rest/in/peace");
         doReturn(null).when(dispatcher).getAuthenticatedUser();
