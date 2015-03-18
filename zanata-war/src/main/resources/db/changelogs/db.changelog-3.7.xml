@@ -27,4 +27,23 @@
     </addColumn>
   </changeSet>
 
+  <changeSet author="damason@redhat.com" id="1">
+    <comment>Modify existing id for plaintext and libreoffice documents to use content hash instead of old positional id.</comment>
+    <customChange class="org.zanata.liquibase.custom.ChangePositionalResIdToContentHash" />
+  </changeSet>
+
+  <changeSet id="3" author="aeng@redhat.com">
+    <comment>Add revisionComment to HTextFlowTarget, HTextFlowTargetHistory</comment>
+    <addColumn tableName="HTextFlowTarget">
+      <column name="revisionComment" type="longtext">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+    <addColumn tableName="HTextFlowTargetHistory">
+      <column name="revisionComment" type="longtext">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

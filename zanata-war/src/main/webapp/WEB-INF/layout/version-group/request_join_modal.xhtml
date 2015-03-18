@@ -2,7 +2,9 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   class="modal" id="joinGroupDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
@@ -39,8 +41,21 @@
         execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#cancel-button').click()"/>
 
       <div class="modal__content l--pad-all-1">
-        <div class="form__item" id="roles">
+        <div class="form__item">
+          <zanata:autocomplete actionBean="versionGroupJoinAction"
+            fetchValue="#{result.slug}" id="projectAutocomplete"
+            render="versions"
+            placeholder="#{msgs['jsf.dashboard.projects.search.placeholder']}">
+            <i class="i i--project"></i> #{result.name}
+            <span class="txt--meta"> [#{result.slug}]</span>
+          </zanata:autocomplete>
 
+          <s:div id="versions">
+            #{versionGroupJoinAction.projectSlug}
+            <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
+              <div>#{version.slug}</div>
+            </ui:repeat>
+          </s:div>
         </div>
 
         <s:decorate id="messageField" template="../field.xhtml">

@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,27 +43,30 @@ import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.VersionGroupDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
+import org.zanata.model.HIterationGroup;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.service.VersionGroupService;
+import org.zanata.ui.AbstractAutocomplete;
 
 import com.google.common.collect.Lists;
 
 @AutoCreate
 @Name("versionGroupJoinAction")
 @Scope(ScopeType.PAGE)
-public class VersionGroupJoinAction implements Serializable {
+public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
+        implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In
     private VersionGroupService versionGroupServiceImpl;
 
     @In
-    private VersionGroupDAO versionGroupDAO;
+    private ProjectDAO projectDAO;
 
     @In
-    private ProjectDAO projectDAO;
+    private VersionGroupDAO versionGroupDAO;
 
     @In
     private ProjectIterationDAO projectIterationDAO;
@@ -81,27 +85,10 @@ public class VersionGroupJoinAction implements Serializable {
     private String slug;
 
     @Getter
-    @Setter
-    private String iterationSlug;
-
-    @Getter
-    @Setter
     private String projectSlug;
 
     @Getter
     private List<SelectableProject> projectVersions = Lists.newArrayList();
-
-    public void searchMaintainedProjectVersion() {
-        Set<HProject> maintainedProjects =
-                authenticatedAccount.getPerson().getMaintainerProjects();
-        for (HProject project : maintainedProjects) {
-            for (HProjectIteration projectIteration : projectDAO
-                    .getAllIterations(project.getSlug())) {
-                projectVersions.add(new SelectableProject(projectIteration,
-                        false));
-            }
-        }
-    }
 
     public boolean hasSelectedVersion() {
         for (SelectableProject projectVersion : projectVersions) {
@@ -112,25 +99,21 @@ public class VersionGroupJoinAction implements Serializable {
         return false;
     }
 
-    public String getGroupName() {
-        return versionGroupDAO.getBySlug(slug).getName();
-    }
-
-    public void searchProjectVersion() {
-        if (StringUtils.isNotEmpty(iterationSlug)
-                && StringUtils.isNotEmpty(projectSlug)) {
-            HProjectIteration projectIteration =
-                    projectIterationDAO.getBySlug(projectSlug, iterationSlug);
-            if (projectIteration != null) {
-                projectVersions.add(new SelectableProject(projectIteration,
-                        true));
+    public List<SelectableProject> getVersions() {
+        if (StringUtils.isNotEmpty(projectSlug)) {
+            List<HProjectIteration> versions =
+                    projectIterationDAO.getByProjectSlug(projectSlug);
+            for (HProjectIteration version : versions) {
+                if(!isVersionInGroup(version.getId())) {
+                    projectVersions.add(new SelectableProject(version, false));
+                }
             }
         }
+        return projectVersions;
     }
 
-    public boolean isVersionInGroup(Long projectIterationId) {
-        return versionGroupServiceImpl.isVersionInGroup(slug,
-                projectIterationId);
+    public boolean isVersionInGroup(Long versionId) {
+        return versionGroupServiceImpl.isVersionInGroup(slug, versionId);
     }
 
     public void cancel() {
@@ -149,6 +132,19 @@ public class VersionGroupJoinAction implements Serializable {
             FacesMessages.instance().add(msgs.get("jsf.NoProjectVersionSelected"));
             return "failure";
         }
+    }
+
+    @Override
+    public List<HProject> suggest() {
+        projectVersions = null;
+        return projectDAO.getProjectsForMaintainer(
+                authenticatedAccount.getPerson(), getQuery(), 0,
+                Integer.MAX_VALUE);
+    }
+
+    @Override
+    public void onSelectItemAction() {
+        projectSlug = getSelectedItem();
     }
 
     @AllArgsConstructor
