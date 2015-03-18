@@ -565,7 +565,7 @@ public class SeamTextParser extends antlr.LLkParser implements
     private java.util.Stack<Token> htmlElementStack =
             new java.util.Stack<Token>();
 
-    private StringBuilder mainBuilder = new StringBuilder();
+    protected StringBuilder mainBuilder = new StringBuilder();
     private StringBuilder builder = mainBuilder;
 
     public String toString() {
@@ -1428,7 +1428,7 @@ public class SeamTextParser extends antlr.LLkParser implements
         case ESCAPE: {
             e = LT(1);
             match(ESCAPE);
-            append(e.getText());
+            append(backslashEscape(e.getText()));
             break;
         }
         case TWIDDLE: {
@@ -1447,6 +1447,10 @@ public class SeamTextParser extends antlr.LLkParser implements
             throw new NoViableAltException(LT(1), getFilename());
         }
         }
+    }
+
+    protected String backslashEscape(String text) {
+        return text;
     }
 
     public final void moreSpecialChars() throws RecognitionException,
