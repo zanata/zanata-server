@@ -162,7 +162,6 @@
         <groupId>com.ning.maven.plugins</groupId>
         <artifactId>maven-duplicate-finder-plugin</artifactId>
         <configuration>
-          <checkTestClasspath>false</checkTestClasspath>
           <ignoredDependencies>
             <dependency>
               <groupId>com.google.gwt</groupId>
@@ -1299,12 +1298,6 @@
     <dependency>
       <groupId>org.zanata</groupId>
       <artifactId>zanata-adapter-glossary</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.zanata</groupId>
-      <artifactId>zanata-rest-client</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <!-- Compatibility Dependencies -->
