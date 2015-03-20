@@ -404,7 +404,7 @@ public class SecurityFunctions {
      * This rule apply to all REST endpoint.
      *
      * @param account - Authenticated account
-     * @param httpMethod - {@link javax.ws.rs.HttpMethod} 
+     * @param httpMethod - {@link javax.ws.rs.HttpMethod}
      * @param restServicePath - service path of rest request.
      *                        See annotation @Path in REST service class.
      */

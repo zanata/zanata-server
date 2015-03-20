@@ -54,10 +54,8 @@ import org.zanata.util.ServiceLocator;
  */
 @Slf4j
 class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
-
-    public static final String API_KEY_ABSENCE_WARNING =
-        "You must have a valid API key. You can create one by logging in to Zanata and visiting the settings page.";
-    
+    static final String API_KEY_ABSENCE_WARNING =
+            "You must have a valid API key. You can create one by logging in to Zanata and visiting the settings page.";
     private final RateLimitingProcessor processor;
 
     public RestLimitingSynchronousDispatcher(
