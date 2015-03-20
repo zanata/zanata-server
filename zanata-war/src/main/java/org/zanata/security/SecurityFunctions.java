@@ -33,6 +33,7 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.security.permission.GrantsPermission;
+import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
 /**
@@ -388,5 +389,33 @@ public class SecurityFunctions {
             }
         }
         return null;
+    }
+
+    /*****************************************************************************************
+     * HTTP request rules
+     ******************************************************************************************/
+
+    /**
+     * Check if user can access to REST URL with httpMethod.
+     * If request is from anonymous user(account == null),
+     * only 'Read' action are allowed. Otherwise, role base check will should be
+     * perform in related RestService class.
+     *
+     * This rule apply to all REST endpoint.
+     *
+     * @param account - Authenticated account
+     * @param httpMethod - {@link javax.ws.rs.HttpMethod} 
+     * @param restServicePath - service path of rest request.
+     *                        See annotation @Path in REST service class.
+     */
+    public static final boolean canAccessRestPath(HAccount account,
+            String httpMethod, String restServicePath) {
+        if (account != null) {
+            return true;
+        }
+        if (HttpUtil.isReadMethod(httpMethod)) {
+            return true;
+        }
+        return false;
     }
 }

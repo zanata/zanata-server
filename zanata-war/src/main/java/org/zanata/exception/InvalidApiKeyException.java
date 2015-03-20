@@ -30,8 +30,8 @@ public class InvalidApiKeyException extends Exception {
 
     public static String getMessage(String username, String apiKey) {
         StringBuilder sb = new StringBuilder();
-        sb.append(message).append(" for user:[ ").append(username).append(" ]")
-                .append(" apiKey:[ ").append(apiKey).append(" ].");
+        sb.append(message).append(" for user: [").append(username).append("]")
+                .append(" apiKey: [").append(apiKey).append("].");
         return sb.toString();
     }
 

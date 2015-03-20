@@ -40,6 +40,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 
+import org.zanata.security.SecurityFunctions;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
@@ -53,8 +54,10 @@ import org.zanata.util.ServiceLocator;
  */
 @Slf4j
 class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
-    static final String API_KEY_ABSENCE_WARNING =
-            "You must have a valid API key. You can create one by logging in to Zanata and visiting the settings page.";
+
+    public static final String API_KEY_ABSENCE_WARNING =
+        "You must have a valid API key. You can create one by logging in to Zanata and visiting the settings page.";
+    
     private final RateLimitingProcessor processor;
 
     public RestLimitingSynchronousDispatcher(
@@ -70,19 +73,33 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
         this.processor = processor;
     }
 
+    HttpServletRequest getServletRequest() {
+        return ServletContexts.instance().getRequest();
+    }
+
     @Override
     public void invoke(final HttpRequest request, final HttpResponse response) {
 
+        //This is for REST request from browser where user is logged in.
         HAccount authenticatedUser = getAuthenticatedUser();
+
         String apiKey = HttpUtil.getApiKey(request);
 
         try {
-            // Anonymous user is limited to 'READ' request
-            if (authenticatedUser == null && Strings.isNullOrEmpty(apiKey)
-                    && !HttpUtil.isReadMethod(request.getHttpMethod())) {
-                response.sendError(
-                        Response.Status.UNAUTHORIZED.getStatusCode(),
-                    InvalidApiKeyException.getMessage(API_KEY_ABSENCE_WARNING));
+            if (authenticatedUser == null
+                    && Strings.isNullOrEmpty(apiKey)
+                    && !SecurityFunctions.canAccessRestPath(authenticatedUser,
+                            request.getHttpMethod(),
+                            request.getPreprocessedPath())) {
+
+                /**
+                 * Not using response.sendError because that will allow JBoss to
+                 * intercept and generate html page with the message. We want to
+                 * return a message string.
+                 */
+                response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+                response.getOutputStream().write(InvalidApiKeyException.getMessage(
+                    API_KEY_ABSENCE_WARNING).getBytes());
                 return;
             }
 
@@ -99,16 +116,13 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
                 /**
                  *
                  * Process anonymous request for rate limiting
-                 * Note: clientIp might be a proxy server IP address, due to
+                 * Note: clientIP might be a proxy server IP address, due to
                  * different implementation of each proxy server. This will put
                  * all the requests from same proxy server into a single queue.
                  *
                  */
-                HttpServletRequest servletRequest =
-                        ServletContexts.instance().getRequest();
-
-                String clientIp = HttpUtil.getClientIp(servletRequest);
-                processor.processClientIp(clientIp, response, taskToRun);
+                String clientIP = HttpUtil.getClientIp(getServletRequest());
+                processor.processClientIp(clientIP, response, taskToRun);
             } else if (authenticatedUser == null) {
                 // we are not validating api key but will rate limit any api key
                 processor.processApiKey(apiKey, response, taskToRun);

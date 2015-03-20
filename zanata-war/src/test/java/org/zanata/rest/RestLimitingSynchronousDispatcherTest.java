@@ -2,12 +2,14 @@ package org.zanata.rest;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.seam.resteasy.SeamResteasyProviderFactory;
+import org.jboss.seam.web.ServletContexts;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -15,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.zanata.exception.InvalidApiKeyException;
 import org.zanata.limits.RateLimitingProcessor;
 import org.zanata.model.HAccount;
 import org.zanata.util.HttpUtil;
@@ -46,12 +49,18 @@ public class RestLimitingSynchronousDispatcherTest {
     @Mock
     private MultivaluedMap<String, String> headers;
     private HAccount authenticatedUser;
+    @Mock
+    private HttpServletRequest servletContexts;
+
+    private String clienIP = "127.0.0.1";
 
     @BeforeMethod
     public void beforeMethod() throws ServletException, IOException {
         MockitoAnnotations.initMocks(this);
-
-        when(request.getHttpHeaders().getRequestHeaders()).thenReturn(headers);
+        when(servletContexts.getHeader(HttpUtil.X_FORWARDED_FOR))
+                .thenReturn(clienIP);
+        when(request.getHttpHeaders().getRequestHeaders())
+                .thenReturn(headers);
         when(request.getHttpMethod()).thenReturn("GET");
         when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
                 API_KEY);
@@ -61,6 +70,7 @@ public class RestLimitingSynchronousDispatcherTest {
                         processor));
 
         // this way we can verify the task actually called super.invoke()
+        doReturn(servletContexts).when(dispatcher).getServletRequest();
         doReturn(superInvoker).when(dispatcher).getInvoker(request);
         doNothing().when(dispatcher).invoke(request, response, superInvoker);
         authenticatedUser = null;
@@ -68,8 +78,22 @@ public class RestLimitingSynchronousDispatcherTest {
     }
 
     @Test
-    public void willSkipIfAPIkeyNotPresent() throws IOException,
-            ServletException {
+    public void testPOSTifNoApiKey() throws Exception {
+        when(request.getHttpMethod()).thenReturn("POST");
+        when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
+            null);
+        when(request.getUri().getPath()).thenReturn("/rest/in/peace");
+        doReturn(null).when(dispatcher).getAuthenticatedUser();
+
+        dispatcher.invoke(request, response);
+
+        verify(response).setStatus(401);
+        verify(response).getOutputStream();
+        verifyZeroInteractions(processor);
+    }
+
+    @Test
+    public void testGETifNoApiKey() throws Exception {
         when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
                 null);
         when(request.getUri().getPath()).thenReturn("/rest/in/peace");
@@ -77,9 +101,13 @@ public class RestLimitingSynchronousDispatcherTest {
 
         dispatcher.invoke(request, response);
 
-        verify(response).sendError(401,
-                RestLimitingSynchronousDispatcher.API_KEY_ABSENCE_WARNING);
-        verifyZeroInteractions(processor);
+        verify(processor).processClientIp(same(clienIP), same(response),
+            taskCaptor.capture());
+
+        // verify task is calling super.invoke
+        Runnable task = taskCaptor.getValue();
+        task.run();
+        verify(dispatcher).getInvoker(request);
     }
 
     @Test

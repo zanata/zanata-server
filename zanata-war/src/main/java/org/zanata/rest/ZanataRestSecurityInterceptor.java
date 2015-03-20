@@ -38,7 +38,8 @@ public class ZanataRestSecurityInterceptor implements PreProcessInterceptor {
                 log.info(InvalidApiKeyException.getMessage(username, apiKey));
                 return ServerResponse.copyIfNotServerResponse(Response.status(
                     Status.UNAUTHORIZED).entity(
-                    InvalidApiKeyException.getMessage(username, apiKey)).build());
+                    InvalidApiKeyException.getMessage(username, apiKey))
+                    .build());
             }
         }
         return null;
