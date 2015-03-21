@@ -45,21 +45,17 @@ public final class HttpUtil {
     public static final String X_AUTH_USER_HEADER = "X-Auth-User";
 
     public static final String X_FORWARDED_FOR = "X-Forwarded-For";
-    public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
-    public static final String WL_Proxy_Client_IP = "WL-Proxy-Client-IP";
-    public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
-    public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
 
-    private static final LinkedList<String> PROXY_HEADERS = Lists
-            .newLinkedList((Arrays.asList(X_FORWARDED_FOR, PROXY_CLIENT_IP,
-                    WL_Proxy_Client_IP, HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR)));
+    public static final LinkedList<String> PROXY_HEADERS = Lists
+            .newLinkedList((Arrays.asList("Proxy-Client-IP",
+                "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR")));
 
     public static String getApiKey(HttpRequest request) {
         return request.getHttpHeaders().getRequestHeaders()
                 .getFirst(X_AUTH_TOKEN_HEADER);
     }
 
-    public static String getUserName(HttpRequest request) {
+    public static String getUsername(HttpRequest request) {
         return request.getHttpHeaders().getRequestHeaders()
                 .getFirst(X_AUTH_USER_HEADER);
     }
@@ -75,11 +71,22 @@ public final class HttpUtil {
      * Default remote address in request will be returned if client information
      * is not found in header.
      *
-     * see http://stackoverflow.com.80bola.com/questions/4678797/how-do-i-get-the-remote-address-of-a-client-in-servlet
+     * see http://stackoverflow.com/questions/4678797/how-do-i-get-the-remote-address-of-a-client-in-servlet
      * @param request
      */
     public static String getClientIp(HttpServletRequest request) {
         String ip;
+
+        //X_FORWARDED_FOR can be list of ip address.
+        String[] ipList =
+                StringUtils.split(request.getHeader(X_FORWARDED_FOR), ",");
+        if(ipList != null) {
+            //Return last ip address from list if found
+            ip = ipList[ipList.length-1];
+            if(!isIpUnknown(ip)) {
+                return ip;
+            }
+        }
 
         for(String proxyHeader: PROXY_HEADERS) {
             ip = request.getHeader(proxyHeader);
@@ -92,7 +99,8 @@ public final class HttpUtil {
 
     private static boolean isIpUnknown(String ip) {
         return StringUtils.isEmpty(ip) || StringUtils.equalsIgnoreCase(ip,
-                "unknown");
+                "unknown") || StringUtils.equalsIgnoreCase(ip, "localhost") ||
+                StringUtils.equals(ip, "127.0.0.1");
     }
 
     public static boolean isReadMethod(String httpMethod) {

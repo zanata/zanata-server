@@ -1,24 +1,12 @@
-package org.zanata.exception;
+package org.zanata.rest;
 
 /**
- * Exception for invalid API key.
+ * Utility for invalid API key exception.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class InvalidApiKeyException extends Exception {
-    private static final String message = "Invalid API key";
-
-    public InvalidApiKeyException(String username, String apiKey, String message) {
-        super(getMessage(username, apiKey, message));
-    }
-
-    public InvalidApiKeyException(String username, String apiKey) {
-        super(getMessage(username, apiKey));
-    }
-
-    public InvalidApiKeyException(String message) {
-        super(getMessage(message));
-    }
+public class InvalidApiKeyUtil {
+    public static final String message = "Invalid API key";
 
     public static String getMessage(String username, String apiKey,
             String additionalMessage) {

@@ -31,17 +31,17 @@ public class RateLimitingProcessor {
     private final LeakyBucket logLimiter = new LeakyBucket(1, 5,
             TimeUnit.MINUTES);
 
-    public void processApiKey(String apiKey, HttpResponse response,
-            Runnable taskToRun) throws Exception {
+    public void processForApiKey(String apiKey, HttpResponse response,
+        Runnable taskToRun) throws Exception {
         process(apiKey, response, taskToRun);
     }
 
-    public void processUsername(String username, HttpResponse response,
+    public void processForUser(String username, HttpResponse response,
         Runnable taskToRun) throws IOException {
         process(username, response, taskToRun);
     }
 
-    public void processClientIp(String ip, HttpResponse response,
+    public void processForAnonymousIP(String ip, HttpResponse response,
         Runnable taskToRun) throws IOException {
         process(ip, response, taskToRun);
     }

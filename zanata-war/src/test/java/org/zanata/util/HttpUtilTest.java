@@ -17,44 +17,44 @@ public class HttpUtilTest {
 
     @Test
     public void getClientIpTest() {
-        String expectedIP = "127.0.0.1";
+        String expectedIP = "255.255.255.1";
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
 
         Mockito.reset(mockRequest);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_CLIENT_IP)).thenReturn(expectedIP);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
 
         Mockito.reset(mockRequest);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn(
             "unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.WL_Proxy_Client_IP)).thenReturn(expectedIP);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
 
         Mockito.reset(mockRequest);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.WL_Proxy_Client_IP)).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.HTTP_CLIENT_IP)).thenReturn(expectedIP);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
 
         Mockito.reset(mockRequest);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.WL_Proxy_Client_IP)).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.HTTP_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.HTTP_X_FORWARDED_FOR)).thenReturn(expectedIP);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(3))).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
 
         Mockito.reset(mockRequest);
         when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.WL_Proxy_Client_IP)).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.HTTP_CLIENT_IP)).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.HTTP_X_FORWARDED_FOR)).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn("");
+        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(3))).thenReturn("");
         when(mockRequest.getRemoteAddr()).thenReturn(expectedIP);
         testClientIP(mockRequest, expectedIP);
     }

@@ -13,7 +13,6 @@ import org.jboss.resteasy.core.ServerResponse;
 import org.jboss.resteasy.spi.Failure;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.interception.PreProcessInterceptor;
-import org.zanata.exception.InvalidApiKeyException;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.util.HttpUtil;
 
@@ -27,7 +26,7 @@ public class ZanataRestSecurityInterceptor implements PreProcessInterceptor {
             preProcess(HttpRequest request, ResourceMethod method)
                     throws Failure, WebApplicationException {
 
-        String username = HttpUtil.getUserName(request);
+        String username = HttpUtil.getUsername(request);
         String apiKey = HttpUtil.getApiKey(request);
 
         if (username != null && apiKey != null) {
@@ -35,10 +34,10 @@ public class ZanataRestSecurityInterceptor implements PreProcessInterceptor {
             ZanataIdentity.instance().setApiKey(apiKey);
             ZanataIdentity.instance().tryLogin();
             if (!ZanataIdentity.instance().isLoggedIn()) {
-                log.info(InvalidApiKeyException.getMessage(username, apiKey));
+                log.info(InvalidApiKeyUtil.getMessage(username, apiKey));
                 return ServerResponse.copyIfNotServerResponse(Response.status(
                     Status.UNAUTHORIZED).entity(
-                    InvalidApiKeyException.getMessage(username, apiKey))
+                    InvalidApiKeyUtil.getMessage(username, apiKey))
                     .build());
             }
         }

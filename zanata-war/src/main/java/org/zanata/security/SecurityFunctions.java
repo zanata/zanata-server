@@ -36,6 +36,8 @@ import org.zanata.security.permission.GrantsPermission;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
+import javax.annotation.Nullable;
+
 /**
  * Contains static helper functions used inside the rules files.
  *
@@ -397,9 +399,12 @@ public class SecurityFunctions {
 
     /**
      * Check if user can access to REST URL with httpMethod.
+     * 1) Check if request can communicate to with rest service path,
+     * 2) then check if request can perform the specific API action.
+     *
      * If request is from anonymous user(account == null),
-     * only 'Read' action are allowed. Otherwise, role base check will should be
-     * perform in related RestService class.
+     * only 'Read' action are allowed. Additionally, role-based check will be
+     * performed in the REST service class.
      *
      * This rule apply to all REST endpoint.
      *
@@ -408,7 +413,7 @@ public class SecurityFunctions {
      * @param restServicePath - service path of rest request.
      *                        See annotation @Path in REST service class.
      */
-    public static final boolean canAccessRestPath(HAccount account,
+    public static final boolean canAccessRestPath(@Nullable HAccount account,
             String httpMethod, String restServicePath) {
         if (account != null) {
             return true;

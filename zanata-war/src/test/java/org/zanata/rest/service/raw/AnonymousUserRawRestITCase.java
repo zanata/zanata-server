@@ -27,12 +27,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.zanata.provider.DBUnitProvider.DataSetOperation;
-import static org.zanata.util.RawRestTestUtils.assertJaxbUnmarshal;
-import static org.zanata.util.RawRestTestUtils.assertJsonUnmarshal;
-import static org.zanata.util.RawRestTestUtils.jaxbMarhsal;
-import static org.zanata.util.RawRestTestUtils.jaxbUnmarshal;
-import static org.zanata.util.RawRestTestUtils.jsonMarshal;
-import static org.zanata.util.RawRestTestUtils.jsonUnmarshal;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
@@ -43,12 +37,10 @@ import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.junit.Test;
 import org.zanata.RestTest;
-import org.zanata.ZanataDbunitJpaTest;
-import org.zanata.exception.InvalidApiKeyException;
+import org.zanata.rest.InvalidApiKeyUtil;
 import org.zanata.rest.MediaTypes;
 import org.zanata.rest.ResourceRequest;
 import org.zanata.rest.ResourceRequestEnvironment;
-import org.zanata.rest.dto.Account;
 
 public class AnonymousUserRawRestITCase extends RestTest {
 
@@ -85,7 +77,7 @@ public class AnonymousUserRawRestITCase extends RestTest {
             @Override
             protected void onResponse(ClientResponse response) {
                 assertThat(response.getEntity(String.class).toString(),
-                    is(InvalidApiKeyException.getMessage(ADMIN, invalidAPI)));
+                    is(InvalidApiKeyUtil.getMessage(ADMIN, invalidAPI)));
 
                 assertThat(response.getStatus(),
                     is(Status.UNAUTHORIZED.getStatusCode()));
@@ -144,7 +136,7 @@ public class AnonymousUserRawRestITCase extends RestTest {
             @Override
             protected void onResponse(ClientResponse response) {
                 assertThat(response.getEntity(String.class).toString(),
-                    is(InvalidApiKeyException.getMessage(
+                    is(InvalidApiKeyUtil.getMessage(
                         API_KEY_ABSENCE_WARNING)));
 
                 assertThat(response.getStatus(),

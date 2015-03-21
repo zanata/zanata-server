@@ -125,6 +125,10 @@ public class RateLimitManager implements Introspectable {
                 });
     }
 
+    /**
+     * @param key - Can be username(if no api key generate with user),
+     *            apiKey or anonymous IP address
+     */
     public RestCallLimiter getLimiter(final String key) {
 
         if (getMaxConcurrent() == 0 && getMaxActive() == 0) {

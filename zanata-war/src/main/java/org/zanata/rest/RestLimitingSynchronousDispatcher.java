@@ -21,9 +21,11 @@
 package org.zanata.rest;
 
 import java.io.IOException;
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -32,7 +34,7 @@ import org.jboss.resteasy.spi.UnhandledException;
 import org.jboss.seam.resteasy.SeamResteasyProviderFactory;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.web.ServletContexts;
-import org.zanata.exception.InvalidApiKeyException;
+import org.zanata.dao.AccountDAO;
 import org.zanata.limits.RateLimitingProcessor;
 import org.zanata.model.HAccount;
 import com.google.common.annotations.VisibleForTesting;
@@ -78,17 +80,27 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
     @Override
     public void invoke(final HttpRequest request, final HttpResponse response) {
 
-        //This is for REST request from browser where user is logged in.
+        /**
+         * This is only non-null if request came from same browser which
+         * user used to logged into Zanata.
+         */
         HAccount authenticatedUser = getAuthenticatedUser();
 
+        /**
+         * If apiKey is empty, request is from anonymous user,
+         * If apiKey is not empty, it must be an authenticated
+         * user from pre-process in ZanataRestSecurityInterceptor.
+         */
         String apiKey = HttpUtil.getApiKey(request);
 
         try {
-            if (authenticatedUser == null
-                    && Strings.isNullOrEmpty(apiKey)
-                    && !SecurityFunctions.canAccessRestPath(authenticatedUser,
-                            request.getHttpMethod(),
-                            request.getPreprocessedPath())) {
+            // Get user account with apiKey if request is from client
+            if(authenticatedUser == null && StringUtils.isNotEmpty(apiKey)) {
+                authenticatedUser = getUser(apiKey);
+            }
+
+            if(!SecurityFunctions.canAccessRestPath(authenticatedUser,
+                request.getHttpMethod(), request.getPreprocessedPath())) {
 
                 /**
                  * Not using response.sendError because that will allow JBoss to
@@ -96,7 +108,7 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
                  * return a message string.
                  */
                 response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-                response.getOutputStream().write(InvalidApiKeyException.getMessage(
+                response.getOutputStream().write(InvalidApiKeyUtil.getMessage(
                     API_KEY_ABSENCE_WARNING).getBytes());
                 return;
             }
@@ -110,28 +122,25 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
                 }
             };
 
-            if (authenticatedUser == null && Strings.isNullOrEmpty(apiKey)) {
+            //authenticatedUser can be from browser or client request
+            if(authenticatedUser == null) {
                 /**
-                 *
                  * Process anonymous request for rate limiting
                  * Note: clientIP might be a proxy server IP address, due to
                  * different implementation of each proxy server. This will put
                  * all the requests from same proxy server into a single queue.
-                 *
                  */
                 String clientIP = HttpUtil.getClientIp(getServletRequest());
-                processor.processClientIp(clientIP, response, taskToRun);
-            } else if (authenticatedUser == null) {
-                // we are not validating api key but will rate limit any api key
-                processor.processApiKey(apiKey, response, taskToRun);
-            } else if (!Strings.isNullOrEmpty(authenticatedUser.getApiKey())) {
-                processor.processApiKey(authenticatedUser.getApiKey(),
-                        response, taskToRun);
+                processor.processForAnonymousIP(clientIP, response, taskToRun);
             } else {
-                processor.processUsername(authenticatedUser.getUsername(),
+                if (!Strings.isNullOrEmpty(authenticatedUser.getApiKey())) {
+                    processor.processForApiKey(authenticatedUser.getApiKey(),
                         response, taskToRun);
+                } else {
+                    processor.processForUser(authenticatedUser.getUsername(),
+                        response, taskToRun);
+                }
             }
-
         } catch (UnhandledException e) {
             Throwable cause = e.getCause();
             log.error("Failed to process REST request", cause);
@@ -160,5 +169,10 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
     protected HAccount getAuthenticatedUser() {
         return ServiceLocator.instance().getInstance(
                 JpaIdentityStore.AUTHENTICATED_USER, HAccount.class);
+    }
+
+    protected HAccount getUser(@Nonnull String apiKey) {
+        return ServiceLocator.instance().getInstance(AccountDAO.class)
+                .getByApiKey(apiKey);
     }
 }
