@@ -49,27 +49,25 @@ public class RestLimitingSynchronousDispatcherTest {
     private MultivaluedMap<String, String> headers;
     private HAccount authenticatedUser;
     @Mock
-    private HttpServletRequest servletContexts;
+    private HttpServletRequest servletRequest;
 
     private String clienIP = "255.255.255.0.1";
 
     @BeforeMethod
     public void beforeMethod() throws ServletException, IOException {
         MockitoAnnotations.initMocks(this);
-        when(servletContexts.getHeader(HttpUtil.X_FORWARDED_FOR))
-                .thenReturn(clienIP);
         when(request.getHttpHeaders().getRequestHeaders())
                 .thenReturn(headers);
         when(request.getHttpMethod()).thenReturn("GET");
         when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
-                API_KEY);
+            API_KEY);
 
         dispatcher =
                 spy(new RestLimitingSynchronousDispatcher(providerFactory,
                         processor));
 
         // this way we can verify the task actually called super.invoke()
-        doReturn(servletContexts).when(dispatcher).getServletRequest();
+        doReturn(servletRequest).when(dispatcher).getServletRequest();
         doReturn(superInvoker).when(dispatcher).getInvoker(request);
         doNothing().when(dispatcher).invoke(request, response, superInvoker);
         authenticatedUser = null;
@@ -119,6 +117,7 @@ public class RestLimitingSynchronousDispatcherTest {
     public void willProcessAnonymousWithGETAndNoApiKey() throws Exception {
         when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(null);
         when(request.getUri().getPath()).thenReturn("/rest/in/peace");
+        when(servletRequest.getRemoteAddr()).thenReturn(clienIP);
         doReturn(null).when(dispatcher).getAuthenticatedUser();
 
         dispatcher.invoke(request, response);

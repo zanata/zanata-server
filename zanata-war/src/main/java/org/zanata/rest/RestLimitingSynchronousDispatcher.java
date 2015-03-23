@@ -103,9 +103,9 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
                 request.getHttpMethod(), request.getPreprocessedPath())) {
 
                 /**
-                 * Not using response.sendError because that will allow JBoss to
-                 * intercept and generate html page with the message. We want to
-                 * return a message string.
+                 * Not using response.sendError because the app server will generate
+                 * an HTML page which includes the message. We want to return
+                 * the message string as is.
                  */
                 response.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
                 response.getOutputStream().write(InvalidApiKeyUtil.getMessage(

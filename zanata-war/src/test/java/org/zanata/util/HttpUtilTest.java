@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -16,52 +17,40 @@ import static org.mockito.Mockito.when;
 public class HttpUtilTest {
 
     @Test
-    public void getClientIpTest() {
+    public void getClientIdWithNoHeaderTest() {
         String expectedIP = "255.255.255.1";
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-
-        Mockito.reset(mockRequest);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-
-        Mockito.reset(mockRequest);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn(
-            "unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-
-        Mockito.reset(mockRequest);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-
-        Mockito.reset(mockRequest);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(3))).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-
-        Mockito.reset(mockRequest);
-        when(mockRequest.getHeader(HttpUtil.X_FORWARDED_FOR)).thenReturn("unknown");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(0))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(1))).thenReturn(null);
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(2))).thenReturn("");
-        when(mockRequest.getHeader(HttpUtil.PROXY_HEADERS.get(3))).thenReturn("");
         when(mockRequest.getRemoteAddr()).thenReturn(expectedIP);
-        testClientIP(mockRequest, expectedIP);
-    }
 
-    private void testClientIP(HttpServletRequest mockRequest, String expectedIP) {
         String ip = HttpUtil.getClientIp(mockRequest);
         assertThat(ip).isEqualTo(expectedIP);
+        verify(mockRequest).getRemoteAddr();
+    }
+
+    @Test
+    public void getClientIdWithWithHeaderTest() {
+        String proxyHeader = "random-header-from-proxy-server";
+        System.setProperty("ZANATA_PROXY_HEADER", proxyHeader);
+        String expectedIP = "255.255.255.1";
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        when(mockRequest.getHeader(proxyHeader)).thenReturn(expectedIP);
+
+        String ip = HttpUtil.getClientIp(mockRequest);
+        assertThat(ip).isEqualTo(expectedIP);
+        verify(mockRequest).getHeader(proxyHeader);
+    }
+
+    @Test
+    public void getClientIdWithWithHeaderListTest() {
+        String proxyHeader = "random-header-from-proxy-server";
+        System.setProperty("ZANATA_PROXY_HEADER", proxyHeader);
+        String expectedIP = "255.255.255.1,255.255.255.2,255.255.255.3";
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        when(mockRequest.getHeader(proxyHeader)).thenReturn(expectedIP);
+
+        String ip = HttpUtil.getClientIp(mockRequest);
+        assertThat(ip).isEqualTo("255.255.255.3");
+        verify(mockRequest).getHeader(proxyHeader);
     }
 
     @Test

@@ -20,8 +20,6 @@
  */
 package org.zanata.util;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.HttpMethod;
@@ -38,17 +36,20 @@ import com.google.common.collect.Lists;
  *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public final class HttpUtil {
+
     private final static List<String> HTTP_REQUEST_READ_METHODS = Lists.newArrayList(
         HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS);
 
     public static final String X_AUTH_TOKEN_HEADER = "X-Auth-Token";
     public static final String X_AUTH_USER_HEADER = "X-Auth-User";
 
-    public static final String X_FORWARDED_FOR = "X-Forwarded-For";
-
-    public static final LinkedList<String> PROXY_HEADERS = Lists
-            .newLinkedList((Arrays.asList("Proxy-Client-IP",
-                "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR")));
+    /**
+     * This should be set by admin.
+     * Value can be, "X-Forwarded-For", "Proxy-Client-IP",
+     * "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"
+     */
+    public static final String PROXY_HEADER = System
+            .getProperty("ZANATA_PROXY_HEADER");
 
     public static String getApiKey(HttpRequest request) {
         return request.getHttpHeaders().getRequestHeaders()
@@ -77,23 +78,24 @@ public final class HttpUtil {
     public static String getClientIp(HttpServletRequest request) {
         String ip;
 
-        //X_FORWARDED_FOR can be list of ip address.
-        String[] ipList =
-                StringUtils.split(request.getHeader(X_FORWARDED_FOR), ",");
-        if(ipList != null) {
-            //Return last ip address from list if found
-            ip = ipList[ipList.length-1];
-            if(!isIpUnknown(ip)) {
-                return ip;
-            }
+        if(StringUtils.isEmpty(PROXY_HEADER)) {
+            return request.getRemoteAddr();
         }
 
-        for(String proxyHeader: PROXY_HEADERS) {
-            ip = request.getHeader(proxyHeader);
-            if(!isIpUnknown(ip)) {
-                return ip;
-            }
+        // PROXY_HEADER can be list of ip address
+        String[] ipList =
+                StringUtils.split(request.getHeader(PROXY_HEADER), ",");
+
+        if(ipList.length == 1) {
+            return ipList[0];
         }
+
+        //return last ip address from list if found
+        ip = ipList[ipList.length-1];
+        if(!isIpUnknown(ip)) {
+            return ip;
+        }
+
         return request.getRemoteAddr();
     }
 
