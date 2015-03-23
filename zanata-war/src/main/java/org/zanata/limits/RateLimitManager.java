@@ -37,7 +37,7 @@ public class RateLimitManager implements Introspectable {
 
     public static final String INTROSPECTABLE_FIELD_RATE_LIMITERS =
             "RateLimiters";
-    private final Cache<String, RestCallLimiter> activeCallers = CacheBuilder
+    private final Cache<RateLimiterToken, RestCallLimiter> activeCallers = CacheBuilder
             .newBuilder().maximumSize(100).build();
 
     @Getter(AccessLevel.PROTECTED)
@@ -111,13 +111,13 @@ public class RateLimitManager implements Introspectable {
     }
 
     private Iterable<String> peekCurrentBuckets() {
-        ConcurrentMap<String, RestCallLimiter> map = activeCallers.asMap();
+        ConcurrentMap<RateLimiterToken, RestCallLimiter> map = activeCallers.asMap();
         return Iterables.transform(map.entrySet(),
-                new Function<Map.Entry<String, RestCallLimiter>, String>() {
+                new Function<Map.Entry<RateLimiterToken, RestCallLimiter>, String>() {
 
                     @Override
                     public String
-                            apply(Map.Entry<String, RestCallLimiter> input) {
+                            apply(Map.Entry<RateLimiterToken, RestCallLimiter> input) {
 
                         RestCallLimiter rateLimiter = input.getValue();
                         return input.getKey() + ":" + rateLimiter;
@@ -126,10 +126,9 @@ public class RateLimitManager implements Introspectable {
     }
 
     /**
-     * @param key - Can be username(if no api key generate with user),
-     *            apiKey or anonymous IP address
+     * @param key - {@link RateLimiterToken.TYPE )
      */
-    public RestCallLimiter getLimiter(final String key) {
+    public RestCallLimiter getLimiter(final RateLimiterToken key) {
 
         if (getMaxConcurrent() == 0 && getMaxActive() == 0) {
             if (activeCallers.size() > 0) {

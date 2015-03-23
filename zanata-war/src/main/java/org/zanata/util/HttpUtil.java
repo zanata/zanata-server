@@ -27,6 +27,7 @@ import javax.ws.rs.HttpMethod;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.spi.HttpRequest;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 
 /**
@@ -45,15 +46,20 @@ public final class HttpUtil {
 
     /**
      * This should be set by admin.
-     * Value can be, "X-Forwarded-For", "Proxy-Client-IP",
+     * Example header names might be "X-Forwarded-For", "Proxy-Client-IP",
      * "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"
      */
-    public static final String PROXY_HEADER = System
+    public static String PROXY_HEADER = System
             .getProperty("ZANATA_PROXY_HEADER");
 
     public static String getApiKey(HttpRequest request) {
         return request.getHttpHeaders().getRequestHeaders()
                 .getFirst(X_AUTH_TOKEN_HEADER);
+    }
+
+    @VisibleForTesting
+    static void refreshProxyHeader() {
+        PROXY_HEADER = System.getProperty("ZANATA_PROXY_HEADER");
     }
 
     public static String getUsername(HttpRequest request) {

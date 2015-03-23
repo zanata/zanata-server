@@ -29,14 +29,16 @@ import org.zanata.model.HAccountRole;
 import org.zanata.model.HIterationGroup;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
-import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.security.permission.GrantsPermission;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Contains static helper functions used inside the rules files.
@@ -44,6 +46,7 @@ import javax.annotation.Nullable;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@Slf4j
 public class SecurityFunctions {
     protected SecurityFunctions() {
     }
@@ -415,6 +418,11 @@ public class SecurityFunctions {
      */
     public static final boolean canAccessRestPath(@Nullable HAccount account,
             String httpMethod, String restServicePath) {
+        //This is to allow data injection for function-test
+        if(isFunctionTestServicePath(restServicePath)) {
+            log.debug("Allow rest access for functional-test");
+            return true;
+        }
         if (account != null) {
             return true;
         }
@@ -422,5 +430,29 @@ public class SecurityFunctions {
             return true;
         }
         return false;
+    }
+
+    public static final boolean canAccessRestPath(
+            @Nonnull ZanataIdentity identity,
+            String httpMethod, String restServicePath) {
+        // This is to allow data injection for function-test
+        if (isFunctionTestServicePath(restServicePath)) {
+            log.debug("Allow rest access for functional-test");
+            return true;
+        }
+        if (identity.isLoggedIn()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if request path are from functional test
+     *
+     * @param servicePath - service path of rest request.
+     *                        See annotation @Path in REST service class.
+     */
+    private static boolean isFunctionTestServicePath(String servicePath) {
+        return servicePath != null && servicePath.startsWith("/test/data");
     }
 }
