@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response.Status;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.annotations.interception.SecurityPrecedence;
 import org.jboss.resteasy.annotations.interception.ServerInterceptor;
 import org.jboss.resteasy.core.ResourceMethod;
@@ -29,7 +30,7 @@ public class ZanataRestSecurityInterceptor implements PreProcessInterceptor {
 
         String username = HttpUtil.getUsername(request);
         String apiKey = HttpUtil.getApiKey(request);
-        if (username != null && apiKey != null) {
+        if (StringUtils.isNotEmpty(username)|| StringUtils.isNotEmpty(apiKey)) {
             ZanataIdentity.instance().getCredentials().setUsername(username);
             ZanataIdentity.instance().setApiKey(apiKey);
             ZanataIdentity.instance().tryLogin();

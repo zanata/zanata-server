@@ -125,8 +125,7 @@ public class AnonymousUserRawRestITCase extends RestTest {
     @Test
     @RunAsClient
     public void doPOSTProjectsWithAnonymous() throws Exception {
-        new ResourceRequest(getRestEndpointUrl("/projects"), "POST",
-                getEmptyHeaderEnvironment()) {
+        new ResourceRequest(getRestEndpointUrl("/projects"), "POST") {
             @Override
             protected void prepareRequest(ClientRequest request) {
                 request.header(HttpHeaders.ACCEPT,
@@ -155,15 +154,6 @@ public class AnonymousUserRawRestITCase extends RestTest {
                         put("X-Auth-Token", invalidAPI);
                     }
                 };
-            }
-        };
-    }
-
-    private ResourceRequestEnvironment getEmptyHeaderEnvironment() {
-        return new ResourceRequestEnvironment() {
-            @Override
-            public Map<String, Object> getDefaultHeaders() {
-                return new HashMap<String, Object>();
             }
         };
     }

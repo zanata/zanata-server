@@ -418,9 +418,9 @@ public class SecurityFunctions {
      */
     public static final boolean canAccessRestPath(@Nullable HAccount account,
             String httpMethod, String restServicePath) {
-        //This is to allow data injection for function-test
-        if(isFunctionTestServicePath(restServicePath)) {
-            log.debug("Allow rest access for functional-test");
+        //This is to allow data injection for function-test/rest-test
+        if(isTestServicePath(restServicePath)) {
+            log.debug("Allow rest access for Zanata test");
             return true;
         }
         if (account != null) {
@@ -435,9 +435,9 @@ public class SecurityFunctions {
     public static final boolean canAccessRestPath(
             @Nonnull ZanataIdentity identity,
             String httpMethod, String restServicePath) {
-        // This is to allow data injection for function-test
-        if (isFunctionTestServicePath(restServicePath)) {
-            log.debug("Allow rest access for functional-test");
+        // This is to allow data injection for function-test/rest-test
+        if (isTestServicePath(restServicePath)) {
+            log.debug("Allow rest access for Zanata test");
             return true;
         }
         if (identity.isLoggedIn()) {
@@ -447,12 +447,12 @@ public class SecurityFunctions {
     }
 
     /**
-     * Check if request path are from functional test
+     * Check if request path are from functional test or RestTest
      *
      * @param servicePath - service path of rest request.
      *                        See annotation @Path in REST service class.
      */
-    private static boolean isFunctionTestServicePath(String servicePath) {
-        return servicePath != null && servicePath.startsWith("/test/data");
+    private static boolean isTestServicePath(String servicePath) {
+        return servicePath != null && servicePath.startsWith("/test");
     }
 }
