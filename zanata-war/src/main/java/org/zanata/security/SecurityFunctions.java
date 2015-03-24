@@ -397,6 +397,17 @@ public class SecurityFunctions {
     }
 
     /*****************************************************************************************
+     * TMX rules
+     ******************************************************************************************/
+
+    @GrantsPermission(actions = "download-tmx")
+    public static boolean canDownloadTMX() {
+        Optional<HAccount> account = getAuthenticatedAccount();
+        return account.isPresent();
+    }
+
+
+    /*****************************************************************************************
      * HTTP request rules
      ******************************************************************************************/
 
