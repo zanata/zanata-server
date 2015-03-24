@@ -59,18 +59,18 @@ public class RateLimitingProcessor {
                         key);
             }
 
-            String clientIdentifier = "";
+            String errorMessage;
             if(key.getType().equals(RateLimiterToken.TYPE.API_KEY)) {
-                clientIdentifier = "API key";
-            } else  {
-                clientIdentifier = key.getValue();
-            }
-
-            String errorMessage =
+                errorMessage =
                     String.format(
-                            "Too many concurrent requests for client '%s' (maximum is %d)",
-                            clientIdentifier,
-                            rateLimiter.getMaxConcurrentPermits());
+                        "Too many concurrent requests for client API key (maximum is %d)",
+                        rateLimiter.getMaxConcurrentPermits());
+            } else  {
+                errorMessage =
+                    String.format(
+                        "Too many concurrent requests for client '%s' (maximum is %d)",
+                        key.getValue(), rateLimiter.getMaxConcurrentPermits());
+            }
             response.sendError(TOO_MANY_REQUEST, errorMessage);
         }
     }
