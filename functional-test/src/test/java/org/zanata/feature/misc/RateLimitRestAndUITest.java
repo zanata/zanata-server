@@ -110,7 +110,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
         WebResource.Builder clientRequest =
                 clientRequestAsAdmin("rest/configurations/"
                         + maxConcurrentPathParam);
-        clientRequest.entity("1", "text/plain");
+        clientRequest.entity("1", MediaType.APPLICATION_JSON_TYPE);
         // can put
         clientRequest.put();
 
@@ -163,7 +163,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
         WebResource.Builder request =
                 clientRequestAsTranslator(
                 "rest/configurations/c/email.admin.addr");
-        request.entity("admin@email.com", "text/plain");
+        request.entity("admin@email.com", MediaType.APPLICATION_JSON_TYPE);
         try {
             request.put();
         } catch (UniformInterfaceException e) {
@@ -209,7 +209,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
         WebResource.Builder clientRequest =
                 clientRequestAsAdmin("rest/configurations/"
                         + maxConcurrentPathParam);
-        clientRequest.entity("2", MediaType.TEXT_PLAIN_TYPE);
+        clientRequest.entity("2", MediaType.APPLICATION_JSON_TYPE);
 
         clientRequest.put();
 
@@ -265,7 +265,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
         WebResource.Builder configRequest =
                 clientRequestAsAdmin("rest/configurations/"
                         + maxActivePathParam);
-        configRequest.entity("1", MediaType.TEXT_PLAIN_TYPE);
+        configRequest.entity("1", MediaType.APPLICATION_JSON_TYPE);
         configRequest.put();
 
         // When: multiple requests that will result in a mapped exception
@@ -288,7 +288,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
         WebResource.Builder configRequest =
                 clientRequestAsAdmin("rest/configurations/"
                         + maxActivePathParam);
-        configRequest.entity("1", MediaType.TEXT_PLAIN_TYPE);
+        configRequest.entity("1", MediaType.APPLICATION_JSON_TYPE);
         configRequest.put();
 
         // When: multiple requests that will result in an unmapped exception
