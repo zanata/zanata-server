@@ -144,6 +144,7 @@ public class ConcurrentAccessTest extends ZanataTestCase {
                 .header("X-Auth-Token",
                         PropertiesHolder.getProperty(Constants.zanataApiKey
                                 .value()))
-                .header("Content-Type", "application/xml");
+                .header("Content-Type", "application/xml")
+                .header("Accept", "application/xml");
     }
 }

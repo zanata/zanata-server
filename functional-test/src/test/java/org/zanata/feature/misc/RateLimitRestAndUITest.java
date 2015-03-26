@@ -141,7 +141,8 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
                 .header("X-Auth-Token",
                         PropertiesHolder.getProperty(Constants.zanataApiKey
                                 .value()))
-                .header("Content-Type", "application/xml");
+                .header("Content-Type", "application/xml")
+                .header("Accept", "application/xml");
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -176,7 +177,8 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
                         .value()) + path)
                 .header("X-Auth-User", TRANSLATOR)
                 .header("X-Auth-Token", TRANSLATOR_API)
-                .header("Content-Type", "application/xml");
+                .header("Content-Type", "application/xml")
+                .header("Accept", "application/xml");
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
