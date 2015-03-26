@@ -386,8 +386,8 @@ public class TranslationsCompatibilityITCase extends CompatibilityBase {
         assertThat(tft3.getTranslator().getEmail(), is("user1@localhost"));
     }
 
-//    @Test
-//    @RunAsClient
+    @Test
+    @RunAsClient
     public void putTranslations() throws Exception {
         TranslatedDocResource translationsClient = getTransResource("/projects/p/sample-project/iterations/i/1.0/r/",
                 AuthenticatedAsUser.Admin);

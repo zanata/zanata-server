@@ -339,6 +339,70 @@ public class TranslationsRawCompatibilityITCase extends CompatibilityBase {
 
     @Test
     @RunAsClient
+    public void getJsonTranslations() throws Exception {
+        new ResourceRequest(
+                getRestEndpointUrl("/projects/p/sample-project/iterations/i/1.0/r/my,path,document-2.txt/translations/"
+                        + LocaleId.EN_US), "GET") {
+            @Override
+            protected void prepareRequest(ClientRequest request) {
+                request.header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+                request.queryParameter("ext", SimpleComment.ID);
+            }
+
+            @Override
+            protected void onResponse(ClientResponse response) {
+                assertThat(response.getStatus(), is(Status.OK.getStatusCode())); // 200
+                assertJsonUnmarshal(response, TranslationsResource.class);
+
+                TranslationsResource transRes =
+                        jsonUnmarshal(response, TranslationsResource.class);
+                assertThat(transRes.getTextFlowTargets().size(),
+                        greaterThanOrEqualTo(3));
+
+                // First Text Flow Target
+                TextFlowTarget tft1 = transRes.getTextFlowTargets().get(0);
+                assertThat(tft1.getResId(), is("tf2"));
+                assertThat(tft1.getState(), is(ContentState.NeedReview));
+                assertThat(tft1.getContents().get(0), is("mssgTrans1"));
+                assertThat(
+                        tft1.getExtensions(true)
+                                .findByType(SimpleComment.class).getValue(),
+                        is("Text Flow Target Comment 1"));
+                assertThat(tft1.getTranslator().getName(), is("Sample User"));
+                assertThat(tft1.getTranslator().getEmail(),
+                        is("user1@localhost"));
+
+                // Second Text Flow Target
+                TextFlowTarget tft2 = transRes.getTextFlowTargets().get(1);
+                assertThat(tft2.getResId(), is("tf3"));
+                assertThat(tft2.getState(), is(ContentState.NeedReview));
+                assertThat(tft2.getContents().get(0), is("mssgTrans2"));
+                assertThat(
+                        tft2.getExtensions(true)
+                                .findByType(SimpleComment.class).getValue(),
+                        is("Text Flow Target Comment 2"));
+                assertThat(tft2.getTranslator().getName(), is("Sample User"));
+                assertThat(tft2.getTranslator().getEmail(),
+                        is("user1@localhost"));
+
+                // First Text Flow Target
+                TextFlowTarget tft3 = transRes.getTextFlowTargets().get(2);
+                assertThat(tft3.getResId(), is("tf4"));
+                assertThat(tft3.getState(), is(ContentState.NeedReview));
+                assertThat(tft3.getContents().get(0), is("mssgTrans3"));
+                assertThat(
+                        tft3.getExtensions(true)
+                                .findByType(SimpleComment.class).getValue(),
+                        is("Text Flow Target Comment 3"));
+                assertThat(tft3.getTranslator().getName(), is("Sample User"));
+                assertThat(tft3.getTranslator().getEmail(),
+                        is("user1@localhost"));
+            }
+        }.run();
+    }
+
+    @Test
+    @RunAsClient
     public void putJsonTranslations() throws Exception {
         // Get the original translations
         TranslatedDocResource translationsClient = getTransResource("/projects/p/sample-project/iterations/i/1.0/r/",
