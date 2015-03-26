@@ -239,15 +239,13 @@ public class SendEmailAction implements Serializable {
                     Collection<ProjectIterationId> projectIterIds =
                             Lists.newArrayList();
 
-                    for (VersionGroupJoinAction.SelectableProject version : versionGroupJoinAction
+                    for (VersionGroupJoinAction.SelectableVersion selectedVersion : versionGroupJoinAction
                             .getProjectVersions()) {
-                        if (version.isSelected()) {
-                            HProjectIteration projIter =
-                                    version.getProjectIteration();
+                        if (selectedVersion.isSelected()) {
                             projectIterIds.add(new ProjectIterationId(
-                                    projIter.getProject().getSlug(),
-                                    projIter.getSlug(),
-                                    projIter.getProjectType()));
+                                selectedVersion.getProjectSlug(),
+                                selectedVersion.getIterationSlug(),
+                                selectedVersion.getProjectType()));
                         }
                     }
 

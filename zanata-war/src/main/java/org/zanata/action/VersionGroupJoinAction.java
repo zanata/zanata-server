@@ -35,6 +35,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.common.EntityStatus;
+import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.VersionGroupDAO;
@@ -45,6 +47,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.service.VersionGroupService;
 import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.webtrans.shared.model.ProjectIterationId;
 
 import com.google.common.collect.Lists;
 
@@ -84,10 +87,13 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     private String projectSlug;
 
     @Getter
-    private List<SelectableProject> projectVersions = Lists.newArrayList();
+    private List<SelectableVersion> projectVersions = Lists.newArrayList();
 
     public boolean hasSelectedVersion() {
-        for (SelectableProject projectVersion : projectVersions) {
+        if(projectVersions.isEmpty()) {
+            return false;
+        }
+        for (SelectableVersion projectVersion : projectVersions) {
             if (projectVersion.isSelected()) {
                 return true;
             }
@@ -99,13 +105,16 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         return versionGroupDAO.getBySlug(slug).getName();
     }
 
-    public List<SelectableProject> getVersions() {
+    public List<SelectableVersion> getVersions() {
         if (StringUtils.isNotEmpty(projectSlug)) {
             List<HProjectIteration> versions =
-                    projectIterationDAO.getByProjectSlug(projectSlug);
+                    projectIterationDAO.getByProjectSlug(projectSlug,
+                        EntityStatus.ACTIVE, EntityStatus.READONLY);
             for (HProjectIteration version : versions) {
                 if(!isVersionInGroup(version.getId())) {
-                    projectVersions.add(new SelectableProject(version, false));
+                    projectVersions
+                            .add(new SelectableVersion(projectSlug, version
+                                    .getSlug(), version.getProjectType(), false));
                 }
             }
         }
@@ -137,7 +146,7 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
 
     @Override
     public List<HProject> suggest() {
-        projectVersions = null;
+        projectVersions.clear();
         return projectDAO.getProjectsForMaintainer(
                 authenticatedAccount.getPerson(), getQuery(), 0,
                 Integer.MAX_VALUE);
@@ -148,12 +157,15 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         projectSlug = getSelectedItem();
     }
 
-    @AllArgsConstructor
-    @Getter
-    public final class SelectableProject {
-        private HProjectIteration projectIteration;
-
+    public final class SelectableVersion extends ProjectIterationId {
+        
+        @Getter
         @Setter
         private boolean selected;
+
+        public SelectableVersion(String projectSlug, String versionSlug, ProjectType projectType, boolean selected) {
+            super(projectSlug, versionSlug, projectType);
+            this.selected = selected;
+        }
     }
 }

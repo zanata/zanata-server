@@ -43,17 +43,17 @@
       <div class="modal__content l--pad-all-1">
         <div class="form__item">
           <zanata:autocomplete actionBean="#{versionGroupJoinAction}"
-            fetchValue="#{result.slug}" id="projectAutocomplete"
+            fetchValue="#{result.slug}" id="versionGroupAutocomplete"
             render="versions"
+            minlength="1"
             placeholder="#{msgs['jsf.dashboard.projects.search.placeholder']}">
             <i class="i i--project"></i> #{result.name}
             <span class="txt--meta"> [#{result.slug}]</span>
           </zanata:autocomplete>
 
           <s:div id="versions">
-            #{versionGroupJoinAction.projectSlug}
             <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
-              <div>#{version.slug}</div>
+              <div>#{version.versionSlug}</div>
             </ui:repeat>
           </s:div>
         </div>
