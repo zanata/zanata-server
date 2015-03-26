@@ -9,6 +9,19 @@
   class="modal" id="joinGroupDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
 
+  <style type="text/css" scoped="scoped">
+    #version-list label {
+      padding-left: 0.40625em;
+    }
+
+    #version-list input[type=checkbox] {
+      width: 1em;
+      height: 1em;
+      vertical-align: middle;
+      margin-bottom: 0.20625em;
+    }
+  </style>
+
   <script>
     function getJoinGroupForm() {
       return jQuery('#' + jqSelector('#{rich:clientId('joinGroupForm')}'));
@@ -45,6 +58,7 @@
           <zanata:autocomplete actionBean="#{versionGroupJoinAction}"
             fetchValue="#{result.slug}" id="versionGroupAutocomplete"
             render="versions"
+            displayText="#{result.name}"
             minlength="1"
             placeholder="#{msgs['jsf.dashboard.projects.search.placeholder']}">
             <i class="i i--project"></i> #{result.name}
@@ -52,9 +66,19 @@
           </zanata:autocomplete>
 
           <s:div id="versions">
-            <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
-              <div>#{version.versionSlug}</div>
-            </ui:repeat>
+            <s:fragment rendered="#{not empty versionGroupJoinAction.versions}">
+              <ul class="list--slat" id="version-list">
+                <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
+                  <li>
+                    <h:selectBooleanCheckbox value="${version.selected}">
+                      <a4j:ajax event="click" render="request-join-buttons"
+                        execute="@form"/>
+                    </h:selectBooleanCheckbox>
+                    <label>#{version.iterationSlug}</label>
+                  </li>
+                </ui:repeat>
+              </ul>
+            </s:fragment>
           </s:div>
         </div>
 
