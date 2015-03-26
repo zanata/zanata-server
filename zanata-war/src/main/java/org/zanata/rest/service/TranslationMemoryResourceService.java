@@ -100,7 +100,7 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasPermission('download-tmx)")
+    @Restrict("#{s:hasPermission('', 'download-tmx')}")
     public Response getProjectTranslationMemory(@Nonnull String projectSlug,
             @Nullable LocaleId locale) {
         log.debug("exporting TMX for project {}, locale {}", projectSlug,
@@ -119,7 +119,7 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasPermission('download-tmx)")
+    @Restrict("#{s:hasPermission('', 'download-tmx')}")
     public Response getProjectIterationTranslationMemory(
             @Nonnull String projectSlug, @Nonnull String iterationSlug,
             @Nullable LocaleId locale) {
