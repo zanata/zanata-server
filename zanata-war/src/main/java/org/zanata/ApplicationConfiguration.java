@@ -73,8 +73,6 @@ public class ApplicationConfiguration implements Serializable {
     public static final String EVENT_CONFIGURATION_CHANGED =
             "zanata.configuration.changed";
 
-    private static final String STYLESHEET_LOCAL_PATH = "/assets/css/style.min.css";
-
     @Getter
     private static final int defaultMaxFilesPerUpload = 100;
 
@@ -113,12 +111,6 @@ public class ApplicationConfiguration implements Serializable {
             .newHashMap();
 
     private Set<String> adminUsers;
-
-    private String webAssetsUrl;
-    private String webAssetsStyleUrl;
-
-    // set by component.xml
-    private String webAssetsVersion = "";
 
     private Optional<String> openIdProvider; // Cache the OpenId provider
 
@@ -420,27 +412,6 @@ public class ApplicationConfiguration implements Serializable {
     public boolean useEmailServerSsl() {
         return jndiBackedConfig.getStmpUsesSsl() != null ? Boolean
                 .parseBoolean(jndiBackedConfig.getStmpUsesSsl()) : false;
-    }
-
-    public String getWebAssetsStyleUrl() {
-        if (isEmpty(webAssetsStyleUrl)) {
-            webAssetsStyleUrl = getWebAssetsUrl() + STYLESHEET_LOCAL_PATH;
-        }
-        return webAssetsStyleUrl;
-    }
-
-    public String getWebAssetsUrl() {
-        if (isEmpty(webAssetsUrl)) {
-            webAssetsUrl =
-                    String.format("%s/%s", getBaseWebAssetsUrl(),
-                            webAssetsVersion);
-        }
-        return webAssetsUrl;
-    }
-
-    private String getBaseWebAssetsUrl() {
-        return Objects.firstNonNull(jndiBackedConfig.getWebAssetsUrlBase(),
-                "//assets-zanata.rhcloud.com");
     }
 
     public int getMaxConcurrentRequestsPerApiKey() {
