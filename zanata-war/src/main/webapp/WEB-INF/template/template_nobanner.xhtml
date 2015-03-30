@@ -30,12 +30,12 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0"/>
     <meta http-equiv="cleartype" content="on"/>
 
-    <link rel="shortcut icon" href="#{resource['assets/img/logo/logo.ico']}"
+    <link rel="shortcut icon" href="#{applicationConfiguration.getWebAssetsUrl('assets/img/logo/logo.ico')}"
       type="image/x-icon" />
 
     <!--[if gt IE 8]><!-->
     <link type="text/css" rel="stylesheet"
-      href="#{resource['assets/css/style.min.css']}"/>
+      href="#{applicationConfiguration.getWebAssetsUrl('assets/css/style.min.css')}"/>
     <!--<![endif]-->
 
     <!--[if (lt IE 9) & (!IEMobile)]>

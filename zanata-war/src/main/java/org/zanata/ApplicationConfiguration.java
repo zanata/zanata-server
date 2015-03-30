@@ -20,8 +20,6 @@
  */
 package org.zanata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,13 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.application.ResourceHandler;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
@@ -53,7 +55,6 @@ import org.zanata.log4j.ZanataHTMLLayout;
 import org.zanata.log4j.ZanataSMTPAppender;
 import org.zanata.security.AuthenticationType;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -115,6 +116,8 @@ public class ApplicationConfiguration implements Serializable {
     private Optional<String> openIdProvider; // Cache the OpenId provider
 
     private String defaultServerPath;
+
+    private String webAssetsUrlBase;
 
     @Create
     public void load() {
@@ -412,6 +415,24 @@ public class ApplicationConfiguration implements Serializable {
     public boolean useEmailServerSsl() {
         return jndiBackedConfig.getStmpUsesSsl() != null ? Boolean
                 .parseBoolean(jndiBackedConfig.getStmpUsesSsl()) : false;
+    }
+
+    public String getWebAssetsUrl(String resource) {
+        return String.format("%s/%s", getWebAssetsUrlBase(), resource);
+    }
+
+    protected String getWebAssetsUrlBase() {
+        if (StringUtils.isBlank(webAssetsUrlBase)) {
+            String contextPath =
+                    FacesContext.getCurrentInstance().getExternalContext()
+                            .getRequestContextPath();
+
+            webAssetsUrlBase = MoreObjects.firstNonNull(
+                    jndiBackedConfig.getWebAssetsUrlBase(),
+                    String.format("%s%s", contextPath,
+                            ResourceHandler.RESOURCE_IDENTIFIER));
+        }
+        return webAssetsUrlBase;
     }
 
     public int getMaxConcurrentRequestsPerApiKey() {
