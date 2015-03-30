@@ -293,6 +293,10 @@
     <to last="true">/webtrans/Application.seam$1</to>
   </rule>
 
+  <!-- zanata-assets resource -->
+  <!-- JSF serves zanata-assets with suffix of .seam,
+      this is to make sure any reference to zanata-assets without .seam can access to the resource.
+      e.g. /assets/style.css are redirect to /assets/style.css.seam -->
   <rule>
     <from casesensitive="true">^/javax.faces.resource/assets/(.*)(?&lt;!.seam)$</from>
     <to last="true">/javax.faces.resource/assets/$1.seam</to>

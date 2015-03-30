@@ -15,6 +15,8 @@ property can safely be reverted or removed before subsequent startups.
             <property name="jboss.as.management.blocking.timeout" value="1000"/>
         </system-properties>
 
+* zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency. [Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
+
 
 <h5>Bugfixes</h5>
 * [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
