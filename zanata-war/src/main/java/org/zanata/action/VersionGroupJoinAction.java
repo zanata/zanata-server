@@ -106,7 +106,7 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     }
 
     public List<SelectableVersion> getVersions() {
-        if (StringUtils.isNotEmpty(projectSlug)) {
+        if (projectVersions.isEmpty() && StringUtils.isNotEmpty(projectSlug)) {
             List<HProjectIteration> versions =
                     projectIterationDAO.getByProjectSlug(projectSlug,
                         EntityStatus.ACTIVE, EntityStatus.READONLY);
@@ -136,12 +136,21 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
                     .getMaintainersBySlug(slug)) {
                 maintainers.add(maintainer);
             }
-            sendEmail.setEmailType(SendEmailAction.EMAIL_TYPE_REQUEST_TO_JOIN_GROUP);
-            return sendEmail.sendToVersionGroupMaintainer(maintainers);
+            sendEmail.setEmailType(
+                SendEmailAction.EMAIL_TYPE_REQUEST_TO_JOIN_GROUP);
+            String result = sendEmail.sendToVersionGroupMaintainer(maintainers);
+            resetData();
+            return result;
         } else {
             FacesMessages.instance().add(msgs.get("jsf.NoProjectVersionSelected"));
             return "failure";
         }
+    }
+
+    public void resetData() {
+        projectSlug = "";
+        projectVersions.clear();
+        setQuery("");
     }
 
     @Override
@@ -158,12 +167,12 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     }
 
     public final class SelectableVersion extends ProjectIterationId {
-        
         @Getter
         @Setter
         private boolean selected;
 
-        public SelectableVersion(String projectSlug, String versionSlug, ProjectType projectType, boolean selected) {
+        public SelectableVersion(String projectSlug, String versionSlug,
+                ProjectType projectType, boolean selected) {
             super(projectSlug, versionSlug, projectType);
             this.selected = selected;
         }

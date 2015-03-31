@@ -215,22 +215,6 @@
                 role="content"
                 aria-labelledby="dropdownContent">
                 <li>
-                  <s:link view="/version-group/request_to_join.xhtml"
-                    styleClass="i__item--right"
-                    propagation="none">
-                    <f:param name="emailType"
-                      value="request_to_join_group"/>
-                    <f:param name="versionGroupSlug"
-                      value="#{versionGroupHomeAction.slug}"/>
-                    <h:outputFormat
-                      value="#{msgs['jsf.RequestAddProjectToGroup']}">
-                      <f:param value="#{versionGroupHome.instance.name}"/>
-                    </h:outputFormat>
-                    <i class="i i--project i__item__icon"></i>
-                  </s:link>
-                </li>
-
-                <li>
                   <a href="#" class="i__item--right"
                     data-toggle="modal" onclick="return false;"
                     data-target="#joinGroupDialog">

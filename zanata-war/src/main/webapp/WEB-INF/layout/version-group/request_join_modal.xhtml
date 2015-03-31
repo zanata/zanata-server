@@ -27,11 +27,25 @@
       return jQuery('#' + jqSelector('#{rich:clientId('joinGroupForm')}'));
     }
 
+    function getJoinGroupVersionList() {
+      return jQuery(getJoinGroupForm()).find('#' + jqSelector('#{rich:clientId('versions')}'));
+    }
+
     function cancelJoinGroup() {
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
-      //clear results
+      jQuery(getJoinGroupVersionList()).empty();
+      jQuery(getJoinGroupForm()).find('#versionGroupAutocomplete-autocomplete__input').val('');
       jQuery(getJoinGroupForm()).find('#send-button').removeClass('is-active');
+      toggleButtons(false);
       return false;
+    }
+
+    function toggleButtons(hasSelection) {
+      if(hasSelection) {
+        jQuery(getJoinGroupForm()).find('#send-button').removeAttr('disabled');
+      } else {
+        jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', true);
+      }
     }
   </script>
 
@@ -44,7 +58,7 @@
       </h2>
       <button type="button"
         class="modal__close button--link"
-        data-dismiss="modal" onclick="cancelJoinGroup();return false;">
+        data-dismiss="modal" onclick="cancelJoinGroupEmail();return false;">
         <i class="i i--huge i--cancel"></i>
       </button>
     </header>
@@ -52,6 +66,9 @@
     <h:form id="joinGroupForm" styleClass="l--push-bottom-0">
       <a4j:jsFunction name="sendJoinGroupEmail" action="#{versionGroupJoinAction.send}"
         execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#cancel-button').click()"/>
+
+      <a4j:jsFunction name="cancelJoinGroupEmail" action="#{versionGroupJoinAction.resetData()}"
+        execute="@form" oncomplete="cancelJoinGroup();"/>
 
       <div class="modal__content l--pad-all-1">
         <div class="form__item">
@@ -71,8 +88,9 @@
                 <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
                   <li>
                     <h:selectBooleanCheckbox value="${version.selected}">
-                      <a4j:ajax event="click" render="request-join-buttons"
-                        execute="@form"/>
+                      <a4j:ajax event="change"
+                        oncomplete="toggleButtons('#{versionGroupJoinAction.hasSelectedVersion()}')"
+                        execute="@this"/>
                     </h:selectBooleanCheckbox>
                     <label>#{version.iterationSlug}</label>
                   </li>
@@ -95,24 +113,18 @@
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
-          <s:div id="request-join-buttons" styleClass="g__item w--1-3 txt--align-right">
-            <h:outputScript rendered="#{not versionGroupJoinAction.hasSelectedVersion()}">
-              $(document).ready(function() {
-                jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', true);
-              });
-            </h:outputScript>
-
-            <button id="cancel-button" onclick="cancelJoinGroup();return false;"
+          <div class="g__item w--1-3 txt--align-right">
+            <button id="cancel-button" onclick="cancelJoinGroupEmail();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
             <button id="send-button" class="button loader button--primary"
-              onclick="sendJoinGroupEmail()">
+              onclick="sendJoinGroupEmail()" disabled="disabled">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
-          </s:div>
+          </div>
         </div>
       </footer>
     </h:form>
