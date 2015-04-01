@@ -15,6 +15,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.events.ConfigurationChanged;
 import org.zanata.util.Introspectable;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
@@ -24,6 +25,9 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.util.ServiceLocator;
+
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 
 /**
  * @author Patrick Huang <a
@@ -37,7 +41,7 @@ public class RateLimitManager implements Introspectable {
 
     public static final String INTROSPECTABLE_FIELD_RATE_LIMITERS =
             "RateLimiters";
-    private final Cache<String, RestCallLimiter> activeCallers = CacheBuilder
+    private final Cache<RateLimiterToken, RestCallLimiter> activeCallers = CacheBuilder
             .newBuilder().maximumSize(100).build();
 
     @Getter(AccessLevel.PROTECTED)
@@ -64,8 +68,11 @@ public class RateLimitManager implements Introspectable {
         maxActive = appConfig.getMaxActiveRequestsPerApiKey();
     }
 
-    @Observer({ ApplicationConfiguration.EVENT_CONFIGURATION_CHANGED })
-    public void configurationChanged() {
+    @Observer(ConfigurationChanged.EVENT_NAME)
+    // TODO only do this if the relevant values have changed
+    public void configurationChanged(
+            @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            ConfigurationChanged payload) {
         int oldConcurrent = maxConcurrent;
         int oldActive = maxActive;
         boolean changed = false;
@@ -111,13 +118,13 @@ public class RateLimitManager implements Introspectable {
     }
 
     private Iterable<String> peekCurrentBuckets() {
-        ConcurrentMap<String, RestCallLimiter> map = activeCallers.asMap();
+        ConcurrentMap<RateLimiterToken, RestCallLimiter> map = activeCallers.asMap();
         return Iterables.transform(map.entrySet(),
-                new Function<Map.Entry<String, RestCallLimiter>, String>() {
+                new Function<Map.Entry<RateLimiterToken, RestCallLimiter>, String>() {
 
                     @Override
                     public String
-                            apply(Map.Entry<String, RestCallLimiter> input) {
+                            apply(Map.Entry<RateLimiterToken, RestCallLimiter> input) {
 
                         RestCallLimiter rateLimiter = input.getValue();
                         return input.getKey() + ":" + rateLimiter;
@@ -125,7 +132,10 @@ public class RateLimitManager implements Introspectable {
                 });
     }
 
-    public RestCallLimiter getLimiter(final String apiKey) {
+    /**
+     * @param key - {@link RateLimiterToken.TYPE )
+     */
+    public RestCallLimiter getLimiter(final RateLimiterToken key) {
 
         if (getMaxConcurrent() == 0 && getMaxActive() == 0) {
             if (activeCallers.size() > 0) {
@@ -135,10 +145,10 @@ public class RateLimitManager implements Introspectable {
             return NoLimitLimiter.INSTANCE;
         }
         try {
-            return activeCallers.get(apiKey, new Callable<RestCallLimiter>() {
+            return activeCallers.get(key, new Callable<RestCallLimiter>() {
                 @Override
                 public RestCallLimiter call() throws Exception {
-                    log.debug("creating rate limiter for api key: {}", apiKey);
+                    log.debug("creating rate limiter for key: {}", key);
                     return new RestCallLimiter(getMaxConcurrent(),
                             getMaxActive());
                 }

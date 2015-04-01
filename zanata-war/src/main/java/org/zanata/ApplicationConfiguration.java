@@ -27,8 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import javax.faces.application.ResourceHandler;
 import javax.faces.context.FacesContext;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.MoreObjects;
@@ -51,6 +55,7 @@ import org.jboss.seam.web.ServletContexts;
 import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
 import org.zanata.config.JndiBackedConfig;
+import org.zanata.events.ConfigurationChanged;
 import org.zanata.log4j.ZanataHTMLLayout;
 import org.zanata.log4j.ZanataSMTPAppender;
 import org.zanata.security.AuthenticationType;
@@ -71,8 +76,6 @@ public class ApplicationConfiguration implements Serializable {
 
     private static final String EMAIL_APPENDER_NAME =
             "zanata.log.appender.email";
-    public static final String EVENT_CONFIGURATION_CHANGED =
-            "zanata.configuration.changed";
 
     @Getter
     private static final int defaultMaxFilesPerUpload = 100;
@@ -128,8 +131,11 @@ public class ApplicationConfiguration implements Serializable {
         this.loadJaasConfig();
     }
 
-    @Observer({ EVENT_CONFIGURATION_CHANGED })
-    public void resetConfigValue(String configName) {
+    @Observer(ConfigurationChanged.EVENT_NAME)
+    public void resetConfigValue(
+            @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            ConfigurationChanged configChange) {
+        String configName = configChange.getConfigKey();
         // Remove the value from all stores
         databaseBackedConfig.reset(configName);
         jndiBackedConfig.reset(configName);

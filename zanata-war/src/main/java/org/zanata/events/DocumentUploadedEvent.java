@@ -23,16 +23,16 @@ package org.zanata.events;
 
 import org.zanata.common.LocaleId;
 
-import lombok.Data;
+import lombok.Value;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  *
  */
-@Data
+@Value
 public final class DocumentUploadedEvent {
     public static final String EVENT_NAME =
-            "org.zanata.event.HDocumentUploaded";
+            "org.zanata.events.DocumentUploadedEvent";
     private final long actorId;
     private final Long documentId;
     private final boolean isSourceDocument;

@@ -46,7 +46,7 @@
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.3.1</zanata.api.compat.version>
     <zanata.client.version>3.3.1</zanata.client.version>
-    <zanata.common.version>3.4.0</zanata.common.version>
+    <zanata.common.version>3.6.0</zanata.common.version>
 
     <richfaces.version>4.5.0.Final</richfaces.version>
 
@@ -791,6 +791,12 @@
       </dependency>
 
       <dependency>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+        </exclusions>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>3.1.4.GA</version>
@@ -972,7 +978,7 @@
       <dependency>
         <groupId>org.fedorahosted.tennera</groupId>
         <artifactId>jgettext</artifactId>
-        <version>0.13</version>
+        <version>0.14</version>
       </dependency>
       <dependency>
         <groupId>org.functionaljava</groupId>
@@ -1463,7 +1469,16 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.1</version>
-            <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>javax.el</groupId>
+                <artifactId>el-api</artifactId>
+              </exclusion>
+            </exclusions>
           </dependency>
           <dependency>
             <groupId>org.fusesource.jansi</groupId>
