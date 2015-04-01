@@ -97,7 +97,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(HTML, HTMLAdapter.class);
         DOCTYPEMAP.put(SUBTITLE, SubtitleAdapter.class);
         DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class); //implement FileFormatAdapter
-        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, GetTextAdapter.class); //implement FileFormatAdapter
+        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, GettextAdapter.class); //implement FileFormatAdapter
 
     }
 
