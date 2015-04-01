@@ -236,7 +236,7 @@ public class SendEmailAction implements Serializable {
                                             .isRequestAsReviewer(),
                                     languageJoinAction
                                             .isRequestAsCoordinator());
-                                    
+
                     String msg = emailServiceImpl.sendToLanguageCoordinators(
                             locale, strategy);
                     facesMessages.addGlobal(msg);
