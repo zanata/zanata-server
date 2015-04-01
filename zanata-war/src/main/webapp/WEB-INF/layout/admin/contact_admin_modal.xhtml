@@ -7,11 +7,6 @@
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
-    $(document).ready(function() {
-      jQuery('#' + jqSelector('#{rich:clientId('contact-admin-subject')}')).
-        val('#{msgs['jsf.message.admin.inquiry.subject']}');
-    });
-
     function cancelContactAdmin() {
       jQuery('#' + jqSelector('#{rich:clientId('contact-admin-message')}')).val('');
 
@@ -37,9 +32,8 @@
     </header>
 
     <h:form id="contactAdminForm" styleClass="l--push-bottom-0">
-      <h:inputHidden id="contact-admin-subject" value="#{contactAdminAction.subject}"/>
       <div class="modal__content l--pad-all-1">
-        <s:decorate id="messageField" template="../field.xhtml">
+        <s:decorate id="messageField" template="/WEB-INF/layout/field.xhtml">
           <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.htmlMessage}"
             required="true">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
@@ -55,7 +49,7 @@
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel-button" onclick="cancelContactAdmin();return false;"
+            <button id="cancel-button" onclick="cancelContactAdmin()"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}

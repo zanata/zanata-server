@@ -13,13 +13,6 @@
     #version-list label {
       padding-left: 0.40625em;
     }
-
-    #version-list input[type=checkbox] {
-      width: 1em;
-      height: 1em;
-      vertical-align: middle;
-      margin-bottom: 0.20625em;
-    }
   </style>
 
   <script>
@@ -41,10 +34,10 @@
     }
 
     function toggleButtons(hasSelection) {
-      if(hasSelection) {
+      if(hasSelection === 'true') {
         jQuery(getJoinGroupForm()).find('#send-button').removeAttr('disabled');
       } else {
-        jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', true);
+        jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', 'disabled');
       }
     }
   </script>
@@ -67,7 +60,7 @@
       <a4j:jsFunction name="sendJoinGroupEmail" action="#{versionGroupJoinAction.send}"
         execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#cancel-button').click()"/>
 
-      <a4j:jsFunction name="cancelJoinGroupEmail" action="#{versionGroupJoinAction.resetData()}"
+      <a4j:jsFunction name="cancelJoinGroupEmail" action="#{versionGroupJoinAction.clearFormFields()}"
         execute="@form" oncomplete="cancelJoinGroup();"/>
 
       <div class="modal__content l--pad-all-1">

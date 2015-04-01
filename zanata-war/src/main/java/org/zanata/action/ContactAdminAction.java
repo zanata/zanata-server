@@ -33,6 +33,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.email.ContactAdminEmailStrategy;
 import org.zanata.email.EmailStrategy;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.service.EmailService;
 
@@ -60,11 +61,13 @@ public class ContactAdminAction implements Serializable {
     @In
     private EmailService emailServiceImpl;
 
+    @In
+    private Messages msgs;
+
     @Getter
     private String replyEmail;
 
     @Getter
-    @Setter
     private String subject;
 
     @Getter
@@ -81,7 +84,7 @@ public class ContactAdminAction implements Serializable {
         fromLoginName = authenticatedAccount.getUsername();
         replyEmail = authenticatedAccount.getPerson().getEmail();
 
-        subject = "";
+        subject = msgs.get("jsf.message.admin.inquiry.subject'");
         htmlMessage = "";
     }
 

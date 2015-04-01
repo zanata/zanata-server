@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
@@ -93,16 +94,10 @@ public class LanguageJoinAction implements Serializable {
         }
     }
 
+    @Restrict("#{identity.loggedIn}")
     public String getSubject() {
         return msgs.format("jsf.language.email.joinrequest.Subject",
-            getLoginName(), getLocaleId().getId());
-    }
-
-    private String getLoginName() {
-        if(authenticatedAccount != null) {
-            return authenticatedAccount.getUsername();
-        }
-        return "";
+            authenticatedAccount.getUsername(), getLocaleId().getId());
     }
 
     private LocaleId getLocaleId() {

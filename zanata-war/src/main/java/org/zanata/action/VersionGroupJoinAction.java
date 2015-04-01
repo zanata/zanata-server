@@ -143,7 +143,7 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
             sendEmail.setEmailType(
                 SendEmailAction.EMAIL_TYPE_REQUEST_TO_JOIN_GROUP);
             String result = sendEmail.sendToVersionGroupMaintainer(maintainers);
-            resetData();
+            clearFormFields();
             return result;
         } else {
             facesMessages.addGlobal(
@@ -152,14 +152,27 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         }
     }
 
-    public void resetData() {
+    /**
+     * This is to reset data when user closes dialog or after sending email.
+     * See version-group/request_join_modal.xhtml#cancelJoinGroupEmail
+     */
+    public void clearFormFields() {
         projectSlug = "";
         projectVersions.clear();
         setQuery("");
     }
 
+    // clear all the project versions in the selected project
+    private void clearProjectVersions() {
+        if(!projectVersions.isEmpty()) {
+            projectVersions.clear();
+        }
+    }
+
     @Override
     public List<HProject> suggest() {
+        // Need to clear the all the versions displayed in dialog from previous
+        // selected project when user is entering a new project search(autocomplete)
         projectVersions.clear();
         return projectDAO.getProjectsForMaintainer(
                 authenticatedAccount.getPerson(), getQuery(), 0,

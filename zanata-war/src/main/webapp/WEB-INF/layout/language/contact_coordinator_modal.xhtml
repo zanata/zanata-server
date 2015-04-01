@@ -46,7 +46,7 @@
       <h:inputHidden id="contact-coordinator-subject" value="#{sendEmail.subject}"/>
 
       <div class="modal__content l--pad-all-1">
-        <s:decorate id="messageField" template="../field.xhtml">
+        <s:decorate id="messageField" template="/WEB-INF/layout/field.xhtml">
           <h:inputTextarea id="contact-coordinator-message" value="#{sendEmail.htmlMessage}"
             required="true" styleClass="l--push-bottom-0">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>

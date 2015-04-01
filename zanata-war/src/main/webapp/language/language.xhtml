@@ -5,7 +5,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:a4j="http://richfaces.org/a4j"
-  template="../WEB-INF/template/template.xhtml">
+  template="/WEB-INF/template/template.xhtml">
 
   <ui:define name="page_title">#{msgs.format('jsf.LanguageTeamTitle',
     languageAction.locale.retrieveDisplayName())}</ui:define>
@@ -165,12 +165,12 @@
 
           <ul class="tabs__content panels__container js-tabs-content l--push-top-1">
             <li id="members">
-              <ui:include src="../WEB-INF/layout/language/members-tab.xhtml"/>
+              <ui:include src="/WEB-INF/layout/language/members-tab.xhtml"/>
             </li>
 
             <s:fragment rendered="#{s:hasRole('admin')}">
               <li id="settings">
-                <ui:include src="../WEB-INF/layout/language/settings-tab.xhtml"/>
+                <ui:include src="/WEB-INF/layout/language/settings-tab.xhtml"/>
               </li>
             </s:fragment>
           </ul>
@@ -178,12 +178,12 @@
       </div>
     </div>
     <s:fragment rendered="#{identity.loggedIn}">
-      <ui:include src="../WEB-INF/layout/language/contact_coordinator_modal.xhtml">
+      <ui:include src="/WEB-INF/layout/language/contact_coordinator_modal.xhtml">
         <ui:param name="id" value="#{languageAction.language}" />
         <ui:param name="displayName" value="#{languageAction.locale.retrieveDisplayName()}" />
       </ui:include>
       <s:fragment rendered="#{not languageAction.isUserInTeam()}">
-        <ui:include src="../WEB-INF/layout/language/request_join_modal.xhtml">
+        <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml">
           <ui:param name="id" value="#{languageAction.language}" />
           <ui:param name="displayName" value="#{languageAction.locale.retrieveDisplayName()}" />
         </ui:include>

@@ -8,7 +8,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
-  template="../WEB-INF/template/template.xhtml">
+  template="/WEB-INF/template/template.xhtml">
 
 <ui:define name="page_title">
   #{msgs['jsf.Groups']} - #{versionGroupHome.instance.name}
@@ -221,7 +221,7 @@
                     #{msgs.format('jsf.RequestAddProjectToGroup', versionGroupHome.instance.name)}
                     <i class="i i--project i__item__icon"></i>
                   </a>
-                  <ui:include src="../WEB-INF/layout/version-group/request_join_modal.xhtml"/>
+                  <ui:include src="/WEB-INF/layout/version-group/request_join_modal.xhtml"/>
                 </li>
               </ul>
             </div>
@@ -246,13 +246,13 @@
       <ul class="tabs__content panels__container js-tabs-content l--push-top-1">
         <li id="languages">
           <ui:include
-            src="../WEB-INF/layout/version-group/languages-tab.xhtml">
+            src="/WEB-INF/layout/version-group/languages-tab.xhtml">
           </ui:include>
         </li>
 
         <li id="projects">
           <ui:include
-            src="../WEB-INF/layout/version-group/projects-tab.xhtml"/>
+            src="/WEB-INF/layout/version-group/projects-tab.xhtml"/>
         </li>
 
         <li id="maintainers">
@@ -267,7 +267,7 @@
           rendered="#{s:hasPermission(versionGroupHome.instance, 'update')}">
           <li id="settings">
             <ui:include
-              src="../WEB-INF/layout/version-group/settings-tab.xhtml"/>
+              src="/WEB-INF/layout/version-group/settings-tab.xhtml"/>
           </li>
         </s:fragment>
       </ul>
