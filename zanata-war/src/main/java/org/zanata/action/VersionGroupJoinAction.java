@@ -23,7 +23,6 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,7 +32,6 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.ProjectType;
@@ -46,8 +44,11 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.service.VersionGroupService;
+
 import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
+
+import org.zanata.ui.faces.FacesMessages;
 
 import com.google.common.collect.Lists;
 
@@ -57,6 +58,9 @@ import com.google.common.collect.Lists;
 public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In
     private VersionGroupService versionGroupServiceImpl;
@@ -142,7 +146,8 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
             resetData();
             return result;
         } else {
-            FacesMessages.instance().add(msgs.get("jsf.NoProjectVersionSelected"));
+            facesMessages.addGlobal(
+                    "#{msgs['jsf.NoProjectVersionSelected']}");
             return "failure";
         }
     }
