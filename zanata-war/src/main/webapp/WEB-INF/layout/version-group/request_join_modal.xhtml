@@ -28,16 +28,16 @@
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
       jQuery(getJoinGroupVersionList()).empty();
       jQuery(getJoinGroupForm()).find('#versionGroupAutocomplete-autocomplete__input').val('');
-      jQuery(getJoinGroupForm()).find('#send-button').removeClass('is-active');
+      jQuery(getJoinGroupForm()).find('#request-join-group-send-button').removeClass('is-active');
       toggleButtons(false);
       return false;
     }
 
     function toggleButtons(hasSelection) {
       if(hasSelection === 'true') {
-        jQuery(getJoinGroupForm()).find('#send-button').removeAttr('disabled');
+        jQuery(getJoinGroupForm()).find('#request-join-group-send-button').removeAttr('disabled');
       } else {
-        jQuery(getJoinGroupForm()).find('#send-button').attr('disabled', 'disabled');
+        jQuery(getJoinGroupForm()).find('#request-join-group-send-button').attr('disabled', 'disabled');
       }
     }
   </script>
@@ -58,7 +58,7 @@
 
     <h:form id="joinGroupForm" styleClass="l--push-bottom-0">
       <a4j:jsFunction name="sendJoinGroupEmail" action="#{versionGroupJoinAction.send}"
-        execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#cancel-button').click()"/>
+        execute="@form" oncomplete="jQuery(getJoinGroupForm()).find('#request-join-group-cancel-button').click()"/>
 
       <a4j:jsFunction name="cancelJoinGroupEmail" action="#{versionGroupJoinAction.clearFormFields()}"
         execute="@form" oncomplete="cancelJoinGroup();"/>
@@ -107,13 +107,13 @@
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel-button" onclick="cancelJoinGroupEmail();return false;"
+            <button id="request-join-group-cancel-button" onclick="cancelJoinGroupEmail();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send-button" class="button loader button--primary"
+            <button id="request-join-group-send-button" class="button loader button--primary"
               onclick="sendJoinGroupEmail()" disabled="disabled">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>

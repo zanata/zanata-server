@@ -10,7 +10,7 @@
     function cancelContactAdmin() {
       jQuery('#' + jqSelector('#{rich:clientId('contact-admin-message')}')).val('');
 
-      jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
+      jQuery(getContactAdminForm()).find('#contact-admin-send-button').removeClass('is-active');
       return false;
     }
 
@@ -43,19 +43,19 @@
 
       <a4j:jsFunction name="sendContactAdminEmail" action="#{contactAdminAction.send}"
         execute="@form"
-        oncomplete="jQuery(getContactAdminForm()).find('#cancel-button').click()"/>
+        oncomplete="jQuery(getContactAdminForm()).find('#contact-admin-cancel-button').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel-button" onclick="cancelContactAdmin()"
+            <button id="contact-admin-cancel-button" onclick="cancelContactAdmin()"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send-button" class="button loader button--primary"
+            <button id="contact-admin-send-button" class="button loader button--primary"
               onclick="sendContactAdminEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>

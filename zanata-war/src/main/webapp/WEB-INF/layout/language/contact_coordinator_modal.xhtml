@@ -18,7 +18,7 @@
     function cancelContactCoordinator() {
       jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-id')}')).val('');
       jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val('');
-      jQuery(getContactAdminForm()).find('#send-button').removeClass('is-active');
+      jQuery(getContactAdminForm()).find('#contact-coordinator-send-button').removeClass('is-active');
 
       return false;
     }
@@ -56,19 +56,19 @@
 
       <a4j:jsFunction name="sendContactCoordinatorEmail" execute="@form"
         action="#{sendEmail.send}"
-        oncomplete="jQuery(getContactCoordinatorForm()).find('#cancel-button').click()"/>
+        oncomplete="jQuery(getContactCoordinatorForm()).find('#contact-coordinator-cancel-button').click()"/>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
         <div class="g--tight">
           <div class="g__item w--2-3"/>
           <div class="g__item w--1-3 txt--align-right">
-            <button id="cancel-button" onclick="cancelContactCoordinator();return false;"
+            <button id="contact-coordinator-cancel-button" onclick="cancelContactCoordinator();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send-button" class="button loader button--primary"
+            <button id="contact-coordinator-send-button" class="button loader button--primary"
               onclick="sendContactCoordinatorEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>

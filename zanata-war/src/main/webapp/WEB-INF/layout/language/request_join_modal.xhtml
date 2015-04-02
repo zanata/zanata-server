@@ -22,7 +22,7 @@
 
     function cancelJoinLanguage() {
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
-      jQuery(getJoinLanguageForm()).find('#send-button').removeClass('is-active');
+      jQuery(getJoinLanguageForm()).find('#request-join-language-send-button').removeClass('is-active');
       //reset all checkboxes
       jQuery(getJoinLanguageForm()).find('#roles').
         find('input.js-form__checkbox__input').prop('checked', false).change();
@@ -54,7 +54,7 @@
       </a4j:jsFunction>
 
       <a4j:jsFunction name="sendJoinLanguageEmail" action="#{sendEmail.send}"
-        execute="@form" oncomplete="jQuery(getJoinLanguageForm()).find('#cancel-button').click()"/>
+        execute="@form" oncomplete="jQuery(getJoinLanguageForm()).find('#request-join-language-cancel-button').click()"/>
 
       <div class="modal__content l--pad-all-1">
         <div class="form__item" id="roles">
@@ -92,17 +92,17 @@
           <s:div id="request-join-buttons" styleClass="g__item w--1-3 txt--align-right">
             <h:outputScript rendered="#{not languageJoinAction.hasSelectedRole()}">
               $(document).ready(function() {
-                jQuery(getJoinLanguageForm()).find('#send-button').attr('disabled', true);
+                jQuery(getJoinLanguageForm()).find('#request-join-language-send-button').attr('disabled', true);
               });
             </h:outputScript>
 
-            <button id="cancel-button" onclick="cancelJoinLanguage();return false;"
+            <button id="request-join-language-cancel-button" onclick="cancelJoinLanguage();return false;"
               class="cancel button--link l--push-right-half"
               data-dismiss="modal">
               #{msgs['jsf.Cancel']}
             </button>
 
-            <button id="send-button" class="button loader button--primary"
+            <button id="request-join-language-send-button" class="button loader button--primary"
               onclick="sendJoinLanguageEmail()">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
