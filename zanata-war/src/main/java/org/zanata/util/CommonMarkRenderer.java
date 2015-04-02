@@ -45,6 +45,9 @@ import java.io.InputStreamReader;
 @Slf4j
 public class CommonMarkRenderer {
 
+    // TODO when upgrading, use org.webjars.bower:commonmark Maven artifact
+    // instead, plus org.apache.servicemix.tooling:depends-maven-plugin to
+    // generate dependencies.properties and get the correct version.
     private static final String commonMarkImpl = "commonmark-0.18.1.min.js";
 
     // ScriptEngine is expensive, but not really threadsafe (even in Rhino).
@@ -55,10 +58,15 @@ public class CommonMarkRenderer {
     private Invocable invocable = getInvocable();
 
     /**
-     * Return the name of the implementation script, available under "scripts/"
+     * Return the name of the implementation script, available under "/script/"
+     * (ie under web resource "$zanata/script/" or under classpath resource
+     * "META-INF/resources/script/".
+     *
+     * NB also used in JSF as
+     * <code>&lt;h:outputScript target="body" library="script" name="${commonMarkRenderer.scriptName}"/&gt;</code>
      * @return
      */
-    public String getCommonMarkImpl() {
+    public String getScriptName() {
         return commonMarkImpl;
     }
 
@@ -82,7 +90,7 @@ public class CommonMarkRenderer {
 
     private Invocable getInvocable() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                getScriptAsStream(commonMarkImpl)))) {
+                getScriptAsStream(getScriptName())))) {
 
             ScriptEngine engine = newEngine();
             engine.eval("window = this;");
