@@ -80,9 +80,6 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
-    @In
-    private Messages msgs;
-
     @Getter
     @Setter
     private String slug;
@@ -160,13 +157,6 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         projectSlug = "";
         projectVersions.clear();
         setQuery("");
-    }
-
-    // clear all the project versions in the selected project
-    private void clearProjectVersions() {
-        if(!projectVersions.isEmpty()) {
-            projectVersions.clear();
-        }
     }
 
     @Override
