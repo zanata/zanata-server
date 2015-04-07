@@ -106,6 +106,14 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         return versionGroupDAO.getBySlug(slug).getName();
     }
 
+    public void bindSelectedVersion(String versionSlug, boolean selected) {
+        for (SelectableVersion projectVersion : projectVersions) {
+            if (projectVersion.getIterationSlug().equals(versionSlug)) {
+                projectVersion.setSelected(selected);
+            }
+        }
+    }
+
     public List<SelectableVersion> getVersions() {
         if (projectVersions.isEmpty() && StringUtils.isNotEmpty(projectSlug)) {
             List<HProjectIteration> versions =

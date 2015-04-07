@@ -29,19 +29,24 @@
       jQuery(getJoinGroupVersionList()).empty();
       jQuery(getJoinGroupForm()).find('#versionGroupAutocomplete-autocomplete__input').val('');
       jQuery(getJoinGroupForm()).find('#request-join-group-send-button').removeClass('is-active');
-      toggleButtons(false);
+      toggleButtons();
       return false;
     }
 
-    function toggleButtons(hasSelection) {
+    function toggleButtons() {
       var sendButton = jQuery(getJoinGroupForm()).find('#request-join-group-send-button');
-
-      if(hasSelection === 'true') {
+      var hasSelection = jQuery(getJoinGroupVersionList()).find('.js-form__checkbox.is-checked').length > 0;
+      if(hasSelection) {
         sendButton.removeAttr('disabled');
       } else {
         sendButton.attr('disabled', 'disabled');
       }
     }
+
+    function refreshCheckbox() {
+      zanata.form.appendCheckboxes(getJoinGroupVersionList().element);
+    }
+
   </script>
 
   <div class="modal__dialog l--constrain-medium">
@@ -65,11 +70,17 @@
       <a4j:jsFunction name="cancelJoinGroupEmail" action="#{versionGroupJoinAction.clearFormFields()}"
         execute="@form" oncomplete="cancelJoinGroup();"/>
 
+      <a4j:jsFunction name="bindSelectedVersion" action="#{versionGroupJoinAction.bindSelectedVersion(key, checked)}"
+        oncomplete="toggleButtons()">
+        <a4j:param name="val1" assignTo="#{key}"/>
+        <a4j:param name="val2" assignTo="#{checked}"/>
+      </a4j:jsFunction>
+
       <div class="modal__content l--pad-all-1">
         <div class="form__item">
           <zanata:autocomplete actionBean="#{versionGroupJoinAction}"
             fetchValue="#{result.slug}" id="versionGroupAutocomplete"
-            render="versions"
+            render="versions" oncomplete="refreshCheckbox()"
             displayText="#{result.name}"
             minlength="1"
             placeholder="#{msgs['jsf.dashboard.projects.search.placeholder']}">
@@ -82,12 +93,9 @@
               <ul class="list--slat" id="version-list">
                 <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">
                   <li>
-                    <h:selectBooleanCheckbox value="${version.selected}">
-                      <a4j:ajax event="change"
-                        oncomplete="toggleButtons('#{versionGroupJoinAction.hasSelectedVersion()}')"
-                        execute="@this"/>
-                    </h:selectBooleanCheckbox>
-                    <label>#{version.iterationSlug}</label>
+                    <zanata:checkbox onValueChanged="bindSelectedVersion"
+                      checked="${version.selected}" value="#{version.iterationSlug}"
+                      label="#{version.iterationSlug}"/>
                   </li>
                 </ui:repeat>
               </ul>
@@ -119,6 +127,7 @@
               onclick="sendJoinGroupEmail()" disabled="disabled">
               <span class="loader__label">#{msgs['jsf.email.Send']}</span>
             </button>
+
           </div>
         </div>
       </footer>
