@@ -34,10 +34,12 @@
     }
 
     function toggleButtons(hasSelection) {
+      var sendButton = jQuery(getJoinGroupForm()).find('#request-join-group-send-button');
+
       if(hasSelection === 'true') {
-        jQuery(getJoinGroupForm()).find('#request-join-group-send-button').removeAttr('disabled');
+        sendButton.removeAttr('disabled');
       } else {
-        jQuery(getJoinGroupForm()).find('#request-join-group-send-button').attr('disabled', 'disabled');
+        sendButton.attr('disabled', 'disabled');
       }
     }
   </script>
@@ -93,7 +95,7 @@
           </s:div>
         </div>
 
-        <s:decorate id="messageField" template="../field.xhtml">
+        <s:decorate id="messageField" template="/WEB-INF/layout/field.xhtml">
           <span>#{msgs['jsf.AdditionalInfo']}</span>
           <span class="txt--meta bx--block">#{msgs['jsf.group.email.AdditionalInfoMessage']}</span>
           <h:inputTextarea id="request-join-message" value="#{sendEmail.htmlMessage}"
