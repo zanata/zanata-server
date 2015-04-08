@@ -1295,6 +1295,11 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
+      <artifactId>zanata-adapter-properties</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
       <artifactId>zanata-rest-client</artifactId>
       <scope>test</scope>
     </dependency>
@@ -1586,6 +1591,10 @@
     <dependency>
       <groupId>net.sf.okapi.filters</groupId>
       <artifactId>okapi-filter-dtd</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.okapi.filters</groupId>
+      <artifactId>okapi-filter-html</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.okapi.filters</groupId>

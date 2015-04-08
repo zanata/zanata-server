@@ -33,6 +33,7 @@ import org.zanata.adapter.HTMLAdapter;
 import org.zanata.adapter.IDMLAdapter;
 import org.zanata.adapter.OpenOfficeAdapter;
 import org.zanata.adapter.PlainTextAdapter;
+import org.zanata.adapter.PropertiesAdapter;
 import org.zanata.adapter.po.PoReader2;
 import org.zanata.adapter.SubtitleAdapter;
 import org.zanata.common.DocumentType;
@@ -96,9 +97,8 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(IDML, IDMLAdapter.class);
         DOCTYPEMAP.put(HTML, HTMLAdapter.class);
         DOCTYPEMAP.put(SUBTITLE, SubtitleAdapter.class);
-        DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class); //implement FileFormatAdapter
-        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, GettextAdapter.class); //implement FileFormatAdapter
-
+        DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class);
+        DOCTYPEMAP.put(PROPERTIES_UTF8, PropertiesUTF8Adapter.class);
     }
 
     private static Set<String> SUPPORTED_EXTENSIONS =

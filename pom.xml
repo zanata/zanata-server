@@ -45,7 +45,7 @@
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.3.1</zanata.api.compat.version>
     <zanata.client.version>3.3.1</zanata.client.version>
-    <zanata.common.version>3.6.0</zanata.common.version>
+    <zanata.common.version>3.6.1-SNAPSHOT</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
 
@@ -436,6 +436,11 @@
       <dependency>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-adapter-glossary</artifactId>
+        <version>${zanata.common.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-adapter-properties</artifactId>
         <version>${zanata.common.version}</version>
       </dependency>
 
