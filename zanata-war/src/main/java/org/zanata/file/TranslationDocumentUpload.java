@@ -135,11 +135,14 @@ public class TranslationDocumentUpload {
                 // FIXME this is misusing the 'filename' field. the method
                 // should probably take a
                 // type anyway
+                Optional<String> docType =
+                    Optional.fromNullable(uploadForm.getFileType());
+
                 transRes =
                         translationFileServiceImpl.parseAdapterTranslationFile(
                                 tempFile.get(), id.getProjectSlug(),
                                 id.getVersionSlug(), id.getDocId(), localeId,
-                                uploadForm.getFileType());
+                                uploadForm.getFileType(), docType);
             }
             if (tempFile.isPresent()) {
                 tempFile.get().delete();

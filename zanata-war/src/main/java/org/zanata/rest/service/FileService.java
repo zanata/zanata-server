@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.jboss.seam.annotations.Name;
 import org.zanata.adapter.FileFormatAdapter;
 import org.zanata.adapter.po.PoWriter2;
 import org.zanata.common.ContentState;
+import org.zanata.common.DocumentType;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.file.FilePersistService;
@@ -65,6 +67,7 @@ import org.zanata.service.TranslationFileService;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 
 @Name("fileService")
@@ -100,12 +103,27 @@ public class FileService implements FileResource {
     @In("filePersistService")
     private FilePersistService filePersistService;
 
+    /**
+     * Deprecated.
+     * @see #acceptedFileTypesMap
+     */
     @Override
+    @Deprecated
     public Response acceptedFileTypes() {
         StringSet acceptedTypes = new StringSet("");
         acceptedTypes.addAll(translationFileServiceImpl
                 .getSupportedExtensions());
         return Response.ok(acceptedTypes.toString()).build();
+    }
+
+    @Override
+    public Response acceptedFileTypesMap() {
+        Map<String, List<String>> acceptedTypesMap = Maps.newHashMap();
+        for(DocumentType type:translationFileServiceImpl
+            .getSupportedDocumentTypes()) {
+            acceptedTypesMap.put(type.name().toUpperCase(), type.getExtensions());
+        }
+        return Response.ok(acceptedTypesMap).build();
     }
 
     @Override

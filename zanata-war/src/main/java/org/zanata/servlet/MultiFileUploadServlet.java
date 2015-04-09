@@ -22,6 +22,7 @@ package org.zanata.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.OptimisticLockException;
@@ -34,21 +35,22 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.StaleStateException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.seam.servlet.ContextualHttpServletRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.zanata.action.AuthenticatedAccountHome;
+import org.zanata.common.DocumentType;
 import org.zanata.file.GlobalDocumentId;
 import org.zanata.file.SourceDocumentUpload;
 import org.zanata.file.UserFileUploadTracker;
@@ -242,6 +244,7 @@ public class MultiFileUploadServlet extends HttpServlet {
 
         private String projectSlug;
         private String versionSlug;
+        private final List<String> fileTypes;
         private String path = "";
         private String lang = "en-US";
         private String fileParams = "";
@@ -253,7 +256,13 @@ public class MultiFileUploadServlet extends HttpServlet {
             this.request = request;
             projectSlug = request.getParameter("p");
             versionSlug = request.getParameter("v");
-
+            //TODO: alex: add types parameter in all caller of /files/upload
+            String fileTypesQuery = request.getParameter("types");
+            if(StringUtils.isNotEmpty(fileTypesQuery)) {
+                fileTypes = Lists.newArrayList(fileTypesQuery.split(","));
+            } else {
+                fileTypes = Collections.emptyList();
+            }
             sourceUploader = ServiceLocator.instance().getInstance(SourceDocumentUpload.class);
             translationFileServiceImpl = ServiceLocator.instance().getInstance(
                     TranslationFileServiceImpl.class);
@@ -392,7 +401,23 @@ public class MultiFileUploadServlet extends HttpServlet {
             form.setFirst(true);
             form.setLast(true);
             form.setSize(item.getSize());
-            form.setFileType(translationFileServiceImpl.extractExtension(item.getName()));
+
+            String extension = translationFileServiceImpl.extractExtension(item.getName());
+            String fileType = null;
+            if(!fileTypes.isEmpty()) {
+                for(String parsedFileType: fileTypes) {
+                    DocumentType docType = DocumentType.valueOf(parsedFileType);
+                    if(docType != null && docType.getExtensions().contains(extension)) {
+                        fileType = docType.name();
+                        break;
+                    }
+                }
+            }
+            fileType =
+                    fileType != null ? translationFileServiceImpl
+                            .extractExtension(item.getName()) : fileType;
+            
+            form.setFileType(fileType);
             form.setFileStream(item.getInputStream());
             return form;
         }

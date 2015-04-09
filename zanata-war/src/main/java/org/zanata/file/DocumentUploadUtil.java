@@ -161,7 +161,7 @@ public class DocumentUploadUtil {
 
     private static void failIfDocumentTypeNotRecognized(
             DocumentFileUploadForm uploadForm) throws ChunkUploadException {
-        if (DocumentType.typeFor(uploadForm.getFileType()) == null) {
+        if (DocumentType.valueOf(uploadForm.getFileType()) == null) {
             throw new ChunkUploadException(Status.PRECONDITION_FAILED,
                     "Value '" + uploadForm.getFileType()
                             + "' is not a recognized document type.");

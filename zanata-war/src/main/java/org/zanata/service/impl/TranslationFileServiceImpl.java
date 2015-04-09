@@ -23,6 +23,7 @@ package org.zanata.service.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.MapMaker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -34,6 +35,7 @@ import org.zanata.adapter.IDMLAdapter;
 import org.zanata.adapter.OpenOfficeAdapter;
 import org.zanata.adapter.PlainTextAdapter;
 import org.zanata.adapter.PropertiesAdapter;
+import org.zanata.adapter.PropertiesUTF8Adapter;
 import org.zanata.adapter.po.PoReader2;
 import org.zanata.adapter.SubtitleAdapter;
 import org.zanata.common.DocumentType;
@@ -49,12 +51,14 @@ import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.service.TranslationFileService;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,6 +73,7 @@ import static org.zanata.common.DocumentType.OPEN_DOCUMENT_SPREADSHEET;
 import static org.zanata.common.DocumentType.OPEN_DOCUMENT_TEXT;
 import static org.zanata.common.DocumentType.PLAIN_TEXT;
 import static org.zanata.common.DocumentType.PROPERTIES;
+import static org.zanata.common.DocumentType.PROPERTIES_UTF8;
 import static org.zanata.common.DocumentType.SUBTITLE;
 import static org.zanata.common.DocumentType.XML_DOCUMENT_TYPE_DEFINITION;
 
@@ -121,14 +126,14 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     @Override
     public TranslationsResource parseTranslationFile(InputStream fileContents,
             String fileName, String localeId, String projectSlug,
-            String iterationSlug, String docId) throws ZanataServiceException {
+            String iterationSlug, String docId, Optional<String> documentType) throws ZanataServiceException {
         if (fileName.endsWith(".po")) {
             return parsePoFile(fileContents, projectSlug, iterationSlug, docId);
         } else if (hasAdapterFor(fileName)) {
             File tempFile = persistToTempFile(fileContents);
             TranslationsResource transRes =
                     parseAdapterTranslationFile(tempFile, projectSlug,
-                            iterationSlug, docId, localeId, fileName);
+                            iterationSlug, docId, localeId, fileName, documentType);
             removeTempFile(tempFile);
             return transRes;
         } else {
@@ -152,14 +157,14 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     @Override
     public TranslationsResource parseAdapterTranslationFile(File tempFile,
             String projectSlug, String iterationSlug, String docId,
-            String localeId, String fileName) {
+            String localeId, String fileName, Optional<String> documentType) {
         Optional<String> params =
                 documentDAO.getAdapterParams(projectSlug, iterationSlug, docId);
         TranslationsResource transRes;
+        FileFormatAdapter adapter = getAdapterFor(documentType, fileName);
         try {
-            transRes =
-                    getAdapterFor(fileName).parseTranslationFile(
-                            tempFile.toURI(), localeId, params);
+            transRes = adapter.parseTranslationFile(tempFile.toURI(), localeId,
+                params);
         } catch (FileFormatAdapterException e) {
             throw new ZanataServiceException("Error parsing translation file: "
                     + fileName, e);
@@ -195,34 +200,41 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     @Override
+    public boolean hasMultipleAdapter(String fileNameOrExtension) {
+        String extension = extractExtension(fileNameOrExtension);
+        return DocumentType.typesFor(extension).size() > 1;
+    }
+
+    @Override
+    public List<DocumentType> getDocumentTypes(String fileNameOrExtension) {
+        String extension = extractExtension(fileNameOrExtension);
+        return DocumentType.typesFor(extension);
+    }
+
+    @Override
     public Resource parseAdapterDocumentFile(URI documentFile,
-            String documentPath, String fileName, Optional<String> params)
-            throws ZanataServiceException {
+            String documentPath, String fileName, Optional<String> params,
+            Optional<String> documentType) throws ZanataServiceException {
         return parseUpdatedAdapterDocumentFile(documentFile,
-                convertToValidPath(documentPath) + fileName, fileName, params);
+                convertToValidPath(documentPath) + fileName, fileName, params,
+                documentType);
     }
 
     @Override
     public Resource parseUpdatedAdapterDocumentFile(URI documentFile,
-            String docId, String fileName, Optional<String> params)
-            throws ZanataServiceException {
-        if (hasAdapterFor(fileName)) {
-            FileFormatAdapter adapter = getAdapterFor(fileName);
-            Resource doc;
-            try {
-                doc =
-                        adapter.parseDocumentFile(documentFile, new LocaleId(
-                                "en"), params);
-            } catch (FileFormatAdapterException e) {
-                throw new ZanataServiceException(
-                        "Error parsing document file: " + fileName, e);
-            }
-            doc.setName(docId);
-            return doc;
-        } else {
-            throw new ZanataServiceException("Unsupported Document file: "
-                    + fileName);
+            String docId, String fileName, Optional<String> params,
+            Optional<String> documentType) throws ZanataServiceException {
+        FileFormatAdapter adapter = getAdapterFor(documentType, fileName);
+        Resource doc;
+        try {
+            doc = adapter.parseDocumentFile(documentFile, new LocaleId(
+                            "en"), params);
+        } catch (FileFormatAdapterException e) {
+            throw new ZanataServiceException(
+                    "Error parsing document file: " + fileName, e);
         }
+        doc.setName(docId);
+        return doc;
     }
 
     /**
@@ -273,6 +285,11 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         return DOCTYPEMAP.containsKey(type);
     }
 
+    @Override
+    public Set<DocumentType> getSupportedDocumentTypes() {
+        return DOCTYPEMAP.keySet();
+    }
+
     private boolean hasAdapterFor(String fileNameOrExtension) {
         String extension = extractExtension(fileNameOrExtension);
         if (extension == null) {
@@ -290,6 +307,10 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         if (extension == null) {
             throw new RuntimeException(
                     "Cannot find adapter for null filename or extension.");
+        }
+        if(hasMultipleAdapter(fileNameOrExtension)) {
+            throw new RuntimeException(
+                "More than 1 adapter found for this extension:" + extension);
         }
         DocumentType documentType = DocumentType.typeFor(extension);
         if (documentType == null) {
@@ -318,6 +339,25 @@ public class TranslationFileServiceImpl implements TranslationFileService {
             throw new RuntimeException(
                     "Unable to construct adapter for document type: " + type, e);
         }
+    }
+
+    /**
+     * Return adapter for given documentType if present, otherwise return adapter
+     * with given fileName.
+     *
+     * @param documentType
+     * @param fileName
+     * @return
+     */
+    private FileFormatAdapter getAdapterFor(Optional<String> documentType,
+        @Nonnull String fileName) {
+        if (documentType.isPresent() && StringUtils.isNotEmpty(
+                documentType.get())) {
+            DocumentType docType = DocumentType.valueOf(documentType.get());
+            return docType != null ? getAdapterFor(docType)
+                : getAdapterFor(fileName);
+        }
+        return getAdapterFor(fileName);
     }
 
     @Override

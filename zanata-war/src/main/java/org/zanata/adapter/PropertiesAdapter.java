@@ -52,9 +52,39 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PropertiesAdapter implements FileFormatAdapter {
 
+    public static final String ISO_8859_1 = Charsets.ISO_8859_1.name();
+
+    public static final String UTF_8 = Charsets.UTF_8.name();
+
     @Override
     public Resource parseDocumentFile(URI fileUri, LocaleId sourceLocale,
         Optional<String> filterParams) throws FileFormatAdapterException,
+        IllegalArgumentException {
+
+        return parseDocumentFile(fileUri, sourceLocale, filterParams,
+            ISO_8859_1);
+    }
+
+    @Override
+    public TranslationsResource parseTranslationFile(URI fileUri,
+        String localeId, Optional<String> params)
+        throws FileFormatAdapterException, IllegalArgumentException {
+
+        return parseTranslationFile(fileUri, localeId, params, ISO_8859_1);
+    }
+
+    @Override
+    public void writeTranslatedFile(OutputStream output, URI originalFile,
+        Map<String, TextFlowTarget> translations, String locale,
+        Optional<String> params)
+        throws FileFormatAdapterException, IllegalArgumentException {
+        
+        writeTranslatedFile(output, originalFile, translations, locale, params,
+            ISO_8859_1);
+    }
+
+    public Resource parseDocumentFile(URI fileUri, LocaleId sourceLocale,
+        Optional<String> filterParams, String charset) throws FileFormatAdapterException,
         IllegalArgumentException {
 
         if (sourceLocale == null) {
@@ -65,8 +95,8 @@ public class PropertiesAdapter implements FileFormatAdapter {
             throw new IllegalArgumentException("Document URI cannot be null");
         }
 
-        PropReader propReader = new PropReader(Charsets.ISO_8859_1.name(),
-            sourceLocale, ContentState.Approved);
+        PropReader propReader = new PropReader(charset, sourceLocale,
+            ContentState.Approved);
 
         BufferedInputStream inputStream = null;
         Resource doc = new Resource();
@@ -88,9 +118,8 @@ public class PropertiesAdapter implements FileFormatAdapter {
         return doc;
     }
 
-    @Override
     public TranslationsResource parseTranslationFile(URI fileUri,
-        String localeId, Optional<String> params)
+        String localeId, Optional<String> params, String charset)
         throws FileFormatAdapterException, IllegalArgumentException {
 
         if (StringUtils.isEmpty(localeId)) {
@@ -98,8 +127,8 @@ public class PropertiesAdapter implements FileFormatAdapter {
                 "locale id string cannot be null or empty");
         }
 
-        PropReader propReader = new PropReader(Charsets.ISO_8859_1.name(),
-            LocaleId.EN_US, ContentState.Approved);
+        PropReader propReader = new PropReader(charset, LocaleId.EN_US,
+            ContentState.Approved);
 
         BufferedInputStream inputStream = null;
 
@@ -128,16 +157,19 @@ public class PropertiesAdapter implements FileFormatAdapter {
         return targetDoc;
     }
 
-    @Override
     public void writeTranslatedFile(OutputStream output, URI originalFile,
         Map<String, TextFlowTarget> translations, String locale,
-        Optional<String> params)
+        Optional<String> params, String charset)
         throws FileFormatAdapterException, IllegalArgumentException {
 
         File tempFile = null;
         try {
             tempFile = File.createTempFile("filename", "extension");
-            PropWriter.write(translations, tempFile);
+            if(charset.equals(ISO_8859_1)) {
+                PropWriter.write(translations, tempFile);
+            } else if (charset.equals(UTF_8)) {
+                PropWriter.writeUTF8(translations, tempFile);
+            }
 
             byte[] buffer = new byte[4096]; // To hold file contents
             int bytesRead;
@@ -147,7 +179,8 @@ public class PropertiesAdapter implements FileFormatAdapter {
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+            throw new FileFormatAdapterException(
+                "Unable to generate translated file", e);
         } finally {
             if (tempFile != null) {
                 if (!tempFile.delete()) {

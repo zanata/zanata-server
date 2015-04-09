@@ -845,17 +845,21 @@ public class VersionHomeAction extends AbstractSortAction implements
         HDocument document = null;
         try {
             Resource doc;
+
+            Optional<String> docType =
+                Optional.fromNullable(sourceFileUpload.documentType);
+
             if (docId == null) {
                 doc =
                         translationFileServiceImpl.parseAdapterDocumentFile(
                                 tempFile.toURI(), documentPath, fileName,
-                                getOptionalParams());
+                                getOptionalParams(), docType);
             } else {
                 doc =
                         translationFileServiceImpl
                                 .parseUpdatedAdapterDocumentFile(
                                         tempFile.toURI(), docId, fileName,
-                                        getOptionalParams());
+                                        getOptionalParams(), docType);
             }
             doc.setLang(new LocaleId(sourceFileUpload.getSourceLang()));
             Set<String> extensions = Collections.<String> emptySet();
@@ -925,17 +929,32 @@ public class VersionHomeAction extends AbstractSortAction implements
             copyTransManager.isCopyTransRunning(getVersion());
     }
 
+    public boolean needDocumentTypeSelection(String fileName) {
+        return translationFileServiceImpl.hasMultipleAdapter(fileName);
+    }
+
+    public List<DocumentType> getDocumentTypes(String fileName) {
+        return translationFileServiceImpl.getDocumentTypes(fileName);
+    }
+
+    public void setDefaultTranslationDocType(String fileName) {
+        translationFileUpload.setDocumentType(getDocumentTypes(fileName).get(0)
+                .name());
+    }
+
     public void uploadTranslationFile(HLocale hLocale) {
         identity.checkPermission("modify-translation", hLocale, getVersion()
                 .getProject());
         try {
             // process the file
+            Optional<String> docType =
+                Optional.fromNullable(translationFileUpload.documentType);
             TranslationsResource transRes =
                     translationFileServiceImpl.parseTranslationFile(
                             translationFileUpload.getFileContents(),
                             translationFileUpload.getFileName(), hLocale
                                     .getLocaleId().getId(), projectSlug,
-                            versionSlug, translationFileUpload.docId);
+                            versionSlug, translationFileUpload.docId, docType);
 
             // translate it
             Set<String> extensions;
@@ -1145,6 +1164,8 @@ public class VersionHomeAction extends AbstractSortAction implements
         private String sourceLang = "en-US"; // en-US by default
 
         private String adapterParams = "";
+
+        private String documentType;
     }
 
     /**
@@ -1164,5 +1185,7 @@ public class VersionHomeAction extends AbstractSortAction implements
         private boolean mergeTranslations = true; // Merge by default
 
         private boolean assignCreditToUploader = false;
+
+        private String documentType;
     }
 }

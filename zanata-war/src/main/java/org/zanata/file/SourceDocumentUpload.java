@@ -268,10 +268,13 @@ public class SourceDocumentUpload {
                             id.getVersionSlug(), id.getDocId());
         }
         try {
+            Optional<String> docType =
+                Optional.fromNullable(uploadForm.getFileType());
+
             Resource doc =
                     translationFileServiceImpl.parseUpdatedAdapterDocumentFile(
                             tempFile.toURI(), id.getDocId(),
-                            uploadForm.getFileType(), params);
+                            uploadForm.getFileType(), params, docType);
             doc.setLang(LocaleId.EN_US);
             // TODO Copy Trans values
             document =

@@ -121,8 +121,8 @@ public class SourceDocumentUploadTest extends DocumentUploadTest {
         when(
                 translationFileService.parseUpdatedAdapterDocumentFile(
                         Matchers.<URI> any(), eq(conf.docId),
-                        eq(conf.fileType), paramCaptor.capture())).thenReturn(
-                document);
+                        eq(conf.fileType), paramCaptor.capture(), Optional.<String>absent())).thenReturn(
+            document);
         when(
                 documentService.saveDocument(eq(conf.projectSlug),
                         eq(conf.versionSlug), Matchers.<Resource> any(),

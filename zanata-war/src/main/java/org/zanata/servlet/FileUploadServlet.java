@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.fileupload.FileItem;
@@ -130,13 +131,16 @@ public class FileUploadServlet extends HttpServlet {
                 String projectSlug = params.get("projectSlug").getString();
                 String versionSlug = params.get("versionSlug").getString();
                 String docId = params.get("docId").getString();
+                Optional<String> docType =
+                    Optional.fromNullable(params.get("docType").getString());
+
                 // process the file
                 TranslationsResource transRes =
                         translationFileServiceImpl.parseTranslationFile(params
                                 .get("uploadFileElement").getInputStream(),
-                                params.get("fileName").getString(),
-                                params.get("targetLocale").getString(),
-                                projectSlug, versionSlug, docId);
+                            params.get("fileName").getString(),
+                            params.get("targetLocale").getString(),
+                            projectSlug, versionSlug, docId, docType);
 
                 // translate it
                 Set<String> extensions;

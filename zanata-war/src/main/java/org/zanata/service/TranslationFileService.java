@@ -31,6 +31,7 @@ import com.google.common.base.Optional;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,7 +57,7 @@ public interface TranslationFileService {
      */
     TranslationsResource parseTranslationFile(InputStream fileContents,
             String fileName, String localeId, String projectSlug,
-            String iterationSlug, String docId) throws ZanataServiceException;
+            String iterationSlug, String docId, Optional<String> documentType) throws ZanataServiceException;
 
     /**
      * Extract the translated strings from a po file to usable form, using
@@ -87,7 +88,7 @@ public interface TranslationFileService {
      */
     TranslationsResource parseAdapterTranslationFile(File tempFile,
             String projectSlug, String iterationSlug, String docId,
-            String localeId, String fileName) throws ZanataServiceException;
+            String localeId, String fileName, Optional<String> documentType) throws ZanataServiceException;
 
     /**
      * Extract the translatable strings from a new document file or from a new
@@ -105,6 +106,10 @@ public interface TranslationFileService {
      */
     Resource parseUpdatedPotFile(InputStream fileContents, String docId,
             String uploadFileName, boolean offlinePo);
+
+    boolean hasMultipleAdapter(String fileNameOrExtension);
+
+    List<DocumentType> getDocumentTypes(String fileNameOrExtension);
 
     /**
      * Extracts the translatable strings from a document file to a usable form.
@@ -124,7 +129,7 @@ public interface TranslationFileService {
      *             there is an error during parsing
      */
     Resource parseAdapterDocumentFile(URI documentFile, String path,
-            String fileName, Optional<String> params)
+            String fileName, Optional<String> params, Optional<String> documentType)
             throws ZanataServiceException;
 
     /**
@@ -145,7 +150,7 @@ public interface TranslationFileService {
      * @throws ZanataServiceException
      */
     Resource parseUpdatedAdapterDocumentFile(URI documentFile, String docId,
-            String uploadFileName, Optional<String> params)
+            String uploadFileName, Optional<String> params, Optional<String> documentType)
             throws ZanataServiceException;
 
     /**
@@ -160,6 +165,8 @@ public interface TranslationFileService {
     Set<String> getSupportedExtensions();
 
     FileFormatAdapter getAdapterFor(DocumentType type);
+
+    Set<DocumentType> getSupportedDocumentTypes();
 
     DocumentType getDocumentType(String fileNameOrExtension);
 
