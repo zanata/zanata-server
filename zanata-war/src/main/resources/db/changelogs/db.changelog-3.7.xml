@@ -27,4 +27,9 @@
     </addColumn>
   </changeSet>
 
+  <changeSet author="sflaniga@redhat.com" id="1">
+    <comment>Convert Seam Text to CommonMark</comment>
+    <customChange class="org.zanata.liquibase.custom.MigrateSeamTextToCommonMark" />
+  </changeSet>
+
 </databaseChangeLog>
