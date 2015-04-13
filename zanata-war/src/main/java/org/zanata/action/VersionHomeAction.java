@@ -938,8 +938,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     public void setDefaultTranslationDocType(String fileName) {
-        translationFileUpload.setDocumentType(getDocumentTypes(fileName).get(0)
-                .name());
+        translationFileUpload.setDocumentType(null);
     }
 
     public void uploadTranslationFile(HLocale hLocale) {

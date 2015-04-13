@@ -35,6 +35,10 @@
       return jQuery('#' + jqSelector('#{rich:clientId('upload-file')}'));
     }
 
+    function clearDocumentTypeSelection() {
+      jQuery('#' + jqSelector('#{rich:clientId('documentType-selection')}')).html('');
+    }
+
     function getUploadFileName() {
       return jQuery(getUploadFileComponent()).val();
     }
@@ -46,6 +50,7 @@
     function cancelUpload() {
       zanata.loader.deactivate('#upload-translation-loader');
       jQuery(getUploadFileComponent()).val('');
+      clearDocumentTypeSelection();
       toggleUploadButton(false, true);
       return false;
     }
@@ -111,6 +116,7 @@
             <h:outputLabel>#{msgs['jsf.iteration.documentType.select']}</h:outputLabel>
             <h:selectOneMenu id="documentTypes" onchange="bindDocumentType(jQuery(this).val())"
               value="#{versionHomeAction.translationFileUpload.documentType}">
+              <f:selectItem itemLabel="---" itemValue="#{null}" />
               <f:selectItems value="#{versionHomeAction.getDocumentTypes(fileName)}"
                 var="documentType"
                 itemLabel="#{documentType.name()}"

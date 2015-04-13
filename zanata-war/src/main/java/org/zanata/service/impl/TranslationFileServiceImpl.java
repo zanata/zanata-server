@@ -308,18 +308,24 @@ public class TranslationFileServiceImpl implements TranslationFileService {
             throw new RuntimeException(
                     "Cannot find adapter for null filename or extension.");
         }
-        if(hasMultipleAdapter(fileNameOrExtension)) {
-            throw new RuntimeException(
-                "More than 1 adapter found for this extension:" + extension);
-        }
         DocumentType documentType = DocumentType.typeFor(extension);
         if (documentType == null) {
             throw new RuntimeException(
-                    "Cannot choose an adapter because the provided string '"
-                            + fileNameOrExtension
-                            + "' does not match any known document type.");
+                "Cannot choose an adapter because the provided string '"
+                    + fileNameOrExtension
+                    + "' does not match any known document type.");
         }
-        return getAdapterFor(documentType);
+        FileFormatAdapter adapter = getAdapterFor(documentType);
+        if(hasMultipleAdapter(fileNameOrExtension)) {
+            /**
+             * TODO: throw runtime error. Need to wait for all upload file
+             * dialog implement multiple adapter check for file extension.
+             */
+            log.warn(
+                    "More than 1 adapter found for this file extension: '{}'. Adapter '{}' will be used.",
+                    extension, adapter.getClass().getName());
+        }
+        return adapter;
     }
 
     @Override
