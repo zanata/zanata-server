@@ -221,7 +221,6 @@
                     #{msgs.format('jsf.RequestAddProjectToGroup', versionGroupHome.instance.name)}
                     <i class="i i--project i__item__icon"></i>
                   </a>
-                  <ui:include src="/WEB-INF/layout/version-group/request_join_modal.xhtml"/>
                 </li>
               </ul>
             </div>
@@ -274,6 +273,10 @@
     </div>
   </div>
 </div>
-</ui:define>
+  <s:fragment
+    rendered="#{versionGroupHomeAction.isUserProjectMaintainer()}">
+    <ui:include src="/WEB-INF/layout/version-group/request_join_modal.xhtml"/>
+  </s:fragment>
 
+</ui:define>
 </ui:composition>

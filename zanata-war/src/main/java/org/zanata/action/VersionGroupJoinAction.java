@@ -21,10 +21,14 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -32,35 +36,36 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.VersionGroupDAO;
-import org.zanata.i18n.Messages;
+import org.zanata.email.EmailStrategy;
+import org.zanata.email.RequestToJoinVersionGroupEmailStrategy;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.service.EmailService;
 import org.zanata.service.VersionGroupService;
 
 import org.zanata.ui.AbstractAutocomplete;
-import org.zanata.webtrans.shared.model.ProjectIterationId;
-
 import org.zanata.ui.faces.FacesMessages;
+import org.zanata.webtrans.shared.model.ProjectIterationId;
 
 import com.google.common.collect.Lists;
 
 @AutoCreate
 @Name("versionGroupJoinAction")
 @Scope(ScopeType.PAGE)
+@Slf4j
 public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    @In("jsfMessages")
-    private FacesMessages facesMessages;
 
     @In
     private VersionGroupService versionGroupServiceImpl;
@@ -74,9 +79,6 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     @In
     private VersionGroupDAO versionGroupDAO;
 
-    @In(create = true)
-    private SendEmailAction sendEmail;
-
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
@@ -89,6 +91,16 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
 
     @Getter
     private List<SelectableVersion> projectVersions = Lists.newArrayList();
+
+    @In
+    private EmailService emailServiceImpl;
+
+    @Getter
+    @Setter
+    private String message;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     public boolean hasSelectedVersion() {
         if(projectVersions.isEmpty()) {
@@ -134,26 +146,70 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         return versionGroupServiceImpl.isVersionInGroup(slug, versionId);
     }
 
-    public void cancel() {
-        sendEmail.cancel();
+    public List<HPerson> getGroupMaintainers() {
+        List<HPerson> maintainers = Lists.newArrayList();
+        for (HPerson maintainer : versionGroupServiceImpl
+            .getMaintainersBySlug(slug)) {
+            maintainers.add(maintainer);
+        }
+        return maintainers;
     }
 
-    public String send() {
+    @Restrict("#{identity.loggedIn}")
+    public void send() {
         if (hasSelectedVersion()) {
+            String fromName = authenticatedAccount.getPerson().getName();
+            String fromLoginName = authenticatedAccount.getUsername();
+            String replyEmail = authenticatedAccount.getPerson().getEmail();
+
             List<HPerson> maintainers = Lists.newArrayList();
             for (HPerson maintainer : versionGroupServiceImpl
-                    .getMaintainersBySlug(slug)) {
+                .getMaintainersBySlug(slug)) {
                 maintainers.add(maintainer);
             }
-            sendEmail.setEmailType(
-                SendEmailAction.EMAIL_TYPE_REQUEST_TO_JOIN_GROUP);
-            String result = sendEmail.sendToVersionGroupMaintainer(maintainers);
-            clearFormFields();
-            return result;
+
+            Collection<ProjectIterationId> projectVersionIds =
+                Lists.newArrayList();
+
+            for (VersionGroupJoinAction.SelectableVersion selectedVersion : projectVersions) {
+                if (selectedVersion.isSelected()) {
+                    projectVersionIds.add(new ProjectIterationId(
+                        selectedVersion.getProjectSlug(),
+                        selectedVersion.getIterationSlug(),
+                        selectedVersion.getProjectType()));
+                }
+            }
+
+            EmailStrategy strategy =
+                new RequestToJoinVersionGroupEmailStrategy(
+                    fromLoginName, fromName, replyEmail,
+                    getGroupName(), getSlug(),
+                    projectVersionIds, message);
+
+            try {
+                String msg =
+                    emailServiceImpl.sendToVersionGroupMaintainers(
+                        getGroupMaintainers(), strategy);
+                facesMessages.addGlobal(msg);
+                clearFormFields();
+
+            } catch (Exception e) {
+                String subject = strategy.getSubject(msgs);
+
+                StringBuilder sb =
+                    new StringBuilder()
+                        .append("Failed to send email with subject '")
+                        .append(subject)
+                        .append("' , message '").append(message)
+                        .append("'");
+                log.error(
+                        "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'",
+                        e, fromName, fromLoginName, replyEmail,
+                        subject, message);
+                facesMessages.addGlobal(sb.toString());
+            }
         } else {
-            facesMessages.addGlobal(
-                    "#{msgs['jsf.NoProjectVersionSelected']}");
-            return "failure";
+            facesMessages.addGlobal(msgs.get("jsf.NoProjectVersionSelected"));
         }
     }
 
@@ -169,9 +225,9 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
 
     @Override
     public List<HProject> suggest() {
-        // Need to clear the all the versions displayed in dialog from previous
-        // selected project when user is entering a new project search(autocomplete)
-        projectVersions.clear();
+        if(authenticatedAccount == null || StringUtils.isEmpty(getQuery())) {
+            return Collections.emptyList();
+        }
         return projectDAO.getProjectsForMaintainer(
                 authenticatedAccount.getPerson(), getQuery(), 0,
                 Integer.MAX_VALUE);
@@ -180,6 +236,9 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     @Override
     public void onSelectItemAction() {
         projectSlug = getSelectedItem();
+        // Need to clear the all the versions displayed in dialog from previous
+        // selected project when user select a new project from search
+        projectVersions.clear();
     }
 
     public final class SelectableVersion extends ProjectIterationId {

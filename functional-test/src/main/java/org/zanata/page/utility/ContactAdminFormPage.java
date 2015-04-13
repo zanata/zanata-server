@@ -33,7 +33,7 @@ import org.zanata.page.BasePage;
 @Slf4j
 public class ContactAdminFormPage extends BasePage {
 
-    private By messageField = By.id("contactAdminForm:messageField:message");
+    private By messageField = By.id("contactAdminForm:messageField:contact-admin-message");
     private By sendButton = By.id("contact-admin-send-button");
 
     public ContactAdminFormPage(WebDriver driver) {

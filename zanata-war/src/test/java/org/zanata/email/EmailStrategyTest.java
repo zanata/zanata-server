@@ -92,7 +92,7 @@ public class EmailStrategyTest {
             return serverPath;
         }
     };
-    EmailBuilder builder = new EmailBuilder(session, context, msgsFactory);
+    EmailBuilder builder = new EmailBuilder(session, context, msgsFactory, null);
     MimeMessage message;
 
     // context values needed for some templates:

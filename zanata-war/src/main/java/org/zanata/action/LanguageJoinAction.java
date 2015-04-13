@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
@@ -34,9 +35,15 @@ import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
+import org.zanata.email.EmailStrategy;
+import org.zanata.email.RequestToJoinLanguageEmailStrategy;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
+import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
+import org.zanata.service.EmailService;
+import org.zanata.service.LocaleService;
+import org.zanata.ui.faces.FacesMessages;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -45,17 +52,24 @@ import org.zanata.model.HLocaleMember;
 @AutoCreate
 @Name("languageJoinAction")
 @Scope(ScopeType.PAGE)
+@Slf4j
 public class LanguageJoinAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private static final String EMAIL_TYPE_REQUEST_JOIN =
-        "request_join_language";
+    @In
+    private LocaleMemberDAO localeMemberDAO;
+
+    @In
+    private LocaleService localeServiceImpl;
+
+    @In
+    private EmailService emailServiceImpl;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
     @In
     private Messages msgs;
-
-    @In
-    private LocaleMemberDAO localeMemberDAO;
 
     @Getter
     @Setter
@@ -73,35 +87,75 @@ public class LanguageJoinAction implements Serializable {
     @Getter
     private String language;
 
+    private HLocale locale;
+
+    @Getter
+    @Setter
+    private String message;
+
     @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
-
-    public String getEmailType() {
-        return EMAIL_TYPE_REQUEST_JOIN;
-    }
 
     public boolean hasSelectedRole() {
         return requestAsTranslator || requestAsReviewer || requestAsCoordinator;
     }
 
     public void bindRole(String role, boolean checked) {
-        if(role.equals("translator")) {
+        if (role.equals("translator")) {
             requestAsTranslator = checked;
-        } else if(role.equals("reviewer")) {
+        } else if (role.equals("reviewer")) {
             requestAsReviewer = checked;
-        } else if(role.equals("coordinator")) {
+        } else if (role.equals("coordinator")) {
             requestAsCoordinator = checked;
         }
     }
 
     @Restrict("#{identity.loggedIn}")
-    public String getSubject() {
-        return msgs.format("jsf.language.email.joinrequest.Subject",
-            authenticatedAccount.getUsername(), getLocaleId().getId());
+    public void send() {
+        String fromName = authenticatedAccount.getPerson().getName();
+        String fromLoginName = authenticatedAccount.getUsername();
+        String replyEmail = authenticatedAccount.getPerson().getEmail();
+
+        EmailStrategy strategy =
+                new RequestToJoinLanguageEmailStrategy(
+                        fromLoginName, fromName, replyEmail,
+                        locale.getLocaleId().getId(),
+                        locale.retrieveNativeName(), message,
+                        isRequestAsTranslator(),
+                        isRequestAsReviewer(),
+                        isRequestAsCoordinator());
+        try {
+            facesMessages.addGlobal(emailServiceImpl
+                .sendToLanguageCoordinators(locale.getLocaleId(), strategy));
+        } catch (Exception e) {
+            String subject = strategy.getSubject(msgs);
+
+            StringBuilder sb =
+                new StringBuilder()
+                    .append("Failed to send email with subject '")
+                    .append(strategy.getSubject(msgs))
+                    .append("' , message '").append(message)
+                    .append("'");
+            log.error(
+                    "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'",
+                    e, fromName, fromLoginName, replyEmail, subject, message);
+            facesMessages.addGlobal(sb.toString());
+        }
     }
 
-    private LocaleId getLocaleId() {
-        return new LocaleId(language);
+    public HLocale getLocale() {
+        /*
+         * Preload the HLocaleMember objects. This line is needed as Hibernate
+         * has problems when invoking lazily loaded collections from postLoad
+         * entity listener methods. In this case, the drools engine will attempt
+         * to access the 'members' collection from inside the security
+         * listener's postLoad method to evaluate rules.
+         */
+        if (locale == null) {
+            locale = localeServiceImpl.getByLocaleId(new LocaleId(language));
+            locale.getMembers();
+        }
+        return locale;
     }
 
     public boolean isTranslator() {

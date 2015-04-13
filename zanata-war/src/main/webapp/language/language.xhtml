@@ -178,15 +178,9 @@
       </div>
     </div>
     <s:fragment rendered="#{identity.loggedIn}">
-      <ui:include src="/WEB-INF/layout/language/contact_coordinator_modal.xhtml">
-        <ui:param name="id" value="#{languageAction.language}" />
-        <ui:param name="displayName" value="#{languageAction.locale.retrieveDisplayName()}" />
-      </ui:include>
+      <ui:include src="/WEB-INF/layout/language/contact_coordinator_modal.xhtml"/>
       <s:fragment rendered="#{not languageAction.isUserInTeam()}">
-        <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml">
-          <ui:param name="id" value="#{languageAction.language}" />
-          <ui:param name="displayName" value="#{languageAction.locale.retrieveDisplayName()}" />
-        </ui:include>
+        <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
       </s:fragment>
     </s:fragment>
   </ui:define>
