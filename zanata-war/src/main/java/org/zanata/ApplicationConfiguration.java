@@ -435,8 +435,8 @@ public class ApplicationConfiguration implements Serializable {
 
             webAssetsUrlBase = MoreObjects.firstNonNull(
                     jndiBackedConfig.getWebAssetsUrlBase(),
-                    String.format("%s%s", contextPath,
-                            ResourceHandler.RESOURCE_IDENTIFIER));
+                    String.format("%s%s/%s/%s", contextPath,
+                            ResourceHandler.RESOURCE_IDENTIFIER, "jars", "assets"));
         }
         return webAssetsUrlBase;
     }

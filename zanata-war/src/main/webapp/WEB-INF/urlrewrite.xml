@@ -296,10 +296,10 @@
   <!-- zanata-assets resource -->
   <!-- JSF serves zanata-assets with suffix of .seam,
       this is to make sure any reference to zanata-assets without .seam can access to the resource.
-      e.g. /assets/style.css are redirect to /assets/style.css.seam -->
+      e.g. jars/assets/style.css redirects to jars/assets/style.css.seam -->
   <rule>
-    <from casesensitive="true">^/javax.faces.resource/assets/(.*)(?&lt;!.seam)$</from>
-    <to last="true">/javax.faces.resource/assets/$1.seam</to>
+    <from casesensitive="true">^/javax.faces.resource/jars/assets/(.*)(?&lt;!.seam)$</from>
+    <to last="true">/javax.faces.resource/jars/assets/$1.seam</to>
   </rule>
 
   <outbound-rule>
