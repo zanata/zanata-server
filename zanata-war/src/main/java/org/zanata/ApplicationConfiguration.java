@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2015, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -27,21 +27,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-import javax.faces.application.ResourceHandler;
-import javax.faces.context.FacesContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
@@ -119,8 +114,6 @@ public class ApplicationConfiguration implements Serializable {
     private Optional<String> openIdProvider; // Cache the OpenId provider
 
     private String defaultServerPath;
-
-    private String webAssetsUrlBase;
 
     @Create
     public void load() {
@@ -421,24 +414,6 @@ public class ApplicationConfiguration implements Serializable {
     public boolean useEmailServerSsl() {
         return jndiBackedConfig.getStmpUsesSsl() != null ? Boolean
                 .parseBoolean(jndiBackedConfig.getStmpUsesSsl()) : false;
-    }
-
-    public String getWebAssetsUrl(String resource) {
-        return String.format("%s/%s", getWebAssetsUrlBase(), resource);
-    }
-
-    protected String getWebAssetsUrlBase() {
-        if (StringUtils.isBlank(webAssetsUrlBase)) {
-            String contextPath =
-                    FacesContext.getCurrentInstance().getExternalContext()
-                            .getRequestContextPath();
-
-            webAssetsUrlBase = MoreObjects.firstNonNull(
-                    jndiBackedConfig.getWebAssetsUrlBase(),
-                    String.format("%s%s/%s/%s", contextPath,
-                            ResourceHandler.RESOURCE_IDENTIFIER, "jars", "assets"));
-        }
-        return webAssetsUrlBase;
     }
 
     public int getMaxConcurrentRequestsPerApiKey() {

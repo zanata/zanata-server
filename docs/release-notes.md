@@ -15,7 +15,19 @@ property can safely be reverted or removed before subsequent startups.
             <property name="jboss.as.management.blocking.timeout" value="1000"/>
         </system-properties>
 
-* zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency. [Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
+* [1207423](https://bugzilla.redhat.com/show_bug.cgi?id=1207423) - zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency.
+[Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
+
+In JSF page, zanata-assets is default to **http://{zanata.url}/javax.faces.resource/jars/assets**. The URL can be overridden in JBoss' `standalone.xml` file.
+
+         <subsystem xmlns="urn:jboss:domain:naming:1.4">
+            <bindings>
+                ...
+                <simple name="java:global/zanata/webassets/url-base" value="http://localhost:8080/testassets"/>
+            </bindings>
+         </subsystem>
+
+Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}"/>`
 
 
 <h5>Bug fixes</h5>
