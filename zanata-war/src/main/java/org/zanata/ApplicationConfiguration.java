@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2013, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -29,7 +29,6 @@ import java.util.Set;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Optional;

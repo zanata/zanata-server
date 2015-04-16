@@ -21,18 +21,17 @@
 
 package org.zanata;
 
-import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
-import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.zanata.config.JndiBackedConfig;
 
 import javax.faces.application.ResourceHandler;
 import javax.faces.context.FacesContext;
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -41,15 +40,7 @@ import java.util.Set;
  * Usage in JSF/HTML page: <link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}"/>
  * Rendered URL from example above is: {@link #DEFAULT_WEB_ASSETS_URL}/img/logo/logo.ico
  *
- * {@link #DEFAULT_WEB_ASSETS_URL} can be overridden in JBoss standalone.xml
- *
- *  <subsystem xmlns="urn:jboss:domain:naming:1.4">
- *      <bindings>
- *       ...
- *          <simple name="java:global/zanata/webassets/url-base" value="http://localhost:8080/testassets"/>
- *      </bindings>
- *  </subsystem>
- *
+ * {@link #DEFAULT_WEB_ASSETS_URL} can be overridden in system property {@link #ASSETS_PROPERTY_KEY}
  *
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -58,11 +49,14 @@ import java.util.Set;
 @Name("assets")
 @Scope(ScopeType.APPLICATION)
 public class WebAssetsConfiguration extends AbstractMap<String, String> {
-    @In
-    private JndiBackedConfig jndiBackedConfig;
 
     /**
-     *  Default url for webassets, http://{zanata.url}/javax.faces.resource/jars/assets
+     * system property for zanata assets url
+     */
+    private final static String ASSETS_PROPERTY_KEY = "zanata.assets.url";
+
+    /**
+     *  Default url for zanata-assets, http://{zanata.url}/javax.faces.resource/jars/assets
      */
     private final static String DEFAULT_WEB_ASSETS_URL = String.format("%s%s/%s/%s",
             FacesContext.getCurrentInstance().getExternalContext()
@@ -71,30 +65,29 @@ public class WebAssetsConfiguration extends AbstractMap<String, String> {
 
     private String webAssetsUrlBase;
 
-    private String getWebAssetsUrl(String resource) {
-        return String.format("%s/%s", getWebAssetsUrlBase(), resource);
+    public WebAssetsConfiguration() {
+        String assetsProperty = System.getProperty(ASSETS_PROPERTY_KEY);
+
+        /**
+         * Try with system property of {@link #ASSETS_PROPERTY_KEY} if exists,
+         * otherwise {@link #DEFAULT_WEB_ASSETS_URL}
+         */
+        webAssetsUrlBase =
+            StringUtils.isEmpty(assetsProperty) ? DEFAULT_WEB_ASSETS_URL
+                : assetsProperty;
     }
 
-    /**
-     * Try to get from jndiBackedConfig bean
-     * (java:global/zanata/webassets/url-base) if exist, else return
-     * DEFAULT_WEB_ASSETS_URL
-     */
-    private String getWebAssetsUrlBase() {
-        if (StringUtils.isBlank(webAssetsUrlBase)) {
-            webAssetsUrlBase = MoreObjects.firstNonNull(
-                jndiBackedConfig.getWebAssetsUrlBase(), DEFAULT_WEB_ASSETS_URL);
-        }
-        return webAssetsUrlBase;
+    private String getWebAssetsUrl(String resource) {
+        return webAssetsUrlBase + "/" + resource;
     }
-    
+
     @Override
     public String get(Object key) {
-        return getWebAssetsUrl((String)key);
+        return getWebAssetsUrl((String) key);
     }
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        return null;
+        return Collections.emptySet();
     }
 }

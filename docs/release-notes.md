@@ -18,14 +18,7 @@ property can safely be reverted or removed before subsequent startups.
 * [1207423](https://bugzilla.redhat.com/show_bug.cgi?id=1207423) - zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency.
 [Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
 
-In JSF page, zanata-assets is default to **http://{zanata.url}/javax.faces.resource/jars/assets**. The URL can be overridden in JBoss' `standalone.xml` file.
-
-         <subsystem xmlns="urn:jboss:domain:naming:1.4">
-            <bindings>
-                ...
-                <simple name="java:global/zanata/webassets/url-base" value="http://localhost:8080/testassets"/>
-            </bindings>
-         </subsystem>
+zanata-assets is set to **http://{zanata.url}/javax.faces.resource/jars/assets** by default. You override the value by setting the system property `zanata.assets.url` when running the server.
 
 Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}"/>`
 
