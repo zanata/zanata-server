@@ -39,6 +39,8 @@ import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -88,7 +90,8 @@ public class CreateProjectVersionTest extends ZanataTestCase {
                 .inputVersionId("");
         createVersionPage.defocus(createVersionPage.projectVersionID);
 
-        assertThat(createVersionPage.getErrors())
+        List<String> errors = createVersionPage.getErrors();
+        assertThat(errors)
                 .contains("value is required")
                 .as("The empty value is rejected");
     }
