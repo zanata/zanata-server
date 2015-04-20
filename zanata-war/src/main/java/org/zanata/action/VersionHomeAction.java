@@ -788,7 +788,7 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     private Optional<String> getOptionalParams() {
         return Optional.fromNullable(Strings.emptyToNull(sourceFileUpload
-                .getAdapterParams()));
+            .getAdapterParams()));
     }
 
     public void setSelectedLocaleId(String localeId) {
@@ -946,6 +946,13 @@ public class VersionHomeAction extends AbstractSortAction implements
                 .getProject());
         try {
             // process the file
+            String fileName = translationFileUpload.fileName;
+            if (!needDocumentTypeSelection(fileName)) {
+                //Get documentType for this file name
+                DocumentType documentType = getDocumentTypes(fileName).get(0);
+                translationFileUpload.setDocumentType(documentType.name());
+            }
+
             Optional<String> docType =
                 Optional.fromNullable(translationFileUpload.documentType);
             TranslationsResource transRes =

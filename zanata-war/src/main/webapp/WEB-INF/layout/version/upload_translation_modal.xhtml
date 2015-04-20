@@ -11,23 +11,23 @@
   <script>
     $(document).ready(function() {
       zanata.loader.deactivate('#upload-translation-loader');
-      toggleUploadButton(false, true);
+      toggleUploadTranslationDocButton(false, true);
       $(getUploadFileComponent()).change(function() {
         var isFileSelected = getUploadFileName() != '';
         if(isFileSelected) {
           renderAdapterSelection(getUploadFileName());
         }
-        toggleUploadButton(isFileSelected, true);
+        toggleUploadTranslationDocButton(isFileSelected, true);
       });
     });
 
-    function toggleUploadButton(enable, display) {
-      var uploadButton = getUploadButton();
+    function toggleUploadTranslationDocButton(enable, display) {
+      var uploadButton = getUploadTranslationDocButton();
       jQuery(uploadButton).prop('disabled', !enable);
       jQuery(uploadButton).toggleClass('is-hidden', !display);
     }
 
-    function getUploadButton() {
+    function getUploadTranslationDocButton() {
       return jQuery('#' + jqSelector('#{rich:clientId('upload-button')}'));
     }
 
@@ -51,13 +51,13 @@
       zanata.loader.deactivate('#upload-translation-loader');
       jQuery(getUploadFileComponent()).val('');
       clearDocumentTypeSelection();
-      toggleUploadButton(false, true);
+      toggleUploadTranslationDocButton(false, true);
       return false;
     }
 
     function onUpload() {
       zanata.loader.activate('#upload-translation-loader');
-      toggleUploadButton(true, false);
+      toggleUploadTranslationDocButton(true, false);
     }
 
   </script>
@@ -75,13 +75,15 @@
   </a4j:jsFunction>
 
   <a4j:jsFunction name="bindDocumentType"
+    onbegin="toggleUploadTranslationDocButton(getDocTypeSelection().val() != '', true)"
     action="#{versionHomeAction.translationFileUpload.setDocumentType(docType)}">
     <a4j:param name="val1" assignTo="#{docType}"/>
   </a4j:jsFunction>
 
   <a4j:jsFunction name="renderAdapterSelection"
     action="#{versionHomeAction.setDefaultTranslationDocType(fileName)}"
-    limitRender="true" render="documentType-selection">
+    limitRender="true" render="documentType-selection"
+    oncomplete="toggleUploadTranslationDocButton(getDocTypeSelection().val() != '', true)">
     <a4j:param name="val1" assignTo="#{fileName}"/>
   </a4j:jsFunction>
 
@@ -116,7 +118,8 @@
             <h:outputLabel>#{msgs['jsf.iteration.documentType.select']}</h:outputLabel>
             <h:selectOneMenu id="documentTypes" onchange="bindDocumentType(jQuery(this).val())"
               value="#{versionHomeAction.translationFileUpload.documentType}">
-              <f:selectItem itemLabel="---" itemValue="#{null}" />
+              <f:selectItem itemLabel="#{msgs['jsf.upload.selectDocType']}" itemValue="#{null}"
+                noSelectionOption="true" />
               <f:selectItems value="#{versionHomeAction.getDocumentTypes(fileName)}"
                 var="documentType"
                 itemLabel="#{documentType.name()}"
