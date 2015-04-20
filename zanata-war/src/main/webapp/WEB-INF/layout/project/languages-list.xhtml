@@ -69,7 +69,6 @@
   <!-- Placed at the end of the list content so that it runs when all the
        content from ajax is present in the DOM -->
   <script type="text/javascript">
-    $(document).ready(function() {
   //<![CDATA[
     // refresh checkbox facades on language lists
     zanata.form.appendCheckboxes(jQuery('##{id}').element);
@@ -78,7 +77,6 @@
     // Triggers appropriate button visibility.
     jQuery('##{id}-list').change();
   //]]>
-    });
   </script>
 
 </ui:composition>
