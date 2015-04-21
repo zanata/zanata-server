@@ -246,6 +246,7 @@ public class EditorOptionsPresenter extends
     @Override
     public void loadDefaultOptions() {
         userOptionsService.loadEditorDefaultOptions();
+        changeReferenceLangPresenter.loadDefaultOption();
         refreshOptions();
     }
 
