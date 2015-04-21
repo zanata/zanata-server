@@ -34,6 +34,11 @@ import org.zanata.rest.dto.resource.TranslationsResource;
 import com.google.common.base.Optional;
 
 /**
+ * Adapter for reading and write {@link org.zanata.common.DocumentType#PROPERTIES_UTF8} file
+ *
+ * TODO: Convert to okapi properties adapter once all client conversion is
+ * migrated to server
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class PropertiesUTF8Adapter extends PropertiesAdapter {

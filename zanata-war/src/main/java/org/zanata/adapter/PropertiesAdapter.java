@@ -47,6 +47,11 @@ import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Adapter for reading and write {@link org.zanata.common.DocumentType#PROPERTIES} file
+ *
+ * TODO: Convert to okapi properties adapter once all client conversion is
+ * migrated to server
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j
@@ -78,7 +83,7 @@ public class PropertiesAdapter implements FileFormatAdapter {
         Map<String, TextFlowTarget> translations, String locale,
         Optional<String> params)
         throws FileFormatAdapterException, IllegalArgumentException {
-        
+
         writeTranslatedFile(output, originalFile, translations, locale, params,
             ISO_8859_1);
     }
@@ -111,8 +116,7 @@ public class PropertiesAdapter implements FileFormatAdapter {
         } finally {
             try {
                 inputStream.close();
-            }
-            catch (IOException e1) {
+            } catch (IOException e1) {
             }
         }
         return doc;
@@ -150,8 +154,7 @@ public class PropertiesAdapter implements FileFormatAdapter {
         } finally {
             try {
                 inputStream.close();
-            }
-            catch (IOException e1) {
+            } catch (IOException e1) {
             }
         }
         return targetDoc;
@@ -177,8 +180,7 @@ public class PropertiesAdapter implements FileFormatAdapter {
             while ((bytesRead = input.read(buffer)) != -1) {
                 output.write(buffer, 0, bytesRead);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new FileFormatAdapterException(
                 "Unable to generate translated file", e);
         } finally {

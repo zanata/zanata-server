@@ -36,6 +36,7 @@ import org.zanata.adapter.OpenOfficeAdapter;
 import org.zanata.adapter.PlainTextAdapter;
 import org.zanata.adapter.PropertiesAdapter;
 import org.zanata.adapter.PropertiesUTF8Adapter;
+import org.zanata.adapter.XliffAdapter;
 import org.zanata.adapter.po.PoReader2;
 import org.zanata.adapter.SubtitleAdapter;
 import org.zanata.common.DocumentType;
@@ -75,6 +76,7 @@ import static org.zanata.common.DocumentType.PLAIN_TEXT;
 import static org.zanata.common.DocumentType.PROPERTIES;
 import static org.zanata.common.DocumentType.PROPERTIES_UTF8;
 import static org.zanata.common.DocumentType.SUBTITLE;
+import static org.zanata.common.DocumentType.XLIFF;
 import static org.zanata.common.DocumentType.XML_DOCUMENT_TYPE_DEFINITION;
 
 /**
@@ -104,6 +106,9 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(SUBTITLE, SubtitleAdapter.class);
         DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class);
         DOCTYPEMAP.put(PROPERTIES_UTF8, PropertiesUTF8Adapter.class);
+        DOCTYPEMAP.put(XLIFF, XliffAdapter.class);
+//        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT_TEMPLATE, XliffAdapter.class);
+//        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, XliffAdapter.class);
     }
 
     private static Set<String> SUPPORTED_EXTENSIONS =
@@ -295,7 +300,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         if (extension == null) {
             return false;
         }
-        DocumentType documentType = DocumentType.typeFor(extension);
+        DocumentType documentType = DocumentType.getByName(extension);
         if (documentType == null) {
             return false;
         }
@@ -308,7 +313,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
             throw new RuntimeException(
                     "Cannot find adapter for null filename or extension.");
         }
-        DocumentType documentType = DocumentType.typeFor(extension);
+        DocumentType documentType = DocumentType.getByName(extension);
         if (documentType == null) {
             throw new RuntimeException(
                 "Cannot choose an adapter because the provided string '"
@@ -330,7 +335,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
 
     @Override
     public DocumentType getDocumentType(String fileNameOrExtension) {
-        return DocumentType.typeFor(extractExtension(fileNameOrExtension));
+        return DocumentType.getByName(extractExtension(fileNameOrExtension));
     }
 
     @Override

@@ -217,7 +217,7 @@ public class DocumentUploadUtil {
         HDocumentUpload newUpload = new HDocumentUpload();
         newUpload.setProjectIteration(projectIteration);
         newUpload.setDocId(id.getDocId());
-        newUpload.setType(DocumentType.typeFor(uploadForm.getFileType()));
+        newUpload.setType(DocumentType.getByName(uploadForm.getFileType()));
         // locale intentionally left null for source
         newUpload.setLocale(locale);
         newUpload.setContentHash(uploadForm.getHash());

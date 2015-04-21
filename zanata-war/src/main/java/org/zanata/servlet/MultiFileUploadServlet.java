@@ -416,7 +416,7 @@ public class MultiFileUploadServlet extends HttpServlet {
             fileType =
                     fileType != null ? translationFileServiceImpl
                             .extractExtension(item.getName()) : fileType;
-            
+
             form.setFileType(fileType);
             form.setFileStream(item.getInputStream());
             return form;

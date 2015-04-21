@@ -443,6 +443,11 @@
         <artifactId>zanata-adapter-properties</artifactId>
         <version>${zanata.common.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-adapter-xliff</artifactId>
+        <version>${zanata.common.version}</version>
+      </dependency>
 
       <!-- zanata client -->
       <dependency>

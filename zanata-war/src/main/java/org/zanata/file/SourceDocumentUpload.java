@@ -147,7 +147,7 @@ public class SourceDocumentUpload {
                                         uploadForm));
             }
 
-            if (DocumentType.typeFor(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
+            if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
                 parsePotFile(potStream, id, uploadForm);
             } else {
@@ -202,7 +202,7 @@ public class SourceDocumentUpload {
 
     private void failIfFileTypeNotValid(DocumentFileUploadForm uploadForm)
             throws ChunkUploadException {
-        DocumentType type = DocumentType.typeFor(uploadForm.getFileType());
+        DocumentType type = DocumentType.getByName(uploadForm.getFileType());
         if (!isSourceDocumentType(type)) {
             throw new ChunkUploadException(Status.BAD_REQUEST, "The type \""
                     + uploadForm.getFileType()
@@ -291,7 +291,7 @@ public class SourceDocumentUpload {
 
         String contentHash = uploadForm.getHash();
         DocumentType documentType =
-                DocumentType.typeFor(uploadForm.getFileType());
+                DocumentType.getByName(uploadForm.getFileType());
 
         persistRawDocument(document, tempFile, contentHash, documentType,
                 params);
