@@ -9,7 +9,7 @@
   <script>
     function cancelContactCoordinator() {
       jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val('');
-      jQuery(getContactAdminForm()).find('#contact-coordinator-send-button').removeClass('is-active');
+      jQuery(getContactCoordinatorForm()).find('#contact-coordinator-send-button').removeClass('is-active');
     }
 
     function getContactCoordinatorForm() {
@@ -53,7 +53,7 @@
           </button>
 
           <button id="contact-coordinator-send-button" class="button loader button--primary"
-            onclick="sendContactCoordinatorEmail()">
+            onclick="sendContactCoordinatorEmail();return false;">
             <span class="loader__label">#{msgs['jsf.email.Send']}</span>
           </button>
         </div>

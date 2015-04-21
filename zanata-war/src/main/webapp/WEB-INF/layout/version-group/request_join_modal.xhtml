@@ -77,6 +77,9 @@
           </zanata:autocomplete>
 
           <s:div id="versions">
+            <s:fragment rendered="#{empty versionGroupJoinAction.versions and versionGroupJoinAction.projectSlug != null}">
+              <div class="l--pad-all-quarter txt--understated">#{msgs['jsf.NoVersions']}</div>
+            </s:fragment>
             <s:fragment rendered="#{not empty versionGroupJoinAction.versions}">
               <ul class="list--slat" id="version-list">
                 <ui:repeat value="#{versionGroupJoinAction.versions}" var="version">

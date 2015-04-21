@@ -110,6 +110,13 @@ public class LanguageJoinAction implements Serializable {
         }
     }
 
+    private void reset() {
+        requestAsTranslator = false;
+        requestAsReviewer = false;
+        requestAsCoordinator = false;
+        message = "";
+    }
+
     @Restrict("#{identity.loggedIn}")
     public void send() {
         String fromName = authenticatedAccount.getPerson().getName();
@@ -140,6 +147,8 @@ public class LanguageJoinAction implements Serializable {
                     "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'",
                     e, fromName, fromLoginName, replyEmail, subject, message);
             facesMessages.addGlobal(sb.toString());
+        } finally {
+            reset();
         }
     }
 
