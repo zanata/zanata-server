@@ -7,14 +7,32 @@
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
+
+    jQuery(document).ready(function () {
+      jQuery(getContactCoordinatorMessageField()).bind('input propertychange', function() {
+        checkMessage();
+      });
+    });
+
     function cancelContactCoordinator() {
-      jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val('');
+      jQuery(getContactCoordinatorMessageField()).val('');
       jQuery(getContactCoordinatorForm()).find('#contact-coordinator-send-button').removeClass('is-active');
+      checkMessage();
+    }
+
+    function getContactCoordinatorMessageField() {
+      return jQuery(getContactCoordinatorForm()).find('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}'));
     }
 
     function getContactCoordinatorForm() {
       return jQuery('#' + jqSelector('#{rich:clientId('contactCoordinatorForm')}'));
     }
+
+    function checkMessage() {
+      var isEmpty = jQuery(getContactCoordinatorMessageField()).val() === '';
+      jQuery(getContactCoordinatorForm()).find('#contact-coordinator-send-button').prop('disabled', isEmpty);
+    }
+
   </script>
 
   <div class="modal__dialog l--constrain-medium">
@@ -34,8 +52,8 @@
       <div class="modal__content l--pad-all-1">
         <s:decorate id="messageField" template="/WEB-INF/layout/field.xhtml">
           <h:inputTextarea id="contact-coordinator-message" value="#{languageContactCoordinatorAction.message}"
-            required="true" styleClass="l--push-bottom-0">
-            <a4j:ajax event="blur" render="messageField" execute="@this"/>
+            styleClass="l--push-bottom-0">
+            <a4j:ajax event="blur" execute="@this"/>
           </h:inputTextarea>
         </s:decorate>
       </div>
@@ -52,7 +70,7 @@
             #{msgs['jsf.Cancel']}
           </button>
 
-          <button id="contact-coordinator-send-button" class="button loader button--primary"
+          <button id="contact-coordinator-send-button" class="button loader button--primary" disabled="disabled"
             onclick="sendContactCoordinatorEmail();return false;">
             <span class="loader__label">#{msgs['jsf.email.Send']}</span>
           </button>
