@@ -10,10 +10,20 @@
     function cancelContactCoordinator() {
       jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val('');
       jQuery(getContactCoordinatorForm()).find('#contact-coordinator-send-button').removeClass('is-active');
+      checkMessage();
     }
 
     function getContactCoordinatorForm() {
       return jQuery('#' + jqSelector('#{rich:clientId('contactCoordinatorForm')}'));
+    }
+
+    function checkMessage() {
+      var isEmpty = jQuery('#' + jqSelector('#{rich:clientId('contact-coordinator-message')}')).val() === '';
+      toggleContactCoordinatorSendButton(!isEmpty);
+    }
+
+    function toggleContactCoordinatorSendButton(enable) {
+      jQuery(getContactCoordinatorForm()).find('#contact-coordinator-send-button').prop('disabled', !enable);
     }
   </script>
 
@@ -34,7 +44,7 @@
       <div class="modal__content l--pad-all-1">
         <s:decorate id="messageField" template="/WEB-INF/layout/field.xhtml">
           <h:inputTextarea id="contact-coordinator-message" value="#{languageContactCoordinatorAction.message}"
-            required="true" styleClass="l--push-bottom-0">
+            required="true" styleClass="l--push-bottom-0" onkeyup="checkMessage()">
             <a4j:ajax event="blur" render="messageField" execute="@this"/>
           </h:inputTextarea>
         </s:decorate>
@@ -52,7 +62,7 @@
             #{msgs['jsf.Cancel']}
           </button>
 
-          <button id="contact-coordinator-send-button" class="button loader button--primary"
+          <button id="contact-coordinator-send-button" class="button loader button--primary" disabled="disabled"
             onclick="sendContactCoordinatorEmail();return false;">
             <span class="loader__label">#{msgs['jsf.email.Send']}</span>
           </button>
