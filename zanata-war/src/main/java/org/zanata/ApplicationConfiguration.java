@@ -20,8 +20,6 @@
  */
 package org.zanata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Optional;
@@ -49,11 +49,11 @@ import org.jboss.seam.web.ServletContexts;
 import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
 import org.zanata.config.JndiBackedConfig;
+import org.zanata.events.ConfigurationChanged;
 import org.zanata.log4j.ZanataHTMLLayout;
 import org.zanata.log4j.ZanataSMTPAppender;
 import org.zanata.security.AuthenticationType;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -70,10 +70,6 @@ public class ApplicationConfiguration implements Serializable {
 
     private static final String EMAIL_APPENDER_NAME =
             "zanata.log.appender.email";
-    public static final String EVENT_CONFIGURATION_CHANGED =
-            "zanata.configuration.changed";
-
-    private static final String STYLESHEET_LOCAL_PATH = "/assets/css/style.min.css";
 
     @Getter
     private static final int defaultMaxFilesPerUpload = 100;
@@ -114,12 +110,6 @@ public class ApplicationConfiguration implements Serializable {
 
     private Set<String> adminUsers;
 
-    private String webAssetsUrl;
-    private String webAssetsStyleUrl;
-
-    // set by component.xml
-    private String webAssetsVersion = "";
-
     private Optional<String> openIdProvider; // Cache the OpenId provider
 
     private String defaultServerPath;
@@ -133,8 +123,11 @@ public class ApplicationConfiguration implements Serializable {
         this.loadJaasConfig();
     }
 
-    @Observer({ EVENT_CONFIGURATION_CHANGED })
-    public void resetConfigValue(String configName) {
+    @Observer(ConfigurationChanged.EVENT_NAME)
+    public void resetConfigValue(
+            @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            ConfigurationChanged configChange) {
+        String configName = configChange.getConfigKey();
         // Remove the value from all stores
         databaseBackedConfig.reset(configName);
         jndiBackedConfig.reset(configName);
@@ -420,27 +413,6 @@ public class ApplicationConfiguration implements Serializable {
     public boolean useEmailServerSsl() {
         return jndiBackedConfig.getStmpUsesSsl() != null ? Boolean
                 .parseBoolean(jndiBackedConfig.getStmpUsesSsl()) : false;
-    }
-
-    public String getWebAssetsStyleUrl() {
-        if (isEmpty(webAssetsStyleUrl)) {
-            webAssetsStyleUrl = getWebAssetsUrl() + STYLESHEET_LOCAL_PATH;
-        }
-        return webAssetsStyleUrl;
-    }
-
-    public String getWebAssetsUrl() {
-        if (isEmpty(webAssetsUrl)) {
-            webAssetsUrl =
-                    String.format("%s/%s", getBaseWebAssetsUrl(),
-                            webAssetsVersion);
-        }
-        return webAssetsUrl;
-    }
-
-    private String getBaseWebAssetsUrl() {
-        return Objects.firstNonNull(jndiBackedConfig.getWebAssetsUrlBase(),
-                "//assets-zanata.rhcloud.com");
     }
 
     public int getMaxConcurrentRequestsPerApiKey() {

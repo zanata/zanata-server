@@ -216,6 +216,18 @@ public abstract class RestTest {
         return ENV_AUTHORIZED;
     }
 
+    /**
+     * Gets an empty header for REST request.
+     */
+    public static final ResourceRequestEnvironment getEmptyHeaderEnvironment() {
+        return new ResourceRequestEnvironment() {
+            @Override
+            public Map<String, Object> getDefaultHeaders() {
+                return new HashMap<String, Object>();
+            }
+        };
+    }
+
     public static ResourceRequestEnvironment getTranslatorHeaders() {
         return new ResourceRequestEnvironment() {
             @Override

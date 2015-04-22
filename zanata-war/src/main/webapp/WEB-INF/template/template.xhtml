@@ -29,13 +29,10 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0"/>
     <meta http-equiv="cleartype" content="on"/>
 
-    <link rel="shortcut icon"
-      href="#{applicationConfiguration.webAssetsUrl}/favicon.ico"
-      type="image/x-icon"/>
+    <link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}" type="image/x-icon" />
 
     <!--[if gt IE 8]><!-->
-    <link type="text/css" rel="stylesheet"
-      href="#{applicationConfiguration.webAssetsStyleUrl}"/>
+    <link type="text/css" rel="stylesheet" href="#{assets['css/style.min.css']}"/>
     <!--<![endif]-->
 
     <!--[if (lt IE 9) & (!IEMobile)]>
@@ -90,13 +87,13 @@
     <a4j:outputPanel layout="block" ajaxRendered="true" id="messages">
       <s:fragment rendered="#{showGlobalMessages != 'false'}">
         <ul class="list--no-bullets message--global">
-          <zanata:global-messages value="#{facesContext.messageList}"
-            rendered="#{not facesContext.validationFailed and not empty facesContext.messageList}"/>
+          <zanata:global-messages value="#{jsfMessages.globalMessagesList}"
+            rendered="#{not facesContext.validationFailed and not empty jsfMessages.globalMessagesList}"/>
           <zanata:global-messages value="#{conversationScopeMessages.getAndClearMessages()}"
             rendered="#{conversationScopeMessages.hasMessages()}"/>
         </ul>
         <h:outputScript
-          rendered="#{conversationScopeMessages.hasMessages() or (not facesContext.validationFailed and not empty facesContext.messageList)}">
+          rendered="#{conversationScopeMessages.hasMessages() or (not facesContext.validationFailed and not empty jsfMessages.globalMessagesList)}">
           startGlobalMessageTimer();
         </h:outputScript>
       </s:fragment>

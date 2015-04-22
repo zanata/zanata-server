@@ -37,6 +37,9 @@
 
     <groovy.version>2.1.5</groovy.version>
     <zanata.web.assets.version>7</zanata.web.assets.version>
+
+    <as7.skip.deploy.marker>${jboss.home}/standalone/deployments/zanata.war.skipdeploy</as7.skip.deploy.marker>
+    <as7.dodeploy.marker>${jboss.home}/standalone/deployments/zanata.war.dodeploy</as7.dodeploy.marker>
   </properties>
 
   <build>
@@ -1276,6 +1279,11 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
+      <artifactId>zanata-assets</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
       <artifactId>zanata-common-util</artifactId>
     </dependency>
 
@@ -1834,6 +1842,18 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.9.9</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

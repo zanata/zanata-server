@@ -41,13 +41,14 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
+    <zanata.assets.version>7.0-SNAPSHOT</zanata.assets.version>
     <zanata.api.version>3.7.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
     <zanata.client.version>3.7.0-SNAPSHOT</zanata.client.version>
     <zanata.common.version>3.6.0</zanata.common.version>
 
-    <richfaces.version>4.5.0.Final</richfaces.version>
+    <richfaces.version>4.5.4.Final</richfaces.version>
 
     <arquillian.version>1.1.5.Final</arquillian.version>
     <shrinkwrap.api.version>1.2.2</shrinkwrap.api.version>
@@ -120,6 +121,12 @@
         <groupId>org.richfaces</groupId>
         <artifactId>richfaces</artifactId>
         <version>${richfaces.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.el</groupId>
+            <artifactId>jboss-el-api_3.0_spec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -359,6 +366,13 @@
         <groupId>org.opensymphony.quartz</groupId>
         <artifactId>quartz</artifactId>
         <version>1.6.5</version>
+      </dependency>
+
+      <!-- zanata assets -->
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-assets</artifactId>
+        <version>${zanata.assets.version}</version>
       </dependency>
 
       <!-- zanata api -->
@@ -783,6 +797,12 @@
       </dependency>
 
       <dependency>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+        </exclusions>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
         <version>3.1.4.GA</version>
@@ -1098,7 +1118,7 @@
       <plugin>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-maven-plugin</artifactId>
-        <version>2.2.0</version>
+        <version>3.6.0</version>
         <configuration>
           <srcDir>.</srcDir>
           <transDir>.</transDir>
@@ -1472,7 +1492,16 @@
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>1.1</version>
-            <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>javax.el</groupId>
+                <artifactId>el-api</artifactId>
+              </exclusion>
+            </exclusions>
           </dependency>
           <dependency>
             <groupId>org.fusesource.jansi</groupId>

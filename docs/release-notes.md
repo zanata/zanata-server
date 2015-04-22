@@ -15,10 +15,19 @@ property can safely be reverted or removed before subsequent startups.
             <property name="jboss.as.management.blocking.timeout" value="1000"/>
         </system-properties>
 
+* [1207423](https://bugzilla.redhat.com/show_bug.cgi?id=1207423) - zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency.
+[Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
+
+zanata-assets is set to **http://{zanata.url}/javax.faces.resource/jars/assets** by default. You override the value by setting the system property `zanata.assets.url` when running the server.
+
+Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}"/>`
+
 
 <h5>Bug fixes</h5>
 * [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
 * [1029734](https://bugzilla.redhat.com/show_bug.cgi?id=1029734) - po header contains invalid entry will cause upload/push failure
+* [895881](https://bugzilla.redhat.com/show_bug.cgi?id=895881) - 'Restore Defaults' in editor options does not properly restore defaults
+* [1165939](https://bugzilla.redhat.com/show_bug.cgi?id=1165939) - The Groups actions panel should not show for a normal user
 
 -----------------------
 
@@ -39,6 +48,10 @@ property can safely be reverted or removed before subsequent startups.
 * [1205046](https://bugzilla.redhat.com/show_bug.cgi?id=1205046) - Key shortcuts are not all visible on a small window
 * [1000273](https://bugzilla.redhat.com/show_bug.cgi?id=1000273) - Font in TM and font in Editor Not matching
 * [1013928](https://bugzilla.redhat.com/show_bug.cgi?id=1013928) - Editor options panel cannot scroll on small screens
+
+
+<h5>New Features</h5>
+* [1172618](https://bugzilla.redhat.com/show_bug.cgi?id=1172618) - Allow anonymous pull from Zanata
 
 ----
 
