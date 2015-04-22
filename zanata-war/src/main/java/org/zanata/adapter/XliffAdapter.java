@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +36,6 @@ import org.zanata.adapter.xliff.XliffWriter;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.rest.dto.resource.Resource;
-import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
 
 import com.google.common.base.Optional;
@@ -113,16 +111,18 @@ public class XliffAdapter implements FileFormatAdapter {
 
     @Override
     public void writeTranslatedFile(OutputStream output, URI originalFile,
-            Map<String, TextFlowTarget> translations, String locale,
-            Optional<String> params)
+            Resource resource, TranslationsResource translationsResource,
+            String locale, Optional<String> params)
             throws FileFormatAdapterException, IllegalArgumentException {
+
+        //write source string with empty translation
+        boolean createSkeletons = true;
 
         File tempFile = null;
         try {
-            Resource source = parseDocumentFile(originalFile,
-                LocaleId.EN_US, Optional.<String>absent());
             tempFile = File.createTempFile("filename", "extension");
-            XliffWriter.write(translations, source, tempFile, locale);
+            XliffWriter.write(resource, translationsResource, tempFile, locale,
+                    createSkeletons);
 
             byte[] buffer = new byte[4096]; // To hold file contents
             int bytesRead;

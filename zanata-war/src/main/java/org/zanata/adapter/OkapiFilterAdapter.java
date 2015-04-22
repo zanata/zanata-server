@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.soap.Text;
+
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.EventType;
 import net.sf.okapi.common.IParameters;
@@ -47,13 +49,16 @@ import org.zanata.common.ContentType;
 import org.zanata.common.HasContents;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
+import org.zanata.file.GlobalDocumentId;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.util.HashUtil;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 /**
  * An adapter that uses a provided {@link IFilter} implementation to parse
@@ -336,9 +341,13 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
 
     @Override
     public void writeTranslatedFile(OutputStream output, URI originalFile,
-            Map<String, TextFlowTarget> translations, String locale,
-            Optional<String> params) throws FileFormatAdapterException,
-            IllegalArgumentException {
+            Resource resource, TranslationsResource translationsResource,
+            String locale, Optional<String> params)
+            throws FileFormatAdapterException, IllegalArgumentException {
+
+        Map<String, TextFlowTarget> translations =
+                transformToMap(translationsResource.getTextFlowTargets());
+
         net.sf.okapi.common.LocaleId localeId =
                 net.sf.okapi.common.LocaleId.fromString(locale);
         IFilterWriter writer = filter.createFilterWriter();
@@ -354,8 +363,23 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         }
     }
 
+    /**
+     * Transform list of TextFlowTarget to map with TextFlowTarget.resId as key
+     *
+     * @param targets
+     * @return
+     */
+    private Map<String, TextFlowTarget> transformToMap(List<TextFlowTarget> targets) {
+        Map<String, TextFlowTarget> resIdTargetMap = Maps.newHashMap();
+
+        for(TextFlowTarget target: targets) {
+            resIdTargetMap.put(target.getResId(), target);
+        }
+        return resIdTargetMap;
+    }
+
     protected String getOutputEncoding() {
-        return "UTF-8";
+        return Charsets.UTF_8.name();
     }
 
     private void writeTranslatedFileWithFileOutput(OutputStream output,

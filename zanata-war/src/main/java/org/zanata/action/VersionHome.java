@@ -460,7 +460,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                 @Override
                 public String apply(DocumentType docType) {
                     return docType.name() + "[" + Joiner.on(",").join(
-                        docType.getExtensions()) + "]";
+                        docType.getSourceExtensions()) + "]";
                 }
             });
         return Joiner.on(", ").join(supportedTypes);

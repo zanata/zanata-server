@@ -109,7 +109,7 @@ public interface TranslationFileService {
 
     boolean hasMultipleAdapter(String fileNameOrExtension);
 
-    List<DocumentType> getDocumentTypes(String fileNameOrExtension);
+    Set<DocumentType> getDocumentTypes(String fileNameOrExtension);
 
     /**
      * Extracts the translatable strings from a document file to a usable form.
@@ -197,20 +197,9 @@ public interface TranslationFileService {
             String docPath, String docName);
 
     /**
-     *
-     * @param fileNameOrExtension
-     * @return the extension for a given filename, or the extension that was
-     *         passed in
-     */
-    String extractExtension(String fileNameOrExtension);
-
-    /**
      * @return true if the specified document is of type po, false if it is any
      *         other type, including null.
      */
-            boolean
+    boolean
             isPoDocument(String projectSlug, String iterationSlug, String docId);
-
-    String generateDocId(String path, String fileName);
-
 }

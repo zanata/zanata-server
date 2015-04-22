@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.Name;
 import org.zanata.common.DocumentType;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
+import org.zanata.common.ProjectType;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.DocumentUploadDAO;
 import org.zanata.dao.ProjectIterationDAO;
@@ -147,17 +148,23 @@ public class SourceDocumentUpload {
                                         uploadForm));
             }
 
-            if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
+            HProjectIteration version =
+                projectIterationDAO.getBySlug(id.getProjectSlug(), id.getVersionSlug());
+
+            if(version.getProjectType() == ProjectType.File) {
+                if (!tempFile.isPresent()) {
+                    tempFile = Optional.of(util
+                            .persistTempFileFromUpload(uploadForm));
+                }
+                processAdapterFile(tempFile.get(), id, uploadForm);
+            } else if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
                 parsePotFile(potStream, id, uploadForm);
             } else {
-                if (!tempFile.isPresent()) {
-                    tempFile =
-                            Optional.of(util
-                                    .persistTempFileFromUpload(uploadForm));
-                }
-                processAdapterFile(tempFile.get(), id, uploadForm);
+                throw new ZanataServiceException("Unsupported source file: "
+                    + tempFile.get().getName());
             }
+
             if (tempFile.isPresent()) {
                 tempFile.get().delete();
             }

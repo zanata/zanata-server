@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
+import org.zanata.file.GlobalDocumentId;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
@@ -87,6 +88,8 @@ public interface FileFormatAdapter {
      *            source document
      * @param translations
      *            to use in generating translated file
+     * @param documentId
+     *            information of the source document file
      * @param locale
      *            to use for translated document
      * @param params
@@ -99,8 +102,8 @@ public interface FileFormatAdapter {
      *             if any parameters are null
      */
     void writeTranslatedFile(OutputStream output, URI originalFile,
-            Map<String, TextFlowTarget> translations, String locale,
-            Optional<String> params) throws FileFormatAdapterException,
-            IllegalArgumentException;
+            Resource resource, TranslationsResource translationsResource,
+            String locale, Optional<String> params)
+            throws FileFormatAdapterException, IllegalArgumentException;
 
 }

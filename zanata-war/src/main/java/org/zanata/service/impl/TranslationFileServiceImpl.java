@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Scope;
 import org.xml.sax.InputSource;
 import org.zanata.adapter.DTDAdapter;
 import org.zanata.adapter.FileFormatAdapter;
+import org.zanata.adapter.GettextAdapter;
 import org.zanata.adapter.HTMLAdapter;
 import org.zanata.adapter.IDMLAdapter;
 import org.zanata.adapter.OpenOfficeAdapter;
@@ -51,6 +52,7 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.service.TranslationFileService;
+import org.zanata.util.FileUtil;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -107,8 +109,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class);
         DOCTYPEMAP.put(PROPERTIES_UTF8, PropertiesUTF8Adapter.class);
         DOCTYPEMAP.put(XLIFF, XliffAdapter.class);
-//        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT_TEMPLATE, XliffAdapter.class);
-//        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, XliffAdapter.class);
+        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT_TEMPLATE, GettextAdapter.class);
     }
 
     private static Set<String> SUPPORTED_EXTENSIONS =
@@ -117,7 +118,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     private static Set<String> buildSupportedExtensionSet() {
         Set<String> supported = new HashSet<String>();
         for (DocumentType type : DOCTYPEMAP.keySet()) {
-            supported.addAll(type.getExtensions());
+            supported.addAll(type.getSourceExtensions());
         }
         return supported;
     }
@@ -132,18 +133,22 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     public TranslationsResource parseTranslationFile(InputStream fileContents,
             String fileName, String localeId, String projectSlug,
             String iterationSlug, String docId, Optional<String> documentType) throws ZanataServiceException {
-        if (fileName.endsWith(".po")) {
-            return parsePoFile(fileContents, projectSlug, iterationSlug, docId);
-        } else if (hasAdapterFor(fileName)) {
+
+        HProjectIteration version =
+            projectIterationDAO.getBySlug(projectSlug, iterationSlug);
+
+        if(version.getProjectType() == ProjectType.File) {
             File tempFile = persistToTempFile(fileContents);
             TranslationsResource transRes =
-                    parseAdapterTranslationFile(tempFile, projectSlug,
-                            iterationSlug, docId, localeId, fileName, documentType);
+                parseAdapterTranslationFile(tempFile, projectSlug,
+                    iterationSlug, docId, localeId, fileName, documentType);
             removeTempFile(tempFile);
             return transRes;
+        } else if(fileName.endsWith(".po")) {
+            return parsePoFile(fileContents, projectSlug, iterationSlug, docId);
         } else {
             throw new ZanataServiceException("Unsupported Translation file: "
-                    + fileName);
+                + fileName);
         }
     }
 
@@ -180,15 +185,6 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     @Override
-    public String generateDocId(String path, String fileName) {
-        String docName = fileName;
-        if (docName.endsWith(".pot")) {
-            docName = docName.substring(0, docName.lastIndexOf('.'));
-        }
-        return convertToValidPath(path) + docName;
-    }
-
-    @Override
     public Resource parseUpdatedPotFile(InputStream fileContents, String docId,
             String fileName, boolean offlinePo) {
         if (fileName.endsWith(".pot")) {
@@ -206,14 +202,14 @@ public class TranslationFileServiceImpl implements TranslationFileService {
 
     @Override
     public boolean hasMultipleAdapter(String fileNameOrExtension) {
-        String extension = extractExtension(fileNameOrExtension);
-        return DocumentType.typesFor(extension).size() > 1;
+        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        return DocumentType.fromSourceExtension(extension).size() > 1;
     }
 
     @Override
-    public List<DocumentType> getDocumentTypes(String fileNameOrExtension) {
-        String extension = extractExtension(fileNameOrExtension);
-        return DocumentType.typesFor(extension);
+    public Set<DocumentType> getDocumentTypes(String fileNameOrExtension) {
+        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        return DocumentType.fromSourceExtension(extension);
     }
 
     @Override
@@ -221,8 +217,8 @@ public class TranslationFileServiceImpl implements TranslationFileService {
             String documentPath, String fileName, Optional<String> params,
             Optional<String> documentType) throws ZanataServiceException {
         return parseUpdatedAdapterDocumentFile(documentFile,
-                convertToValidPath(documentPath) + fileName, fileName, params,
-                documentType);
+            FileUtil.convertToValidPath(documentPath) + fileName, fileName,
+            params, documentType);
     }
 
     @Override
@@ -240,24 +236,6 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         }
         doc.setName(docId);
         return doc;
-    }
-
-    /**
-     * A valid path is either empty, or has a trailing slash and no leading
-     * slash.
-     *
-     * @param path
-     * @return valid path
-     */
-    private String convertToValidPath(String path) {
-        path = path.trim();
-        while (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (path.length() > 0 && !path.endsWith("/")) {
-            path = path.concat("/");
-        }
-        return path;
     }
 
     private TranslationsResource parsePoFile(InputStream fileContents,
@@ -296,7 +274,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     private boolean hasAdapterFor(String fileNameOrExtension) {
-        String extension = extractExtension(fileNameOrExtension);
+        String extension = FileUtil.extractExtension(fileNameOrExtension);
         if (extension == null) {
             return false;
         }
@@ -308,7 +286,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     private FileFormatAdapter getAdapterFor(String fileNameOrExtension) {
-        String extension = extractExtension(fileNameOrExtension);
+        String extension = FileUtil.extractExtension(fileNameOrExtension);
         if (extension == null) {
             throw new RuntimeException(
                     "Cannot find adapter for null filename or extension.");
@@ -335,7 +313,8 @@ public class TranslationFileServiceImpl implements TranslationFileService {
 
     @Override
     public DocumentType getDocumentType(String fileNameOrExtension) {
-        return DocumentType.getByName(extractExtension(fileNameOrExtension));
+        return DocumentType.getByName(FileUtil.extractExtension(
+            fileNameOrExtension));
     }
 
     @Override
@@ -369,25 +348,6 @@ public class TranslationFileServiceImpl implements TranslationFileService {
                 : getAdapterFor(fileName);
         }
         return getAdapterFor(fileName);
-    }
-
-    @Override
-    public String extractExtension(String fileNameOrExtension) {
-        if (fileNameOrExtension == null || fileNameOrExtension.length() == 0
-                || fileNameOrExtension.endsWith(".")) {
-            // could throw exception here
-            return null;
-        }
-
-        String extension;
-        if (fileNameOrExtension.contains(".")) {
-            extension =
-                    fileNameOrExtension.substring(fileNameOrExtension
-                            .lastIndexOf('.') + 1);
-        } else {
-            extension = fileNameOrExtension;
-        }
-        return extension;
     }
 
     @Override

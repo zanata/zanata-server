@@ -82,6 +82,7 @@ import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
+import org.zanata.util.FileUtil;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.util.UrlUtil;
@@ -754,7 +755,7 @@ public class VersionHomeAction extends AbstractSortAction implements
         String docId = sourceFileUpload.getDocId();
         if (docId == null) {
             docId =
-                    translationFileServiceImpl.generateDocId(
+                    FileUtil.generateDocId(
                             sourceFileUpload.getDocumentPath(),
                             sourceFileUpload.getFileName());
         }
@@ -843,20 +844,17 @@ public class VersionHomeAction extends AbstractSortAction implements
         }
 
         HDocument document = null;
+        Optional<String> docType =
+            Optional.fromNullable(sourceFileUpload.documentType);
         try {
             Resource doc;
 
-            Optional<String> docType =
-                Optional.fromNullable(sourceFileUpload.documentType);
-
             if (docId == null) {
-                doc =
-                        translationFileServiceImpl.parseAdapterDocumentFile(
+                doc = translationFileServiceImpl.parseAdapterDocumentFile(
                                 tempFile.toURI(), documentPath, fileName,
                                 getOptionalParams(), docType);
             } else {
-                doc =
-                        translationFileServiceImpl
+                doc = translationFileServiceImpl
                                 .parseUpdatedAdapterDocumentFile(
                                         tempFile.toURI(), docId, fileName,
                                         getOptionalParams(), docType);
@@ -883,8 +881,12 @@ public class VersionHomeAction extends AbstractSortAction implements
             HRawDocument rawDocument = new HRawDocument();
             rawDocument.setDocument(document);
             rawDocument.setContentHash(new String(Hex.encodeHex(md5hash)));
-            rawDocument.setType(DocumentType.typeFor(translationFileServiceImpl
-                    .extractExtension(fileName)));
+            if(docType.isPresent()) {
+                rawDocument.setType(DocumentType.getByName(docType.get()));
+            } else {
+                rawDocument.setType(DocumentType.fromSourceExtension(
+                    FileUtil.extractExtension(fileName)).iterator().next());
+            }
             rawDocument.setUploadedBy(identity.getCredentials().getUsername());
 
             Optional<String> params = getOptionalParams();
@@ -934,7 +936,7 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     public List<DocumentType> getDocumentTypes(String fileName) {
-        return translationFileServiceImpl.getDocumentTypes(fileName);
+        return Lists.newArrayList(translationFileServiceImpl.getDocumentTypes(fileName));
     }
 
     public void setDefaultTranslationDocType(String fileName) {

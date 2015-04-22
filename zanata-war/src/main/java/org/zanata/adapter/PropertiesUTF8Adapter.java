@@ -61,10 +61,10 @@ public class PropertiesUTF8Adapter extends PropertiesAdapter {
 
     @Override
     public void writeTranslatedFile(OutputStream output, URI originalFile,
-            Map<String, TextFlowTarget> translations, String locale,
+        Resource resource, TranslationsResource translationsResource, String locale,
             Optional<String> params)
             throws FileFormatAdapterException, IllegalArgumentException {
-        writeTranslatedFile(output, originalFile, translations, locale, params,
-                UTF_8);
+        writeTranslatedFile(output, resource, translationsResource, locale,
+                params, UTF_8);
     }
 }

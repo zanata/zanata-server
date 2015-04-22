@@ -56,8 +56,7 @@ import org.zanata.file.SourceDocumentUpload;
 import org.zanata.file.UserFileUploadTracker;
 import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.rest.dto.ChunkUploadResponse;
-import org.zanata.service.TranslationFileService;
-import org.zanata.service.impl.TranslationFileServiceImpl;
+import org.zanata.util.FileUtil;
 import org.zanata.util.ServiceLocator;
 
 import static com.google.common.base.Strings.emptyToNull;
@@ -250,7 +249,6 @@ public class MultiFileUploadServlet extends HttpServlet {
         private String fileParams = "";
 
         private SourceDocumentUpload sourceUploader;
-        private TranslationFileService translationFileServiceImpl;
 
         public FileUploadRequestHandler(HttpServletRequest request) {
             this.request = request;
@@ -264,16 +262,9 @@ public class MultiFileUploadServlet extends HttpServlet {
                 fileTypes = Collections.emptyList();
             }
             sourceUploader = ServiceLocator.instance().getInstance(SourceDocumentUpload.class);
-            translationFileServiceImpl = ServiceLocator.instance().getInstance(
-                    TranslationFileServiceImpl.class);
         }
 
         public JSONArray process() throws FileUploadException {
-            // FIXME fail with error?
-            if (translationFileServiceImpl == null) {
-                log.error("translationFileServiceImpl is null");
-            }
-
             List<FileItem> items = getRequestItems();
             JSONArray filesJson = processFilesFromItems(items);
 
@@ -331,7 +322,7 @@ public class MultiFileUploadServlet extends HttpServlet {
          * @return JSON summary of outcome of the attempt.
          */
         private JSONObject processFileItem(FileItem item) {
-            String docId = translationFileServiceImpl.generateDocId(path, item.getName());
+            String docId = FileUtil.generateDocId(path, item.getName());
             GlobalDocumentId id = new GlobalDocumentId(projectSlug, versionSlug, docId);
 
             Optional<String> errorMessage;
@@ -402,19 +393,19 @@ public class MultiFileUploadServlet extends HttpServlet {
             form.setLast(true);
             form.setSize(item.getSize());
 
-            String extension = translationFileServiceImpl.extractExtension(item.getName());
+            String extension = FileUtil.extractExtension(item.getName());
             String fileType = null;
             if(!fileTypes.isEmpty()) {
                 for(String parsedFileType: fileTypes) {
                     DocumentType docType = DocumentType.valueOf(parsedFileType);
-                    if(docType != null && docType.getExtensions().contains(extension)) {
+                    if(docType != null && docType.getSourceExtensions().contains(extension)) {
                         fileType = docType.name();
                         break;
                     }
                 }
             }
             fileType =
-                    fileType != null ? translationFileServiceImpl
+                    fileType != null ? FileUtil
                             .extractExtension(item.getName()) : fileType;
 
             form.setFileType(fileType);

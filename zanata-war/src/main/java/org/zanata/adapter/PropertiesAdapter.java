@@ -29,8 +29,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Map;
-
 
 import org.apache.commons.lang.StringUtils;
 import org.zanata.adapter.properties.PropReader;
@@ -39,7 +37,6 @@ import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.rest.dto.resource.Resource;
-import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
 
 import com.google.common.base.Charsets;
@@ -80,12 +77,12 @@ public class PropertiesAdapter implements FileFormatAdapter {
 
     @Override
     public void writeTranslatedFile(OutputStream output, URI originalFile,
-        Map<String, TextFlowTarget> translations, String locale,
-        Optional<String> params)
+        Resource resource, TranslationsResource translationsResource,
+        String locale, Optional<String> params)
         throws FileFormatAdapterException, IllegalArgumentException {
 
-        writeTranslatedFile(output, originalFile, translations, locale, params,
-            ISO_8859_1);
+        writeTranslatedFile(output, resource, translationsResource, locale,
+                params, ISO_8859_1);
     }
 
     public Resource parseDocumentFile(URI fileUri, LocaleId sourceLocale,
@@ -160,18 +157,21 @@ public class PropertiesAdapter implements FileFormatAdapter {
         return targetDoc;
     }
 
-    public void writeTranslatedFile(OutputStream output, URI originalFile,
-        Map<String, TextFlowTarget> translations, String locale,
+    public void writeTranslatedFile(OutputStream output, Resource resource,
+        TranslationsResource translationsResource, String locale,
         Optional<String> params, String charset)
         throws FileFormatAdapterException, IllegalArgumentException {
+
+        //write source string with empty translation
+        boolean createSkeletons = true;
 
         File tempFile = null;
         try {
             tempFile = File.createTempFile("filename", "extension");
             if(charset.equals(ISO_8859_1)) {
-                PropWriter.write(translations, tempFile);
+                PropWriter.write(resource, translationsResource, tempFile, createSkeletons);
             } else if (charset.equals(UTF_8)) {
-                PropWriter.writeUTF8(translations, tempFile);
+                PropWriter.writeUTF8(resource, translationsResource, tempFile, createSkeletons);
             }
 
             byte[] buffer = new byte[4096]; // To hold file contents

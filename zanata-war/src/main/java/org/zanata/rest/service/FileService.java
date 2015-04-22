@@ -25,23 +25,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.zanata.adapter.FileFormatAdapter;
@@ -67,7 +68,7 @@ import org.zanata.service.TranslationFileService;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 @Name("fileService")
@@ -105,7 +106,7 @@ public class FileService implements FileResource {
 
     /**
      * Deprecated.
-     * @see #acceptedFileTypesMap
+     * @see #acceptedFileTypeList
      */
     @Override
     @Deprecated
@@ -117,13 +118,14 @@ public class FileService implements FileResource {
     }
 
     @Override
-    public Response acceptedFileTypesMap() {
-        Map<String, List<String>> acceptedTypesMap = Maps.newHashMap();
-        for(DocumentType type:translationFileServiceImpl
-            .getSupportedDocumentTypes()) {
-            acceptedTypesMap.put(type.name().toUpperCase(), type.getExtensions());
-        }
-        return Response.ok(acceptedTypesMap).build();
+    public Response acceptedFileTypeList() {
+        Type genericType = new GenericType<List<DocumentType>>() {
+        }.getGenericType();
+
+        Object entity =
+            new GenericEntity<List<DocumentType>>(Lists.newArrayList(translationFileServiceImpl
+                .getSupportedDocumentTypes()), genericType);
+        return Response.ok(entity).build();
     }
 
     @Override
@@ -244,6 +246,8 @@ public class FileService implements FileResource {
             if (!filePersistService.hasPersistedDocument(id)) {
                 return Response.status(Status.NOT_FOUND).build();
             }
+            Resource res = this.resourceUtils.buildResource(document);
+
             final Set<String> extensions = Collections.<String> emptySet();
             TranslationsResource transRes =
                     (TranslationsResource) this.translatedDocResourceService
@@ -253,8 +257,8 @@ public class FileService implements FileResource {
             // include fuzzy.
             // New list is used as transRes list appears not to be a modifiable
             // implementation.
-            Map<String, TextFlowTarget> translations =
-                    new HashMap<String, TextFlowTarget>();
+            List<TextFlowTarget> filteredTranslations = Lists.newArrayList();
+
             boolean useFuzzy =
                     FILETYPE_TRANSLATED_APPROVED_AND_FUZZY.equals(fileType);
             for (TextFlowTarget target : transRes.getTextFlowTargets()) {
@@ -264,9 +268,12 @@ public class FileService implements FileResource {
                 // this
                 if (target.getState() == ContentState.Approved
                         || (useFuzzy && target.getState() == ContentState.NeedReview)) {
-                    translations.put(target.getResId(), target);
+                    filteredTranslations.add(target);
                 }
             }
+
+            transRes.getTextFlowTargets().clear();
+            transRes.getTextFlowTargets().addAll(filteredTranslations);
 
             HDocument hDocument =
                     documentDAO.getByProjectIterationAndDocId(projectSlug,
@@ -298,8 +305,8 @@ public class FileService implements FileResource {
                     Optional.<String> fromNullable(Strings
                             .emptyToNull(rawParamString));
             StreamingOutput output =
-                    new FormatAdapterStreamingOutput(uri, translations, locale,
-                            adapter, params);
+                    new FormatAdapterStreamingOutput(uri, res, transRes,
+                        locale, adapter, params);
             response =
                     Response.ok()
                             .header("Content-Disposition",
@@ -423,16 +430,19 @@ public class FileService implements FileResource {
     }
 
     private class FormatAdapterStreamingOutput implements StreamingOutput {
-        private Map<String, TextFlowTarget> translations;
+        private Resource resource;
+        private TranslationsResource translationsResource;
         private String locale;
         private URI original;
         private FileFormatAdapter adapter;
         private Optional<String> params;
 
         public FormatAdapterStreamingOutput(URI originalDoc,
-                Map<String, TextFlowTarget> translations, String locale,
-                FileFormatAdapter adapter, Optional<String> params) {
-            this.translations = translations;
+            Resource resource, TranslationsResource translationsResource,
+                String locale, FileFormatAdapter adapter,
+                Optional<String> params) {
+            this.resource = resource;
+            this.translationsResource = translationsResource;
             this.locale = locale;
             this.original = originalDoc;
             this.adapter = adapter;
@@ -443,8 +453,8 @@ public class FileService implements FileResource {
         public void write(OutputStream output) throws IOException,
                 WebApplicationException {
             // FIXME should the generated file be virus scanned?
-            adapter.writeTranslatedFile(output, original, translations, locale,
-                    params);
+            adapter.writeTranslatedFile(output, original, resource,
+                translationsResource, locale, params);
         }
     }
 
