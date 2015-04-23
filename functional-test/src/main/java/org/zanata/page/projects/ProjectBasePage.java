@@ -32,7 +32,6 @@ import org.zanata.page.projects.projectsettings.ProjectGeneralTab;
 import org.zanata.page.projects.projectsettings.ProjectLanguagesTab;
 import org.zanata.page.projects.projectsettings.ProjectPermissionsTab;
 import org.zanata.page.projects.projectsettings.ProjectTranslationTab;
-import com.google.common.base.Predicate;
 
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.page.projects.projectsettings.ProjectWebHooksTab;
@@ -65,93 +64,93 @@ public class ProjectBasePage extends BasePage {
 
     public String getProjectName() {
         log.info("Query Project name");
-        return waitForWebElement(projectInfo)
+        return expectWebElement(projectInfo)
                 .findElement(By.tagName("h1")).getText();
     }
 
     public ProjectVersionsPage gotoVersionsTab() {
         log.info("Click Versions tab");
-        waitForElementExists(versionsTabBody);
-        clickWhenTabEnabled(waitForWebElement(versionsTab));
-        waitForWebElement(By.id("versions"));
+        expectElementExists(versionsTabBody);
+        clickWhenTabEnabled(expectWebElement(versionsTab));
+        expectWebElement(By.id("versions"));
         return new ProjectVersionsPage(getDriver());
     }
 
     public ProjectMaintainersPage gotoMaintainersTab() {
         log.info("Click Maintainers tab");
-        waitForElementExists(maintainersTabBody);
-        clickWhenTabEnabled(waitForWebElement(maintainersTab));
-        waitForWebElement(By.id("maintainers"));
+        expectElementExists(maintainersTabBody);
+        clickWhenTabEnabled(expectWebElement(maintainersTab));
+        expectWebElement(By.id("maintainers"));
         return new ProjectMaintainersPage(getDriver());
     }
 
     public ProjectAboutPage gotoAboutTab() {
         log.info("Click About tab");
-        waitForElementExists(aboutTabBody);
-        clickWhenTabEnabled(waitForWebElement(aboutTab));
-        waitForWebElement(By.id("about"));
+        expectElementExists(aboutTabBody);
+        clickWhenTabEnabled(expectWebElement(aboutTab));
+        expectWebElement(By.id("about"));
         return new ProjectAboutPage(getDriver());
     }
 
     public boolean settingsTabIsDisplayed() {
         log.info("Query Settings tab is displayed");
-        return waitForElementExists(settingsTab).isDisplayed();
+        return expectElementExists(settingsTab).isDisplayed();
     }
 
     public ProjectBasePage gotoSettingsTab() {
         log.info("Click Settings tab");
-        waitForElementExists(settingsTabBody);
-        clickWhenTabEnabled(waitForWebElement(settingsTab));
-        waitForWebElement(settingsTab);
+        expectElementExists(settingsTabBody);
+        clickWhenTabEnabled(expectWebElement(settingsTab));
+        expectWebElement(settingsTab);
         return new ProjectBasePage(getDriver());
     }
 
     public ProjectGeneralTab gotoSettingsGeneral() {
         log.info("Click General settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsGeneralTab));
-        waitForWebElement(By.id("settings-general"));
+        clickWhenTabEnabled(expectWebElement(settingsGeneralTab));
+        expectWebElement(By.id("settings-general"));
         return new ProjectGeneralTab(getDriver());
     }
 
     public ProjectPermissionsTab gotoSettingsPermissionsTab() {
         log.info("Click Permissions settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsPermissionTab));
-        waitForWebElement(By.id("settings-permissions"));
+        clickWhenTabEnabled(expectWebElement(settingsPermissionTab));
+        expectWebElement(By.id("settings-permissions"));
         return new ProjectPermissionsTab(getDriver());
     }
 
     public ProjectTranslationTab gotoSettingsTranslationTab() {
         log.info("Click Translation settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsTranslationTab));
-        waitForWebElement(By.id("settings-translation"));
+        clickWhenTabEnabled(expectWebElement(settingsTranslationTab));
+        expectWebElement(By.id("settings-translation"));
         return new ProjectTranslationTab(getDriver());
     }
 
     public ProjectLanguagesTab gotoSettingsLanguagesTab() {
         log.info("Click Languages settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsLanguagesTab));
-        waitForWebElement(By.id("settings-languages"));
+        clickWhenTabEnabled(expectWebElement(settingsLanguagesTab));
+        expectWebElement(By.id("settings-languages"));
         return new ProjectLanguagesTab(getDriver());
     }
 
     public ProjectWebHooksTab gotoSettingsWebHooksTab() {
         log.info("Click WebHooks settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsWebHooksTab));
-        waitForWebElement(By.id("settings-webhooks"));
+        clickWhenTabEnabled(expectWebElement(settingsWebHooksTab));
+        expectWebElement(By.id("settings-webhooks"));
         return new ProjectWebHooksTab(getDriver());
     }
 
     public ProjectAboutTab gotoSettingsAboutTab() {
         log.info("Click About settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsAboutTab));
-        waitForWebElement(By.id("settings-about"));
+        clickWhenTabEnabled(expectWebElement(settingsAboutTab));
+        expectWebElement(By.id("settings-about"));
         return new ProjectAboutTab(getDriver());
     }
 
     public List<String> getContentAreaParagraphs() {
         log.info("Query Project info");
         List<String> paragraphTexts = new ArrayList<String>();
-        List<WebElement> paragraphs = waitForWebElement(projectInfo)
+        List<WebElement> paragraphs = expectWebElement(projectInfo)
                         .findElements(By.tagName("p"));
         for (WebElement element : paragraphs) {
             paragraphTexts.add(element.getText());
@@ -161,7 +160,7 @@ public class ProjectBasePage extends BasePage {
 
     public String getHomepage() {
         log.info("Query Project homepage");
-        for (WebElement element : waitForWebElement(projectInfo)
+        for (WebElement element : expectWebElement(projectInfo)
                 .findElements(By.tagName("li"))) {
             if (element.findElement(By.className("list__title"))
                     .getText().trim()
@@ -174,7 +173,7 @@ public class ProjectBasePage extends BasePage {
 
     public String getGitUrl() {
         log.info("Query Project repo");
-        for (WebElement element : waitForWebElement(projectInfo)
+        for (WebElement element : expectWebElement(projectInfo)
                 .findElements(By.tagName("li"))) {
             if (element.findElement(By.className("list__title")).getText()
                     .trim().equals("Repository:")) {

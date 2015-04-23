@@ -22,7 +22,6 @@
 package org.zanata.feature.projectversion;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -75,7 +74,7 @@ public class EditVersionLanguagesTest extends ZanataTestCase {
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
                 .clickInheritCheckbox()
-                .waitForLocaleListVisible();
+                .expectLocaleListVisible();
 
         List<String> enabledLocaleList = versionLanguagesTab
                 .getEnabledLocaleList();
@@ -91,7 +90,7 @@ public class EditVersionLanguagesTest extends ZanataTestCase {
         versionLanguagesTab.expectNotification("Language \"English " +
                 "(United States)\" has been added to version.");
         versionLanguagesTab = versionLanguagesTab
-                .waitForLanguagesContains("English (United States)[en-US]");
+                .expectLanguagesContains("English (United States)[en-US]");
 
         versionLanguagesTab = versionLanguagesTab
                 .enterSearchLanguage("fr")
@@ -99,7 +98,7 @@ public class EditVersionLanguagesTest extends ZanataTestCase {
         versionLanguagesTab.expectNotification("Language \"French\" has " +
                 "been added to version.");
         versionLanguagesTab = versionLanguagesTab
-                .waitForLanguagesContains("French[fr]");
+                .expectLanguagesContains("French[fr]");
 
         enabledLocaleList = versionLanguagesTab.getEnabledLocaleList();
 

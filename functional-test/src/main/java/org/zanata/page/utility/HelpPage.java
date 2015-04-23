@@ -41,13 +41,13 @@ public class HelpPage extends BasePage {
 
     public HelpPage clickMoreActions() {
         log.info("Click More Actions");
-        waitForWebElement(moreActions).click();
+        expectWebElement(moreActions).click();
         return new HelpPage(getDriver());
     }
 
     public ContactAdminFormPage clickContactAdmin() {
         log.info("Click Contact Admin button");
-        waitForWebElement(contactAdminLink).click();
+        expectWebElement(contactAdminLink).click();
         return new ContactAdminFormPage(getDriver());
     }
 }

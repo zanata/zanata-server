@@ -45,7 +45,7 @@ public class SetProjectVisibilityTest extends ZanataTestCase {
                 .setReadOnlyFilterEnabled(false)
                 .setObsoleteFilterEnabled(true);
 
-        projectsPage.waitForProjectVisibility("about fedora", true);
+        projectsPage.expectProjectVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")

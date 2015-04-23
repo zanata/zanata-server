@@ -47,48 +47,48 @@ public class SignInPage extends CorePage {
 
     public SignInPage enterUsername(String username) {
         log.info("Enter username {}", username);
-        waitForWebElement(usernameField).sendKeys(username);
+        expectWebElement(usernameField).sendKeys(username);
         return new SignInPage(getDriver());
     }
 
     public SignInPage enterPassword(String password) {
         log.info("Enter password {}", password);
-        waitForWebElement(passwordField).sendKeys(password);
+        expectWebElement(passwordField).sendKeys(password);
         return new SignInPage(getDriver());
     }
 
     public DashboardBasePage clickSignIn() {
         log.info("Click Sign In");
-        waitForWebElement(signInButton).click();
+        expectWebElement(signInButton).click();
         return new DashboardBasePage(getDriver());
     }
 
     public SignInPage clickSignInExpectError() {
         log.info("Click Sign In");
-        waitForWebElement(signInButton).click();
+        expectWebElement(signInButton).click();
         return new SignInPage(getDriver());
     }
 
     public GoogleAccountPage selectGoogleOpenID() {
         log.info("Click 'Google'");
-        waitForWebElement(googleButton).click();
+        expectWebElement(googleButton).click();
         return new GoogleAccountPage(getDriver());
     }
 
     public ResetPasswordPage goToResetPassword() {
         log.info("Click Forgot Password");
-        waitForWebElement(forgotPasswordLink).click();
+        expectWebElement(forgotPasswordLink).click();
         return new ResetPasswordPage(getDriver());
     }
 
     public RegisterPage goToRegister() {
         log.info("Click Sign Up");
-        waitForWebElement(signUpLink).click();
+        expectWebElement(signUpLink).click();
         return new RegisterPage(getDriver());
     }
 
     public String getPageTitle() {
         log.info("Query page title");
-        return waitForWebElement(titleLabel).getText();
+        return expectWebElement(titleLabel).getText();
     }
 }

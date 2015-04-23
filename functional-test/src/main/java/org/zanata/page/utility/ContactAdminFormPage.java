@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.zanata.page.BasePage;
-import org.zanata.util.WebElementUtil;
 
 /**
  * @author Patrick Huang <a
@@ -43,20 +42,20 @@ public class ContactAdminFormPage extends BasePage {
 
     public ContactAdminFormPage inputSubject(String subject) {
         log.info("Enter subject {}", subject);
-        waitForWebElement(subjectField).clear();
-        waitForWebElement(subjectField).sendKeys(subject);
+        expectWebElement(subjectField).clear();
+        expectWebElement(subjectField).sendKeys(subject);
         return new ContactAdminFormPage(getDriver());
     }
 
     public ContactAdminFormPage inputMessage(String message) {
         log.info("Enter message {}", message);
-        waitForWebElement(messageField).sendKeys(message);
+        expectWebElement(messageField).sendKeys(message);
         return new ContactAdminFormPage(getDriver());
     }
 
     public HelpPage send() {
         log.info("Click Send");
-        waitForWebElement(sendButton).click();
+        expectWebElement(sendButton).click();
         return new HelpPage(getDriver());
     }
 }

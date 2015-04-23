@@ -39,6 +39,8 @@ import org.zanata.util.WebElementUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * The base class for the page driver. Contains functionality not generally of
  * a user visible nature.
@@ -90,16 +92,17 @@ public class AbstractPage {
     }
 
     public Alert switchToAlert() {
-        return waitForAMoment().withMessage("alert").until(new Function<WebDriver, Alert>() {
-            @Override
-            public Alert apply(WebDriver driver) {
-                try {
-                    return getDriver().switchTo().alert();
-                } catch (NoAlertPresentException noAlertPresent) {
-                    return null;
-                }
-            }
-        });
+        return waitForAMoment().withMessage("alert").until(
+                new Function<WebDriver, Alert>() {
+                    @Override
+                    public Alert apply(WebDriver driver) {
+                        try {
+                            return getDriver().switchTo().alert();
+                        } catch (NoAlertPresentException noAlertPresent) {
+                            return null;
+                        }
+                    }
+                });
     }
 
     /**
@@ -158,7 +161,9 @@ public class AbstractPage {
      * @param callable a callable that returns a result
      * @param matcher a matcher that matches to expected result
      * @param <T> result type
+     * @deprecated use waitForPageSilence() and then simply check the condition
      */
+    @Deprecated
     public <T> void
             waitFor(final Callable<T> callable, final Matcher<T> matcher) {
         waitForAMoment().withMessage(StringDescription.toString(matcher)).until(
@@ -227,42 +232,54 @@ public class AbstractPage {
      * Wait for all loaders to be inactive
      */
     private void waitForLoaders() {
-        waitForAMoment().withMessage("Loader indicator").until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
+        waitForAMoment().withMessage("Loader indicator").until(
+                new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver input) {
 
-                List<WebElement> loaders = (List<WebElement>) getExecutor()
-                        .executeScript("return (typeof $ == 'undefined') ?  [] : $('.js-loader')");
-                for (WebElement loader : loaders) {
-                    if (loader.getAttribute("class").contains("is-active")) {
-                        log.info("Wait for loader finished");
-                        return false;
+                    List<WebElement> loaders = (List<WebElement>) getExecutor()
+                            .executeScript("return (typeof $ == 'undefined') ?  [] : $('.js-loader')");
+                        for (WebElement loader : loaders) {
+                            if (loader.getAttribute("class")
+                                    .contains("is-active")) {
+                                log.info("Wait for loader finished");
+                                return false;
+                            }
+                        }
+                        return true;
                     }
-                }
-                return true;
-            }
-        });
+                });
     }
 
     /**
-     * Wait for an element to be visible, and return it
+     * @deprecated use expectWebElement
+     */
+    @Deprecated
+    public WebElement waitForWebElement(final By elementBy) {
+        return expectWebElement(elementBy);
+    }
+
+    /**
+     * Expect an element to be visible, and return it
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement waitForWebElement(final By elementBy) {
+    public WebElement expectWebElement(final By elementBy) {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().withMessage(msg).until(new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver input) {
-                WebElement targetElement = getDriver().findElement(elementBy);
-                if (!elementIsReady(targetElement)) {
-                    return null;
-                }
-                return targetElement;
-            }
-        });
+        WebElement targetElement = getDriver().findElement(elementBy);
+        assertReady(targetElement);
+        return targetElement;
+    }
+
+    /**
+     * @deprecated use expectWebElement
+     */
+    @Deprecated
+    public WebElement waitForWebElement(final WebElement parentElement,
+            final By elementBy) {
+        return expectWebElement(parentElement, elementBy);
     }
 
     /**
@@ -271,21 +288,21 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement waitForWebElement(final WebElement parentElement,
-                                        final By elementBy) {
+    public WebElement expectWebElement(final WebElement parentElement,
+            final By elementBy) {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().withMessage(msg).until(new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver input) {
-                WebElement targetElement = parentElement.findElement(elementBy);
-                if (!elementIsReady(targetElement)) {
-                    return null;
-                }
-                return targetElement;
-            }
-        });
+        WebElement targetElement = parentElement.findElement(elementBy);
+        assertReady(targetElement);
+        return targetElement;
+    }
+
+    /**
+     * @deprecated use expectElementExists
+     */
+    public WebElement waitForElementExists(final By elementBy) {
+        return expectElementExists(elementBy);
     }
 
     /**
@@ -295,17 +312,20 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement waitForElementExists(final By elementBy) {
+    public WebElement expectElementExists(final By elementBy) {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().withMessage(msg).until(
-                new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver input) {
-                return getDriver().findElement(elementBy);
-            }
-        });
+        return getDriver().findElement(elementBy);
+    }
+
+    /**
+     * @deprecated use expectElementExists
+     */
+    @Deprecated
+    public WebElement waitForElementExists(final WebElement parentElement,
+            final By elementBy) {
+        return expectElementExists(parentElement, elementBy);
     }
 
     /**
@@ -315,20 +335,16 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement waitForElementExists(final WebElement parentElement,
-                                           final By elementBy) {
+    public WebElement expectElementExists(final WebElement parentElement,
+            final By elementBy) {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().withMessage(msg).until(new Function<WebDriver, WebElement>() {
-            @Override
-            public WebElement apply(WebDriver input) {
-                return parentElement.findElement(elementBy);
-            }
-        });
+        return parentElement.findElement(elementBy);
     }
 
-    private boolean elementIsReady(WebElement targetElement) {
-        return targetElement.isDisplayed() && targetElement.isEnabled();
+    private void assertReady(WebElement targetElement) {
+        assertThat(targetElement.isDisplayed()).as("displayed").isTrue();
+        assertThat(targetElement.isEnabled()).as("enabled").isTrue();
     }
 }

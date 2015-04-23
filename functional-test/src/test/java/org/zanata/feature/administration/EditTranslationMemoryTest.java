@@ -138,7 +138,7 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .enterImportFileName(importFile.getAbsolutePath())
                 .clickUploadButtonAndAcknowledge();
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(importTMId, "1"))
+        assertThat(tmMemoryPage.getNumberOfEntries(importTMId))
                 .isEqualTo("1")
                 .as("The Translation Memory has one entry");
     }
@@ -161,7 +161,7 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
 
         tmMemoryPage = tmMemoryPage.dismissError();
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(rejectTMId, "0"))
+        assertThat(tmMemoryPage.getNumberOfEntries(rejectTMId))
                 .isEqualTo("0")
                 .as("No change is recorded");
     }
@@ -226,14 +226,14 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .enterImportFileName(importFile.getAbsolutePath())
                 .clickUploadButtonAndAcknowledge();
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(clearTMId, "1"))
+        assertThat(tmMemoryPage.getNumberOfEntries(clearTMId))
                 .isEqualTo("1")
                 .as("The TM has one item");
 
         tmMemoryPage = tmMemoryPage.clickOptions(clearTMId)
                 .clickClearTMAndAccept(clearTMId);
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(clearTMId, "0"))
+        assertThat(tmMemoryPage.getNumberOfEntries(clearTMId))
                 .isEqualTo("0")
                 .as("The translation memory entries is empty");
     }
@@ -253,14 +253,14 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .enterImportFileName(importFile.getAbsolutePath())
                 .clickUploadButtonAndAcknowledge();
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(clearTMId, "1"))
+        assertThat(tmMemoryPage.getNumberOfEntries(clearTMId))
                 .isEqualTo("1")
                 .as("The TM has one item");
 
         tmMemoryPage = tmMemoryPage.clickOptions(clearTMId)
                 .clickClearTMAndCancel(clearTMId);
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(clearTMId, "1"))
+        assertThat(tmMemoryPage.getNumberOfEntries(clearTMId))
                 .isEqualTo("1")
                 .as("The translation memory entries count is the same");
     }
@@ -282,7 +282,7 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .enterImportFileName(importFile.getAbsolutePath())
                 .clickUploadButtonAndAcknowledge();
 
-        assertThat(tmMemoryPage.waitForExpectedNumberOfEntries(forceClear, "1"))
+        assertThat(tmMemoryPage.getNumberOfEntries(forceClear))
                 .isEqualTo("1")
                 .as("The TM has one item");
         assertThat(tmMemoryPage.clickOptions(forceClear).canDelete(forceClear))
@@ -290,7 +290,7 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .as("The item cannot yet be deleted");
 
         tmMemoryPage = tmMemoryPage.clickClearTMAndAccept(forceClear);
-        tmMemoryPage.waitForExpectedNumberOfEntries(forceClear, "0");
+        tmMemoryPage.getNumberOfEntries(forceClear);
 
         assertThat(tmMemoryPage.clickOptions(forceClear).canDelete(forceClear))
                 .isTrue()

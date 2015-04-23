@@ -72,7 +72,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .setActiveFilterEnabled(true)
                 .setReadOnlyFilterEnabled(false)
                 .setObsoleteFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", false);
+                .expectProjectNotVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .doesNotContain("about fedora")
@@ -81,7 +81,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
         projectsPage = projectsPage.setActiveFilterEnabled(false)
                 .setReadOnlyFilterEnabled(true)
                 .setObsoleteFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true);
+                .expectProjectVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")
@@ -102,7 +102,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .setActiveFilterEnabled(false)
                 .setReadOnlyFilterEnabled(true)
                 .setObsoleteFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true)
+                .expectProjectVisible("about fedora")
                 .getProjectNamesOnCurrentPage())
                 .contains("about fedora")
                 .as("The project is locked");
@@ -118,7 +118,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .setActiveFilterEnabled(true)
                 .setReadOnlyFilterEnabled(false)
                 .setObsoleteFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true);
+                .expectProjectVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")

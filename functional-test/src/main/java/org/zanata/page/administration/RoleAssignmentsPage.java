@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.zanata.page.BasePage;
-import org.zanata.util.TableRow;
 import org.zanata.util.WebElementUtil;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class RoleAssignmentsPage extends BasePage {
 
     public EditRoleAssignmentPage clickCreateNew() {
         log.info("Click Create New");
-        waitForWebElement(newRuleButton).click();
+        expectWebElement(newRuleButton).click();
         return new EditRoleAssignmentPage(getDriver());
     }
 

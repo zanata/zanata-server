@@ -45,31 +45,31 @@ public class GoogleAccountPage extends AbstractPage {
 
     public GoogleAccountPage enterGoogleEmail(String email) {
         log.info("Enter email {}", email);
-        waitForWebElement(emailField).sendKeys(email);
+        expectWebElement(emailField).sendKeys(email);
         return new GoogleAccountPage(getDriver());
     }
 
     public GoogleAccountPage enterGooglePassword(String password) {
         log.info("Enter password {}", password);
-        waitForWebElement(passwordField).sendKeys(password);
+        expectWebElement(passwordField).sendKeys(password);
         return new GoogleAccountPage(getDriver());
     }
 
     public GooglePermissionsPage clickSignIn() {
         log.info("Click account Sign In");
-        waitForWebElement(signInButton).click();
+        expectWebElement(signInButton).click();
         return new GooglePermissionsPage(getDriver());
     }
 
     public GoogleManagePermissionsPage clickPermissionsSignIn() {
         log.info("Click account management Sign In");
-        waitForWebElement(signInButton).click();
+        expectWebElement(signInButton).click();
         return new GoogleManagePermissionsPage(getDriver());
     }
 
     public String rememberedUser() {
         log.info("Query remembered user email");
-        return waitForWebElement(emailLabelField).getText();
+        return expectWebElement(emailLabelField).getText();
     }
 
     public boolean hasRememberedAuthentication() {
@@ -79,7 +79,7 @@ public class GoogleAccountPage extends AbstractPage {
 
     public GoogleAccountPage removeSavedAuthentication() {
         log.info("Click Sign in with different account");
-        waitForWebElement(signInDifferent).click();
+        expectWebElement(signInDifferent).click();
         return new GoogleAccountPage(getDriver());
     }
 

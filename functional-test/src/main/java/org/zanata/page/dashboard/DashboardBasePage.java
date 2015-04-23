@@ -20,7 +20,6 @@
  */
 package org.zanata.page.dashboard;
 
-import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -28,6 +27,8 @@ import org.zanata.page.BasePage;
 import org.zanata.page.dashboard.dashboardsettings.DashboardAccountTab;
 import org.zanata.page.dashboard.dashboardsettings.DashboardClientTab;
 import org.zanata.page.dashboard.dashboardsettings.DashboardProfileTab;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class DashboardBasePage extends BasePage {
@@ -61,14 +62,14 @@ public class DashboardBasePage extends BasePage {
 
     public String getUserFullName() {
         log.info("Query user full name");
-        return waitForWebElement(profileOverview)
+        return expectWebElement(profileOverview)
                 .findElement(By.tagName("h1")).getText();
     }
 
     public DashboardActivityTab gotoActivityTab() {
         log.info("Click Activity tab");
-        waitForElementExists(activityTabBody);
-        clickWhenTabEnabled(waitForWebElement(activityTab));
+        expectElementExists(activityTabBody);
+        clickWhenTabEnabled(expectWebElement(activityTab));
         return new DashboardActivityTab(getDriver());
     }
 
@@ -81,44 +82,40 @@ public class DashboardBasePage extends BasePage {
 
     public DashboardProjectsTab gotoProjectsTab() {
         log.info("Click Projects tab");
-        waitForElementExists(projectsTabBody);
-        clickWhenTabEnabled(waitForWebElement(projectsTab));
+        expectElementExists(projectsTabBody);
+        clickWhenTabEnabled(expectWebElement(projectsTab));
         return new DashboardProjectsTab(getDriver());
     }
 
     public DashboardBasePage goToSettingsTab() {
         log.info("Click Settings tab");
-        waitForElementExists(settingsTabBody);
-        clickWhenTabEnabled(waitForWebElement(settingsTab));
+        expectElementExists(settingsTabBody);
+        clickWhenTabEnabled(expectWebElement(settingsTab));
         return new DashboardBasePage(getDriver());
     }
 
     public DashboardAccountTab gotoSettingsAccountTab() {
         log.info("Click Account settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsAccountTab));
+        clickWhenTabEnabled(expectWebElement(settingsAccountTab));
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardProfileTab goToSettingsProfileTab() {
         log.info("Click Profile settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsProfileTab));
+        clickWhenTabEnabled(expectWebElement(settingsProfileTab));
         return new DashboardProfileTab(getDriver());
     }
 
     public DashboardClientTab goToSettingsClientTab() {
         log.info("Click Client settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsClientTab));
+        clickWhenTabEnabled(expectWebElement(settingsClientTab));
         return new DashboardClientTab(getDriver());
     }
 
-    public void waitForUsernameChanged(final String current) {
+    public void expectUsernameChanged(final String current) {
         log.info("Wait for username change from {}", current);
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return !getUserFullName().equals(current);
-            }
-        });
+        waitForPageSilence();
+        assertThat(getUserFullName()).isNotEqualTo(current);
     }
 
 }

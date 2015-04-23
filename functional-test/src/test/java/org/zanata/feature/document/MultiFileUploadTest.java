@@ -115,7 +115,7 @@ public class MultiFileUploadTest extends ZanataTestCase {
 
         VersionDocumentsPage versionDocumentsPage = versionDocumentsTab
                 .gotoDocumentTab()
-                .waitForSourceDocsContains(testFileName);
+                .expectSourceDocsContains(testFileName);
 
         assertThat(versionDocumentsPage.getSourceDocumentNames())
                 .contains(firstFile.getName())

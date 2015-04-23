@@ -30,6 +30,8 @@ import org.openqa.selenium.WebElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Damian Jansen
  * <a href="mailto:djansen@redhat.com">djansen@redhat.com</a>
@@ -41,14 +43,10 @@ public class VersionDocumentsPage extends VersionBasePage {
         super(driver);
     }
 
-    public VersionDocumentsPage waitForSourceDocsContains(final String document) {
+    public VersionDocumentsPage expectSourceDocsContains(final String document) {
         log.info("Click Project link");
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return sourceDocumentsContains(document);
-            }
-        });
+        waitForPageSilence();
+        assertThat(getSourceDocumentNames()).contains(document);
         return new VersionDocumentsPage(getDriver());
     }
 
@@ -76,7 +74,7 @@ public class VersionDocumentsPage extends VersionBasePage {
 
     private List<WebElement> getDocumentsTabDocumentList() {
         slightPause();
-        return waitForWebElement(By.id("documents-document_list"))
+        return expectWebElement(By.id("documents-document_list"))
                         .findElements(By.xpath("./li"));
     }
 

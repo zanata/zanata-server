@@ -56,7 +56,7 @@ public class VersionDocumentsTab extends VersionBasePage {
 
     public VersionDocumentsTab pressUploadFileButton() {
         log.info("Click Upload file button");
-        clickLinkAfterAnimation(waitForWebElement(uploadButton));
+        clickLinkAfterAnimation(expectWebElement(uploadButton));
         return new VersionDocumentsTab(getDriver());
     }
 
@@ -67,12 +67,12 @@ public class VersionDocumentsTab extends VersionBasePage {
      */
     public boolean canSubmitDocument() {
         log.info("Query can start upload");
-        return waitForElementExists(startUploadButton).isEnabled();
+        return expectElementExists(startUploadButton).isEnabled();
     }
 
     public VersionDocumentsTab cancelUpload() {
         log.info("Click Cancel");
-        waitForWebElement(cancelUploadButton).click();
+        expectWebElement(cancelUploadButton).click();
         waitForAMoment().until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
@@ -93,21 +93,21 @@ public class VersionDocumentsTab extends VersionBasePage {
                         "arguments[0].style.height = '1px'; " +
                         "arguments[0].style.width = '1px'; " +
                         "arguments[0].style.opacity = 1",
-                        waitForElementExists(fileUploadInput));
+                        expectElementExists(fileUploadInput));
 
-        waitForWebElement(fileUploadInput).sendKeys(filePath);
+        expectWebElement(fileUploadInput).sendKeys(filePath);
         return new VersionDocumentsTab(getDriver());
     }
 
     public VersionDocumentsTab submitUpload() {
         log.info("Click Submit upload");
-        waitForWebElement(startUploadButton).click();
+        expectWebElement(startUploadButton).click();
         return new VersionDocumentsTab(getDriver());
     }
 
     public VersionDocumentsTab clickUploadDone() {
         log.info("Click upload Done button");
-        waitForWebElement(fileUploadDone).click();
+        expectWebElement(fileUploadDone).click();
         return new VersionDocumentsTab(getDriver());
     }
 
@@ -117,7 +117,7 @@ public class VersionDocumentsTab extends VersionBasePage {
                 .until(new Function<WebDriver, List<String>>() {
                     @Override
                     public List<String> apply(WebDriver input) {
-                        List<WebElement> elements = waitForElementExists(
+                        List<WebElement> elements = expectElementExists(
                                 By.id("settings-document_form"))
                                 .findElement(By.tagName("ul"))
                                 .findElements(By.xpath(".//li/label[@class='" +
@@ -160,13 +160,13 @@ public class VersionDocumentsTab extends VersionBasePage {
     }
 
     private List<WebElement> getUploadListElements() {
-        return waitForWebElement(filesListPanel).findElement(By.tagName("ul"))
+        return expectWebElement(filesListPanel).findElement(By.tagName("ul"))
                 .findElements(By.tagName("li"));
     }
 
     public String getUploadError() {
         log.info("Query upload error message");
-        return waitForWebElement(waitForElementExists(fileUploadPanel),
+        return expectWebElement(expectElementExists(fileUploadPanel),
                 By.className("message--danger")).getText();
     }
 }

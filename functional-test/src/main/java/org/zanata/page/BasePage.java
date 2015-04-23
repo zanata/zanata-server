@@ -51,6 +51,8 @@ import com.google.common.collect.Iterables;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * A Base Page is an extension of the Core Page, providing the navigation bar
  * and sidebar links common to most pages outside of the editor.
@@ -264,15 +266,11 @@ public class BasePage extends CorePage {
         return new ProjectsPage(getDriver());
     }
 
-    public BasePage waitForSearchListContains(final String expected) {
+    public BasePage expectSearchListContains(final String expected) {
+        waitForPageSilence();
         String msg = "Project search list contains " + expected;
-        logWaiting(msg);
-        waitForAMoment().withMessage(msg).until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return getProjectSearchAutocompleteItems().contains(expected);
-            }
-        });
+        assertThat(getProjectSearchAutocompleteItems()).as(msg).contains(
+                expected);
         return new BasePage(getDriver());
     }
 
@@ -341,7 +339,7 @@ public class BasePage extends CorePage {
     }
 
     public void clickElement(By findby) {
-        scrollIntoView(waitForWebElement(findby));
-        waitForWebElement(findby).click();
+        scrollIntoView(expectWebElement(findby));
+        expectWebElement(findby).click();
     }
 }

@@ -63,13 +63,13 @@ public class ManageLanguageTeamMemberPage extends BasePage {
 
     public ManageLanguageTeamMemberPage clickMoreActions() {
         log.info("Click More Actions dropdown");
-        waitForWebElement(moreActions).click();
+        expectWebElement(moreActions).click();
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 
     private String getMemberCount() {
         log.info("Query members info");
-        return waitForWebElement(By.className("panel__heading"))
+        return expectWebElement(By.className("panel__heading"))
                 .findElement(By.className("i--users")).getText().trim();
     }
 
@@ -80,7 +80,7 @@ public class ManageLanguageTeamMemberPage extends BasePage {
             return Collections.emptyList();
         }
         List<String> names = new ArrayList<>();
-        for (WebElement listEntry : waitForWebElement(memberPanel)
+        for (WebElement listEntry : expectWebElement(memberPanel)
                 .findElements(By.className("list__item--actionable"))) {
             names.add(listEntry.findElement(By.tagName("h3")).getText().trim());
         }
@@ -89,7 +89,7 @@ public class ManageLanguageTeamMemberPage extends BasePage {
 
     public ManageLanguageTeamMemberPage joinLanguageTeam() {
         log.info("Click Join");
-        waitForWebElement(joinLanguageTeamButton).click();
+        expectWebElement(joinLanguageTeamButton).click();
         // we need to wait for this join to finish before returning the page
         waitForAMoment().until(new Function<WebDriver, Boolean>() {
             @Override
@@ -102,19 +102,19 @@ public class ManageLanguageTeamMemberPage extends BasePage {
 
     public ManageLanguageTeamMemberPage clickAddTeamMember() {
         log.info("Click Add Team Member");
-        waitForWebElement(addTeamMemberButton).click();
+        expectWebElement(addTeamMemberButton).click();
         return this;
     }
 
     public ManageLanguageTeamMemberPage enterUsername(String username) {
         log.info("Enter username search {}", username);
-        waitForWebElement(addUserSearchInput).sendKeys(username);
+        expectWebElement(addUserSearchInput).sendKeys(username);
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 
     public ManageLanguageTeamMemberPage clickSearch() {
         log.info("Click Search");
-        waitForWebElement(addUserSearchButton).click();
+        expectWebElement(addUserSearchButton).click();
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 
@@ -122,7 +122,7 @@ public class ManageLanguageTeamMemberPage extends BasePage {
         return waitForAMoment().until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver input) {
-                WebElement list = waitForWebElement(personTable)
+                WebElement list = expectWebElement(personTable)
                         .findElement(By.className("list--slat"));
                 List<WebElement> rows = list
                         .findElements(By.className("txt--meta"));
@@ -172,13 +172,13 @@ public class ManageLanguageTeamMemberPage extends BasePage {
 
     public ManageLanguageTeamMemberPage clickAddSelectedButton() {
         log.info("Click Add Selected");
-        waitForWebElement(addSelectedButton).click();
+        expectWebElement(addSelectedButton).click();
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 
     public ManageLanguageTeamMemberPage clickCloseSearchDialog() {
         log.info("Click Close");
-        waitForWebElement(closeSearchButton).click();
+        expectWebElement(closeSearchButton).click();
         return new ManageLanguageTeamMemberPage(getDriver());
     }
 

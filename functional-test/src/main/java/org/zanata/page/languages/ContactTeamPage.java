@@ -41,19 +41,19 @@ public class ContactTeamPage extends BasePage {
 
     public ContactTeamPage enterSubject(String subject) {
         log.info("Enter subject {}", subject);
-        waitForWebElement(subjectField).sendKeys(subject);
+        expectWebElement(subjectField).sendKeys(subject);
         return new ContactTeamPage(getDriver());
     }
 
     public ContactTeamPage enterMessage(String message) {
         log.info("Enter message {}", message);
-        waitForWebElement(messageField).sendKeys(message);
+        expectWebElement(messageField).sendKeys(message);
         return new ContactTeamPage(getDriver());
     }
 
     public LanguagesPage clickSend() {
         log.info("Click the Send Message button");
-        waitForWebElement(sendButton).click();
+        expectWebElement(sendButton).click();
         return new LanguagesPage(getDriver());
     }
 }
