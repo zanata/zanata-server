@@ -54,13 +54,13 @@ public class VersionBasePage extends BasePage {
 
     public String getProjectVersionName() {
         log.info("Query Version name");
-        return waitForWebElement(versionInfo)
+        return expectWebElement(versionInfo)
                 .findElement(By.tagName("h1")).getText();
     }
 
     public ProjectVersionsPage clickProjectLink(String projectName) {
         log.info("Click Project link");
-        waitForWebElement(versionPage)
+        expectWebElement(versionPage)
                 .findElement(By.linkText(projectName))
                 .click();
         return new ProjectVersionsPage(getDriver());
@@ -68,54 +68,54 @@ public class VersionBasePage extends BasePage {
 
     public VersionDocumentsPage gotoDocumentTab() {
         log.info("Click Documents tab");
-        waitForElementExists(documentsTabBody);
-        clickWhenTabEnabled(waitForWebElement(documentsTab));
-        waitForWebElement(By.id("documents"));
+        expectElementExists(documentsTabBody);
+        clickWhenTabEnabled(expectWebElement(documentsTab));
+        expectWebElement(By.id("documents"));
         return new VersionDocumentsPage(getDriver());
     }
 
     public VersionLanguagesPage gotoLanguageTab() {
         log.info("Click Languages tab");
-        waitForElementExists(languageTabBody);
-        clickWhenTabEnabled(waitForWebElement(languageTab));
-        waitForWebElement(By.id("languages"));
+        expectElementExists(languageTabBody);
+        clickWhenTabEnabled(expectWebElement(languageTab));
+        expectWebElement(By.id("languages"));
         return new VersionLanguagesPage(getDriver());
     }
 
     public VersionBasePage gotoSettingsTab() {
         log.info("Click Settings tab");
         slightPause();
-        waitForElementExists(settingsTabBody);
-        clickWhenTabEnabled(waitForWebElement(settingsTab));
-        waitForWebElement(settingsTabBody);
+        expectElementExists(settingsTabBody);
+        clickWhenTabEnabled(expectWebElement(settingsTab));
+        expectWebElement(settingsTabBody);
         return new VersionBasePage(getDriver());
     }
 
     public VersionGeneralTab gotoSettingsGeneral() {
         log.info("Click General settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsGeneralTab));
-        waitForWebElement(By.id("settings-general_form"));
+        clickWhenTabEnabled(expectWebElement(settingsGeneralTab));
+        expectWebElement(By.id("settings-general_form"));
         return new VersionGeneralTab(getDriver());
     }
 
     public VersionLanguagesTab gotoSettingsLanguagesTab() {
         log.info("Click Languages settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsLanguagesTab));
-        waitForWebElement(By.id("settings-languages-form"));
+        clickWhenTabEnabled(expectWebElement(settingsLanguagesTab));
+        expectWebElement(By.id("settings-languages-form"));
         return new VersionLanguagesTab(getDriver());
     }
 
     public VersionDocumentsTab gotoSettingsDocumentsTab() {
         log.info("Click Documents settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsDocumentsTab));
-        waitForWebElement(By.id("settings-document_form"));
+        clickWhenTabEnabled(expectWebElement(settingsDocumentsTab));
+        expectWebElement(By.id("settings-document_form"));
         return new VersionDocumentsTab(getDriver());
     }
 
     public VersionTranslationTab gotoSettingsTranslationTab() {
         log.info("Click Translation settings sub-tab");
-        clickWhenTabEnabled(waitForWebElement(settingsTranslationTab));
-        waitForWebElement(By.id("settings-translation-review-form"));
+        clickWhenTabEnabled(expectWebElement(settingsTranslationTab));
+        expectWebElement(By.id("settings-translation-review-form"));
         return new VersionTranslationTab(getDriver());
     }
 

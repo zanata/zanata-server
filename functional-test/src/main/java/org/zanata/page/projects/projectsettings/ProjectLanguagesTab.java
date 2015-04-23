@@ -30,6 +30,8 @@ import org.zanata.util.LanguageList;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * This class represents the project language settings page.
  *
@@ -68,39 +70,18 @@ public class ProjectLanguagesTab extends ProjectBasePage {
         return new ProjectLanguagesTab(getDriver());
     }
 
-    /**
-     * Get a list of disabled locales in this project
-     *
-     * @return String list of language/locale names
-     */
-    public List<String> getDisabledLocaleList() {
-        log.info("Query enabled locales");
-        return LanguageList.getListedLocales(waitForWebElement(inactiveLocales));
-    }
-
-    public ProjectLanguagesTab expectDisabledLocaleListCount(final int count) {
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return getDisabledLocaleList().size() == count;
-            }
-        });
-        return new ProjectLanguagesTab(getDriver());
-    }
-
-    private List<WebElement> getDisabledLocaleListElement() {
-        return waitForWebElement(inactiveLocales)
-                .findElements(By.className("reveal"));
+    private List<WebElement> getEnabledLocaleListElement() {
+        return expectWebElement(settingsLanguagesForm)
+                .findElement(By.className("list--slat"))
+                .findElements(By.className("reveal--list-item"));
     }
 
     public ProjectLanguagesTab waitForLocaleListVisible() {
         log.info("Wait for locale list visible");
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver driver) {
-                return waitForWebElement(activeLocales).isDisplayed();
-            }
-        });
+        waitForPageSilence();
+        WebElement el = getDriver().findElement(settingsLanguagesForm)
+                .findElement(By.className("list--slat"));
+        assertThat(el).as("displayed").isEqualTo(true);
         return new ProjectLanguagesTab(getDriver());
     }
 

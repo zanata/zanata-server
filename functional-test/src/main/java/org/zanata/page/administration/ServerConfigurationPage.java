@@ -167,29 +167,31 @@ public class ServerConfigurationPage extends BasePage {
 
     public ServerConfigurationPage inputMaxConcurrent(int max) {
         log.info("Enter maximum concurrent API requests {}", max);
-        enterTextConfigField(maxConcurrentField, Integer.toString(max));
+        expectWebElement(maxConcurrentField).clear();
+        expectWebElement(maxConcurrentField).sendKeys(max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
     public String getMaxConcurrentRequestsPerApiKey() {
         log.info("Query maximum concurrent API requests");
-        return waitForWebElement(maxConcurrentField).getAttribute("value");
+        return expectWebElement(maxConcurrentField).getAttribute("value");
     }
 
     public ServerConfigurationPage inputMaxActive(int max) {
         log.info("Enter maximum active API requests {}", max);
-        enterTextConfigField(maxActiveField, Integer.toString(max));
+        expectWebElement(maxActiveField).clear();
+        expectWebElement(maxActiveField).sendKeys(max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
     public String getMaxActiveRequestsPerApiKey() {
         log.info("Query maximum active API requests");
-        return waitForWebElement(maxActiveField).getAttribute("value");
+        return expectWebElement(maxActiveField).getAttribute("value");
     }
 
     public AdministrationPage save() {
         log.info("Click Save");
-        waitForWebElement(saveButton).click();
+        expectWebElement(saveButton).click();
         return new AdministrationPage(getDriver());
     }
 

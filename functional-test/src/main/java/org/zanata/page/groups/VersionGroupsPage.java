@@ -58,13 +58,13 @@ public class VersionGroupsPage extends BasePage {
 
     public CreateVersionGroupPage createNewGroup() {
         log.info("Click New Group button");
-        waitForWebElement(createGroupButton).click();
+        expectWebElement(createGroupButton).click();
         return new CreateVersionGroupPage(getDriver());
     }
 
     public VersionGroupPage goToGroup(String groupName) {
         log.info("Click group {}", groupName);
-        waitForWebElement(groupTable).findElement(By.linkText(groupName)).click();
+        expectWebElement(groupTable).findElement(By.linkText(groupName)).click();
         return new VersionGroupPage(getDriver());
     }
 
@@ -86,8 +86,8 @@ public class VersionGroupsPage extends BasePage {
 
     public String getInfoMessage() {
         log.info("Test info msg");
-        log.info(waitForWebElement(infomsg).getText());
-        return waitForWebElement(infomsg).getText();
+        log.info(expectWebElement(infomsg).getText());
+        return expectWebElement(infomsg).getText();
     }
 
 }

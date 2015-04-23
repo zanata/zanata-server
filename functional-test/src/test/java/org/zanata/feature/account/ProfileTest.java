@@ -89,7 +89,7 @@ public class ProfileTest extends ZanataTestCase {
 
         dashboardClientTab.waitForPageSilence();
         dashboardClientTab = dashboardClientTab.pressApiKeyGenerateButton();
-        dashboardClientTab.waitForApiKeyChanged(currentApiKey);
+        dashboardClientTab.expectApiKeyChanged(currentApiKey);
 
         assertThat(dashboardClientTab.getApiKey()).isNotEqualTo(currentApiKey)
                 .as("The user's api key is different");
@@ -114,7 +114,7 @@ public class ProfileTest extends ZanataTestCase {
                 .enterName("Tranny")
                 .clickUpdateProfileButton();
 
-        dashboardProfileTab.waitForUsernameChanged("translator");
+        dashboardProfileTab.expectUsernameChanged("translator");
 
         assertThat(dashboardProfileTab.getUserFullName()).isEqualTo("Tranny")
                 .as("The user's name has been changed");

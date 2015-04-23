@@ -66,47 +66,47 @@ public class RegisterPage extends CorePage {
 
     public RegisterPage enterName(String name) {
         log.info("Enter name {}", name);
-        waitForWebElement(nameField).sendKeys(name);
+        expectWebElement(nameField).sendKeys(name);
         return new RegisterPage(getDriver());
     }
 
     public RegisterPage enterUserName(String userName) {
         log.info("Enter username {}", userName);
-        waitForWebElement(usernameField).sendKeys(userName);
+        expectWebElement(usernameField).sendKeys(userName);
         return new RegisterPage(getDriver());
     }
 
     public RegisterPage enterEmail(String email) {
         log.info("Enter email {}", email);
-        waitForWebElement(emailField).sendKeys(email);
+        expectWebElement(emailField).sendKeys(email);
         return new RegisterPage(getDriver());
     }
 
     public RegisterPage enterPassword(String password) {
         log.info("Enter password {}", password);
-        waitForWebElement(passwordField).sendKeys(password);
+        expectWebElement(passwordField).sendKeys(password);
         return new RegisterPage(getDriver());
     }
 
     // TODO: Add a "signup success" page
     public HomePage register() {
         log.info("Click Sign Up");
-        waitForWebElement(signUpButton).click();
+        expectWebElement(signUpButton).click();
         return new HomePage(getDriver());
     }
 
     public RegisterPage registerFailure() {
         log.info("Click Sign Up");
-        waitForWebElement(signUpButton).click();
+        expectWebElement(signUpButton).click();
         return new RegisterPage(getDriver());
     }
 
     public RegisterPage clearFields() {
         log.info("Clear fields");
-        waitForWebElement(nameField).clear();
-        waitForWebElement(emailField).clear();
-        waitForWebElement(usernameField).clear();
-        waitForWebElement(passwordField).clear();
+        expectWebElement(nameField).clear();
+        expectWebElement(emailField).clear();
+        expectWebElement(usernameField).clear();
+        expectWebElement(passwordField).clear();
         return new RegisterPage(getDriver());
     }
 
@@ -124,29 +124,29 @@ public class RegisterPage extends CorePage {
 
     public String getPageTitle() {
         log.info("Query page title");
-        return waitForWebElement(titleLabel).getText();
+        return expectWebElement(titleLabel).getText();
     }
 
     public SignInPage goToSignIn() {
         log.info("Click Log In");
-        waitForWebElement(loginLink).click();
+        expectWebElement(loginLink).click();
         return new SignInPage(getDriver());
     }
 
     public RegisterPage clickPasswordShowToggle() {
         log.info("Click Show/Hide");
-        waitForWebElement(showHideToggleButton).click();
+        expectWebElement(showHideToggleButton).click();
         return new RegisterPage(getDriver());
     }
 
     public String getPassword() {
         log.info("Query password");
-        return waitForWebElement(passwordField).getAttribute("value");
+        return expectWebElement(passwordField).getAttribute("value");
     }
 
     public String getPasswordFieldType() {
         log.info("Query password field type");
-        return waitForWebElement(passwordField).getAttribute("type");
+        return expectWebElement(passwordField).getAttribute("type");
     }
 
     public boolean termsOfUseUrlVisible() {

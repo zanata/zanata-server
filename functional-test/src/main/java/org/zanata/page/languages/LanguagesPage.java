@@ -27,7 +27,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
-import org.zanata.page.administration.AddLanguagePage;
 import org.zanata.util.TableRow;
 import org.zanata.util.WebElementUtil;
 
@@ -71,7 +70,7 @@ public class LanguagesPage extends BasePage {
     }
 
     private List<WebElement> getRows() {
-        return waitForWebElement(waitForElementExists(By.id("languageForm")),
+        return expectWebElement(expectElementExists(By.id("languageForm")),
                 By.className("list--stats"))
                 .findElements(By.tagName("li"));
     }

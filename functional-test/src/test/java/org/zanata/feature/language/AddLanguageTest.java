@@ -81,7 +81,7 @@ public class AddLanguageTest extends ZanataTestCase {
                 .clickMoreActions()
                 .addNewLanguage()
                 .enterSearchLanguage(language)
-                .waitForPluralsWarning()
+                .expectPluralsWarning()
                 .saveLanguage();
 
         assertThat(languagesPage.getLanguageLocales())
@@ -98,7 +98,7 @@ public class AddLanguageTest extends ZanataTestCase {
                 .goToProject("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
-                .waitForLocaleListVisible()
+                .expectLocaleListVisible()
                 .getEnabledLocaleList();
 
         assertThat(enabledLocaleList)
@@ -125,8 +125,8 @@ public class AddLanguageTest extends ZanataTestCase {
                 .clickMoreActions()
                 .addNewLanguage()
                 .enterSearchLanguage(language)
-                .waitForPluralsWarning()
-                .enableLanguageByDefault(false)
+                .expectPluralsWarning()
+                .disableLanguageByDefault()
                 .saveLanguage();
 
         assertThat(languagesPage.getLanguageLocales())
@@ -141,7 +141,8 @@ public class AddLanguageTest extends ZanataTestCase {
                 .goToProject("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
-                .waitForLocaleListVisible();
+                .expectLocaleListVisible()
+                .getEnabledLocaleList();
         List<String> enabledLocaleList = projectLanguagesTab.getEnabledLocaleList();
         List<String> disabledLocaleList = projectLanguagesTab.getDisabledLocaleList();
 

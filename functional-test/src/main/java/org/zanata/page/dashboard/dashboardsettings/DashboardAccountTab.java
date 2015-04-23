@@ -54,34 +54,34 @@ public class DashboardAccountTab extends DashboardBasePage {
 
     public DashboardAccountTab typeNewAccountEmailAddress(String emailAddress) {
         log.info("Enter email {}", emailAddress);
-        waitForWebElement(emailField).clear();
-        waitForWebElement(emailField).sendKeys(emailAddress);
+        expectWebElement(emailField).clear();
+        expectWebElement(emailField).sendKeys(emailAddress);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab clickUpdateEmailButton() {
         log.info("Click Update Email");
-        waitForWebElement(updateEmailButton).click();
+        expectWebElement(updateEmailButton).click();
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab typeOldPassword(String oldPassword) {
         log.info("Enter old password {}", oldPassword);
-        waitForWebElement(oldPasswordField).clear();
-        waitForWebElement(oldPasswordField).sendKeys(oldPassword);
+        expectWebElement(oldPasswordField).clear();
+        expectWebElement(oldPasswordField).sendKeys(oldPassword);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab typeNewPassword(String newPassword) {
         log.info("Enter new password {}", newPassword);
-        waitForWebElement(newPasswordField).clear();
-        waitForWebElement(newPasswordField).sendKeys(newPassword);
+        expectWebElement(newPasswordField).clear();
+        expectWebElement(newPasswordField).sendKeys(newPassword);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab clickUpdatePasswordButton() {
         log.info("Click Update Password");
-        waitForWebElement(changePasswordButton).click();
+        expectWebElement(changePasswordButton).click();
         return new DashboardAccountTab(getDriver());
     }
 }

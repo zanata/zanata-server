@@ -52,6 +52,8 @@ import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.workflow.BasicWorkFlow;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * A Base Page is an extension of the Core Page, providing the navigation bar
  * and sidebar links common to most pages outside of the editor.
@@ -359,7 +361,7 @@ public class BasePage extends CorePage {
     }
 
     public void clickElement(By findby) {
-        scrollIntoView(waitForWebElement(findby));
-        waitForWebElement(findby).click();
+        scrollIntoView(expectWebElement(findby));
+        expectWebElement(findby).click();
     }
 }
