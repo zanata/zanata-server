@@ -46,13 +46,11 @@ import com.google.common.base.Predicate;
 @Slf4j
 public class AbstractPage {
     private final WebDriver driver;
-    private final FluentWait<WebDriver> ajaxWaitForSec;
 
     public AbstractPage(final WebDriver driver) {
         PageFactory.initElements(new AjaxElementLocatorFactory(driver, 10),
                 this);
         this.driver = driver;
-        ajaxWaitForSec = WebElementUtil.waitForAMoment(driver);
         waitForPageSilence();
     }
 
@@ -88,7 +86,7 @@ public class AbstractPage {
     }
 
     public FluentWait<WebDriver> waitForAMoment() {
-        return ajaxWaitForSec;
+        return WebElementUtil.waitForAMoment(driver);
     }
 
     public Alert switchToAlert() {
