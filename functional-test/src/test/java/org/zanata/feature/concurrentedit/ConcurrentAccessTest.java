@@ -69,7 +69,7 @@ public class ConcurrentAccessTest extends ZanataTestCase {
     public static void beforeClass() throws Exception {
         String path = "rest/configurations/c/max.concurrent.req.per.apikey";
         WebResource.Builder configRequest = clientRequestAsAdmin(path);
-        configRequest.entity("1", MediaType.APPLICATION_JSON_TYPE);
+        configRequest.entity("6", MediaType.APPLICATION_JSON_TYPE);
         configRequest.put();
     }
 

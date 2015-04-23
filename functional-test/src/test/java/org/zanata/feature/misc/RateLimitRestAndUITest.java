@@ -254,7 +254,7 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
 
         List<Integer> result = getResultStatusCodes(futures);
 
-        // 1 request from translator should get 403 and fail
+        // 1 request from translator should get 429 and fail
         log.info("result: {}", result);
         assertThat(result).contains(201, 201, 201, 201, 429);
     }
@@ -314,9 +314,9 @@ public class RateLimitRestAndUITest extends ZanataTestCase {
                     ZanataRestCaller.buildSourceResource("doc" + counter,
                             ZanataRestCaller.buildTextFlow("res" + counter,
                                     "content" + counter)), false);
-        } catch (Exception e) {
+        } catch (UniformInterfaceException e) {
             log.info("rest call failed: {}", e.getMessage());
-            return 500;
+            return e.getResponse().getStatus();
         }
     }
 
