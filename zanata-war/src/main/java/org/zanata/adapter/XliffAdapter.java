@@ -121,8 +121,8 @@ public class XliffAdapter implements FileFormatAdapter {
         File tempFile = null;
         try {
             tempFile = File.createTempFile("filename", "extension");
-            XliffWriter.write(resource, translationsResource, tempFile, locale,
-                    createSkeletons);
+            XliffWriter.writeFile(tempFile, resource, locale,
+                translationsResource, createSkeletons);
 
             byte[] buffer = new byte[4096]; // To hold file contents
             int bytesRead;

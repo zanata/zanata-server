@@ -67,7 +67,6 @@ import java.util.Set;
 
 import static org.jboss.seam.ScopeType.STATELESS;
 import static org.zanata.common.DocumentType.GETTEXT_PORTABLE_OBJECT;
-import static org.zanata.common.DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE;
 import static org.zanata.common.DocumentType.HTML;
 import static org.zanata.common.DocumentType.IDML;
 import static org.zanata.common.DocumentType.OPEN_DOCUMENT_GRAPHICS;
@@ -109,7 +108,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(PROPERTIES, PropertiesAdapter.class);
         DOCTYPEMAP.put(PROPERTIES_UTF8, PropertiesUTF8Adapter.class);
         DOCTYPEMAP.put(XLIFF, XliffAdapter.class);
-        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT_TEMPLATE, GettextAdapter.class);
+        DOCTYPEMAP.put(GETTEXT_PORTABLE_OBJECT, GettextAdapter.class);
     }
 
     private static Set<String> SUPPORTED_EXTENSIONS =
@@ -416,8 +415,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
 
             // additional check in case we do start storing raw documents for po
             DocumentType docType = doc.getRawDocument().getType();
-            return docType == GETTEXT_PORTABLE_OBJECT
-                    || docType == GETTEXT_PORTABLE_OBJECT_TEMPLATE;
+            return docType == GETTEXT_PORTABLE_OBJECT;
         }
         return false;
     }

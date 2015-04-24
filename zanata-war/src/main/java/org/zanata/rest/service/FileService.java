@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -57,6 +58,7 @@ import org.zanata.file.RawDocumentContentAccessException;
 import org.zanata.file.SourceDocumentUpload;
 import org.zanata.file.TranslationDocumentUpload;
 import org.zanata.model.HDocument;
+import org.zanata.model.HRawDocument;
 import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.rest.StringSet;
 import org.zanata.rest.dto.resource.Resource;
@@ -296,24 +298,28 @@ public class FileService implements FileResource {
             // the generated file should be scanned instead
             virusScanner.scan(tempFile, name);
             URI uri = tempFile.toURI();
+            HRawDocument hRawDocument = hDocument.getRawDocument();
             FileFormatAdapter adapter =
-                    translationFileServiceImpl.getAdapterFor(hDocument
-                            .getRawDocument().getType());
-            String rawParamString =
-                    hDocument.getRawDocument().getAdapterParameters();
+                    translationFileServiceImpl.getAdapterFor(hRawDocument.getType());
+            String rawParamString = hRawDocument.getAdapterParameters();
             Optional<String> params =
                     Optional.<String> fromNullable(Strings
                             .emptyToNull(rawParamString));
             StreamingOutput output =
                     new FormatAdapterStreamingOutput(uri, res, transRes,
                         locale, adapter, params);
+
+            String srcExt = FilenameUtils.getExtension(document.getName());
+            String transExt = hRawDocument.getType().getExtensions().get(srcExt);
+            String transFileName =  FilenameUtils.removeExtension(document
+                    .getName()) + "." + transExt;
             response =
                     Response.ok()
                             .header("Content-Disposition",
                                     "attachment; filename=\""
-                                            + document.getName() + "\"")
+                                            + transFileName + "\"")
                             .entity(output).build();
-            // TODO damason: remove more immediately, but make sure response has
+         // TODO damason: remove more immediately, but make sure response has
             // finished with the file
             // Note: may not be necessary when file storage is on disk.
             tempFile.deleteOnExit();

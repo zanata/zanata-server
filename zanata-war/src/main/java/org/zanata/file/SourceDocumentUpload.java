@@ -157,7 +157,7 @@ public class SourceDocumentUpload {
                             .persistTempFileFromUpload(uploadForm));
                 }
                 processAdapterFile(tempFile.get(), id, uploadForm);
-            } else if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE) {
+            } else if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT_PORTABLE_OBJECT) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
                 parsePotFile(potStream, id, uploadForm);
             } else {
@@ -223,7 +223,7 @@ public class SourceDocumentUpload {
     }
 
     private boolean isPotType(DocumentType type) {
-        return type == DocumentType.GETTEXT_PORTABLE_OBJECT_TEMPLATE;
+        return type == DocumentType.GETTEXT_PORTABLE_OBJECT;
     }
 
     private boolean isAdapterType(DocumentType type) {
