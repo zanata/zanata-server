@@ -23,6 +23,8 @@ package org.zanata.service.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.MapMaker;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -382,12 +384,24 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     @Override
-    public String getFileExtension(String projectSlug, String iterationSlug,
+    public String getSourceFileExtension(String projectSlug, String iterationSlug,
             String docPath, String docName) {
+        return FilenameUtils.getExtension(docName);
+    }
+
+    @Override
+    public String getTranslationFileExtension(String projectSlug, String iterationSlug,
+        String docPath, String docName) {
+
+        String srcExt =
+                getSourceFileExtension(projectSlug, iterationSlug, docPath,
+                        docName);
+
         HDocument doc =
-                documentDAO.getByProjectIterationAndDocId(projectSlug,
-                        iterationSlug, docPath + docName);
-        return doc.getRawDocument().getType().getExtension();
+            documentDAO.getByProjectIterationAndDocId(projectSlug,
+                iterationSlug, docPath + docName);
+
+        return doc.getRawDocument().getType().getExtensions().get(srcExt);
     }
 
     @Override

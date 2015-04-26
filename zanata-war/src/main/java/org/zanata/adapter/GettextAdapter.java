@@ -59,7 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Adapter for reading and write {@link org.zanata.common.DocumentType#GETTEXT_PORTABLE_OBJECT}
- * and {@link org.zanata.common.DocumentType#GETTEXT_PORTABLE_OBJECT_TEMPLATE}
  *
  * TODO: Convert to okapi gettext adapter once all client conversion is
  * migrated to server

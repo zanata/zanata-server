@@ -722,10 +722,16 @@ public class VersionHomeAction extends AbstractSortAction implements
                 versionSlug, docId);
     }
 
-    public String extensionOf(String docPath, String docName) {
+    public String sourceExtensionOf(String docPath, String docName) {
         return "."
-                + translationFileServiceImpl.getFileExtension(projectSlug,
-                        versionSlug, docPath, docName);
+                + translationFileServiceImpl.getSourceFileExtension(projectSlug,
+            versionSlug, docPath, docName);
+    }
+
+    public String translationExtensionOf(String docPath, String docName) {
+        return "."
+            + translationFileServiceImpl.getTranslationFileExtension(projectSlug,
+            versionSlug, docPath, docName);
     }
 
     public boolean hasOriginal(String docPath, String docName) {

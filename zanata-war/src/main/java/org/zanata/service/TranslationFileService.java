@@ -193,8 +193,11 @@ public interface TranslationFileService {
      */
     void removeTempFile(File tempFile);
 
-    String getFileExtension(String projectSlug, String iterationSlug,
+    String getSourceFileExtension(String projectSlug, String iterationSlug,
             String docPath, String docName);
+
+    String getTranslationFileExtension(String projectSlug, String iterationSlug,
+        String docPath, String docName);
 
     /**
      * @return true if the specified document is of type po, false if it is any

@@ -169,12 +169,13 @@ public class PropertiesAdapter implements FileFormatAdapter {
         try {
             tempFile = File.createTempFile("filename", "extension");
             if(charset.equals(ISO_8859_1)) {
-                PropWriter.writeTranslationsLatinOne(resource,
-                    translationsResource, tempFile, createSkeletons);
+                PropWriter.writeTranslationsFile(resource,
+                        translationsResource, tempFile,
+                        PropWriter.CHARSET.Latin1, createSkeletons);
             } else if (charset.equals(UTF_8)) {
-                PropWriter.writeTranslationsUTF8(resource,
-                        translationsResource,
-                        tempFile, createSkeletons);
+                PropWriter.writeTranslationsFile(resource,
+                    translationsResource,
+                    tempFile, PropWriter.CHARSET.UTF8, createSkeletons);
             }
 
             byte[] buffer = new byte[4096]; // To hold file contents
