@@ -21,15 +21,11 @@ pages:
 - ['release-notes.md', 'Release Notes', 'Release Notes']
 
 # User Guide
-- ['user-guide/translators-new-account.md', 'User Guide', 'Creating a new account']
-- ['user-guide/joining-a-language-team.md', 'User Guide', 'Joining a Language team']
-- ['user-guide/contributing-translations.md', 'User Guide', 'Contributing Translations']
-- ['user-guide/keyboard-shortcuts.md', 'User Guide', 'Keyboard Shortcuts']
-- ['user-guide/project-types.md', 'User Guide', 'Project Types']
-- ['user-guide/client-configuration.md', 'User Guide', 'Client Configuration']
-- ['user-guide/client-command-hook.md', 'User Guide', 'Client Command Hook']
-- ['user-guide/user-profile.md', 'User Guide', 'User Profile Page']
-- ['user-guide/merge-translations.md', 'User Guide', 'Merge translations']
+## Account
+- ['user-guide/account/account-sign-up.md', 'User Guide', 'Create new account']
+- ['user-guide/account/account-activate.md', 'User Guide', 'Activate account']
+- ['user-guide/account/account-resend-activation.md', 'User Guide', 'Resend activation email']
+- ['user-guide/account/account-settings.md', 'User Guide', 'Account settings']
 ## Project
 - ['user-guide/projects/create-project.md', 'User Guide', 'Creating a Project']
 - ['user-guide/projects/project-settings.md', 'User Guide', 'Project settings']
@@ -38,5 +34,14 @@ pages:
 - ['user-guide/projects/project-view.md', 'User Guide', 'The Project View']
 ## Version
 - ['user-guide/versions/version-view.md', 'User Guide', 'The Version View']
+- ['user-guide/joining-a-language-team.md', 'User Guide', 'Joining a Language team']
+- ['user-guide/contributing-translations.md', 'User Guide', 'Contributing Translations']
+- ['user-guide/keyboard-shortcuts.md', 'User Guide', 'Keyboard Shortcuts']
+- ['user-guide/project-types.md', 'User Guide', 'Project Types']
+- ['user-guide/client-configuration.md', 'User Guide', 'Client Configuration']
+- ['user-guide/client-command-hook.md', 'User Guide', 'Client Command Hook']
+- ['user-guide/user-profile.md', 'User Guide', 'User Profile Page']
+- ['user-guide/merge-translations.md', 'User Guide', 'Merge translations']
+
 
 copyright: Copyright &copy; 2015, <a href="http//www.redhat.com">Red Hat</a>.

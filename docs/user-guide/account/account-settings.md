@@ -1,0 +1,59 @@
+# Account Settings
+
+To access your user settings:
+
+ 1. Login to Zanata
+ 1. Click on `User menu` on top right corner, click on `Settings` on the drop down menu.
+ 1. Alternately, you can on `Settings` tab in your dashboard page.
+ 
+## Account Settings
+
+### Update email
+ 
+ 1. Type in new email address in input field and click `Update email`.
+ 
+ <img alt="Email input field" src="images/account-settings-email.png" />
+
+ 1. A confirmation email will be send to the new email address. Click on the link or the URL to confirm email address change.
+
+### Change password
+
+ 1. Fill in `Old Password` and `New Password` field.
+
+ <img alt="Password input field" src="images/account-settings-password.png" />
+ 
+ 1. Click `Update password` to change your password.
+ 
+### Merge with other account
+
+Use this to merge additional Zanata accounts you may have created when signing up with a connected account.
+
+ 1. Select and login into any connected account that you wish to merge with current logged in account.
+ 1. Click `Merge account` button merge from the selected connected account into current logged in account.
+
+## Profile
+
+1. To update your name, fill in updated name in input field and click `Update profile`.
+
+## Languages
+
+This page shows all the language team you have joined in Zanata. 
+
+<img alt="Languages" src="images/account-settings-languages.png" />
+
+To join more language team, 
+
+ 1. Click on `Join a language team`.
+ 1. See [Joining language team](user-guide/joining-a-language-team).
+
+## Client
+
+[command-line client push](http://zanata-client.readthedocs.org/en/latest/commands/push/) 
+
+API key is a unique identifier used for authentication between client and Zanata server. 
+Both [Zanata CLI](http://zanata-client.readthedocs.org/en/latest/installation) and [Zanata Maven plugin](http://zanata-client.readthedocs.org/en/latest/maven-plugin/installation/) uses it.
+
+ 1. To generate an API Key, click on `Generate new API Key` button.
+ 1. The updated settings for your Zanata client is available in the text area below.
+ 
+For more information on setting up Zanata client, see [Zanata CLI](http://zanata-client.readthedocs.org/en/latest/installation) and [Zanata Maven plugin](http://zanata-client.readthedocs.org/en/latest/maven-plugin/installation/).
