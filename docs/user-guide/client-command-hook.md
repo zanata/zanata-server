@@ -1,3 +1,4 @@
+<!-- TODO: Move to zanata-client readthedocs section -->
 Custom commands can be specified in zanata.xml. Custom commands can be almost any command that can run on the command line, and can be configured to run before or after a Zanata client command. This feature was added in version 3.3.0 of the CLI client and the Maven Plugin, and cannot be used in earlier versions.
 
 To specify one or more custom commands:

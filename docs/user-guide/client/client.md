@@ -1,0 +1,1 @@
+Please refer to [Zanata client|readthedocs](http://zanata-client.readthedocs.org/en/latest/)

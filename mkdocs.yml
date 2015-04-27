@@ -27,21 +27,25 @@ pages:
 - ['user-guide/account/account-resend-activation.md', 'User Guide', 'Resend activation email']
 - ['user-guide/account/account-settings.md', 'User Guide', 'Account settings']
 ## Project
+- ['user-guide/projects/project-view.md', 'User Guide', 'The Project View']
 - ['user-guide/projects/create-project.md', 'User Guide', 'Creating a Project']
 - ['user-guide/projects/project-settings.md', 'User Guide', 'Project settings']
-- ['user-guide/projects/create-version.md', 'User Guide', 'Creating a Version']
+- ['user-guide/projects/project-types.md', 'User Guide', 'Project Types']
 - ['user-guide/projects/upload-strings.md', 'User Guide', 'Upload Strings']
-- ['user-guide/projects/project-view.md', 'User Guide', 'The Project View']
 ## Version
 - ['user-guide/versions/version-view.md', 'User Guide', 'The Version View']
+- ['user-guide/versions/create-version.md', 'User Guide', 'Creating a Version']
+- ['user-guide/versions/version-settings.md', 'User Guide', 'Version settings']
+- ['user-guide/versions/merge-translations.md', 'User Guide', 'Merge translations']
+## General
 - ['user-guide/joining-a-language-team.md', 'User Guide', 'Joining a Language team']
 - ['user-guide/contributing-translations.md', 'User Guide', 'Contributing Translations']
-- ['user-guide/keyboard-shortcuts.md', 'User Guide', 'Keyboard Shortcuts']
-- ['user-guide/project-types.md', 'User Guide', 'Project Types']
-- ['user-guide/client-configuration.md', 'User Guide', 'Client Configuration']
-- ['user-guide/client-command-hook.md', 'User Guide', 'Client Command Hook']
 - ['user-guide/user-profile.md', 'User Guide', 'User Profile Page']
-- ['user-guide/merge-translations.md', 'User Guide', 'Merge translations']
+## Editor
+- ['user-guide/keyboard-shortcuts.md', 'User Guide', 'Keyboard Shortcuts']
+## Client
+- ['user-guide/client/client.md', 'User Guide', 'Zanata client']
+- ['user-guide/client-command-hook.md', 'User Guide', 'Client Command Hook']
 
 
 copyright: Copyright &copy; 2015, <a href="http//www.redhat.com">Red Hat</a>.
