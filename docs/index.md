@@ -20,3 +20,8 @@ For help and support options, see [Help|Zanata](http://zanata.org/help/)
 License
 -------
 Zanata is Free software, licensed under the [LGPL](http://www.gnu.org/licenses/lgpl-2.1.html).
+
+Release notes
+-------
+
+[Release notes](release-notes.md)

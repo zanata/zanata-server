@@ -44,16 +44,14 @@ This page shows all the language team you have joined in Zanata.
 To join more language team, 
 
  1. Click on `Join a language team`.
- 1. See [Joining language team](user-guide/joining-a-language-team).
+ 1. See [Joining language team](user-guide/languages/language-team#joining-a-language-team).
 
 ## Client
 
-[command-line client push](http://zanata-client.readthedocs.org/en/latest/commands/push/) 
-
-API key is a unique identifier used for authentication between client and Zanata server. 
+API key is a unique identifier used for authentication between client and Zanata server.
 Both [Zanata CLI](http://zanata-client.readthedocs.org/en/latest/installation) and [Zanata Maven plugin](http://zanata-client.readthedocs.org/en/latest/maven-plugin/installation/) uses it.
 
  1. To generate an API Key, click on `Generate new API Key` button.
  1. The updated settings for your Zanata client is available in the text area below.
  
-For more information on setting up Zanata client, see [Zanata CLI](http://zanata-client.readthedocs.org/en/latest/installation) and [Zanata Maven plugin](http://zanata-client.readthedocs.org/en/latest/maven-plugin/installation/).
+For more information on setting up Zanata client, see [Zanata Client configuration](http://zanata-client.readthedocs.org/en/latest/configuration/).

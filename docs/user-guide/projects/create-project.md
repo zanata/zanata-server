@@ -14,6 +14,7 @@ To start creating a project on the Zanata website, click the `New Project` butto
 <img alt="Project creation button on Projects page" src="images/create-project.png" />
 <figcaption>Project creation button on `Projects` page.</figcaption>
 </figure>
+<br/>
 
 The following screenshot shows the project creation page. In the screenshot, all fields have been filled in to illustrate the process. This example would create a project with a URL ending in '/zanata-server', that will be displayed in the project list as 'Zanata Server'. Details for each of the fields are shown below.
 
@@ -23,7 +24,6 @@ The following screenshot shows the project creation page. In the screenshot, all
 </figure>
 
 ------------
-
 
 ### Project ID
 

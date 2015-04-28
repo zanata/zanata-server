@@ -30,14 +30,14 @@ A project information page will appear after selecting a translation project. Th
 - The active iteration for the project
 - Past iterations
 
-## Iterations
+## Version
 
-An iteration is an instance or version of the project. Zanata allows for the translation of current and past versions of each project.
+A version is an instance or version of the project. Zanata allows for the translation of current and past versions of each project.
 
-Each iteration contains a number of project translations dependent upon how many Language Teams you have joined. For example, a member of the English, Chinese and French Language Teams will see project translations for English, Chinese and French under each iteration.
+Each version contains a number of project translations dependent upon how many Language Teams you have joined. For example, a member of the English, Chinese and French Language Teams will see project translations for English, Chinese and French under each version.
 
-Each iteration also has a progress bar for each language. Each progress bar shows the percentage of translation complete for each iteration. 
+Each version also has a progress bar for each language. Each progress bar shows the percentage of translation complete for each version.
 
-## Open an Iteration for Translation
+## Open a version for Translation
 
 A translator wishing to contribute to a project translation needs to click the "Translate" link for the desired iteration and language. This takes the translator to the web-based Translation Workspace (WebTrans), which is covered in the next section.
