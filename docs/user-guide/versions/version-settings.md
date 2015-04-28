@@ -17,7 +17,7 @@ See the [Version Creation Help](user-guide/versions/create-version) for details 
 
 ### Project Type
 
-Project Type settings by default inherits from project's settings but maintainer are able to define different project type for version. See [Project Types](user-guide/projects/project-types) and [Project Settings](user-guide/projects/project-settings/#project-type) for more information.
+Project Type settings by default inherits from project's settings but maintainers are able to select a different project type for the version. See [Project Types](user-guide/projects/project-types) and [Project Settings](user-guide/projects/project-settings/#project-type) for more information.
 
 ### Make this version read only
 

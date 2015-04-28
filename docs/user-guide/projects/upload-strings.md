@@ -27,7 +27,7 @@ You will need to [Create a project](projects/create-project) and [Create a versi
 
 <img alt="Upload source document" src="images/upload-source-doc.png" />
 
-*Alternately*
+*Alternatively*
 
 1. Go to `Settings` tab -> `Documents` section. Click `+` sign on top left panel.
 1. Click on `Update this document` icon on right side of a document.
