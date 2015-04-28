@@ -63,3 +63,22 @@ To add a version to your group, select the desired project version from the drop
 
 To remove a project version from the list, first move the cursor over the project version, then click the "X" that appears.
 <img alt="Groups projects remove" src="/images/group-projects-remove.png" />
+
+------------
+
+## Maintainers Settings
+
+<figure>
+<img alt="Groups Maintainer Settings tab" src="images/group-maintainer-settings.png" />
+<figcaption>Group Maintainer Settings tab</figcaption>
+</figure>
+<br>
+
+### Add a Maintainer
+
+To search for users, enter at least three characters of a username into the field under "Add a Maintainer". Available users matching the entered text will display in a dropdown.
+To add a user as a maintainer for the project, select their username from the dropdown.
+
+### Remove a Maintainer
+
+To remove a maintainer from the maintainers list, first move the cursor over the maintainer, then click the "X" that appears.

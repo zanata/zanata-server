@@ -18,6 +18,7 @@ You will need to [Create a project](projects/create-project) and [Create a versi
 1. Browse or Drag your documents into the dialog and click `Upload Documents`.
 1. You can access the same dialog in by go to `Settings` tab -> `Documents` section. Click `+` sign on top left panel.
 <img alt="Upload source document dialog" src="images/upload-source-doc-dialog.png" />
+<br/>
 
 #### Updating existing source documents
 

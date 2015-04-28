@@ -11,7 +11,7 @@ pages:
 - ['user-guide/translator-guide.md', 'Getting Started', 'Translator Guide']
 - ['user-guide/project-maintainer-guide.md', 'Getting Started', 'Project Maintainer Guide']
 - ['user-guide/admin-guide.md', 'Getting Started', 'Zanata Admin Guide']
-
+## Accounts
 - ['user-guide/account/account-sign-up.md', 'Accounts', 'Create new account']
 - ['user-guide/account/account-activate.md', 'Accounts', 'Activate account']
 - ['user-guide/account/account-resend-activation.md', 'Accounts', 'Resend activation email']
@@ -23,11 +23,13 @@ pages:
 - ['user-guide/projects/project-settings.md', 'Projects', 'Project settings']
 - ['user-guide/projects/project-types.md', 'Projects', 'Project types']
 - ['user-guide/projects/upload-strings.md', 'Projects', 'Upload strings']
-## Version
+## Versions
 - ['user-guide/versions/version-view.md', 'Versions', 'Version view']
 - ['user-guide/versions/create-version.md', 'Versions', 'Creating a version']
 - ['user-guide/versions/version-settings.md', 'Versions', 'Version settings']
+- ['user-guide/versions/request-to-join-group.md', 'Versions', 'Join a group']
 - ['user-guide/versions/merge-translations.md', 'Versions', 'Merge translations']
+- ['user-guide/versions/download-translations.md', 'Versions', 'Download translations']
 ## Languages
 - ['user-guide/languages/language-team.md', 'Languages', 'Language team']
 ## Groups
@@ -36,6 +38,8 @@ pages:
 - ['user-guide/groups/group-settings.md', 'Groups', 'Group settings']
 ## Editor
 - ['user-guide/editor/keyboard-shortcuts.md', 'Editor', 'Keyboard shortcuts']
+## API
+- ['user-guide/api/api.md', 'API', 'Zanata API']
 ## Client
 - ['user-guide/client/client.md', 'Zanata Client', 'Zanata client']
 # Configuration

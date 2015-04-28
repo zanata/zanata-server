@@ -13,9 +13,14 @@ While signed-in, translators can join a Language Team by completing the followin
 1. Click `Language` tab.
 1. Click the language team you want to join.
 1. Click on `More Action` menu on top right panel, select `Request to Join Team`.
+<figure>
 <img alt="Request to join menu" src="images/language-request-join-menu.png" />
+</figure>
+<br/>
 1. In the dialog, select roles you wish to be added as, fill in some information for language team coordinator and click `Send`.
+<figure>
 <img alt="Request to join menu" src="images/language-request-join.png" />
+</figure>
 
 ------------
 
