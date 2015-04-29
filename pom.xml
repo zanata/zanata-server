@@ -48,10 +48,9 @@
     <!-- see also the jboss7 profile below -->
     <hibernate.scope>provided</hibernate.scope>
     <!--
-         TODO include Hibernate in war (or deploy as JBoss modules).
-         NB: JBoss EAP 6.2.3 only has 4.2.7.SP4
+         NB: JBoss EAP 6.4.0 has 4.2.18.Final-redhat-2
     -->
-    <hibernate.version>4.2.8.Final</hibernate.version>
+    <hibernate.version>4.2.19.Final</hibernate.version>
     <hibernate.search.scope>compile</hibernate.search.scope>
     <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
@@ -1203,10 +1202,10 @@
       </activation>
       <properties>
         <cargo.container>wildfly8x</cargo.container>
-        <wildfly.client.version>8.1.0.Final</wildfly.client.version>
+        <wildfly.client.version>8.2.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
-        <wildfly.version>8.1.0.Final</wildfly.version>
+        <wildfly.version>8.2.0.Final</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</cargo.installation>
@@ -1216,10 +1215,11 @@
         <appserver.home>${cargo.extract.dir}/${appserver.dir.name}/${appserver.dir.name}</appserver.home>
 
         <module.wildfly.version>8.1.0.Final</module.wildfly.version>
-        <mojarra.module.version>2.1.28</mojarra.module.version>
+        <mojarra.module.version>2.1.29-01</mojarra.module.version>
         <mojarra.module.name>wildfly-${module.wildfly.version}-module-mojarra-${mojarra.module.version}.zip</mojarra.module.name>
-        <hibernate.module.version>4.2.15.Final</hibernate.module.version>
+        <hibernate.module.version>4.2.19.Final</hibernate.module.version>
         <hibernate.module.name>wildfly-${module.wildfly.version}-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
+        <undertow.module.name>wildfly-9.0.0.Beta2-modules-undertow.zip</undertow.module.name>
       </properties>
 
       <build>
@@ -1240,10 +1240,15 @@
                 <configuration>
                   <target unless="skipITs">
                     <mkdir dir="${download.dir}" />
+
                     <get src="http://sourceforge.net/projects/zanata/files/wildfly/${mojarra.module.name}/download" dest="${download.dir}/${mojarra.module.name}" skipexisting="true" />
-                    <get src="http://sourceforge.net/projects/zanata/files/wildfly/${hibernate.module.name}/download" dest="${download.dir}/${hibernate.module.name}" skipexisting="true" />
                     <unzip src="${download.dir}/${mojarra.module.name}" dest="${appserver.home}" />
+
+                    <get src="http://sourceforge.net/projects/zanata/files/wildfly/${hibernate.module.name}/download" dest="${download.dir}/${hibernate.module.name}" skipexisting="true" />
                     <unzip src="${download.dir}/${hibernate.module.name}" dest="${appserver.home}" />
+
+                    <get src="http://sourceforge.net/projects/zanata/files/wildfly/${undertow.module.name}/download" dest="${download.dir}/${undertow.module.name}" skipexisting="true" />
+                    <unzip src="${download.dir}/${undertow.module.name}" dest="${appserver.home}" />
                   </target>
                 </configuration>
               </execution>
