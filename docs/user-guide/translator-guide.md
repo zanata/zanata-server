@@ -1,43 +1,29 @@
-# An overview on contributing translations
-
 # Contributing Translations
 
-Any translator who has joined a Language Team can participate in the document translation process. This chapter looks at the translation process, including:
+Any translator who has joined a language team can participate in the document translation process.
 
-- Opening a translation project
-- Using the translation interface
-- Keyboard shortcuts
-- Using translation memory
-- Dealing with conflicts
+# Start translate a project version
 
-# Opening a Translation Project
+1. Login as user. Make sure you have [joined at least 1 language team](user-guide/languages/language-team#join-a-language-team).
+1. Click on the `Projects` menu option on the top menu.
+1. Click on project you wish to translation from the list.
+1. In project page, locate the version you wish to translate.
+1. Click on `Options` and select `Translate in {your language}`.
+<figure>
+<img alt="Start translate" src="images/webtrans-access.png" />
+</figure>
+<br/>
 
-## Projects
+# Start translating a specific document in a project version
 
-The Projects page of your translation site will list all projects available for translation. All translators who have joined a Language Team can open these projects and translate them in the language of each respective team.
+1. Login as user. Make sure you have [joined at least 1 language team](user-guide/languages/language-team#join-a-language-team).
+1. Click on the `Projects` menu option on the top menu.
+1. Click on project you wish to translation from the list.
+1. In project page, click on the version you wish to translate.
+3. In version page, open up the language page (default page) and select a language.
+4. Click on the document name to open up the editor.
 
-To open a project:
-
-1. Click on the Projects menu option on the top menu
-1. Click the title of a project you wish to translate
-
-## Project Information
-
-A project information page will appear after selecting a translation project. This includes:
-
-- The name of the project
-- A description of the project
-- The active iteration for the project
-- Past iterations
-
-## Version
-
-A version is an instance or version of the project. Zanata allows for the translation of current and past versions of each project.
-
-Each version contains a number of project translations dependent upon how many Language Teams you have joined. For example, a member of the English, Chinese and French Language Teams will see project translations for English, Chinese and French under each version.
-
-Each version also has a progress bar for each language. Each progress bar shows the percentage of translation complete for each version.
-
-## Open a version for Translation
-
-A translator wishing to contribute to a project translation needs to click the "Translate" link for the desired iteration and language. This takes the translator to the web-based Translation Workspace (WebTrans), which is covered in the next section.
+<figure>
+<img alt="Select document" src="images/editor-open-menu.png" />
+</figure>
+<br/>

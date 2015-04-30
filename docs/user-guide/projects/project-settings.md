@@ -96,7 +96,11 @@ To remove a language from the list of available locales, first move the cursor o
 Validations run in the translation editor and help translators to provide translations that are valid for your project. Validations set to `Warning` or `Error` in this list will be displayed in the translation editor when an invalid translation has been entered.
 Validations not enabled here can be toggled by translators to suit their individual workflow.
 
+* Off - turn off validation check by default.
+* Warning - display warning to translator when validation failed. Translator can save the translation as `Translated`.
+* Error - display error to translator when validation failed. Translator cannot save translation as `Translated` until error has been fixed.
 
+See [validation](user-guide/projects/validations) all available check.
 
 ### Copy Translations settings
 

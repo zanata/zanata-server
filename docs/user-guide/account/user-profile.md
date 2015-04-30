@@ -1,5 +1,3 @@
-# User Profile Page
-
 You can view a user's profile page by typing the username in the top search field and click on the search result.
 
 <img alt="Project user search" src="images/project-user-search.png" />

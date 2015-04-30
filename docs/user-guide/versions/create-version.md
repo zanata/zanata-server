@@ -40,6 +40,7 @@ Project Type defines the type of files that your project uses to store source an
 ### Copy from previous version
 
 If selected, this new version is will based off the selected version.
+See [Copy version](user-guide/translation-reuse/copy-version) for more information.
 
 ## Version creation through the command line
 
