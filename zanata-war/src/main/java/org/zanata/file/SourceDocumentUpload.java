@@ -151,6 +151,11 @@ public class SourceDocumentUpload {
             HProjectIteration version =
                 projectIterationDAO.getBySlug(id.getProjectSlug(), id.getVersionSlug());
 
+            if(version == null) {
+                throw new ZanataServiceException("Project version not found: "
+                    + id.getProjectSlug() + " " + id.getVersionSlug());
+            }
+
             if(version.getProjectType() == ProjectType.File) {
                 if (!tempFile.isPresent()) {
                     tempFile = Optional.of(util

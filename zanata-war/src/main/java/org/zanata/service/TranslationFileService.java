@@ -28,10 +28,10 @@ import org.zanata.rest.dto.resource.TranslationsResource;
 
 import com.google.common.base.Optional;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -107,7 +107,7 @@ public interface TranslationFileService {
     Resource parseUpdatedPotFile(InputStream fileContents, String docId,
             String uploadFileName, boolean offlinePo);
 
-    boolean hasMultipleAdapter(String fileNameOrExtension);
+    boolean hasMultipleDocumentTypes(String fileNameOrExtension);
 
     Set<DocumentType> getDocumentTypes(String fileNameOrExtension);
 
@@ -168,8 +168,6 @@ public interface TranslationFileService {
 
     Set<DocumentType> getSupportedDocumentTypes();
 
-    DocumentType getDocumentType(String fileNameOrExtension);
-
     /**
      * Persist an input stream to a temporary file.
      *
@@ -203,6 +201,5 @@ public interface TranslationFileService {
      * @return true if the specified document is of type po, false if it is any
      *         other type, including null.
      */
-    boolean
-            isPoDocument(String projectSlug, String iterationSlug, String docId);
+    boolean isPoDocument(String projectSlug, String iterationSlug, String docId);
 }

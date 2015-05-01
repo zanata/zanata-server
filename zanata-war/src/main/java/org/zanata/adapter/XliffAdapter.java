@@ -39,9 +39,10 @@ import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 
 import com.google.common.base.Optional;
+import org.zanata.util.FileUtil;
 
 /**
- * Adapter for reading and write {@link org.zanata.common.DocumentType#XLIFF} file
+ * Adapter for read and write {@link org.zanata.common.DocumentType#XLIFF} file
  *
  * TODO: Convert to okapi xliff adapter once all client conversion is
  * migrated to server
@@ -98,13 +99,7 @@ public class XliffAdapter implements FileFormatAdapter {
                 "Could not open the URL. The URL is OK but the input stream could not be opened.\n"
                     + e.getMessage(), e);
         } finally {
-            if (transFile != null) {
-                if (!transFile.delete()) {
-                    log.warn(
-                        "unable to remove temporary file {}, marked for delete on exit",
-                        transFile.getAbsolutePath()); transFile.deleteOnExit();
-                }
-            }
+            FileUtil.tryDeleteFile(transFile);
         }
         return targetDoc;
     }
@@ -124,24 +119,12 @@ public class XliffAdapter implements FileFormatAdapter {
             XliffWriter.writeFile(tempFile, resource, locale,
                 translationsResource, createSkeletons);
 
-            byte[] buffer = new byte[4096]; // To hold file contents
-            int bytesRead;
-            FileInputStream input = new FileInputStream(tempFile);
-            while ((bytesRead = input.read(buffer)) != -1) {
-                output.write(buffer, 0, bytesRead);
-            }
+            FileUtil.writeFileToOutputStream(tempFile, output);
         } catch (IOException e) {
             throw new FileFormatAdapterException(
                 "Unable to generate translated file", e);
         } finally {
-            if (tempFile != null) {
-                if (!tempFile.delete()) {
-                    log.warn(
-                        "unable to remove temporary file {}, marked for delete on exit",
-                        tempFile.getAbsolutePath());
-                    tempFile.deleteOnExit();
-                }
-            }
+            FileUtil.tryDeleteFile(tempFile);
         }
     }
 }

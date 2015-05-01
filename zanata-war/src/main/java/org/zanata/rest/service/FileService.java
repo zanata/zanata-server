@@ -149,7 +149,7 @@ public class FileService implements FileResource {
         GlobalDocumentId id =
                 new GlobalDocumentId(projectSlug, iterationSlug, docId);
         return translationUploader.tryUploadTranslationFile(id, localeId,
-                merge, assignCreditToUploader , uploadForm);
+            merge, assignCreditToUploader, uploadForm);
     }
 
     @Override
@@ -277,14 +277,11 @@ public class FileService implements FileResource {
             transRes.getTextFlowTargets().clear();
             transRes.getTextFlowTargets().addAll(filteredTranslations);
 
-            HDocument hDocument =
-                    documentDAO.getByProjectIterationAndDocId(projectSlug,
-                            iterationSlug, docId);
             InputStream inputStream;
             try {
                 inputStream =
                         filePersistService
-                                .getRawDocumentContentAsStream(hDocument
+                                .getRawDocumentContentAsStream(document
                                         .getRawDocument());
             } catch (RawDocumentContentAccessException e) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e)
@@ -298,7 +295,7 @@ public class FileService implements FileResource {
             // the generated file should be scanned instead
             virusScanner.scan(tempFile, name);
             URI uri = tempFile.toURI();
-            HRawDocument hRawDocument = hDocument.getRawDocument();
+            HRawDocument hRawDocument = document.getRawDocument();
             FileFormatAdapter adapter =
                     translationFileServiceImpl.getAdapterFor(hRawDocument.getType());
             String rawParamString = hRawDocument.getAdapterParameters();
@@ -309,15 +306,11 @@ public class FileService implements FileResource {
                     new FormatAdapterStreamingOutput(uri, res, transRes,
                         locale, adapter, params);
 
-            String srcExt = FilenameUtils.getExtension(document.getName());
-            String transExt = hRawDocument.getType().getExtensions().get(srcExt);
-            String transFileName =  FilenameUtils.removeExtension(document
-                    .getName()) + "." + transExt;
             response =
                     Response.ok()
                             .header("Content-Disposition",
                                     "attachment; filename=\""
-                                            + transFileName + "\"")
+                                            + generateTranslationFileName(document) + "\"")
                             .entity(output).build();
          // TODO damason: remove more immediately, but make sure response has
             // finished with the file
@@ -327,6 +320,19 @@ public class FileService implements FileResource {
             response = Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
         }
         return response;
+    }
+
+    /**
+     * Generate translation file with translation extension from DocumentType
+     *
+     * @param document
+     */
+    private String generateTranslationFileName(HDocument document) {
+        String srcExt = FilenameUtils.getExtension(document.getName());
+        DocumentType documentType = document.getRawDocument().getType();
+        String transExt = documentType.getExtensions().get(srcExt);
+        return FilenameUtils.removeExtension(document
+            .getName()) + "." + transExt;
     }
 
     @Override

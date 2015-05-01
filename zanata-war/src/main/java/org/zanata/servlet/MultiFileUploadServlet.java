@@ -254,7 +254,10 @@ public class MultiFileUploadServlet extends HttpServlet {
             this.request = request;
             projectSlug = request.getParameter("p");
             versionSlug = request.getParameter("v");
-            //TODO: alex: add types parameter in all caller of /files/upload
+            /**
+             * TODO: add types parameter in all caller of /files/upload (multifile upload)
+             * https://bugzilla.redhat.com/show_bug.cgi?id=1217671
+             */
             String fileTypesQuery = request.getParameter("types");
             if(StringUtils.isNotEmpty(fileTypesQuery)) {
                 fileTypes = Lists.newArrayList(fileTypesQuery.split(","));
@@ -393,24 +396,33 @@ public class MultiFileUploadServlet extends HttpServlet {
             form.setLast(true);
             form.setSize(item.getSize());
 
-            String extension = FileUtil.extractExtension(item.getName());
-            String fileType = null;
-            if(!fileTypes.isEmpty()) {
-                for(String parsedFileType: fileTypes) {
-                    DocumentType docType = DocumentType.valueOf(parsedFileType);
-                    if(docType != null && docType.getSourceExtensions().contains(extension)) {
-                        fileType = docType.name();
+            form.setFileType(getFileTypeForItem(item.getName()));
+            form.setFileStream(item.getInputStream());
+            return form;
+        }
+
+        private String getFileTypeForItem(String filename) {
+            String extension = FileUtil.extractExtension(filename);
+            /**
+             * TODO: Implement docType selection for multifile upload.
+             * At the moment, get the first docType from returned list.
+             */
+            DocumentType fileType =
+                    DocumentType.fromSourceExtension(extension).iterator()
+                            .next();
+            if (!fileTypes.isEmpty()) {
+                for (String parsedFileType : fileTypes) {
+                    DocumentType docType = DocumentType.getByName(
+                            parsedFileType);
+                    if (docType != null
+                            && docType.getSourceExtensions()
+                                    .contains(extension)) {
+                        fileType = docType;
                         break;
                     }
                 }
             }
-            fileType =
-                    fileType != null ? FileUtil
-                            .extractExtension(item.getName()) : fileType;
-
-            form.setFileType(fileType);
-            form.setFileStream(item.getInputStream());
-            return form;
+            return fileType == null ? extension : fileType.name();
         }
 
 

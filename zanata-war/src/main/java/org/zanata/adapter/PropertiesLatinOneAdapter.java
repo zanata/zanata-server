@@ -22,16 +22,15 @@
 package org.zanata.adapter;
 
 /**
- * Adapter for reading and write
- * {@link org.zanata.common.DocumentType#PROPERTIES_UTF8} file
+ * Adapter for read and write {@link org.zanata.common.DocumentType#PROPERTIES} file
  *
  * TODO: Convert to okapi properties adapter once all client conversion is
  * migrated to server
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class PropertiesUTF8Adapter extends GenericPropertiesAdapter {
-    public PropertiesUTF8Adapter() {
-        super(GenericPropertiesAdapter.UTF_8);
+public class PropertiesLatinOneAdapter extends GenericPropertiesAdapter {
+    public PropertiesLatinOneAdapter() {
+        super(GenericPropertiesAdapter.ISO_8859_1);
     }
 }

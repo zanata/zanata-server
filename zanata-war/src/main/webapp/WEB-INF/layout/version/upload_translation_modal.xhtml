@@ -9,22 +9,26 @@
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
-    $(document).ready(function() {
+    jQuery(document).ready(function() {
       zanata.loader.deactivate('#upload-translation-loader');
-      toggleUploadTranslationDocButton(false, true);
-      $(getUploadFileComponent()).change(function() {
+      setUploadTranslationDocButtonEnabled(false);
+      setUploadTranslationDocButtonVisible(true);
+      getUploadFileComponent().change(function() {
         var isFileSelected = getUploadFileName() != '';
         if(isFileSelected) {
           renderAdapterSelection(getUploadFileName());
         }
-        toggleUploadTranslationDocButton(isFileSelected, true);
+        setUploadTranslationDocButtonEnabled(isFileSelected);
+        setUploadTranslationDocButtonVisible(true);
       });
     });
 
-    function toggleUploadTranslationDocButton(enable, display) {
-      var uploadButton = getUploadTranslationDocButton();
-      jQuery(uploadButton).prop('disabled', !enable);
-      jQuery(uploadButton).toggleClass('is-hidden', !display);
+    function setUploadTranslationDocButtonEnabled(enable) {
+      getUploadTranslationDocButton().prop('disabled', !enable);
+    }
+
+    function setUploadTranslationDocButtonVisible(visible) {
+      getUploadTranslationDocButton().toggleClass('is-hidden', !visible);
     }
 
     function getUploadTranslationDocButton() {
@@ -40,7 +44,7 @@
     }
 
     function getUploadFileName() {
-      return jQuery(getUploadFileComponent()).val();
+      return getUploadFileComponent().val();
     }
 
     function getDocTypeSelection() {
@@ -49,15 +53,17 @@
 
     function cancelUpload() {
       zanata.loader.deactivate('#upload-translation-loader');
-      jQuery(getUploadFileComponent()).val('');
+      getUploadFileComponent().val('');
       clearDocumentTypeSelection();
-      toggleUploadTranslationDocButton(false, true);
+      setUploadTranslationDocButtonEnabled(false);
+      setUploadTranslationDocButtonVisible(true);
       return false;
     }
 
     function onUpload() {
       zanata.loader.activate('#upload-translation-loader');
-      toggleUploadTranslationDocButton(true, false);
+      setUploadTranslationDocButtonEnabled(true);
+      setUploadTranslationDocButtonVisible(false);
     }
 
   </script>
@@ -75,7 +81,7 @@
   </a4j:jsFunction>
 
   <a4j:jsFunction name="bindDocumentType"
-    onbegin="toggleUploadTranslationDocButton(getDocTypeSelection().val() != '', true)"
+    onbegin="setUploadTranslationDocButtonEnabled(getDocTypeSelection().val() != '');setUploadTranslationDocButtonVisible(true);"
     action="#{versionHomeAction.translationFileUpload.setDocumentType(docType)}">
     <a4j:param name="val1" assignTo="#{docType}"/>
   </a4j:jsFunction>
@@ -83,7 +89,7 @@
   <a4j:jsFunction name="renderAdapterSelection"
     action="#{versionHomeAction.setDefaultTranslationDocType(fileName)}"
     limitRender="true" render="documentType-selection"
-    oncomplete="toggleUploadTranslationDocButton(getDocTypeSelection().val() != '', true)">
+    oncomplete="setUploadTranslationDocButtonEnabled(getDocTypeSelection().val() != '');setUploadTranslationDocButtonVisible(true);">
     <a4j:param name="val1" assignTo="#{fileName}"/>
   </a4j:jsFunction>
 

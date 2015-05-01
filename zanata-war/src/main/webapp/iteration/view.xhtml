@@ -85,10 +85,10 @@
   }
 
   function checkIfFileSelected() {
-    var isFileSelected = jQuery(getSourceDocInput()).val() != '';
-    toggleUploadSourceButton(isFileSelected);
+    var isFileSelected = getSourceDocInput().val() != '';
+    setUploadSourceButtonEnabled(isFileSelected);
     if(isFileSelected) {
-      renderSourceDocTypeSelector(jQuery(getSourceDocInput()).val());
+      renderSourceDocTypeSelector(getSourceDocInput().val());
     }
   }
 
@@ -104,9 +104,9 @@
     return jQuery('#' + jqSelector('#{rich:clientId('specificDocSubmitUploadButton')}'));
   }
 
-  function toggleUploadSourceButton(enable) {
+  function setUploadSourceButtonEnabled(enable) {
     var uploadButton = getUploadSourceDocButton();
-    jQuery(uploadButton).prop('disabled', !enable);
+    uploadButton.prop('disabled', !enable);
   }
 
 </script>
@@ -168,13 +168,13 @@
       oncomplete="refreshStatistics();"/>
 
     <a4j:jsFunction name="renderSourceDocTypeSelector"
-      oncomplete="toggleUploadSourceButton(getSourceDocTypeSelection().val() != '')"
+      oncomplete="setUploadSourceButtonEnabled(getSourceDocTypeSelection().val() != '')"
       render="source-documentType-selection" limitRender="true">
       <a4j:param name="val1" assignTo="#{selectedSourceDocName}"/>
     </a4j:jsFunction>
 
     <a4j:jsFunction name="bindSourceDocumentType"
-      onbegin="toggleUploadSourceButton(getSourceDocTypeSelection().val() != '')"
+      onbegin="setUploadSourceButtonEnabled(getSourceDocTypeSelection().val() != '')"
       action="#{versionHomeAction.sourceFileUpload.setDocumentType(docType)}">
       <a4j:param name="val1" assignTo="#{docType}"/>
     </a4j:jsFunction>

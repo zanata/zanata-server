@@ -696,17 +696,34 @@ public class VersionHomeAction extends AbstractSortAction implements
                         .getProject(), hLocale);
     }
 
+    private DocumentType getDocumentType(Optional<String> docType) {
+        DocumentType type;
+        if (!docType.isPresent()) {
+            // if docType null, only 1 document type available for selected file extensions
+            type = translationFileServiceImpl
+                            .getDocumentTypes(sourceFileUpload.getFileName())
+                            .iterator().next();
+        } else {
+            // if docType not null, adapter is selected by user from drop down
+            type = DocumentType.getByName(docType.get());
+        }
+        return type;
+    }
+
     public void uploadSourceFile() {
         identity.checkPermission("import-template", getVersion());
 
         if (sourceFileUpload.getFileName().endsWith(".pot")) {
             uploadPotFile();
         } else {
-            DocumentType type =
-                    translationFileServiceImpl.getDocumentType(sourceFileUpload
-                            .getFileName());
-            if (translationFileServiceImpl.hasAdapterFor(type)) {
-                uploadAdapterFile();
+
+            Optional<String> docType =
+                Optional.fromNullable(sourceFileUpload.documentType);
+
+            DocumentType documentType = getDocumentType(docType);
+
+            if (translationFileServiceImpl.hasAdapterFor(documentType)) {
+                uploadAdapterFile(documentType);
             } else {
                 conversationScopeMessages.setMessage(
                         FacesMessage.SEVERITY_INFO,
@@ -730,7 +747,8 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public String translationExtensionOf(String docPath, String docName) {
         return "."
-            + translationFileServiceImpl.getTranslationFileExtension(projectSlug,
+            + translationFileServiceImpl.getTranslationFileExtension(
+            projectSlug,
             versionSlug, docPath, docName);
     }
 
@@ -812,7 +830,7 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     // TODO add logging for disk writing errors
     // TODO damason: unify this with Source/TranslationDocumentUpload
-    private void uploadAdapterFile() {
+    private void uploadAdapterFile(DocumentType docType) {
         String fileName = sourceFileUpload.getFileName();
         String docId = sourceFileUpload.getDocId();
         String documentPath = "";
@@ -850,20 +868,18 @@ public class VersionHomeAction extends AbstractSortAction implements
         }
 
         HDocument document = null;
-        Optional<String> docType =
-            Optional.fromNullable(sourceFileUpload.documentType);
         try {
             Resource doc;
 
             if (docId == null) {
                 doc = translationFileServiceImpl.parseAdapterDocumentFile(
                                 tempFile.toURI(), documentPath, fileName,
-                                getOptionalParams(), docType);
+                                getOptionalParams(), Optional.of(docType.name()));
             } else {
                 doc = translationFileServiceImpl
                                 .parseUpdatedAdapterDocumentFile(
                                         tempFile.toURI(), docId, fileName,
-                                        getOptionalParams(), docType);
+                                        getOptionalParams(), Optional.of(docType.name()));
             }
             doc.setLang(new LocaleId(sourceFileUpload.getSourceLang()));
             Set<String> extensions = Collections.<String> emptySet();
@@ -887,12 +903,7 @@ public class VersionHomeAction extends AbstractSortAction implements
             HRawDocument rawDocument = new HRawDocument();
             rawDocument.setDocument(document);
             rawDocument.setContentHash(new String(Hex.encodeHex(md5hash)));
-            if(docType.isPresent()) {
-                rawDocument.setType(DocumentType.getByName(docType.get()));
-            } else {
-                rawDocument.setType(DocumentType.fromSourceExtension(
-                    FileUtil.extractExtension(fileName)).iterator().next());
-            }
+            rawDocument.setType(docType);
             rawDocument.setUploadedBy(identity.getCredentials().getUsername());
 
             Optional<String> params = getOptionalParams();
@@ -938,11 +949,12 @@ public class VersionHomeAction extends AbstractSortAction implements
     }
 
     public boolean needDocumentTypeSelection(String fileName) {
-        return translationFileServiceImpl.hasMultipleAdapter(fileName);
+        return translationFileServiceImpl.hasMultipleDocumentTypes(fileName);
     }
 
     public List<DocumentType> getDocumentTypes(String fileName) {
-        return Lists.newArrayList(translationFileServiceImpl.getDocumentTypes(fileName));
+        return Lists.newArrayList(
+            translationFileServiceImpl.getDocumentTypes(fileName));
     }
 
     public void setDefaultTranslationDocType(String fileName) {

@@ -21,11 +21,23 @@
 
 package org.zanata.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.zanata.exception.FileFormatAdapterException;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
- * Utility class for File
+ * Utility class for file related operations.
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
+@Slf4j
 public class FileUtil {
 
     /**
@@ -35,21 +47,7 @@ public class FileUtil {
      *         passed in
      */
     public static String extractExtension(String fileNameOrExtension) {
-        if (fileNameOrExtension == null || fileNameOrExtension.length() == 0
-            || fileNameOrExtension.endsWith(".")) {
-            // could throw exception here
-            return null;
-        }
-
-        String extension;
-        if (fileNameOrExtension.contains(".")) {
-            extension =
-                fileNameOrExtension.substring(fileNameOrExtension
-                    .lastIndexOf('.') + 1);
-        } else {
-            extension = fileNameOrExtension;
-        }
-        return extension;
+        return FilenameUtils.getExtension(fileNameOrExtension);
     }
 
 
@@ -60,7 +58,6 @@ public class FileUtil {
      *
      * @param path
      * @param fileName
-     * @return
      */
     public static String generateDocId(String path, String fileName) {
         String docName = fileName;
@@ -86,5 +83,38 @@ public class FileUtil {
             path = path.concat("/");
         }
         return path;
+    }
+
+    /**
+     * Try delete given file or use File#deleteOnExit
+     *
+     * @param file
+     */
+    public static void tryDeleteFile(@Nullable File file) {
+        if (file != null) {
+            if (!file.delete()) {
+                log.warn(
+                        "unable to remove file {}, marked for delete on exit",
+                        file.getAbsolutePath());
+                file.deleteOnExit();
+            }
+        }
+    }
+
+    /**
+     * Write given file to outputstream.
+     *
+     * @param file
+     * @param output
+     * @throws IOException
+     */
+    public static void writeFileToOutputStream(File file, OutputStream output)
+            throws IOException {
+        byte[] buffer = new byte[4096]; // To hold file contents
+        int bytesRead;
+        FileInputStream input = new FileInputStream(file);
+        while ((bytesRead = input.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
+        }
     }
 }

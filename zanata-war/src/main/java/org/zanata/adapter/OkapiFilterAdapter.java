@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.soap.Text;
-
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.EventType;
 import net.sf.okapi.common.IParameters;
@@ -49,11 +47,11 @@ import org.zanata.common.ContentType;
 import org.zanata.common.HasContents;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
-import org.zanata.file.GlobalDocumentId;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
+import org.zanata.util.FileUtil;
 import org.zanata.util.HashUtil;
 
 import com.google.common.base.Charsets;
@@ -346,7 +344,8 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
             throws FileFormatAdapterException, IllegalArgumentException {
 
         Map<String, TextFlowTarget> translations =
-                transformToMap(translationsResource.getTextFlowTargets());
+                transformToMapByResId(
+                    translationsResource.getTextFlowTargets());
 
         net.sf.okapi.common.LocaleId localeId =
                 net.sf.okapi.common.LocaleId.fromString(locale);
@@ -369,7 +368,8 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
      * @param targets
      * @return
      */
-    private Map<String, TextFlowTarget> transformToMap(List<TextFlowTarget> targets) {
+    private Map<String, TextFlowTarget> transformToMapByResId(
+        List<TextFlowTarget> targets) {
         Map<String, TextFlowTarget> resIdTargetMap = Maps.newHashMap();
 
         for(TextFlowTarget target: targets) {
@@ -394,12 +394,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
             generateTranslatedFile(originalFile, translations, localeId,
                     writer, params);
 
-            byte[] buffer = new byte[4096]; // To hold file contents
-            int bytesRead;
-            FileInputStream input = new FileInputStream(tempFile);
-            while ((bytesRead = input.read(buffer)) != -1) {
-                output.write(buffer, 0, bytesRead);
-            }
+            FileUtil.writeFileToOutputStream(tempFile, output);
         } catch (IOException e) {
             // FIXME log
             throw new FileFormatAdapterException(
@@ -409,14 +404,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
             throw new FileFormatAdapterException(
                     "Unable to generate translated file", e);
         } finally {
-            if (tempFile != null) {
-                if (!tempFile.delete()) {
-                    log.warn(
-                            "unable to remove temporary file {}, marked for delete on exit",
-                            tempFile.getAbsolutePath());
-                    tempFile.deleteOnExit();
-                }
-            }
+            FileUtil.tryDeleteFile(tempFile);
         }
 
     }
