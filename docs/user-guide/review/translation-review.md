@@ -59,7 +59,7 @@ To reject a translation click the `Reject translation` button next to the editor
 </figure>
 <br/>
 
-You must enter a reason for rejecting the translation - the `Confirm rejection` will not work until a reason has been entered. This is to make sure that translators can make the right changes so that the tranlsation is acceptable, rather than trying to guess why it was rejected.
+You must enter a reason for rejecting the translation - the `Confirm rejection` will not work until a reason has been entered. This is to make sure that translators can make the right changes so that the translation is acceptable, rather than trying to guess why it was rejected.
 
 Rejected state is shown as orange bars on either side of the translation string. You will also notice an indicator on the top right of the text area showing that there is a comment. Clicking the comment indicator will open the history view where the comment is shown.
 

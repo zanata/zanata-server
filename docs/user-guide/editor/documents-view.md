@@ -9,7 +9,7 @@
 4. **Search** - Allow translators to by document name.
 5. **Change statistic view** - Change statistic measurement in `Words`(total words in the all documents) or `Messages` (total translation entry in all documents).
 6. **Settings** - From top to bottom: Notification, Chat room, Settings, Validations.
-7. **Paging** - Page nagivation for document list.
+7. **Paging** - Page navigation for document list.
 
 ## Settings
 
