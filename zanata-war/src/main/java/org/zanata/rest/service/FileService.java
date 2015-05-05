@@ -43,6 +43,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -325,12 +326,18 @@ public class FileService implements FileResource {
     /**
      * Generate translation file with translation extension from DocumentType
      *
+     * Source file name will be used if translation extension cannot be found
+     * in HRawDocument#DocumentType
+     *
      * @param document
      */
     private String generateTranslationFileName(HDocument document) {
         String srcExt = FilenameUtils.getExtension(document.getName());
         DocumentType documentType = document.getRawDocument().getType();
         String transExt = documentType.getExtensions().get(srcExt);
+        if(StringUtils.isEmpty(transExt)) {
+            return document.getName();
+        }
         return FilenameUtils.removeExtension(document
             .getName()) + "." + transExt;
     }
