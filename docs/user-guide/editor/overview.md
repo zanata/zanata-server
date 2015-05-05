@@ -6,7 +6,7 @@ See [Translator guide](user-guide/translator-guide) for more information.
 ## Views in webtrans
 
 <figure>
-<img alt="View icons" src="images/editor-views-icon.png" />
+<img alt="View icons" src="images/editor-views-icon.gif" />
 </figure>
 <br/>
 

@@ -1,7 +1,7 @@
 Once a group has been created, the maintainer can add further details and group behaviour via the Settings tab.
 See the [Group Creation Help](user-guide/groups/create-group) for details on creating groups.
 <figure>
-<img alt="Groups General Settings tab" src="images/group-settings-button.png" />
+<img alt="Groups General Settings tab" src="images/group-settings-button.gif" />
 <figcaption>Groups Settings tab link.</figcaption>
 </figure>
 
@@ -11,7 +11,7 @@ See the [Group Creation Help](user-guide/groups/create-group) for details on cre
 The General tab contains fields that manage appearance your group which already covered in the [Group Creation Help](user-guide/groups/create-group).
 
 <figure>
-<img alt="Group General Settings tab" src="images/group-general-settings.png" />
+<img alt="Group General Settings tab" src="images/group-general-settings.gif" />
 <figcaption>Group General Settings tab</figcaption>
 </figure>
 <br/>
@@ -26,7 +26,7 @@ This button is used to set a group to read-only, which prevents the group being 
 ## Languages Settings
 
 <figure>
-<img alt="Groups Languages Settings tab" src="/images/group-languages-settings.png" />
+<img alt="Groups Languages Settings tab" src="/images/group-languages-settings.gif" />
 <figcaption>Groups Languages Settings tab</figcaption>
 </figure>
 <br>
@@ -47,7 +47,7 @@ To remove a language from the list of available locales, first move the cursor o
 ## Projects Settings
 
 <figure>
-<img alt="Groups Projects Settings tab" src="/images/group-projects-settings.png" />
+<img alt="Groups Projects Settings tab" src="/images/group-projects-settings.gif" />
 <figcaption>Groups Projects Settings tab</figcaption>
 </figure>
 <br>
@@ -62,14 +62,14 @@ To add a version to your group, select the desired project version from the drop
 ### Remove a project version
 
 To remove a project version from the list, first move the cursor over the project version, then click the "X" that appears.
-<img alt="Groups projects remove" src="/images/group-projects-remove.png" />
+<img alt="Groups projects remove" src="/images/group-projects-remove.gif" />
 
 ------------
 
 ## Maintainers Settings
 
 <figure>
-<img alt="Groups Maintainer Settings tab" src="images/group-maintainer-settings.png" />
+<img alt="Groups Maintainer Settings tab" src="images/group-maintainer-settings.gif" />
 <figcaption>Group Maintainer Settings tab</figcaption>
 </figure>
 <br>

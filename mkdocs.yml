@@ -58,6 +58,7 @@ pages:
 - ['user-guide/editor/editor-view.md', 'Editor', 'Editor view']
 - ['user-guide/editor/documents-view.md', 'Editor', 'Document view']
 - ['user-guide/editor/keyboard-shortcuts.md', 'Editor', 'Keyboard shortcuts']
+- ['user-guide/editor/translation-history.md', 'Editor', 'Translation history']
 ## Glossary
 - ['user-guide/glossary/glossary-roles-permissions.md', 'Glossary', 'Roles and Permissions']
 - ['user-guide/glossary/upload-glossaries.md', 'Glossary', 'Upload glossaries']

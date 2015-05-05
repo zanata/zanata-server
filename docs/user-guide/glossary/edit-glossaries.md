@@ -11,12 +11,12 @@ See [glossary roles and permission]({{ site.url }}/help/glossary/glossary-roles-
     translation editor can be found at [Preparing for Translation]({{ site.url }}/help/translation/preparing-for-translation).
 1. In Glossary panel (bottom right corner), click on <i class='i i--info txt--highlight'></i> icon on the glossary entry you wish to edit.
 <figure>
-    <img alt="glossary panel" src="{{ site.url }}/images/351-glossary-panel.png" />
+    <img alt="glossary panel" src="{{ site.url }}/images/351-glossary-panel.gif" />
     <figcaption>Glossary panel</figcaption>
 </figure>
 
 <figure>
-    <img alt="glossary entry window" src="{{ site.url }}/images/351-glossary-edit-windows.png" />
+    <img alt="glossary entry window" src="{{ site.url }}/images/351-glossary-edit-windows.gif" />
     <figcaption>Glossary entry windows</figcaption>
 </figure>
 

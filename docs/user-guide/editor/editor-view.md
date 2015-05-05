@@ -1,5 +1,5 @@
 <figure>
-<img alt="Editor view" src="images/editor-overview.png" />
+<img alt="Editor view" src="images/editor-overview.gif" />
 </figure>
 <br/>
 
@@ -21,14 +21,14 @@ If you're not part of that language team, the editor will open as readonly mode.
 You will be restricted to only viewing source and translations in the editor.
 
 <figure>
-<img alt="Readonly editor" src="images/editor-readonly-indicator.png" />
+<img alt="Readonly editor" src="images/editor-readonly-indicator.gif" />
 </figure>
 <br/>
 
 ## Settings
 
 <figure>
-<img alt="Editor settings" src="images/editor-settings.png" />
+<img alt="Editor settings" src="images/editor-settings.gif" />
 </figure>
 <br/>
 
@@ -46,7 +46,7 @@ You will be restricted to only viewing source and translations in the editor.
 ## Validations
 
 <figure>
-<img alt="Editor validation settings" src="images/editor-validations.png" />
+<img alt="Editor validation settings" src="images/editor-validations.gif" />
 </figure>
 <br/>
 

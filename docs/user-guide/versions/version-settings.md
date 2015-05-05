@@ -1,7 +1,7 @@
 Once a version has been created, the maintainer can add further details and version behaviour via the Settings tab.
 See the [Version Creation Help](user-guide/versions/create-version) for details on creating version.
 <figure>
-<img alt="Version General Settings tab" src="images/version-settings-button.png" />
+<img alt="Version General Settings tab" src="images/version-settings-button.gif" />
 <figcaption>Versions Settings tab link.</figcaption>
 </figure>
 
@@ -10,7 +10,7 @@ See the [Version Creation Help](user-guide/versions/create-version) for details 
 ## General Settings
 
 <figure>
-<img alt="Version General Settings tab" src="images/version-general-settings.png" />
+<img alt="Version General Settings tab" src="images/version-general-settings.gif" />
 <figcaption>Version General Settings tab</figcaption>
 </figure>
 <br>
@@ -30,7 +30,7 @@ This can be toggled using the same button, as desired.
 ## Documents Settings
 
 <figure>
-<img alt="Version Documents Settings tab" src="/images/version-documents-settings.png" />
+<img alt="Version Documents Settings tab" src="/images/version-documents-settings.gif" />
 <figcaption>Version Documents Settings tab</figcaption>
 </figure>
 
@@ -45,7 +45,7 @@ Click `+` sign on top left in Documents tab under Settings. Browse or Drag your 
 ## Languages Settings
 
 <figure>
-<img alt="Version Languages Settings tab" src="/images/version-languages-settings.png" />
+<img alt="Version Languages Settings tab" src="/images/version-languages-settings.gif" />
 <figcaption>Version Languages Settings tab</figcaption>
 </figure>
 
@@ -60,7 +60,7 @@ By default, your project will be available for translation to a set of locales d
 ## Translation Settings
 
 <figure>
-<img alt="Version Translation Settings tab" src="images/version-translation-settings.png" />
+<img alt="Version Translation Settings tab" src="images/version-translation-settings.gif" />
 <figcaption>Version Translation Settings tab</figcaption>
 </figure>
 

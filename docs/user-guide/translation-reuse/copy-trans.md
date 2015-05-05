@@ -31,7 +31,7 @@ This process is repeated for each text flow in the uploaded document, or, if Cop
 If `Continue` is selected for all conditions, only the required "On content mismatch" rule is checked. This means that if a string has matching content it bypasses all other conditions and is reused in a "Translated" state (or "Approved" if your project requires review and the translation being copied is already in "Approved" state). When there are multiple matches, the latest translation is used.
 
 <figure>
-<img alt="Copy trans permissive options" src="images/copy-trans-permissive.png" />
+<img alt="Copy trans permissive options" src="images/copy-trans-permissive.gif" />
 </figure>
 <br/>
 
@@ -40,7 +40,7 @@ If `Continue` is selected for all conditions, only the required "On content mism
 If `Don't Copy` is selected for all conditions, a string must have matching content, a matching ID, be from the same project, and be from a document with the same name and path, otherwise it will not be reused. If all of the conditions are passed, the content is reused in a "Translated" state (or "Approved" if your project requires review and the translation being copied is already in "Approved" state).
 
 <figure>
-<img alt="Copy trans strict options" src="images/copy-trans-strict.png" />
+<img alt="Copy trans strict options" src="images/copy-trans-strict.gif" />
 </figure>
 <br/>
 
@@ -53,7 +53,7 @@ For this example, consider that you have a new version of your project in Zanata
 1. Because most string IDs have not changed, set "On Context mismatch" to `Continue as Fuzzy`.
 
 <figure>
-<img alt="Copy trans new version" src="images/copy-trans-newversion.png" />
+<img alt="Copy trans new version" src="images/copy-trans-newversion.gif" />
 </figure>
 <br/>
 
@@ -64,14 +64,14 @@ You can run Copy Trans manually against a project version.
 
 1. On the project version page, click on `More actions` menu on the top right.
 <figure>
-<img alt="Copy trans access" src="images/copy-trans-access.png" />
+<img alt="Copy trans access" src="images/copy-trans-access.gif" />
 </figure>
 <br/>
 1. Select `Copy Translations`.
 1. Select the appropriate action for each condition, and then click `Copy Translations` button.
 
 <figure>
-<img alt="Copy trans dialog" src="images/copy-trans-dialog.png" />
+<img alt="Copy trans dialog" src="images/copy-trans-dialog.gif" />
 </figure>
 <br/>
 

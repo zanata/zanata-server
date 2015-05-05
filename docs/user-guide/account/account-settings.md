@@ -12,7 +12,7 @@ To access your user settings:
  
  1. Enter the new email address in input field and click `Update email`.
  
- <img alt="Email input field" src="images/account-settings-email.png" />
+ <img alt="Email input field" src="images/account-settings-email.gif" />
 
  1. A confirmation email will be sent to the new email address. Click on the link or the URL to confirm email address change.
 
@@ -20,7 +20,7 @@ To access your user settings:
 
  1. Fill in the `Old Password` and `New Password` fields.
 
- <img alt="Password input field" src="images/account-settings-password.png" />
+ <img alt="Password input field" src="images/account-settings-password.gif" />
  
  1. Click `Update password` to change your password.
  
@@ -39,7 +39,7 @@ Use this to merge additional Zanata accounts you may have created when signing u
 
 This page shows all the language teams you have joined in Zanata.
 
-<img alt="Languages" src="images/account-settings-languages.png" />
+<img alt="Languages" src="images/account-settings-languages.gif" />
 
 To join more language teams,
 

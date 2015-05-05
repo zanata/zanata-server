@@ -1,5 +1,5 @@
 <figure>
-<img alt="Documents view" src="images/editor-doc-list.png" />
+<img alt="Documents view" src="images/editor-doc-list.gif" />
 </figure>
 <br/>
 
@@ -14,7 +14,7 @@
 ## Settings
 
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-settings.png" />
+<img alt="Documents view settings" src="images/editor-doc-list-settings.gif" />
 </figure>
 <br/>
 
@@ -28,10 +28,18 @@
 ## Validations
 
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-validations.png" />
+<img alt="Documents view settings" src="images/editor-doc-list-validations.gif" />
 </figure>
 <br/>
 
-See [validations](user-guide/projects/validations) for more details.
-
 * **Run validation** - Allows user to run validations against all documents.
+
+------
+
+1. This will run validation for the documents that are currently visible in the list (if the document list is multiple pages, validation must be run separately for each page).
+2. When validation is complete, an icon is shown next to each document name on the page. A check-mark icon means the document did not have any validation warnings. A cross icon and red document name mean one or more translations in the document caused a warning.
+3. Click a red document name to see all the translations that caused warnings.
+
+**Note:** validation icons will not change until the next time validation is run on the document, even if the translations are updated. Make sure to re-run validation after making any changes so that the results are accurate.
+
+See [validations](user-guide/projects/validations) for more details.
