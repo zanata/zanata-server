@@ -21,7 +21,7 @@ Any translator who has joined a language team can participate in the document tr
 1. Click on project you wish to translation from the list.
 1. In project page, click on the version you wish to translate.
 3. In version page, open up the language page (default page) and select a language.
-4. Click on the document name to open up the editor.
+4. Click on the document name to open up the [editor](user-guide/editor/editor-view).
 
 <figure>
 <img alt="Select document" src="images/editor-open-menu.gif" />
