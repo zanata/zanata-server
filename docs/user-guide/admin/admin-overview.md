@@ -2,14 +2,14 @@ Zanata admin has full access to all functionality in Zanata.
 
 To access to admin menu, login to Zanata with admin role user, select `Administrator`.
 <figure>
-<img alt="admin menu access" src="images/admin-menu-access.gif" />
+<img alt="admin menu access" src="images/admin-menu-access.png" />
 </figure>
 <br/>
 
 ## Admin sections
 
 <figure>
-<img alt="admin sections" src="images/admin-sections.gif" />
+<img alt="admin sections" src="images/admin-sections.png" />
 </figure>
 <br/>
 

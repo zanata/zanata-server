@@ -1,7 +1,7 @@
 When a project version is selected, you will be shown specific details about the selected version.
 
 <figure>
-<img alt="Version View Languages Tab" src="/images/version-view-languages.gif" />
+<img alt="Version View Languages Tab" src="/images/version-view-languages.png" />
 <figcaption>Version View</figcaption>
 </figure>
 <br>

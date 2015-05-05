@@ -1,5 +1,5 @@
 <figure>
-<img alt="Editor view" src="images/editor-overview.gif" />
+<img alt="Editor view" src="images/editor-overview.png" />
 </figure>
 <br/>
 
@@ -14,7 +14,7 @@ Statistic and remaining hours of the current document translation document.
 
 ### 3. Views
 
-See [View](user-guide/editor/overview#views-in-webtrans) for more information.
+See [Views](user-guide/editor/overview#views-in-webtrans) for more information.
 
 ### 4. Search and filter 
 
@@ -35,8 +35,6 @@ In addition to filtering by states, you can check the 'Invalid' checkbox to only
 ### 5. Source string
 
 Source strings show the original text for which a translation is needed. The text itself is displayed within a text box, and cannot be changed. In addition to the source text, some other useful information is shown.
-
-Source string showing extra information
 
 Line numbers are shown to the left of the source and translation text boxes. Long lines will be displayed over several lines in the text box, but will only have a single line number.
 
@@ -81,14 +79,14 @@ If you're not part of that language team, the editor will open as readonly mode.
 You will be restricted to only viewing source and translations in the editor.
 
 <figure>
-<img alt="Readonly editor" src="images/editor-readonly-indicator.gif" />
+<img alt="Readonly editor" src="images/editor-readonly-indicator.png" />
 </figure>
 <br/>
 
 ## Settings
 
 <figure>
-<img alt="Editor settings" src="images/editor-settings.gif" />
+<img alt="Editor settings" src="images/editor-settings.png" />
 </figure>
 <br/>
 
@@ -106,7 +104,7 @@ You will be restricted to only viewing source and translations in the editor.
 ## Validations
 
 <figure>
-<img alt="Editor validation settings" src="images/editor-validations.gif" />
+<img alt="Editor validation settings" src="images/editor-validations.png" />
 </figure>
 <br/>
 

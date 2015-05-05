@@ -7,4 +7,4 @@ If you didn't receive an email after signing up, or entered wrong email address 
  1. To resend activation email to the same email address, click on `Resend activation email` button.
  1. To update email address and send activation email, enter the new email address in the input field and click `Update email`.
 
-<img alt="Resend activation or update email address" src="images/account-resend-activation.gif" />
+<img alt="Resend activation or update email address" src="images/account-resend-activation.png" />

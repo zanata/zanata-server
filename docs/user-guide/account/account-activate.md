@@ -9,6 +9,6 @@ To activate your account:
  1. Click the `Account activation link` in your email or copy and paste the URL provided into your browser.
  1. You will be redirected to Zanata with your account activated. You can now log in with your details.
  
-<img alt="Account activated" src="images/account-activated.gif" />
+<img alt="Account activated" src="images/account-activated.png" />
 
 *Note: The activation URL will expire after 24 hours.*

@@ -12,7 +12,7 @@ Requires **Glossary-admin** role. See [glossary roles and permission]({{ site.ur
 1. Click `Glossary` on menu.
 1. Click on `Glossary options` on the glossary language you wish to delete and click `Delete glossary`.
 <figure>
-    <img alt="Glossary options" src="{{ site.url }}/images/351-glossary-options.gif" />
+    <img alt="Glossary options" src="{{ site.url }}/images/351-glossary-options.png" />
 </figure>
 1. Click `OK` to confirm delete all glossary entries in selected locale.
 

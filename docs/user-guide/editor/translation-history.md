@@ -4,7 +4,7 @@ User will be able to see translation history of each messages. It will display f
 In editor click on the "timer" like icon below cancel will bring up the initial view:
 
 <figure>
-<img alt="Translation history" src="images/translation-history.gif" />
+<img alt="Translation history" src="images/translation-history.png" />
 </figure>
 <br/>
 
@@ -12,7 +12,7 @@ In editor click on the "timer" like icon below cancel will bring up the initial 
 If selecting exactly two entries, user will be able to compare them in a diff view:
 
 <figure>
-<img alt="Translation history comparison" src="images/translation-history-comparison.gif" />
+<img alt="Translation history comparison" src="images/translation-history-comparison.png" />
 </figure>
 <br/>
 

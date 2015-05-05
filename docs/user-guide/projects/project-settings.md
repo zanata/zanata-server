@@ -1,7 +1,7 @@
 Once a project has been created, the maintainer can add further details and project behaviour via the Settings tab.
 See the [Project Creation Help](user-guide/projects/create-project) for details on creating projects.
 <figure>
-<img alt="Project General Settings tab" src="images/project-settings-button.gif" />
+<img alt="Project General Settings tab" src="images/project-settings-button.png" />
 <figcaption>Project Settings tab link.</figcaption>
 </figure>
 
@@ -12,7 +12,7 @@ The Settings tab contains fields that manage appearance and workflow of your pro
 ## General Settings
 
 <figure>
-<img alt="Project General Settings tab" src="images/project-general-settings.gif" />
+<img alt="Project General Settings tab" src="images/project-general-settings.png" />
 <figcaption>Project General Settings tab</figcaption>
 </figure>
 <br>
@@ -50,7 +50,7 @@ This can be toggled using the same button, as desired.
 ## Languages Settings
 
 <figure>
-<img alt="Project Languages Settings tab" src="/images/project-languages-settings.gif" />
+<img alt="Project Languages Settings tab" src="/images/project-languages-settings.png" />
 <figcaption>Project Languages Settings tab</figcaption>
 </figure>
 <br>
@@ -67,7 +67,7 @@ To search for available languages, enter text into the field under "Add a langua
 To add add a language to your project, select the desired language from the dropdown.
 
 <figure>
-<img alt="Adding a project language" src="images/project-languages-add.gif" />
+<img alt="Adding a project language" src="images/project-languages-add.png" />
 <figcaption>Adding a project language</figcaption>
 </figure>
 
@@ -77,7 +77,7 @@ To add add a language to your project, select the desired language from the drop
 To remove a language from the list of available locales, first move the cursor over the language, then click the "X" that appears.
 
 <figure>
-<img alt="Removing a project language" src="images/project-languages-remove.gif" />
+<img alt="Removing a project language" src="images/project-languages-remove.png" />
 <figcaption>Removing a project language</figcaption>
 </figure>
 
@@ -86,7 +86,7 @@ To remove a language from the list of available locales, first move the cursor o
 ## Translation Settings
 
 <figure>
-<img alt="Project Translation Settings tab" src="images/project-translation-settings.gif" />
+<img alt="Project Translation Settings tab" src="images/project-translation-settings.png" />
 <figcaption>Project Translation Settings tab</figcaption>
 </figure>
 
@@ -113,7 +113,7 @@ Refer to [the Copy Translations reference]({{ site.url }}/help/reuse/copytrans-e
 ## Permissions Settings
 
 <figure>
-<img alt="Project Permissions Settings tab" src="images/project-permissions-settings.gif" />
+<img alt="Project Permissions Settings tab" src="images/project-permissions-settings.png" />
 <figcaption>Project Permissions Settings tab</figcaption>
 </figure>
 <br>
@@ -136,7 +136,7 @@ The access restriction feature is intended for use with special roles that can b
 ## Webhooks
 
 <figure>
-<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings.gif" />
+<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings.png" />
 <figcaption>Project Webhooks Settings tab</figcaption>
 </figure>
 
@@ -149,7 +149,7 @@ When an event occurs, Zanata will make a HTTP POST to the URI configured in the 
 
 ### Adding a Webhook URI
 
-<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings-2.gif" />
+<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings-2.png" />
 Enter a valid URI into the provided text input. Hit the 'enter' key or click on 'Add webhook' button to add the URI.
 
 ------------
@@ -157,7 +157,7 @@ Enter a valid URI into the provided text input. Hit the 'enter' key or click on 
 ## About
 
 <figure>
-<img alt="Project About Settings tab" src="images/project-about-settings.gif" />
+<img alt="Project About Settings tab" src="images/project-about-settings.png" />
 <figcaption>Project About Settings tab</figcaption>
 </figure>
 <br>

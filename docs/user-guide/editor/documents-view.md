@@ -1,5 +1,5 @@
 <figure>
-<img alt="Documents view" src="images/editor-doc-list.gif" />
+<img alt="Documents view" src="images/editor-doc-list.png" />
 </figure>
 <br/>
 
@@ -14,7 +14,7 @@
 ## Settings
 
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-settings.gif" />
+<img alt="Documents view settings" src="images/editor-doc-list-settings.png" />
 </figure>
 <br/>
 
@@ -28,7 +28,7 @@
 ## Validations
 
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-validations.gif" />
+<img alt="Documents view settings" src="images/editor-doc-list-validations.png" />
 </figure>
 <br/>
 

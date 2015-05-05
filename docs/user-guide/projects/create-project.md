@@ -11,7 +11,7 @@ Anyone with an account can upload source strings to Zanata. The first step is to
 To start creating a project on the Zanata website, click the `New Project` button on the `Projects` page.
 
 <figure>
-<img alt="Project creation button on Projects page" src="images/create-project.gif" />
+<img alt="Project creation button on Projects page" src="images/create-project.png" />
 <figcaption>Project creation button on `Projects` page.</figcaption>
 </figure>
 <br/>
@@ -19,7 +19,7 @@ To start creating a project on the Zanata website, click the `New Project` butto
 The following screenshot shows the project creation page. In the screenshot, all fields have been filled in to illustrate the process. This example would create a project with a URL ending in '/zanata-server', that will be displayed in the project list as 'Zanata Server'. Details for each of the fields are shown below.
 
 <figure>
-<img alt="Example project creation form with all fields filled in" src="images/create-project-completed.gif" />
+<img alt="Example project creation form with all fields filled in" src="images/create-project-completed.png" />
 <figcaption>Example filled in project creation form</figcaption>
 </figure>
 
