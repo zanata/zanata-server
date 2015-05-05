@@ -1,5 +1,5 @@
 'Role assignment rules' are Zanata's way of dynamically assigning security roles and even Project access to users. 
-To configure Role Assignment Rules, admin users must go to the Administration section and click 'Role assignment rules' button.
+To configure Role Assignment Rules, admin users must go to the Administration section and click the 'Role assignment rules' button.
 
 <figure>
 <img alt="Role Assignment Rules Location" src="images/role-assignment-access.png" />
@@ -25,13 +25,13 @@ To configure Role Assignment Rules, admin users must go to the Administration se
 
 1. User Logs in.
 2. Authentication Policy is checked. If the user logged in using the authentication policy declared in the rule, continue to the next step. Otherwise, this rule is not applied.
-3. Identity Patter is checked. If the user's name (or Open Id) matches the pattern described in the rule, continue to the next step. Otherwise, this rule is not applied.
+3. Identity Pattern is checked. If the user's name (or Open Id) matches the pattern described in the rule, continue to the next step. Otherwise, this rule is not applied.
 4. The user is assigned the role stated in the Rule. Process subsequent rules.
 
 ### Adding new rules
 
-1. Navigate to 'Role assignment rules' page.
-1. Click on `More Action` menu on the top right panel.
+1. Navigate to the 'Role assignment rules' page.
+1. Click on `More Actions` menu on the top right panel.
 <figure>
 <img alt="Role Assignment Rules new" src="images/role-assignment-new-access.png" />
 </figure>
@@ -45,8 +45,8 @@ To configure Role Assignment Rules, admin users must go to the Administration se
 
 ### Deleting rules
 
-1. Navigate to 'Role assignment rules' page.
-1. Locate the rule you wish to delete, click on `Options` menu in front of the row.
+1. Navigate to the 'Role assignment rules' page.
+1. Locate the rule you wish to delete, click on the `Options` menu in front of the row.
 1. Click `Delete` to remove the rule.
 <figure>
 <img alt="Role Assignment delete" src="images/role-assignment-delete.png" />
@@ -59,9 +59,9 @@ To configure Role Assignment Rules, admin users must go to the Administration se
 To complement the dynamic role assignment described above, Zanata can now restrict project access by roles. 
 To restrict project access,
 
-1. Go to project settings page.
-1. Click on `Permission` tab.
-1. Check `Restrict access to certain user roles` and select roles that you wish to allow access to your project.
+1. Go to the project settings page.
+1. Click on `Permissions` tab.
+1. Check `Restrict access to certain user roles` and select the roles that you wish to allow access to your project.
 <figure>
 <img alt="Role Assignment project" src="images/role-assignment-project.png" />
 </figure>
