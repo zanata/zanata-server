@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2015, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,32 +18,19 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.validation;
-
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
+package org.zanata.model;
 
 /**
- * Like {@link org.jboss.seam.captcha.Captcha} but uses the patched
- * {@link org.zanata.validation.PatchedCaptchaResponse} to avoid a bug in the
- * original.
+ * Will give a user friendly string representation of the object. All targets in
+ * SecurityFunctions should implement this interface so that when the permission
+ * check fail and we throw an AuthorizationException, the message will be more
+ * meaningful.
  *
- * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
- *
- * @see PatchedCaptchaResponse
+ * @see org.jboss.seam.security.SecurityFunctions
+ * @see org.zanata.security.ZanataIdentity#checkPermission(java.lang.String,
+ *      java.lang.Object...)
  */
-@Name("org.jboss.seam.captcha.captcha")
-@Scope(ScopeType.SESSION)
-public class PatchedCaptcha extends org.jboss.seam.captcha.Captcha {
-    private static final long serialVersionUID = 1L;
+public interface HasUserFriendlyToString {
 
-    @PatchedCaptchaResponse
-    public String getCaptchaResponse() {
-        return super.getResponse();
-    }
-
-    public void setCaptchaResponse(String input) {
-        super.setResponse(input);
-    }
+    String userFriendlyToString();
 }
