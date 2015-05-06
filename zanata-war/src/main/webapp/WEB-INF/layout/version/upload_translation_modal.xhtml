@@ -15,7 +15,7 @@
       setUploadTranslationDocButtonVisible(true);
       getUploadFileComponent().change(function() {
         var isFileSelected = getUploadFileName() != '';
-        if(isFileSelected) {
+        if (isFileSelected) {
           renderAdapterSelection(getUploadFileName());
         }
         setUploadTranslationDocButtonEnabled(isFileSelected);

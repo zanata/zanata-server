@@ -87,7 +87,7 @@
   function checkIfFileSelected() {
     var isFileSelected = getSourceDocInput().val() != '';
     setUploadSourceButtonEnabled(isFileSelected);
-    if(isFileSelected) {
+    if (isFileSelected) {
       renderSourceDocTypeSelector(getSourceDocInput().val());
     }
   }
