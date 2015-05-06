@@ -223,13 +223,13 @@ public class TranslationFileServiceImpl implements TranslationFileService {
 
     @Override
     public boolean hasMultipleDocumentTypes(String fileNameOrExtension) {
-        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        String extension = FilenameUtils.getExtension(fileNameOrExtension);
         return DocumentType.fromSourceExtension(extension).size() > 1;
     }
 
     @Override
     public Set<DocumentType> getDocumentTypes(String fileNameOrExtension) {
-        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        String extension = FilenameUtils.getExtension(fileNameOrExtension);
         return DocumentType.fromSourceExtension(extension);
     }
 
@@ -295,7 +295,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     private boolean hasAdapterFor(String fileNameOrExtension) {
-        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        String extension = FilenameUtils.getExtension(fileNameOrExtension);
         if (extension == null) {
             return false;
         }
@@ -307,7 +307,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     }
 
     private FileFormatAdapter getAdapterFor(String fileNameOrExtension) {
-        String extension = FileUtil.extractExtension(fileNameOrExtension);
+        String extension = FilenameUtils.getExtension(fileNameOrExtension);
         if (extension == null) {
             throw new RuntimeException(
                     "Cannot find adapter for null filename or extension.");

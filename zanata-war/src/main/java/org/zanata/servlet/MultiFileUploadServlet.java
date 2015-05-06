@@ -42,6 +42,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.StaleStateException;
 import org.hibernate.exception.ConstraintViolationException;
@@ -402,7 +403,7 @@ public class MultiFileUploadServlet extends HttpServlet {
         }
 
         private String getFileTypeForItem(String filename) {
-            String extension = FileUtil.extractExtension(filename);
+            String extension = FilenameUtils.getExtension(filename);
             /**
              * TODO: Implement docType selection for multifile upload.
              * At the moment, get the first docType from returned list.

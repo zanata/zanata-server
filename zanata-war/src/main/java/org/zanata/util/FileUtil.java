@@ -41,17 +41,6 @@ import java.io.OutputStream;
 public class FileUtil {
 
     /**
-     *
-     * @param fileNameOrExtension
-     * @return the extension for a given filename, or the extension that was
-     *         passed in
-     */
-    public static String extractExtension(String fileNameOrExtension) {
-        return FilenameUtils.getExtension(fileNameOrExtension);
-    }
-
-
-    /**
      * Generate documentId by concatenating path with fileName
      *
      * e.g "foo", "bar.txt" = "foo/bar.txt"

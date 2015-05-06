@@ -32,35 +32,6 @@ import static org.hamcrest.Matchers.is;
 @Test(groups = { "unit-tests" })
 public class FileUtilTest {
 
-    // FIXME this is the current behaviour, but doesn't seem sensible
-    @Test
-    public void extractExtensionFromPlainFilenameCurrentBehaviour() {
-        assertThat(FileUtil.extractExtension("foobar"), is("foobar"));
-    }
-
-    @Test(enabled = false, description = "enable this test once extractExtensionFromPlainFilenameCurrentBehaviour is fixed")
-    public void extractExtensionFromPlainFilenameBetterBehaviour() {
-        assertThat(FileUtil.extractExtension("foobar"), is(""));
-    }
-
-    @Test
-    public void extractNormalExtension() {
-        assertThat(FileUtil.extractExtension("file.txt"), is("txt"));
-    }
-
-    @Test
-    public void extractExtensionWithMultipleDots() {
-        assertThat(FileUtil.extractExtension("foo.bar.txt"), is("txt"));
-    }
-
-    @Test
-    public void extractFromSQLInjection() {
-        String extension =
-            FileUtil
-                .extractExtension("file.txt;DROP ALL OBJECTS;other.txt");
-        assertThat(extension, is("txt"));
-    }
-
     @Test
     public void generateSimpleDocId() {
         assertThat(FileUtil.generateDocId("foo", "bar.txt"),
