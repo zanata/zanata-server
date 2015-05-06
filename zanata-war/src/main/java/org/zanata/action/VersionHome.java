@@ -453,9 +453,22 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
      * @return comma-separated list of accepted file extensions. May be an empty
      *         string
      */
-    public String getAcceptedSourceFileTypes() {
+    public String getAcceptedSourceFileExtensions() {
         List<String> supportedTypes = Lists.transform(ProjectType
             .getSupportedSourceFileTypes(getProjectType()),
+            new Function<DocumentType, String>() {
+                @Override
+                public String apply(DocumentType docType) {
+                    return Joiner.on(",").join(
+                        docType.getSourceExtensions());
+                }
+            });
+        return Joiner.on(", ").join(supportedTypes);
+    }
+
+    public String getAcceptedSourceFile() {
+        List<String> supportedTypes = Lists.transform(ProjectType
+                .getSupportedSourceFileTypes(getProjectType()),
             new Function<DocumentType, String>() {
                 @Override
                 public String apply(DocumentType docType) {
