@@ -51,6 +51,7 @@ import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HRawDocument;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.service.TranslationFileService;
@@ -137,7 +138,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         HProjectIteration version =
             projectIterationDAO.getBySlug(projectSlug, iterationSlug);
 
-        if(version == null) {
+        if (version == null) {
             throw new ZanataServiceException("Project version not found: "
                 + projectSlug + " " + iterationSlug);
         }
@@ -173,13 +174,16 @@ public class TranslationFileServiceImpl implements TranslationFileService {
     public TranslationsResource parseAdapterTranslationFile(File tempFile,
             String projectSlug, String iterationSlug, String docId,
             String localeId, String fileName, Optional<String> documentType) {
-        Optional<String> params =
-                documentDAO.getAdapterParams(projectSlug, iterationSlug, docId);
+        HDocument doc =
+                documentDAO.getByProjectIterationAndDocId(projectSlug,
+                        iterationSlug, docId);
+
         TranslationsResource transRes;
         FileFormatAdapter adapter = getAdapterFor(documentType, fileName);
         try {
-            transRes = adapter.parseTranslationFile(tempFile.toURI(), localeId,
-                params);
+            transRes = adapter.parseTranslationFile(tempFile.toURI(), doc
+                            .getSourceLocaleId(), localeId,
+                            getAdapterParams(doc));
         } catch (FileFormatAdapterException e) {
             throw new ZanataServiceException("Error parsing translation file: "
                     + fileName, e);
@@ -188,6 +192,18 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         }
         return transRes;
     }
+
+    public Optional<String> getAdapterParams(HDocument doc) {
+        if (doc != null) {
+            HRawDocument rawDoc = doc.getRawDocument();
+            if (rawDoc != null) {
+                return Optional.fromNullable(rawDoc.getAdapterParameters());
+            }
+        }
+        return Optional.<String> absent();
+    }
+
+
 
     @Override
     public Resource parseUpdatedPotFile(InputStream fileContents, String docId,
@@ -304,7 +320,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
                     + "' does not match any known document type.");
         }
         FileFormatAdapter adapter = getAdapterFor(documentType);
-        if(hasMultipleDocumentTypes(fileNameOrExtension)) {
+        if (hasMultipleDocumentTypes(fileNameOrExtension)) {
             /**
              * TODO: throw runtime error. Need to wait for all upload file
              * dialog implement multiple adapter check for file extension.

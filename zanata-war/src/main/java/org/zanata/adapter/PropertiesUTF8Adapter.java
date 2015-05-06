@@ -22,7 +22,7 @@
 package org.zanata.adapter;
 
 /**
- * Adapter for reading and write
+ * Adapter to read and write
  * {@link org.zanata.common.DocumentType#PROPERTIES_UTF8} file
  *
  * TODO: Convert to okapi properties adapter once all client conversion is

@@ -335,7 +335,7 @@ public class FileService implements FileResource {
         String srcExt = FilenameUtils.getExtension(document.getName());
         DocumentType documentType = document.getRawDocument().getType();
         String transExt = documentType.getExtensions().get(srcExt);
-        if(StringUtils.isEmpty(transExt)) {
+        if (StringUtils.isEmpty(transExt)) {
             return document.getName();
         }
         return FilenameUtils.removeExtension(document

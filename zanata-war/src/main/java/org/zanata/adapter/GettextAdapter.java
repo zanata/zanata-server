@@ -58,7 +58,7 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Adapter for reading and write {@link org.zanata.common.DocumentType#GETTEXT_PORTABLE_OBJECT}
+ * Adapter to read and write {@link org.zanata.common.DocumentType#GETTEXT}
  *
  * TODO: Convert to okapi gettext adapter once all client conversion is
  * migrated to server
@@ -95,7 +95,7 @@ public class GettextAdapter implements FileFormatAdapter {
 
     @Override
     public TranslationsResource parseTranslationFile(URI fileUri,
-        String localeId, Optional<String> params)
+        LocaleId sourceLocaleId, String localeId, Optional<String> params)
         throws FileFormatAdapterException, IllegalArgumentException {
 
         if (StringUtils.isEmpty(localeId)) {

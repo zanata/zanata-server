@@ -280,7 +280,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
 
     @Override
     public TranslationsResource parseTranslationFile(URI fileUri,
-            String localeId, Optional<String> filterParams)
+            LocaleId sourceLocaleId, String localeId, Optional<String> filterParams)
             throws FileFormatAdapterException, IllegalArgumentException {
         if (localeId == null || localeId.isEmpty()) {
             throw new IllegalArgumentException(

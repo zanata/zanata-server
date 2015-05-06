@@ -42,7 +42,7 @@ import com.google.common.base.Optional;
 import org.zanata.util.FileUtil;
 
 /**
- * Adapter for read and write {@link org.zanata.common.DocumentType#XLIFF} file
+ * Adapter to read and write {@link org.zanata.common.DocumentType#XLIFF} file
  *
  * TODO: Convert to okapi xliff adapter once all client conversion is
  * migrated to server
@@ -84,7 +84,7 @@ public class XliffAdapter implements FileFormatAdapter {
 
     @Override
     public TranslationsResource parseTranslationFile(URI fileUri,
-            String localeId, Optional<String> params)
+            LocaleId sourceLocaleId, String localeId, Optional<String> params)
             throws FileFormatAdapterException, IllegalArgumentException {
 
         XliffReader xliffReader = new XliffReader();

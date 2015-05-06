@@ -24,7 +24,6 @@ package org.zanata.adapter;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.zanata.adapter.properties.PropReader;
 import org.zanata.adapter.properties.PropWriter;
 import org.zanata.common.ContentState;
@@ -36,7 +35,6 @@ import org.zanata.util.FileUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -44,7 +42,7 @@ import java.net.URI;
 import java.net.URL;
 
 /**
- * Properties file adapter for read and write.
+ * Properties file adapter to read and write.
  *
  * See
  * {@link org.zanata.adapter.PropertiesLatinOneAdapter}
@@ -59,67 +57,27 @@ public class GenericPropertiesAdapter implements FileFormatAdapter {
 
     public static final String UTF_8 = Charsets.UTF_8.name();
 
-    private final String charset;
+    private final PropWriter.CHARSET charset;
 
     public GenericPropertiesAdapter(String charset) {
-        // check that charset is valid, throw exception if not
-        this.charset = charset;
+        this.charset = toPropWriterCharset(charset);
+    }
+
+    private PropWriter.CHARSET toPropWriterCharset(String charset) {
+        if (charset.equals(ISO_8859_1)) {
+            return PropWriter.CHARSET.Latin1;
+        } else if (charset.equals(UTF_8)) {
+            return PropWriter.CHARSET.UTF8;
+        } else {
+            throw new FileFormatAdapterException(
+                "Not supported charset '" + charset + "' for properties file");
+        }
     }
 
     @Override
     public Resource parseDocumentFile(URI fileUri, LocaleId sourceLocale,
             Optional<String> params)
             throws FileFormatAdapterException, IllegalArgumentException {
-        return parseDocumentFile(fileUri, sourceLocale, params,
-                charset);
-    }
-
-    @Override
-    public TranslationsResource parseTranslationFile(URI fileUri,
-            String localeId, Optional<String> params)
-            throws FileFormatAdapterException, IllegalArgumentException {
-        return parseTranslationFile(fileUri, localeId, params, charset);
-    }
-
-    @Override
-    public void writeTranslatedFile(OutputStream output, URI originalFile,
-            Resource resource, TranslationsResource translationsResource,
-            String locale, Optional<String> params)
-            throws FileFormatAdapterException, IllegalArgumentException {
-        writeTranslatedFile(output, resource, translationsResource, locale,
-            params, charset);
-    }
-
-    private TranslationsResource parseTranslationFile(URI fileUri,
-        String localeId, Optional<String> params, String charset)
-        throws FileFormatAdapterException, IllegalArgumentException {
-
-        PropReader propReader = new PropReader(charset, LocaleId.EN_US,
-            ContentState.Approved);
-
-        /**
-         * Resource is not needed for properties file translation parser
-         * as its only used for contentHash check
-         */
-        Resource srcDoc = new Resource();
-
-        TranslationsResource targetDoc = new TranslationsResource();
-
-        try (BufferedInputStream inputStream = readStream(fileUri)){
-            propReader.extractTarget(targetDoc, inputStream, srcDoc);
-        } catch (IOException e) {
-            throw new FileFormatAdapterException(
-                "Could not open the URL. The URL is OK but the input stream could not be opened.\n"
-                    + e.getMessage(), e);
-        }
-        return targetDoc;
-    }
-
-    private Resource parseDocumentFile(URI fileUri, LocaleId sourceLocale,
-            Optional<String> filterParams, String charset)
-            throws FileFormatAdapterException,
-            IllegalArgumentException {
-
         if (sourceLocale == null) {
             throw new IllegalArgumentException("Source locale cannot be null");
         }
@@ -143,35 +101,50 @@ public class GenericPropertiesAdapter implements FileFormatAdapter {
         return doc;
     }
 
-    private PropWriter.CHARSET toPropWriterCharset(String charset) {
-        if(charset.equals(ISO_8859_1)) {
-            return PropWriter.CHARSET.Latin1;
-        } else if (charset.equals(UTF_8)) {
-            return PropWriter.CHARSET.UTF8;
-        } else {
+    @Override
+    public TranslationsResource parseTranslationFile(URI fileUri,
+            LocaleId sourceLocaleId, String localeId, Optional<String> params)
+            throws FileFormatAdapterException, IllegalArgumentException {
+        PropReader propReader = new PropReader(charset, sourceLocaleId,
+                ContentState.Approved);
+
+        /**
+         * Resource is not needed for properties file translation parser as its
+         * only used for contentHash check
+         */
+        Resource srcDoc = new Resource();
+
+        TranslationsResource targetDoc = new TranslationsResource();
+
+        try (BufferedInputStream inputStream = readStream(fileUri)) {
+            propReader.extractTarget(targetDoc, inputStream, srcDoc);
+        } catch (IOException e) {
             throw new FileFormatAdapterException(
-                "Not supported charset '" + charset + "' for properties file");
+                    "Could not open the URL. The URL is OK but the input stream could not be opened.\n"
+                            + e.getMessage(), e);
         }
+        return targetDoc;
     }
 
-    private void writeTranslatedFile(OutputStream output, Resource resource,
-        TranslationsResource translationsResource, String locale,
-        Optional<String> params, String charset)
-        throws FileFormatAdapterException, IllegalArgumentException {
-
-        //write source string with empty translation
+    @Override
+    public void writeTranslatedFile(OutputStream output, URI originalFile,
+            Resource resource, TranslationsResource translationsResource,
+            String locale, Optional<String> params)
+            throws FileFormatAdapterException, IllegalArgumentException {
+        // write source string with empty translation
         boolean createSkeletons = true;
 
         File tempFile = null;
         try {
             tempFile = File.createTempFile("filename", "extension");
             PropWriter.writeTranslationsFile(resource,
-                translationsResource, tempFile, toPropWriterCharset(charset), createSkeletons);
+                    translationsResource, tempFile,
+                    charset, createSkeletons);
 
             FileUtil.writeFileToOutputStream(tempFile, output);
         } catch (IOException e) {
             throw new FileFormatAdapterException(
-                "Unable to generate translated file", e);
+                    "Unable to generate translated file", e);
         } finally {
             FileUtil.tryDeleteFile(tempFile);
         }

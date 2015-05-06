@@ -259,7 +259,7 @@ public class MultiFileUploadServlet extends HttpServlet {
              * https://bugzilla.redhat.com/show_bug.cgi?id=1217671
              */
             String fileTypesQuery = request.getParameter("types");
-            if(StringUtils.isNotEmpty(fileTypesQuery)) {
+            if (StringUtils.isNotEmpty(fileTypesQuery)) {
                 fileTypes = Lists.newArrayList(fileTypesQuery.split(","));
             } else {
                 fileTypes = Collections.emptyList();
