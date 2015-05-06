@@ -35,11 +35,18 @@ import java.util.List;
 @Slf4j
 public class RoleAssignmentsPage extends BasePage {
 
+    private By moreActions = By.id("roleassign-more-actions");
     private By newRuleButton = By.linkText("New Rule");
     private By roleTable = By.className("list--stats");
 
     public RoleAssignmentsPage(WebDriver driver) {
         super(driver);
+    }
+
+    public RoleAssignmentsPage clickMoreActions() {
+        log.info("Click More Actions dropdown");
+        expectWebElement(moreActions).click();
+        return new RoleAssignmentsPage(getDriver());
     }
 
     public EditRoleAssignmentPage clickCreateNew() {
