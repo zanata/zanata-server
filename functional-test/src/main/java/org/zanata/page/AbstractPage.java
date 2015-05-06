@@ -39,6 +39,8 @@ import org.zanata.util.WebElementUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
+import javax.annotation.Nullable;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -234,21 +236,23 @@ public class AbstractPage {
     private void waitForLoaders() {
         waitForAMoment().withMessage("Loader indicator").until(
                 new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver input) {
-
-                    List<WebElement> loaders = (List<WebElement>) getExecutor()
-                            .executeScript("return (typeof $ == 'undefined') ?  [] : $('.js-loader')");
-                        for (WebElement loader : loaders) {
-                            if (loader.getAttribute("class")
-                                    .contains("is-active")) {
-                                log.info("Wait for loader finished");
-                                return false;
-                            }
-                        }
-                        return true;
+            @Override
+            public boolean apply(WebDriver input) {
+                // Find all elements with class name js-loader, or return []
+                String script = "return (typeof $ == 'undefined') ?  [] : " +
+                        "$('.js-loader')";
+                @SuppressWarnings("unchecked")
+                List<WebElement> loaders = (List<WebElement>) getExecutor()
+                        .executeScript(script);
+                for (WebElement loader : loaders) {
+                    if (loader.getAttribute("class").contains("is-active")) {
+                        log.info("Wait for loader finished");
+                        return false;
                     }
-                });
+                }
+                return true;
+            }
+        });
     }
 
     /**
@@ -260,7 +264,7 @@ public class AbstractPage {
     }
 
     /**
-     * Expect an element to be visible, and return it
+     * Expect an element to be interactive, and return it
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
@@ -268,7 +272,8 @@ public class AbstractPage {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        WebElement targetElement = getDriver().findElement(elementBy);
+        WebElement targetElement = expectElementExists(elementBy);
+        waitForElementReady(targetElement);
         assertReady(targetElement);
         return targetElement;
     }
@@ -293,7 +298,7 @@ public class AbstractPage {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        WebElement targetElement = parentElement.findElement(elementBy);
+        WebElement targetElement = expectElementExists(parentElement, elementBy);
         assertReady(targetElement);
         return targetElement;
     }
@@ -316,7 +321,12 @@ public class AbstractPage {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return getDriver().findElement(elementBy);
+        return waitForAMoment().until(new Function<WebDriver, WebElement>() {
+            @Override
+            public WebElement apply(WebDriver input) {
+                return getDriver().findElement(elementBy);
+            }
+        });
     }
 
     /**
@@ -340,7 +350,22 @@ public class AbstractPage {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return parentElement.findElement(elementBy);
+        return waitForAMoment().until(new Function<WebDriver, WebElement>() {
+            @Override
+            public WebElement apply(WebDriver input) {
+                return parentElement.findElement(elementBy);
+            }
+        });
+    }
+
+    private void waitForElementReady(final WebElement element) {
+         waitForAMoment().withMessage("Waiting for element to be ready").until(
+                new Predicate<WebDriver>() {
+                @Override
+                public boolean apply(WebDriver input) {
+                    return element.isDisplayed() && element.isEnabled();
+                }
+         });
     }
 
     private void assertReady(WebElement targetElement) {
