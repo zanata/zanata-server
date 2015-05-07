@@ -29,6 +29,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -63,7 +64,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.ServletLifecycle;
-import org.jboss.seam.core.Events;
+import org.zanata.events.ServerStarted;
+import org.zanata.util.Event;
 import org.zanata.exception.ZanataInitializationException;
 import org.zanata.rest.dto.VersionInfo;
 import org.zanata.util.VersionUtility;
@@ -99,10 +101,11 @@ public class ZanataInit {
                 Level.SEVERE);
     }
 
-    public static final String EVENT_Zanata_Startup = "Zanata.startup";
-
     @In
     private ApplicationConfiguration applicationConfiguration;
+
+    @In("event")
+    private Event<ServerStarted> startupEvent;
 
     @Observer("org.jboss.seam.postInitialization")
     public void initZanata() throws Exception {
@@ -170,7 +173,7 @@ public class ZanataInit {
                 + this.applicationConfiguration.getEmailServerHost() + ":"
                 + this.applicationConfiguration.getEmailServerPort());
 
-        Events.instance().raiseEvent(EVENT_Zanata_Startup);
+        startupEvent.fire(new ServerStarted());
 
         log.info("Started Zanata...");
     }
@@ -428,7 +431,8 @@ public class ZanataInit {
         }
         log.info("  AS version: " + appServerVersion.asVersion.orNull());
         log.info("  SCM: " + ver.getScmDescribe());
-        log.info("  Red Hat Inc 2008-2014");
+        log.info("  Red Hat Inc 2008-{}",
+                Calendar.getInstance().get(Calendar.YEAR));
         log.info("============================================");
     }
 

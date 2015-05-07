@@ -15,6 +15,7 @@
     <connection>scm:git:git://github.com/zanata/zanata.git</connection>
     <developerConnection>scm:git:git@github.com:zanata/zanata.git</developerConnection>
     <url>https://github.com/zanata/zanata</url>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -70,6 +71,7 @@
               <exclude>**/model/security/*</exclude>
               <exclude>**/model/type/*</exclude>
               <exclude>**/model/*</exclude>
+              <exclude>**/model/tm/*</exclude>
             </excludes>
           </instrumentation>
           <check>

@@ -53,6 +53,9 @@ public class CorePage extends AbstractPage {
 
     public CorePage(WebDriver driver) {
         super(driver);
+        // TODO put this back when implicit waits have been removed
+        // With implicit waits, this adds 3 seconds to almost every page load
+//        assertNoCriticalErrors();
     }
 
     public String getTitle() {
@@ -159,18 +162,13 @@ public class CorePage extends AbstractPage {
     }
 
     public void assertNoCriticalErrors() {
-        log.info("Query critical errors");
-        List<WebElement> errors =
-                getDriver().findElements(By.id("errorMessage"));
+        List<WebElement> errors = getDriver()
+                .findElements(By.className("alert--danger"));
         if (errors.size() > 0) {
+            log.info("Error page displayed");
             throw new RuntimeException("Critical error: \n"
                     + errors.get(0).getText());
         }
-    }
-
-    public boolean hasNoCriticalErrors() {
-        log.info("Query critical errors");
-        return getDriver().findElements(By.id("errorMessage")).size() <= 0;
     }
 
     /**
@@ -198,6 +196,7 @@ public class CorePage extends AbstractPage {
         log.info("Force unfocus");
         WebElement element = getDriver().findElement(elementBy);
         getExecutor().executeScript("arguments[0].blur()", element);
+        waitForPageSilence();
     }
 
     /* The system sometimes moves too fast for the Ajax pages, so provide a

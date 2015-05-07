@@ -6,6 +6,7 @@ import static javax.mail.Message.RecipientType.TO;
 import java.io.StringWriter;
 import java.net.ConnectException;
 import java.util.List;
+import java.util.Locale;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -31,12 +32,14 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.mail.MailSession;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.i18n.Messages;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import org.zanata.i18n.MessagesFactory;
 import org.zanata.util.HtmlUtil;
 
 import static com.googlecode.totallylazy.collections.PersistentMap.constructors.map;
@@ -67,7 +70,9 @@ public class EmailBuilder {
     @In
     private Context emailContext;
     @In
-    private Messages msgs;
+    private MessagesFactory messagesFactory;
+    @In
+    private LocaleSelector localeSelector;
 
     private static VelocityEngine makeVelocityEngine() {
         VelocityEngine ve = new VelocityEngine();
@@ -103,6 +108,9 @@ public class EmailBuilder {
      */
     public void sendMessage(EmailStrategy strategy,
             List<String> receivedReasons, InternetAddress[] toAddresses) {
+        Locale pervLocale = localeSelector.getLocale();
+        localeSelector.setLocale(new Locale("en"));
+
         try {
             MimeMessage email = new MimeMessage(mailSession);
             buildMessage(email, strategy, toAddresses, receivedReasons);
@@ -114,6 +122,8 @@ public class EmailBuilder {
                 throw new RuntimeException("The system failed to connect to mail service. Please contact the administrator!", e);
             }
             throw new RuntimeException(e);
+        } finally {
+            localeSelector.setLocale(pervLocale);
         }
     }
 
@@ -150,9 +160,14 @@ public class EmailBuilder {
             InternetAddress[] toAddresses, List<String> receivedReasons)
             throws MessagingException {
 
+        // TODO remember users' locales, and customise for each recipient
+        // msgs = messagesFactory.getMessages(account.getLocale());
+        Messages msgs = messagesFactory.getDefaultLocaleMessages();
+
         Optional<InternetAddress> from = strategy.getFromAddress();
+        String fromName = msgs.get("jsf.Zanata");
         msg.setFrom(from.or(Addresses.getAddress(
-                emailContext.getFromAddress(), emailContext.getFromName())));
+                emailContext.getFromAddress(), fromName)));
         Optional<InternetAddress[]> replyTo = strategy.getReplyToAddress();
         if (replyTo.isPresent()) {
             msg.setReplyTo(replyTo.get());
@@ -203,16 +218,11 @@ public class EmailBuilder {
     public static class Context {
         @In
         private ApplicationConfiguration applicationConfiguration;
-        @In
-        private Messages msgs;
         String getServerPath() {
             return applicationConfiguration.getServerPath();
         }
         String getFromAddress() {
             return applicationConfiguration.getFromEmailAddr();
-        }
-        String getFromName() {
-            return msgs.get("jsf.Zanata");
         }
     }
 

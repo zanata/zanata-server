@@ -94,17 +94,6 @@ public class AbstractPage {
         return WebElementUtil.waitForAMoment(driver);
     }
 
-    /**
-     * Wait for all necessary elements to be available on page.
-     * @param elementBys
-     *            selenium search criteria for locating elements
-     */
-    public void waitForPage(List<By> elementBys) {
-        for (final By by : elementBys) {
-            waitForElementExists(by);
-        }
-    }
-
     public Alert switchToAlert() {
         return waitForAMoment().withMessage("alert").until(new Function<WebDriver, Alert>() {
             @Override
@@ -272,7 +261,8 @@ public class AbstractPage {
                 if (outstanding == null) {
                     if (log.isWarnEnabled()) {
                         String url = getDriver().getCurrentUrl();
-                        String pageSource = ShortString.shorten(getDriver().getPageSource(), 2000);
+                        String pageSource = ShortString.shorten(
+                                getDriver().getPageSource(), 2000);
                         log.warn("XMLHttpRequest.active is null. Is AjaxCounterBean missing? URL: {}\nPartial page source follows:\n{}", url, pageSource);
                     }
                     return true;
@@ -286,11 +276,35 @@ public class AbstractPage {
                 }
                 int expected = getExpectedBackgroundRequests();
                 if (outstanding < expected) {
-                    log.warn("Expected at least {} background requests, but actual count is {}", expected, outstanding, new Throwable());
+                    log.warn(
+                            "Expected at least {} background requests, but actual count is {}",
+                            expected, outstanding, new Throwable());
                 } else {
                     log.debug("Waiting: outstanding = {}, expected = {}", outstanding, expected);
                 }
                 return outstanding <= expected;
+            }
+        });
+        waitForLoaders();
+    }
+
+    /**
+     * Wait for all loaders to be inactive
+     */
+    private void waitForLoaders() {
+        waitForAMoment().withMessage("Loader indicator").until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+
+                List<WebElement> loaders = (List<WebElement>) getExecutor()
+                        .executeScript("return (typeof $ == 'undefined') ?  [] : $('.js-loader')");
+                for (WebElement loader : loaders) {
+                    if (loader.getAttribute("class").contains("is-active")) {
+                        log.info("Wait for loader finished");
+                        return false;
+                    }
+                }
+                return true;
             }
         });
     }

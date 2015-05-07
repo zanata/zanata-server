@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jboss.seam.ScopeType;
@@ -15,7 +16,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.core.Events;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.AccountDAO;
@@ -37,32 +37,32 @@ import org.zanata.model.HLocale;
 @Install(false)
 public class EssentialDataCreator {
 
-    // You can listen to this event during startup
-    public static final String ESSENTIAL_DATA_CREATED_EVENT =
-            "EssentialDataCreator.complete";
-
-    @In
-    private EntityManager entityManager;
-
     @In
     private ApplicationConfiguration applicationConfiguration;
 
     private boolean prepared;
 
-    public String username;
-    public String password;
-    public String email;
-    public String name;
-    public String apiKey;
+    @In
+    private AccountDAO accountDAO;
 
     @In
-    AccountDAO accountDAO;
+    private AccountRoleDAO accountRoleDAO;
 
     @In
-    AccountRoleDAO accountRoleDAO;
+    private LocaleDAO localeDAO;
 
-    @In
-    LocaleDAO localeDAO;
+    public EssentialDataCreator() {
+    }
+
+    @VisibleForTesting
+    protected EssentialDataCreator(
+            ApplicationConfiguration applicationConfiguration,
+            AccountDAO accountDAO, AccountRoleDAO accountRoleDAO, LocaleDAO localeDAO) {
+        this.applicationConfiguration = applicationConfiguration;
+        this.accountDAO = accountDAO;
+        this.accountRoleDAO = accountRoleDAO;
+        this.localeDAO = localeDAO;
+    }
 
     // Do it when the application starts (but after everything else has been
     // loaded)
@@ -122,7 +122,7 @@ public class EssentialDataCreator {
             }
 
             if (!adminExists) {
-                log.warn("No admin users found. Admin users can be enabled in zanata.properties");
+                log.warn("No admin users found. Admin users can be enabled in jndi bindings: java:global/zanata/security/admin-users");
             }
 
             // Enable en-US by default
@@ -138,7 +138,6 @@ public class EssentialDataCreator {
 
             prepared = true;
         }
-        Events.instance().raiseEvent(ESSENTIAL_DATA_CREATED_EVENT);
     }
 
 }

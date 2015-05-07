@@ -15,6 +15,7 @@
     <connection>scm:git:git://github.com/zanata/zanata.git</connection>
     <developerConnection>scm:git:git@github.com:zanata/zanata.git</developerConnection>
     <url>https://github.com/zanata/zanata</url>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -36,6 +37,9 @@
 
     <groovy.version>2.1.5</groovy.version>
     <zanata.web.assets.version>7</zanata.web.assets.version>
+
+    <as7.skip.deploy.marker>${jboss.home}/standalone/deployments/zanata.war.skipdeploy</as7.skip.deploy.marker>
+    <as7.dodeploy.marker>${jboss.home}/standalone/deployments/zanata.war.dodeploy</as7.dodeploy.marker>
   </properties>
 
   <build>
@@ -108,8 +112,6 @@
             <usedDependency>org.opensymphony.quartz:quartz</usedDependency>
             <!-- Used indirectly by org.zanata.arquillian.Deployments -->
             <usedDependency>org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api</usedDependency>
-            <!-- used by REST API interfaces -->
-            <usedDependency>org.jboss.resteasy:resteasy-multipart-provider</usedDependency>
             <!-- Used by javamelody for email/pdf support -->
             <usedDependency>com.lowagie:itext</usedDependency>
             <!--used to log sql and parameters when debugging Hibernate -->
@@ -127,7 +129,6 @@
             <!-- Used by lucene search -->
             <usedDependency>org.hibernate.common:hibernate-commons-annotations</usedDependency>
             <!-- Used by hibernate -->
-            <usedDependency>org.hibernate:hibernate-ehcache</usedDependency>
             <usedDependency>org.hibernate:hibernate-search-analyzers</usedDependency>
             <!-- used for arquillian deployment (org.zanata.Deployments) -->
             <usedDependency>org.hibernate:hibernate-testing</usedDependency>
@@ -385,6 +386,8 @@
               <!--TODO move all gwt wrapper class under specific package. i.e boundary-->
               <!--<exclude>**/boundary/**/*</exclude>-->
               <exclude>**/test/**/*</exclude>
+              <exclude>**/Sample*</exclude>
+              <exclude>**/dto/**</exclude>
               <!--<exclude>**/supersource/**/*</exclude>-->
               <exclude>**/client/**/*View</exclude>
               <exclude>**/client/Application*</exclude>
@@ -394,6 +397,7 @@
               <exclude>**/client/rpc/**</exclude>
               <exclude>**/client/ui/**</exclude>
               <exclude>**/client/view/**</exclude>
+              <exclude>**/client/util/**</exclude>
               <exclude>**/EventWrapperImpl*</exclude>
               <exclude>**/*DataProvider*</exclude>
               <exclude>**/*SelectionModel*</exclude>
@@ -401,6 +405,9 @@
               <exclude>**/shared/auth/**</exclude>
               <exclude>**/shared/model/**</exclude>
               <exclude>**/shared/rpc/**</exclude>
+              <exclude>**/shared/util/**</exclude>
+              <!--hard to test due to environment dependent-->
+              <exclude>org/zanata/security/**</exclude>
 
               <!--Server exclusion-->
               <exclude>**/job/**</exclude>
@@ -986,10 +993,8 @@
                 <goals><goal>run</goal></goals>
                 <configuration>
                   <target unless="skipArqTests">
-                    <fail message="'appserver' property must be set to run integration tests (or else use -DskipArqTests)"
-                      unless="appserver" />
-                    <fail message="'cargo.installation' property must be set to run integration tests (or else use -DskipArqTests)"
-                      unless="cargo.installation"/>
+                    <fail message="'appserver' property must be set to run integration tests (or else use -DskipArqTests)" unless="appserver" />
+                    <fail message="'cargo.installation' property must be set to run integration tests (or else use -DskipArqTests)" unless="cargo.installation" />
                   </target>
                 </configuration>
               </execution>
@@ -1049,9 +1054,7 @@
                 </goals>
                 <configuration>
                   <target unless="skipArqTests">
-                    <copy overwrite="true"
-                      file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian.xml"
-                      tofile="${appserver.home}/standalone/configuration/standalone-arquillian.xml" />
+                    <copy overwrite="true" file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian.xml" tofile="${appserver.home}/standalone/configuration/standalone-arquillian.xml" />
                   </target>
                 </configuration>
               </execution>
@@ -1181,10 +1184,7 @@
                 </goals>
                 <configuration>
                   <target unless="skipArqTests">
-                    <copy
-                      overwrite="true"
-                      file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian-wildfly.xml"
-                      tofile="${appserver.home}/standalone/configuration/standalone.xml" />
+                    <copy overwrite="true" file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian-wildfly.xml" tofile="${appserver.home}/standalone/configuration/standalone.xml" />
                   </target>
                 </configuration>
               </execution>
@@ -1206,7 +1206,7 @@
         <dependency>
           <groupId>org.wildfly</groupId>
           <artifactId>wildfly-arquillian-container-managed</artifactId>
-          <version>${wildfly.version}</version>
+          <version>${wildfly.client.version}</version>
           <scope>test</scope>
           <exclusions>
             <exclusion>
@@ -1232,6 +1232,12 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -1271,7 +1277,17 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
+      <artifactId>zanata-assets</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
       <artifactId>zanata-common-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
+      <artifactId>zanata-liquibase</artifactId>
     </dependency>
 
     <dependency>
@@ -1293,12 +1309,6 @@
     <dependency>
       <groupId>org.zanata</groupId>
       <artifactId>zanata-adapter-glossary</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.zanata</groupId>
-      <artifactId>zanata-rest-client</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <!-- Compatibility Dependencies -->
@@ -1497,11 +1507,6 @@
 
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <scope>${hibernate.scope}</scope>
     </dependency>
@@ -1525,6 +1530,11 @@
 
     <dependency>
       <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-ehcache</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-testing</artifactId>
       <scope>test</scope>
       <exclusions>
@@ -1533,6 +1543,12 @@
           <groupId>com.sun</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+      <version>2.5.1</version>
     </dependency>
 
     <dependency>
@@ -1576,12 +1592,6 @@
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
       <version>3.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache-core</artifactId>
-      <version>2.5.1</version>
     </dependency>
 
     <!-- Okapi Filters -->
@@ -1763,6 +1773,31 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-search-engine</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-search-infinispan</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <!-- TODO Use a bom for EAP or wildfly (This is the EAP 6.3 version) -->
+      <version>5.2.4.Final</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- These two are being explicitly added as jboss-as-parent
+      excludes them -->
+    <dependency>
+      <groupId>org.jboss.marshalling</groupId>
+      <artifactId>jboss-marshalling</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.marshalling</groupId>
+      <artifactId>jboss-marshalling-river</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.spec.javax.el</groupId>
@@ -1811,6 +1846,18 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+      <version>0.9.9</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -2056,10 +2103,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
+      <version>4.2.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <version>4.2.5</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -2101,7 +2150,7 @@
     <dependency>
       <groupId>se.jiderhamn</groupId>
       <artifactId>classloader-leak-prevention</artifactId>
-      <version>1.11.0</version>
+      <version>1.12.0</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -2280,3 +2329,5 @@
 
 
 </project>
+
+

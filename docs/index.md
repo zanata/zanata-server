@@ -1,31 +1,49 @@
 Zanata Server
 =============
+Please visit [About|Zanata](http://zanata.org/about/)
 
-TBD
-
-Features
---------
-
-- TBD
-
-Installation
+Getting started
 ------------
 
-<!-- For installation instructions please see the [Installation Section](installation) -->
+- [Project maintainer guide](user-guide/project-maintainer-guide.md)
+- [Translator guide](user-guide/translator-guide.md)
+- [System admin guide](user-guide/system-admin/configuration/installation.md)
 
 Contribute
 ----------
 
-- Issue Tracker: http://bugzilla.redhat.com
-- Source Code: github.com/zanata/zanata-server
+- [Issue Tracker](http://bugzilla.redhat.com/buglist.cgi?product=Zanata)
+- [Source Code on GitHub](http://github.com/zanata)
 
-Support
+Release notes
 -------
 
-If you are having issues, please let us know.
-We have a mailing list located at: zanata-users@redhat.com
+[Release notes](release-notes.md)
+
+Contact us
+-------
+
+<ul>
+    <li>
+        <a href="mailto:zanata-users@redhat.com" target="_top">Email</a>
+    </li>
+    <li>
+        <a href="http://webchat.freenode.net/?channels=zanata">IRC</a>
+    </li>
+    <li>
+        <a href="http://zanata.org/mailing-lists/">Mailing lists</a>
+    </li>
+    <li>
+        <iframe src="http://ghbtns.com/github-btn.html?user=zanata&repo=zanata-server&type=watch&count=true"
+            allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+    </li>
+    <li>
+        <a href="https://twitter.com/zanataTM" class="twitter-follow-button" data-show-count="false">Follow @zanataTM</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    </li>
+</ul>
+
 
 License
 -------
-
-<!-- The project is licensed under the BSD license. -->
+Zanata is Free software, licensed under the [LGPL](http://www.gnu.org/licenses/lgpl-2.1.html).

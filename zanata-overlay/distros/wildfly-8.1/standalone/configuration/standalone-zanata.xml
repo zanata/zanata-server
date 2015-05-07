@@ -32,6 +32,7 @@
         <property name="javamelody.storage-directory" value="${user.home}/zanata/stats"/>
         <property name="hibernate.search.default.indexBase" value="${user.home}/zanata/indexes"/>
         <property name="ehcache.disk.store.dir" value="${user.home}/zanata/ehcache"/>
+        <property name="jboss.as.management.blocking.timeout" value="1000"/>
     </system-properties>
 
 
@@ -110,6 +111,18 @@
             <logger category="org.jboss.as.config">
                 <level name="DEBUG"/>
             </logger>
+            <!-- Disable WARN about GWT's org.hibernate.validator.ValidationMessages -->
+            <logger category="org.jboss.modules">
+                <level name="ERROR"/>
+            </logger>
+            <!-- Disable WARN: "Queue with name '...' has already been registered" -->
+            <logger category="org.richfaces.log.Components">
+                <level name="ERROR"/>
+            </logger>
+            <!-- Disable WARN: "RP discovery / realm validation disabled;" -->
+            <logger category="org.openid4java.server.RealmVerifier">
+                <level name="ERROR"/>
+            </logger>
             <logger category="sun.rmi">
                 <level name="WARN"/>
             </logger>
@@ -152,7 +165,7 @@
                         <password>sa</password>
                     </security>
                 </datasource>
-                <datasource jndi-name="java:jboss/datasources/zanataDatasource" pool-name="zanataDatasource" enabled="true" use-ccm="false">
+                <datasource jndi-name="java:jboss/datasources/zanataDatasource" pool-name="zanataDatasource" enabled="true" use-ccm="true">
                     <connection-url>jdbc:mysql://localhost:3306/zanata?characterEncoding=UTF-8</connection-url>
                     <driver-class>com.mysql.jdbc.Driver</driver-class>
                     <driver>mysql-connector-java.jar</driver>
@@ -255,7 +268,8 @@
                     <file-store passivation="false" purge="false"/>
                 </local-cache>
             </cache-container>
-            <cache-container name="hibernate" default-cache="local-query" module="org.hibernate">
+            <cache-container name="hibernate" default-cache="local-query" module="org.hibernate"
+                jndi-name="java:jboss/infinispan/container/hibernate" start="EAGER">
                 <local-cache name="entity">
                     <transaction mode="NON_XA"/>
                     <eviction strategy="LRU" max-entries="10000"/>
@@ -269,6 +283,19 @@
                 <local-cache name="timestamps">
                     <transaction mode="NONE"/>
                     <eviction strategy="NONE"/>
+                </local-cache>
+            </cache-container>
+            <!--
+            Zanata multi-purpose caches.
+            -->
+            <cache-container name="zanata" default-cache="default"
+                jndi-name="java:jboss/infinispan/container/zanata"
+                start="EAGER"
+                module="org.jboss.as.clustering.web.infinispan">
+                <local-cache name="default">
+                    <transaction mode="NON_XA" />
+                    <eviction strategy="LRU" max-entries="10000" />
+                    <expiration max-idle="100000" />
                 </local-cache>
             </cache-container>
         </subsystem>
@@ -290,7 +317,7 @@
                     <keepalive-time time="10" unit="seconds"/>
                 </long-running-threads>
             </default-workmanager>
-            <cached-connection-manager debug="true"/>
+            <cached-connection-manager debug="true" error="false"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jdr:1.0"/>
         <subsystem xmlns="urn:jboss:domain:jmx:1.3">

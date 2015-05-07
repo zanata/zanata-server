@@ -22,14 +22,19 @@ package org.zanata.notification;
 
 import java.io.Serializable;
 
+import javax.enterprise.event.Observes;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -49,6 +54,8 @@ import com.google.common.base.Throwables;
 @Scope(ScopeType.APPLICATION)
 @Startup
 @Slf4j
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationManager implements Serializable {
     private static final long serialVersionUID = -1L;
 
@@ -59,10 +66,23 @@ public class NotificationManager implements Serializable {
     @In
     private QueueSession queueSession;
 
-    @Observer(LanguageTeamPermissionChangedEvent.LANGUAGE_TEAM_PERMISSION_CHANGED)
+
+    @Create
+    public void onCreate() {
+        try {
+            mailQueueSender.getQueue();
+        } catch (JMSException e) {
+            // it will never reach this block. As long as you call getQueue()
+            // and if the queue is not defined, seam will terminate:
+            // org.jboss.seam.jms.ManagedQueueSender.getQueue(ManagedQueueSender.java:45
+            Throwables.propagate(e);
+        }
+    }
+
+    @Observer(LanguageTeamPermissionChangedEvent.EVENT_NAME)
     public
             void onLanguageTeamPermissionChanged(
-                    final LanguageTeamPermissionChangedEvent event) {
+                    final @Observes LanguageTeamPermissionChangedEvent event) {
         try {
             ObjectMessage message =
                     queueSession.createObjectMessage(event);

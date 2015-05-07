@@ -83,6 +83,7 @@ import org.zanata.service.LockManagerService;
 import org.zanata.service.TranslationMergeService;
 import org.zanata.service.TranslationService;
 import org.zanata.service.ValidationService;
+import org.zanata.util.Event;
 import org.zanata.util.ShortString;
 import org.zanata.webtrans.shared.model.TransUnitId;
 import org.zanata.webtrans.shared.model.TransUnitUpdateInfo;
@@ -110,9 +111,6 @@ public class TranslationServiceImpl implements TranslationService {
 
     @In
     private DocumentDAO documentDAO;
-
-    @In
-    private PersonDAO personDAO;
 
     @In
     private TextFlowDAO textFlowDAO;
@@ -144,6 +142,12 @@ public class TranslationServiceImpl implements TranslationService {
 
     @In
     private Messages msgs;
+
+    @In("event")
+    private Event<DocumentUploadedEvent> documentUploadedEvent;
+
+    @In("event")
+    private Event<TextFlowTargetStateEvent> textFlowTargetStateEvent;
 
     @Override
     public List<TranslationResult> translate(LocaleId localeId,
@@ -318,12 +322,11 @@ public class TranslationServiceImpl implements TranslationService {
             // new DocumentId(document.getId(), document.getDocId()), hasError,
             // hTextFlowTarget.getLastChanged(),
             // hTextFlowTarget.getLastModifiedBy().getAccount().getUsername());
-            Events.instance().raiseTransactionSuccessEvent(
-                    TextFlowTargetStateEvent.EVENT_NAME,
+            textFlowTargetStateEvent.fireAfterSuccess(
                     new TextFlowTargetStateEvent(actorId, versionId,
                             documentId, textFlow.getId(), hTextFlowTarget
-                                    .getLocale().getLocaleId(), hTextFlowTarget
-                                    .getId(), hTextFlowTarget.getState(),
+                            .getLocale().getLocaleId(), hTextFlowTarget
+                            .getId(), hTextFlowTarget.getState(),
                             oldState));
         }
     }
@@ -628,6 +631,7 @@ public class TranslationServiceImpl implements TranslationService {
                 }
             }.workInTransaction();
         } catch (Exception e) {
+            log.error("exception in transferFromTranslationsResourceExtensions: {}", e.getMessage());
             throw new ZanataServiceException("Error during translation.", 500,
                     e);
         }
@@ -666,6 +670,7 @@ public class TranslationServiceImpl implements TranslationService {
                 work.setAssignCreditToUploader(assignCreditToUploader);
                 changed |= work.workInTransaction();
             } catch (Exception e) {
+                log.error("exception in SaveBatchWork:{}", e.getMessage());
                 throw new ZanataServiceException("Error during translation.",
                         500, e);
             }
@@ -691,15 +696,13 @@ public class TranslationServiceImpl implements TranslationService {
                     }
                 }.workInTransaction();
 
-                if (Events.exists()) {
-                    Long actorId = authenticatedAccount.getPerson().getId();
-                    Events.instance().raiseEvent(
-                            DocumentUploadedEvent.EVENT_NAME,
-                            new DocumentUploadedEvent(actorId,
-                                    document.getId(), false, hLocale
-                                            .getLocaleId()));
-                }
+                Long actorId = authenticatedAccount.getPerson().getId();
+                documentUploadedEvent.fire(new DocumentUploadedEvent(
+                        actorId,
+                        document.getId(), false,
+                        hLocale.getLocaleId()));
             } catch (Exception e) {
+                log.error("exception in removeTargets: {}", e.getMessage());
                 throw new ZanataServiceException("Error during translation.",
                         500, e);
             }
@@ -736,6 +739,10 @@ public class TranslationServiceImpl implements TranslationService {
 
         @Override
         protected Boolean work() throws Exception {
+            // we need to call clear at the beginning because text flow target
+            // history rely on after commit callback.
+            textFlowTargetDAO.clear();
+            document = entityManager.find(HDocument.class, document.getId());
             boolean changed = false;
 
             // we need a fresh object in this session,
@@ -829,7 +836,7 @@ public class TranslationServiceImpl implements TranslationService {
 
                         changed = true;
                         Long actorId;
-                        if(assignCreditToUploader){
+                        if (assignCreditToUploader){
                             HPerson hPerson = authenticatedAccount.getPerson();
                             hTarget.setTranslator(hPerson);
                             hTarget.setLastModifiedBy(hPerson);
@@ -848,8 +855,6 @@ public class TranslationServiceImpl implements TranslationService {
                     handleOp.get().increaseProgress(1);
                 }
             }
-            // every batch will start with a new hibernate session therefore no
-            // need to call clear
             textFlowTargetDAO.flush();
 
             return changed;

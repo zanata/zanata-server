@@ -29,16 +29,17 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.email.ContactAdminEmailStrategy;
 import org.zanata.email.EmailStrategy;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.service.EmailService;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.zanata.ui.faces.FacesMessages;
 
 /**
  * Handles send email to admin.
@@ -60,16 +61,21 @@ public class ContactAdminAction implements Serializable {
     @In
     private EmailService emailServiceImpl;
 
+    @In
+    private Messages msgs;
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
+
     @Getter
     private String replyEmail;
 
     @Getter
-    @Setter
     private String subject;
 
     @Getter
     @Setter
-    private String htmlMessage;
+    private String message;
 
     private String fromName;
 
@@ -81,16 +87,28 @@ public class ContactAdminAction implements Serializable {
         fromLoginName = authenticatedAccount.getUsername();
         replyEmail = authenticatedAccount.getPerson().getEmail();
 
-        subject = "";
-        htmlMessage = "";
+        subject = msgs.get("jsf.message.admin.inquiry.subject");
+        message = "";
     }
 
     public void send() {
-        EmailStrategy strategy = new ContactAdminEmailStrategy(
-            fromLoginName, fromName, replyEmail, subject, htmlMessage);
+        try {
+            EmailStrategy strategy = new ContactAdminEmailStrategy(
+                    fromLoginName, fromName, replyEmail, subject, message);
 
-        String msg = emailServiceImpl.sendToAdmins(strategy, null);
-
-        FacesMessages.instance().add(msg);
+            facesMessages.addGlobal(emailServiceImpl.sendToAdmins(strategy,
+                    null));
+        } catch (Exception e) {
+            StringBuilder sb =
+                    new StringBuilder()
+                            .append("Failed to send email with subject '")
+                            .append(subject)
+                            .append("' , message '").append(message)
+                            .append("'");
+            log.error(
+                    "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'",
+                    e, fromName, fromLoginName, replyEmail, subject, message);
+            facesMessages.addGlobal(sb.toString());
+        }
     }
 }

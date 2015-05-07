@@ -23,7 +23,6 @@ package org.zanata.page;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -31,6 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.zanata.page.account.ProfilePage;
 import org.zanata.page.account.RegisterPage;
 import org.zanata.page.account.SignInPage;
 import org.zanata.page.administration.AdministrationPage;
@@ -156,6 +156,7 @@ public class BasePage extends CorePage {
 
     public SignInPage clickSignInLink() {
         log.info("Click Log In");
+        waitForPageSilence();
         WebElement signInLink = getDriver().findElement(BY_SIGN_IN);
         signInLink.click();
         return new SignInPage(getDriver());
@@ -163,14 +164,16 @@ public class BasePage extends CorePage {
 
     public boolean hasLoggedIn() {
         log.info("Query user is logged in");
+        waitForPageSilence();
         List<WebElement> avatar = getDriver().findElements(BY_USER_AVATAR);
         return avatar.size() > 0;
     }
 
     public String loggedInAs() {
         log.info("Query logged in user name");
-        return waitForWebElement(BY_USER_AVATAR).getAttribute(
-                "data-original-title");
+        waitForPageSilence();
+        return waitForWebElement(BY_USER_AVATAR)
+                .getAttribute("data-original-title");
     }
 
     public HomePage logout() {
@@ -255,14 +258,14 @@ public class BasePage extends CorePage {
     }
 
     public BasePage enterSearch(String searchText) {
-        log.info("Enter Project search {}", searchText);
+        log.info("Enter Project/Person search {}", searchText);
         WebElementUtil.searchAutocomplete(getDriver(), "projectAutocomplete",
                 searchText);
         return new BasePage(getDriver());
     }
 
     public ProjectsPage submitSearch() {
-        log.info("Press Enter on Project search");
+        log.info("Press Enter on Project/Person search");
         getDriver().findElement(
                 By.id("projectAutocomplete-autocomplete__input")).sendKeys(
                 Keys.ENTER);
@@ -270,25 +273,36 @@ public class BasePage extends CorePage {
     }
 
     public BasePage waitForSearchListContains(final String expected) {
-        String msg = "Project search list contains " + expected;
+        String msg = "Project/Person search list contains " + expected;
         logWaiting(msg);
         waitForAMoment().withMessage(msg).until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
-                return getProjectSearchAutocompleteItems().contains(expected);
+                return getZanataSearchAutocompleteItems().contains(expected);
             }
         });
         return new BasePage(getDriver());
     }
 
-    public List<String> getProjectSearchAutocompleteItems() {
-        log.info("Query Projects search results list");
+    public List<String> getZanataSearchAutocompleteItems() {
+        log.info("Query Project/Person search results list");
         return WebElementUtil.getSearchAutocompleteItems(getDriver(),
                 "general-search-form", "projectAutocomplete");
     }
 
-    public ProjectVersionsPage clickSearchEntry(final String searchEntry) {
+    public ProfilePage clickUserSearchEntry(final String searchEntry) {
+        log.info("Click Person search result {}", searchEntry);
+        clickSearchEntry(searchEntry);
+        return new ProfilePage(getDriver());
+    }
+
+    public ProjectVersionsPage clickProjectSearchEntry(String searchEntry) {
         log.info("Click Projects search result {}", searchEntry);
+        clickSearchEntry(searchEntry);
+        return new ProjectVersionsPage(getDriver());
+    }
+
+    private void clickSearchEntry(final String searchEntry) {
         String msg = "search result " + searchEntry;
         WebElement searchItem =
                 waitForAMoment().withMessage(msg).until(
@@ -311,7 +325,6 @@ public class BasePage extends CorePage {
                             }
                         });
         searchItem.click();
-        return new ProjectVersionsPage(getDriver());
     }
 
     public void clickWhenTabEnabled(final WebElement tab) {

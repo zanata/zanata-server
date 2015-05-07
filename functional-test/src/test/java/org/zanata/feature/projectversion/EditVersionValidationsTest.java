@@ -77,8 +77,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
         versionTranslationTab = versionTranslationTab
                 .setValidationLevel("Tab characters (\\t)", "Error");
 
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
-
         versionTranslationTab = versionTranslationTab
                 .goToHomePage()
                 .goToProjects()
@@ -103,8 +101,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTab()
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Error");
-
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
 
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
@@ -141,8 +137,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Error");
 
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
-
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
                 .gotoVersion("master")
@@ -172,8 +166,10 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTranslationTab()
                 .setValidationLevel(
                         "Positional printf (XSI extension)", "Error");
-        versionTranslationTab.expectNotification(
-                "Updated validation Positional printf (XSI extension) to Error.");
+
+        // TODO: Uncomment when RHBZ1199852 is fixed
+        // versionTranslationTab.expectNotification(
+        //        "Updated validation Positional printf (XSI extension) to Error.");
 
         assertThat(versionTranslationTab
                 .isValidationLevel("Positional printf (XSI extension)", "Error"))
@@ -185,8 +181,10 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .as("The Printf level is Off");
 
         versionTranslationTab.setValidationLevel("Printf variables", "Error");
-        versionTranslationTab.expectNotification(
-                "Updated validation Printf variables to Error.");
+
+        // TODO: Uncomment when RHBZ1199852 is fixed
+        // versionTranslationTab.expectNotification(
+        //        "Updated validation Printf variables to Error.");
 
         assertThat(versionTranslationTab
                 .isValidationLevel("Printf variables", "Error"))
@@ -208,8 +206,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTab()
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Off");
-
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
 
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")

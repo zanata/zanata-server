@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.mail.BodyPart;
@@ -42,6 +43,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.common.ProjectType;
 import org.zanata.i18n.Messages;
+import org.zanata.i18n.MessagesFactory;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 
 /**
@@ -64,12 +66,19 @@ public class EmailStrategyTest {
         }
     };
     String fromAddress = "zanata@example.com";
-    String fromName = "SERVER_NAME[测试]";
+    String fromName = msgs.get("jsf.Zanata");
     String toName = "User Name[测试]";
     String toAddress = "username@example.com";
     String serverPath = "https://zanata.example.com";
     InternetAddress toAddr;
     InternetAddress[] toAddresses;
+
+    MessagesFactory msgsFactory = new MessagesFactory() {
+        @Override
+        public Messages getMessages(Locale locale) {
+            return msgs;
+        }
+    };
 
     Session session = Session.getDefaultInstance(new Properties());
     EmailBuilder.Context context = new EmailBuilder.Context() {
@@ -82,13 +91,8 @@ public class EmailStrategyTest {
         String getServerPath() {
             return serverPath;
         }
-
-        @Override
-        String getFromName() {
-            return fromName;
-        }
     };
-    EmailBuilder builder = new EmailBuilder(session, context, msgs);
+    EmailBuilder builder = new EmailBuilder(session, context, msgsFactory, null);
     MimeMessage message;
 
     // context values needed for some templates:
@@ -268,33 +272,6 @@ public class EmailStrategyTest {
     }
 
     @Test
-    public void requestRoleLanguage() throws Exception {
-        EmailStrategy strategy =
-                new RequestRoleLanguageEmailStrategy(
-                        fromLoginName, fromName, replyEmail,
-                        localeId, localeNativeName, htmlMessage,
-                        true, true, true);
-
-        builder.buildMessage(message, strategy, toAddresses,
-            Lists.newArrayList("requestRoleLanguage test"));
-
-        checkFromAndTo(message);
-        assertThat(message.getSubject()).isEqualTo(
-                msgs.format("jsf.email.rolerequest.Subject", fromLoginName, localeId));
-
-        String html = extractHtmlPart(message);
-        checkGenericTemplate(html);
-
-        assertThat(html).contains(msgs.format(
-                "jsf.email.rolerequest.UserRequestingRole",
-                fromName, fromLoginName, localeId, localeNativeName));
-        assertThat(html).contains(
-                htmlMessage);
-        assertThat(html).contains(
-                serverPath + "/language/view/" + localeId);
-    }
-
-    @Test
     public void requestToJoinLanguage() throws Exception {
         EmailStrategy strategy =
                 new RequestToJoinLanguageEmailStrategy(
@@ -307,7 +284,7 @@ public class EmailStrategyTest {
 
         checkFromAndTo(message);
         assertThat(message.getSubject()).isEqualTo(msgs.format(
-                "jsf.email.joinrequest.Subject", fromLoginName, localeId));
+                "jsf.language.email.joinrequest.Subject", fromLoginName, localeId));
 
         String html = extractHtmlPart(message);
         checkGenericTemplate(html);

@@ -32,4 +32,63 @@
     <customChange class="org.zanata.liquibase.custom.MigrateSeamTextToCommonMark" />
   </changeSet>
 
+  <!-- Restore H2 constraints removed by changeset db.changelog-1.6a.xml:1:aeng@redhat.com -->
+  <changeSet author="sflaniga@redhat.com" id="1.6a:1:aeng@redhat.com:fix" dbms="h2">
+    <addForeignKeyConstraint baseTableName="HGlossaryTerm"
+      baseColumnNames="glossaryEntryId" constraintName="UKglossaryterm_glossary_entry_id"
+      referencedTableName="HGlossaryEntry" referencedColumnNames="id" />
+    <addPrimaryKey tableName="HGlossaryEntry" columnNames="id" />
+    <addPrimaryKey tableName="HGlossaryTerm" columnNames="id" />
+    <addPrimaryKey tableName="HTermComment" columnNames="id" />
+  </changeSet>
+
+  <!-- This change was added in the 3.7 development branch, but back-ported to the 3.6 branch at patch 3.6.1 -->
+  <changeSet author="damason@redhat.com" id="1">
+    <comment>Modify existing id for plaintext and libreoffice documents to use content hash instead of old positional id.</comment>
+    <customChange class="org.zanata.liquibase.custom.ChangePositionalResIdToContentHash" />
+  </changeSet>
+
+  <changeSet id="2" author="pahuang@redhat.com">
+    <comment>add indexes to HTextFlowTargetHistory and HTextFlowTarget table</comment>
+    <createIndex tableName="HTextFlowTargetHistory" indexName="Idx_lastChanged">
+      <column name="lastChanged"/>
+    </createIndex>
+    <createIndex tableName="HTextFlowTargetHistory" indexName="Idx_TranslatedBy">
+      <column name="reviewed_by_id"/>
+    </createIndex>
+    <createIndex tableName="HTextFlowTargetHistory" indexName="Idx_ReviewedBy">
+      <column name="reviewed_by_id"/>
+    </createIndex>
+    <createIndex tableName="HTextFlowTarget" indexName="Idx_ReviewedBy">
+      <column name="reviewed_by_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="3" author="pahuang@redhat.com">
+    <comment>add indexes to HTextFlowTargetHistory and HTextFlowTarget table</comment>
+    <createIndex tableName="HTextFlowTargetHistory" indexName="Idx_lastModifiedBy">
+      <column name="last_modified_by_id"/>
+    </createIndex>
+    <createIndex tableName="HTextFlowTarget" indexName="Idx_lastModifiedBy">
+      <column name="last_modified_by_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet id="3" author="aeng@redhat.com">
+    <comment>Add revisionComment to HTextFlowTarget, HTextFlowTargetHistory</comment>
+    <addColumn tableName="HTextFlowTarget">
+      <column name="revisionComment" type="longtext">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+    <addColumn tableName="HTextFlowTargetHistory">
+      <column name="revisionComment" type="longtext">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <!-- TODO Ensure any new 3.7 tables are converted to InnoDB (on dev machines).
+       See db.changelog-3.6.xml -->
+
 </databaseChangeLog>

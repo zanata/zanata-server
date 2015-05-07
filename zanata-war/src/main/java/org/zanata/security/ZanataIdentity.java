@@ -20,6 +20,7 @@
  */
 package org.zanata.security;
 
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -32,6 +33,7 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.security.AuthorizationException;
 import org.jboss.seam.security.Configuration;
 import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.NotLoggedInException;
@@ -39,7 +41,9 @@ import org.jboss.seam.security.management.JpaIdentityStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
+import org.zanata.events.Logout;
 import org.zanata.model.HAccount;
+import org.zanata.model.HasUserFriendlyToString;
 import org.zanata.security.permission.MultiTargetList;
 import org.zanata.util.ServiceLocator;
 
@@ -55,8 +59,6 @@ public class ZanataIdentity extends Identity {
     private static final Logger log = LoggerFactory.getLogger(
             ZanataIdentity.class);
 
-    public static final String USER_LOGOUT_EVENT = "user.logout";
-    public static final String USER_ENTER_WORKSPACE = "user.enter";
     public static final String JAAS_DEFAULT = "default";
 
     private static final long serialVersionUID = -5488977241602567930L;
@@ -107,8 +109,8 @@ public class ZanataIdentity extends Identity {
     @Observer("org.jboss.seam.preDestroyContext.SESSION")
     public void logout() {
         if (Events.exists() && getCredentials() != null) {
-            Events.instance().raiseEvent(USER_LOGOUT_EVENT,
-                    getCredentials().getUsername());
+            Events.instance().raiseEvent(Logout.EVENT_NAME,
+                    new Logout(getCredentials().getUsername()));
         }
         super.logout();
     }
@@ -123,8 +125,8 @@ public class ZanataIdentity extends Identity {
                         target, action, getAccountUsername());
             }
         } else {
-            if (log.isWarnEnabled()) {
-                log.warn("DENIED hasPermission({}, {}) for user {}",
+            if (log.isDebugEnabled()) {
+                log.debug("DENIED hasPermission({}, {}) for user {}",
                         target, action, getAccountUsername());
             }
         }
@@ -142,12 +144,12 @@ public class ZanataIdentity extends Identity {
         if (result) {
             if (log.isDebugEnabled()) {
                 log.debug("ALLOWED hasPermission({}, {}, {}) for user {}",
-                        name, action, arg, getAccountUsername());
+                        name, action, Lists.newArrayList(arg), getAccountUsername());
             }
         } else {
-            if (log.isWarnEnabled()) {
-                log.warn("DENIED hasPermission({}, {}, {}) for user {}",
-                        name, action, arg, getAccountUsername());
+            if (log.isDebugEnabled()) {
+                log.debug("DENIED hasPermission({}, {}, {}) for user {}",
+                        name, action, Lists.newArrayList(arg), getAccountUsername());
             }
         }
         log.trace("EXIT hasPermission(): {}", result);
@@ -183,7 +185,27 @@ public class ZanataIdentity extends Identity {
      *             if logged in but not authorised
      */
     public void checkPermission(String action, Object... targets) {
-        super.checkPermission(MultiTargetList.fromTargets(targets), action);
+        try {
+            super.checkPermission(MultiTargetList.fromTargets(targets), action);
+        } catch (AuthorizationException exception) {
+            // try to produce a better than default error message
+            List<String> meaningfulTargets = Lists.newArrayList();
+            for (Object target : targets) {
+                if (target instanceof HasUserFriendlyToString) {
+                    String targetString = ((HasUserFriendlyToString) target).userFriendlyToString();
+                    meaningfulTargets.add(targetString);
+                } else {
+                    log.warn(
+                            "target [{}] may not have user friendly string representation",
+                            target.getClass());
+                    meaningfulTargets.add(target.toString());
+                }
+            }
+            throw new AuthorizationException(
+                    String.format(
+                            "Failed to obtain permission('%s') with following facts(%s)",
+                            action, meaningfulTargets));
+        }
     }
 
     @Override
