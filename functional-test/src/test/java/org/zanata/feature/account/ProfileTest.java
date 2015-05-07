@@ -20,6 +20,7 @@
  */
 package org.zanata.feature.account;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -85,8 +86,9 @@ public class ProfileTest extends ZanataTestCase {
                 .goToSettingsTab()
                 .goToSettingsClientTab();
         String currentApiKey = dashboardClientTab.getApiKey();
-        dashboardClientTab = dashboardClientTab.pressApiKeyGenerateButton();
 
+        dashboardClientTab.waitForPageSilence();
+        dashboardClientTab = dashboardClientTab.pressApiKeyGenerateButton();
         dashboardClientTab.waitForApiKeyChanged(currentApiKey);
 
         assertThat(dashboardClientTab.getApiKey()).isNotEqualTo(currentApiKey)

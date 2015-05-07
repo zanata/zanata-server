@@ -25,9 +25,11 @@
     <cobertura.total-branch-rate>30</cobertura.total-branch-rate>
     <cobertura.halt.failure>false</cobertura.halt.failure>
     <delombok.dir>${project.build.directory}/delombok/org/zanata</delombok.dir>
+    <!-- failsafe.version needs to be at least 2.19-20150503.223005-71: -->
     <failsafe.rerunFailingTestsCount>3</failsafe.rerunFailingTestsCount>
     <failsafe.useFile>false</failsafe.useFile>
     <surefire.useFile>false</surefire.useFile>
+    <surefire.version>2.19-SNAPSHOT</surefire.version>
     <!-- Applies to surefire and failsafe (if enabled) -->
     <failIfNoTests>true</failIfNoTests>
 
@@ -41,10 +43,11 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
+    <zanata.assets.version>7.0-SNAPSHOT</zanata.assets.version>
     <zanata.api.version>3.7.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
-    <zanata.api.compat.version>3.3.1</zanata.api.compat.version>
-    <zanata.client.version>3.3.1</zanata.client.version>
+    <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
+    <zanata.client.version>3.7.0-SNAPSHOT</zanata.client.version>
     <zanata.common.version>3.6.1-SNAPSHOT</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
@@ -367,6 +370,13 @@
         <version>1.6.5</version>
       </dependency>
 
+      <!-- zanata assets -->
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-assets</artifactId>
+        <version>${zanata.assets.version}</version>
+      </dependency>
+
       <!-- zanata api -->
       <dependency>
         <groupId>org.zanata</groupId>
@@ -479,6 +489,12 @@
       <dependency>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-liquibase</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -1008,6 +1024,23 @@
           </exclusion>
         </exclusions>
       </dependency>
+
+      <dependency>
+        <groupId>com.jayway.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>1.6.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1070,6 +1103,17 @@
   </repositories>
 
   <pluginRepositories>
+    <!-- Needed for surefire/failsafe snapshots -->
+    <pluginRepository>
+      <id>apache.snapshots.https</id>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
     <pluginRepository>
       <id>jboss-public-repository-group</id>
       <name>JBoss Public Maven Repository Group</name>
@@ -1103,7 +1147,7 @@
       <plugin>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-maven-plugin</artifactId>
-        <version>2.2.0</version>
+        <version>3.6.0</version>
         <configuration>
           <srcDir>.</srcDir>
           <transDir>.</transDir>
@@ -1144,6 +1188,7 @@
                 <allowedRepository>repo.bodar.com</allowedRepository>
               </allowedRepositories>
               <allowedPluginRepositories combine.children="append">
+                <allowedPluginRepository>apache.snapshots.https</allowedPluginRepository>
                 <allowedPluginRepository>cobertura-it-maven-plugin-maven2-release</allowedPluginRepository>
                 <allowedPluginRepository>jboss-public-repository-group</allowedPluginRepository>
               </allowedPluginRepositories>
@@ -1224,7 +1269,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.18.1</version>
+          <version>${surefire.version}</version>
           <executions>
             <execution>
               <id>integration-test</id>
@@ -1406,7 +1451,7 @@
       <properties>
         <cargo.container>jboss72x</cargo.container>
         <!-- name of the top-level dir within the appserver zip -->
-        <appserver.dir.name>jboss-eap-6.3</appserver.dir.name>
+        <appserver.dir.name>jboss-eap-6.4</appserver.dir.name>
         <!-- where the appserver will be installed -->
         <appserver.home>${cargo.extract.dir}/${cargo.basename}/${appserver.dir.name}</appserver.home>
       </properties>
@@ -1423,7 +1468,9 @@
       </activation>
       <properties>
         <cargo.container>wildfly8x</cargo.container>
+        <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
+        <!-- This is the server version -->
         <wildfly.version>8.1.0.Final</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
@@ -1613,6 +1660,7 @@
   </distributionManagement>
 
   <modules>
+    <module>zanata-liquibase</module>
     <module>zanata-model</module>
     <module>zanata-war</module>
     <module>zanata-test-war</module>

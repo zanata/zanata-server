@@ -112,8 +112,6 @@
             <usedDependency>org.opensymphony.quartz:quartz</usedDependency>
             <!-- Used indirectly by org.zanata.arquillian.Deployments -->
             <usedDependency>org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api</usedDependency>
-            <!-- used by REST API interfaces -->
-            <usedDependency>org.jboss.resteasy:resteasy-multipart-provider</usedDependency>
             <!-- Used by javamelody for email/pdf support -->
             <usedDependency>com.lowagie:itext</usedDependency>
             <!--used to log sql and parameters when debugging Hibernate -->
@@ -390,6 +388,8 @@
               <!--TODO move all gwt wrapper class under specific package. i.e boundary-->
               <!--<exclude>**/boundary/**/*</exclude>-->
               <exclude>**/test/**/*</exclude>
+              <exclude>**/Sample*</exclude>
+              <exclude>**/dto/**</exclude>
               <!--<exclude>**/supersource/**/*</exclude>-->
               <exclude>**/client/**/*View</exclude>
               <exclude>**/client/Application*</exclude>
@@ -399,6 +399,7 @@
               <exclude>**/client/rpc/**</exclude>
               <exclude>**/client/ui/**</exclude>
               <exclude>**/client/view/**</exclude>
+              <exclude>**/client/util/**</exclude>
               <exclude>**/EventWrapperImpl*</exclude>
               <exclude>**/*DataProvider*</exclude>
               <exclude>**/*SelectionModel*</exclude>
@@ -406,6 +407,9 @@
               <exclude>**/shared/auth/**</exclude>
               <exclude>**/shared/model/**</exclude>
               <exclude>**/shared/rpc/**</exclude>
+              <exclude>**/shared/util/**</exclude>
+              <!--hard to test due to environment dependent-->
+              <exclude>org/zanata/security/**</exclude>
 
               <!--Server exclusion-->
               <exclude>**/job/**</exclude>
@@ -1204,7 +1208,7 @@
         <dependency>
           <groupId>org.wildfly</groupId>
           <artifactId>wildfly-arquillian-container-managed</artifactId>
-          <version>${wildfly.version}</version>
+          <version>${wildfly.client.version}</version>
           <scope>test</scope>
           <exclusions>
             <exclusion>
@@ -1230,6 +1234,12 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -1269,7 +1279,17 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
+      <artifactId>zanata-assets</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
       <artifactId>zanata-common-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
+      <artifactId>zanata-liquibase</artifactId>
     </dependency>
 
     <dependency>
@@ -1301,12 +1321,6 @@
     <dependency>
       <groupId>org.zanata</groupId>
       <artifactId>zanata-adapter-xliff</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.zanata</groupId>
-      <artifactId>zanata-rest-client</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <!-- Compatibility Dependencies -->
@@ -2100,10 +2114,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
+      <version>4.2.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <version>4.2.5</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -2317,3 +2333,5 @@
 
 
 </project>
+
+
