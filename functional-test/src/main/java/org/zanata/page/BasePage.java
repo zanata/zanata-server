@@ -361,7 +361,7 @@ public class BasePage extends CorePage {
     }
 
     public void clickElement(By findby) {
-        scrollIntoView(expectWebElement(findby));
-        expectWebElement(findby).click();
+        scrollIntoView(readyElement(findby));
+        readyElement(findby).click();
     }
 }

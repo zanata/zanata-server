@@ -57,7 +57,7 @@ public class VersionLanguagesTab extends VersionBasePage {
      */
     public VersionLanguagesTab clickInheritCheckbox() {
         log.info("Click Inherit check box");
-        expectWebElement(expectWebElement(languagesSettingForm),
+        readyElement(readyElement(languagesSettingForm),
                 By.className("form__checkbox"))
                 .click();
         return new VersionLanguagesTab(getDriver());
@@ -66,7 +66,7 @@ public class VersionLanguagesTab extends VersionBasePage {
     public VersionLanguagesTab expectLocaleListVisible() {
         log.info("Wait for locale list visible");
         waitForPageSilence();
-        WebElement el = expectWebElement(languagesSettingForm)
+        WebElement el = readyElement(languagesSettingForm)
                 .findElement(By.className("list--slat"));
         assertThat(el.isDisplayed()).as("displayed").isTrue();
         return new VersionLanguagesTab(getDriver());
@@ -83,7 +83,7 @@ public class VersionLanguagesTab extends VersionBasePage {
     }
 
     private List<WebElement> getEnabledLocaleListElement() {
-        return expectWebElement(languagesSettingForm)
+        return readyElement(languagesSettingForm)
                 .findElements(By.xpath(".//ul/li[@class='reveal--list-item']"));
     }
 

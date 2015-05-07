@@ -41,21 +41,21 @@ public class DashboardProfileTab extends DashboardBasePage {
 
     public String getUsername() {
         log.info("Query user name");
-        return expectWebElement(By.id("profileForm"))
+        return readyElement(By.id("profileForm"))
                 .findElement(By.className("l--push-bottom-0"))
                 .getText();
     }
 
     public DashboardProfileTab enterName(String name) {
         log.info("Enter name {}", name);
-        expectWebElement(accountNameField).clear();
-        expectWebElement(accountNameField).sendKeys(name);
+        readyElement(accountNameField).clear();
+        readyElement(accountNameField).sendKeys(name);
         return new DashboardProfileTab(getDriver());
     }
 
     public DashboardProfileTab clickUpdateProfileButton() {
         log.info("Click Update");
-        expectWebElement(updateProfileButton).click();
+        readyElement(updateProfileButton).click();
         return new DashboardProfileTab(getDriver());
     }
 }

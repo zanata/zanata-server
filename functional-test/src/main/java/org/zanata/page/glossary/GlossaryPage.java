@@ -69,8 +69,8 @@ public class GlossaryPage extends BasePage {
     }
 
     private List<WebElement> getListItems() {
-        return expectElementExists(
-                expectElementExists(glossaryMain),
+        return existingElement(
+                existingElement(glossaryMain),
                 By.className("list--stats"))
                 .findElements(listItem);
     }

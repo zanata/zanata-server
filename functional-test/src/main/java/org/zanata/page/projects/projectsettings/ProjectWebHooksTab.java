@@ -20,7 +20,6 @@
  */
 package org.zanata.page.projects.projectsettings;
 
-import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -47,12 +46,12 @@ public class ProjectWebHooksTab extends ProjectBasePage {
     }
 
     public ProjectWebHooksTab enterUrl(String url) {
-        expectWebElement(urlInputField).sendKeys(url + Keys.ENTER);
+        readyElement(urlInputField).sendKeys(url + Keys.ENTER);
         return new ProjectWebHooksTab(getDriver());
     }
 
     public List<String> getWebHooks() {
-        return WebElementUtil.elementsToText(expectWebElement(webHooksList)
+        return WebElementUtil.elementsToText(readyElement(webHooksList)
                 .findElement(By.className("list--slat"))
                 .findElements(By.className("list-item")));
     }
@@ -70,7 +69,7 @@ public class ProjectWebHooksTab extends ProjectBasePage {
     }
 
     public ProjectWebHooksTab clickRemoveOn(String url) {
-        List<WebElement> listItems = expectWebElement(webHooksList)
+        List<WebElement> listItems = readyElement(webHooksList)
                 .findElement(By.className("list--slat"))
                 .findElements(By.className("list-item"));
         boolean clicked = false;

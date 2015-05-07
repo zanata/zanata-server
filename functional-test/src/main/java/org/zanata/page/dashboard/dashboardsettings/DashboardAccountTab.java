@@ -54,34 +54,34 @@ public class DashboardAccountTab extends DashboardBasePage {
 
     public DashboardAccountTab typeNewAccountEmailAddress(String emailAddress) {
         log.info("Enter email {}", emailAddress);
-        expectWebElement(emailField).clear();
-        expectWebElement(emailField).sendKeys(emailAddress);
+        readyElement(emailField).clear();
+        readyElement(emailField).sendKeys(emailAddress);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab clickUpdateEmailButton() {
         log.info("Click Update Email");
-        expectWebElement(updateEmailButton).click();
+        readyElement(updateEmailButton).click();
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab typeOldPassword(String oldPassword) {
         log.info("Enter old password {}", oldPassword);
-        expectWebElement(oldPasswordField).clear();
-        expectWebElement(oldPasswordField).sendKeys(oldPassword);
+        readyElement(oldPasswordField).clear();
+        readyElement(oldPasswordField).sendKeys(oldPassword);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab typeNewPassword(String newPassword) {
         log.info("Enter new password {}", newPassword);
-        expectWebElement(newPasswordField).clear();
-        expectWebElement(newPasswordField).sendKeys(newPassword);
+        readyElement(newPasswordField).clear();
+        readyElement(newPasswordField).sendKeys(newPassword);
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardAccountTab clickUpdatePasswordButton() {
         log.info("Click Update Password");
-        expectWebElement(changePasswordButton).click();
+        readyElement(changePasswordButton).click();
         return new DashboardAccountTab(getDriver());
     }
 }

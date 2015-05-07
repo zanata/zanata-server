@@ -59,66 +59,66 @@ public class TranslationMemoryPage extends BasePage {
 
     public TranslationMemoryEditPage clickCreateNew() {
         log.info("Click Create New");
-        expectWebElement(dropDownMenu).click();
+        readyElement(dropDownMenu).click();
         clickLinkAfterAnimation(createTmLink);
         return new TranslationMemoryEditPage(getDriver());
     }
 
     public TranslationMemoryPage clickOptions(String tmName) {
         log.info("Click Options dropdown for {}", tmName);
-        expectWebElement(findRowByTMName(tmName), listDropDownMenu).click();
+        readyElement(findRowByTMName(tmName), listDropDownMenu).click();
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickImport(String tmName) {
         log.info("Click Import");
-        expectWebElement(findRowByTMName(tmName), listImportButton).click();
+        readyElement(findRowByTMName(tmName), listImportButton).click();
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage enterImportFileName(String importFileName) {
         log.info("Enter import TM filename {}", importFileName);
-        expectWebElement(filenameInput).sendKeys(importFileName);
+        readyElement(filenameInput).sendKeys(importFileName);
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickUploadButtonAndAcknowledge() {
         log.info("Click and accept Upload button");
-        expectWebElement(uploadButton).click();
+        readyElement(uploadButton).click();
         switchToAlert().accept();
         return new TranslationMemoryPage(getDriver());
     }
 
     public Alert expectFailedUpload() {
         log.info("Click Upload");
-        expectWebElement(uploadButton).click();
+        readyElement(uploadButton).click();
         return switchToAlert();
     }
 
     public TranslationMemoryPage clickClearTMAndAccept(String tmName) {
         log.info("Click and accept Clear {}", tmName);
-        expectWebElement(findRowByTMName(tmName), listClearButton).click();
+        readyElement(findRowByTMName(tmName), listClearButton).click();
         switchToAlert().accept();
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickClearTMAndCancel(String tmName) {
         log.info("Click and Cancel Clear {}", tmName);
-        expectWebElement(findRowByTMName(tmName), listClearButton).click();
+        readyElement(findRowByTMName(tmName), listClearButton).click();
         switchToAlert().dismiss();
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickDeleteTmAndAccept(String tmName) {
         log.info("Click and accept Delete {}", tmName);
-        expectWebElement(findRowByTMName(tmName), listDeleteButton).click();
+        readyElement(findRowByTMName(tmName), listDeleteButton).click();
         switchToAlert().accept();
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickDeleteTmAndCancel(String tmName) {
         log.info("Click and cancel Delete {}", tmName);
-        expectWebElement(findRowByTMName(tmName), listDeleteButton).click();
+        readyElement(findRowByTMName(tmName), listDeleteButton).click();
         switchToAlert().dismiss();
         return new TranslationMemoryPage(getDriver());
     }
@@ -151,7 +151,7 @@ public class TranslationMemoryPage extends BasePage {
 
     public boolean canDelete(String tmName) {
         log.info("Query can delete {}", tmName);
-        String disabled = expectWebElement(
+        String disabled = readyElement(
                 findRowByTMName(tmName), listDeleteButton)
                 .getAttribute("disabled");
 
@@ -162,7 +162,7 @@ public class TranslationMemoryPage extends BasePage {
      * Check to see if the TM list is empty
      */
     private boolean noTmsCreated() {
-        for (WebElement element : expectWebElement(tmList)
+        for (WebElement element : readyElement(tmList)
                 .findElements(By.tagName("p"))) {
             if (element.getText().equals(NO_MEMORIES)) {
                 return true;
@@ -187,7 +187,7 @@ public class TranslationMemoryPage extends BasePage {
             log.info("TM list is empty");
             return new ArrayList<>();
         }
-        return expectWebElement(expectWebElement(tmList),
+        return readyElement(readyElement(tmList),
                 By.className("list--stats"))
                 .findElements(By.className("list__item--actionable"));
     }
@@ -198,7 +198,7 @@ public class TranslationMemoryPage extends BasePage {
     }
 
     private String getListEntryDescription(WebElement listElement) {
-        return expectWebElement(listElement, listItemDescription).getText();
+        return readyElement(listElement, listItemDescription).getText();
     }
 
     private String getListEntryCount(WebElement listElement) {

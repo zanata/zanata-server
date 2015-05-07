@@ -43,7 +43,7 @@ public class DashboardActivityTab extends DashboardBasePage {
 
     public List<WebElement> getMyActivityList() {
         log.info("Query activity list");
-        return expectWebElement(activityList).findElements(By.xpath("./li"));
+        return readyElement(activityList).findElements(By.xpath("./li"));
     }
 
     /**
@@ -53,7 +53,7 @@ public class DashboardActivityTab extends DashboardBasePage {
     public boolean clickMoreActivity() {
         log.info("Click More Activity button");
         final int activityListOrigSize = getMyActivityList().size();
-        expectWebElement(moreActivityButton).click();
+        readyElement(moreActivityButton).click();
         return waitForAMoment().until(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver input) {

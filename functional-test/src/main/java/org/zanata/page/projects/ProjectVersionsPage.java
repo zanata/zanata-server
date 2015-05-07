@@ -98,7 +98,7 @@ public class ProjectVersionsPage extends ProjectBasePage {
 
     public int getNumberOfDisplayedVersions() {
         log.info("Query number of displayed versions");
-        return Integer.parseInt(expectWebElement(versionCount).getText());
+        return Integer.parseInt(readyElement(versionCount).getText());
     }
 
     public ProjectVersionsPage expectDisplayedVersions(final int expected) {
@@ -111,16 +111,16 @@ public class ProjectVersionsPage extends ProjectBasePage {
 
     public ProjectVersionsPage clickSearchIcon() {
         log.info("Click Search icon");
-        expectWebElement(expectElementExists(versions), searchIcon).click();
+        readyElement(existingElement(versions), searchIcon).click();
         return new ProjectVersionsPage(getDriver());
     }
 
     public ProjectVersionsPage clearVersionSearch() {
         log.info("Clear version search field");
         int maxKeys = 500;
-        while (!expectWebElement(versionSearchInput)
+        while (!readyElement(versionSearchInput)
                 .getAttribute("value").isEmpty() && maxKeys > 0) {
-            expectWebElement(versionSearchInput).sendKeys(Keys.BACK_SPACE);
+            readyElement(versionSearchInput).sendKeys(Keys.BACK_SPACE);
             maxKeys = maxKeys - 1;
         }
         if (maxKeys == 0) {
@@ -131,7 +131,7 @@ public class ProjectVersionsPage extends ProjectBasePage {
 
     public ProjectVersionsPage enterVersionSearch(String searchTerm) {
         log.info("Enter version search {}", searchTerm);
-        expectWebElement(versionSearchInput).sendKeys(searchTerm);
+        readyElement(versionSearchInput).sendKeys(searchTerm);
         return new ProjectVersionsPage(getDriver());
     }
 }

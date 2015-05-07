@@ -43,14 +43,14 @@ public class DashboardProjectsTab extends DashboardBasePage {
 
     public List<WebElement> getMaintainedProjectList() {
         log.info("Query maintained projects list");
-        return expectWebElement(maintainedProjectsList)
+        return readyElement(maintainedProjectsList)
                 .findElement(By.tagName("ul"))
                 .findElements(By.xpath("./li"));
     }
 
     public CreateProjectPage clickOnCreateProjectLink() {
         log.info("Click Create Project");
-        expectWebElement(createProjectLink).click();
+        readyElement(createProjectLink).click();
         return new CreateProjectPage(getDriver());
     }
 }

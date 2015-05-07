@@ -70,7 +70,7 @@ public class LanguagesPage extends BasePage {
     }
 
     private List<WebElement> getRows() {
-        return expectWebElement(expectElementExists(By.id("languageForm")),
+        return readyElement(existingElement(By.id("languageForm")),
                 By.className("list--stats"))
                 .findElements(By.tagName("li"));
     }

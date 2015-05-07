@@ -71,7 +71,7 @@ public class ProjectLanguagesTab extends ProjectBasePage {
     }
 
     private List<WebElement> getEnabledLocaleListElement() {
-        return expectWebElement(settingsLanguagesForm)
+        return readyElement(settingsLanguagesForm)
                 .findElement(By.className("list--slat"))
                 .findElements(By.className("reveal--list-item"));
     }

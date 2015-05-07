@@ -21,7 +21,6 @@
 package org.zanata.page.projectversion;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -74,7 +73,7 @@ public class VersionDocumentsPage extends VersionBasePage {
 
     private List<WebElement> getDocumentsTabDocumentList() {
         slightPause();
-        return expectWebElement(By.id("documents-document_list"))
+        return readyElement(By.id("documents-document_list"))
                         .findElements(By.xpath("./li"));
     }
 

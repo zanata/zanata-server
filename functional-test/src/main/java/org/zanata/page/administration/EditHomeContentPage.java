@@ -43,10 +43,10 @@ public class EditHomeContentPage extends BasePage {
     public EditHomeContentPage enterText(String text) {
         log.info("Enter homepage code\n{}", text);
         // Switch to the CKEditor frame
-        getDriver().switchTo().frame(expectWebElement(By
+        getDriver().switchTo().frame(readyElement(By
                 .id("cke_homeContentForm:homeContent:inp"))
                 .findElement(By.tagName("iframe")));
-        expectWebElement(By.tagName("body")).sendKeys(text);
+        readyElement(By.tagName("body")).sendKeys(text);
         // Switch back!
         getDriver().switchTo().defaultContent();
         return new EditHomeContentPage(getDriver());
@@ -54,13 +54,13 @@ public class EditHomeContentPage extends BasePage {
 
     public HomePage update() {
         log.info("Click Update");
-        expectWebElement(updateButton).click();
+        readyElement(updateButton).click();
         return new HomePage(getDriver());
     }
 
     public HomePage cancelUpdate() {
         log.info("Click Cancel");
-        expectWebElement(cancelButton).click();
+        readyElement(cancelButton).click();
         return new HomePage(getDriver());
     }
 }

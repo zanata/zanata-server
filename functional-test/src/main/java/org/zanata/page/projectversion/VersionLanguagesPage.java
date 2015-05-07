@@ -53,12 +53,12 @@ public class VersionLanguagesPage extends VersionBasePage {
     private By documentListItemTitle = By.className("list__title");
 
     private List<WebElement> getLanguageTabLocaleList() {
-        return expectWebElement(languageList).findElements(By.tagName("li"));
+        return readyElement(languageList).findElements(By.tagName("li"));
     }
 
     private List<WebElement> getLanguageTabDocumentList() {
         log.info("Query documents list");
-        return expectWebElement(expectElementExists(languageDocumentList),
+        return readyElement(existingElement(languageDocumentList),
                 By.className("list--stats"))
                 .findElements(documentListItem);
     }
@@ -96,7 +96,7 @@ public class VersionLanguagesPage extends VersionBasePage {
                     @Override
                     public WebElement apply(WebDriver input) {
                         for (WebElement document : getLanguageTabDocumentList()) {
-                            if (expectElementExists(document,
+                            if (existingElement(document,
                                     documentListItemTitle)
                                     .getText().equals(docName)) {
                                 return document

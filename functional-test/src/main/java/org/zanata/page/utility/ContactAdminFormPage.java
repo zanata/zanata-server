@@ -43,14 +43,14 @@ public class ContactAdminFormPage extends BasePage {
 
     public ContactAdminFormPage inputSubject(String subject) {
         log.info("Enter subject {}", subject);
-        expectWebElement(subjectField).clear();
-        expectWebElement(subjectField).sendKeys(subject);
+        readyElement(subjectField).clear();
+        readyElement(subjectField).sendKeys(subject);
         return new ContactAdminFormPage(getDriver());
     }
 
     public ContactAdminFormPage inputMessage(String message) {
         log.info("Enter message {}", message);
-        expectWebElement(messageField).sendKeys(message);
+        readyElement(messageField).sendKeys(message);
         return new ContactAdminFormPage(getDriver());
     }
 
@@ -62,7 +62,7 @@ public class ContactAdminFormPage extends BasePage {
      */
     public <P> P send(Class<P> pageClass) {
         log.info("Click Send");
-        expectWebElement(sendButton).click();
+        readyElement(sendButton).click();
         return PageFactory.initElements(getDriver(), pageClass);
     }
 }

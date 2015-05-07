@@ -49,25 +49,25 @@ public class SignInPage extends CorePage {
 
     public SignInPage enterUsername(String username) {
         log.info("Enter username {}", username);
-        expectWebElement(usernameField).sendKeys(username);
+        readyElement(usernameField).sendKeys(username);
         return new SignInPage(getDriver());
     }
 
     public SignInPage enterPassword(String password) {
         log.info("Enter password {}", password);
-        expectWebElement(passwordField).sendKeys(password);
+        readyElement(passwordField).sendKeys(password);
         return new SignInPage(getDriver());
     }
 
     public DashboardBasePage clickSignIn() {
         log.info("Click Sign In");
-        expectWebElement(signInButton).click();
+        readyElement(signInButton).click();
         return new DashboardBasePage(getDriver());
     }
 
     public SignInPage clickSignInExpectError() {
         log.info("Click Sign In");
-        expectWebElement(signInButton).click();
+        readyElement(signInButton).click();
         return new SignInPage(getDriver());
     }
 
@@ -79,24 +79,24 @@ public class SignInPage extends CorePage {
 
     public GoogleAccountPage selectGoogleOpenID() {
         log.info("Click 'Google'");
-        expectWebElement(googleButton).click();
+        readyElement(googleButton).click();
         return new GoogleAccountPage(getDriver());
     }
 
     public ResetPasswordPage goToResetPassword() {
         log.info("Click Forgot Password");
-        expectWebElement(forgotPasswordLink).click();
+        readyElement(forgotPasswordLink).click();
         return new ResetPasswordPage(getDriver());
     }
 
     public RegisterPage goToRegister() {
         log.info("Click Sign Up");
-        expectWebElement(signUpLink).click();
+        readyElement(signUpLink).click();
         return new RegisterPage(getDriver());
     }
 
     public String getPageTitle() {
         log.info("Query page title");
-        return expectWebElement(titleLabel).getText();
+        return readyElement(titleLabel).getText();
     }
 }

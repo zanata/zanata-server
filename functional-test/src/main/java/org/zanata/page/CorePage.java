@@ -64,7 +64,7 @@ public class CorePage extends AbstractPage {
     public HomePage goToHomePage() {
         log.info("Click Zanata home icon");
         scrollToTop();
-        expectWebElement(homeLink).click();
+        readyElement(homeLink).click();
         return new HomePage(getDriver());
     }
 
@@ -122,23 +122,28 @@ public class CorePage extends AbstractPage {
     }
 
     /**
-     * Wait until at least one error is visible
+     * Wait until an expected error is visible
      *
+     * @param expected The expected error string
      * @return The full list of visible errors
      */
-    public List<String> expectErrors() {
-        waitForPageSilence();
+    public List<String> expectError(final String expected) {
+        String msg = "expected error: " + expected;
+        logWaiting(msg);
+        waitForAMoment().withMessage(msg).until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return getErrors().contains(expected);
+            }
+        });
         return getErrors();
     }
 
-    public String getNotificationMessage(By elementBy) {
-        log.info("Query notification message: " + elementBy);
-        WebElement message = waitForElementExists(elementBy);
-        return message.getText();
-    }
-
     public String getNotificationMessage() {
-        return getNotificationMessage(By.cssSelector("#messages li"));
+        log.info("Query notification message");
+        List<WebElement> messages = existingElement(By.id("messages"))
+                        .findElements(By.tagName("li"));
+        return messages.size() > 0 ? messages.get(0).getText() : "";
     }
 
     public boolean expectNotification(final String notification) {
@@ -194,7 +199,8 @@ public class CorePage extends AbstractPage {
     public void defocus(By elementBy) {
         log.info("Force unfocus");
         WebElement element = getDriver().findElement(elementBy);
-        getExecutor().executeScript("arguments[0].blur()", element);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].blur()",
+                element);
         waitForPageSilence();
     }
 
