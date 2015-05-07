@@ -131,7 +131,7 @@ public class ProjectPermissionsTab extends ProjectBasePage {
     }
 
     private List<WebElement> getSettingsMaintainersElement() {
-        return expectWebElement(maintainersForm)
+        return readyElement(maintainersForm)
                 .findElement(By.id("maintainers-list"))
                 .findElements(By.className("reveal--list-item"));
     }

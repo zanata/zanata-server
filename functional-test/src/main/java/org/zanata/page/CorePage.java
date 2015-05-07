@@ -61,7 +61,7 @@ public class CorePage extends AbstractPage {
     public HomePage goToHomePage() {
         log.info("Click Zanata home icon");
         scrollToTop();
-        expectWebElement(homeLink).click();
+        readyElement(homeLink).click();
         return new HomePage(getDriver());
     }
 
@@ -138,7 +138,7 @@ public class CorePage extends AbstractPage {
 
     public String getNotificationMessage() {
         log.info("Query notification message");
-        List<WebElement> messages = expectElementExists(By.id("messages"))
+        List<WebElement> messages = existingElement(By.id("messages"))
                         .findElements(By.tagName("li"));
         return messages.size() > 0 ? messages.get(0).getText() : "";
     }
@@ -201,7 +201,8 @@ public class CorePage extends AbstractPage {
     public void defocus(By elementBy) {
         log.info("Force unfocus");
         WebElement element = getDriver().findElement(elementBy);
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].blur()", element);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].blur()",
+                element);
         waitForPageSilence();
     }
 

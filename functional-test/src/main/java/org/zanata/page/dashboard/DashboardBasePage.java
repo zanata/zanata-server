@@ -62,14 +62,14 @@ public class DashboardBasePage extends BasePage {
 
     public String getUserFullName() {
         log.info("Query user full name");
-        return expectWebElement(profileOverview)
+        return readyElement(profileOverview)
                 .findElement(By.tagName("h1")).getText();
     }
 
     public DashboardActivityTab gotoActivityTab() {
         log.info("Click Activity tab");
-        expectElementExists(activityTabBody);
-        clickWhenTabEnabled(expectWebElement(activityTab));
+        existingElement(activityTabBody);
+        clickWhenTabEnabled(readyElement(activityTab));
         return new DashboardActivityTab(getDriver());
     }
 
@@ -82,33 +82,33 @@ public class DashboardBasePage extends BasePage {
 
     public DashboardProjectsTab gotoProjectsTab() {
         log.info("Click Projects tab");
-        expectElementExists(projectsTabBody);
-        clickWhenTabEnabled(expectWebElement(projectsTab));
+        existingElement(projectsTabBody);
+        clickWhenTabEnabled(readyElement(projectsTab));
         return new DashboardProjectsTab(getDriver());
     }
 
     public DashboardBasePage goToSettingsTab() {
         log.info("Click Settings tab");
-        expectElementExists(settingsTabBody);
-        clickWhenTabEnabled(expectWebElement(settingsTab));
+        existingElement(settingsTabBody);
+        clickWhenTabEnabled(readyElement(settingsTab));
         return new DashboardBasePage(getDriver());
     }
 
     public DashboardAccountTab gotoSettingsAccountTab() {
         log.info("Click Account settings sub-tab");
-        clickWhenTabEnabled(expectWebElement(settingsAccountTab));
+        clickWhenTabEnabled(readyElement(settingsAccountTab));
         return new DashboardAccountTab(getDriver());
     }
 
     public DashboardProfileTab goToSettingsProfileTab() {
         log.info("Click Profile settings sub-tab");
-        clickWhenTabEnabled(expectWebElement(settingsProfileTab));
+        clickWhenTabEnabled(readyElement(settingsProfileTab));
         return new DashboardProfileTab(getDriver());
     }
 
     public DashboardClientTab goToSettingsClientTab() {
         log.info("Click Client settings sub-tab");
-        clickWhenTabEnabled(expectWebElement(settingsClientTab));
+        clickWhenTabEnabled(readyElement(settingsClientTab));
         return new DashboardClientTab(getDriver());
     }
 

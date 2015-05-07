@@ -256,11 +256,11 @@ public class AbstractPage {
     }
 
     /**
-     * @deprecated use expectWebElement
+     * @deprecated use readyElement
      */
     @Deprecated
     public WebElement waitForWebElement(final By elementBy) {
-        return expectWebElement(elementBy);
+        return readyElement(elementBy);
     }
 
     /**
@@ -268,23 +268,23 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement expectWebElement(final By elementBy) {
+    public WebElement readyElement(final By elementBy) {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        WebElement targetElement = expectElementExists(elementBy);
+        WebElement targetElement = existingElement(elementBy);
         waitForElementReady(targetElement);
         assertReady(targetElement);
         return targetElement;
     }
 
     /**
-     * @deprecated use expectWebElement
+     * @deprecated use readyElement
      */
     @Deprecated
     public WebElement waitForWebElement(final WebElement parentElement,
             final By elementBy) {
-        return expectWebElement(parentElement, elementBy);
+        return readyElement(parentElement, elementBy);
     }
 
     /**
@@ -293,21 +293,21 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement expectWebElement(final WebElement parentElement,
+    public WebElement readyElement(final WebElement parentElement,
             final By elementBy) {
         String msg = "element ready " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        WebElement targetElement = expectElementExists(parentElement, elementBy);
+        WebElement targetElement = existingElement(parentElement, elementBy);
         assertReady(targetElement);
         return targetElement;
     }
 
     /**
-     * @deprecated use expectElementExists
+     * @deprecated use existingElement
      */
     public WebElement waitForElementExists(final By elementBy) {
-        return expectElementExists(elementBy);
+        return existingElement(elementBy);
     }
 
     /**
@@ -317,7 +317,7 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement expectElementExists(final By elementBy) {
+    public WebElement existingElement(final By elementBy) {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
@@ -330,12 +330,12 @@ public class AbstractPage {
     }
 
     /**
-     * @deprecated use expectElementExists
+     * @deprecated use existingElement
      */
     @Deprecated
     public WebElement waitForElementExists(final WebElement parentElement,
             final By elementBy) {
-        return expectElementExists(parentElement, elementBy);
+        return existingElement(parentElement, elementBy);
     }
 
     /**
@@ -345,7 +345,7 @@ public class AbstractPage {
      * @param elementBy WebDriver By locator
      * @return target WebElement
      */
-    public WebElement expectElementExists(final WebElement parentElement,
+    public WebElement existingElement(final WebElement parentElement,
             final By elementBy) {
         String msg = "element exists " + elementBy;
         logWaiting(msg);

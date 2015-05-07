@@ -44,32 +44,32 @@ public class EditRoleAssignmentPage extends BasePage {
 
     public EditRoleAssignmentPage selectPolicy(String policy) {
         log.info("Select policy {}", policy);
-        new Select(expectWebElement(policySelect)).selectByValue(policy);
+        new Select(readyElement(policySelect)).selectByValue(policy);
         return new EditRoleAssignmentPage(getDriver());
     }
 
     public EditRoleAssignmentPage enterIdentityPattern(String pattern) {
         log.info("Enter identity pattern {}", pattern);
-        expectWebElement(patternField).clear();
-        expectWebElement(patternField).sendKeys(pattern);
+        readyElement(patternField).clear();
+        readyElement(patternField).sendKeys(pattern);
         return new EditRoleAssignmentPage(getDriver());
     }
 
     public EditRoleAssignmentPage selectRole(String role) {
         log.info("Select role {}", role);
-        new Select(expectWebElement(roleSelect)).selectByValue(role);
+        new Select(readyElement(roleSelect)).selectByValue(role);
         return new EditRoleAssignmentPage(getDriver());
     }
 
     public RoleAssignmentsPage saveRoleAssignment() {
         log.info("Click Save");
-        expectWebElement(saveButton).click();
+        readyElement(saveButton).click();
         return new RoleAssignmentsPage(getDriver());
     }
 
     public RoleAssignmentsPage cancelEditRoleAssignment() {
         log.info("Click Cancel");
-        expectWebElement(cancelButton).click();
+        readyElement(cancelButton).click();
         return new RoleAssignmentsPage(getDriver());
     }
 }

@@ -43,19 +43,19 @@ public class EditHomeCodePage extends BasePage {
 
     public EditHomeCodePage enterText(String text) {
         log.info("Enter homepage text\n{}", text);
-        expectWebElement(textEdit).sendKeys(text);
+        readyElement(textEdit).sendKeys(text);
         return new EditHomeCodePage(getDriver());
     }
 
     public HomePage update() {
         log.info("Click Update");
-        expectWebElement(updateButton).click();
+        readyElement(updateButton).click();
         return new HomePage(getDriver());
     }
 
     public HomePage cancelUpdate() {
         log.info("Click Cancel");
-        expectWebElement(cancelButton).click();
+        readyElement(cancelButton).click();
         return new HomePage(getDriver());
     }
 }

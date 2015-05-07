@@ -90,9 +90,9 @@ public class EditorPage extends BasePage {
                         || input.findElements(glossaryTable).size() == 1;
             }
         });
-        expectWebElement(glossarySearchInput).clear();
-        expectWebElement(glossarySearchInput).sendKeys(term);
-        expectWebElement(By.id("gwt-debug-glossarySearchButton")).click();
+        readyElement(glossarySearchInput).clear();
+        readyElement(glossarySearchInput).sendKeys(term);
+        readyElement(By.id("gwt-debug-glossarySearchButton")).click();
         return new EditorPage(getDriver());
     }
 
@@ -183,7 +183,7 @@ public class EditorPage extends BasePage {
     public EditorPage setSyntaxHighlighting(boolean option) {
         log.info("Set syntax highlight to {}", option);
         openConfigurationPanel();
-        WebElement highlight = expectWebElement(By.id(EDITOR_SYNTAXHIGHLIGHT));
+        WebElement highlight = readyElement(By.id(EDITOR_SYNTAXHIGHLIGHT));
         if (highlight.isSelected() != option) {
             highlight.click();
         }
@@ -201,7 +201,7 @@ public class EditorPage extends BasePage {
             }
         });
         new Actions(getDriver())
-                .click(expectWebElement(configurationPanel))
+                .click(readyElement(configurationPanel))
                 .perform();
         return waitForAMoment().until(new Function<WebDriver, Boolean>() {
             @Override
@@ -242,7 +242,7 @@ public class EditorPage extends BasePage {
     private String getContentAtRowIndex(final long rowIndex,
             final String idFormat,
             final Plurals plural) {
-        return expectWebElement(By
+        return readyElement(By
                 .id(String.format(idFormat, rowIndex, plural.index())))
                 .getAttribute("value");
     }
@@ -261,7 +261,7 @@ public class EditorPage extends BasePage {
 
     private void setTargetContent(final long rowIndex, final String text,
             final String idFormat, final Plurals plural) {
-        WebElement we = expectWebElement(By
+        WebElement we = readyElement(By
                 .id(String.format(idFormat, rowIndex, plural.index())));
         we.click();
         we.clear();
@@ -278,7 +278,7 @@ public class EditorPage extends BasePage {
     public EditorPage pasteIntoRowAtIndex(final long rowIndex,
                                           final String text) {
         log.info("Paste at {} the text {}", rowIndex, text);
-        WebElement we = expectWebElement(By.id(String.format(TARGET_ID_FMT,
+        WebElement we = readyElement(By.id(String.format(TARGET_ID_FMT,
                 rowIndex, Plurals.SourceSingular.index())));
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(new StringSelection(text), null);
@@ -289,7 +289,7 @@ public class EditorPage extends BasePage {
 
     public EditorPage approveTranslationAtRow(int rowIndex) {
         log.info("Click Approve on row {}", rowIndex);
-        expectWebElement(By
+        readyElement(By
                 .id(String.format(APPROVE_BUTTON_ID_FMT, rowIndex)))
                 .click();
         slightPause();
@@ -298,7 +298,7 @@ public class EditorPage extends BasePage {
 
     public EditorPage saveAsFuzzyAtRow(int rowIndex) {
         log.info("Click Fuzzy on row {}", rowIndex);
-        expectWebElement(By
+        readyElement(By
                 .id(String.format(FUZZY_BUTTON_ID_FMT, rowIndex)))
                 .click();
         return new EditorPage(getDriver());
@@ -311,12 +311,12 @@ public class EditorPage extends BasePage {
 
     public String getStatistics() {
         log.info("Query statistics");
-        return expectWebElement(By.id("gwt-debug-statistics-label")).getText();
+        return readyElement(By.id("gwt-debug-statistics-label")).getText();
     }
 
     public List<String> getMessageSources() {
         log.info("Query list of text flow sources");
-        return WebElementUtil.elementsToText(expectWebElement(transUnitTable)
+        return WebElementUtil.elementsToText(readyElement(transUnitTable)
                 .findElements(By.className("gwt-HTML")));
     }
 
@@ -382,10 +382,10 @@ public class EditorPage extends BasePage {
      */
     public EditorPage openValidationOptions() {
         log.info("Click to open Validation options panel");
-        new Actions(getDriver()).click(expectWebElement(
-                expectElementExists(By.id("container")), validationOptions))
+        new Actions(getDriver()).click(readyElement(
+                existingElement(By.id("container")), validationOptions))
                 .perform();
-        expectElementExists(validationOptionsView);
+        existingElement(validationOptionsView);
         return new EditorPage(getDriver());
     }
 
@@ -397,7 +397,7 @@ public class EditorPage extends BasePage {
      */
     public boolean isValidationOptionAvailable(Validations validation) {
         log.info("Query is validation option {} available", validation);
-        return expectWebElement(By.xpath("//*[@title='" +
+        return readyElement(By.xpath("//*[@title='" +
                 getValidationTitle(validation) + "']"))
                 .findElement(By.tagName("input"))
                 .isEnabled();
@@ -411,8 +411,8 @@ public class EditorPage extends BasePage {
      */
     public boolean isValidationOptionSelected(Validations validation) {
         log.info("Query is validation option {} selected", validation);
-        return expectElementExists(
-                expectElementExists(By.xpath("//*[@title='" +
+        return existingElement(
+                existingElement(By.xpath("//*[@title='" +
                         getValidationTitle(validation) + "']")),
                 By.tagName("input")).isSelected();
     }
@@ -425,7 +425,7 @@ public class EditorPage extends BasePage {
      */
     public EditorPage clickValidationCheckbox(Validations validation) {
         log.info("Click validation checkbox {}", validation);
-        expectWebElement(expectElementExists(By.xpath("//*[@title='" +
+        readyElement(existingElement(By.xpath("//*[@title='" +
                         getValidationTitle(validation) + "']")),
                 By.tagName("input")).click();
         return new EditorPage(getDriver());
@@ -456,19 +456,19 @@ public class EditorPage extends BasePage {
 
     public EditorPage inputFilterQuery(String query) {
         log.info("Enter filter query {}", query);
-        expectWebElement(editorFilterField).clear();
-        expectWebElement(editorFilterField).sendKeys(query + Keys.ENTER);
+        readyElement(editorFilterField).clear();
+        readyElement(editorFilterField).sendKeys(query + Keys.ENTER);
         return new EditorPage(getDriver());
     }
 
     public String getFilterQuery() {
         log.info("Query filter text");
-        return expectWebElement(editorFilterField).getAttribute("value");
+        return readyElement(editorFilterField).getAttribute("value");
     }
 
     // Find the right side column for the selected row
     private WebElement getTranslationTargetColumn() {
-        return expectWebElement(By.className("selected"))
+        return readyElement(By.className("selected"))
                 .findElements(By.className("transUnitCol"))
                 // Right column
                 .get(1);
@@ -476,13 +476,13 @@ public class EditorPage extends BasePage {
 
     // Find the validation messages / errors box
     private WebElement getTargetValidationBox() {
-        return expectElementExists(getTranslationTargetColumn(), validationBox);
+        return existingElement(getTranslationTargetColumn(), validationBox);
     }
 
     // Click the History button for the selected row - row id must be known
     public EditorPage clickShowHistoryForRow(int row) {
         log.info("Click history button on row {}", row);
-        expectWebElement(getTranslationTargetColumn(), By
+        readyElement(getTranslationTargetColumn(), By
                 .id("gwt-debug-target-" + row + "-history"))
                 .click();
         waitForAMoment().until(new Predicate<WebDriver>() {
@@ -544,7 +544,7 @@ public class EditorPage extends BasePage {
     public EditorPage clickCompareVersionsTab() {
         log.info("Click on Compare versions tab");
         getCompareTab().click();
-        expectWebElement(getTranslationHistoryBox(), By.className("html-face"));
+        readyElement(getTranslationHistoryBox(), By.className("html-face"));
         return new EditorPage(getDriver());
     }
 
@@ -571,8 +571,8 @@ public class EditorPage extends BasePage {
     }
 
     private WebElement getTranslationHistoryBox() {
-        return expectElementExists(
-                expectElementExists(By.id("gwt-debug-transHistory")),
+        return existingElement(
+                existingElement(By.id("gwt-debug-transHistory")),
                 By.id("gwt-debug-transHistoryTabPanel"));
     }
 

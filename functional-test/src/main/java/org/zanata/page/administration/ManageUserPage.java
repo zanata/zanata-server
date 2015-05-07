@@ -58,7 +58,7 @@ public class ManageUserPage extends BasePage {
     }
 
     public List<WebElement> getRows() {
-        return expectWebElement(userTable)
+        return readyElement(userTable)
                 .findElements(By.className("list__item--actionable"));
     }
 

@@ -43,19 +43,19 @@ public class DashboardClientTab extends DashboardBasePage {
 
     public DashboardClientTab pressApiKeyGenerateButton() {
         log.info("Press Generate API Key");
-        expectWebElement(generateApiKeyButton).click();
+        readyElement(generateApiKeyButton).click();
         getDriver().switchTo().alert().accept();
         return new DashboardClientTab(getDriver());
     }
 
     public String getApiKey() {
         log.info("Query API Key");
-        return expectWebElement(apiKeyLabel).getAttribute("value");
+        return readyElement(apiKeyLabel).getAttribute("value");
     }
 
     public String getConfigurationDetails() {
         log.info("Query configuration details");
-        return expectWebElement(configurationTextArea).getText();
+        return readyElement(configurationTextArea).getText();
     }
 
     public void expectApiKeyChanged(final String current) {

@@ -45,13 +45,13 @@ public class RoleAssignmentsPage extends BasePage {
 
     public RoleAssignmentsPage clickMoreActions() {
         log.info("Click More Actions dropdown");
-        expectWebElement(moreActions).click();
+        readyElement(moreActions).click();
         return new RoleAssignmentsPage(getDriver());
     }
 
     public EditRoleAssignmentPage clickCreateNew() {
         log.info("Click Create New");
-        expectWebElement(newRuleButton).click();
+        readyElement(newRuleButton).click();
         return new EditRoleAssignmentPage(getDriver());
     }
 

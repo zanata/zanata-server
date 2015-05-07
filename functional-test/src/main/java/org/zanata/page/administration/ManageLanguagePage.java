@@ -48,13 +48,13 @@ public class ManageLanguagePage extends BasePage {
 
     public ManageLanguagePage clickMoreActions() {
         log.info("Click More Actions dropdown");
-        expectWebElement(moreActions).click();
+        readyElement(moreActions).click();
         return new ManageLanguagePage(getDriver());
     }
 
     public AddLanguagePage addNewLanguage() {
         log.info("Click Add New Language");
-        expectWebElement(addLanguageButton).click();
+        readyElement(addLanguageButton).click();
         return new AddLanguagePage(getDriver());
     }
 
@@ -110,7 +110,7 @@ public class ManageLanguagePage extends BasePage {
     }
 
     private List<WebElement> getRows() {
-        return expectWebElement(expectElementExists(By.id("languageForm")),
+        return readyElement(existingElement(By.id("languageForm")),
                 By.className("list--stats"))
                 .findElements(By.className("list__item--actionable"));
     }

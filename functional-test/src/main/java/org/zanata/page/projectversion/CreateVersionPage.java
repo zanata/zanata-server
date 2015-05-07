@@ -81,7 +81,7 @@ public class CreateVersionPage extends BasePage {
     private void clickCopyFromCheckbox() {
         ((JavascriptExecutor) getDriver())
                 .executeScript("arguments[0].click();",
-                expectWebElement(copyFromPreviousVersionChk)
+                readyElement(copyFromPreviousVersionChk)
                         .findElement(By.tagName("span")));
 
     }
@@ -97,7 +97,7 @@ public class CreateVersionPage extends BasePage {
         } else {
             clickCopyFromCheckbox();
         }
-        expectWebElement(previousVersionsList);
+        readyElement(previousVersionsList);
         return this;
     }
 
@@ -112,19 +112,19 @@ public class CreateVersionPage extends BasePage {
         } else {
             clickCopyFromCheckbox();
         }
-        expectWebElement(projectTypesList);
+        readyElement(projectTypesList);
         return this;
     }
 
     public boolean copyFromVersionIsChecked() {
         log.info("Query is Copy from Version checkbox checked");
-        return expectWebElement(copyFromPreviousVersionChk)
+        return readyElement(copyFromPreviousVersionChk)
                 .findElement(By.tagName("input")).isSelected();
     }
 
     private WebElement getVersionIdField() {
         log.info("Query Version ID");
-        return expectWebElement(projectVersionID);
+        return readyElement(projectVersionID);
     }
 
     public CreateVersionPage selectProjectType(final String projectType) {
@@ -133,7 +133,7 @@ public class CreateVersionPage extends BasePage {
                 .until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver input) {
-                for (WebElement item : expectWebElement(projectTypeSelection)
+                for (WebElement item : readyElement(projectTypeSelection)
                         .findElements(By.tagName("li"))) {
                     if (item.findElement(By.tagName("label")).getText()
                             .startsWith(projectType)) {
@@ -149,13 +149,13 @@ public class CreateVersionPage extends BasePage {
 
     public VersionLanguagesPage saveVersion() {
         log.info("Click Save");
-        clickAndCheckErrors(expectWebElement(saveButton));
+        clickAndCheckErrors(readyElement(saveButton));
         return new VersionLanguagesPage(getDriver());
     }
 
     public CreateVersionPage saveExpectingError() {
         log.info("Click Save");
-        expectWebElement(saveButton).click();
+        readyElement(saveButton).click();
         return new CreateVersionPage(getDriver());
     }
 

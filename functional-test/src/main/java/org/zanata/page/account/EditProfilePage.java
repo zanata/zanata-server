@@ -45,36 +45,36 @@ public class EditProfilePage extends BasePage {
 
     public EditProfilePage enterName(String name) {
         log.info("Enter name {}", name);
-        expectWebElement(nameField).clear();
-        expectWebElement(nameField).sendKeys(name);
+        readyElement(nameField).clear();
+        readyElement(nameField).sendKeys(name);
         defocus(nameField);
         return new EditProfilePage(getDriver());
     }
 
     public EditProfilePage enterUserName(String userName) {
         log.info("Enter username {}", userName);
-        expectWebElement(usernameField).clear();
-        expectWebElement(usernameField).sendKeys(userName);
+        readyElement(usernameField).clear();
+        readyElement(usernameField).sendKeys(userName);
         return new EditProfilePage(getDriver());
     }
 
     public EditProfilePage enterEmail(String email) {
         log.info("Enter email {}", email);
-        expectWebElement(emailField).clear();
-        expectWebElement(emailField).sendKeys(email);
+        readyElement(emailField).clear();
+        readyElement(emailField).sendKeys(email);
         defocus(emailField);
         return new EditProfilePage(getDriver());
     }
 
     public HomePage clickSave() {
         log.info("Click Save");
-        expectWebElement(saveButton).click();
+        readyElement(saveButton).click();
         return new HomePage(getDriver());
     }
 
     public EditProfilePage clickSaveAndExpectErrors() {
         log.info("Click Save");
-        expectWebElement(saveButton).click();
+        readyElement(saveButton).click();
         return new EditProfilePage(getDriver());
     }
 

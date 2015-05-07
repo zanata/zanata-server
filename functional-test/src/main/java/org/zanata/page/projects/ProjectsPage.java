@@ -51,7 +51,7 @@ public class ProjectsPage extends BasePage {
 
     public CreateProjectPage clickOnCreateProjectLink() {
         log.info("Click Create Project");
-        expectWebElement(createProjectButton).click();
+        readyElement(createProjectButton).click();
         return new CreateProjectPage(getDriver());
     }
 
@@ -74,7 +74,7 @@ public class ProjectsPage extends BasePage {
 
     public List<String> getProjectNamesOnCurrentPage() {
         log.info("Query Projects list");
-        if (expectWebElement(mainContentDiv)
+        if (readyElement(mainContentDiv)
                 .getText().contains("No project exists")) {
             return Collections.emptyList();
         }
@@ -110,7 +110,7 @@ public class ProjectsPage extends BasePage {
 
     public ProjectsPage setActiveFilterEnabled(boolean enabled) {
         log.info("Click to set Active filter enabled to {}", enabled);
-        WebElement activeCheckbox = expectWebElement(activeCheckBox);
+        WebElement activeCheckbox = readyElement(activeCheckBox);
         if (activeCheckbox.isSelected() != enabled) {
             activeCheckbox.click();
         }
@@ -119,7 +119,7 @@ public class ProjectsPage extends BasePage {
 
     public ProjectsPage setReadOnlyFilterEnabled(final boolean enabled) {
         log.info("Click to set Read-only filter enabled to {}", enabled);
-        WebElement readOnlyCheckbox = expectWebElement(readOnlyCheckBox);
+        WebElement readOnlyCheckbox = readyElement(readOnlyCheckBox);
         if (readOnlyCheckbox.isSelected() != enabled) {
             readOnlyCheckbox.click();
         }
@@ -128,7 +128,7 @@ public class ProjectsPage extends BasePage {
 
     public ProjectsPage setObsoleteFilterEnabled(boolean enabled) {
         log.info("Click to set Obsolete filter enabled to {}", enabled);
-        WebElement obsoleteCheckbox = expectWebElement(obsoleteCheckBox);
+        WebElement obsoleteCheckbox = readyElement(obsoleteCheckBox);
         if (obsoleteCheckbox.isSelected() != enabled) {
             obsoleteCheckbox.click();
         }
