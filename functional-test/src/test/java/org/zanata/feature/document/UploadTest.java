@@ -108,10 +108,6 @@ public class UploadTest extends ZanataTestCase {
                 .submitUpload()
                 .clickUploadDone();
 
-        assertThat(new File(documentStorageDirectory).list().length)
-                .isEqualTo(1)
-                .as("There is only one uploaded source file");
-
         File newlyCreatedFile = new File(documentStorageDirectory,
                 testFileGenerator
                         .getFirstFileNameInDirectory(documentStorageDirectory));

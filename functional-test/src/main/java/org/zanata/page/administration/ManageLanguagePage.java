@@ -66,14 +66,18 @@ public class ManageLanguagePage extends BasePage {
     }
 
     public ManageLanguagePage clickOptions(String localeId) {
-        findRowByLocale(localeId).findElement(By.className("dropdown__toggle"))
+        readyElement(findRowByLocale(localeId), By.className("dropdown__toggle"))
                 .click();
         return new ManageLanguagePage(getDriver());
     }
 
     public ManageLanguagePage enableLanguageByDefault(String localeId) {
         log.info("Click to enable {}", localeId);
-        findRowByLocale(localeId).findElement(enableByDefault).click();
+        if (findRowByLocale(localeId).findElements(disableByDefault).size() > 0) {
+            log.warn("Language already enabled!");
+            return new ManageLanguagePage(getDriver());
+        }
+        readyElement(findRowByLocale(localeId), enableByDefault).click();
         switchToAlert().accept();
         return new ManageLanguagePage(getDriver());
     }
