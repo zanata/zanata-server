@@ -51,10 +51,10 @@ public class MigrateSeamTextToCommonMark implements CustomTaskChange {
     private static final int IDX_KEY = 1;
     private static final int IDX_TEXT = 2;
     private static final String[] SQL_QUERIES = {
-            "SELECT config_key, config_value " +
+            "SELECT config_key, config_value, id " +
                     "FROM HApplicationConfiguration " +
                     "WHERE config_key LIKE 'pages.home.content'",
-            "SELECT slug, homeContent " +
+            "SELECT slug, homeContent, id " +
                     "FROM HProject " +
                     "WHERE homeContent IS NOT NULL"
     };
