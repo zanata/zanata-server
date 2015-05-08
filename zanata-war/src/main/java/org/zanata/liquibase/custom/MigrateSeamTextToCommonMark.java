@@ -113,7 +113,7 @@ public class MigrateSeamTextToCommonMark implements CustomTaskChange {
                 for (String sql : SQL_QUERIES) {
                     ResultSet rs3 = stmt.executeQuery(sql);
                     while (rs3.next()) {
-                        if (recordsUpdated++ % 100 == 0) {
+                        if (recordsUpdated % 100 == 0) {
                             log.info("MigrateSeamTextToCommonMark: updated "
                                     + recordsUpdated + "/" + totalRecords
                                     + " records");
@@ -126,6 +126,7 @@ public class MigrateSeamTextToCommonMark implements CustomTaskChange {
                             rs3.updateString(IDX_TEXT, commonMark);
                             rs3.updateRow();
                         }
+                        ++recordsUpdated;
                     }
                 }
                 log.info("MigrateSeamTextToCommonMark: updated " +
