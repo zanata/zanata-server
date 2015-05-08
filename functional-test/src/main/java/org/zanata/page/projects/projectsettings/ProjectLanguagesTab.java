@@ -79,9 +79,7 @@ public class ProjectLanguagesTab extends ProjectBasePage {
     public ProjectLanguagesTab waitForLocaleListVisible() {
         log.info("Wait for locale list visible");
         waitForPageSilence();
-        WebElement el = getDriver().findElement(settingsLanguagesForm)
-                .findElement(By.className("list--slat"));
-        assertThat(el).as("displayed").isEqualTo(true);
+        readyElement(existingElement(settingsLanguagesForm), By.className("list--slat"));
         return new ProjectLanguagesTab(getDriver());
     }
 

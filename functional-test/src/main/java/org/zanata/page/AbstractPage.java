@@ -39,8 +39,6 @@ import org.zanata.util.WebElementUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
-import javax.annotation.Nullable;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -432,6 +430,7 @@ public class AbstractPage {
          });
     }
 
+    // Assert the element is available and visible
     private void assertReady(WebElement targetElement) {
         assertThat(targetElement.isDisplayed()).as("displayed").isTrue();
         assertThat(targetElement.isEnabled()).as("enabled").isTrue();

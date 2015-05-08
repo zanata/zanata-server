@@ -104,6 +104,13 @@ public class ProjectVersionsPage extends ProjectBasePage {
     public ProjectVersionsPage expectDisplayedVersions(final int expected) {
         log.info("Wait for number of displayed versions to be {}", expected);
         waitForPageSilence();
+        waitForAMoment().withMessage("Waiting for versions").until(
+                new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                return getNumberOfDisplayedVersions() == expected;
+            }
+        });
         assertThat(getNumberOfDisplayedVersions()).isEqualTo(expected);
         assertThat(getVersions()).hasSize(expected);
         return new ProjectVersionsPage(getDriver());
