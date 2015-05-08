@@ -285,13 +285,13 @@
       <dependency>
         <groupId>org.jboss.xnio</groupId>
         <artifactId>xnio-api</artifactId>
-        <version>3.3.0.Final</version>
+        <version>3.2.3.Final</version>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.xnio</groupId>
         <artifactId>xnio-nio</artifactId>
-        <version>3.3.0.Final</version>
+        <version>3.2.3.Final</version>
       </dependency>
 
       <dependency>
@@ -1202,7 +1202,7 @@
       </activation>
       <properties>
         <cargo.container>wildfly8x</cargo.container>
-        <wildfly.client.version>8.2.0.Final</wildfly.client.version>
+        <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
         <wildfly.version>9.0.0.CR1</wildfly.version>
@@ -1269,7 +1269,7 @@
           <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jandex</artifactId>
-            <version>1.2.1.Final</version>
+            <version>1.1.0.Final</version>
             <scope>test</scope>
           </dependency>
           <dependency>
@@ -1317,13 +1317,13 @@
           <dependency>
             <groupId>org.jboss.marshalling</groupId>
             <artifactId>jboss-marshalling</artifactId>
-            <version>1.4.9.Final</version>
+            <version>1.4.6.Final</version>
             <scope>test</scope>
           </dependency>
           <dependency>
             <groupId>org.jboss.marshalling</groupId>
             <artifactId>jboss-marshalling-river</artifactId>
-            <version>1.4.9.Final</version>
+            <version>1.4.6.Final</version>
             <scope>test</scope>
           </dependency>
           <dependency>
