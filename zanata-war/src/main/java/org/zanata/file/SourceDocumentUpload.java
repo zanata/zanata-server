@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.zanata.common.DocumentType;
@@ -320,7 +321,7 @@ public class SourceDocumentUpload {
         rawDocument.setType(documentType);
         rawDocument.setUploadedBy(identity.getCredentials().getUsername());
         filePersistService.persistRawDocumentContentFromFile(rawDocument,
-                rawFile);
+                rawFile, FilenameUtils.getExtension(rawFile.getName()));
         if (params.isPresent()) {
             rawDocument.setAdapterParameters(params.get());
         }

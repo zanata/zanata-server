@@ -222,7 +222,6 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
      * Separates translatable text from surrounding non-translatable text.
      *
      * @param tu
-     * @return
      */
     private Map<String, String> getPartitionedText(TextUnit tu) {
         return TranslatableSeparator.separate(GenericContent
@@ -233,8 +232,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
     /**
      * Separates translatable text from surrounding non-translatable text.
      *
-     * @param tu
-     * @return
+     * @param letterCodedText
      */
     private Map<String, String> getPartitionedText(String letterCodedText) {
         return TranslatableSeparator.separate(letterCodedText);
@@ -347,18 +345,24 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
                 transformToMapByResId(
                     translationsResource.getTextFlowTargets());
 
-        net.sf.okapi.common.LocaleId localeId =
+        try {
+            net.sf.okapi.common.LocaleId localeId =
                 net.sf.okapi.common.LocaleId.fromString(locale);
-        IFilterWriter writer = filter.createFilterWriter();
-        writer.setOptions(localeId, getOutputEncoding());
 
-        if (requireFileOutput) {
-            writeTranslatedFileWithFileOutput(output, originalFile,
+            IFilterWriter writer = filter.createFilterWriter();
+            writer.setOptions(localeId, getOutputEncoding());
+
+            if (requireFileOutput) {
+                writeTranslatedFileWithFileOutput(output, originalFile,
                     translations, localeId, writer, params);
-        } else {
-            writer.setOutput(output);
-            generateTranslatedFile(originalFile, translations, localeId,
+            } else {
+                writer.setOutput(output);
+                generateTranslatedFile(originalFile, translations, localeId,
                     writer, params);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new FileFormatAdapterException(
+                "Unable to generate translated file", e);
         }
     }
 

@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.faces.application.FacesMessage;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -922,7 +923,7 @@ public class VersionHomeAction extends AbstractSortAction implements
                         "uploaded file did not pass virus scan");
             }
             filePersistService.persistRawDocumentContentFromFile(rawDocument,
-                    tempFile);
+                    tempFile, FilenameUtils.getExtension(fileName));
             documentDAO.addRawDocument(document, rawDocument);
             documentDAO.flush();
         }
