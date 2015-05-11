@@ -26,6 +26,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -48,6 +49,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -295,7 +298,6 @@ public class BasePage extends CorePage {
     }
 
     public void clickWhenTabEnabled(final WebElement tab) {
-        String msg = "Clickable tab: " + tab;
         waitForPageSilence();
         clickElement(tab);
     }
@@ -314,22 +316,79 @@ public class BasePage extends CorePage {
     }
 
     /**
-     * Convenience function for clicking elements
+     * Convenience function for clicking elements.  Removes obstructing
+     * elements, scrolls the item into view and clicks it when it is ready.
      * @param findby
      */
     public void clickElement(By findby) {
-        /*scrollIntoView(readyElement(findby));
-        waitForAMoment().withMessage("clickable: " + findby.toString()).until(
-                ExpectedConditions.elementToBeClickable(findby));
-        readyElement(findby).click();*/
         clickElement(readyElement(findby));
     }
 
     public void clickElement(final WebElement element) {
+        removeNotifications();
+        waitForNotificationsGone();
         scrollIntoView(element);
         waitForAMoment().withMessage("clickable: " + element.toString()).until(
                 ExpectedConditions.elementToBeClickable(element));
         element.click();
+    }
+
+    /**
+     * Remove any visible notifications
+     */
+    public void removeNotifications() {
+        @SuppressWarnings("unchecked")
+        List<WebElement> notifications = (List<WebElement>) getExecutor()
+                .executeScript("return (typeof $ == 'undefined') ?  [] : " +
+                        "$('a.message__remove').toArray()");
+        if (notifications.isEmpty()) {
+            return;
+        }
+        log.info("Closing {} notifications", notifications.size());
+        for (WebElement notification : notifications) {
+            try {
+                notification.click();
+            } catch (WebDriverException exc) {
+                log.info("Missed a notification X click");
+            }
+        }
+        // Finally, forcibly un-is-active the message container - for speed
+        String script = "return (typeof $ == 'undefined') ?  [] : " +
+                "$('ul.message--global').toArray()";
+        @SuppressWarnings("unchecked")
+        List<WebElement> messageBoxes = ((List<WebElement>) getExecutor()
+                .executeScript(script));
+        for (WebElement messageBox : messageBoxes) {
+            getExecutor().executeScript(
+                    "arguments[0].setAttribute('class', arguments[1]);",
+                    messageBox,
+                    messageBox.getAttribute("class").replace("is-active", ""));
+        }
+    }
+
+    /**
+     * Wait for the notifications box to go. Assumes test has dealt with
+     * removing it, or is waiting for it to time out.
+     */
+    public void waitForNotificationsGone() {
+        final String script = "return (typeof $ == 'undefined') ?  [] : " +
+                "$('ul.message--global').toArray()";
+        final String message = "Waiting for notifications box to go";
+        waitForAMoment().withMessage(message).until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                @SuppressWarnings("unchecked")
+                List<WebElement> boxes = (List<WebElement>) getExecutor()
+                        .executeScript(script);
+                for (WebElement box : boxes) {
+                    if (box.isDisplayed()) {
+                        log.info(message);
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
     }
 
 }
