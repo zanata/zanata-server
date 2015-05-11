@@ -75,6 +75,10 @@ public class AbstractPage {
         return driver;
     }
 
+    public JavascriptExecutor getExecutor() {
+        return (JavascriptExecutor) getDriver();
+    }
+
     public String getUrl() {
         return driver.getCurrentUrl();
     }
@@ -85,17 +89,6 @@ public class AbstractPage {
 
     public FluentWait<WebDriver> waitForAMoment() {
         return ajaxWaitForSec;
-    }
-
-    /**
-     * Wait for all necessary elements to be available on page.
-     * @param elementBys
-     *            selenium search criteria for locating elements
-     */
-    public void waitForPage(List<By> elementBys) {
-        for (final By by : elementBys) {
-            waitForElementExists(by);
-        }
     }
 
     public Alert switchToAlert() {
@@ -239,8 +232,9 @@ public class AbstractPage {
         waitForAMoment().withMessage("Loader indicator").until(new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {
-                List<WebElement> loaders = driver
-                        .findElements(By.className("js-loader"));
+
+                List<WebElement> loaders = (List<WebElement>) getExecutor()
+                        .executeScript("return (typeof $ == 'undefined') ?  [] : $('.js-loader')");
                 for (WebElement loader : loaders) {
                     if (loader.getAttribute("class").contains("is-active")) {
                         log.info("Wait for loader finished");
