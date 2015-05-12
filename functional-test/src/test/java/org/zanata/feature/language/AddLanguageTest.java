@@ -98,7 +98,6 @@ public class AddLanguageTest extends ZanataTestCase {
                 .goToProject("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
-                .expectLocaleListVisible()
                 .getEnabledLocaleList();
 
         assertThat(enabledLocaleList)
@@ -140,17 +139,11 @@ public class AddLanguageTest extends ZanataTestCase {
                 .goToProjects()
                 .goToProject("about fedora")
                 .gotoSettingsTab()
-                .gotoSettingsLanguagesTab()
-                .expectLocaleListVisible()
-                .getEnabledLocaleList();
+                .gotoSettingsLanguagesTab();
         List<String> enabledLocaleList = projectLanguagesTab.getEnabledLocaleList();
-        List<String> disabledLocaleList = projectLanguagesTab.getDisabledLocaleList();
 
         assertThat(enabledLocaleList)
                 .doesNotContain(language)
-                .as("The language is disabled by default");
-        assertThat(disabledLocaleList)
-                .contains(language)
                 .as("The language is disabled by default");
     }
 

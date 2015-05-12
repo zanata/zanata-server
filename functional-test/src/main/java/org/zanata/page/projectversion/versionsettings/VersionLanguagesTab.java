@@ -25,6 +25,7 @@ import com.google.common.base.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.zanata.page.projectversion.VersionBasePage;
 import org.zanata.util.LanguageList;
 
@@ -82,11 +83,6 @@ public class VersionLanguagesTab extends VersionBasePage {
         return LanguageList.getListedLocales(waitForWebElement(activeLocales));
     }
 
-    private List<WebElement> getEnabledLocaleListElement() {
-        return readyElement(languagesSettingForm)
-                .findElements(By.xpath(".//ul/li[@class='reveal--list-item']"));
-    }
-
     public VersionLanguagesTab expectLanguagesContains(String language) {
         log.info("Wait for languages contains {}", language);
         waitForPageSilence();
@@ -113,7 +109,7 @@ public class VersionLanguagesTab extends VersionBasePage {
 
     public VersionLanguagesTab enterSearchLanguage(String localeQuery) {
         log.info("Enter language search {}", localeQuery);
-        waitForWebElement(disabledLocalesFilter).sendKeys(localeQuery);
+        readyElement(disabledLocalesFilter).sendKeys(localeQuery);
         return new VersionLanguagesTab(getDriver());
     }
 

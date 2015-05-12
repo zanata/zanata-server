@@ -22,14 +22,11 @@ package org.zanata.page.languages;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.codec.language.bm.Languages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
-import org.zanata.util.TableRow;
-import org.zanata.util.WebElementUtil;
-
+import org.zanata.page.administration.AddLanguagePage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +37,7 @@ import java.util.List;
 public class LanguagesPage extends BasePage {
 
     private By moreActions = By.id("more-actions");
-
     private By addLanguageLink = By.linkText("Add New Language");
-
     private By enabledByDefaultLabel = By.className("label");
 
     public LanguagesPage(WebDriver driver) {
@@ -90,13 +85,13 @@ public class LanguagesPage extends BasePage {
 
     public LanguagesPage clickMoreActions() {
         log.info("Click More Actions dropdown");
-        waitForWebElement(moreActions).click();
+        readyElement(moreActions).click();
         return new LanguagesPage(getDriver());
     }
 
     public AddLanguagePage addNewLanguage() {
         log.info("Click Add New Language");
-        waitForWebElement(addLanguageLink).click();
+        readyElement(addLanguageLink).click();
         return new AddLanguagePage(getDriver());
     }
 

@@ -38,12 +38,6 @@ public class ContactTeamPage extends BasePage {
         super(driver);
     }
 
-    public ContactTeamPage enterSubject(String subject) {
-        log.info("Enter subject {}", subject);
-        readyElement(subjectField).sendKeys(subject);
-        return new ContactTeamPage(getDriver());
-    }
-
     public ContactTeamPage enterMessage(String message) {
         log.info("Enter message {}", message);
         readyElement(messageField).sendKeys(message);

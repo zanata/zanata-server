@@ -57,7 +57,7 @@ public class ProjectLanguagesTab extends ProjectBasePage {
      */
     public List<String> getEnabledLocaleList() {
         log.info("Query enabled locales");
-        return LanguageList.getListedLocales(waitForWebElement(activeLocales));
+        return LanguageList.getListedLocales(readyElement(activeLocales));
     }
 
     public ProjectLanguagesTab expectEnabledLocaleListCount(final int count) {
@@ -70,19 +70,6 @@ public class ProjectLanguagesTab extends ProjectBasePage {
         return new ProjectLanguagesTab(getDriver());
     }
 
-    private List<WebElement> getEnabledLocaleListElement() {
-        return readyElement(settingsLanguagesForm)
-                .findElement(By.className("list--slat"))
-                .findElements(By.className("reveal--list-item"));
-    }
-
-    public ProjectLanguagesTab waitForLocaleListVisible() {
-        log.info("Wait for locale list visible");
-        waitForPageSilence();
-        readyElement(existingElement(settingsLanguagesForm), By.className("list--slat"));
-        return new ProjectLanguagesTab(getDriver());
-    }
-
     /**
      * Enter text into the language search field
      * @param languageQuery text to search for
@@ -90,7 +77,7 @@ public class ProjectLanguagesTab extends ProjectBasePage {
      */
     public ProjectLanguagesTab enterSearchLanguage(String languageQuery) {
         log.info("Enter language search {}", languageQuery);
-        waitForWebElement(disabledLocalesFilter).sendKeys(languageQuery);
+        readyElement(disabledLocalesFilter).sendKeys(languageQuery);
         return new ProjectLanguagesTab(getDriver());
     }
 

@@ -91,6 +91,7 @@ public class UploadTest extends ZanataTestCase {
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     @Category(BasicAcceptanceTest.class)
+    @Ignore("Error in system path")
     public void uploadedDocumentIsInFilesystem() {
         File originalFile =
                 testFileGenerator.generateTestFileWithContent(

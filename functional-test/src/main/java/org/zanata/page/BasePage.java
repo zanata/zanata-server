@@ -160,7 +160,7 @@ public class BasePage extends CorePage {
     public boolean hasLoggedIn() {
         log.info("Query user is logged in");
         waitForPageSilence();
-        List<WebElement> avatar = getDriver().findElements(BY_USER_AVATAR);
+        List<WebElement> avatar = getDriver().findElements(userAvatar);
         return avatar.size() > 0;
     }
 
