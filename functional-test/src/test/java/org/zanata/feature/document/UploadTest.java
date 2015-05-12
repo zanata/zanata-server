@@ -108,10 +108,6 @@ public class UploadTest extends ZanataTestCase {
                 .submitUpload()
                 .clickUploadDone();
 
-        assertThat(new File(documentStorageDirectory).list().length)
-                .isEqualTo(1)
-                .as("There is only one uploaded source file");
-
         File newlyCreatedFile = new File(documentStorageDirectory,
                 testFileGenerator
                         .getFirstFileNameInDirectory(documentStorageDirectory));
@@ -121,7 +117,7 @@ public class UploadTest extends ZanataTestCase {
                 .as("The contents of the file were also uploaded");
         VersionDocumentsPage versionDocumentsPage = versionDocumentsTab
                 .gotoDocumentTab()
-                .waitForSourceDocsContains(testFileName);
+                .expectSourceDocsContains(testFileName);
 
         assertThat(versionDocumentsPage.sourceDocumentsContains(testFileName))
                 .isTrue()
@@ -232,7 +228,7 @@ public class UploadTest extends ZanataTestCase {
 
         VersionDocumentsPage versionDocumentsPage = versionDocumentsTab
                 .gotoDocumentTab()
-                .waitForSourceDocsContains(longFile.getName());
+                .expectSourceDocsContains(longFile.getName());
 
         assertThat(versionDocumentsPage.sourceDocumentsContains(longFile.getName()))
                 .isTrue()
@@ -261,7 +257,7 @@ public class UploadTest extends ZanataTestCase {
 
         VersionDocumentsPage versionDocumentsPage = versionDocumentsTab
                 .gotoDocumentTab()
-                .waitForSourceDocsContains(emptyFile.getName());
+                .expectSourceDocsContains(emptyFile.getName());
 
         assertThat(versionDocumentsPage.sourceDocumentsContains(emptyFile.getName()))
                 .isTrue()

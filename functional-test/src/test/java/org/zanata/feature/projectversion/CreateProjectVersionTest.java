@@ -39,6 +39,8 @@ import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.ProjectWorkFlow;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -88,7 +90,8 @@ public class CreateProjectVersionTest extends ZanataTestCase {
                 .inputVersionId("");
         createVersionPage.defocus(createVersionPage.projectVersionID);
 
-        assertThat(createVersionPage.getErrors())
+        List<String> errors = createVersionPage.getErrors();
+        assertThat(errors)
                 .contains("value is required")
                 .as("The empty value is rejected");
     }
@@ -119,7 +122,7 @@ public class CreateProjectVersionTest extends ZanataTestCase {
 
         createVersionPage = createVersionPage.inputVersionId("_C_");
         createVersionPage.defocus(createVersionPage.projectVersionID);
-        createVersionPage = createVersionPage.waitForNumErrors(1);
+        createVersionPage = createVersionPage.expectNumErrors(1);
 
         assertThat(createVersionPage.expectError(
                     CreateVersionPage.VALIDATION_ERROR))
@@ -128,7 +131,7 @@ public class CreateProjectVersionTest extends ZanataTestCase {
 
         createVersionPage = createVersionPage.inputVersionId("A-B_C");
         createVersionPage.defocus(createVersionPage.projectVersionID);
-        createVersionPage = createVersionPage.waitForNumErrors(0);
+        createVersionPage = createVersionPage.expectNumErrors(0);
 
         assertThat(createVersionPage.getErrors())
                 .doesNotContain(CreateVersionPage.VALIDATION_ERROR)
@@ -151,7 +154,7 @@ public class CreateProjectVersionTest extends ZanataTestCase {
         ProjectVersionsPage projectVersionsPage = new ProjectWorkFlow()
                 .createNewProjectVersion(projectName, "alpha")
                 .clickProjectLink(projectName);
-        projectVersionsPage.waitForDisplayedVersions(1);
+        projectVersionsPage.expectDisplayedVersions(1);
 
         assertThat(projectVersionsPage.getNumberOfDisplayedVersions())
                 .isEqualTo(1)
@@ -160,7 +163,7 @@ public class CreateProjectVersionTest extends ZanataTestCase {
         projectVersionsPage = new ProjectWorkFlow()
                 .createNewProjectVersion("version nums", "bravo")
                 .clickProjectLink(projectName);
-        projectVersionsPage.waitForDisplayedVersions(2);
+        projectVersionsPage.expectDisplayedVersions(2);
 
         assertThat(projectVersionsPage.getNumberOfDisplayedVersions())
                 .isEqualTo(2)

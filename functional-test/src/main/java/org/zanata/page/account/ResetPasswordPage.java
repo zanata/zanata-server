@@ -42,32 +42,32 @@ public class ResetPasswordPage extends BasePage {
 
     public ResetPasswordPage enterUserName(String username) {
         log.info("Enter username {}", username);
-        waitForWebElement(usernameField).sendKeys(username);
+        readyElement(usernameField).sendKeys(username);
         return new ResetPasswordPage(getDriver());
     }
 
     public ResetPasswordPage enterEmail(String email) {
         log.info("Enter email {}", email);
-        waitForWebElement(emailField).sendKeys(email);
+        readyElement(emailField).sendKeys(email);
         return new ResetPasswordPage(getDriver());
     }
 
     public ResetPasswordPage clearFields() {
         log.info("Clear fields");
-        waitForWebElement(usernameField).clear();
-        waitForWebElement(emailField).clear();
+        readyElement(usernameField).clear();
+        readyElement(emailField).clear();
         return new ResetPasswordPage(getDriver());
     }
 
     public ResetPasswordPage resetPassword() {
         log.info("Click Submit");
-        waitForWebElement(submitButton).click();
+        readyElement(submitButton).click();
         return new ResetPasswordPage(getDriver());
     }
 
     public ResetPasswordPage resetFailure() {
         log.info("Click Submit");
-        waitForWebElement(submitButton).click();
+        readyElement(submitButton).click();
         return new ResetPasswordPage(getDriver());
     }
 }

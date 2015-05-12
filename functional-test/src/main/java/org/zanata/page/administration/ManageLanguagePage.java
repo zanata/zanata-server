@@ -48,13 +48,13 @@ public class ManageLanguagePage extends BasePage {
 
     public ManageLanguagePage clickMoreActions() {
         log.info("Click More Actions dropdown");
-        waitForWebElement(moreActions).click();
+        readyElement(moreActions).click();
         return new ManageLanguagePage(getDriver());
     }
 
     public AddLanguagePage addNewLanguage() {
         log.info("Click Add New Language");
-        waitForWebElement(addLanguageButton).click();
+        readyElement(addLanguageButton).click();
         return new AddLanguagePage(getDriver());
     }
 
@@ -66,14 +66,18 @@ public class ManageLanguagePage extends BasePage {
     }
 
     public ManageLanguagePage clickOptions(String localeId) {
-        findRowByLocale(localeId).findElement(By.className("dropdown__toggle"))
+        readyElement(findRowByLocale(localeId), By.className("dropdown__toggle"))
                 .click();
         return new ManageLanguagePage(getDriver());
     }
 
     public ManageLanguagePage enableLanguageByDefault(String localeId) {
         log.info("Click to enable {}", localeId);
-        findRowByLocale(localeId).findElement(enableByDefault).click();
+        if (findRowByLocale(localeId).findElements(disableByDefault).size() > 0) {
+            log.warn("Language already enabled!");
+            return new ManageLanguagePage(getDriver());
+        }
+        readyElement(findRowByLocale(localeId), enableByDefault).click();
         switchToAlert().accept();
         return new ManageLanguagePage(getDriver());
     }
@@ -110,7 +114,7 @@ public class ManageLanguagePage extends BasePage {
     }
 
     private List<WebElement> getRows() {
-        return waitForWebElement(waitForElementExists(By.id("languageForm")),
+        return readyElement(existingElement(By.id("languageForm")),
                 By.className("list--stats"))
                 .findElements(By.className("list__item--actionable"));
     }

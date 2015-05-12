@@ -33,6 +33,8 @@ import org.zanata.util.WebElementUtil;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * This class represents the project version settings tab for languages.
  *
@@ -56,22 +58,18 @@ public class VersionLanguagesTab extends VersionBasePage {
      */
     public VersionLanguagesTab clickInheritCheckbox() {
         log.info("Click Inherit check box");
-        waitForWebElement(waitForWebElement(languagesSettingForm),
+        readyElement(readyElement(languagesSettingForm),
                 By.className("form__checkbox"))
                 .click();
         return new VersionLanguagesTab(getDriver());
     }
 
-    public VersionLanguagesTab waitForLocaleListVisible() {
+    public VersionLanguagesTab expectLocaleListVisible() {
         log.info("Wait for locale list visible");
-        waitForAMoment().until(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return waitForWebElement(languagesSettingForm)
-                        .findElement(By.className("list--slat"))
-                        .isDisplayed();
-            }
-        });
+        waitForPageSilence();
+        WebElement el = readyElement(languagesSettingForm)
+                .findElement(By.className("list--slat"));
+        assertThat(el.isDisplayed()).as("displayed").isTrue();
         return new VersionLanguagesTab(getDriver());
     }
 
@@ -92,30 +90,16 @@ public class VersionLanguagesTab extends VersionBasePage {
     }
 
     private List<WebElement> getEnabledLocaleListElement() {
-        return waitForWebElement(languagesSettingForm)
+        return readyElement(languagesSettingForm)
                 .findElements(By.xpath(".//ul/li[@class='reveal--list-item']"));
     }
 
-    public VersionLanguagesTab waitForLanguagesContains(String language) {
+    public VersionLanguagesTab expectLanguagesContains(String language) {
         log.info("Wait for languages contains {}", language);
-        waitForLanguageEntryExpected(language, true);
+        waitForPageSilence();
+        assertThat(getEnabledLocaleList()).as("enabled locales list").contains(
+                language);
         return new VersionLanguagesTab(getDriver());
-    }
-
-    public VersionLanguagesTab waitForLanguagesNotContains(String language) {
-        log.info("Wait for languages does not contain {}", language);
-        waitForLanguageEntryExpected(language, false);
-        return new VersionLanguagesTab(getDriver());
-    }
-
-    private void waitForLanguageEntryExpected(final String language,
-                                              final boolean exists) {
-        waitForAMoment().until(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return getEnabledLocaleList().contains(language) == exists;
-            }
-        });
     }
 
     public VersionLanguagesTab enterSearchLanguage(String localeQuery) {

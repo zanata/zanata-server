@@ -30,7 +30,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.zanata.page.utility.HomePage;
 import org.zanata.util.WebElementUtil;
 
@@ -62,7 +61,7 @@ public class CorePage extends AbstractPage {
     public HomePage goToHomePage() {
         log.info("Click Zanata home icon");
         scrollToTop();
-        waitForWebElement(homeLink).click();
+        readyElement(homeLink).click();
         return new HomePage(getDriver());
     }
 
@@ -139,7 +138,7 @@ public class CorePage extends AbstractPage {
 
     public String getNotificationMessage() {
         log.info("Query notification message");
-        List<WebElement> messages = waitForElementExists(By.id("messages"))
+        List<WebElement> messages = existingElement(By.id("messages"))
                         .findElements(By.tagName("li"));
         return messages.size() > 0 ? messages.get(0).getText() : "";
     }
@@ -202,7 +201,8 @@ public class CorePage extends AbstractPage {
     public void defocus(By elementBy) {
         log.info("Force unfocus");
         WebElement element = getDriver().findElement(elementBy);
-        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].blur()", element);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].blur()",
+                element);
         waitForPageSilence();
     }
 

@@ -31,8 +31,9 @@ import org.openqa.selenium.WebElement;
 import org.zanata.page.projects.ProjectBasePage;
 import org.zanata.util.WebElementUtil;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * This class represents the project language settings page.
@@ -77,21 +78,15 @@ public class ProjectLanguagesTab extends ProjectBasePage {
     }
 
     private List<WebElement> getEnabledLocaleListElement() {
-        return waitForWebElement(settingsLanguagesForm)
+        return readyElement(settingsLanguagesForm)
                 .findElement(By.className("list--slat"))
                 .findElements(By.className("reveal--list-item"));
     }
 
-    public ProjectLanguagesTab waitForLocaleListVisible() {
+    public ProjectLanguagesTab expectLocaleListVisible() {
         log.info("Wait for locale list visible");
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver driver) {
-                return driver.findElement(settingsLanguagesForm)
-                        .findElement(By.className("list--slat"))
-                        .isDisplayed();
-            }
-        });
+        waitForPageSilence();
+        readyElement(existingElement(settingsLanguagesForm), By.className("list--slat"));
         return new ProjectLanguagesTab(getDriver());
     }
 
