@@ -168,7 +168,7 @@ public class SourceDocumentUpload {
                 parsePotFile(potStream, id, uploadForm);
             } else {
                 throw new ZanataServiceException("Unsupported source file: "
-                    + tempFile.get().getName());
+                    + id.getDocId());
             }
 
             if (tempFile.isPresent()) {

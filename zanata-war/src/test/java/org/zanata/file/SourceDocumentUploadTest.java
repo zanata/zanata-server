@@ -121,7 +121,7 @@ public class SourceDocumentUploadTest extends DocumentUploadTest {
         when(
                 translationFileService.parseUpdatedAdapterDocumentFile(
                         Matchers.<URI> any(), eq(conf.docId),
-                        eq(conf.fileType), paramCaptor.capture(), Optional.<String>absent())).thenReturn(
+                        eq(conf.fileType), paramCaptor.capture(), Matchers.<Optional> any())).thenReturn(
             document);
         when(
                 documentService.saveDocument(eq(conf.projectSlug),
@@ -166,7 +166,7 @@ public class SourceDocumentUploadTest extends DocumentUploadTest {
         mockRequiredServices();
         response = sourceUpload.tryUploadSourceFile(conf.id, conf.uploadForm);
         assertResponseHasStatus(BAD_REQUEST);
-        assertResponseHasErrorMessage("The type \"txt\" specified in form parameter 'type' is not "
+        assertResponseHasErrorMessage("The type \"PLAIN_TEXT\" specified in form parameter 'type' is not "
                 + "valid for a source file on this server.");
     }
 
