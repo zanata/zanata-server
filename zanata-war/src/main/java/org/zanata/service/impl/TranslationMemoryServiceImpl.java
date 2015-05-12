@@ -305,9 +305,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                     Lists.newArrayList(textFlowTarget.getContents());
             TransMemoryResultItem.MatchType matchType =
                     fromContentState(textFlowTarget.getState());
-            addOrIncrementResultItem(transMemoryQuery, matchesMap, match,
-                    matchType, textFlowContents, targetContents, textFlowTarget
-                            .getTextFlow().getId(), "");
+            TransMemoryResultItem item = createOrGetResultItem(transMemoryQuery, matchesMap, match, matchType,
+                    textFlowContents, targetContents);
+            addTextFlowTargetToResultMatches(textFlowTarget, item);
         } else if (entity instanceof TransMemoryUnit) {
             TransMemoryUnit transUnit = (TransMemoryUnit) entity;
             ArrayList<String> sourceContents =
@@ -316,10 +316,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             ArrayList<String> targetContents =
                     Lists.newArrayList(transUnit.getTransUnitVariants()
                             .get(targetLocaleId.getId()).getPlainTextSegment());
-            addOrIncrementResultItem(transMemoryQuery, matchesMap, match,
-                    TransMemoryResultItem.MatchType.Imported, sourceContents,
-                    targetContents, transUnit.getId(), transUnit
-                            .getTranslationMemory().getSlug());
+            TransMemoryResultItem item = createOrGetResultItem(transMemoryQuery, matchesMap, match,
+                    TransMemoryResultItem.MatchType.Imported, sourceContents, targetContents);
+            addTransMemoryUnitToResultMatches(item, transUnit);
         }
     }
 
@@ -370,11 +369,16 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         }
     }
 
-    private void addOrIncrementResultItem(TransMemoryQuery transMemoryQuery,
-            Map<TMKey, TransMemoryResultItem> matchesMap, Object[] match,
-            TransMemoryResultItem.MatchType matchType,
-            ArrayList<String> sourceContents, ArrayList<String> targetContents,
-            Long sourceId, String origin) {
+    /**
+     * Look up the result item for the given source and target contents.
+     *
+     * If no item is found, a new one is added to the map and returned.
+     *
+     * @return the item for the given source and target contents, which may be newly created.
+     */
+    private TransMemoryResultItem createOrGetResultItem(TransMemoryQuery transMemoryQuery, Map<TMKey,
+            TransMemoryResultItem> matchesMap, Object[] match, TransMemoryResultItem.MatchType matchType,
+                                                        ArrayList<String> sourceContents, ArrayList<String> targetContents) {
         TMKey key = new TMKey(sourceContents, targetContents);
         TransMemoryResultItem item = matchesMap.get(key);
         if (item == null) {
@@ -387,9 +391,29 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                             matchType, score, percent);
             matchesMap.put(key, item);
         }
+        return item;
+    }
+
+    private void addTransMemoryUnitToResultMatches(TransMemoryResultItem item, TransMemoryUnit transMemoryUnit) {
         item.incMatchCount();
-        item.addOrigin(origin);
-        item.addSourceId(sourceId);
+        item.addOrigin(transMemoryUnit.getTranslationMemory().getSlug());
+    }
+
+    private void addTextFlowTargetToResultMatches(HTextFlowTarget textFlowTarget, TransMemoryResultItem item) {
+        item.incMatchCount();
+
+        // TODO change sourceId to include type, then include the id of imported matches
+        item.addSourceId(textFlowTarget.getTextFlow().getId());
+
+        // Workaround: since Imported does not have a details view in the current editor,
+        //             I am treating it as the lowest priority, so will be overwritten by
+        //             other match types.
+        //             A better fix is to have the DTO hold all the match types so the editor
+        //             can show them in whatever way is most sensible.
+        ContentState state = textFlowTarget.getState();
+        if (state == ContentState.Approved || item.getMatchType() == TransMemoryResultItem.MatchType.Imported) {
+            item.setMatchType(fromContentState(state));
+        }
     }
 
     /**
