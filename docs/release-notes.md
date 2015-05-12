@@ -31,11 +31,15 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1165939](https://bugzilla.redhat.com/show_bug.cgi?id=1165939) - The Groups actions panel should not show for a normal user
 * [1205512](https://bugzilla.redhat.com/show_bug.cgi?id=1205512) - Run validation in editor document list is disabled when it should not be
 * [903964](https://bugzilla.redhat.com/show_bug.cgi?id=903964) - Error message not propagated to client when push fails
+* [1218002](https://bugzilla.redhat.com/show_bug.cgi?id=1218002) - Disable Google Open Id option
 
 -----------------------
 
 <h5>New Features</h5>
 * [1133989](https://bugzilla.redhat.com/show_bug.cgi?id=1133989) - Copy translations from existing version.
+* [1186972](https://bugzilla.redhat.com/show_bug.cgi?id=1186972) - Server-side file conversion and REST service.
+    * File project type now supports XLIFF, PROPERTIES, PROPERTIES_UTF8, and GETTEXT
+* [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs 
 *
 
 ## 3.6.3
