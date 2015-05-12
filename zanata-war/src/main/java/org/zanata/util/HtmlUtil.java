@@ -35,9 +35,12 @@ import static org.owasp.html.Sanitizers.LINKS;
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 public class HtmlUtil {
-    // workaround for https://code.google.com/p/owasp-java-html-sanitizer/issues/detail?id=31
+    // add em as workaround for https://code.google.com/p/owasp-java-html-sanitizer/issues/detail?id=31
     public static final PolicyFactory MORE_FORMATTING = new HtmlPolicyBuilder()
-            .allowElements("em").toFactory();
+            .allowElements("em", "pre",
+                    "table", "th", "tr", "td",
+                    "caption", "colgroup", "col",
+                    "thead", "tbody", "tfoot").toFactory();
     // Don't allow CSS styles, scripts, etc
     public static final PolicyFactory SANITIZER =
             BLOCKS.and(FORMATTING).and(MORE_FORMATTING).and(IMAGES).and(LINKS);
