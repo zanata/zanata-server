@@ -452,6 +452,12 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-adapter-properties</artifactId>
         <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.zanata</groupId>
