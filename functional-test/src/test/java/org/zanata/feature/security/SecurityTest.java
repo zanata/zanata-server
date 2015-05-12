@@ -120,8 +120,8 @@ public class SecurityTest extends ZanataTestCase {
                 .enterUserNameEmail("nosuchuser@nosuchdomain.com")
                 .resetFailure();
 
-        assertThat(
-                resetPasswordPage.getNotificationMessage())
+        assertThat(resetPasswordPage.getNotificationMessage(By
+                        .id("passwordResetRequestForm:messages")))
                 .isEqualTo("No account found.")
                 .as("A no such account message is displayed");
     }
