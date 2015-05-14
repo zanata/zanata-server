@@ -1,3 +1,5 @@
+// Implementation copied from Seam 2.3.1
+
 package org.zanata.seam.framework;
 
 /**
@@ -6,11 +8,6 @@ package org.zanata.seam.framework;
  * @param <T>
  *            the persistence context class (eg. Session or EntityManager)
  * @author Gavin King
- */
-/*
- * Implementation copied from Seam 2.3.1
- *
- * in preparation for a migration to a different framework.
  */
 public abstract class PersistenceController<T> extends Controller {
     private transient T persistenceContext;

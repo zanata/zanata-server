@@ -1,3 +1,5 @@
+// Implementation copied from Seam 2.3.1
+
 package org.zanata.seam.framework;
 
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
@@ -21,11 +23,6 @@ import org.jboss.seam.framework.EntityNotFoundException;
  * intermediate Seam component.
  *
  * @author Gavin King
- */
-/*
- * Implementation copied from Seam 2.3.1
- *
- * in preparation for a migration to a different framework.
  */
 @Scope(ScopeType.CONVERSATION)
 public abstract class Home<T, E> extends MutableController<T> {

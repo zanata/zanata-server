@@ -1,3 +1,5 @@
+// Implementation copied from Seam 2.3.1
+
 package org.zanata.seam.framework;
 
 import java.io.Serializable;
@@ -8,11 +10,6 @@ import org.jboss.seam.core.Mutable;
  * Base class for controllers which implement the Mutable interface.
  *
  * @author Gavin King
- */
-/*
- * Implementation copied from Seam 2.3.1
- *
- * in preparation for a migration to a different framework.
  */
 public abstract class MutableController<T>
         extends PersistenceController<T>

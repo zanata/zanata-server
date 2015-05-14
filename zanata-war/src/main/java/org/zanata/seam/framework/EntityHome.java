@@ -1,3 +1,5 @@
+// Implementation copied from Seam 2.3.1
+
 package org.zanata.seam.framework;
 
 import javax.persistence.EntityManager;
@@ -11,11 +13,6 @@ import org.jboss.seam.transaction.Transaction;
  * Base class for Home objects of JPA entities.
  *
  * @author Gavin King
- */
-/*
- * Implementation copied from Seam 3.2.1
- *
- * in preparation for a migration to a different framework.
  */
 public class EntityHome<E> extends Home<EntityManager, E> {
     private static final long serialVersionUID = -3140094990727574632L;

@@ -1,3 +1,5 @@
+// Implementation copied from Seam 2.3.1
+
 package org.zanata.seam.framework;
 
 import java.io.Serializable;
@@ -36,11 +38,6 @@ import org.jboss.seam.web.Session;
  * controller.
  *
  * @author Gavin King
- */
-/*
- * Implementation copied from Seam 3.2.1
- *
- * in preparation for a migration to a different framework.
  */
 public abstract class Controller implements Serializable {
 
