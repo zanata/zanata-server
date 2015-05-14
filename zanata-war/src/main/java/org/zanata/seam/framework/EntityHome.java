@@ -13,10 +13,7 @@ import org.jboss.seam.transaction.Transaction;
  * @author Gavin King
  */
 /*
- * Implementation copied from:
- *
- * https://source.jboss.org/browse/Seam/branches/community/Seam_2_3/jboss-seam/src
- * /main/java/org/jboss/seam/framework/EntityHome.java?r=14108
+ * Implementation copied from Seam 3.2.1
  *
  * in preparation for a migration to a different framework.
  */

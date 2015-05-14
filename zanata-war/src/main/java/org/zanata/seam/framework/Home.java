@@ -23,10 +23,7 @@ import org.jboss.seam.framework.EntityNotFoundException;
  * @author Gavin King
  */
 /*
- * Implementation copied from:
- *
- * https://source.jboss.org/browse/Seam/branches/community/Seam_2_3/jboss-seam/src
- * /main/java/org/jboss/seam/framework/Home.java?r=14108
+ * Implementation copied from Seam 2.3.1
  *
  * in preparation for a migration to a different framework.
  */

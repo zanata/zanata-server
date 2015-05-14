@@ -8,10 +8,7 @@ package org.zanata.seam.framework;
  * @author Gavin King
  */
 /*
- * Implementation copied from:
- *
- * https://source.jboss.org/browse/Seam/branches/community/Seam_2_3/jboss-seam/src
- * /main/java/org/jboss/seam/framework/PersistenceController.java?r=14108
+ * Implementation copied from Seam 2.3.1
  *
  * in preparation for a migration to a different framework.
  */
