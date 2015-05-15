@@ -68,7 +68,7 @@ public class MigrateSeamTextToCommonMark implements CustomTaskChange {
 
     private static final String unsuccessfulConversionComment =
             "<small><i>The following text failed conversion from Seam Text " +
-                    "to CommonMark by Zanata.  It may require editing to" +
+                    "to CommonMark by Zanata.  It may require editing to " +
                     "fix formatting.</i></small>\n\n";
 
     private static String stripNonBreakSpace(String text) {
