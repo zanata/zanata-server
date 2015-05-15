@@ -62,12 +62,12 @@ public class CorePage extends AbstractPage {
     public HomePage goToHomePage() {
         log.info("Click Zanata home icon");
         scrollToTop();
-        readyElement(homeLink).click();
+        clickElement(homeLink);
         return new HomePage(getDriver());
     }
 
     protected void clickAndCheckErrors(WebElement button) {
-        button.click();
+        clickElement(button);
         List<String> errors = getErrors();
         if (!errors.isEmpty()) {
             throw new RuntimeException(Joiner.on(";").join(errors));
@@ -75,7 +75,7 @@ public class CorePage extends AbstractPage {
     }
 
     protected void clickAndExpectErrors(WebElement button) {
-        button.click();
+        clickElement(button);
         refreshPageUntil(this, new Predicate<WebDriver>() {
             @Override
             public boolean apply(WebDriver input) {

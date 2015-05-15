@@ -85,7 +85,7 @@ public class BasePage extends CorePage {
 
     public DashboardBasePage goToMyDashboard() {
         log.info("Click Dashboard menu link");
-        readyElement(userAvatar).click();
+        clickElement(userAvatar);
         clickLinkAfterAnimation(BY_DASHBOARD_LINK);
         return new DashboardBasePage(getDriver());
     }
@@ -101,18 +101,9 @@ public class BasePage extends CorePage {
         slightPause();
         if (!menuItem.isDisplayed()) {
             // screen is too small the menu become dropdown
-            readyElement(existingElement(By.id("nav-main")), By.tagName("a")).click();
+            clickElement(readyElement(existingElement(By.id("nav-main")), By.tagName("a")));
         }
-        waitForAMoment().withMessage("displayed: " + menuItem).until(
-                new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver input) {
-                        return menuItem.isDisplayed();
-                    }
-                });
-        waitForAMoment().withMessage("clickable: " + menuItem).until(
-                ExpectedConditions.elementToBeClickable(menuItem));
-        menuItem.click();
+        clickElement(menuItem);
     }
 
     public VersionGroupsPage goToGroups() {
@@ -318,7 +309,7 @@ public class BasePage extends CorePage {
                                 return null;
                             }
                         });
-        searchItem.click();
+        clickElement(searchItem);
     }
 
     public void clickWhenTabEnabled(final WebElement tab) {
