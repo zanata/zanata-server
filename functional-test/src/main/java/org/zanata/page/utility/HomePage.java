@@ -43,12 +43,12 @@ public class HomePage extends BasePage {
 
     public EditHomeContentPage goToEditPageContent() {
         log.info("Click Edit Page Content");
-        waitForWebElement(editPageContentButton).click();
+        readyElement(editPageContentButton).click();
         return new EditHomeContentPage(getDriver());
     }
 
     public String getMainBodyContent() {
         log.info("Query homepage content");
-        return waitForWebElement(mainBodyContent).getText();
+        return readyElement(mainBodyContent).getText();
     }
 }

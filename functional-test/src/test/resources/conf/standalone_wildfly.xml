@@ -102,6 +102,14 @@
       <logger category="org.apache.tomcat.util.modeler">
         <level name="WARN"/>
       </logger>
+      <!-- JDBC connection allocation/release will be logged to server.log -->
+      <logger category="org.hibernate.engine.jdbc.internal.LogicalConnectionImpl">
+        <level name="DEBUG"/>
+      </logger>
+      <!-- More info about JDBC connections will be logged to server.log -->
+      <logger category="org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl">
+        <level name="DEBUG"/>
+      </logger>
       <logger category="org.jboss.as.config">
         <level name="DEBUG"/>
       </logger>
@@ -117,6 +125,10 @@
       <logger category="org.openid4java.server.RealmVerifier">
         <level name="ERROR"/>
       </logger>
+      <!-- Enable if you want to log all HTTP requests to server.log: -->
+      <!--<logger category="org.zanata.requests">-->
+      <!--<level name="DEBUG"/>-->
+      <!--</logger>-->
       <logger category="sun.rmi">
         <level name="WARN"/>
       </logger>
@@ -268,7 +280,6 @@
       -->
       <cache-container name="zanata" default-cache="default"
         jndi-name="java:jboss/infinispan/container/zanata"
-        start="EAGER"
         module="org.jboss.as.clustering.web.infinispan">
         <local-cache name="default">
           <transaction mode="NON_XA" />
@@ -306,7 +317,7 @@
     <subsystem xmlns="urn:jboss:domain:jpa:1.1">
       <jpa default-datasource="" default-extended-persistence-inheritance="DEEP"/>
     </subsystem>
-    <subsystem xmlns="urn:jboss:domain:jsf:1.0" default-jsf-impl-slot="mojarra-2.1.28"/>
+    <subsystem xmlns="urn:jboss:domain:jsf:1.0" default-jsf-impl-slot="mojarra-2.1.29-01"/>
     <subsystem xmlns="urn:jboss:domain:mail:2.0">
       <mail-session name="default" jndi-name="java:jboss/mail/Default">
         <smtp-server outbound-socket-binding-ref="mail-smtp"/>

@@ -2,7 +2,7 @@
 
 <h5>Infrastructure Changes</h5>
 
-* Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](configuration/infinispan) section for more information.
+* Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
 
 * This release adds a one-time migration of some data, which can cause a timeout during server startup. This applies to
 all plain text and libreoffice formats, so is only a concern for servers that are upgrading from an earlier version and
@@ -44,8 +44,24 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 
 ## 3.6.3
 
+<h5>Infrastructure Changes</h5>
+
+Zanata now requires JBoss EAP 6.4.0.GA or later (recommended), or WildFly version 9.0.0.CR1 or later.
+
+The WildFly modules for Hibernate and Mojarra have been updated, to 4.2.19.Final and 2.1.29-01 respectively.  The Zanata installer includes the updated modules.
+
+The Zanata installer's configuration now enables "connection debugging" to prevent any potential JDBC connection leaks.
+
+-----------------------
+
+<h5>New Features</h5>
+* Added Liquibase logging (as part of [1207575](https://bugzilla.redhat.com/show_bug.cgi?id=1207575))
+
+-----------------------
+
 <h5>Bugfixes</h5>
 * [1207575](https://bugzilla.redhat.com/show_bug.cgi?id=1207575) - Zanata still creates MyISAM (not InnoDB) tables in some cases
+* [1197955](https://bugzilla.redhat.com/show_bug.cgi?id=1197955) - [WildFly] IllegalStateException: UT000010: Session not found
 
 -----------------------
 
@@ -91,7 +107,7 @@ As it is a _prototype_, there are bound to be some bugs and sub-optimal behaviou
 
 <h5>Infrastructure Changes</h5>
 
-Zanata now requires JMS to be configured in standalone.xml in order to queue up some messages going out of the system. For instructions on how to do this, please [See Here](configuration/jms-messaging)
+Zanata now requires JMS to be configured in standalone.xml in order to queue up some messages going out of the system. For instructions on how to do this, please [See Here](user-guide/system-admin/configuration/jms-messaging)
 
 <h5>Drupal Plugin</h5>
 * [1078009](https://bugzilla.redhat.com/show_bug.cgi?id=1078009) -  PROTOTYPE: Drupal plugin to push and pull Zanata translations
