@@ -22,10 +22,8 @@ package org.zanata.page;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -143,17 +141,18 @@ public enum WebDriverFactory {
         if (eventListener == null && ScreenshotDirForTest.isScreenshotEnabled()) {
             eventListener  = new TestEventForScreenshotListener(driver);
         }
-        enableScreenshots();
+        driver = enableScreenshots();
         eventListener.updateTestID(testName);
     }
 
     private WebDriver enableScreenshots() {
         log.debug("Enabling screenshot module...");
-        return EventFiringWebDriver.class.cast(driver).register(eventListener);
+        return new EventFiringWebDriver(driver).register(eventListener);
     }
 
     public void unregisterScreenshot() {
-        EventFiringWebDriver.class.cast(driver).unregister(eventListener);
+        log.debug("Deregistering screenshot module...");
+        driver = new EventFiringWebDriver(driver).unregister(eventListener);
     }
 
     private WebDriver createPlainDriver() {
