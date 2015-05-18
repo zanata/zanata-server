@@ -41,6 +41,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
     * File project type now supports XLIFF, PROPERTIES, PROPERTIES_UTF8, and GETTEXT
 * [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs 
 * [1209670](https://bugzilla.redhat.com/show_bug.cgi?id=1209670) - Improve review statistics - approved vs translated
+* [1211134](https://bugzilla.redhat.com/show_bug.cgi?id=1211134) - Review should be enabled in editor by default
 
 ## 3.6.3
 
