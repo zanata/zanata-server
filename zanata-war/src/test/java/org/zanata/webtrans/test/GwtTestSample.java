@@ -1,6 +1,6 @@
 package org.zanata.webtrans.test;
 
-import junit.framework.Assert;
+import org.assertj.core.api.Assertions;
 
 import com.google.gwt.junit.client.GWTTestCase;
 
@@ -16,6 +16,6 @@ public class GwtTestSample extends GWTTestCase {
         // avoided wherever possible in favour of plain JUnit tests.
         // Only code that requires a DOM should be tested with these
         // (e.g. most view classes).
-        Assert.assertTrue(true);
+        Assertions.assertThat(true).isTrue();
     }
 }

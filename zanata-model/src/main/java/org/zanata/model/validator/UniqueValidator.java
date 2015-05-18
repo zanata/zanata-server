@@ -62,7 +62,7 @@ public class UniqueValidator implements ConstraintValidator<Unique, Object> {
                 session.getSessionFactory().getClassMetadata(value.getClass());
         String idName = metadata.getIdentifierPropertyName();
         // FIXME was EntityMode.POJO
-        Serializable id = metadata.getIdentifier(value);
+        Serializable id = metadata.getIdentifier(value, null);
 
         DetachedCriteria criteria = DetachedCriteria.forClass(value.getClass());
         for (String property : parameters.properties()) {
