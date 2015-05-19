@@ -248,6 +248,9 @@ public class EditorOptionsPresenter extends
                     public void onSuccess(LoadOptionsResult result) {
                         userOptionsService.getConfigHolder().setState(
                                 result.getConfiguration());
+                        eventBus.fireEvent(new NotificationEvent(
+                            NotificationEvent.Severity.Warning,
+                            messages.loadedUserOptions()));
                         refreshOptions();
                     }
                 });
@@ -258,6 +261,9 @@ public class EditorOptionsPresenter extends
         userOptionsService.loadEditorDefaultOptions();
         changeReferenceLangPresenter.loadDefaultOption();
         refreshOptions();
+        eventBus.fireEvent(new NotificationEvent(
+            NotificationEvent.Severity.Warning,
+            messages.restoreToDefaultOptions()));
     }
 
     @Override
@@ -271,8 +277,5 @@ public class EditorOptionsPresenter extends
     private void refreshOptions() {
         display.setOptionsState(userOptionsService.getConfigHolder().getState());
         eventBus.fireEvent(UserConfigChangeEvent.EDITOR_CONFIG_CHANGE_EVENT);
-        eventBus.fireEvent(new NotificationEvent(
-                NotificationEvent.Severity.Warning,
-            messages.loadUserEditorOptions()));
     }
 }

@@ -114,7 +114,7 @@ public class DocumentListOptionsPresenter extends
     @Override
     public void persistOptionChange() {
         userOptionsService.persistOptionChange(userOptionsService
-                .getDocumentListOptions());
+            .getDocumentListOptions());
     }
 
     @Override
@@ -141,7 +141,7 @@ public class DocumentListOptionsPresenter extends
                         eventBus.fireEvent(UserConfigChangeEvent.DOCUMENT_CONFIG_CHANGE_EVENT);
                         eventBus.fireEvent(new NotificationEvent(
                                 NotificationEvent.Severity.Warning,
-                                "Loaded user options"));
+                                messages.loadedUserOptions()));
                     }
                 });
     }
@@ -154,6 +154,6 @@ public class DocumentListOptionsPresenter extends
         eventBus.fireEvent(UserConfigChangeEvent.DOCUMENT_CONFIG_CHANGE_EVENT);
         eventBus.fireEvent(new NotificationEvent(
                 NotificationEvent.Severity.Warning,
-                messages.loadUserEditorOptions()));
+                messages.restoreToDefaultOptions()));
     }
 }
