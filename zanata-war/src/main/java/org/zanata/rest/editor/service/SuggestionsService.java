@@ -22,6 +22,7 @@ package org.zanata.rest.editor.service;
 
 import com.google.common.base.Joiner;
 import com.googlecode.totallylazy.Either;
+import com.googlecode.totallylazy.Option;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -32,6 +33,7 @@ import org.zanata.rest.editor.service.resource.SuggestionsResource;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TranslationMemoryService;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
+import org.zanata.webtrans.shared.rpc.HasSearchType;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.Path;
@@ -61,26 +63,27 @@ public class SuggestionsService implements SuggestionsResource {
     @Override
     public Response query(List<String> query, String sourceLocaleString, String transLocaleString, String searchTypeString) {
 
-        Either<SearchType, Response> searchTypeOrErrorResponse = getSearchType(searchTypeString);
-        if (searchTypeOrErrorResponse.isRight()) {
-            return searchTypeOrErrorResponse.right();
+        Option<SearchType> searchType = getSearchType(searchTypeString);
+        if (searchType.isEmpty()) {
+            return unknownSearchTypeResponse(searchTypeString);
         }
-        SearchType searchType = searchTypeOrErrorResponse.left();
 
-        Either<LocaleId, Response> sourceLocaleOrError = getSourceLocale(sourceLocaleString);
-        if (sourceLocaleOrError.isRight()) {
-            return sourceLocaleOrError.right();
+        Option<LocaleId> sourceLocale = getLocale(sourceLocaleString);
+        if (sourceLocale.isEmpty()) {
+            return Response.status(BAD_REQUEST)
+                    .entity(String.format("Unrecognized source locale: \"%s\"", sourceLocaleString))
+                    .build();
         }
-        LocaleId sourceLocale = sourceLocaleOrError.left();
 
-        Either<LocaleId, Response> transLocaleOrError = getTransLocale(transLocaleString);
-        if (transLocaleOrError.isRight()) {
-            return transLocaleOrError.right();
+        Option<LocaleId> transLocale = getLocale(transLocaleString);
+        if (transLocale.isEmpty()) {
+            return Response.status(BAD_REQUEST)
+                    .entity(String.format("Unrecognized translation locale: \"%s\"", transLocaleString))
+                    .build();
         }
-        LocaleId transLocale = transLocaleOrError.left();
 
-        List<Suggestion> suggestions = transMemoryService.searchTransMemoryWithDetails(transLocale, sourceLocale,
-                new TransMemoryQuery(query, searchType));
+        List<Suggestion> suggestions = transMemoryService.searchTransMemoryWithDetails(transLocale.get(),
+                sourceLocale.get(), new TransMemoryQuery(query, searchType.get()));
 
         // Wrap in generic entity to prevent type erasure, so that an
         // appropriate MessageBodyReader can be used.
@@ -90,53 +93,44 @@ public class SuggestionsService implements SuggestionsResource {
         return Response.ok(entity).build();
     }
 
-    private Either<LocaleId, Response> getSourceLocale(String localeString) {
-        final String errorMessage = String.format("Unrecognized source locale: \"%s\"", localeString);
-        return getLocaleOrError(localeString, errorMessage);
-    }
-
-    private Either<LocaleId, Response> getTransLocale(String localeString) {
-        final String errorMessage = String.format("Unrecognized translation locale: \"%s\"", localeString);
-        return getLocaleOrError(localeString, errorMessage);
-    }
-
     /**
-     * Try to get a valid locale for a given string. If the string does not match a supported
-     * locale, generate an error response with the given error message.
+     * Try to get a valid locale for a given string.
      *
      * @param localeString used to look up the locale
-     * @param errorMessage error to include in the response if an error response is returned.
-     * @return a LocaleId if the given string matches one, otherwise an error response.
+     * @return a wrapped LocaleId if the given string matches one, otherwise an empty option.
      */
-    private Either<LocaleId, Response> getLocaleOrError(final String localeString, final String errorMessage) {
-        final Response.ResponseBuilder errorResponse = Response.status(BAD_REQUEST).entity(errorMessage);
-
-        if (localeString == null) {
-            return Either.right(errorResponse.build());
-        }
+    private Option<LocaleId> getLocale(String localeString) {
         @Nullable HLocale hLocale = localeService.getByLocaleId(localeString);
         if (hLocale == null) {
-            return Either.right(errorResponse.build());
+            return Option.none();
         }
-        return Either.left(hLocale.getLocaleId());
+        return Option.option(hLocale.getLocaleId());
     }
 
-
     /**
-     * Try to get a valid search type constant for a given string. If the string does not
-     * match a valid search type, generate an error response with appropriate error message.
+     * Try to get a valid search type constant for a given string.
      *
      * @param searchTypeString used to look up the search type. Case insensitive.
-     * @return A SearchType if the given string matches one, otherwise an error response.
+     * @return A wrapped SearchType if the given string matches one, otherwise an empty option.
      */
-    private Either<SearchType, Response> getSearchType(String searchTypeString) {
+    private Option<SearchType> getSearchType(String searchTypeString) {
         for (SearchType type : SearchType.values()) {
             if (type.name().equalsIgnoreCase(searchTypeString)) {
-                return Either.left(type);
+                return Option.option(type);
             }
         }
+        return Option.none();
+    }
+
+    /**
+     * Generate and build an error response that reports the search type being unrecognized.
+     *
+     * @param searchTypeString shown in the error message as the unrecognized string
+     * @return a built Response.
+     */
+    private Response unknownSearchTypeResponse(String searchTypeString) {
         String error = String.format("Unrecognized search type: \"%s\". Expected one of: %s",
                 searchTypeString, SEARCH_TYPES);
-        return Either.right(Response.status(BAD_REQUEST).entity(error).build());
+        return Response.status(BAD_REQUEST).entity(error).build();
     }
 }
