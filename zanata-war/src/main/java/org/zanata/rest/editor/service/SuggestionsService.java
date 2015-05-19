@@ -111,15 +111,14 @@ public class SuggestionsService implements SuggestionsResource {
     private Either<LocaleId, Response> getLocaleOrError(final String localeString, final String errorMessage) {
         final Response.ResponseBuilder errorResponse = Response.status(BAD_REQUEST).entity(errorMessage);
 
-        try {
-            @Nullable HLocale hLocale = localeService.getByLocaleId(localeString);
-            if (hLocale == null) {
-                return Either.right(errorResponse.build());
-            }
-            return Either.left(hLocale.getLocaleId());
-        } catch (IllegalArgumentException e) {
+        if (localeString == null) {
             return Either.right(errorResponse.build());
         }
+        @Nullable HLocale hLocale = localeService.getByLocaleId(localeString);
+        if (hLocale == null) {
+            return Either.right(errorResponse.build());
+        }
+        return Either.left(hLocale.getLocaleId());
     }
 
 

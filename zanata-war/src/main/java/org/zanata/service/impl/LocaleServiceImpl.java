@@ -264,7 +264,14 @@ public class LocaleServiceImpl implements LocaleService {
 
     @Override
     public HLocale getByLocaleId(@Nonnull String localeId) {
-        return this.getByLocaleId(new LocaleId(localeId));
+        final LocaleId locale;
+        try {
+            locale = new LocaleId(localeId);
+        } catch (IllegalArgumentException e) {
+            log.warn("Tried to look up a locale with a malformed id", e);
+            return null;
+        }
+        return this.getByLocaleId(locale);
     }
 
     @Override
