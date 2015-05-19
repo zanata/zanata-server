@@ -91,11 +91,13 @@ public class SuggestionsService implements SuggestionsResource {
     }
 
     private Either<LocaleId, Response> getSourceLocale(String localeString) {
-        return getLocaleOrError(localeString, "Unrecognized source locale: \"%s\"");
+        final String errorMessage = String.format("Unrecognized source locale: \"%s\"", localeString);
+        return getLocaleOrError(localeString, errorMessage);
     }
 
     private Either<LocaleId, Response> getTransLocale(String localeString) {
-        return getLocaleOrError(localeString, "Unrecognized translation locale: \"%s\"");
+        final String errorMessage = String.format("Unrecognized translation locale: \"%s\"", localeString);
+        return getLocaleOrError(localeString, errorMessage);
     }
 
     /**
@@ -103,11 +105,10 @@ public class SuggestionsService implements SuggestionsResource {
      * locale, generate an error response with the given error message.
      *
      * @param localeString used to look up the locale
-     * @param errorFormat error to display. Include "%s" to substitute the locale string.
+     * @param errorMessage error to include in the response if an error response is returned.
      * @return a LocaleId if the given string matches one, otherwise an error response.
      */
-    private Either<LocaleId, Response> getLocaleOrError(final String localeString, final String errorFormat) {
-        final String errorMessage = String.format(errorFormat, localeString);
+    private Either<LocaleId, Response> getLocaleOrError(final String localeString, final String errorMessage) {
         final Response.ResponseBuilder errorResponse = Response.status(BAD_REQUEST).entity(errorMessage);
 
         try {
