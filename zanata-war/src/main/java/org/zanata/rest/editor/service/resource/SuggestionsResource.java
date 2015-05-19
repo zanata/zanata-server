@@ -34,7 +34,7 @@ import java.util.List;
 @Consumes({ MediaType.APPLICATION_JSON })
 public interface SuggestionsResource {
 
-    public static final String SERVICE_PATH = "/suggestions/{sourceLocale}/{transLocale}";
+    public static final String SERVICE_PATH = "/suggestions";
 
     /**
      * Retrieves a list of suggestions for a a query in the body of the request.
@@ -64,7 +64,7 @@ public interface SuggestionsResource {
     @POST
     @Produces({ MediaTypes.APPLICATION_ZANATA_SUGGESTIONS_JSON, MediaType.APPLICATION_JSON })
     public Response query(List<String> query,
-                          @PathParam("sourceLocale") String sourceLocale,
-                          @PathParam("transLocale") String transLocale,
+                          @QueryParam("from") String sourceLocale,
+                          @QueryParam("to") String transLocale,
                           @QueryParam("searchType") @DefaultValue("FUZZY_PLURAL") String searchType);
 }
