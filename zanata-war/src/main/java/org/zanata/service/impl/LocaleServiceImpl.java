@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -263,6 +264,7 @@ public class LocaleServiceImpl implements LocaleService {
     }
 
     @Override
+    @Nullable
     public HLocale getByLocaleId(@Nonnull String localeId) {
         final LocaleId locale;
         try {
