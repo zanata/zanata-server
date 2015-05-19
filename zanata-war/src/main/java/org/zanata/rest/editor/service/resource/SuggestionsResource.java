@@ -62,7 +62,7 @@ public interface SuggestionsResource {
      *         the server while performing this operation.
      */
     @POST
-    @Produces({ MediaTypes.APPLICATION_ZANATA_SUGGESTIONS, MediaType.APPLICATION_JSON })
+    @Produces({ MediaTypes.APPLICATION_ZANATA_SUGGESTIONS_JSON, MediaType.APPLICATION_JSON })
     public Response query(List<String> query,
                           @PathParam("sourceLocale") String sourceLocale,
                           @PathParam("transLocale") String transLocale,
