@@ -34,6 +34,7 @@ import org.zanata.webtrans.client.events.ReloadUserConfigUIHandler;
 import org.zanata.webtrans.client.events.UserConfigChangeEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEventHandler;
+import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.client.rpc.CachingDispatchAsync;
 import org.zanata.webtrans.client.service.UserOptionsService;
 import org.zanata.webtrans.client.view.EditorOptionsDisplay;
@@ -57,9 +58,11 @@ public class EditorOptionsPresenter extends
     private final UserWorkspaceContext userWorkspaceContext;
     private final CachingDispatchAsync dispatcher;
     private final UserOptionsService userOptionsService;
+    private final WebTransMessages messages;
 
     @Inject
-    public EditorOptionsPresenter(EditorOptionsDisplay display,
+    public EditorOptionsPresenter(WebTransMessages messages,
+            EditorOptionsDisplay display,
             EventBus eventBus, UserWorkspaceContext userWorkspaceContext,
             ValidationOptionsPresenter validationDetailsPresenter,
             ChangeReferenceLangPresenter changeReferenceLangPresenter,
@@ -71,6 +74,7 @@ public class EditorOptionsPresenter extends
         this.userWorkspaceContext = userWorkspaceContext;
         this.dispatcher = dispatcher;
         this.userOptionsService = userOptionsService;
+        this.messages = messages;
         display.setListener(this);
     }
 
@@ -269,6 +273,6 @@ public class EditorOptionsPresenter extends
         eventBus.fireEvent(UserConfigChangeEvent.EDITOR_CONFIG_CHANGE_EVENT);
         eventBus.fireEvent(new NotificationEvent(
                 NotificationEvent.Severity.Warning,
-                "Loaded default editor options."));
+            messages.loadUserEditorOptions()));
     }
 }
