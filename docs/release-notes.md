@@ -43,6 +43,9 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs 
 * [1209670](https://bugzilla.redhat.com/show_bug.cgi?id=1209670) - Improve review statistics - approved vs translated
 * [1211134](https://bugzilla.redhat.com/show_bug.cgi?id=1211134) - Review should be enabled in editor by default
+* [1198433](https://bugzilla.redhat.com/show_bug.cgi?id=1198433) - Replace Seam Text with CommonMark Markdown
+    * User text on the home page and project "about" pages will now be rendered as CommonMark.
+    * Existing Seam Text will be migrated to CommonMark where possible.
 
 ## 3.6.3
 
