@@ -127,17 +127,17 @@ public class SuggestionsService implements SuggestionsResource {
      * Try to get a valid search type constant for a given string. If the string does not
      * match a valid search type, generate an error response with appropriate error message.
      *
-     * @param searchTypeString used to look up the search type.
+     * @param searchTypeString used to look up the search type. Case insensitive.
      * @return A SearchType if the given string matches one, otherwise an error response.
      */
     private Either<SearchType, Response> getSearchType(String searchTypeString) {
-        try {
-            SearchType searchType = SearchType.valueOf(searchTypeString);
-            return Either.left(searchType);
-        } catch (IllegalArgumentException e) {
-            String error = String.format("Unrecognized search type: \"%s\". Expected one of: %s",
-                    searchTypeString, SEARCH_TYPES);
-            return Either.right(Response.status(BAD_REQUEST).entity(error).build());
+        for (SearchType type : SearchType.values()) {
+            if (type.name().equalsIgnoreCase(searchTypeString)) {
+                return Either.left(type);
+            }
         }
+        String error = String.format("Unrecognized search type: \"%s\". Expected one of: %s",
+                searchTypeString, SEARCH_TYPES);
+        return Either.right(Response.status(BAD_REQUEST).entity(error).build());
     }
 }
