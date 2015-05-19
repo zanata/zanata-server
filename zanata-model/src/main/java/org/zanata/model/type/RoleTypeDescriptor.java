@@ -21,15 +21,13 @@
 
 package org.zanata.model.type;
 
-import org.hibernate.type.descriptor.WrapperOptions;
-import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
 import org.zanata.model.HAccountRole;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class RoleTypeDescriptor extends
-    AbstractTypeDescriptor<HAccountRole.RoleType> {
+    InitialEnumDescriptor<HAccountRole.RoleType> {
 
     public static final RoleTypeDescriptor INSTANCE =
         new RoleTypeDescriptor();
@@ -40,39 +38,12 @@ public class RoleTypeDescriptor extends
     }
 
     @Override
-    public String toString(HAccountRole.RoleType value) {
-        return String.valueOf((value).getInitial());
+    char getInitial(HAccountRole.RoleType value) {
+        return value.getInitial();
     }
 
     @Override
-    public HAccountRole.RoleType fromString(String string) {
-        if (string == null) {
-            return null;
-        } else {
-            return HAccountRole.RoleType.valueOf(string.charAt(0));
-        }
-    }
-
-    @Override
-    public <X> X unwrap(HAccountRole.RoleType value, Class<X> type,
-        WrapperOptions options) {
-        if (value == null) {
-            return null;
-        }
-        if (String.class.isAssignableFrom(type)) {
-            return (X) String.valueOf((value).getInitial());
-        }
-        throw unknownUnwrap(type);
-    }
-
-    @Override
-    public <X> HAccountRole.RoleType wrap(X value, WrapperOptions options) {
-        if (value == null) {
-            return null;
-        }
-        if (String.class.isInstance(value)) {
-            return HAccountRole.RoleType.valueOf(((String) value).charAt(0));
-        }
-        throw unknownWrap(value.getClass());
+    HAccountRole.RoleType valueOf(String string) {
+        return HAccountRole.RoleType.valueOf(string.charAt(0));
     }
 }

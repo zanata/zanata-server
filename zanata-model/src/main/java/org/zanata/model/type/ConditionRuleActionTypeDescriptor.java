@@ -21,16 +21,13 @@
 
 package org.zanata.model.type;
 
-import org.hibernate.type.descriptor.WrapperOptions;
-import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
-import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HCopyTransOptions.ConditionRuleAction;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class ConditionRuleActionTypeDescriptor extends
-    AbstractTypeDescriptor<ConditionRuleAction> {
+    InitialEnumDescriptor<ConditionRuleAction> {
 
     public static final ConditionRuleActionTypeDescriptor INSTANCE =
         new ConditionRuleActionTypeDescriptor();
@@ -40,40 +37,12 @@ public class ConditionRuleActionTypeDescriptor extends
     }
 
     @Override
-    public String toString(HCopyTransOptions.ConditionRuleAction value) {
-        return String.valueOf((value).getInitial());
+    char getInitial(ConditionRuleAction value) {
+        return value.getInitial();
     }
 
     @Override
-    public HCopyTransOptions.ConditionRuleAction fromString(String string) {
-        if (string == null) {
-            return null;
-        } else {
-            return ConditionRuleAction.valueOf(string.charAt(0));
-        }
-    }
-
-    @Override
-    public <X> X unwrap(HCopyTransOptions.ConditionRuleAction value,
-        Class<X> type, WrapperOptions options) {
-        if (value == null) {
-            return null;
-        }
-        if (String.class.isAssignableFrom(type)) {
-            return (X) String.valueOf((value).getInitial());
-        }
-        throw unknownUnwrap(type);
-    }
-
-    @Override
-    public <X> HCopyTransOptions.ConditionRuleAction wrap(X value,
-        WrapperOptions options) {
-        if (value == null) {
-            return null;
-        }
-        if (String.class.isInstance(value)) {
-            return ConditionRuleAction.valueOf(((String) value).charAt(0));
-        }
-        throw unknownWrap(value.getClass());
+    ConditionRuleAction valueOf(String string) {
+        return ConditionRuleAction.valueOf(string.charAt(0));
     }
 }
