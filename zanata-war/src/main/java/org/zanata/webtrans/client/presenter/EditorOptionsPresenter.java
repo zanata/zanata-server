@@ -34,6 +34,7 @@ import org.zanata.webtrans.client.events.ReloadUserConfigUIHandler;
 import org.zanata.webtrans.client.events.UserConfigChangeEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEventHandler;
+import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.client.rpc.CachingDispatchAsync;
 import org.zanata.webtrans.client.service.UserOptionsService;
 import org.zanata.webtrans.client.view.EditorOptionsDisplay;
@@ -57,9 +58,11 @@ public class EditorOptionsPresenter extends
     private final UserWorkspaceContext userWorkspaceContext;
     private final CachingDispatchAsync dispatcher;
     private final UserOptionsService userOptionsService;
+    private final WebTransMessages messages;
 
     @Inject
-    public EditorOptionsPresenter(EditorOptionsDisplay display,
+    public EditorOptionsPresenter(WebTransMessages messages,
+            EditorOptionsDisplay display,
             EventBus eventBus, UserWorkspaceContext userWorkspaceContext,
             ValidationOptionsPresenter validationDetailsPresenter,
             ChangeReferenceLangPresenter changeReferenceLangPresenter,
@@ -71,6 +74,7 @@ public class EditorOptionsPresenter extends
         this.userWorkspaceContext = userWorkspaceContext;
         this.dispatcher = dispatcher;
         this.userOptionsService = userOptionsService;
+        this.messages = messages;
         display.setListener(this);
     }
 
@@ -94,10 +98,16 @@ public class EditorOptionsPresenter extends
 
     @Override
     public void onWorkspaceContextUpdated(WorkspaceContextUpdateEvent event) {
+        boolean oldReadOnly = userWorkspaceContext.hasReadOnlyAccess();
         userWorkspaceContext.setProjectActive(event.isProjectActive());
         userWorkspaceContext.getWorkspaceContext().getWorkspaceId()
                 .getProjectIterationId().setProjectType(event.getProjectType());
-        setReadOnly(userWorkspaceContext.hasReadOnlyAccess());
+        if (oldReadOnly != userWorkspaceContext.hasReadOnlyAccess()) {
+            // because this may cause a force redraw event which triggers an auto-save of pending change.
+            // see org.zanata.webtrans.client.view.EditorOptionsView.setOptionsState()
+            // see onUseCodeMirrorOptionChanged()
+            setReadOnly(userWorkspaceContext.hasReadOnlyAccess());
+        }
     }
 
     private void setReadOnly(boolean readOnly) {
@@ -122,10 +132,8 @@ public class EditorOptionsPresenter extends
 
     @Override
     public void onPageSizeClick(int pageSize) {
-        if (userOptionsService.getConfigHolder().getState().getEditorPageSize() != pageSize) {
-            userOptionsService.getConfigHolder().setEditorPageSize(pageSize);
-            eventBus.fireEvent(new EditorPageSizeChangeEvent(pageSize));
-        }
+        userOptionsService.getConfigHolder().setEditorPageSize(pageSize);
+        eventBus.fireEvent(new EditorPageSizeChangeEvent(pageSize));
     }
 
     @Override
@@ -197,8 +205,8 @@ public class EditorOptionsPresenter extends
     }
 
     @Override
-    public void onUseCodeMirrorOptionChanged(Boolean useCodeMirrorChkValue) {
-        if (userOptionsService.getConfigHolder().getState()
+    public void onUseCodeMirrorOptionChanged(Boolean useCodeMirrorChkValue, boolean force) {
+        if (force || userOptionsService.getConfigHolder().getState()
                 .isUseCodeMirrorEditor() != useCodeMirrorChkValue) {
             userOptionsService.getConfigHolder().setUseCodeMirrorEditor(
                     useCodeMirrorChkValue);
@@ -240,6 +248,9 @@ public class EditorOptionsPresenter extends
                     public void onSuccess(LoadOptionsResult result) {
                         userOptionsService.getConfigHolder().setState(
                                 result.getConfiguration());
+                        eventBus.fireEvent(new NotificationEvent(
+                            NotificationEvent.Severity.Warning,
+                            messages.loadedUserOptions()));
                         refreshOptions();
                     }
                 });
@@ -248,7 +259,11 @@ public class EditorOptionsPresenter extends
     @Override
     public void loadDefaultOptions() {
         userOptionsService.loadEditorDefaultOptions();
+        changeReferenceLangPresenter.loadDefaultOption();
         refreshOptions();
+        eventBus.fireEvent(new NotificationEvent(
+            NotificationEvent.Severity.Warning,
+            messages.restoreToDefaultOptions()));
     }
 
     @Override
@@ -262,8 +277,5 @@ public class EditorOptionsPresenter extends
     private void refreshOptions() {
         display.setOptionsState(userOptionsService.getConfigHolder().getState());
         eventBus.fireEvent(UserConfigChangeEvent.EDITOR_CONFIG_CHANGE_EVENT);
-        eventBus.fireEvent(new NotificationEvent(
-                NotificationEvent.Severity.Warning,
-                "Loaded default editor options."));
     }
 }

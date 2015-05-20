@@ -25,9 +25,11 @@
     <cobertura.total-branch-rate>30</cobertura.total-branch-rate>
     <cobertura.halt.failure>false</cobertura.halt.failure>
     <delombok.dir>${project.build.directory}/delombok/org/zanata</delombok.dir>
+    <!-- failsafe.version needs to be at least 2.19-20150503.223005-71: -->
     <failsafe.rerunFailingTestsCount>3</failsafe.rerunFailingTestsCount>
     <failsafe.useFile>false</failsafe.useFile>
     <surefire.useFile>false</surefire.useFile>
+    <surefire.version>2.19-SNAPSHOT</surefire.version>
     <!-- Applies to surefire and failsafe (if enabled) -->
     <failIfNoTests>true</failIfNoTests>
 
@@ -36,18 +38,30 @@
     <icu4j.version>50.1.1</icu4j.version>
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
     <lucene.version>3.6.2</lucene.version>
+
+    <!--
+    Not used yet.
+
+    When updating commonmark.js, please update the file commonmark-*.min.js
+    and the string jsf.project.about.markup in messages.properties.
+
+    TODO: package commonmark.js for webjars.org
+    <commonmark.spec.version>18.0</commonmark.spec.version>
+    -->
+
     <solr.version>${lucene.version}</solr.version>
     <seam.version>2.3.1.Final</seam.version>
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
+    <zanata.assets.version>7.0-SNAPSHOT</zanata.assets.version>
     <zanata.api.version>3.7.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
-    <zanata.api.compat.version>3.3.1</zanata.api.compat.version>
-    <zanata.client.version>3.3.1</zanata.client.version>
-    <zanata.common.version>3.6.0</zanata.common.version>
+    <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
+    <zanata.client.version>3.7.0-SNAPSHOT</zanata.client.version>
+    <zanata.common.version>3.6.1-SNAPSHOT</zanata.common.version>
 
-    <richfaces.version>4.5.0.Final</richfaces.version>
+    <richfaces.version>4.5.4.Final</richfaces.version>
 
     <arquillian.version>1.1.5.Final</arquillian.version>
     <shrinkwrap.api.version>1.2.2</shrinkwrap.api.version>
@@ -57,7 +71,10 @@
     <!-- see http://community.jboss.org/wiki/HibernateCompatibilityMatrix?decorator=print -->
     <!-- see also the jboss7 profile below -->
     <hibernate.scope>provided</hibernate.scope>
-    <hibernate.version>4.2.17.Final</hibernate.version>
+    <!--
+         NB: JBoss EAP 6.4.0 has 4.2.18.Final-redhat-2
+    -->
+    <hibernate.version>4.2.19.Final</hibernate.version>
     <hibernate.search.scope>compile</hibernate.search.scope>
     <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
@@ -120,6 +137,12 @@
         <groupId>org.richfaces</groupId>
         <artifactId>richfaces</artifactId>
         <version>${richfaces.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.el</groupId>
+            <artifactId>jboss-el-api_3.0_spec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -355,10 +378,27 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- Liquibase Dependencies -->
+      <!-- If the Liquibase version is being updated, please refer to
+      any changelog files that run 'on change' and make sure that they still run
+      after upgrading the version. -->
+      <dependency>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-core</artifactId>
+        <version>3.3.3</version>
+      </dependency>
+
       <dependency>
         <groupId>org.opensymphony.quartz</groupId>
         <artifactId>quartz</artifactId>
         <version>1.6.5</version>
+      </dependency>
+
+      <!-- zanata assets -->
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-assets</artifactId>
+        <version>${zanata.assets.version}</version>
       </dependency>
 
       <!-- zanata api -->
@@ -432,6 +472,22 @@
         <artifactId>zanata-adapter-glossary</artifactId>
         <version>${zanata.common.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-adapter-properties</artifactId>
+        <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-adapter-xliff</artifactId>
+        <version>${zanata.common.version}</version>
+      </dependency>
 
       <!-- zanata client -->
       <dependency>
@@ -463,6 +519,12 @@
       <dependency>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.zanata</groupId>
+        <artifactId>zanata-liquibase</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -992,6 +1054,23 @@
           </exclusion>
         </exclusions>
       </dependency>
+
+      <dependency>
+        <groupId>com.jayway.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>1.6.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -1054,6 +1133,17 @@
   </repositories>
 
   <pluginRepositories>
+    <!-- Needed for surefire/failsafe snapshots -->
+    <pluginRepository>
+      <id>apache.snapshots.https</id>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
     <pluginRepository>
       <id>jboss-public-repository-group</id>
       <name>JBoss Public Maven Repository Group</name>
@@ -1087,7 +1177,7 @@
       <plugin>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-maven-plugin</artifactId>
-        <version>2.2.0</version>
+        <version>3.6.0</version>
         <configuration>
           <srcDir>.</srcDir>
           <transDir>.</transDir>
@@ -1128,6 +1218,7 @@
                 <allowedRepository>repo.bodar.com</allowedRepository>
               </allowedRepositories>
               <allowedPluginRepositories combine.children="append">
+                <allowedPluginRepository>apache.snapshots.https</allowedPluginRepository>
                 <allowedPluginRepository>cobertura-it-maven-plugin-maven2-release</allowedPluginRepository>
                 <allowedPluginRepository>jboss-public-repository-group</allowedPluginRepository>
               </allowedPluginRepositories>
@@ -1208,7 +1299,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.18.1</version>
+          <version>${surefire.version}</version>
           <executions>
             <execution>
               <id>integration-test</id>
@@ -1390,7 +1481,7 @@
       <properties>
         <cargo.container>jboss72x</cargo.container>
         <!-- name of the top-level dir within the appserver zip -->
-        <appserver.dir.name>jboss-eap-6.3</appserver.dir.name>
+        <appserver.dir.name>jboss-eap-6.4</appserver.dir.name>
         <!-- where the appserver will be installed -->
         <appserver.home>${cargo.extract.dir}/${cargo.basename}/${appserver.dir.name}</appserver.home>
       </properties>
@@ -1407,8 +1498,10 @@
       </activation>
       <properties>
         <cargo.container>wildfly8x</cargo.container>
+        <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
-        <wildfly.version>8.1.0.Final</wildfly.version>
+        <!-- This is the server version -->
+        <wildfly.version>9.0.0.CR1</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</cargo.installation>
@@ -1418,9 +1511,9 @@
         <appserver.home>${cargo.extract.dir}/${appserver.dir.name}/${appserver.dir.name}</appserver.home>
 
         <module.wildfly.version>8.1.0.Final</module.wildfly.version>
-        <mojarra.module.version>2.1.28</mojarra.module.version>
+        <mojarra.module.version>2.1.29-01</mojarra.module.version>
         <mojarra.module.name>wildfly-${module.wildfly.version}-module-mojarra-${mojarra.module.version}.zip</mojarra.module.name>
-        <hibernate.module.version>4.2.15.Final</hibernate.module.version>
+        <hibernate.module.version>4.2.19.Final</hibernate.module.version>
         <hibernate.module.name>wildfly-${module.wildfly.version}-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
       </properties>
 
@@ -1527,6 +1620,12 @@
             <scope>test</scope>
           </dependency>
           <dependency>
+            <groupId>org.jboss.marshalling</groupId>
+            <artifactId>jboss-marshalling</artifactId>
+            <version>1.4.6.Final</version>
+            <scope>test</scope>
+          </dependency>
+          <dependency>
             <groupId>org.jboss.modules</groupId>
             <artifactId>jboss-modules</artifactId>
             <version>1.3.3.Final</version>
@@ -1597,6 +1696,7 @@
   </distributionManagement>
 
   <modules>
+    <module>zanata-liquibase</module>
     <module>zanata-model</module>
     <module>zanata-war</module>
     <module>zanata-test-war</module>

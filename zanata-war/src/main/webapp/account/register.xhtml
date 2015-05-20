@@ -12,8 +12,7 @@
 
     <div class="header__logo-only">
       <s:link view="/home.xhtml" propagation="none" id="home" tabindex="1">
-        <img src="#{applicationConfiguration.webAssetsUrl}/logo.svg"
-          alt="Zanata"/>
+        <img src="#{assets['img/logo/logo.svg']}" alt="Zanata"/>
       </s:link>
     </div>
 
@@ -118,10 +117,6 @@
                   <li class="l--push-top-half">
                     <h:commandLink action="#{loginAction.openIdLogin('Fedora')}"
                       styleClass="button--full button--fedora" value="Fedora"/>
-                  </li>
-                  <li class="l--push-top-half">
-                    <h:commandLink action="#{loginAction.openIdLogin('Google')}"
-                      styleClass="button--full button--google" value="Google"/>
                   </li>
                   <li class="l--push-top-half">
                     <h:commandLink action="#{loginAction.openIdLogin('Yahoo')}"

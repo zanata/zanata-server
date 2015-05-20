@@ -63,9 +63,6 @@ public class JndiBackedConfig implements Serializable {
             "java:global/zanata/email/default-from-address";
     private static final String KEY_DOCUMENT_FILE_STORE =
             "java:global/zanata/files/document-storage-directory";
-    private static final String KEY_WEB_ASSETS_URL_BASE =
-            "java:global/zanata/webassets/url-base";
-
     private final Map<String, String> configurationValues =
             new HashMap<String, String>();
 
@@ -167,9 +164,5 @@ public class JndiBackedConfig implements Serializable {
 
     public String getDocumentFileStorageLocation() {
         return getConfigValue(KEY_DOCUMENT_FILE_STORE);
-    }
-
-    public String getWebAssetsUrlBase() {
-        return getConfigValue(KEY_WEB_ASSETS_URL_BASE);
     }
 }

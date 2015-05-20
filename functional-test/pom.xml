@@ -12,7 +12,7 @@
   <name>functional-test</name>
 
   <properties>
-    <selenium.version>2.44.0</selenium.version>
+    <selenium.version>2.45.0</selenium.version>
 
     <!--Cargo Settings -->
     <cargo.host>localhost</cargo.host>
@@ -27,14 +27,18 @@
     <cargo.container.home>${project.build.directory}/jboss/container</cargo.container.home>
     <context.path>zanata</context.path>
 
-    <!--data source-->
-    <ds.jndi.name>zanataDatasource</ds.jndi.name>
     <!--mysql-maven-plugin will use these setup-->
     <ds.database>root</ds.database>
     <ds.username>root</ds.username>
     <ds.password>root</ds.password>
     <ds.connection.url>jdbc:mysql://localhost:${mysql.port}/${ds.database}?characterEncoding=UTF-8</ds.connection.url>
     <ds.driver.class>com.mysql.jdbc.Driver</ds.driver.class>
+
+    <!-- mysql-dist 5.5.34 is the default version, but 5.6.14 may also work.
+         mysql-dist 5.6.21 won't work due to
+         https://github.com/jcabi/jcabi-mysql-maven-plugin/issues/47
+     -->
+    <mysql.dist.version>5.5.34</mysql.dist.version>
 
     <!-- target zanata instance will be built by war overlay -->
     <zanata.test.war.name>zanata-test-${project.version}</zanata.test.war.name>
@@ -51,7 +55,7 @@
     <webdriver.type>chrome</webdriver.type>
     <webdriver.log>${project.build.directory}/webdriver.log</webdriver.log>
     <webdriver.screenshot.dir>${project.build.directory}/screenshots</webdriver.screenshot.dir>
-    <webdriver.wait>10</webdriver.wait>
+    <webdriver.wait>20</webdriver.wait>
     <googleopenid.credentials>zanata.user.1:</googleopenid.credentials>
     <!-- on jenkins, this needs to be set to empty - so that cargo can shutdown. see http://stackoverflow.com/questions/1096642/tomcat-failed-to-shutdown -->
     <cargo.debug.jvm.args>
@@ -76,12 +80,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.4</version>
+        <version>4.3.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.3.2</version>
+        <version>4.3.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -100,7 +104,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -207,24 +211,27 @@
       <version>2.4</version>
     </dependency>
 
-
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.zanata</groupId>
       <artifactId>zanata-common-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>jaxrs-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-jaxrs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>resteasy-jaxb-provider</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-      <scope>${resteasy.scope}</scope>
     </dependency>
 
     <!-- to use rest client in test -->
@@ -232,18 +239,21 @@
       <groupId>org.zanata</groupId>
       <artifactId>zanata-rest-client</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>javassist</groupId>
-          <artifactId>javassist</artifactId>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
         </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <exclusions>
         <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -251,21 +261,6 @@
       <groupId>org.zanata</groupId>
       <artifactId>zanata-common-util</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxb-provider</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
 
     <dependency>
       <groupId>org.zanata</groupId>
@@ -328,6 +323,22 @@
     </dependency>
 
     <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.objenesis</groupId>
+      <artifactId>objenesis</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>${groovy.version}</version>
@@ -358,7 +369,7 @@
         <standalone.xml.file>standalone_wildfly.xml</standalone.xml.file>
         <jndi-remote-client.groupId>org.wildfly</jndi-remote-client.groupId>
         <jndi-remote-client.artifactId>wildfly-controller-client</jndi-remote-client.artifactId>
-        <jndi-remote-client.version>${wildfly.version}</jndi-remote-client.version>
+        <jndi-remote-client.version>${wildfly.client.version}</jndi-remote-client.version>
       </properties>
       <build>
         <plugins>
@@ -477,7 +488,7 @@
                     <artifactItem>
                       <groupId>com.jcabi</groupId>
                       <artifactId>mysql-dist</artifactId>
-                      <version>5.5.34</version>
+                      <version>${mysql.dist.version}</version>
                       <classifier>${mysql.classifier}</classifier>
                       <type>zip</type>
                       <overWrite>false</overWrite>
@@ -808,10 +819,10 @@
                 <echo>-DskipArqTests : to skip Arquillian integration tests (if building zanata-war)</echo>
                 <echo />
                 <echo>Unless skipping tests, you must choose an appserver:</echo>
-                <echo>-Dappserver=jbosseap6 -Dcargo.installation=http://example.com/jbosseap632.zip -Dcargo.basename=jbosseap632</echo>
+                <echo>-Dappserver=jbosseap6 -Dcargo.installation=http://example.com/jbosseap640.zip -Dcargo.basename=jbosseap640</echo>
                 <echo>or -Dappserver=wildfly8</echo>
                 <echo>NB: cargo.basename needs to match the basename of the file given in cargo.installation.</echo>
-                <echo>For example, if cargo.installation is http://example.com/download/jboss-6.3.2.zip, cargo.basename should be jboss-6.3.2.</echo>
+                <echo>For example, if cargo.installation is http://example.com/download/jboss-6.4.0.zip, cargo.basename should be jboss-6.4.0.</echo>
                 <echo>appserver.dir.name is top-level dir inside zip.  For jbosseap6, default is jboss-eap-6.3.  Override for later versions.</echo>
                 <echo/>
                 <echo>-DallFuncTests to enable all functional tests (defaults to smoke tests)</echo>
@@ -855,7 +866,6 @@
           <usedDependencies combine.children="append">
             <usedDependency>mysql:mysql-connector-java</usedDependency>
             <usedDependency>org.codehaus.groovy:groovy-all</usedDependency>
-            <usedDependency>org.jboss.resteasy:resteasy-jaxb-provider</usedDependency>
             <usedDependency>org.projectlombok:lombok</usedDependency>
           </usedDependencies>
         </configuration>
@@ -996,3 +1006,4 @@
     </pluginManagement>
   </build>
 </project>
+

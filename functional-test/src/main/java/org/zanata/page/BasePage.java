@@ -27,9 +27,9 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.zanata.page.account.ProfilePage;
 import org.zanata.page.account.RegisterPage;
 import org.zanata.page.account.SignInPage;
 import org.zanata.page.administration.AdministrationPage;
@@ -51,6 +51,10 @@ import com.google.common.collect.Iterables;
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.workflow.BasicWorkFlow;
 
+import javax.annotation.Nullable;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * A Base Page is an extension of the Core Page, providing the navigation bar
  * and sidebar links common to most pages outside of the editor.
@@ -60,23 +64,20 @@ import org.zanata.workflow.BasicWorkFlow;
  */
 @Slf4j
 public class BasePage extends CorePage {
+
     private final By NavMenuBy = By.id("nav-main");
-
-    @FindBy(id = "projects_link")
-    private WebElement projectsLink;
-
-    @FindBy(id = "version-groups_link")
-    private WebElement groupsLink;
-
-    @FindBy(id = "languages_link")
-    private WebElement languagesLink;
-
+    private By projectsLink = By.id("projects_link");
+    private By groupsLink = By.id("version-groups_link");
+    private By languagesLink = By.id("languages_link");
+    private By glossaryLink = By.id("glossary_link");
+    private By userAvatar = By.id("user--avatar");
     private static final By BY_SIGN_IN = By.id("signin_link");
     private static final By BY_SIGN_OUT = By.id("right_menu_sign_out_link");
     private static final By BY_DASHBOARD_LINK = By.id("dashboard");
     private static final By BY_ADMINISTRATION_LINK = By.id("administration");
+    private By searchInput = By.id("projectAutocomplete-autocomplete__input");
+    private By registrationLink = By.id("register_link_internal_auth");
     private static final By contactAdminLink = By.linkText("Contact admin");
-    private static final By BY_USER_AVATAR = By.id("user--avatar");
 
     public BasePage(final WebDriver driver) {
         super(driver);
@@ -84,14 +85,14 @@ public class BasePage extends CorePage {
 
     public DashboardBasePage goToMyDashboard() {
         log.info("Click Dashboard menu link");
-        waitForWebElement(BY_USER_AVATAR).click();
+        readyElement(userAvatar).click();
         clickLinkAfterAnimation(BY_DASHBOARD_LINK);
         return new DashboardBasePage(getDriver());
     }
 
     public ProjectsPage goToProjects() {
         log.info("Click Projects");
-        clickNavMenuItem(getDriver().findElement(By.id("projects_link")));
+        clickNavMenuItem(existingElement(projectsLink));
         return new ProjectsPage(getDriver());
     }
 
@@ -100,8 +101,7 @@ public class BasePage extends CorePage {
         slightPause();
         if (!menuItem.isDisplayed()) {
             // screen is too small the menu become dropdown
-            getDriver().findElement(By.id("nav-main"))
-                    .findElement(By.tagName("a")).click();
+            readyElement(existingElement(By.id("nav-main")), By.tagName("a")).click();
         }
         waitForAMoment().withMessage("displayed: " + menuItem).until(
                 new Predicate<WebDriver>() {
@@ -110,7 +110,6 @@ public class BasePage extends CorePage {
                         return menuItem.isDisplayed();
                     }
                 });
-        // The notifications can sometimes get in the way
         waitForAMoment().withMessage("clickable: " + menuItem).until(
                 ExpectedConditions.elementToBeClickable(menuItem));
         menuItem.click();
@@ -118,67 +117,61 @@ public class BasePage extends CorePage {
 
     public VersionGroupsPage goToGroups() {
         log.info("Click Groups");
-        clickNavMenuItem(groupsLink);
+        clickNavMenuItem(existingElement(groupsLink));
         return new VersionGroupsPage(getDriver());
     }
 
     public LanguagesPage goToLanguages() {
         log.info("Click Languages");
-        clickNavMenuItem(getDriver().findElement(By.id("languages_link")));
+        clickNavMenuItem(existingElement(languagesLink));
         return new LanguagesPage(getDriver());
     }
 
     public GlossaryPage goToGlossary() {
         log.info("Click Glossary");
         // Dynamically find the link, as it is not present for every user
-        clickNavMenuItem(getDriver().findElement(By.id("glossary_link")));
+        clickNavMenuItem(existingElement(glossaryLink));
         return new GlossaryPage(getDriver());
     }
 
     public AdministrationPage goToAdministration() {
         log.info("Click Administration menu link");
-        waitForWebElement(BY_USER_AVATAR).click();
+        clickElement(userAvatar);
         clickLinkAfterAnimation(BY_ADMINISTRATION_LINK);
         return new AdministrationPage(getDriver());
     }
 
     public RegisterPage goToRegistration() {
         log.info("Click Sign Up");
-        Preconditions
-                .checkArgument(!hasLoggedIn(),
-                        "User has logged in! You should sign out or delete cookie first in your test.");
-        WebElement registerLink =
-                getDriver().findElement(By.id("register_link_internal_auth"));
-        registerLink.click();
+        Preconditions.checkArgument(!hasLoggedIn(),
+                "User has logged in! You should sign out or delete cookie " +
+                        "first in your test.");
+
+        clickElement(registrationLink);
         return new RegisterPage(getDriver());
     }
 
     public SignInPage clickSignInLink() {
         log.info("Click Log In");
-        waitForPageSilence();
-        WebElement signInLink = getDriver().findElement(BY_SIGN_IN);
-        signInLink.click();
+        clickElement(BY_SIGN_IN);
         return new SignInPage(getDriver());
     }
 
     public boolean hasLoggedIn() {
         log.info("Query user is logged in");
         waitForPageSilence();
-        List<WebElement> avatar = getDriver().findElements(BY_USER_AVATAR);
+        List<WebElement> avatar = getDriver().findElements(userAvatar);
         return avatar.size() > 0;
     }
 
     public String loggedInAs() {
         log.info("Query logged in user name");
-        waitForPageSilence();
-        return waitForWebElement(BY_USER_AVATAR)
-                .getAttribute("data-original-title");
+        return existingElement(userAvatar).getAttribute("data-original-title");
     }
 
     public HomePage logout() {
         log.info("Click Log Out");
-        scrollIntoView(waitForWebElement(BY_USER_AVATAR));
-        waitForWebElement(BY_USER_AVATAR).click();
+        clickElement(userAvatar);
         clickLinkAfterAnimation(BY_SIGN_OUT);
         //Handle RHBZ1197955
         if (getDriver().findElements(By.className("error-div")).size() > 0) {
@@ -223,8 +216,8 @@ public class BasePage extends CorePage {
     }
 
     public <P> P goToPage(String navLinkText, Class<P> pageClass) {
-        getDriver().findElement(NavMenuBy)
-                .findElement(By.linkText(navLinkText)).click();
+        readyElement(existingElement(NavMenuBy),
+                By.linkText(navLinkText)).click();
         return PageFactory.initElements(getDriver(), pageClass);
     }
 
@@ -236,8 +229,7 @@ public class BasePage extends CorePage {
      * @param locator
      */
     public void clickLinkAfterAnimation(By locator) {
-        getExecutor().executeScript("arguments[0].click();", getDriver()
-                .findElement(locator));
+        clickLinkAfterAnimation(existingElement(locator));
     }
 
     public void clickLinkAfterAnimation(WebElement element) {
@@ -246,7 +238,7 @@ public class BasePage extends CorePage {
 
     public String getHelpURL() {
         log.info("Query Help URL");
-        WebElement help_link = getDriver().findElement(By.id("help_link"));
+        WebElement help_link = existingElement(By.id("help_link"));
         return help_link.getAttribute("href");
     }
 
@@ -257,7 +249,7 @@ public class BasePage extends CorePage {
     }
 
     public BasePage enterSearch(String searchText) {
-        log.info("Enter Project search {}", searchText);
+        log.info("Enter Project/Person search {}", searchText);
         WebElementUtil.searchAutocomplete(getDriver(), "projectAutocomplete",
                 searchText);
         return new BasePage(getDriver());
@@ -265,32 +257,46 @@ public class BasePage extends CorePage {
 
     public ProjectsPage submitSearch() {
         log.info("Press Enter on Project search");
-        getDriver().findElement(
-                By.id("projectAutocomplete-autocomplete__input")).sendKeys(
-                Keys.ENTER);
+        existingElement(searchInput).sendKeys(Keys.ENTER);
         return new ProjectsPage(getDriver());
     }
 
-    public BasePage waitForSearchListContains(final String expected) {
+    public BasePage expectSearchListContains(final String expected) {
+        waitForPageSilence();
         String msg = "Project search list contains " + expected;
-        logWaiting(msg);
-        waitForAMoment().withMessage(msg).until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                return getProjectSearchAutocompleteItems().contains(expected);
-            }
-        });
+        waitForAMoment().withMessage("Waiting for search contains").until(
+                new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver input) {
+                        return getZanataSearchAutocompleteItems()
+                                .contains(expected);
+                    }
+                }
+        );
+        assertThat(getZanataSearchAutocompleteItems()).as(msg).contains(
+                expected);
         return new BasePage(getDriver());
     }
 
-    public List<String> getProjectSearchAutocompleteItems() {
-        log.info("Query Projects search results list");
+    public List<String> getZanataSearchAutocompleteItems() {
+        log.info("Query Project/Person search results list");
         return WebElementUtil.getSearchAutocompleteItems(getDriver(),
                 "general-search-form", "projectAutocomplete");
     }
 
-    public ProjectVersionsPage clickSearchEntry(final String searchEntry) {
+    public ProfilePage clickUserSearchEntry(final String searchEntry) {
+        log.info("Click Person search result {}", searchEntry);
+        clickSearchEntry(searchEntry);
+        return new ProfilePage(getDriver());
+    }
+
+    public ProjectVersionsPage clickProjectSearchEntry(String searchEntry) {
         log.info("Click Projects search result {}", searchEntry);
+        clickSearchEntry(searchEntry);
+        return new ProjectVersionsPage(getDriver());
+    }
+
+    private void clickSearchEntry(final String searchEntry) {
         String msg = "search result " + searchEntry;
         WebElement searchItem =
                 waitForAMoment().withMessage(msg).until(
@@ -313,28 +319,11 @@ public class BasePage extends CorePage {
                             }
                         });
         searchItem.click();
-        return new ProjectVersionsPage(getDriver());
     }
 
     public void clickWhenTabEnabled(final WebElement tab) {
-        String msg = "Clickable tab: " + tab;
-        waitForAMoment().withMessage(msg).until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                waitForPageSilence();
-                boolean clicked = false;
-                try {
-                    scrollIntoView(tab);
-                    if (tab.isDisplayed() && tab.isEnabled()) {
-                        tab.click();
-                        clicked = true;
-                    }
-                } catch (WebDriverException wde) {
-                    return false;
-                }
-                return clicked;
-            }
-        });
+        waitForPageSilence();
+        clickElement(tab);
     }
 
     public String getHtmlSource(WebElement webElement) {
@@ -342,13 +331,88 @@ public class BasePage extends CorePage {
                 "return arguments[0].innerHTML;", webElement);
     }
 
-
-    public boolean isValid() {
+    /**
+     * Check if the page has the home button, expecting a valid base page
+     * @return boolean is valid
+     */
+    public boolean isPageValid() {
         return (getDriver().findElements(By.id("home"))).size() > 0;
     }
 
+    /**
+     * Convenience function for clicking elements.  Removes obstructing
+     * elements, scrolls the item into view and clicks it when it is ready.
+     * @param findby
+     */
     public void clickElement(By findby) {
-        scrollIntoView(waitForWebElement(findby));
-        waitForWebElement(findby).click();
+        clickElement(readyElement(findby));
     }
+
+    public void clickElement(final WebElement element) {
+        removeNotifications();
+        waitForNotificationsGone();
+        scrollIntoView(element);
+        waitForAMoment().withMessage("clickable: " + element.toString()).until(
+                ExpectedConditions.elementToBeClickable(element));
+        element.click();
+    }
+
+    /**
+     * Remove any visible notifications
+     */
+    public void removeNotifications() {
+        @SuppressWarnings("unchecked")
+        List<WebElement> notifications = (List<WebElement>) getExecutor()
+                .executeScript("return (typeof $ == 'undefined') ?  [] : " +
+                        "$('a.message__remove').toArray()");
+        if (notifications.isEmpty()) {
+            return;
+        }
+        log.info("Closing {} notifications", notifications.size());
+        for (WebElement notification : notifications) {
+            try {
+                notification.click();
+            } catch (WebDriverException exc) {
+                log.info("Missed a notification X click");
+            }
+        }
+        // Finally, forcibly un-is-active the message container - for speed
+        String script = "return (typeof $ == 'undefined') ?  [] : " +
+                "$('ul.message--global').toArray()";
+        @SuppressWarnings("unchecked")
+        List<WebElement> messageBoxes = ((List<WebElement>) getExecutor()
+                .executeScript(script));
+        for (WebElement messageBox : messageBoxes) {
+            getExecutor().executeScript(
+                    "arguments[0].setAttribute('class', arguments[1]);",
+                    messageBox,
+                    messageBox.getAttribute("class").replace("is-active", ""));
+        }
+    }
+
+    /**
+     * Wait for the notifications box to go. Assumes test has dealt with
+     * removing it, or is waiting for it to time out.
+     */
+    public void waitForNotificationsGone() {
+        final String script = "return (typeof $ == 'undefined') ?  [] : " +
+                "$('ul.message--global').toArray()";
+        final String message = "Waiting for notifications box to go";
+        waitForAMoment().withMessage(message).until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                @SuppressWarnings("unchecked")
+                List<WebElement> boxes = (List<WebElement>) getExecutor()
+                        .executeScript(script);
+                for (WebElement box : boxes) {
+                    if (box.isDisplayed()) {
+                        log.info(message);
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
 }

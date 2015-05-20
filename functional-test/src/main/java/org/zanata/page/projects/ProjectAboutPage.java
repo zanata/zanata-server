@@ -31,7 +31,7 @@ import org.openqa.selenium.WebDriver;
 @Slf4j
 public class ProjectAboutPage extends ProjectBasePage {
 
-    private By aboutText = By.id("project-about");
+    private By aboutText = By.id("home-content-rendered");
 
     public ProjectAboutPage(WebDriver driver) {
         super(driver);
@@ -39,6 +39,6 @@ public class ProjectAboutPage extends ProjectBasePage {
 
     public String getAboutText() {
         log.info("Query About content");
-        return waitForWebElement(aboutText).getText();
+        return readyElement(aboutText).getText();
     }
 }

@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletResponse;
-
 import net.customware.gwt.presenter.client.EventBus;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
 
@@ -45,7 +43,6 @@ import org.zanata.webtrans.client.events.DocumentSelectionEvent;
 import org.zanata.webtrans.client.events.DocumentSelectionHandler;
 import org.zanata.webtrans.client.events.DocumentStatsUpdatedEvent;
 import org.zanata.webtrans.client.events.NotificationEvent;
-import org.zanata.webtrans.client.events.NotificationEvent.Severity;
 import org.zanata.webtrans.client.events.RefreshProjectStatsEvent;
 import org.zanata.webtrans.client.events.RunDocValidationEvent;
 import org.zanata.webtrans.client.events.RunDocValidationEventHandler;
@@ -84,12 +81,10 @@ import org.zanata.webtrans.shared.rpc.RunDocValidationResult;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.inject.Inject;
 
 public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
@@ -595,44 +590,6 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
     }
 
     @Override
-    public void showUploadDialog(DocumentInfo docInfo) {
-        display.showUploadDialog(docInfo, userWorkspaceContext
-                .getWorkspaceContext().getWorkspaceId());
-    }
-
-    @Override
-    public void cancelFileUpload() {
-        display.closeFileUpload();
-    }
-
-    @Override
-    public void onFileUploadComplete(SubmitCompleteEvent event) {
-        display.closeFileUpload();
-        if (event.getResults().contains(
-                String.valueOf(HttpServletResponse.SC_OK))) {
-            if (event.getResults().contains("Warnings")) {
-                eventBus.fireEvent(new NotificationEvent(Severity.Warning,
-                        "File uploaded with warnings", event.getResults(),
-                        true, null));
-            } else {
-                eventBus.fireEvent(new NotificationEvent(Severity.Info,
-                        "File uploaded", event.getResults(), true, null));
-            }
-            queryStats();
-        } else {
-            eventBus.fireEvent(new NotificationEvent(Severity.Error,
-                    "File upload failed.", event.getResults(), true, null));
-        }
-    }
-
-    @Override
-    public void onUploadFile() {
-        if (!Strings.isNullOrEmpty(display.getSelectedUploadFileName())) {
-            display.submitUploadForm();
-        }
-    }
-
-    @Override
     public void onWorkspaceContextUpdated(WorkspaceContextUpdateEvent event) {
         userWorkspaceContext.setProjectActive(event.isProjectActive());
         userWorkspaceContext.getWorkspaceContext().getWorkspaceId()
@@ -642,60 +599,64 @@ public class DocumentListPresenter extends WidgetPresenter<DocumentListDisplay>
 
     @Override
     public void onRunDocValidation(RunDocValidationEvent event) {
-        if (event.getView() == MainView.Documents) {
-            List<ValidationId> valIds =
-                    userOptionsService.getConfigHolder().getState()
-                            .getEnabledValidationIds();
-            if (!valIds.isEmpty() && !pageRows.keySet().isEmpty()) {
-                ArrayList<DocumentId> docList = Lists.newArrayList();
-                for (DocumentId documentId : pageRows.keySet()) {
-                    display.showRowLoading(pageRows.get(documentId));
-                    docList.add(documentId);
-                }
-
-                dispatcher.execute(new RunDocValidationAction(valIds, docList),
-                        new AsyncCallback<RunDocValidationResult>() {
-                            @Override
-                            public void
-                                    onSuccess(RunDocValidationResult result) {
-                                Log.debug("Success doc validation - "
-                                        + result.getResultMap().size());
-
-                                for (Entry<DocumentId, Boolean> entry : result
-                                        .getResultMap().entrySet()) {
-                                    Integer row = pageRows.get(entry.getKey());
-                                    DocumentNode node =
-                                            nodes.get(entry.getKey());
-
-                                    DocValidationStatus status =
-                                            entry.getValue() ? DocValidationStatus.HasError
-                                                    : DocValidationStatus.NoError;
-
-                                    if (row != null) {
-                                        display.updateRowHasError(
-                                                row.intValue(), status);
-
-                                        if (node != null) {
-                                            node.getDocInfo().setHasError(
-                                                    entry.getValue());
-                                        }
-                                    }
-                                }
-                                eventBus.fireEvent(new DocValidationResultEvent(
-                                        new Date()));
-                            }
-
-                            @Override
-                            public void onFailure(Throwable caught) {
-                                eventBus.fireEvent(new NotificationEvent(
-                                        NotificationEvent.Severity.Error,
-                                        "Unable to run validation"));
-                                eventBus.fireEvent(new DocValidationResultEvent(
-                                        new Date()));
-                            }
-                        });
-            }
+        if (event.getView() != MainView.Documents) {
+            return;
         }
+        List<ValidationId> valIds =
+                userOptionsService.getConfigHolder().getState()
+                        .getEnabledValidationIds();
+        if (valIds.isEmpty() || pageRows.keySet().isEmpty()) {
+            // no validation to run. we just need to re-enable the button.
+            // see org.zanata.webtrans.client.presenter.ValidationOptionsPresenter.onCompleteRunDocValidation()
+            eventBus.fireEvent(new DocValidationResultEvent(null));
+            return;
+        }
+        ArrayList<DocumentId> docList = Lists.newArrayList();
+        for (DocumentId documentId : pageRows.keySet()) {
+            display.showRowLoading(pageRows.get(documentId));
+            docList.add(documentId);
+        }
+
+        dispatcher.execute(new RunDocValidationAction(valIds, docList),
+                new AsyncCallback<RunDocValidationResult>() {
+                    @Override
+                    public void
+                            onSuccess(RunDocValidationResult result) {
+                        Log.debug("Success doc validation - "
+                                + result.getResultMap().size());
+
+                        for (Entry<DocumentId, Boolean> entry : result
+                                .getResultMap().entrySet()) {
+                            Integer row = pageRows.get(entry.getKey());
+                            DocumentNode node =
+                                    nodes.get(entry.getKey());
+
+                            DocValidationStatus status =
+                                    entry.getValue() ? DocValidationStatus.HasError
+                                            : DocValidationStatus.NoError;
+
+                            if (row != null) {
+                                display.updateRowHasError(row, status);
+
+                                if (node != null) {
+                                    node.getDocInfo().setHasError(
+                                            entry.getValue());
+                                }
+                            }
+                        }
+                        eventBus.fireEvent(new DocValidationResultEvent(
+                                new Date()));
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        eventBus.fireEvent(new NotificationEvent(
+                                NotificationEvent.Severity.Error,
+                                "Unable to run validation"));
+                        eventBus.fireEvent(new DocValidationResultEvent(
+                                new Date()));
+                    }
+                });
     }
 
     @Override

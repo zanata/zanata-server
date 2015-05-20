@@ -3,6 +3,7 @@ package org.zanata.webtrans.client.resources;
 import com.google.gwt.i18n.client.LocalizableResource.DefaultLocale;
 import com.google.gwt.i18n.client.LocalizableResource.Generate;
 import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.safehtml.shared.SafeHtml;
 
 @DefaultLocale
 @Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
@@ -501,9 +502,6 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Last run: {0}")
     String lastValidationRun(String completeTime);
 
-    @DefaultMessage("Upload document to merge/override translation")
-    String uploadButtonTitle();
-
     @DefaultMessage("Download document with extension {0}")
     String downloadFileTitle(String key);
 
@@ -551,4 +549,18 @@ public interface WebTransMessages extends Messages {
 
     @DefaultMessage("Anonymous")
     String anonymousUser();
+
+    @DefaultMessage("Project ID or version ID has changed. Please copy your unsaved work into clipboard. Editor will reload in 10 seconds.")
+    String workspaceUrlHasChanged();
+
+    @DefaultMessage("Loaded user options")
+    String loadedUserOptions();
+
+    @DefaultMessage("Restore to default options")
+    String restoreToDefaultOptions();
+
+    @DefaultMessage("Saved user options")
+    String savedOptions();
+
+
 }

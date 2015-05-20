@@ -330,9 +330,7 @@ public class DocumentListTable extends FlexTable {
         FlowPanel panel = new FlowPanel();
         final TransUnitCountBar graph =
                 new TransUnitCountBar(userWorkspaceContext, messages,
-                        LabelFormat.PERCENT_COMPLETE, false,
-                        userWorkspaceContext.getWorkspaceRestrictions()
-                                .isProjectRequireReview());
+                        LabelFormat.PERCENT_COMPLETE, false);
         Image loading = new Image(resources.spinner());
         panel.add(graph);
         panel.add(loading);
@@ -414,17 +412,6 @@ public class DocumentListTable extends FlexTable {
             anchor.setTarget("_blank");
             panel.add(anchor);
         }
-        Anchor upload = new Anchor();
-        upload.setTitle(messages.uploadButtonTitle());
-        upload.setStyleName("i i--import l--push-left-half");
-        upload.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                listener.showUploadDialog(docInfo);
-            }
-        });
-        panel.add(upload);
-
         return panel;
     }
 

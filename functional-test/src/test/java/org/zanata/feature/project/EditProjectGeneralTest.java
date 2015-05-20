@@ -72,7 +72,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .setActiveFilterEnabled(true)
                 .setReadOnlyFilterEnabled(false)
                 .setArchivedFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", false);
+                .expectProjectNotVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .doesNotContain("about fedora")
@@ -81,7 +81,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
         projectsPage = projectsPage.setActiveFilterEnabled(false)
                 .setReadOnlyFilterEnabled(true)
                 .setArchivedFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true);
+                .expectProjectVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")
@@ -101,8 +101,8 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .goToProjects()
                 .setActiveFilterEnabled(false)
                 .setReadOnlyFilterEnabled(true)
+                .expectProjectVisible("about fedora")
                 .setArchivedFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true)
                 .getProjectNamesOnCurrentPage())
                 .contains("about fedora")
                 .as("The project is locked");
@@ -118,7 +118,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .setActiveFilterEnabled(true)
                 .setReadOnlyFilterEnabled(false)
                 .setArchivedFilterEnabled(false)
-                .waitForProjectVisibility("about fedora", true);
+                .expectProjectVisible("about fedora");
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")
@@ -209,5 +209,27 @@ public class EditProjectGeneralTest extends ZanataTestCase {
         assertThat(projectVersionsPage.getGitUrl())
                 .isEqualTo("http://git.example.com")
                 .as("The git url is correct");
+    }
+
+    @Feature(summary = "Project slug can be changed and page will redirect to new URL after the change",
+            tcmsTestPlanIds = 0, tcmsTestCaseIds = 0)
+    @Test
+    public void changeProjectSlug() {
+        ProjectGeneralTab projectGeneralTab = new ProjectWorkFlow()
+                .goToProjectByName("about fedora")
+                .gotoSettingsTab()
+                .gotoSettingsGeneral()
+                .enterProjectSlug("fedora-reborn")
+                .updateProject();
+
+        projectGeneralTab.reload();
+        assertThat(projectGeneralTab.getUrl()).contains("/fedora-reborn");
+        projectGeneralTab = projectGeneralTab
+                .gotoSettingsTab()
+                .gotoSettingsGeneral();
+
+        assertThat(projectGeneralTab.getProjectId())
+                .isEqualTo("fedora-reborn")
+                .as("The project slug is correct");
     }
 }

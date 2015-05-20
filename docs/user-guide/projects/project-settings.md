@@ -21,7 +21,7 @@ The Settings tab contains fields that manage appearance and workflow of your pro
 
 Project Type defines the type of files that your project uses to store source and translation strings. This setting ensures that files for your project will be downloaded in the correct format.
 
-There is a brief description for each project type next to each project type option. If the description is insufficient, more information on each project type is available at [Project Types wiki page](user-guide/project-types).
+There is a brief description for each project type next to each project type option. If the description is insufficient, more information on each project type is available at [Project Types](user-guide/projects/project-types).
 
 ### Home Page
 
@@ -96,13 +96,17 @@ To remove a language from the list of available locales, first move the cursor o
 Validations run in the translation editor and help translators to provide translations that are valid for your project. Validations set to `Warning` or `Error` in this list will be displayed in the translation editor when an invalid translation has been entered.
 Validations not enabled here can be toggled by translators to suit their individual workflow.
 
+* Off - turn off validation check by default.
+* Warning - display warning to translator when validation failed. Translator can save the translation as `Translated`.
+* Error - display error to translator when validation failed. Translator cannot save translation as `Translated` until error has been fixed.
 
+See [validation](user-guide/projects/validations) all available check.
 
 ### Copy Translations settings
 
 Copy Translations attempts to reuse translations that have been entered in Zanata by matching them with untranslated strings in your project-version.  These settings change the way Copy Translations behaves when a new version is created.
 
-Refer to [the Copy Translations reference]({{ site.url }}/help/reuse/copytrans-explained) for more information.
+Refer to [the Copy Translations reference](user-guide/translation-reuse/copy-trans/) for more information.
 
 ------------
 
@@ -129,6 +133,27 @@ The access restriction feature is intended for use with special roles that can b
 
 ------------
 
+## Webhooks
+
+<figure>
+<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings.png" />
+<figcaption>Project Webhooks Settings tab</figcaption>
+</figure>
+
+The Webhooks feature is HTTP callbacks which are triggered when a document in a language has reached a certain milestone. Currently, webhooks events will be triggered when
+
+- A document has reached 100% Translated
+- A document has reached 100% Approved (by reviewer)
+
+When an event occurs, Zanata will make a HTTP POST to the URI configured in the project.
+
+### Adding a Webhook URI
+
+<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings-2.png" />
+Enter a valid URI into the provided text input. Hit the 'enter' key or click on 'Add webhook' button to add the URI.
+
+------------
+
 ## About
 
 <figure>
@@ -137,5 +162,9 @@ The access restriction feature is intended for use with special roles that can b
 </figure>
 <br>
 
-About is optional rich text that will be shown on your project's about tab. This can be used to provide more detailed information to translators to help them understand and translate your project.
-The rich text format is Seam Text. For help with rich text formatting, click "Seam Text" under the editor.
+About is optional text that will be shown on your project's about
+tab. This can be used to provide more detailed information to translators
+to help them understand and translate your project.
+
+The text format is parsed as CommonMark markdown. For help with text
+formatting, click "CommonMark" under the editor.

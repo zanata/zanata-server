@@ -53,14 +53,14 @@ public class ProjectSearchTest extends ZanataTestCase {
         BasePage basePage = new BasicWorkFlow()
                 .goToHome()
                 .enterSearch("about")
-                .waitForSearchListContains("about fedora");
+                .expectSearchListContains("about fedora");
 
-        assertThat(basePage.getProjectSearchAutocompleteItems())
+        assertThat(basePage.getZanataSearchAutocompleteItems())
                 .contains("about fedora")
                 .as("Normal user can see the project");
 
         ProjectBasePage projectPage =
-                basePage.clickSearchEntry("about fedora");
+                basePage.clickProjectSearchEntry("about fedora");
 
         assertThat(projectPage.getProjectName().trim())
                 .isEqualTo("about fedora")
@@ -75,7 +75,7 @@ public class ProjectSearchTest extends ZanataTestCase {
         ProjectsPage projectsPage = new BasicWorkFlow()
                 .goToHome()
                 .enterSearch("arodef")
-                .waitForSearchListContains("Search Zanata for 'arodef'")
+                .expectSearchListContains("Search Zanata for 'arodef'")
                 .submitSearch();
 
         assertThat(projectsPage.getProjectNamesOnCurrentPage().isEmpty())
@@ -98,9 +98,9 @@ public class ProjectSearchTest extends ZanataTestCase {
         BasePage basePage = new BasicWorkFlow()
                 .goToHome()
                 .enterSearch("about")
-                .waitForSearchListContains("Search Zanata for 'about'");
+                .expectSearchListContains("Search Zanata for 'about'");
 
-        assertThat(basePage.getProjectSearchAutocompleteItems())
+        assertThat(basePage.getZanataSearchAutocompleteItems())
                 .doesNotContain("About Fedora")
                 .as("User cannot see the archived project");
     }

@@ -2,10 +2,12 @@ Zanata Server
 =============
 Please visit [About|Zanata](http://zanata.org/about/)
 
-Installation
+Getting started
 ------------
 
-[Installation section](configuration/installation.md)
+- [Project maintainer guide](user-guide/project-maintainer-guide.md)
+- [Translator guide](user-guide/translator-guide.md)
+- [System admin guide](user-guide/system-admin/configuration/installation.md)
 
 Contribute
 ----------
@@ -13,9 +15,34 @@ Contribute
 - [Issue Tracker](http://bugzilla.redhat.com/buglist.cgi?product=Zanata)
 - [Source Code on GitHub](http://github.com/zanata)
 
-Support
+Release notes
 -------
-For help and support options, see [Help|Zanata](http://zanata.org/help/)
+
+[Release notes](release-notes.md)
+
+Contact us
+-------
+
+<ul>
+    <li>
+        <a href="mailto:zanata-users@redhat.com" target="_top">Email</a>
+    </li>
+    <li>
+        <a href="http://webchat.freenode.net/?channels=zanata">IRC</a>
+    </li>
+    <li>
+        <a href="http://zanata.org/mailing-lists/">Mailing lists</a>
+    </li>
+    <li>
+        <iframe src="http://ghbtns.com/github-btn.html?user=zanata&repo=zanata-server&type=watch&count=true"
+            allowtransparency="true" frameborder="0" scrolling="0" width="80" height="20"></iframe>
+    </li>
+    <li>
+        <a href="https://twitter.com/zanataTM" class="twitter-follow-button" data-show-count="false">Follow @zanataTM</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    </li>
+</ul>
+
 
 License
 -------

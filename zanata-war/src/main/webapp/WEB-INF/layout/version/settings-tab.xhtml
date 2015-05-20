@@ -98,7 +98,7 @@
     <ui:include src="edit_form.xhtml"/>
 
     <div class="l--push-top-1">
-      <a4j:commandLink value="#{msgs['jsf.UpdateGeneralSettings']}"
+      <a4j:commandLink id="updateButton" value="#{msgs['jsf.UpdateGeneralSettings']}"
         action="#{versionHome.update}"
         rendered="#{versionHome.managed}"
         render="version-info, copy-project-type"
@@ -177,7 +177,8 @@
         <zanata:multi-file-upload styleClass="button button--snug l--push-top-half"
           id="file-upload-component"
           title="#{msgs['jsf.iteration.files.UploadNewSourceDocument']}"
-          accepted="#{versionHome.acceptedSourceFileTypes}"
+          accepted="#{versionHome.acceptedSourceFileExtensions}"
+          acceptedDescriptions="#{versionHome.acceptedSourceFile}"
           url="#{request.contextPath}/files/upload?p=#{versionHome.projectSlug}&amp;v=#{versionHome.slug}"
           maxfiles="#{applicationConfiguration.maxFilesPerUpload}">
           <i class="i i--plus"></i>

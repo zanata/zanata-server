@@ -76,7 +76,7 @@ public class SecurityTest extends ZanataTestCase {
     public void signInFailure() {
         assertThat(new LoginWorkFlow()
                 .signInFailure("nosuchuser", "password")
-                .expectErrors())
+                .expectError("Login failed"))
                 .contains("Login failed")
                 .as("Log in error message is shown");
     }
@@ -89,8 +89,7 @@ public class SecurityTest extends ZanataTestCase {
                 .goToHome()
                 .clickSignInLink()
                 .goToResetPassword()
-                .enterUserName("admin")
-                .enterEmail("admin@example.com");
+                .enterUserNameEmail("admin@example.com");
         HomePage homePage = resetPasswordPage.resetPassword();
 
         assertThat(homePage.getNotificationMessage())
@@ -109,7 +108,7 @@ public class SecurityTest extends ZanataTestCase {
                 .as("The system has sent a reset password email to the user");
     }
 
-    @Feature(summary = "The user must enter a known account and email pair " +
+    @Feature(summary = "The user must enter a known account or email " +
             "to reset their password",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -118,45 +117,16 @@ public class SecurityTest extends ZanataTestCase {
                 .goToHome()
                 .clickSignInLink()
                 .goToResetPassword()
-                .enterUserName("nosuchuser")
-                .enterEmail("nosuchuser@nosuchdomain.com")
+                .enterUserNameEmail("nosuchuser@nosuchdomain.com")
                 .resetFailure();
 
-        assertThat(
-                resetPasswordPage.getNotificationMessage(By
+        assertThat(resetPasswordPage.getNotificationMessage(By
                         .id("passwordResetRequestForm:messages")))
                 .isEqualTo("No account found.")
                 .as("A no such account message is displayed");
     }
 
-    @Feature(summary = "The user must enter a valid account and email pair " +
-            "to reset their password",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
-    @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    public void invalidResetPasswordFieldEntries() {
-        ResetPasswordPage resetPasswordPage = new BasicWorkFlow()
-                .goToHome()
-                .clickSignInLink()
-                .goToResetPassword()
-                .enterUserName("b")
-                .enterEmail("b")
-                .resetFailure();
-
-        assertThat(resetPasswordPage.expectErrors())
-                .contains("not a well-formed email address")
-                .as("Invalid email error is displayed");
-
-        // Both are valid, but show seemingly at random
-        assertThat(resetPasswordPage.getErrors().get(0))
-                .isIn("Between 3 and 20 lowercase letters, numbers and " +
-                            "underscores only",
-                        "size must be between 3 and 20",
-                        "must match ^[a-z\\d_]{3,20}$")
-                .as("Invalid username error is displayed");
-    }
-
-    @Feature(summary = "The user must enter both an account name and email " +
-            "address to reset their password",
+    @Feature(summary = "Username or email field must not empty",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void emptyResetPasswordFieldEntries() {
@@ -167,7 +137,7 @@ public class SecurityTest extends ZanataTestCase {
                 .clearFields()
                 .resetFailure();
 
-        assertThat(resetPasswordPage.expectErrors())
+        assertThat(resetPasswordPage.getErrors())
                 .contains("value is required")
                 .as("value is required error is displayed");
     }

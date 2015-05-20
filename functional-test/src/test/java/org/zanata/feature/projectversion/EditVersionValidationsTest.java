@@ -77,8 +77,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
         versionTranslationTab = versionTranslationTab
                 .setValidationLevel("Tab characters (\\t)", "Error");
 
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
-
         versionTranslationTab = versionTranslationTab
                 .goToHomePage()
                 .goToProjects()
@@ -104,8 +102,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Error");
 
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
-
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
                 .gotoVersion("master")
@@ -116,7 +112,7 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .as("The text in the translation target is blank");
 
         editorPage.pasteIntoRowAtIndex(0, "\t").saveAsFuzzyAtRow(0);
-        editorPage.waitForValidationErrorsVisible();
+        editorPage.expectValidationErrorsVisible();
 
         assertThat(editorPage.getValidationMessageCurrentTarget())
                 .isEqualTo("Warning: none, Errors: 1")
@@ -140,8 +136,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTab()
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Error");
-
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
 
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
@@ -213,8 +207,6 @@ public class EditVersionValidationsTest extends ZanataTestCase {
                 .gotoSettingsTranslationTab()
                 .setValidationLevel("Tab characters (\\t)", "Off");
 
-        assumeTrue("RHBZ1017458", versionTranslationTab.hasNoCriticalErrors());
-
         EditorPage editorPage = new ProjectWorkFlow()
                 .goToProjectByName("about fedora")
                 .gotoVersion("master")
@@ -229,7 +221,7 @@ public class EditVersionValidationsTest extends ZanataTestCase {
         editorPage = editorPage
                 .openValidationOptions()
                 .clickValidationCheckbox(EditorPage.Validations.TABS);
-        editorPage.waitForValidationErrorsVisible();
+        editorPage.expectValidationErrorsVisible();
 
         assertThat(editorPage.isValidationMessageCurrentTargetVisible())
                 .isTrue()

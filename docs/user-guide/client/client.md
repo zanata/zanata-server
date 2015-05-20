@@ -1,0 +1,1 @@
+All Zanata client documentation is located [here](http://docs.zanata.org/projects/zanata-client/).
