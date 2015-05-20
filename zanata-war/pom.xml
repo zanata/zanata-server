@@ -367,6 +367,7 @@
           <junitArtifactName>none:none</junitArtifactName>
           <testNGArtifactName>org.testng:testng</testNGArtifactName>
           <forkCount>1.5C</forkCount>
+          <objectFactory>org.zanata.testng.TestObjectFactory</objectFactory>
           <reuseForks>false</reuseForks>
           <includes>
             <include>**/*Test.groovy</include>
@@ -1224,6 +1225,13 @@
   </profiles>
 
   <dependencies>
+
+    <dependency>
+      <groupId>com.binarytweed</groupId>
+      <artifactId>quarantining-test-runner</artifactId>
+      <version>0.0.1</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>commons-beanutils</groupId>
