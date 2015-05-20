@@ -27,7 +27,7 @@ import org.zanata.model.HAccountRole;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class RoleTypeDescriptor extends
-    InitialEnumDescriptor<HAccountRole.RoleType> {
+    SingleCharEnumTypeDescriptor<HAccountRole.RoleType> {
 
     public static final RoleTypeDescriptor INSTANCE =
         new RoleTypeDescriptor();
@@ -38,7 +38,7 @@ public class RoleTypeDescriptor extends
     }
 
     @Override
-    char getInitial(HAccountRole.RoleType value) {
+    char getIdentifyingChar(HAccountRole.RoleType value) {
         return value.getInitial();
     }
 

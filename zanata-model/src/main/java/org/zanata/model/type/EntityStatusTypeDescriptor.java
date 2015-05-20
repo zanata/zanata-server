@@ -27,7 +27,7 @@ import org.zanata.common.EntityStatus;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class EntityStatusTypeDescriptor extends
-    InitialEnumDescriptor<EntityStatus> {
+    SingleCharEnumTypeDescriptor<EntityStatus> {
 
     public static final EntityStatusTypeDescriptor INSTANCE =
         new EntityStatusTypeDescriptor();
@@ -37,7 +37,7 @@ public class EntityStatusTypeDescriptor extends
     }
 
     @Override
-    char getInitial(EntityStatus value) {
+    char getIdentifyingChar(EntityStatus value) {
         return value.getInitial();
     }
 

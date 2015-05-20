@@ -27,7 +27,7 @@ import org.zanata.model.HCopyTransOptions.ConditionRuleAction;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class ConditionRuleActionTypeDescriptor extends
-    InitialEnumDescriptor<ConditionRuleAction> {
+    SingleCharEnumTypeDescriptor<ConditionRuleAction> {
 
     public static final ConditionRuleActionTypeDescriptor INSTANCE =
         new ConditionRuleActionTypeDescriptor();
@@ -37,7 +37,7 @@ public class ConditionRuleActionTypeDescriptor extends
     }
 
     @Override
-    char getInitial(ConditionRuleAction value) {
+    char getIdentifyingChar(ConditionRuleAction value) {
         return value.getInitial();
     }
 

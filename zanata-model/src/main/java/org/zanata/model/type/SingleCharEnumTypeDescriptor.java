@@ -25,19 +25,18 @@ import org.hibernate.type.descriptor.WrapperOptions;
 import org.hibernate.type.descriptor.java.AbstractTypeDescriptor;
 
 /**
- * Descriptor for Enum type which uses initial and char(0).
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public abstract class InitialEnumDescriptor<T> extends AbstractTypeDescriptor<T> {
+public abstract class SingleCharEnumTypeDescriptor<T extends Enum> extends AbstractTypeDescriptor<T> {
 
-    protected InitialEnumDescriptor(Class<T> type) {
+    protected SingleCharEnumTypeDescriptor(Class<T> type) {
         super(type);
     }
 
     @Override
     public String toString(T value) {
-        return String.valueOf(getInitial(value));
+        return String.valueOf(getIdentifyingChar(value));
     }
 
     @Override
@@ -55,7 +54,7 @@ public abstract class InitialEnumDescriptor<T> extends AbstractTypeDescriptor<T>
             return null;
         }
         if (String.class.isAssignableFrom(type)) {
-            return (X) String.valueOf(getInitial(value));
+            return (X) String.valueOf(getIdentifyingChar(value));
         }
         throw unknownUnwrap(type);
     }
@@ -75,7 +74,7 @@ public abstract class InitialEnumDescriptor<T> extends AbstractTypeDescriptor<T>
      * @param value
      * @return initial of the type value
      */
-    abstract char getInitial(T value);
+    abstract char getIdentifyingChar(T value);
 
     /**
      * @param string
