@@ -34,6 +34,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1218002](https://bugzilla.redhat.com/show_bug.cgi?id=1218002) - Disable Google Open Id option
 * [1222710](https://bugzilla.redhat.com/show_bug.cgi?id=1222710) - Editor option save fails due to ClassCastException
 * [1222358](https://bugzilla.redhat.com/show_bug.cgi?id=1222358) - User profile page dropdown will not work in firefox
+* [1207980](https://bugzilla.redhat.com/show_bug.cgi?id=1207980) - Split up large Liquibase changesets to avoid partial updates
 
 -----------------------
 
