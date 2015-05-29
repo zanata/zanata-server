@@ -3,7 +3,7 @@
 <!-- https://access.redhat.com/knowledge/docs/en-US/JBoss_Enterprise_Application_Platform/6/html/Development_Guide/Included_Modules1.html -->
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
   <deployment>
-    <!-- These exclusions let us use RESTEasy 2 instead of the
+    <!-- These exclusions let us use the war file's RESTEasy instead of the
          container's version -->
     <exclude-subsystems>
       <subsystem name="jaxrs" />

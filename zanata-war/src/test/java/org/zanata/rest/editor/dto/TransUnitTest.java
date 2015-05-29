@@ -2,9 +2,6 @@ package org.zanata.rest.editor.dto;
 
 import static org.testng.Assert.assertEquals;
 
-import java.io.IOException;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.testng.annotations.Test;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 

@@ -6,9 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.jboss.resteasy.core.ResourceInvoker;
+import org.jboss.resteasy.mock.MockHttpRequest;
+import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
-import org.jboss.seam.resteasy.SeamResteasyProviderFactory;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -18,6 +20,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.zanata.limits.RateLimitingProcessor;
 import org.zanata.model.HAccount;
+import org.zanata.seam.resteasy.SeamResteasyProviderFactory;
 import org.zanata.util.HttpUtil;
 
 import static org.mockito.Mockito.*;
@@ -40,7 +43,7 @@ public class RestLimitingSynchronousDispatcherTest {
     @Mock
     private RateLimitingProcessor processor;
     @Mock
-    private SeamResteasyProviderFactory providerFactory;
+    private ResteasyProviderFactory providerFactory = SeamResteasyProviderFactory.getInstance();
     @Captor
     private ArgumentCaptor<Runnable> taskCaptor;
     @Mock
