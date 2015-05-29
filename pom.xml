@@ -187,6 +187,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.sun.xml.fastinfoset</groupId>
+        <artifactId>FastInfoset</artifactId>
+        <version>1.2.12</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <type>ejb</type>
@@ -247,6 +253,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
