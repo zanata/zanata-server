@@ -103,8 +103,6 @@ public class DocumentServiceImplTest {
         when(project.getWebHooks()).thenReturn(webHooks);
         when(documentDAO.getById(docId)).thenReturn(document);
         when(document.getDocId()).thenReturn(docIdString);
-
-        when(msgs.format(anyString())).thenReturn("test message");
     }
 
     @Test

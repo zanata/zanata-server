@@ -22,6 +22,7 @@ import org.zanata.common.ProjectType;
 import org.zanata.webtrans.client.events.NotificationEvent;
 import org.zanata.webtrans.client.events.UserConfigChangeEvent;
 import org.zanata.webtrans.client.events.WorkspaceContextUpdateEvent;
+import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.client.rpc.CachingDispatchAsync;
 import org.zanata.webtrans.client.service.UserOptionsService;
 import org.zanata.webtrans.client.view.DocumentListOptionsDisplay;
@@ -52,6 +53,8 @@ public class DocumentListOptionsPresenterTest {
     private CachingDispatchAsync dispatcher;
     @Mock
     private UserOptionsService userOptionsService;
+    @Mock
+    private WebTransMessages messages;
     @Captor
     private ArgumentCaptor<UserConfigChangeEvent> eventCaptor;
 
@@ -63,7 +66,7 @@ public class DocumentListOptionsPresenterTest {
         MockitoAnnotations.initMocks(this);
 
         presenter =
-                new DocumentListOptionsPresenter(display, eventBus,
+                new DocumentListOptionsPresenter(messages, display, eventBus,
                         userWorkspaceContext, dispatcher, userOptionsService);
         when(userOptionsService.getConfigHolder()).thenReturn(configHolder);
 

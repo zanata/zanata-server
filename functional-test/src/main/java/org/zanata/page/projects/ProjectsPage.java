@@ -43,7 +43,6 @@ public class ProjectsPage extends BasePage {
     private By projectTable = By.id("main_content:form:projectList");
     private By activeCheckBox = By.xpath("//*[@data-original-title='Filter active projects']");
     private By readOnlyCheckBox = By.xpath("//*[@data-original-title='Filter read-only projects']");
-    private By archivedCheckBox = By.xpath("//*[@data-original-title='Filter archived projects']");
 
     public ProjectsPage(final WebDriver driver) {
         super(driver);
@@ -69,7 +68,7 @@ public class ProjectsPage extends BasePage {
                 link.click();
                 return new ProjectVersionsPage(getDriver());
             }
-        });
+        }, "Find and go to project " + projectName);
     }
 
     public List<String> getProjectNamesOnCurrentPage() {
@@ -126,12 +125,4 @@ public class ProjectsPage extends BasePage {
         return new ProjectsPage(getDriver());
     }
 
-    public ProjectsPage setArchivedFilterEnabled(boolean enabled) {
-        log.info("Click to set Archived filter enabled to {}", enabled);
-        WebElement archivedCheckbox = readyElement(archivedCheckBox);
-        if (archivedCheckbox.isSelected() != enabled) {
-            archivedCheckbox.click();
-        }
-        return new ProjectsPage(getDriver());
-    }
 }

@@ -22,6 +22,9 @@ zanata-assets is set to **http://{zanata.url}/javax.faces.resource/jars/assets**
 
 Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}"/>`
 
+* [PR 633](https://github.com/zanata/zanata-server/pull/633) - Use JNDI to obtain mail server from app server
+    * Zanata now uses `java:jboss/mail/Default` mail session for SMTP configuration.  See "Email configuration" in [System admin guide](http://docs.zanata.org/en/latest/user-guide/system-admin/configuration/installation/index.html) for details.
+
 
 <h5>Bug fixes</h5>
 * [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
@@ -32,7 +35,12 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1205512](https://bugzilla.redhat.com/show_bug.cgi?id=1205512) - Run validation in editor document list is disabled when it should not be
 * [903964](https://bugzilla.redhat.com/show_bug.cgi?id=903964) - Error message not propagated to client when push fails
 * [1218002](https://bugzilla.redhat.com/show_bug.cgi?id=1218002) - Disable Google Open Id option
+* [1222710](https://bugzilla.redhat.com/show_bug.cgi?id=1222710) - Editor option save fails due to ClassCastException
 * [1222358](https://bugzilla.redhat.com/show_bug.cgi?id=1222358) - User profile page dropdown will not work in firefox
+* [1165930](https://bugzilla.redhat.com/show_bug.cgi?id=1165930) - 'Copy from previous version' shows if an obsolete version exists
+* [1098362](https://bugzilla.redhat.com/show_bug.cgi?id=1098362) - download link in editor doesn't encode properly and result in 404
+* [1225689](https://bugzilla.redhat.com/show_bug.cgi?id=1225689) - [Project Version View] Failed to load entries when the doc id contains characters that should be URL encoded
+* [981498](https://bugzilla.redhat.com/show_bug.cgi?id=981498) - No underscore sanity checking on creating usernames
 
 -----------------------
 
@@ -42,9 +50,13 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
     * File project type now supports XLIFF, PROPERTIES, PROPERTIES_UTF8, and GETTEXT
 * [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs 
 * [1209670](https://bugzilla.redhat.com/show_bug.cgi?id=1209670) - Improve review statistics - approved vs translated
+* [1211134](https://bugzilla.redhat.com/show_bug.cgi?id=1211134) - Review should be enabled in editor by default
 * [1198433](https://bugzilla.redhat.com/show_bug.cgi?id=1198433) - Replace Seam Text with CommonMark Markdown
     * User text on the home page and project "about" pages will now be rendered as CommonMark.
     * Existing Seam Text will be migrated to CommonMark where possible.
+* [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs
+* [1211849](https://bugzilla.redhat.com/show_bug.cgi?id=1211849) - Project maintainer can change project/version slug
+* [1082840](https://bugzilla.redhat.com/show_bug.cgi?id=1082840) - Project maintainer can delete a project or project version
 
 ## 3.6.3
 
@@ -66,6 +78,7 @@ The Zanata installer's configuration now enables "connection debugging" to preve
 <h5>Bugfixes</h5>
 * [1207575](https://bugzilla.redhat.com/show_bug.cgi?id=1207575) - Zanata still creates MyISAM (not InnoDB) tables in some cases
 * [1197955](https://bugzilla.redhat.com/show_bug.cgi?id=1197955) - [WildFly] IllegalStateException: UT000010: Session not found
+* [[1197955]](https://bugzilla.redhat.com/show_bug.cgi?id=1223597) - Statistic on last page in document list view in Editor always loading
 
 -----------------------
 

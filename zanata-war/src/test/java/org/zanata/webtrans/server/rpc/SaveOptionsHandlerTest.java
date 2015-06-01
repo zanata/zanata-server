@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.dao.AccountDAO;
+import org.zanata.dao.AccountOptionDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountOption;
 import org.zanata.seam.SeamAutowire;
@@ -36,6 +37,8 @@ public class SaveOptionsHandlerTest extends ZanataDbunitJpaTest {
     private SaveOptionsHandler handler;
     private HAccount authenticatedAccount;
 
+    private final static SeamAutowire seam = SeamAutowire.instance();
+
     @Override
     protected void prepareDBUnitOperations() {
         beforeTestOperations.add(new DataSetOperation(
@@ -49,13 +52,13 @@ public class SaveOptionsHandlerTest extends ZanataDbunitJpaTest {
 
     @Before
     public void beforeMethod() {
-        AccountDAO accountDAO = new AccountDAO(getSession());
         authenticatedAccount = getEm().find(HAccount.class, 1L);
         // @formatter:off
-      handler = SeamAutowire.instance()
+      handler = seam
             .reset()
             .use(JpaIdentityStore.AUTHENTICATED_USER, authenticatedAccount)
-            .use("accountDAO", accountDAO)
+            .use("accountDAO", new AccountDAO(getSession()))
+            .use("accountOptionDAO", new AccountOptionDAO(getSession()))
             .ignoreNonResolvable()
             .autowire(SaveOptionsHandler.class);
       // @formatter:on

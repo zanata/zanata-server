@@ -152,9 +152,7 @@ public class AppView extends Composite implements AppDisplay,
         this.messages = messages;
         translationStatsBar =
                 new TransUnitCountBar(userWorkspaceContext, messages,
-                        LabelFormat.PERCENT_COMPLETE_HRS, true,
-                        userWorkspaceContext.getWorkspaceRestrictions()
-                                .isProjectRequireReview());
+                        LabelFormat.PERCENT_COMPLETE_HRS, true);
         translationStatsBar.setVisible(false); // hide until there is a value to
 
         projectLink =
@@ -401,7 +399,7 @@ public class AppView extends Composite implements AppDisplay,
             case Warning:
                 return "message--warning";
             case Error:
-                return "message--danger";
+                return "message--danger app-error";
             case Info:
                 return "message--highlight";
         }
