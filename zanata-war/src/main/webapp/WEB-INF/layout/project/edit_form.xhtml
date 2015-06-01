@@ -60,6 +60,8 @@
       <h:inputTextarea id="description" required="false"
         value="#{projectHome.instance.description}">
         <f:validateLength maximum="100"/>
+        <a4j:ajax event="change" render="descriptionField"
+          execute="@this"/>
       </h:inputTextarea>
     </s:decorate>
   </div>
