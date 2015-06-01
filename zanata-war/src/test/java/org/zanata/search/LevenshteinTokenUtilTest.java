@@ -24,8 +24,12 @@ package org.zanata.search;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.data.Offset;
 import org.junit.Test;
-import org.testng.Assert;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sean Flanigan <a
@@ -33,7 +37,7 @@ import org.testng.Assert;
  *
  */
 public class LevenshteinTokenUtilTest {
-    private static final double DELTA = 0.0001;
+    private static final Offset<Double> DELTA = offset(0.0001);
 
     @Test
     public void testVarious() {
@@ -43,17 +47,17 @@ public class LevenshteinTokenUtilTest {
         String s4 = "dbnoicgjnedbitnhjudbioe";
 
         double similarity = LevenshteinTokenUtil.getSimilarity(s1, s1);
-        Assert.assertTrue(similarity > 0.999f);
+        assertTrue(similarity > 0.999f);
 
         similarity = LevenshteinTokenUtil.getSimilarity(s1, s2);
-        Assert.assertTrue(similarity > 0.3f);
-        Assert.assertTrue(similarity < 0.4f);
+        assertTrue(similarity > 0.3f);
+        assertTrue(similarity < 0.4f);
 
         similarity = LevenshteinTokenUtil.getSimilarity(s1, s3);
-        Assert.assertEquals(similarity, 0.5, DELTA);
+        assertThat(similarity).isEqualTo(0.5, DELTA);
 
         similarity = LevenshteinTokenUtil.getSimilarity(s1, s4);
-        Assert.assertEquals(similarity, 0.0, DELTA);
+        assertThat(similarity).isEqualTo(0.0, DELTA);
     }
 
     @Test
@@ -64,8 +68,8 @@ public class LevenshteinTokenUtilTest {
                 "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890";
 
         double similarity = LevenshteinTokenUtil.getSimilarity(s1, s2);
-        Assert.assertTrue(similarity > 0.95f);
-        Assert.assertTrue(similarity < 1.0f);
+        assertTrue(similarity > 0.95f);
+        assertTrue(similarity < 1.0f);
     }
 
     @Test
@@ -74,7 +78,7 @@ public class LevenshteinTokenUtilTest {
         List<String> strings2 = Arrays.asList("1234567890abcdefghij");
         double similarity =
                 LevenshteinTokenUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 0.0, DELTA);
+        assertThat(similarity).isEqualTo(0.0, DELTA);
     }
 
     @Test
@@ -84,8 +88,8 @@ public class LevenshteinTokenUtilTest {
         List<String> strings2 = Arrays.asList("123 456 78 9", "bc_ def ghi j");
         double similarity =
                 LevenshteinTokenUtil.getSimilarity(strings1, strings2);
-        Assert.assertTrue(similarity > 0.7);
-        Assert.assertTrue(similarity < 0.8);
+        assertTrue(similarity > 0.7);
+        assertTrue(similarity < 0.8);
     }
 
     @Test
@@ -94,7 +98,7 @@ public class LevenshteinTokenUtilTest {
         List<String> strings2 = Arrays.asList("abcdefghij", "1234567890");
         double similarity =
                 LevenshteinTokenUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 0.0, DELTA);
+        assertThat(similarity).isEqualTo(0.0, DELTA);
     }
 
     @Test
@@ -103,7 +107,7 @@ public class LevenshteinTokenUtilTest {
         List<String> strings2 = Arrays.asList("one", "two");
         double similarity =
                 LevenshteinTokenUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 1.0, DELTA);
+        assertThat(similarity).isEqualTo(1.0, DELTA);
     }
 
     @Test

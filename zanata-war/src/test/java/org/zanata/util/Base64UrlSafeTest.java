@@ -21,7 +21,8 @@
 package org.zanata.util;
 
 import org.junit.Test;
-import org.testng.Assert;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Base64UrlSafeTest {
     @Test
@@ -29,7 +30,7 @@ public class Base64UrlSafeTest {
         String var = "hding;helen.ding.uq@gmail.com";
         String enVar = Base64UrlSafe.encode(var);
         String deVar = Base64UrlSafe.decode(enVar);
-        Assert.assertEquals(var, deVar);
+        assertThat(var).isEqualTo(deVar);
     }
 
 }

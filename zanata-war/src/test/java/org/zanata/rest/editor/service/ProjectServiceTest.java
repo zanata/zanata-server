@@ -16,7 +16,6 @@ import org.zanata.rest.dto.Project;
 import org.zanata.rest.service.ETagUtils;
 
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 
 public class ProjectServiceTest {
     private ProjectService service;

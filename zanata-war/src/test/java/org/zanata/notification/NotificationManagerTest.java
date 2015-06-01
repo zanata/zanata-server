@@ -14,7 +14,6 @@ import org.zanata.events.LanguageTeamPermissionChangedEvent;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 
 public class NotificationManagerTest {
     private NotificationManager manager;

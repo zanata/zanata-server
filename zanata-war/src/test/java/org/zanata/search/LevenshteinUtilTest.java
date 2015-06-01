@@ -24,8 +24,12 @@ package org.zanata.search;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.data.Offset;
+import org.junit.Assert;
 import org.junit.Test;
-import org.testng.Assert;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 /**
  * @author Sean Flanigan <a
@@ -33,7 +37,7 @@ import org.testng.Assert;
  *
  */
 public class LevenshteinUtilTest {
-    private static final double DELTA = 0.0001;
+    private static final Offset<Double> DELTA = offset(0.0001);
 
     @Test
     public void testVarious() {
@@ -83,7 +87,7 @@ public class LevenshteinUtilTest {
         List<String> strings1 = Arrays.asList("1234567890", "abcdefghij");
         List<String> strings2 = Arrays.asList("123456789", "bcdefghij");
         double similarity = LevenshteinUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 0.9, DELTA);
+        assertThat(similarity).isEqualTo(0.9, DELTA);
     }
 
     @Test
@@ -91,7 +95,7 @@ public class LevenshteinUtilTest {
         List<String> strings1 = Arrays.asList("1234567890", "abcdefghij");
         List<String> strings2 = Arrays.asList("abcdefghij", "1234567890");
         double similarity = LevenshteinUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 0.0, DELTA);
+        assertThat(similarity).isEqualTo(0.0, DELTA);
     }
 
     @Test
@@ -99,7 +103,7 @@ public class LevenshteinUtilTest {
         List<String> strings1 = Arrays.asList("one", "two");
         List<String> strings2 = Arrays.asList("one", "two");
         double similarity = LevenshteinUtil.getSimilarity(strings1, strings2);
-        Assert.assertEquals(similarity, 1.0, DELTA);
+        assertThat(similarity).isEqualTo(1.0, DELTA);
     }
 
 }

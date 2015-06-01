@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static org.testng.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateUtilTest {
 
@@ -21,12 +21,12 @@ public class DateUtilTest {
     @Test
     public void testFormatShortDate() throws Exception {
         String s = DateUtil.formatShortDate(aDate);
-        assertEquals(s, "25/12/13 01:02");
+        assertThat(s).isEqualTo("25/12/13 01:02");
     }
 
     @Test
     public void testFormatLongDateTime() throws Exception {
         String s = DateUtil.formatLongDateTime(aDate);
-        assertEquals(s, "25/12/13 01:02:03");
+        assertThat(s).isEqualTo("25/12/13 01:02:03");
     }
 }

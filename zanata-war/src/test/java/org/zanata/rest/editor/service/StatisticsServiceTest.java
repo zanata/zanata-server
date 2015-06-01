@@ -17,7 +17,6 @@ import org.zanata.rest.dto.stats.TranslationStatistics;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 
 public class StatisticsServiceTest {
     private StatisticsService service;

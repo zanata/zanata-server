@@ -6,6 +6,7 @@ import java.sql.Statement;
 
 import lombok.Cleanup;
 
+import org.assertj.core.api.Fail;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.JDBCException;
 import org.hibernate.Query;
@@ -15,7 +16,6 @@ import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.junit.Before;
 import org.junit.Test;
-import org.testng.Assert;
 import org.zanata.ZanataDbunitJpaTest;
 
 public class WrappedConnectionProviderTest extends ZanataDbunitJpaTest {
@@ -88,7 +88,8 @@ public class WrappedConnectionProviderTest extends ZanataDbunitJpaTest {
     }
 
     private void concurrentResultSetNotDetected() {
-        Assert.fail("Failed to detect concurrent ResultSet - is Wrapped*ConnectionProvider enabled in persistence.xml?");
+        Fail.fail("Failed to detect concurrent ResultSet - is " +
+                "Wrapped*ConnectionProvider enabled in persistence.xml?");
     }
 
     private void checkExceptionType(JDBCException e) {

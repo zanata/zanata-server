@@ -9,7 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.zanata.util.EmptyEnumeration;
 
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 
 public class DeadLetterQueueReceiverTest {
     private DeadLetterQueueReceiver receiver;

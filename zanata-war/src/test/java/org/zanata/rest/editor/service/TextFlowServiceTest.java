@@ -2,8 +2,6 @@ package org.zanata.rest.editor.service;
 
 import javax.ws.rs.core.Response;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -12,14 +10,12 @@ import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.model.HLocale;
-import org.zanata.model.TestFixture;
 import org.zanata.rest.editor.dto.TransUnits;
 import org.zanata.rest.service.ResourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 import static org.zanata.model.TestFixture.makeHTextFlow;
 import static org.zanata.model.TestFixture.makeTransUnit;
 

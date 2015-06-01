@@ -1,12 +1,12 @@
 package org.zanata.rest.service;
 
-import static org.testng.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.fedorahosted.openprops.Properties;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class PoUtilityTest {
     String lineSep = System.getProperty("line.separator");

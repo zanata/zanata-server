@@ -12,7 +12,6 @@ import org.zanata.model.HPerson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.testng.Assert.*;
 
 public class DuplicateEmailValidatorTest {
     private DuplicateEmailValidator validator;

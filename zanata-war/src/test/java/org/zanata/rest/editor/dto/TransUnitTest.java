@@ -1,12 +1,9 @@
 package org.zanata.rest.editor.dto;
 
-import static org.testng.Assert.assertEquals;
-
-import java.io.IOException;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.zanata.rest.dto.resource.TextFlowTarget;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -23,7 +20,7 @@ public class TransUnitTest {
     public void testPutValidSource() {
         TransUnit tu = new TransUnit();
         tu.put(TransUnit.SOURCE, new EditorTextFlow());
-        assertEquals(tu.size(), 1);
+        assertThat(tu.size()).isEqualTo(1);
     }
 
     @Test(expected = ClassCastException.class)
@@ -36,6 +33,6 @@ public class TransUnitTest {
     public void testPutValidTarget() {
         TransUnit tu = new TransUnit();
         tu.put("fr", new TextFlowTarget());
-        assertEquals(tu.size(), 1);
+        assertThat(tu.size()).isEqualTo(1);
     }
 }
