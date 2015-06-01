@@ -5,7 +5,7 @@ import static org.testng.Assert.assertEquals;
 import java.io.IOException;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 
 /**
@@ -13,7 +13,7 @@ import org.zanata.rest.dto.resource.TextFlowTarget;
  */
 public class TransUnitTest {
 
-    @Test(expectedExceptions = ClassCastException.class)
+    @Test(expected = ClassCastException.class)
     public void testPutInvalidSource() {
         TransUnit tu = new TransUnit();
         tu.put(TransUnit.SOURCE, "String");
@@ -26,7 +26,7 @@ public class TransUnitTest {
         assertEquals(tu.size(), 1);
     }
 
-    @Test(expectedExceptions = ClassCastException.class)
+    @Test(expected = ClassCastException.class)
     public void testPutInvalidTarget() {
         TransUnit tu = new TransUnit();
         tu.put("fr", "String");

@@ -1,20 +1,20 @@
 package org.zanata.action.validator;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit-tests" })
 public class EmailListValidatorTest {
 
     private EmailListValidator validator;
     private ConstraintValidatorContext context = null;
 
-    @BeforeMethod
+    @Before
     public void create() {
         validator = new EmailListValidator();
         validator.initialize(null);

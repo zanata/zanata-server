@@ -9,10 +9,10 @@ import javax.ws.rs.core.Response;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.hibernate.transform.ResultTransformer;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.ContentType;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -47,7 +47,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.*;
 
-@Test(groups = "unit-tests")
 public class ProjectVersionServiceTest {
     private ProjectVersionService service;
     @Mock
@@ -63,7 +62,7 @@ public class ProjectVersionServiceTest {
     @Mock
     private LocaleService localeService;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         service =
@@ -140,13 +139,13 @@ public class ProjectVersionServiceTest {
                 .contains(LocaleId.DE, LocaleId.ES);
     }
 
-    @Test(expectedExceptions = NoSuchEntityException.class)
+    @Test(expected = NoSuchEntityException.class)
     public void willThrowNoSuchEntityExceptionIfVersionNotFound() {
         when(projectIterationDAO.getBySlug("a", "1")).thenReturn(null);
         service.retrieveAndCheckIteration("a", "1", false);
     }
 
-    @Test(expectedExceptions = NoSuchEntityException.class)
+    @Test(expected = NoSuchEntityException.class)
     public void willThrowNoSuchEntityExceptionIfVersionIsObsolete() {
         HProjectIteration iteration = new HProjectIteration();
         iteration.setStatus(EntityStatus.OBSOLETE);
@@ -154,7 +153,7 @@ public class ProjectVersionServiceTest {
         service.retrieveAndCheckIteration("a", "1", false);
     }
 
-    @Test(expectedExceptions = NoSuchEntityException.class)
+    @Test(expected = NoSuchEntityException.class)
     public void willThrowNoSuchEntityExceptionIfProjectIsObsolete() {
         HProjectIteration iteration = new HProjectIteration();
         HProject project = new HProject();
@@ -164,7 +163,7 @@ public class ProjectVersionServiceTest {
         service.retrieveAndCheckIteration("a", "1", false);
     }
 
-    @Test(expectedExceptions = ReadOnlyEntityException.class)
+    @Test(expected = ReadOnlyEntityException.class)
     public
             void
             willThrowReadOnlyEntityExceptionIfVersionIsReadOnlyButRequireWritePermission() {
@@ -175,7 +174,7 @@ public class ProjectVersionServiceTest {
         service.retrieveAndCheckIteration("a", "1", true);
     }
 
-    @Test(expectedExceptions = ReadOnlyEntityException.class)
+    @Test(expected = ReadOnlyEntityException.class)
     public
             void
             willThrowReadOnlyEntityExceptionIfProjectIsReadOnlyButRequireWritePermission() {

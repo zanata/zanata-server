@@ -20,10 +20,9 @@
  */
 package org.zanata.util;
 
+import org.junit.Test;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
-@Test(groups = { "unit-tests" })
 public class Base64UrlSafeTest {
     @Test
     public void test() {

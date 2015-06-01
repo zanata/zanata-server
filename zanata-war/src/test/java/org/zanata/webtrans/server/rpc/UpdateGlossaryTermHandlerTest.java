@@ -2,11 +2,13 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.Date;
 
+import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
@@ -15,6 +17,7 @@ import org.zanata.model.HLocale;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.GlossaryDetails;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermResult;
@@ -30,7 +33,8 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class UpdateGlossaryTermHandlerTest {
     private UpdateGlossaryTermHandler handler;
     @Mock
@@ -43,7 +47,7 @@ public class UpdateGlossaryTermHandlerTest {
     private HLocale targetHLocale = new HLocale(LocaleId.DE);
     private HLocale srcLocale = new HLocale(LocaleId.EN_US);
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         // @formatter:off
@@ -99,7 +103,7 @@ public class UpdateGlossaryTermHandlerTest {
 
     }
 
-    @Test(expectedExceptions = ActionException.class)
+    @Test(expected = ActionException.class)
     public void testExecuteWhenTargetTermNotFound() throws Exception {
         GlossaryDetails selectedDetailEntry =
                 new GlossaryDetails("source", "target", null, null,
@@ -122,7 +126,7 @@ public class UpdateGlossaryTermHandlerTest {
         handler.execute(action, null);
     }
 
-    @Test(expectedExceptions = ActionException.class)
+    @Test(expected = ActionException.class)
     public void testExecuteWhenTargetTermVersionNotMatch() throws Exception {
         GlossaryDetails selectedDetailEntry =
                 new GlossaryDetails("source", "target", null, null,

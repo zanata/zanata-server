@@ -13,12 +13,11 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
+import org.junit.Before;
+import org.junit.Test;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
 
-@Test(groups = { "jpa-tests" })
 public class WrappedConnectionProviderTest extends ZanataDbunitJpaTest {
 
     private Session session;
@@ -39,7 +38,7 @@ public class WrappedConnectionProviderTest extends ZanataDbunitJpaTest {
                 DatabaseOperation.CLEAN_INSERT));
     }
 
-    @BeforeMethod(firstTimeOnly = true)
+    @Before
     public void setup() {
         session = getSession();
     }

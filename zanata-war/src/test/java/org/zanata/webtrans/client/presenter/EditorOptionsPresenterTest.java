@@ -11,12 +11,12 @@ import java.util.Map;
 import net.customware.gwt.presenter.client.EventBus;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.webtrans.client.events.EditorPageSizeChangeEvent;
@@ -42,7 +42,6 @@ import org.zanata.webtrans.shared.rpc.NavOption;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.zanata.webtrans.client.view.ChangeReferenceLangDisplay;
 
-@Test(groups = { "unit-tests" })
 public class EditorOptionsPresenterTest {
     private EditorOptionsPresenter presenter;
     @Mock
@@ -70,7 +69,7 @@ public class EditorOptionsPresenterTest {
 
     private WorkspaceId workspaceId;
 
-    @BeforeMethod
+    @Before
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
         when(userOptionsService.getConfigHolder()).thenReturn(configHolder);

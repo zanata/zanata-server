@@ -8,6 +8,8 @@ import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import com.binarytweed.test.Quarantine;
+import org.zanata.test.QuarantiningRunner;
 import org.hibernate.Session;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
@@ -15,10 +17,11 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.seam.security.management.JpaIdentityStore;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.zanata.config.JndiBackedConfig;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
@@ -35,6 +38,8 @@ import org.zanata.security.AuthenticationType;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.Mockito.when;
 
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
 
     protected static final URI MOCK_BASE_URI = URI.create("http://mockhost");
@@ -49,7 +54,7 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
     @Mock
     private JndiBackedConfig jndiBackedConfig;
 
-    @BeforeMethod
+    @Before
     public final void prepareRestEasyFramework() {
         MockitoAnnotations.initMocks(this);
         when(jndiBackedConfig.getEnabledAuthenticationPolicies()).thenReturn(
@@ -108,7 +113,7 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
         seamAutowire.use(JpaIdentityStore.AUTHENTICATED_USER, account);
     }
 
-    @AfterMethod
+    @After
     public final void cleanUpRestEasyFramework() {
         exceptionMappers.clear();
         resources.clear();

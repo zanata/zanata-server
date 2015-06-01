@@ -29,18 +29,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.binarytweed.test.Quarantine;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.DefaultCacheManager;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.impl.TranslationStateCacheImpl.DocumentLocaleKey;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentStatus;
@@ -48,7 +50,8 @@ import org.zanata.webtrans.shared.model.ValidationId;
 
 import com.google.common.cache.CacheLoader;
 
-@Test(groups = { "business-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class TranslationStateCacheImplTest {
     TranslationStateCacheImpl tsCache;
     @Mock
@@ -61,7 +64,7 @@ public class TranslationStateCacheImplTest {
     @Mock
     private CacheLoader<Long, Map<ValidationId, Boolean>> targetValidationLoader;
 
-    @BeforeMethod
+    @Before
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
         tsCache =
@@ -78,6 +81,7 @@ public class TranslationStateCacheImplTest {
         tsCache.create();
     }
 
+    @Test
     public void testGetLastModifiedTextFlowTarget() throws Exception {
         // Given:
         Long documentId = new Long("100");
@@ -102,6 +106,7 @@ public class TranslationStateCacheImplTest {
         assertThat(result2, equalTo(docStats));
     }
 
+    @Test
     public void testTextFlowTargetHasError() throws Exception {
         // Given:
         Long targetId = new Long("1000");
@@ -121,6 +126,7 @@ public class TranslationStateCacheImplTest {
         assertThat(result, equalTo(null));
     }
 
+    @Test
     public void testTextFlowTargetHasError2() throws Exception {
         // Given:
         Long targetId = new Long("1000");

@@ -3,11 +3,13 @@ package org.zanata.rest.editor.service;
 import java.util.List;
 import javax.ws.rs.core.Response;
 
+import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.jboss.resteasy.client.ClientResponse;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.dao.ActivityDAO;
 import org.zanata.dao.DocumentDAO;
@@ -16,6 +18,7 @@ import org.zanata.rest.editor.dto.Locale;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.impl.ActivityServiceImpl;
 import org.zanata.service.impl.LocaleServiceImpl;
+import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -24,6 +27,8 @@ import static org.hamcrest.Matchers.sameInstance;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class LocalesServiceTest extends ZanataDbunitJpaTest {
 
     private Response okResponse;
@@ -50,7 +55,7 @@ public class LocalesServiceTest extends ZanataDbunitJpaTest {
                 DatabaseOperation.CLEAN_INSERT));
     }
 
-    @BeforeMethod
+    @Before
     public void initializeSeam() {
         seam.reset().useImpl(LocaleServiceImpl.class)
                 .use("session", getSession()).ignoreNonResolvable();
@@ -59,7 +64,7 @@ public class LocalesServiceTest extends ZanataDbunitJpaTest {
         okResponse = Response.ok().build();
     }
 
-    @AfterMethod
+    @After
     public void afterMethod() {
         okResponse = null;
         response = null;

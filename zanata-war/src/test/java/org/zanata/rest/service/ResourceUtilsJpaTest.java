@@ -3,9 +3,11 @@ package org.zanata.rest.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.assertj.core.api.Assertions;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import com.binarytweed.test.Quarantine;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.PerformanceProfiling;
 import org.zanata.SlowTest;
 import org.zanata.ZanataJpaTest;
@@ -29,13 +31,16 @@ import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.zanata.test.QuarantiningRunner;
 
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 @Slf4j
 public class ResourceUtilsJpaTest extends ZanataJpaTest {
     static SeamAutowire seam = SeamAutowire.instance();
     private ResourceUtils resourceUtils;
 
-    @BeforeMethod
+    @Before
     public void setUp() {
         deleteAllTables();
         resourceUtils =
@@ -46,7 +51,7 @@ public class ResourceUtilsJpaTest extends ZanataJpaTest {
     }
 
     @Test
-    void transferFromResourceMetadata() {
+    public void transferFromResourceMetadata() {
         ResourceMeta from = new ResourceMeta("resId");
         from.setContentType(ContentType.TextPlain);
         PoHeader poHeader = new PoHeader();
@@ -68,7 +73,9 @@ public class ResourceUtilsJpaTest extends ZanataJpaTest {
         // TODO check the results in 'to'
     }
 
-    @Test(enabled = false, description = "This should be executed manually in IDE")
+    @Ignore
+    // This should be executed manually in IDE
+    @Test
     @SlowTest
     @PerformanceProfiling
     // ideally change persistence.xml to use a local mysql database and monitor general log etc.

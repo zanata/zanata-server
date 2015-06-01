@@ -20,8 +20,11 @@
  */
 package org.zanata.seam;
 
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import com.binarytweed.test.Quarantine;
+import org.zanata.test.QuarantiningRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -33,8 +36,10 @@ import static org.hamcrest.Matchers.nullValue;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class AutowireContextsTest {
-    @BeforeTest
+    @Before
     public void newSessionBeforeTest() {
         AutowireContexts.getInstance().newSession();
     }
@@ -74,7 +79,7 @@ public class AutowireContextsTest {
 
     @Test
     public void noComponent() {
-        assertThat((String) AutowireContexts.getInstance().getValue("not-set"),
+        assertThat(AutowireContexts.getInstance().getValue("not-set"),
                 nullValue());
     }
 }

@@ -2,14 +2,16 @@ package org.zanata.service.impl;
 
 import java.util.List;
 
+import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.search.impl.FullTextSessionImpl;
 import org.hibernate.search.jpa.impl.FullTextEntityManagerImpl;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -22,6 +24,7 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.search.FilterConstraints;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TextFlowSearchService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -31,7 +34,8 @@ import static org.mockito.Mockito.*;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = { "jpa-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class TextFlowSearchServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 
@@ -50,7 +54,7 @@ public class TextFlowSearchServiceImplTest extends ZanataDbunitJpaTest {
                 DatabaseOperation.CLEAN_INSERT));
     }
 
-    @BeforeMethod
+    @Before
     public void beforeMethod() {
         MockitoAnnotations.initMocks(this);
         // @formatter:off

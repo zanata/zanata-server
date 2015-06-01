@@ -3,11 +3,13 @@ package org.zanata.webtrans.server.rpc;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.exception.ZanataServiceException;
@@ -18,6 +20,7 @@ import org.zanata.model.TestFixture;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetGlossaryDetailsAction;
@@ -33,7 +36,8 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class GetGlossaryDetailsHandlerTest {
     private GetGlossaryDetailsHandler handler;
     @Mock
@@ -45,7 +49,7 @@ public class GetGlossaryDetailsHandlerTest {
     private HLocale targetHLocale = new HLocale(LocaleId.DE);
     private final HLocale srcLocale = new HLocale(LocaleId.EN);
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         // @formatter:off
@@ -97,7 +101,7 @@ public class GetGlossaryDetailsHandlerTest {
                 Matchers.equalTo("target term"));
     }
 
-    @Test(expectedExceptions = ActionException.class)
+    @Test(expected = ActionException.class)
     public void testExecuteWithInvalidLocale() throws Exception {
         WorkspaceId workspaceId =
                 TestFixture.workspaceId(targetHLocale.getLocaleId());

@@ -23,24 +23,29 @@ package org.zanata.service.impl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import com.binarytweed.test.Quarantine;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.common.DocumentType;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.TranslationFileService;
+import org.zanata.test.QuarantiningRunner;
 
-@Test(groups = { "unit-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class TranslationFileServiceImplTest {
 
     TranslationFileService transFileService;
 
-    @BeforeMethod
+    @Before
     public void beforeTest() {
         transFileService =
                 SeamAutowire.instance().reset().ignoreNonResolvable()
                         .autowire(TranslationFileServiceImpl.class);
     }
 
+    @Test
     public void hasPlainTextAdapter() {
         assertThat(transFileService.hasAdapterFor(DocumentType.PLAIN_TEXT),
                 is(true));

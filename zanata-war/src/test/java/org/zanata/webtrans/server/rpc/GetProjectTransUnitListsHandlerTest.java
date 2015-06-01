@@ -2,14 +2,16 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.List;
 
+import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.ZanataServiceException;
@@ -22,6 +24,7 @@ import org.zanata.search.FilterConstraints;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TextFlowSearchService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetProjectTransUnitLists;
 import org.zanata.webtrans.shared.rpc.GetProjectTransUnitListsResult;
@@ -41,8 +44,9 @@ import static org.zanata.model.TestFixture.makeHTextFlow;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
 @Slf4j
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class GetProjectTransUnitListsHandlerTest {
     public static final long DOC_ID = 1L;
     private GetProjectTransUnitListsHandler handler;
@@ -59,7 +63,7 @@ public class GetProjectTransUnitListsHandlerTest {
     private LocaleId localeId = LocaleId.DE;
     private WorkspaceId workspaceId;
 
-    @BeforeClass
+    @Before
     public void setUpData() {
         hLocale = TestFixture.setId(3L, new HLocale(LocaleId.DE));
         // @formatter:off
@@ -73,7 +77,7 @@ public class GetProjectTransUnitListsHandlerTest {
         workspaceId = TestFixture.workspaceId(localeId);
     }
 
-    @BeforeMethod
+    @Before
     @SuppressWarnings("unchecked")
     public void beforeMethod() {
         SeamAutowire.instance().reset();
@@ -110,11 +114,11 @@ public class GetProjectTransUnitListsHandlerTest {
                     .setContent0(targetContent);
         }
         log.debug("text flow - id: {}, source : [{}], target: [{}]",
-                new Object[] { id, sourceContent, targetContent });
+                id, sourceContent, targetContent);
         return hTextFlow;
     }
 
-    @Test(expectedExceptions = ActionException.class)
+    @Test(expected = ActionException.class)
     public void exceptionIfLocaleIsInvalid() throws Exception {
         GetProjectTransUnitLists action =
                 new GetProjectTransUnitLists("a", true, true, false);

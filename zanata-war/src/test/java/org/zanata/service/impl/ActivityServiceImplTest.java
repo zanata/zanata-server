@@ -28,9 +28,11 @@ import static org.hamcrest.Matchers.nullValue;
 import java.util.Date;
 import java.util.List;
 
+import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.ActivityType;
 import org.zanata.common.ContentState;
@@ -43,11 +45,13 @@ import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.Activity;
 import org.zanata.model.type.EntityType;
 import org.zanata.seam.SeamAutowire;
+import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Test(groups = { "business-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class ActivityServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 
@@ -78,7 +82,7 @@ public class ActivityServiceImplTest extends ZanataDbunitJpaTest {
                 DatabaseOperation.CLEAN_INSERT));
     }
 
-    @BeforeMethod
+    @Before
     public void initializeSeam() {
         seam.reset().use("activityDAO", new ActivityDAO(getSession()))
                 .use("textFlowTargetDAO", new TextFlowTargetDAO(getSession()))

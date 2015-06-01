@@ -20,8 +20,12 @@
  */
 package org.zanata.service.impl;
 
-import org.testng.annotations.Test;
+import com.binarytweed.test.Quarantine;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.lock.Lock;
+import org.zanata.seam.SeamAutowire;
+import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -34,8 +38,14 @@ import static org.hamcrest.Matchers.is;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Test(groups = { "business-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class LockManagerServiceImplTest {
+
+    static {
+        SeamAutowire.instance();
+    }
+
     private LockManagerServiceImpl lockManagerService =
             new LockManagerServiceImpl();
 

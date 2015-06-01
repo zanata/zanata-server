@@ -9,26 +9,24 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 
+import com.binarytweed.test.Quarantine;
+import org.zanata.test.QuarantiningRunner;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Listeners;
-import org.testng.annotations.Test;
-import org.zanata.testng.TestMethodListener;
+import org.zanata.seam.SeamAutowire;
 import org.zanata.util.ZanataEntities;
 
-@Listeners(TestMethodListener.class)
 // single threaded because of ehcache (perhaps other reasons too)
-@Test(singleThreaded = true)
+//@Test(singleThreaded = true)
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public abstract class ZanataJpaTest {
     private static final Logger log = LoggerFactory.getLogger(ZanataJpaTest.class);
     private static final String PERSIST_NAME = "zanataDatasourcePU";
@@ -37,18 +35,16 @@ public abstract class ZanataJpaTest {
 
     protected EntityManager em;
 
-    @BeforeMethod
     @Before
-    protected void setupEM() {
+    public void setupEM() {
         log.debug("Setting up EM");
         emf.getCache().evictAll();
         em = emf.createEntityManager();
         em.getTransaction().begin();
     }
 
-    @AfterMethod
     @After
-    protected void shutdownEM() {
+    public void shutdownEM() {
         log.debug("Shutting down EM");
         clearHibernateSecondLevelCache();
         em.getTransaction().rollback();
@@ -71,9 +67,10 @@ public abstract class ZanataJpaTest {
         return (Session) em.getDelegate();
     }
 
-    @BeforeSuite
     @BeforeClass
     public static void initializeEMF() {
+        // let SeamAutowire patch Seam before someone else loads it:
+        SeamAutowire.instance();
         log.debug("Initializing EMF");
         emf =
                 Persistence.createEntityManagerFactory(PERSIST_NAME,
@@ -84,7 +81,6 @@ public abstract class ZanataJpaTest {
         return null;
     }
 
-    @AfterSuite
     @AfterClass
     public static void shutDownEMF() {
         log.debug("Shutting down EMF");

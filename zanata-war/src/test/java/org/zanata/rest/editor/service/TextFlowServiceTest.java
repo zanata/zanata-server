@@ -4,10 +4,10 @@ import javax.ws.rs.core.Response;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
@@ -23,14 +23,13 @@ import static org.testng.Assert.*;
 import static org.zanata.model.TestFixture.makeHTextFlow;
 import static org.zanata.model.TestFixture.makeTransUnit;
 
-@Test(groups = "unit-tests")
 public class TextFlowServiceTest {
     private TextFlowService service;
     @Mock
     private TextFlowDAO textFlowDAO;
     private TransUnitUtils transUnitUtils;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         transUnitUtils = new TransUnitUtils(new ResourceUtils());

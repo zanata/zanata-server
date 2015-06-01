@@ -24,18 +24,18 @@ package org.zanata.search;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * @author Sean Flanigan <a
  *         href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  *
  */
-@Test(groups = { "unit-tests" })
 public class LevenshteinTokenUtilTest {
     private static final double DELTA = 0.0001;
 
+    @Test
     public void testVarious() {
         String s1 = "one two";
         String s2 = "one two three four five";
@@ -56,6 +56,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertEquals(similarity, 0.0, DELTA);
     }
 
+    @Test
     public void testPoint96Similarity() {
         String s1 =
                 "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 123456789";
@@ -67,6 +68,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertTrue(similarity < 1.0f);
     }
 
+    @Test
     public void testDifferentSizedLists() {
         List<String> strings1 = Arrays.asList("1234567890", "abcdefghij");
         List<String> strings2 = Arrays.asList("1234567890abcdefghij");
@@ -75,6 +77,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertEquals(similarity, 0.0, DELTA);
     }
 
+    @Test
     public void testSimilarLists() {
         List<String> strings1 =
                 Arrays.asList("123 456 78 90", "a_ bc_ def ghi j");
@@ -85,6 +88,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertTrue(similarity < 0.8);
     }
 
+    @Test
     public void testMisorderedLists() {
         List<String> strings1 = Arrays.asList("1234567890", "abcdefghij");
         List<String> strings2 = Arrays.asList("abcdefghij", "1234567890");
@@ -93,6 +97,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertEquals(similarity, 0.0, DELTA);
     }
 
+    @Test
     public void testIdenticalLists() {
         List<String> strings1 = Arrays.asList("one", "two");
         List<String> strings2 = Arrays.asList("one", "two");
@@ -101,6 +106,7 @@ public class LevenshteinTokenUtilTest {
         Assert.assertEquals(similarity, 1.0, DELTA);
     }
 
+    @Test
     public void testTokenise() {
         String[] foobar = LevenshteinTokenUtil.tokenise("foo bar baz");
         assert foobar.length == 3;

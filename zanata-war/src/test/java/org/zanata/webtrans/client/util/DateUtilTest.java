@@ -1,19 +1,19 @@
 package org.zanata.webtrans.client.util;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.testng.Assert.*;
 
-@Test(groups = { "unit-tests" })
 public class DateUtilTest {
 
     private Date aDate;
 
-    @BeforeMethod
+    @Before
     public void before() {
         aDate = new GregorianCalendar(2013, 11, 25, 1, 2, 3).getTime();
     }

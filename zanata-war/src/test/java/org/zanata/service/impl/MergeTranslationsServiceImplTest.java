@@ -34,12 +34,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.common.ContentState;
@@ -54,11 +56,13 @@ import org.zanata.rest.editor.service.LocalesService;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.util.MessageGenerator;
 
 import com.google.common.collect.Lists;
 
-@Test(groups = { "business-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 
@@ -91,8 +95,8 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                 DatabaseOperation.CLEAN_INSERT));
     }
 
-    @BeforeMethod
-    protected void beforeMethod() throws Exception {
+    @Before
+    public void beforeMethod() throws Exception {
         MockitoAnnotations.initMocks(this);
         seam.reset();
         projectIterationDAO = new ProjectIterationDAO(getSession());
@@ -292,7 +296,8 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
             HTextFlowTarget target2, boolean useNewerTranslation,
             boolean expectedResult) {
         boolean result =
-                service.shouldMerge(target1, target2, useNewerTranslation);
+                MergeTranslationsServiceImpl.shouldMerge(target1, target2,
+                        useNewerTranslation);
         assertThat(result).isEqualTo(expectedResult);
     }
 }

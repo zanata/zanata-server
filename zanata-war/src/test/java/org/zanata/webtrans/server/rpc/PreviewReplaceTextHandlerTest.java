@@ -1,14 +1,17 @@
 package org.zanata.webtrans.server.rpc;
 
+import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.ContentState;
 import org.zanata.model.TestFixture;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.TransUnit;
 import org.zanata.webtrans.shared.model.TransUnitUpdatePreview;
 import org.zanata.webtrans.shared.rpc.PreviewReplaceText;
@@ -23,13 +26,14 @@ import static org.mockito.Mockito.verify;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class PreviewReplaceTextHandlerTest {
     private PreviewReplaceTextHandler handler;
     @Mock
     private ZanataIdentity identity;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         // @formatter:off
@@ -59,7 +63,7 @@ public class PreviewReplaceTextHandlerTest {
         assertThat(preview.getContents(), Matchers.contains("replace"));
     }
 
-    @Test(expectedExceptions = ActionException.class)
+    @Test(expected = ActionException.class)
     public void cannotRollback() throws ActionException {
         handler.rollback(null, null, null);
     }

@@ -27,10 +27,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.binarytweed.test.Quarantine;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.model.HLocale;
@@ -38,12 +40,14 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
+import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Test(groups = { "unit-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class AutocompleteTest {
 
     static final List<HLocale> supportedLocales = Lists.newArrayList(
@@ -58,7 +62,7 @@ public class AutocompleteTest {
     @Mock
     LocaleDAO localeDAO;
 
-    @BeforeMethod
+    @Before
     public void prepareTest() {
         MockitoAnnotations.initMocks(this);
         seam.reset()

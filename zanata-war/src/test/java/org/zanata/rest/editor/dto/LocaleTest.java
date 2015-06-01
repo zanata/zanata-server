@@ -3,7 +3,7 @@ package org.zanata.rest.editor.dto;
 import java.io.IOException;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.zanata.common.LocaleId;
 
 import static org.testng.Assert.assertEquals;

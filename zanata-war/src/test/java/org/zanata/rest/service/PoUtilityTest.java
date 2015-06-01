@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.fedorahosted.openprops.Properties;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
-@Test(groups = { "unit-tests" })
 public class PoUtilityTest {
     String lineSep = System.getProperty("line.separator");
 

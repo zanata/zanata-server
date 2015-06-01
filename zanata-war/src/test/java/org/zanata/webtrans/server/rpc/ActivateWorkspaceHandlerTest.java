@@ -13,15 +13,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.binarytweed.test.Quarantine;
 import net.customware.gwt.dispatch.server.ExecutionContext;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
@@ -34,6 +36,7 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
+import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.client.presenter.UserConfigHolder;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.server.TranslationWorkspace;
@@ -62,7 +65,8 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class ActivateWorkspaceHandlerTest {
     public static final String HTTP_SESSION_ID = "httpSessionId";
     private ActivateWorkspaceHandler handler;
@@ -98,7 +102,7 @@ public class ActivateWorkspaceHandlerTest {
 
     private ValidationFactory validationFactory;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         // @formatter:off

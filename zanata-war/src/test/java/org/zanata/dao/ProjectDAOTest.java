@@ -4,16 +4,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.binarytweed.test.Quarantine;
+import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.jboss.seam.security.Identity;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.model.HProject;
 
-@Test(groups = { "jpa-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class ProjectDAOTest extends ZanataDbunitJpaTest {
 
     private ProjectDAO dao;
@@ -26,11 +30,11 @@ public class ProjectDAOTest extends ZanataDbunitJpaTest {
     }
 
     @BeforeClass
-    void beforeClass() {
+    public static void disableSecurity() {
         Identity.setSecurityEnabled(false);
     }
 
-    @BeforeMethod(firstTimeOnly = true)
+    @Before
     public void setup() {
         dao = new ProjectDAO((Session) getEm().getDelegate());
     }

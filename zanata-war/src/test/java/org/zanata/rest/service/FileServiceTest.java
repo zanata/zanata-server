@@ -28,24 +28,28 @@ import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
+import com.binarytweed.test.Quarantine;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.file.GlobalDocumentId;
 import org.zanata.file.SourceDocumentUpload;
 import org.zanata.file.TranslationDocumentUpload;
 import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.seam.SeamAutowire;
+import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author David Mason, <a
  *         href="mailto:damason@redhat.com">damason@redhat.com</a>
  */
-@Test(groups = { "unit-tests" })
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class FileServiceTest {
     private static final String PROJ_SLUG = "project-slug";
     private static final String VER_SLUG = "version-slug";
@@ -70,7 +74,7 @@ public class FileServiceTest {
     private Response okResponse;
     private Response response;
 
-    @BeforeMethod
+    @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
 
@@ -87,7 +91,7 @@ public class FileServiceTest {
         okResponse = Response.ok().build();
     }
 
-    @AfterMethod
+    @After
     public void afterMethod() {
         id = null;
         form = null;
@@ -95,6 +99,7 @@ public class FileServiceTest {
         response = null;
     }
 
+    @Test
     public void sourceUploadParamsHandledCorrectly() {
         when(sourceUploader.tryUploadSourceFile(eq(id), formCaptor.capture()))
                 .thenReturn(okResponse);
@@ -102,6 +107,7 @@ public class FileServiceTest {
         assertThat(formCaptor.getValue(), is(sameInstance(form)));
     }
 
+    @Test
     public void sourceUploadResponseReturnedDirectly() {
         when(sourceUploader.tryUploadSourceFile(id, form)).thenReturn(
                 okResponse);
@@ -110,6 +116,7 @@ public class FileServiceTest {
         assertThat(response, is(sameInstance(okResponse)));
     }
 
+    @Test
     public void translationUploadParamsHandledCorrectly() {
         when(
                 transUploader.tryUploadTranslationFile(eq(id), eq(LOCALE),
@@ -120,6 +127,7 @@ public class FileServiceTest {
         assertThat(formCaptor.getValue(), is(sameInstance(form)));
     }
 
+    @Test
     public void translationUploadResponseReturnedDirectly() {
         when(transUploader.tryUploadTranslationFile(id, LOCALE, MERGE, false, form))
                 .thenReturn(okResponse);

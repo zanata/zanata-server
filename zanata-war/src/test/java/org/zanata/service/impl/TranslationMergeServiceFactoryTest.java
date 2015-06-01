@@ -1,12 +1,16 @@
 package org.zanata.service.impl;
 
+import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.zanata.common.MergeType;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.TranslationMergeService;
+import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.*;
 
@@ -14,12 +18,13 @@ import static org.hamcrest.MatcherAssert.*;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Test(groups = "unit-tests")
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
 public class TranslationMergeServiceFactoryTest {
     private TranslationMergeServiceFactory factory;
 
-    @BeforeClass
-    public void beforeClass() {
+    @Before
+    public void before() {
         factory =
                 SeamAutowire.instance().reset().ignoreNonResolvable()
                         .autowire(TranslationMergeServiceFactory.class);
