@@ -46,10 +46,13 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class CommonMarkRenderer {
 
-    // TODO when upgrading, use org.webjars.bower:commonmark Maven artifact
-    // instead, plus org.apache.servicemix.tooling:depends-maven-plugin to
+    // TODO when upgrading, use org.apache.servicemix.tooling:depends-maven-plugin to
     // generate dependencies.properties and get the correct version.
-    private static final String commonMarkImpl = "commonmark-0.18.1.min.js";
+    private static final String VER = "0.18.1";
+    private static final String SCRIPT_NAME = "commonmark/" +
+            VER + "/dist/commonmark.js";
+    private static final String RESOURCE_NAME = "META-INF/resources/webjars/" +
+            SCRIPT_NAME;
 
     // ScriptEngine is expensive, but not really threadsafe (even in Rhino).
     // However, they are quite large, so it's probably not worth keeping
@@ -59,16 +62,17 @@ public class CommonMarkRenderer {
     private Invocable invocable = getInvocable();
 
     /**
-     * Return the name of the implementation script, available under "/script/"
-     * (ie under web resource "$zanata/script/" or under classpath resource
-     * "META-INF/resources/script/".
+     * Return the name of the implementation script for JSF h:outputScript.
      *
-     * NB also used in JSF as
-     * <code>&lt;h:outputScript target="body" library="script" name="${commonMarkRenderer.scriptName}"/&gt;</code>
+     * You can use it like this:
+     * <pre>
+     * {@code <h:outputScript target="body" library="webjars"
+     *     name="${commonMarkRenderer.outputScriptName}"/>}
+     * </pre>
      * @return
      */
-    public String getScriptName() {
-        return commonMarkImpl;
+    public String getOutputScriptName() {
+        return SCRIPT_NAME;
     }
 
     /**
@@ -91,7 +95,7 @@ public class CommonMarkRenderer {
 
     private Invocable getInvocable() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                getScriptAsStream(getScriptName()), StandardCharsets.UTF_8))) {
+                getScriptAsStream(), StandardCharsets.UTF_8))) {
 
             ScriptEngine engine = newEngine();
             engine.eval("window = this;");
@@ -111,9 +115,9 @@ public class CommonMarkRenderer {
         }
     }
 
-    protected InputStream getScriptAsStream(String scriptName) {
+    private InputStream getScriptAsStream() {
         return getClass().getClassLoader().getResourceAsStream(
-                "META-INF/resources/script/" + scriptName);
+                RESOURCE_NAME);
     }
 
     private ScriptEngine newEngine() {

@@ -2158,6 +2158,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>commonmark</artifactId>
+      <version>0.18.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <scope>provided</scope>
