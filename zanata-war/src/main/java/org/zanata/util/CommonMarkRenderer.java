@@ -46,9 +46,8 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class CommonMarkRenderer {
 
-    // TODO when upgrading, use org.apache.servicemix.tooling:depends-maven-plugin to
-    // generate dependencies.properties and get the correct version.
-    private static final String VER = "0.19.0";
+    private static final String VER = Dependencies.getVersion(
+            "org.webjars.bower:commonmark:jar");
     private static final String SCRIPT_NAME = "commonmark/" +
             VER + "/dist/commonmark.js";
     private static final String RESOURCE_NAME = "META-INF/resources/webjars/" +
