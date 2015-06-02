@@ -43,7 +43,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [981498](https://bugzilla.redhat.com/show_bug.cgi?id=981498) - No underscore sanity checking on creating usernames
 * [1147304](https://bugzilla.redhat.com/show_bug.cgi?id=1147304) - Project search fails on special characters
 * [1123186](https://bugzilla.redhat.com/show_bug.cgi?id=1123186) - Project search fails for multiple word project names
-
+* [1112498](https://bugzilla.redhat.com/show_bug.cgi?id=1112498) - Unable to remove self as maintainer
 -----------------------
 
 <h5>New Features</h5>
