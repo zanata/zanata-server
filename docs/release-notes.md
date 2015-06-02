@@ -41,6 +41,8 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1098362](https://bugzilla.redhat.com/show_bug.cgi?id=1098362) - download link in editor doesn't encode properly and result in 404
 * [1225689](https://bugzilla.redhat.com/show_bug.cgi?id=1225689) - [Project Version View] Failed to load entries when the doc id contains characters that should be URL encoded
 * [981498](https://bugzilla.redhat.com/show_bug.cgi?id=981498) - No underscore sanity checking on creating usernames
+* [1147304](https://bugzilla.redhat.com/show_bug.cgi?id=1147304) - Project search fails on special characters
+* [1123186](https://bugzilla.redhat.com/show_bug.cgi?id=1123186) - Project search fails for multiple word project names
 
 -----------------------
 
