@@ -53,6 +53,10 @@ public class CommonMarkRenderer {
     private static final String RESOURCE_NAME = "META-INF/resources/webjars/" +
             SCRIPT_NAME;
 
+    public CommonMarkRenderer() {
+        log.info("Using commonmark.js version {}", VER);
+    }
+
     // ScriptEngine is expensive, but not really threadsafe (even in Rhino).
     // However, they are quite large, so it's probably not worth keeping
     // one for every thread.  Instead, we keep one around, and synchronise
@@ -115,8 +119,13 @@ public class CommonMarkRenderer {
     }
 
     private InputStream getScriptAsStream() {
-        return getClass().getClassLoader().getResourceAsStream(
-                RESOURCE_NAME);
+        InputStream stream =
+                getClass().getClassLoader().getResourceAsStream(
+                        RESOURCE_NAME);
+        if (stream == null) {
+            throw new RuntimeException("Script "+ RESOURCE_NAME + " not found");
+        }
+        return stream;
     }
 
     private ScriptEngine newEngine() {
