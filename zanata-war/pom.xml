@@ -91,7 +91,9 @@
                       props.put coord, a.version
                     }
                   }
-                  new File(project.build.outputDirectory, 'dependencies.properties').withWriter { out ->
+                  def buildDir = new File(project.build.outputDirectory)
+                  buildDir.mkdirs()
+                  new File(buildDir, 'dependencies.properties').withWriter { out ->
                     props.store out, 'Zanata dependency versions'
                   }
                 </script>
