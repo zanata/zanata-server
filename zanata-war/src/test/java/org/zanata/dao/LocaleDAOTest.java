@@ -3,8 +3,6 @@ package org.zanata.dao;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.jboss.seam.security.Identity;
@@ -18,8 +16,6 @@ import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class LocaleDAOTest extends ZanataDbunitJpaTest {
     private static final Logger log = LoggerFactory.getLogger(LocaleDAOTest.class);
 

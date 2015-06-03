@@ -2,7 +2,6 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.ZanataServiceException;
@@ -24,7 +24,6 @@ import org.zanata.search.FilterConstraints;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TextFlowSearchService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetProjectTransUnitLists;
 import org.zanata.webtrans.shared.rpc.GetProjectTransUnitListsResult;
@@ -45,9 +44,7 @@ import static org.zanata.model.TestFixture.makeHTextFlow;
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class GetProjectTransUnitListsHandlerTest {
+public class GetProjectTransUnitListsHandlerTest extends ZanataTest {
     public static final long DOC_ID = 1L;
     private GetProjectTransUnitListsHandler handler;
     @Mock

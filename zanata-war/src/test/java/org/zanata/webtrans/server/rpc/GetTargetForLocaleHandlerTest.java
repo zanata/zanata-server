@@ -5,7 +5,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-import com.binarytweed.test.Quarantine;
 import lombok.extern.slf4j.Slf4j;
 import org.dbunit.operation.DatabaseOperation;
 
@@ -24,7 +23,6 @@ import org.zanata.model.TestFixture;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.IdForLocale;
 import org.zanata.webtrans.shared.model.Locale;
 import org.zanata.webtrans.shared.model.TransUnitId;
@@ -33,8 +31,6 @@ import org.zanata.webtrans.shared.rpc.GetTargetForLocale;
 import org.zanata.webtrans.shared.rpc.GetTargetForLocaleResult;
 
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class GetTargetForLocaleHandlerTest extends ZanataDbunitJpaTest {
     private GetTargetForLocaleHandler handler;
     @Mock

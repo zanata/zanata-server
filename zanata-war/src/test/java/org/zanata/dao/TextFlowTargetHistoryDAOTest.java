@@ -2,8 +2,6 @@ package org.zanata.dao;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.hibernate.transform.ResultTransformer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -38,8 +36,6 @@ import lombok.RequiredArgsConstructor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
     private TextFlowTargetHistoryDAO historyDAO;
     private HPerson user;

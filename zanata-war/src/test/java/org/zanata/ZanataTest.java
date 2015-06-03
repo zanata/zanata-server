@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Red Hat, Inc. and individual contributors
+ * Copyright 2015, Red Hat, Inc. and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
  *
@@ -18,33 +18,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.zanata.service.impl;
+package org.zanata;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import org.junit.Before;
-import org.junit.Test;
+import com.binarytweed.test.Quarantine;
 import org.junit.runner.RunWith;
-import org.zanata.ZanataTest;
-import org.zanata.common.DocumentType;
-import org.zanata.seam.SeamAutowire;
-import org.zanata.service.TranslationFileService;
+import org.zanata.test.QuarantiningRunner;
 
-public class TranslationFileServiceImplTest extends ZanataTest {
-
-    TranslationFileService transFileService;
-
-    @Before
-    public void beforeTest() {
-        transFileService =
-                SeamAutowire.instance().reset().ignoreNonResolvable()
-                        .autowire(TranslationFileServiceImpl.class);
-    }
-
-    @Test
-    public void hasPlainTextAdapter() {
-        assertThat(transFileService.hasAdapterFor(DocumentType.PLAIN_TEXT),
-                is(true));
-    }
+/**
+ * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
+ */
+@Quarantine({ "org.jboss.seam" })
+@RunWith(QuarantiningRunner.class)
+public abstract class ZanataTest {
 }

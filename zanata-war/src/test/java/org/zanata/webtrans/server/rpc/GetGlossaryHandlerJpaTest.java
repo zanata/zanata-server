@@ -2,7 +2,6 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.Session;
@@ -19,7 +18,6 @@ import org.zanata.model.HLocale;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.rpc.GetGlossary;
 import org.zanata.webtrans.shared.rpc.GetGlossaryResult;
 import org.zanata.webtrans.shared.rpc.HasSearchType;
@@ -37,8 +35,6 @@ import static org.mockito.Mockito.when;
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class GetGlossaryHandlerJpaTest extends ZanataDbunitJpaTest {
     private static final LocaleId TARGET_LOCALE_ID = new LocaleId("zh");
     private GetGlossaryHandler handler;

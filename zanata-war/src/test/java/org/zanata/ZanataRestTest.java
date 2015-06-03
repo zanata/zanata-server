@@ -8,8 +8,6 @@ import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.hibernate.Session;
 import org.jboss.resteasy.client.ClientRequestFactory;
 import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
@@ -38,8 +36,6 @@ import org.zanata.security.AuthenticationType;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.mockito.Mockito.when;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
 
     protected static final URI MOCK_BASE_URI = URI.create("http://mockhost");

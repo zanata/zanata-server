@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.ContentType;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -27,7 +27,6 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.TranslationFileService;
 import org.zanata.service.TranslationStateCache;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentInfo;
 import org.zanata.webtrans.shared.model.WorkspaceId;
@@ -38,9 +37,7 @@ import org.zanata.webtrans.shared.rpc.GetDocumentListResult;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class GetDocumentListHandlerTest {
+public class GetDocumentListHandlerTest extends ZanataTest {
     private GetDocumentListHandler handler;
     @Mock
     private ZanataIdentity identity;

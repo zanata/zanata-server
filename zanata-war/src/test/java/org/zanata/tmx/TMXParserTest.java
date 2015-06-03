@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import nu.xom.Element;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -63,8 +61,6 @@ import com.google.common.collect.Sets;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class TMXParserTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

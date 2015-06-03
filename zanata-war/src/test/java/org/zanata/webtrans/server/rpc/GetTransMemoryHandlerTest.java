@@ -2,7 +2,6 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.apache.lucene.queryParser.QueryParser;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -10,11 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.TranslationMemoryService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
 import org.zanata.webtrans.shared.rpc.GetTranslationMemory;
@@ -31,9 +30,7 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class GetTransMemoryHandlerTest {
+public class GetTransMemoryHandlerTest extends ZanataTest {
     private GetTransMemoryHandler handler;
 
     @Mock

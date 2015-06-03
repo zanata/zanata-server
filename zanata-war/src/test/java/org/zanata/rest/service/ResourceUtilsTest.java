@@ -11,7 +11,6 @@ import java.util.Properties;
 import javax.persistence.EntityManager;
 
 import com.binarytweed.test.DelegateRunningTo;
-import com.binarytweed.test.Quarantine;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -23,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.ZanataTest;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.MergeType;
@@ -37,7 +37,6 @@ import org.zanata.model.po.HPoTargetHeader;
 import org.zanata.rest.dto.extensions.gettext.PoTargetHeader;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.seam.SeamAutowire;
-import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -45,10 +44,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @DelegateRunningTo(DataProviderRunner.class)
-public class ResourceUtilsTest {
+public class ResourceUtilsTest extends ZanataTest {
     private static final Logger log = LoggerFactory
             .getLogger(ResourceUtilsTest.class);
 

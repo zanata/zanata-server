@@ -2,8 +2,6 @@ package org.zanata.rest.service;
 
 import javax.ws.rs.core.Response;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.hibernate.Session;
 import org.jboss.seam.security.Identity;
 import org.junit.Before;
@@ -19,8 +17,6 @@ import org.zanata.dao.TextFlowStreamingDAO;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class TMXDummyRestTest extends ZanataRestTest {
 
     @Mock

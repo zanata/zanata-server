@@ -34,7 +34,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,13 +55,10 @@ import org.zanata.rest.editor.service.LocalesService;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.util.MessageGenerator;
 
 import com.google.common.collect.Lists;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

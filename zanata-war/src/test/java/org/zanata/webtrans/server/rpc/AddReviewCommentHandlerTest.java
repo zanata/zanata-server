@@ -21,8 +21,7 @@
 
 package org.zanata.webtrans.server.rpc;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
+import org.zanata.ZanataTest;
 import org.hamcrest.Matchers;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.junit.Before;
@@ -63,9 +62,7 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class AddReviewCommentHandlerTest {
+public class AddReviewCommentHandlerTest extends ZanataTest {
     private AddReviewCommentHandler handler;
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)

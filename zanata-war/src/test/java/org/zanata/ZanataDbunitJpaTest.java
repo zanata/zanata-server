@@ -9,8 +9,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import lombok.extern.slf4j.Slf4j;
 
 import org.dbunit.database.DatabaseConfig;
@@ -34,8 +32,6 @@ import org.junit.runner.RunWith;
  * @see org.jboss.seam.mock.DBUnitSeamTest
  * @see org.jboss.seam.mock.DBJUnitSeamTest
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @Slf4j
 public abstract class ZanataDbunitJpaTest extends ZanataJpaTest {
 

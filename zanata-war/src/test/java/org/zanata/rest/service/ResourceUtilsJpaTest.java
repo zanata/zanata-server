@@ -3,7 +3,6 @@ package org.zanata.rest.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.binarytweed.test.Quarantine;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,10 +30,7 @@ import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.zanata.test.QuarantiningRunner;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @Slf4j
 public class ResourceUtilsJpaTest extends ZanataJpaTest {
     static SeamAutowire seam = SeamAutowire.instance();

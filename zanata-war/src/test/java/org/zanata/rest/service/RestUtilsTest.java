@@ -10,7 +10,6 @@ import javax.validation.ValidatorFactory;
 import javax.ws.rs.core.MediaType;
 
 import com.binarytweed.test.DelegateRunningTo;
-import com.binarytweed.test.Quarantine;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -20,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.ZanataTest;
 import org.zanata.rest.dto.DTOUtil;
 import org.zanata.rest.dto.VersionInfo;
 import org.zanata.rest.dto.resource.Resource;
@@ -27,15 +27,12 @@ import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.seam.SeamAutowire;
 import com.allen_sauer.gwt.log.client.Log;
-import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @DelegateRunningTo(DataProviderRunner.class)
-public class RestUtilsTest {
+public class RestUtilsTest extends ZanataTest {
     RestUtils restUtils;
 
     private static ResourceTestObjectFactory resourceTestFactory =

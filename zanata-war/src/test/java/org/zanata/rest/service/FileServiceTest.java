@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
-import com.binarytweed.test.Quarantine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,20 +36,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.file.GlobalDocumentId;
 import org.zanata.file.SourceDocumentUpload;
 import org.zanata.file.TranslationDocumentUpload;
 import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.seam.SeamAutowire;
-import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author David Mason, <a
  *         href="mailto:damason@redhat.com">damason@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class FileServiceTest {
+public class FileServiceTest extends ZanataTest {
     private static final String PROJ_SLUG = "project-slug";
     private static final String VER_SLUG = "version-slug";
     private static final String DOC_ID = "docId";

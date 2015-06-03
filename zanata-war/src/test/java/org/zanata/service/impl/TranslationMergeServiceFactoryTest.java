@@ -1,16 +1,15 @@
 package org.zanata.service.impl;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.zanata.ZanataTest;
 import org.zanata.common.MergeType;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.TranslationMergeService;
-import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.*;
 
@@ -18,9 +17,7 @@ import static org.hamcrest.MatcherAssert.*;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class TranslationMergeServiceFactoryTest {
+public class TranslationMergeServiceFactoryTest extends ZanataTest {
     private TranslationMergeServiceFactory factory;
 
     @Before

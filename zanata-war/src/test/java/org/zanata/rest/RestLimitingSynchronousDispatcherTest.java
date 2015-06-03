@@ -5,7 +5,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.binarytweed.test.Quarantine;
 import org.jboss.resteasy.core.ResourceInvoker;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
@@ -18,9 +17,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.limits.RateLimitingProcessor;
 import org.zanata.model.HAccount;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.util.HttpUtil;
 
 import static org.mockito.Mockito.*;
@@ -30,9 +29,7 @@ import static org.mockito.Mockito.doReturn;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class RestLimitingSynchronousDispatcherTest {
+public class RestLimitingSynchronousDispatcherTest extends ZanataTest {
     private RestLimitingSynchronousDispatcher dispatcher;
 
     private static final String API_KEY = "apiKey123";

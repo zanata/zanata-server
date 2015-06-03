@@ -2,7 +2,6 @@ package org.zanata.service.impl;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.search.impl.FullTextSessionImpl;
@@ -24,7 +23,6 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.search.FilterConstraints;
 import org.zanata.service.LocaleService;
 import org.zanata.service.TextFlowSearchService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -34,8 +32,6 @@ import static org.mockito.Mockito.*;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class TextFlowSearchServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

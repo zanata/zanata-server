@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.binarytweed.test.Quarantine;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.DefaultCacheManager;
 import org.junit.Before;
@@ -37,12 +36,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.impl.TranslationStateCacheImpl.DocumentLocaleKey;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.DocumentStatus;
@@ -50,9 +49,7 @@ import org.zanata.webtrans.shared.model.ValidationId;
 
 import com.google.common.cache.CacheLoader;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class TranslationStateCacheImplTest {
+public class TranslationStateCacheImplTest extends ZanataTest {
     TranslationStateCacheImpl tsCache;
     @Mock
     private CacheLoader<DocumentLocaleKey, WordStatistic> docStatisticLoader;

@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.binarytweed.test.Quarantine;
 import net.customware.gwt.dispatch.server.ExecutionContext;
 
 import org.hamcrest.Matchers;
@@ -24,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
@@ -36,7 +36,6 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.client.presenter.UserConfigHolder;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.server.TranslationWorkspace;
@@ -65,9 +64,7 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class ActivateWorkspaceHandlerTest {
+public class ActivateWorkspaceHandlerTest extends ZanataTest {
     public static final String HTTP_SESSION_ID = "httpSessionId";
     private ActivateWorkspaceHandler handler;
     @Mock

@@ -9,8 +9,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
@@ -25,9 +23,7 @@ import org.zanata.util.ZanataEntities;
 
 // single threaded because of ehcache (perhaps other reasons too)
 //@Test(singleThreaded = true)
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public abstract class ZanataJpaTest {
+public abstract class ZanataJpaTest extends ZanataTest {
     private static final Logger log = LoggerFactory.getLogger(ZanataJpaTest.class);
     private static final String PERSIST_NAME = "zanataDatasourcePU";
 

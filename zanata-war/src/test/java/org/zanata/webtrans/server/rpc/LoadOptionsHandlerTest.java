@@ -5,8 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.HashMap;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.jboss.seam.security.management.JpaIdentityStore;
@@ -30,8 +28,6 @@ import org.zanata.webtrans.shared.rpc.SaveOptionsAction;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class LoadOptionsHandlerTest extends ZanataDbunitJpaTest {
     private LoadOptionsHandler handler;
     private SaveOptionsHandler saveHandler;

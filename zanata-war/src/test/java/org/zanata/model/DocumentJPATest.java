@@ -10,8 +10,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.hibernate.Session;
@@ -28,8 +26,6 @@ import org.zanata.dao.LocaleDAO;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class DocumentJPATest extends ZanataDbunitJpaTest {
 
     private LocaleDAO localeDAO;

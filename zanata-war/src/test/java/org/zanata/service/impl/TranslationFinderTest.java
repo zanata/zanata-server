@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.binarytweed.test.DelegateRunningTo;
-import com.binarytweed.test.Quarantine;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -40,7 +39,6 @@ import org.zanata.service.SearchIndexManager;
 import org.zanata.service.TranslationFinder;
 
 import com.google.common.base.Optional;
-import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -48,8 +46,6 @@ import org.zanata.test.QuarantiningRunner;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @DelegateRunningTo(DataProviderRunner.class)
 public class TranslationFinderTest extends ImmutableDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();

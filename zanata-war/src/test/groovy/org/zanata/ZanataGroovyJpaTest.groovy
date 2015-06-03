@@ -18,12 +18,12 @@ import javax.persistence.Persistence
  * This class is a groovy parallel to {@link ZanataJpaTest} with small changes to make it runnable by groovy,
  * such as no @Test annotation at the class level as TestNG will attempt to run all groovy-generated methods.
  *
- * Groups must be declared on all callback methods in order for them to get picked up when running frouped tests.
+ * Groups must be declared on all callback methods in order for them to get picked up when running grouped tests.
  *
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  * @see {@link ZanataJpaTest}
  */
-abstract class ZanataGroovyJpaTest {
+abstract class ZanataGroovyJpaTest extends ZanataTest {
     private static final Logger log = LoggerFactory.getLogger(ZanataJpaTest.class);
     private static final String PERSIST_NAME = "zanataDatasourcePU";
 

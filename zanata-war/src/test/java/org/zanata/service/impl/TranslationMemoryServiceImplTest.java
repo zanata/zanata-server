@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.binarytweed.test.DelegateRunningTo;
-import com.binarytweed.test.Quarantine;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
@@ -33,7 +32,6 @@ import org.zanata.model.TestFixture;
 import org.zanata.model.po.HPotEntryData;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.SearchIndexManager;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.TransMemoryDetails;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
@@ -51,8 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 // see also TranslationFinderTest
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @DelegateRunningTo(DataProviderRunner.class)
 public class TranslationMemoryServiceImplTest extends ImmutableDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();

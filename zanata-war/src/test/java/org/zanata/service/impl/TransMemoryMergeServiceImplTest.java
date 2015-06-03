@@ -34,7 +34,6 @@ import static org.zanata.webtrans.shared.rpc.HasSearchType.SearchType.FUZZY_PLUR
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import net.customware.gwt.dispatch.shared.ActionException;
 
 import org.hamcrest.Matchers;
@@ -45,6 +44,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -60,7 +60,6 @@ import org.zanata.service.SecurityService;
 import org.zanata.service.TransMemoryMergeService;
 import org.zanata.service.TranslationMemoryService;
 import org.zanata.service.TranslationService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.server.TranslationWorkspace;
 import org.zanata.webtrans.shared.NoSuchWorkspaceException;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
@@ -81,9 +80,7 @@ import com.google.common.base.Optional;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class TransMemoryMergeServiceImplTest {
+public class TransMemoryMergeServiceImplTest extends ZanataTest {
 
     private TransMemoryMergeService transMemoryMergeService;
 

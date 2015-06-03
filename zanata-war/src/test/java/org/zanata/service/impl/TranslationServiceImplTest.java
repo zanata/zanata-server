@@ -23,8 +23,6 @@ package org.zanata.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.jboss.seam.security.management.JpaIdentityStore;
@@ -57,8 +55,6 @@ import static org.zanata.service.TranslationService.TranslationResult;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class TranslationServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
     @Mock

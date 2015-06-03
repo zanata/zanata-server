@@ -2,19 +2,18 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 import org.zanata.model.TestFixture;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.impl.LocaleServiceImpl;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetLocaleList;
 import org.zanata.webtrans.shared.rpc.GetLocaleListResult;
@@ -27,9 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class GetLocaleListHandlerTest {
+public class GetLocaleListHandlerTest extends ZanataTest {
     private GetLocaleListHandler handler;
 
     @Mock

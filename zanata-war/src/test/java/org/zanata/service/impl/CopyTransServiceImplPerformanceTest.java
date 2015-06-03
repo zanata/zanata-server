@@ -17,8 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
+import org.zanata.ZanataTest;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -74,9 +73,7 @@ import com.google.common.collect.ImmutableMap;
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class CopyTransServiceImplPerformanceTest {
+public class CopyTransServiceImplPerformanceTest extends ZanataTest {
     private static final String PERSIST_NAME = "zanataDatasourcePU";
     private static final String MYSQL_TEST_DB_URL =
             "jdbc:log4jdbc:mysql://localhost:3306/zanata_unit_test?characterEncoding=UTF-8";

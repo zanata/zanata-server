@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -26,7 +26,6 @@ import org.zanata.rest.service.ResourceUtils;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.SecurityService;
 import org.zanata.service.TranslationService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.server.TranslationWorkspace;
 import org.zanata.webtrans.shared.model.DocumentId;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
@@ -41,9 +40,7 @@ import com.google.common.collect.Lists;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class RevertTransUnitUpdatesHandlerTest {
+public class RevertTransUnitUpdatesHandlerTest extends ZanataTest {
     private RevertTransUnitUpdatesHandler handler;
     @Mock
     private TranslationService translationServiceImpl;

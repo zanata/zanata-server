@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +23,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.AccountDAO;
@@ -38,7 +38,6 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.ValidationService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.NoSuchWorkspaceException;
 import org.zanata.webtrans.shared.auth.EditorClientId;
 import org.zanata.webtrans.shared.model.ValidationAction;
@@ -54,9 +53,7 @@ import com.google.common.collect.Lists;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class TranslationWorkspaceManagerImplTest {
+public class TranslationWorkspaceManagerImplTest extends ZanataTest {
     private TranslationWorkspaceManagerImpl manager;
 
     @Mock

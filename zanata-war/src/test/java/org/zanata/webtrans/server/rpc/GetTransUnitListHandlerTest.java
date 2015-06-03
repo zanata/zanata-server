@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import lombok.extern.slf4j.Slf4j;
 
 import org.dbunit.operation.DatabaseOperation;
@@ -37,7 +36,6 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.impl.TextFlowSearchServiceImpl;
 import org.zanata.service.impl.TranslationStateCacheImpl;
 import org.zanata.service.impl.ValidationServiceImpl;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.client.service.GetTransUnitActionContext;
 import org.zanata.webtrans.shared.auth.EditorClientId;
 import org.zanata.webtrans.shared.model.DocumentInfo;
@@ -53,8 +51,6 @@ import org.zanata.webtrans.shared.rpc.GetTransUnitsNavigationResult;
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class GetTransUnitListHandlerTest extends ZanataDbunitJpaTest {
     private GetTransUnitListHandler handler;
     @Mock

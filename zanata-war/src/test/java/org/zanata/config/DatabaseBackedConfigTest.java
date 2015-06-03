@@ -20,14 +20,12 @@
  */
 package org.zanata.config;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.seam.SeamAutowire;
-import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,8 +37,6 @@ import static org.hamcrest.Matchers.nullValue;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class DatabaseBackedConfigTest extends ZanataDbunitJpaTest {
     private DatabaseBackedConfig databaseBackedConfig;
 

@@ -22,7 +22,6 @@ package org.zanata.service.impl;
 
 import java.util.ArrayList;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -35,7 +34,6 @@ import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.UserAccountService;
-import org.zanata.test.QuarantiningRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
@@ -45,8 +43,6 @@ import static org.hamcrest.Matchers.not;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class UserAccountServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

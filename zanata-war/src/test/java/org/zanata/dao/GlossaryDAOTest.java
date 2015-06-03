@@ -2,8 +2,6 @@ package org.zanata.dao;
 
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.jboss.seam.security.Identity;
@@ -24,8 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     private GlossaryDAO dao;
 

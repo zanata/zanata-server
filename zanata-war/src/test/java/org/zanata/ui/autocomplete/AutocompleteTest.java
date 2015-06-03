@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.model.HLocale;
@@ -40,15 +40,12 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
-import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class AutocompleteTest {
+public class AutocompleteTest extends ZanataTest {
 
     static final List<HLocale> supportedLocales = Lists.newArrayList(
             new HLocale(LocaleId.DE), new HLocale(LocaleId.EN), new HLocale(

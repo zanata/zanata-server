@@ -2,13 +2,13 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.Date;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
@@ -17,7 +17,6 @@ import org.zanata.model.HLocale;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.GlossaryDetails;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermResult;
@@ -33,9 +32,7 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class UpdateGlossaryTermHandlerTest {
+public class UpdateGlossaryTermHandlerTest extends ZanataTest {
     private UpdateGlossaryTermHandler handler;
     @Mock
     private ZanataIdentity identity;

@@ -2,13 +2,13 @@ package org.zanata.webtrans.server.rpc;
 
 import java.util.Date;
 
-import com.binarytweed.test.Quarantine;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.exception.ZanataServiceException;
@@ -24,7 +24,6 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.impl.TranslationMemoryServiceImpl;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 import org.zanata.webtrans.shared.model.WorkspaceId;
 import org.zanata.webtrans.shared.rpc.GetTransMemoryDetailsAction;
@@ -40,9 +39,7 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class GetTransMemoryDetailsHandlerTest {
+public class GetTransMemoryDetailsHandlerTest extends ZanataTest {
     private GetTransMemoryDetailsHandler handler;
     @Mock
     private ZanataIdentity identity;

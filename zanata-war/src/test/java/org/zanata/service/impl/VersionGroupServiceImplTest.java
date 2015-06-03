@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
 import org.infinispan.manager.CacheContainer;
@@ -47,14 +46,11 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.VersionLocaleKey;
-import org.zanata.test.QuarantiningRunner;
 import org.zanata.ui.model.statistic.WordStatistic;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class VersionGroupServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

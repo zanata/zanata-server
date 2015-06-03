@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,14 +52,11 @@ import org.zanata.rest.dto.stats.contribution.LocaleStatistics;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.service.ValidationService;
 import org.zanata.service.impl.TranslationStateCacheImpl;
-import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

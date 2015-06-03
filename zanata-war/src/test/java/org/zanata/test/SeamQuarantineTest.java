@@ -23,6 +23,7 @@ package org.zanata.test;
 import com.binarytweed.test.Quarantine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.zanata.ZanataTest;
 import org.zanata.seam.SeamAutowire;
 
 /**
@@ -30,8 +31,7 @@ import org.zanata.seam.SeamAutowire;
  *         href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 @Quarantine({ "org.jboss.seam", "org.zanata.test.SeamQuarantineTest" })
-@RunWith(QuarantiningRunner.class)
-public class SeamQuarantineTest {
+public class SeamQuarantineTest extends ZanataTest {
     @Test
     public void test1() throws ClassNotFoundException {
         // load Seam before test2 gets a chance to use SeamAutowire

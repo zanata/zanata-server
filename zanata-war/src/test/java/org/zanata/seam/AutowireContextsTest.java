@@ -20,8 +20,7 @@
  */
 package org.zanata.seam;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
+import org.zanata.ZanataTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +35,7 @@ import static org.hamcrest.Matchers.nullValue;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
-public class AutowireContextsTest {
+public class AutowireContextsTest extends ZanataTest {
     @Before
     public void newSessionBeforeTest() {
         AutowireContexts.getInstance().newSession();

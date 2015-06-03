@@ -4,8 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.jboss.seam.security.Identity;
@@ -16,8 +14,6 @@ import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.model.HProject;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class ProjectDAOTest extends ZanataDbunitJpaTest {
 
     private ProjectDAO dao;

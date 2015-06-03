@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import lombok.extern.slf4j.Slf4j;
 
 import org.dbunit.operation.DatabaseOperation;
@@ -30,8 +28,6 @@ import org.zanata.webtrans.shared.rpc.SaveOptionsResult;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @Slf4j
 public class SaveOptionsHandlerTest extends ZanataDbunitJpaTest {
     private SaveOptionsHandler handler;

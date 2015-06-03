@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import com.binarytweed.test.Quarantine;
-import org.zanata.test.QuarantiningRunner;
 import lombok.extern.slf4j.Slf4j;
 
 import org.assertj.core.api.Assertions;
@@ -44,8 +42,6 @@ import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 @Slf4j
 public class TranslationServiceImplJpaTest extends ZanataJpaTest {
 

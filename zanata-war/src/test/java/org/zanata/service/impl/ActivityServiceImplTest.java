@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.nullValue;
 import java.util.Date;
 import java.util.List;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,13 +44,10 @@ import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.Activity;
 import org.zanata.model.type.EntityType;
 import org.zanata.seam.SeamAutowire;
-import org.zanata.test.QuarantiningRunner;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class ActivityServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 

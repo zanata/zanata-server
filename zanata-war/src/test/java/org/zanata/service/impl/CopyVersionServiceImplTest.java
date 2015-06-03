@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
-import com.binarytweed.test.Quarantine;
 import org.dbunit.operation.DatabaseOperation;
 import org.infinispan.manager.CacheContainer;
 import org.junit.Before;
@@ -64,10 +63,7 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataCredentials;
 import org.zanata.security.ZanataIdentity;
 import com.google.common.collect.Lists;
-import org.zanata.test.QuarantiningRunner;
 
-@Quarantine({ "org.jboss.seam" })
-@RunWith(QuarantiningRunner.class)
 public class CopyVersionServiceImplTest extends ZanataDbunitJpaTest {
     private SeamAutowire seam = SeamAutowire.instance();
 
