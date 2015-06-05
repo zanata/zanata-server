@@ -50,10 +50,6 @@ public class ZanataResteasyBootstrap extends ResteasyBootstrap {
     @Override
     protected void initDispatcher() {
         super.initDispatcher();
-        getDispatcher().getProviderFactory().registerProvider(
-                ZanataRestSecurityInterceptor.class);
-        getDispatcher().getProviderFactory().registerProvider(
-                ZanataRestVersionInterceptor.class);
     }
 
     @Override

@@ -89,6 +89,9 @@ public class Deployments {
         archive.addAsResource("pluralforms.properties");
         archive.addAsResource(new ClassLoaderAsset("META-INF/orm.xml"),
                 "META-INF/orm.xml");
+        archive.addAsResource(new ClassLoaderAsset(
+                "META-INF/seam-deployment.properties"),
+                "META-INF/seam-deployment.properties");
         archive.addAsResource(
                 new FileAsset(
                         new File(
