@@ -129,8 +129,8 @@ public class LevenshteinTokenUtil {
     /**
      * Splits into tokens (lower-case).
      *
-     * @param s
-     * @return
+     * @param s the string to tokenise
+     * @return an array of lowercase tokens (words)
      */
     static String[] tokenise(String s) {
         String[] tokens = s.toLowerCase().split(SPLIT_REGEX);
@@ -141,6 +141,16 @@ public class LevenshteinTokenUtil {
             }
         }
         return list.toArray(new String[list.size()]);
+    }
+
+    /**
+     * Like tokenise(String) but does not discard stop words.
+     *
+     * @param s the string to tokenise
+     * @return an array of lowercase tokens (words)
+     */
+    static String[] tokeniseAndKeepStopWords(String s) {
+        return s.toLowerCase().split(SPLIT_REGEX);
     }
 
     private static int countExtraStringLengths(List<String> strings,
@@ -159,56 +169,113 @@ public class LevenshteinTokenUtil {
      * strings. Returns the mean similarity of s1 against each string in the
      * list.
      *
-     * @param s1
-     * @param strings2
-     * @return
+     * @param s1 string to compare against each other string
+     * @param strings2 other strings to compare s1 against
+     * @return mean similarity between s1 and each of strings2
      */
     public static double getSimilarity(final String s1,
             final List<String> strings2) {
         double totalSimilarity = 0.0;
-        int stringCount = strings2.size();
-        for (int i = 0; i < stringCount; i++) {
-            String s2 = strings2.get(i);
+        for (String s2 : strings2) {
             totalSimilarity += getSimilarity(s1, s2);
         }
-        double meanSimilarity = totalSimilarity / stringCount;
-        return meanSimilarity;
+        return totalSimilarity / strings2.size();
     }
 
+    /**
+     * Calculate the word-based case-insensitive similarity of two lists of
+     * strings (range 0.0 to 1.0).
+     *
+     *  - Strings at the same index are compared.
+     *  - Stop-words are ignored in comparisons. See #stopwords.
+     *  - When both lists are empty, they are considered identical (returns 1.0)
+     *  - Empty strings are considered identical to other empty strings.
+     *
+     * If a string is made up only of stop-words, the calculation will be
+     * repeated without ignoring stop-words. This is so that a sensible score
+     * can be returned when there is nothing else to compare.
+     *
+     * If comparisons with and without stop-words generate usable information,
+     * 0.0 is returned as a fallback.
+     *
+     * TODO review use of stop-words in these comparisons, since results can
+     * often be confusing to end-users.
+     *
+     * @param strings1 a list of strings to compare
+     * @param strings2 the other list of strings to compare
+     * @return average similarity between the strings, between 0.0 and 1.0
+     */
     public static double getSimilarity(final List<String> strings1,
             final List<String> strings2) {
+        return getSimilarity(strings1, strings2, true);
+    }
+
+    /**
+     * Calculate word-based similarity of two lists of strings, optionally
+     * ignoring stop-words for all comparisons.
+     *
+     * If stop-words are ignored but no usable data remains for comparison,
+     * the calculation is repeated without ignoring stop-words.
+     *
+     * @param ignoreStopWords whether stop-words should be ignored for the first
+     *                        attempt at comparison.
+     * @return average similarity between the strings, between 0.0 and 1.0
+     */
+    private static double getSimilarity(List<String> strings1,
+            List<String> strings2, boolean ignoreStopWords) {
+        // all empty lists are identical
+        if (strings1.isEmpty() && strings2.isEmpty()) {
+            return 1.0;
+        }
+
         // length of the shorter list
-        int minListSize;
+        final int minListSize = Math.min(strings1.size(), strings2.size());
+        final List<String> longestList = strings1.size() > minListSize ?
+                strings1 : strings2;
 
-        // count the extra strings first:
-        int extraStringLengths; // total of "extra" strings in the longer list
-        if (strings1.size() < strings2.size()) {
-            minListSize = strings1.size();
-            extraStringLengths = countExtraStringLengths(strings2, minListSize);
-        } else {
-            minListSize = strings2.size();
-            extraStringLengths = countExtraStringLengths(strings1, minListSize);
-        }
+        // total of "extra" strings in the longer list
+        final int extraStringLengths =
+                countExtraStringLengths(longestList, minListSize);
 
-        // total of Levenshtein distance between corresponding strings in the
-        // two lists, plus the length of any extra strings if one list is longer
-        int totalLevDistance = extraStringLengths;
-        // total of max editing distance between all the corresponding strings,
-        // plus length of extra strings
-        int totalMaxDistance = extraStringLengths;
+        // running total of Levenshtein distance between corresponding strings
+        // in the two lists
+        int cumulativeLevDistance = 0;
 
-        // now count the strings which correspond between both lists
+        // running total of max editing distance between all the corresponding
+        // strings.
+        int cumulativeMaxDistance = 0;
+
+        // count the strings which correspond between both lists
         for (int i = 0; i < minListSize; i++) {
-            String[] s1 = tokenise(strings1.get(i));
-            String[] s2 = tokenise(strings2.get(i));
-            int levenshteinDistance = getLevenshteinDistanceInWords(s1, s2);
-            totalLevDistance += levenshteinDistance;
-            totalMaxDistance += Math.max(s1.length, s2.length);
+            final String string1 = strings1.get(i);
+            final String string2 = strings2.get(i);
+            String[] tokens1 = ignoreStopWords ? tokenise(string1)
+                    : tokeniseAndKeepStopWords(string1);
+            String[] tokens2 = ignoreStopWords ? tokenise(string2)
+                    : tokeniseAndKeepStopWords(string2);
+            final int levenshteinDistance =
+                    getLevenshteinDistanceInWords(tokens1, tokens2);
+            cumulativeLevDistance += levenshteinDistance;
+
+            // When a string contains only stop words, tokenise returns an empty
+            // array, so this value can remain at 0.
+            cumulativeMaxDistance += Math.max(tokens1.length, tokens2.length);
         }
-        double similarity =
-                (totalMaxDistance - totalLevDistance)
-                        / (double) totalMaxDistance;
-        return similarity;
+        final int totalLevDistance = cumulativeLevDistance + extraStringLengths;
+        final int totalMaxDistance = cumulativeMaxDistance + extraStringLengths;
+
+        // if there would be a divide-by-zero situation due to all strings being
+        // only stop-words, compare the stop words instead. If this does not
+        // work, all strings must contain no tokens.
+        if (totalMaxDistance == 0) {
+            if (ignoreStopWords) {
+                return getSimilarity(strings1, strings2, false);
+            }
+            // TODO fall back on plain string comparison instead.
+            return 0.0;
+        }
+
+        return (totalMaxDistance - totalLevDistance) / (double) totalMaxDistance;
     }
 
 }
