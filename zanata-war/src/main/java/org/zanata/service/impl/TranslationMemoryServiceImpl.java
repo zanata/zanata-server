@@ -855,9 +855,28 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
          */
         private void runQueryAndCacheSuggestions() {
             for (Object[] resultRow : runQuery()) {
-                processMatch(fromResultRow(resultRow));
+                processResultRow(resultRow);
             }
             processed = true;
+        }
+
+        /**
+         * Convert a result row to a match (if possible) then process the match.
+         *
+         * If the row does not contain an appropriate entity, an error is logged
+         * and the row is skipped.
+         *
+         * @param resultRow in the form [Float score, Object entity]
+         */
+        private void processResultRow(Object[] resultRow) {
+            try {
+                final QueryMatch match = fromResultRow(resultRow);
+                processMatch(match);
+            } catch (IllegalArgumentException e) {
+                log.error(
+                        "Skipped result row because it does not contain " +
+                                "an expected entity type: {}", resultRow, e);
+            }
         }
 
         /**
