@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public class LevenshteinTokenUtil {
-    private static final String SPLIT_REGEX = "[,.]?[\\s]+";
+    private static final String SPLIT_REGEX = "[,.;?!\\s]+";
 
     private static final Set<String> stopwords;
 
