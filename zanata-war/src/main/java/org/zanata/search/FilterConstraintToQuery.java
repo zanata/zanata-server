@@ -3,6 +3,9 @@ package org.zanata.search;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.MatchMode;
 import org.joda.time.DateTime;
@@ -18,6 +21,8 @@ import lombok.Setter;
 
 import static org.zanata.search.FilterConstraintToQuery.Parameters.*;
 import static org.zanata.util.HqlCriterion.eq;
+import static org.zanata.util.HqlCriterion.ne;
+import static org.zanata.util.HqlCriterion.isNull;
 import static org.zanata.util.HqlCriterion.escapeWildcard;
 import static org.zanata.util.HqlCriterion.ilike;
 import static org.zanata.util.HqlCriterion.match;
@@ -283,8 +288,21 @@ public class FilterConstraintToQuery {
         if (Strings.isNullOrEmpty(constraints.getLastModifiedByUser())) {
             return null;
         }
+        if(isExcludeSearchTerm(constraints.getLastModifiedByUser())) {
+            String nullLastModifiedByCondition = isNull("lastModifiedBy");
+            String excludeUsernameCondition = ne("lastModifiedBy.account.username",
+                LastModifiedBy.placeHolder());
+            return "("
+                    + QueryBuilder.or(nullLastModifiedByCondition,
+                            excludeUsernameCondition) + ")";
+        }
         return eq("lastModifiedBy.account.username",
                 LastModifiedBy.placeHolder());
+    }
+
+    private boolean isExcludeSearchTerm(@Nonnull String term) {
+        return StringUtils.isEmpty(term) ? false
+                : (term.startsWith("-") && term.length() > 1);
     }
 
     public Query setQueryParameters(Query textFlowQuery, HLocale hLocale) {
@@ -312,8 +330,12 @@ public class FilterConstraintToQuery {
                 constraints.getSourceComment(), SourceComment);
         addWildcardSearchParamIfPresent(textFlowQuery,
                 constraints.getTransComment(), TargetComment);
-        addExactMatchParamIfPresent(textFlowQuery,
-                constraints.getLastModifiedByUser(), LastModifiedBy);
+        String lastModifiedByUser = constraints.getLastModifiedByUser();
+        if(isExcludeSearchTerm(lastModifiedByUser)) {
+            lastModifiedByUser = lastModifiedByUser.substring(1);
+        }
+        addExactMatchParamIfPresent(textFlowQuery, lastModifiedByUser,
+            LastModifiedBy);
         if (constraints.getChangedAfter() != null) {
             textFlowQuery.setParameter(LastChangedAfter.namedParam(),
                     constraints.getChangedAfter().toDate());
