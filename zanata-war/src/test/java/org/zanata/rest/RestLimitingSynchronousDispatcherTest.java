@@ -42,7 +42,7 @@ public class RestLimitingSynchronousDispatcherTest {
     private HttpResponse response;
     @Mock
     private RateLimitingProcessor processor;
-    @Mock
+    //@Mock
     private ResteasyProviderFactory providerFactory = SeamResteasyProviderFactory.getInstance();
     @Captor
     private ArgumentCaptor<Runnable> taskCaptor;
@@ -61,6 +61,7 @@ public class RestLimitingSynchronousDispatcherTest {
         MockitoAnnotations.initMocks(this);
         when(request.getHttpHeaders().getRequestHeaders())
                 .thenReturn(headers);
+        when(request.getMutableHeaders()).thenReturn(headers);
         when(request.getHttpMethod()).thenReturn("GET");
         when(headers.getFirst(HttpUtil.X_AUTH_TOKEN_HEADER)).thenReturn(
             API_KEY);
