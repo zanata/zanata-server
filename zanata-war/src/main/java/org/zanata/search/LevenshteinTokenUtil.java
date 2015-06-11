@@ -122,6 +122,7 @@ public class LevenshteinTokenUtil {
 
         int levDistance = getLevenshteinDistanceInWords(s1s, s2s);
         int maxDistance = Math.max(s1s.length, s2s.length);
+        // FIXME maxDistance can be 0, leading to divide-by-zero
         double similarity = (maxDistance - levDistance) / (double) maxDistance;
         return similarity;
     }
@@ -141,16 +142,6 @@ public class LevenshteinTokenUtil {
             }
         }
         return list.toArray(new String[list.size()]);
-    }
-
-    /**
-     * Like tokenise(String) but does not discard stop words.
-     *
-     * @param s the string to tokenise
-     * @return an array of lowercase tokens (words)
-     */
-    static String[] tokeniseAndKeepStopWords(String s) {
-        return s.toLowerCase().split(SPLIT_REGEX);
     }
 
     private static int countExtraStringLengths(List<String> strings,
@@ -191,12 +182,8 @@ public class LevenshteinTokenUtil {
      *  - When both lists are empty, they are considered identical (returns 1.0)
      *  - Empty strings are considered identical to other empty strings.
      *
-     * If a string is made up only of stop-words, the calculation will be
-     * repeated without ignoring stop-words. This is so that a sensible score
-     * can be returned when there is nothing else to compare.
-     *
-     * If comparisons with and without stop-words generate no usable information,
-     * 0.0 is returned as a fallback.
+     * If a string is made up only of stop-words, the similarity will always be
+     * 0.0 regardless of the actual similarity of the stop-words.
      *
      * TODO review use of stop-words in these comparisons, since results can
      * often be confusing to end-users.
@@ -207,22 +194,6 @@ public class LevenshteinTokenUtil {
      */
     public static double getSimilarity(final List<String> strings1,
             final List<String> strings2) {
-        return getSimilarity(strings1, strings2, true);
-    }
-
-    /**
-     * Calculate word-based similarity of two lists of strings, optionally
-     * ignoring stop-words for all comparisons.
-     *
-     * If stop-words are ignored but no usable data remains for comparison,
-     * the calculation is repeated without ignoring stop-words.
-     *
-     * @param ignoreStopWords whether stop-words should be ignored for the first
-     *                        attempt at comparison.
-     * @return average similarity between the strings, between 0.0 and 1.0
-     */
-    private static double getSimilarity(List<String> strings1,
-            List<String> strings2, boolean ignoreStopWords) {
         // all empty lists are identical
         if (strings1.isEmpty() && strings2.isEmpty()) {
             return 1.0;
@@ -249,10 +220,8 @@ public class LevenshteinTokenUtil {
         for (int i = 0; i < minListSize; i++) {
             final String string1 = strings1.get(i);
             final String string2 = strings2.get(i);
-            String[] tokens1 = ignoreStopWords ? tokenise(string1)
-                    : tokeniseAndKeepStopWords(string1);
-            String[] tokens2 = ignoreStopWords ? tokenise(string2)
-                    : tokeniseAndKeepStopWords(string2);
+            String[] tokens1 = tokenise(string1);
+            String[] tokens2 = tokenise(string2);
             final int levenshteinDistance =
                     getLevenshteinDistanceInWords(tokens1, tokens2);
             cumulativeLevDistance += levenshteinDistance;
@@ -265,13 +234,8 @@ public class LevenshteinTokenUtil {
         final int totalMaxDistance = cumulativeMaxDistance + extraStringLengths;
 
         // if there would be a divide-by-zero situation due to all strings being
-        // only stop-words, compare the stop words instead. If this does not
-        // work, all strings must contain no tokens.
+        // only stop-words, return 0 instead.
         if (totalMaxDistance == 0) {
-            if (ignoreStopWords) {
-                return getSimilarity(strings1, strings2, false);
-            }
-            // TODO fall back on plain string comparison instead.
             return 0.0;
         }
 

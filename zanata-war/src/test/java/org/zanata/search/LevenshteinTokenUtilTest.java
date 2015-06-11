@@ -126,10 +126,13 @@ public class LevenshteinTokenUtilTest {
         assertDifferentStringSimilarity("An bar is an baz", "My bar is foo", 0.5);
     }
 
+    /**
+     * TODO review this behaviour, it is confusing to users.
+     */
     @Test
-    public void testStopWordsNotIgnoredWhenNoOtherWordsPresent() {
+    public void testStopWordsOnlyAlwaysHaveZeroSimilarity() {
         assertDifferentStringSimilarity("The is not", "A", 0.0);
-        assertDifferentStringSimilarity("The not is and", "It not is but", 0.5);
+        assertDifferentStringSimilarity("The not is and", "It not is but", 0.0);
     }
 
     @Test
