@@ -55,11 +55,11 @@
     <okapi.version>0.22</okapi.version>
 
     <zanata.assets.version>7.0-SNAPSHOT</zanata.assets.version>
-    <zanata.api.version>3.7.0</zanata.api.version>
+    <zanata.api.version>3.7.2</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
-    <zanata.client.version>3.7.0-SNAPSHOT</zanata.client.version>
-    <zanata.common.version>3.6.1-SNAPSHOT</zanata.common.version>
+    <zanata.client.version>3.7.0</zanata.client.version>
+    <zanata.common.version>3.7.1</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
 
@@ -1227,6 +1227,9 @@
 
                 <!-- use org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec -->
                 <exclude>org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec</exclude>
+
+                <!-- use jdk and javax.xml.stream:stax-api -->
+                <exclude>javax.xml.bind:jsr173_api</exclude>
               </excludes>
             </bannedDependencies>
             <requireNoRepositories>
