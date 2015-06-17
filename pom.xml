@@ -499,6 +499,12 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-adapter-xliff</artifactId>
         <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- zanata client -->
