@@ -134,8 +134,6 @@
             <usedDependency>org.hibernate:hibernate-testing</usedDependency>
             <usedDependency>org.jboss.arquillian.junit:arquillian-junit-container</usedDependency>
             <usedDependency>org.jboss.arquillian.protocol:arquillian-protocol-servlet</usedDependency>
-            <!-- Used by JSON (RestEasy) -->
-            <usedDependency>org.jboss.resteasy:resteasy-jackson-provider</usedDependency>
             <usedDependency>org.codehaus.jackson:jackson-xc</usedDependency>
             <!-- Used in arquillian test - zanata-war/arquillian/components.properties -->
             <usedDependency>org.jboss.seam:jboss-seam-debug</usedDependency>
