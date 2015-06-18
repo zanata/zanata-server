@@ -1,18 +1,17 @@
 Once a project has been created, the maintainer can add further details and project behaviour via the Settings tab.
-See the [Project Creation Help](user-guide/projects/create-project) for details on creating projects.
+See the [Project Creation Help](/user-guide/projects/create-project) for details on creating projects.
 <figure>
-<img alt="Project General Settings tab" src="images/project-settings-button.png" />
+![Project General Settings tab](/images/project-settings-button.png)
 <figcaption>Project Settings tab link.</figcaption>
 </figure>
 
-The Settings tab contains fields that manage appearance and workflow of your project.  Some of these are already covered in the [Project Creation Help](user-guide/projects/create-project).
+The Settings tab contains fields that manage appearance and workflow of your project.  Some of these are already covered in the [Project Creation Help](/user-guide/projects/create-project).
 
 ------------
 
 ## General Settings
-
 <figure>
-<img alt="Project General Settings tab" src="images/project-general-settings.png" />
+![Project General Settings tab](/images/project-general-settings.png)
 <figcaption>Project General Settings tab</figcaption>
 </figure>
 <br>
@@ -21,7 +20,7 @@ The Settings tab contains fields that manage appearance and workflow of your pro
 
 Project Type defines the type of files that your project uses to store source and translation strings. This setting ensures that files for your project will be downloaded in the correct format.
 
-There is a brief description for each project type next to each project type option. If the description is insufficient, more information on each project type is available at [Project Types](user-guide/projects/project-types).
+There is a brief description for each project type next to each project type option. If the description is insufficient, more information on each project type is available at [Project Types](/user-guide/projects/project-types).
 
 ### Home Page
 
@@ -48,9 +47,8 @@ This can be toggled using the same button, as desired.
 ------------
 
 ## Languages Settings
-
 <figure>
-<img alt="Project Languages Settings tab" src="/images/project-languages-settings.png" />
+![Project Languages Settings tab](/images/project-languages-settings.png)
 <figcaption>Project Languages Settings tab</figcaption>
 </figure>
 <br>
@@ -65,9 +63,8 @@ By default, your project will be available for translation to all of the enabled
 
 To search for available languages, enter text into the field under "Add a language". Available languages matching the entered text will display in a dropdown.
 To add add a language to your project, select the desired language from the dropdown.
-
 <figure>
-<img alt="Adding a project language" src="images/project-languages-add.png" />
+![Adding a project language](/images/project-languages-add.png)
 <figcaption>Adding a project language</figcaption>
 </figure>
 
@@ -75,18 +72,16 @@ To add add a language to your project, select the desired language from the drop
 ### Remove a Language
 
 To remove a language from the list of available locales, first move the cursor over the language, then click the "X" that appears.
-
 <figure>
-<img alt="Removing a project language" src="images/project-languages-remove.png" />
+![Removing a project language](/images/project-languages-remove.png)
 <figcaption>Removing a project language</figcaption>
 </figure>
 
 ------------
 
 ## Translation Settings
-
 <figure>
-<img alt="Project Translation Settings tab" src="images/project-translation-settings.png" />
+![Project Translation Settings tab](/images/project-translation-settings.png)
 <figcaption>Project Translation Settings tab</figcaption>
 </figure>
 
@@ -100,20 +95,19 @@ Validations not enabled here can be toggled by translators to suit their individ
 * Warning - display warning to translator when validation failed. Translator can save the translation as `Translated`.
 * Error - display error to translator when validation failed. Translator cannot save translation as `Translated` until error has been fixed.
 
-See [validation](user-guide/projects/validations) all available check.
+See [validation](/user-guide/projects/validations) all available check.
 
 ### Copy Translations settings
 
 Copy Translations attempts to reuse translations that have been entered in Zanata by matching them with untranslated strings in your project-version.  These settings change the way Copy Translations behaves when a new version is created.
 
-Refer to [the Copy Translations reference](user-guide/translation-reuse/copy-trans/) for more information.
+Refer to [the Copy Translations reference](/user-guide/translation-reuse/copy-trans/) for more information.
 
 ------------
 
 ## Permissions Settings
-
 <figure>
-<img alt="Project Permissions Settings tab" src="images/project-permissions-settings.png" />
+![Project Permissions Settings tab](/images/project-permissions-settings.png)
 <figcaption>Project Permissions Settings tab</figcaption>
 </figure>
 <br>
@@ -134,9 +128,8 @@ The access restriction feature is intended for use with special roles that can b
 ------------
 
 ## Webhooks
-
 <figure>
-<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings.png" />
+![Project Webhooks Settings tab](/images/project-webhooks-settings.png)
 <figcaption>Project Webhooks Settings tab</figcaption>
 </figure>
 
@@ -149,15 +142,14 @@ When an event occurs, Zanata will make a HTTP POST to the URI configured in the 
 
 ### Adding a Webhook URI
 
-<img alt="Project Webhooks Settings tab" src="images/project-webhooks-settings-2.png" />
+![Project Webhooks Settings tab](/images/project-webhooks-settings-2.png)
 Enter a valid URI into the provided text input. Hit the 'enter' key or click on 'Add webhook' button to add the URI.
 
 ------------
 
 ## About
-
 <figure>
-<img alt="Project About Settings tab" src="images/project-about-settings.png" />
+![Project About Settings tab](/images/project-about-settings.png)
 <figcaption>Project About Settings tab</figcaption>
 </figure>
 <br>

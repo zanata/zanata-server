@@ -1,12 +1,12 @@
 ### Prerequisite
-Requires **Glossary-admin** role. See [glossary roles and permission](user-guide/glossary/glossary-roles-permissions) for permission setup.
+Requires **Glossary-admin** role. See [glossary roles and permission](/user-guide/glossary/glossary-roles-permissions) for permission setup.
 
 ### Delete via Web UI
 1. Login into Zanata
 1. Click `Glossary` on menu.
 1. Click on `Glossary options` on the glossary language you wish to delete and click `Delete glossary`.
 <figure>
-    <img alt="Glossary options" src="/images/glossary-options.png" />
+![Glossary options](/images/glossary-options.png)
 </figure>
 1. Click `OK` to confirm delete all glossary entries in selected locale.
 

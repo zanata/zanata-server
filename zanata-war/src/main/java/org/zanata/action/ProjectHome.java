@@ -51,6 +51,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.faces.FacesManager;
+import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -67,7 +69,6 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
-import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
@@ -78,6 +79,7 @@ import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.CommonMarkRenderer;
 import org.zanata.util.ComparatorUtil;
+import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -131,9 +133,6 @@ public class ProjectHome extends SlugHome<HProject> implements
     private CommonMarkRenderer renderer;
 
     @In
-    private ConversationScopeMessages conversationScopeMessages;
-
-    @In
     private EntityManager entityManager;
 
     @In("jsfMessages")
@@ -153,6 +152,9 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @In
     private CopyTransOptionsModel copyTransOptionsModel;
+
+    @In
+    private UrlUtil urlUtil;
 
     // This property is present to keep the filter in place when the region with
     // the filter box is refreshed.
@@ -559,8 +561,8 @@ public class ProjectHome extends SlugHome<HProject> implements
         removeAliasesForDisabledLocales();
         refreshDisabledLocales();
         update();
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.project.LanguageUpdateFromGlobal"));
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            msgs.get("jsf.project.LanguageUpdateFromGlobal"));
     }
 
     private void removeAliasesForDisabledLocales() {
@@ -626,10 +628,23 @@ public class ProjectHome extends SlugHome<HProject> implements
         if (projectId == null) {
             HProject project = (HProject) session.byNaturalId(HProject.class)
                 .using("slug", getSlug()).load();
+            validateProjectState(project);
             projectId = project.getId();
             return project;
         } else {
-            return (HProject) session.byId(HProject.class).load(projectId);
+            HProject project =
+                    (HProject) session.byId(HProject.class).load(projectId);
+            validateProjectState(project);
+            return project;
+        }
+    }
+
+    private void validateProjectState(HProject project) {
+        if (project == null || project.getStatus() == EntityStatus.OBSOLETE) {
+            log.warn(
+                    "Project [id={}, slug={}], does not exist or is soft deleted: {}",
+                    projectId, slug, project);
+            throw new EntityNotFoundException();
         }
     }
 
@@ -639,8 +654,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         // when id is invalid and conversation will not
         // start
 
-        if (ip.getStatus().equals(EntityStatus.OBSOLETE)
-                && !checkViewObsolete()) {
+        if (ip.getStatus().equals(EntityStatus.OBSOLETE)) {
             throw new EntityNotFoundException();
         }
     }
@@ -655,9 +669,8 @@ public class ProjectHome extends SlugHome<HProject> implements
                 copyTransOptionsModel.getInstance());
 
         update();
-
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.project.CopyTransOpts.updated"));
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            msgs.get("jsf.project.CopyTransOpts.updated"));
     }
 
     public void initialize() {
@@ -717,7 +730,20 @@ public class ProjectHome extends SlugHome<HProject> implements
             return null;
         }
         getInstance().setSlug(getInputSlugValue());
+
+        boolean softDeleted = false;
+        if (getInstance().getStatus() == EntityStatus.OBSOLETE) {
+            softDeleted = true;
+            getInstance().setSlug(getInstance().changeToDeletedSlug());
+        }
+
         String result = super.update();
+
+        if (softDeleted) {
+            String url = urlUtil.dashboardUrl();
+            FacesManager.instance().redirectToExternalURL(url);
+            return result;
+        }
         if (!slug.equals(getInstance().getSlug())) {
             slug = getInstance().getSlug();
             return "projectSlugUpdated";
@@ -779,24 +805,26 @@ public class ProjectHome extends SlugHome<HProject> implements
         return list;
     }
 
+    @In
+    private Redirect redirect;
+
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public String removeMaintainer(HPerson person) {
         if (getInstanceMaintainers().size() <= 1) {
-            conversationScopeMessages
-                    .setMessage(FacesMessage.SEVERITY_INFO,
-                            msgs.get("jsf.project.NeedAtLeastOneMaintainer"));
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+                msgs.get("jsf.project.NeedAtLeastOneMaintainer"));
         } else {
             getInstance().getMaintainers().remove(person);
             maintainerFilter.reset();
             update();
 
-            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.project.MaintainerRemoved",
-                            person.getName()));
-
-            // force page to do url redirect to project page. See pages.xml
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.project.MaintainerRemoved",
+                    person.getName()));
             if (person.equals(authenticatedAccount.getPerson())) {
-                return "redirect";
+                redirect.setViewId("/project/project.xhtml");
+                redirect.setParameter("slug", getSlug());
+                redirect.execute();
             }
         }
         return "";
@@ -817,8 +845,8 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         update();
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.RolesUpdated"));
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            msgs.get("jsf.RolesUpdated"));
     }
 
     @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
@@ -842,10 +870,13 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         update();
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            msgs.format("jsf.project.status.updated",
+                EntityStatus.valueOf(initial)));
+    }
 
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.project.status.updated",
-                        EntityStatus.valueOf(initial)));
+    public void deleteSelf() {
+        updateStatus('O');
     }
 
     public Map<String, Boolean> getRoleRestrictions() {
@@ -876,10 +907,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         List<HProjectIteration> results = new ArrayList<HProjectIteration>();
 
         for (HProjectIteration iteration : getInstance().getProjectIterations()) {
-            if (iteration.getStatus() == EntityStatus.OBSOLETE
-                    && checkViewObsolete()) {
-                results.add(iteration);
-            } else if (iteration.getStatus() != EntityStatus.OBSOLETE) {
+            if (iteration.getStatus() != EntityStatus.OBSOLETE) {
                 results.add(iteration);
             }
         }
@@ -960,10 +988,9 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         update();
-
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.validation.updated",
-                        validationId.getDisplayName(), state));
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            msgs.format("jsf.validation.updated",
+                validationId.getDisplayName(), state));
     }
 
     public List<ValidationAction> getValidationList() {
@@ -1053,19 +1080,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         // Disable the default message from Seam
     }
 
-    /**
-     * This is for autocomplete components of which ConversationScopeMessages
-     * will be null
-     *
-     * @param conversationScopeMessages
-     */
-    private String update(ConversationScopeMessages conversationScopeMessages) {
-        if (this.conversationScopeMessages == null) {
-            this.conversationScopeMessages = conversationScopeMessages;
-        }
-        return update();
-    }
-
     private boolean checkViewObsolete() {
         return identity != null
                 && identity.hasPermission("HProject", "view-obsolete");
@@ -1085,17 +1099,20 @@ public class ProjectHome extends SlugHome<HProject> implements
         public void onSelectItemAction() {
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
-        }
-
+            }
 
             HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
-            update(conversationScopeMessages);
+            update();
             reset();
 
-            conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.project.MaintainerAdded",
-                            maintainer.getName()));
+            getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.project.MaintainerAdded",
+                    maintainer.getName()));
+        }
+
+        private FacesMessages getFacesMessages() {
+            return ServiceLocator.instance().getInstance(FacesMessages.class);
         }
     }
 

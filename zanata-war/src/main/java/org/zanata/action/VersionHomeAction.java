@@ -88,6 +88,8 @@ import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.DocumentStatus;
+import org.zanata.webtrans.shared.util.TokenUtil;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -175,6 +177,9 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     @In("filePersistService")
     private FilePersistService filePersistService;
+
+    @In
+    private UrlUtil urlUtil;
 
     private List<HLocale> supportedLocale;
 
@@ -931,14 +936,6 @@ public class VersionHomeAction extends AbstractSortAction implements
         translationFileServiceImpl.removeTempFile(tempFile);
     }
 
-    public String encodeDocId(String docId) {
-        return UrlUtil.encodeString(docId);
-    }
-
-    public String decodeDocId(String docId) {
-        return UrlUtil.decodeString(docId);
-    }
-
     // Check if copy-trans, copy version or merge-trans is running for given
     // version
     public boolean isCopyActionsRunning() {
@@ -960,6 +957,17 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public void setDefaultTranslationDocType(String fileName) {
         translationFileUpload.setDocumentType(null);
+    }
+
+    public String getEditorUrl(String sourceLocale, String docId) {
+        return urlUtil
+                .editorDocumentUrl(projectSlug, versionSlug,
+                        selectedLocale.getLocaleId(), new LocaleId(
+                                sourceLocale), TokenUtil.encode(docId));
+    }
+
+    public String encodeDocId(String docId) {
+        return urlUtil.encodeString(docId);
     }
 
     public void uploadTranslationFile(HLocale hLocale) {

@@ -1,11 +1,9 @@
-<figure>
-<img alt="Editor view" src="images/editor-overview.png" />
-</figure>
+![Editor view](/images/editor-overview.png)
 <br/>
 
 ### 1. Breadcrumbs
 
-Links to Project -> Version -> [Documents view](user-guide/editor/documents-view) -> Document name. Each link will redirect to the respective page.
+Links to Project -> Version -> [Documents view](/user-guide/editor/documents-view) -> Document name. Each link will redirect to the respective page.
 
 
 ### 2. Statistic
@@ -14,7 +12,7 @@ Statistic and remaining hours of the current document translation document.
 
 ### 3. Views
 
-See [Views](user-guide/editor/overview#views-in-webtrans) for more information.
+See [Views](/user-guide/editor/overview#views-in-webtrans) for more information.
 
 ### 4. Search and filter 
 
@@ -77,16 +75,14 @@ If a glossary has been uploaded for your language, each word in the currently se
 
 If you're not part of that language team, the editor will open as readonly mode.
 You will be restricted to only viewing source and translations in the editor.
-
 <figure>
-<img alt="Readonly editor" src="images/editor-readonly-indicator.png" />
+![Readonly editor](/images/editor-readonly-indicator.png)
 </figure>
 <br/>
 
 ## Settings
-
 <figure>
-<img alt="Editor settings" src="images/editor-settings.png" />
+![Editor settings](/images/editor-settings.png)
 </figure>
 <br/>
 
@@ -102,14 +98,13 @@ You will be restricted to only viewing source and translations in the editor.
 
 
 ## Validations
-
 <figure>
-<img alt="Editor validation settings" src="images/editor-validations.png" />
+![Editor validation settings](/images/editor-validations.png)
 </figure>
 <br/>
 
 Translators can enable or disable validation check on their translations except for those which is enforced by project maintainers.
-See [Project settings](user-guide/projects/project-settings#validations) for more information.
+See [Project settings](/user-guide/projects/project-settings#validations) for more information.
 
-See [validations](user-guide/projects/validations) all available check.
+See [validations](/user-guide/projects/validations) all available check.
     

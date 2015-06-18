@@ -20,7 +20,8 @@
  */
 package org.zanata.util;
 
-import org.testng.annotations.Test;
+
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -43,6 +44,21 @@ public class CommonMarkRendererTest {
     public void testRenderToHtmlUnsafe() throws Exception {
         String source = "This text contains an *unsafe* <script>script</script> element.";
         String expected = "<p>This text contains an <em>unsafe</em> <script>script</script> element.</p>\n";
+        String rendered = renderer.renderToHtmlUnsafe(source);
+        assertThat(rendered).isEqualTo(expected);
+    }
+
+    // This test fails with commonmark.js 0.18.1 as minified by
+    // jscompress.com (UglifyJS v1):
+    @Test
+    public void testRenderAmpersandInsideCodeFence() throws Exception {
+        String source = "```\n" +
+                "for (int i=0; i&lt;100; i++) {\n" +
+                "}\n" +
+                "```";
+        String expected = "<pre><code>for (int i=0; i&amp;lt;100; i++) {\n" +
+                "}\n" +
+                "</code></pre>\n";
         String rendered = renderer.renderToHtmlUnsafe(source);
         assertThat(rendered).isEqualTo(expected);
     }

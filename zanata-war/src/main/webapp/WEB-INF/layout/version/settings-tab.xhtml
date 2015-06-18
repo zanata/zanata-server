@@ -46,6 +46,8 @@
   <a4j:param name="val2" assignTo="#{value}"/>
 </a4j:jsFunction>
 
+<a4j:jsFunction name="runDelete" action="#{versionHome.deleteSelf()}" />
+
 <h1>#{msgs['jsf.iteration.VersionSettings']}</h1>
 
 <s:div styleClass="tabs--vertical js-tabs" id="version-settings">
@@ -142,29 +144,14 @@
       <s:fragment
         rendered="#{s:hasPermission(versionHome.instance, 'mark-obsolete')}">
         <s:div styleClass="g__item w--1-2"
-          rendered="#{versionHome.instance.status eq 'OBSOLETE'}">
-          <a4j:commandLink
-            styleClass="button--success l--push-bottom-half"
-            action="#{versionHome.updateStatus('A')}"
-            render="status, version-info">
-            <i class="i--left i--archive"></i>
-            #{msgs['jsf.iteration.UnArchiveThisVersion']}
-          </a4j:commandLink>
-
-          <p
-            class="txt--meta">#{msgs['jsf.iteration.unarchive.Message']}</p>
-        </s:div>
-        <s:div styleClass="g__item w--1-2"
           rendered="#{versionHome.instance.status ne 'OBSOLETE'}">
-          <a4j:commandLink styleClass="button--danger l--push-bottom-half"
-            action="#{versionHome.updateStatus('O')}"
-            render="status, version-info">
-            <i class="i--left i--archive"></i>
-            #{msgs['jsf.iteration.ArchiveThisVersion']}
-          </a4j:commandLink>
-
+          <a href="javascript:void(0)" class="button--danger l--push-bottom-half"
+            onclick="zanata.modal.show('#delete-confirmation-modal')">
+            #{msgs['jsf.iteration.DeleteThisVersion']}
+            <i class="i--left i--trash"></i>
+          </a>
           <p
-            class="txt--meta">#{msgs['jsf.iteration.archive.Message']}</p>
+            class="txt--meta">#{msgs['jsf.iteration.delete.Message']}</p>
         </s:div>
       </s:fragment>
     </s:div>
@@ -268,27 +255,32 @@
   <h2 class="l--push-all-0 gamma d--bottom l--push-bottom-half">
     #{msgs['jsf.Translation']}
   </h2>
-  <h:form id="settings-translation-review-form" styleClass="l--push-bottom-0">
-    <h3 class="heading--secondary">#{msgs['jsf.label.review']}</h3>
 
-    <div class="is-active" id="translation-review-form">
-      <zanata:checkbox
-        label="#{msgs['jsf.iteration.requireTranslationReview']}"
-        onValueChanged="bindRequireReviewValue"
-        checked="#{versionHome.instance.requireTranslationReview}"
-        value="requireTranslationReview"/>
+  <ui:remove>
+    <!-- Remove require review option until https://bugzilla.redhat.com/show_bug.cgi?id=1211137-->
+    <h:form id="settings-translation-review-form" styleClass="l--push-bottom-0">
+      <h3 class="heading--secondary">#{msgs['jsf.label.review']}</h3>
 
-      <p class="txt--meta">#{msgs['jsf.iteration.requireReview.message']}
-        <a href="http://zanata.org/help/review/review-activating/"
-          target="_blank"
-          title="#{msgs['jsf.iteration.requireReview.help']}"><i
-          class="i i--help"></i>
-        </a>
-      </p>
-    </div>
-  </h:form>
+        <div class="is-active" id="translation-review-form">
+          <zanata:checkbox
+            label="#{msgs['jsf.iteration.requireTranslationReview']}"
+            onValueChanged="bindRequireReviewValue"
+            checked="#{versionHome.instance.requireTranslationReview}"
+            value="requireTranslationReview"/>
 
-  <hr/>
+          <p class="txt--meta">#{msgs['jsf.iteration.requireReview.message']}
+            <a href="http://zanata.org/help/review/review-activating/"
+              target="_blank"
+              title="#{msgs['jsf.iteration.requireReview.help']}"><i
+              class="i i--help"></i>
+            </a>
+          </p>
+        </div>
+    </h:form>
+    <hr/>
+  </ui:remove>
+
+
 
   <h:form id="settings-translation-validation-form">
     <h3 class="heading--secondary">#{msgs['jsf.Validation']}</h3>
@@ -379,4 +371,8 @@
 </s:div>
 
 <ui:include src="/WEB-INF/layout/copy_trans_inline_modal.xhtml"/>
+  <ui:include src="/WEB-INF/layout/delete_confirmation_modal.xhtml">
+    <ui:param name="entityType" value="#{msgs['jsf.Version']}" />
+    <ui:param name="entityName" value="#{versionHome.instance.slug}" />
+  </ui:include>
 </ui:composition>

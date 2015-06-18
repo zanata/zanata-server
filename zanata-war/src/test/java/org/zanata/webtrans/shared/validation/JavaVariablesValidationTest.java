@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.webtrans.client.resources.ValidationMessages;
 import org.zanata.webtrans.server.locale.Gwti18nReader;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -42,13 +42,12 @@ import org.zanata.webtrans.shared.validation.action.JavaVariablesValidation;
  * @author David Mason, damason@redhat.com
  *
  **/
-@Test(groups = { "unit-tests" })
 public class JavaVariablesValidationTest {
     private JavaVariablesValidation javaVariablesValidation;
 
     private ValidationMessages messages;
 
-    @BeforeMethod
+    @Before
     public void init() throws IOException {
         MockitoAnnotations.initMocks(this);
         messages = Gwti18nReader.create(ValidationMessages.class);
@@ -94,8 +93,8 @@ public class JavaVariablesValidationTest {
         List<String> errorList =
                 javaVariablesValidation.validate(source, target);
 
-        assertThat(errorList, hasItem(messages.varsMissing(Arrays.asList("{2}",
-                "{1}", "{0}"))));
+        assertThat(errorList, hasItem(messages.varsMissing(Arrays.asList("{0}",
+                "{1}", "{2}"))));
         assertThat(errorList.size(), is(1));
     }
 
@@ -118,7 +117,7 @@ public class JavaVariablesValidationTest {
                 javaVariablesValidation.validate(source, target);
 
         assertThat(errorList,
-                hasItem(messages.varsAdded(Arrays.asList("{2}", "{1}", "{0}"))));
+                hasItem(messages.varsAdded(Arrays.asList("{0}", "{1}", "{2}"))));
         assertThat(errorList.size(), is(1));
     }
 
@@ -145,8 +144,8 @@ public class JavaVariablesValidationTest {
         List<String> errorList =
                 javaVariablesValidation.validate(source, target);
 
-        assertThat(errorList, hasItem(messages.varsMissing(Arrays.asList("{2}",
-                "{1}", "{0}"))));
+        assertThat(errorList, hasItem(messages.varsMissing(Arrays.asList("{0}",
+                "{1}", "{2}"))));
         assertThat(errorList.size(), is(1));
     }
 
@@ -158,7 +157,7 @@ public class JavaVariablesValidationTest {
                 javaVariablesValidation.validate(source, target);
 
         assertThat(errorList,
-                hasItem(messages.varsMissing(Arrays.asList("{1}", "{0}"))));
+                hasItem(messages.varsMissing(Arrays.asList("{0}", "{1}"))));
         assertThat(errorList.size(), is(1));
     }
 

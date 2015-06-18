@@ -39,21 +39,19 @@ public class ProjectSearch implements Serializable {
 
     private final static int DEFAULT_PAGE_SIZE = 30;
 
-    @In
-    private ZanataIdentity identity;
-
     @Getter
     private ProjectAutocomplete projectAutocomplete = new ProjectAutocomplete();
 
     private QueryProjectPagedListDataModel queryProjectPagedListDataModel =
             new QueryProjectPagedListDataModel(DEFAULT_PAGE_SIZE);
 
-    // Count of result to be return as part of autocomplete
-    private final static int INITIAL_RESULT_COUNT = 5;
+    // Count of project to be return as part of autocomplete
+    private final static int INITIAL_RESULT_COUNT = 10;
+
+    // Count of person to be return as part of autocomplete
+    private final static int INITIAL_PERSON_RESULT_COUNT = 20;
 
     public DataModel getProjectPagedListDataModel() {
-        queryProjectPagedListDataModel.setIncludeObsolete(identity
-                .hasPermission("HProject", "view-obsolete"));
         return queryProjectPagedListDataModel;
     }
 
@@ -94,18 +92,17 @@ public class ProjectSearch implements Serializable {
             }
             try {
                 String searchQuery = getQuery().trim();
+                boolean includeObsolete = false;
                 List<HProject> searchResult =
-                        projectDAO.searchProjects(
-                                searchQuery,
-                                INITIAL_RESULT_COUNT,
-                                0,
-                                ZanataIdentity.instance().hasPermission(
-                                        "HProject", "view-obsolete"));
+                        projectDAO.searchProjects(searchQuery,
+                                INITIAL_RESULT_COUNT, 0, includeObsolete);
 
                 for (HProject project : searchResult) {
                     result.add(new SearchResult(project, null));
                 }
-                List<HAccount> hAccounts = accountDAO.searchQuery(searchQuery);
+                List<HAccount> hAccounts =
+                        accountDAO.searchQuery(searchQuery,
+                                INITIAL_PERSON_RESULT_COUNT, 0);
                 for (HAccount hAccount : hAccounts) {
                     result.add(new SearchResult(null, hAccount));
                 }

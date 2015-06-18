@@ -1,20 +1,17 @@
-<figure>
-<img alt="Documents view" src="images/editor-doc-list.png" />
-</figure>
+![Documents view](/images/editor-doc-list.png)
 <br/>
 
 1. **Breadcrumbs** - Links to Project -> Version
 2. **Statistic** - Statistic and remaining hours for the selected project version in selected language.
-3. [**Views**](user-guide/editor/overview#views-in-webtrans)
+3. [**Views**](/user-guide/editor/overview#views-in-webtrans)
 4. **Search** - Allow translators to by document name.
 5. **Change statistic view** - Change statistic measurement in `Words`(total words in the all documents) or `Messages` (total translation entry in all documents).
 6. **Settings** - From top to bottom: Notification, Chat room, Settings, Validations.
 7. **Paging** - Page navigation for document list.
 
 ## Settings
-
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-settings.png" />
+![Documents view settings](/images/editor-doc-list-settings.png)
 </figure>
 <br/>
 
@@ -26,9 +23,8 @@
 
 
 ## Validations
-
 <figure>
-<img alt="Documents view settings" src="images/editor-doc-list-validations.png" />
+![Editor doc list validations](/images/editor-doc-list-validations.png)
 </figure>
 <br/>
 
@@ -42,4 +38,4 @@
 
 **Note:** validation icons will not change until the next time validation is run on the document, even if the translations are updated. Make sure to re-run validation after making any changes so that the results are accurate.
 
-See [validations](user-guide/projects/validations) for more details.
+See [validations](/user-guide/projects/validations) for more details.

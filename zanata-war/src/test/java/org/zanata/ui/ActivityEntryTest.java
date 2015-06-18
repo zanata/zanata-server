@@ -1,14 +1,15 @@
 package org.zanata.ui;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.zanata.common.ActivityType;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
+import org.zanata.i18n.Messages;
 import org.zanata.model.Activity;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
@@ -28,7 +29,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.zanata.model.TestFixture.makeHTextFlow;
 
-@Test(groups = "unit-tests")
 public class ActivityEntryTest {
     private ActivityEntry activityEntry;
     @Mock
@@ -37,6 +37,8 @@ public class ActivityEntryTest {
     private ActivityService activityService;
     @Mock
     private UrlUtil urlUtil;
+    @Mock
+    private Messages msgs;
     private HProjectIteration iteration;
     private HProject project;
     private int wordCount = 10;
@@ -45,10 +47,10 @@ public class ActivityEntryTest {
     private HTextFlowTarget textFlowTarget;
     private HDocument document;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        activityEntry = new ActivityEntry(activityService, urlUtil, documentDAO);
+        activityEntry = new ActivityEntry(activityService, urlUtil, documentDAO, msgs);
         iteration = new HProjectIteration();
         iteration.setId(1L);
         iteration.setSlug("master");
