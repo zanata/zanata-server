@@ -64,7 +64,9 @@ public class Deployments {
                 .resolve()
                 .using(
                 // JavaMelody's ServletFilter/Listener interfere with test
-                // deployments
+                // deployments.
+                // google-collections gets pulled in by arquillian and
+                // conflict with guava.
                 new RejectDependenciesStrategy(false,
                         "net.bull.javamelody:javamelody-core",
                         "com.google.collections:google-collections"))

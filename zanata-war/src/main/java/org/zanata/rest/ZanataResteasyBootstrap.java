@@ -48,11 +48,6 @@ public class ZanataResteasyBootstrap extends ResteasyBootstrap {
     }
 
     @Override
-    protected void initDispatcher() {
-        super.initDispatcher();
-    }
-
-    @Override
     protected Dispatcher createDispatcher(
             SeamResteasyProviderFactory providerFactory) {
         return new RestLimitingSynchronousDispatcher(providerFactory);
