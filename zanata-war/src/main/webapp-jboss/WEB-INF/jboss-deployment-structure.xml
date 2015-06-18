@@ -20,6 +20,7 @@
       <module name="javax.annotation.api" />
       <!-- not needed for wildfly: -->
       <module name="javax.ejb.api" />
+      <module name="javax.inject.api" />
       <module name="javax.el.api" />
       <module name="javax.faces.api" />
       <!-- not needed for wildfly: -->
