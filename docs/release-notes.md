@@ -1,19 +1,22 @@
 ## 3.7
 
-<h5>Infrastructure Changes</h5>
+<h5>Deployment</h5>
 
-* Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
-
-* This release adds a one-time migration of some data, which can cause a timeout during server startup. This applies to
-all plain text and libreoffice formats, so is only a concern for servers that are upgrading from an earlier version and
-already have several hundred such documents. To avoid the timeout, add or change the following property in
-`standalone.xml`. A value of 1000 seconds is sufficient in our tests. Since the migration is performed only once, the
-property can safely be reverted or removed before subsequent startups.
+* Deployment for this release may require a longer timeout due to underlying database schema changes and data migration. This is dependent on database size and system performance, and the system administrator should consider increasing the JBoss timeout value in standalone.xml.  This example sets a timeout of two hours, which should be more than enough:
 
         <system-properties>
             ...
-            <property name="jboss.as.management.blocking.timeout" value="1000"/>
+            <property name="jboss.as.management.blocking.timeout" value="7200"/>
+            ...
         </system-properties>
+      
+        
+* The Zanata administrator will also need to reindex HProject table via the Administration menu. See [Manage search](user-guide/admin/manage-search) for more information.
+    
+    
+<h5>Infrastructure Changes</h5>
+
+* Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
 
 * [1207423](https://bugzilla.redhat.com/show_bug.cgi?id=1207423) - zanata-assets(javascipts and css style) now are packaged as jar and is part of zanata-server dependency.
 [Release](http://repository-zanata.forge.cloudbees.com/release/org/zanata/zanata-assets/) and [snapshot](http://repository-zanata.forge.cloudbees.com/snapshot/org/zanata/zanata-assets/)
@@ -25,19 +28,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [PR 633](https://github.com/zanata/zanata-server/pull/633) - Use JNDI to obtain mail server from app server
     * Zanata now uses `java:jboss/mail/Default` mail session for SMTP configuration.  See "Email configuration" in [System admin guide](http://docs.zanata.org/en/latest/user-guide/system-admin/configuration/installation/index.html) for details.
 
-<h5>Deployment</h5>
 
-* Deployment for this release may require a longer timeout due to underlying database changes. This is dependent on database size and the system administrator should consider increasing the JBoss timeout value in standalone.xml.
-
-        <system-properties>
-            ...
-            <property name="jboss.as.management.blocking.timeout" value="2000"/>
-        </system-properties>
-      
-        
-* The Zanata administrator will also need to reindex HProject table via the Administration menu. See [Manage search](user-guide/admin/manage-search) for more information.
-    
-    
 <h5>Bug fixes</h5>
 * [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
 * [1029734](https://bugzilla.redhat.com/show_bug.cgi?id=1029734) - po header contains invalid entry will cause upload/push failure
@@ -62,6 +53,10 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1224030](https://bugzilla.redhat.com/show_bug.cgi?id=1224030) - Search form does not trigger search if paste text
 * [1198898](https://bugzilla.redhat.com/show_bug.cgi?id=1198898) - Exception on using the URL to view a language not yet added to Zanata
 * [1116172](https://bugzilla.redhat.com/show_bug.cgi?id=1116172) - Captcha no longer used, dead code still exists
+* [1230419](https://bugzilla.redhat.com/show_bug.cgi?id=1230419) - Only show "approved" figure in version page if "Review required" is enable or value more than 0
+* [1229940](https://bugzilla.redhat.com/show_bug.cgi?id=1229940) - When deleting a version or project remove links and replace icon from the activity feed
+* [1230424](https://bugzilla.redhat.com/show_bug.cgi?id=1230424) - Update message "Archived" to "Deleted" in activity table
+
 -----------------------
 
 <h5>New Features</h5>
@@ -77,6 +72,8 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs
 * [1211849](https://bugzilla.redhat.com/show_bug.cgi?id=1211849) - Project maintainer can change project/version slug
 * [1082840](https://bugzilla.redhat.com/show_bug.cgi?id=1082840) - Project maintainer can delete a project or project version
+* [1209669](https://bugzilla.redhat.com/show_bug.cgi?id=1209669) - New REST endpoint for editor suggestions.
+*
 
 ## 3.6.3
 

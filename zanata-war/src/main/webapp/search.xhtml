@@ -3,11 +3,6 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:rich="http://richfaces.org/rich"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   template="/WEB-INF/template/template.xhtml">
 
   <ui:define
@@ -15,7 +10,7 @@
     zanataSearch.autocomplete.query)}</ui:define>
   <ui:define name="center_content">
     <div class="g--centered" id="search-page">
-      <div class="g__item w--1-s w--1-2 l--push-bottom-half">
+      <div class="g__item w--1-s w--1 l--push-bottom-half">
         <p class="txt--meta l--push-all-0">
           #{msgs.format('jsf.search.searchQuery.title', zanataSearch.autocomplete.query)}
         </p>
@@ -52,160 +47,16 @@
 
           <ul class="tabs__content js-tabs-content">
             <li id="projects" class="is-active">
-              <div class="panels">
-                <div class="panel">
-                  <div class="panel__header">
-                    <div class="panel__header__actions">
-                      <zanata:sortlist id="project-sorting"
-                        sortAction="#{zanataSearch.sortProjectList()}"
-                        render="search-project_form, projectFilter-pager, projectFilter-page-info, projectFilterBottom-pager, projectFilterBottom-page-info"
-                        sortingList="#{zanataSearch.projectSortingList}"
-                        onbegin="clearHTML('#{rich:clientId('search-project_form')}')"
-                        status="projects-loader"/>
-                    </div>
-                    <h2 class="panel__heading">#{msgs['jsf.Projects']}</h2>
-                  </div>
-
-                  <div class="panel__sub-header js-reveal">
-                    <zanata:list-filter status="projects-loader"
-                      bottomPanel="true"
-                      listId="search-project_form"
-                      placeholder="#{msgs['jsf.project.search.placeholder']}"
-                      iconClass="i--project"
-                      render="search-project_form, projectFilterBottom-pager, projectFilterBottom-page-info"
-                      id="projectFilter"
-                      actionBean="#{zanataSearch.projectTabProjectFilter}"/>
-                  </div>
-
-                  <a4j:status name="projects-loader">
-                    <f:facet name="start">
-                      <zanata:loader/>
-                    </f:facet>
-                  </a4j:status>
-
-                  <h:form id="search-project_form" styleClass="l--push-bottom-1">
-                    <s:div styleClass="l--pad-all-half" rendered="#{zanataSearch.getTotalProjectCount() ge 0 and empty zanataSearch.projectTabProjectFilter.currentPage}">
-                      <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
-                    </s:div>
-
-                    <s:fragment
-                      rendered="#{not empty zanataSearch.projectTabProjectFilter.currentPage}">
-                      <ul class="list--stats">
-                        <ui:repeat value="#{zanataSearch.projectTabProjectFilter.currentPage}"
-                          var="project">
-                          <li class="l--pad-all-half">
-                            <a href="#{request.contextPath}/project/view/#{project.slug}">
-                              <div class="list__item">
-                                <div class="list__item__info">
-                                  <h3 class="list__title"><zanata:project-label project="#{project}"/></h3>
-                                  <div class="list__item__meta">
-                                    <i class="i i--version" title="#{msgs['jsf.Versions']}"></i> #{project.projectIterations.size}
-                                  </div>
-                                </div>
-                                <div class="list__item__actions">
-                                  <span class="txt--understated" title="#{msgs['jsf.CreationDate']}: #{project.creationDate}">
-                                    <i class="i i--clock"></i> #{zanataSearch.getHowLongAgoDescription(project.creationDate)}
-                                  </span>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                        </ui:repeat>
-                      </ul>
-                    </s:fragment>
-
-                  </h:form>
-
-                  <zanata:list-filter status="projects-loader"
-                    listId="search-project_form"
-                    placeholder="#{msgs['jsf.language.search.placeholder']}"
-                    iconClass="i--language" bottomPanel="true"
-                    render="search-project_form, projectFilter-pager, projectFilter-page-info"
-                    id="projectFilterBottom"
-                    actionBean="#{zanataSearch.projectTabProjectFilter}"/>
-
-                </div>
-              </div>
+              <ui:include src="/WEB-INF/layout/search/projects-tab.xhtml"/>
             </li>
-
             <li id="users">
-
+              <ui:include src="/WEB-INF/layout/search/users-tab.xhtml"/>
             </li>
           </ul>
         </div>
       </div>
     </div>
 
-
-
-
-
-
-
-
-    <h1>#{msgs.format('jsf.projectSearch.searchQuery.title', zanataSearch.autocomplete.query)}</h1>
-    <h:form>
-      <div style="text-align: center">
-        <rich:dataScroller renderIfSinglePage="false" for="searchResults"
-          page="#{zanataSearch.projectPagedListDataModel.scrollerPage}" id="scroller"
-          fastControls="hide" render="scroller, searchResults">
-          <f:facet name="first">
-            <h:outputText value="" styleClass="icon-to-start"/>
-          </f:facet>
-          <f:facet name="previous">
-            <h:outputText value="" styleClass="icon-left-open"/>
-          </f:facet>
-          <f:facet name="next">
-            <h:outputText value="" styleClass="icon-right-open-1"/>
-          </f:facet>
-          <f:facet name="fastforward">
-            <h:outputText value="" styleClass="icon-fast-fw-1"/>
-          </f:facet>
-          <f:facet name="last">
-            <h:outputText value="" styleClass="icon-to-end"/>
-          </f:facet>
-
-          <f:facet name="first_disabled">
-            <h:outputText value="" styleClass="icon-to-start"/>
-          </f:facet>
-          <f:facet name="previous_disabled">
-            <h:outputText value="" styleClass="icon-left-open"/>
-          </f:facet>
-          <f:facet name="next_disabled">
-            <h:outputText value="" styleClass="icon-right-open-1"/>
-          </f:facet>
-          <f:facet name="fastforward_disabled">
-            <h:outputText value="" styleClass="icon-fast-fw-1"/>
-          </f:facet>
-          <f:facet name="last_disabled">
-            <h:outputText value="" styleClass="icon-to-end"/>
-          </f:facet>
-        </rich:dataScroller>
-      </div>
-
-      <rich:dataTable id="searchResults" columnsWidth="200px,200px,80px"
-        rows="#{zanataSearch.projectPagedListDataModel.pageSize}"
-        value="#{zanataSearch.getProjectPagedListDataModel()}" var="project">
-        <rich:column>
-          <f:facet name="header">#{msgs['jsf.ProjectName']}</f:facet>
-          <s:link id="project" value="#{project.name}" propagation="none"
-            styleClass="table_link #{project.status eq 'READONLY' ? 'readonly_link' : (project.status eq 'OBSOLETE' ? 'obsolete_link' : '')}"
-            view="/project/project.xhtml">
-            <f:param name="slug" value="#{project.slug}"/>
-          </s:link>
-        </rich:column>
-        <rich:column>
-          <f:facet name="header">#{msgs['jsf.Description']}</f:facet>
-          <h:outputText value="#{project.description}"/>
-        </rich:column>
-        <rich:column>
-          <f:facet name="header">#{msgs['jsf.CreationDate']}</f:facet>
-          <h:outputText value="#{project.creationDate}">
-            <f:convertDateTime type="date" dateStyle="default"/>
-          </h:outputText>
-        </rich:column>
-      </rich:dataTable>
-    </h:form>
   </ui:define>
 
 </ui:composition>

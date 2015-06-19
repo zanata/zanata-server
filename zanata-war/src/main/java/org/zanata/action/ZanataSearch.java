@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.faces.model.DataModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +20,6 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.model.HAccount;
-import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 
 import com.google.common.collect.Lists;
@@ -42,12 +39,13 @@ public class ZanataSearch implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final static int DEFAULT_PAGE_SIZE = 30;
-
     private final boolean includeObsolete = false;
-    
+
     @In
     private ProjectDAO projectDAO;
+
+    @In
+    private AccountDAO accountDAO;
 
     @Getter
     private ProjectUserAutocomplete autocomplete = new ProjectUserAutocomplete();
@@ -57,8 +55,9 @@ public class ZanataSearch implements Serializable {
         Lists.newArrayList(SortingType.SortOption.ALPHABETICAL,
             SortingType.SortOption.CREATED_DATE));
 
-    private QueryProjectPagedListDataModel queryProjectPagedListDataModel =
-            new QueryProjectPagedListDataModel(DEFAULT_PAGE_SIZE);
+    @Getter
+    private SortingType UserSortingList = new SortingType(
+        Lists.newArrayList(SortingType.SortOption.ALPHABETICAL));
 
     // Count of project to be return as part of autocomplete
     private final static int INITIAL_RESULT_COUNT = 10;
@@ -69,9 +68,8 @@ public class ZanataSearch implements Serializable {
     private final ProjectComparator projectComparator =
         new ProjectComparator(getProjectSortingList());
 
-    public DataModel getProjectPagedListDataModel() {
-        return queryProjectPagedListDataModel;
-    }
+    private final UserComparator userComparator =
+        new UserComparator(getUserSortingList());
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -141,57 +139,92 @@ public class ZanataSearch implements Serializable {
 
         @Override
         public void setQuery(String query) {
-            queryProjectPagedListDataModel.setQuery(query);
             super.setQuery(query);
         }
     }
 
     @Getter
     private final AbstractListFilter<HProject> projectTabProjectFilter =
-        new AbstractListFilter<HProject>() {
-            
+        new InMemoryListFilter<HProject>() {
+
             private ProjectDAO projectDAO = ServiceLocator.instance()
                 .getInstance(ProjectDAO.class);
-
+            /**
+             * Fetches all records.
+             *
+             * @return A list of all records to be managed by the filter.
+             */
             @Override
-            protected List<HProject> fetchRecords(int start, int max,
-                String filter) {
+            protected List<HProject> fetchAll() {
+                if (StringUtils.isEmpty(getAutocomplete().getQuery())) {
+                    return Collections.emptyList();
+                }
                 try {
-                    String search = filter;
-                    if (StringUtils.isEmpty(search)) {
-                        search = getAutocomplete().getQuery();
-                        if(StringUtils.isEmpty(search)) {
-                            return Collections.emptyList();
-                        }
-                    }
-                    List<HProject> projects = projectDAO.searchProjects(search, -1, 0,
-                        includeObsolete);
+                    List<HProject> projects =
+                            projectDAO.searchProjects(getAutocomplete()
+                                    .getQuery(), -1, 0,
+                                    includeObsolete);
                     Collections.sort(projects, projectComparator);
                     return projects;
-                } catch (ParseException ex) {
+                } catch (ParseException e) {
                     return Collections.emptyList();
                 }
             }
 
+            /**
+             * Indicates whether the element should be included in the results.
+             *
+             * @param elem   The element to analyze
+             * @param filter The filter string being used.
+             * @return True if the element passes the filter. False otherwise.
+             */
             @Override
-            protected long fetchTotalRecords(String filter) {
-                try {
-                    String search = filter;
-                    if (StringUtils.isEmpty(search)) {
-                        search = getAutocomplete().getQuery();
-                        if(StringUtils.isEmpty(search)) {
-                            return 0L;
-                        }
-                    }
-                    return projectDAO.getQueryProjectSize(search,
-                        includeObsolete);
-                } catch (ParseException ex) {
-                    return 0L;
-                }
+            protected boolean include(HProject elem, String filter) {
+                return true; //no internal filter
             }
         };
-    
+
+    @Getter
+    private final AbstractListFilter<HAccount> userTabUserFilter =
+        new InMemoryListFilter<HAccount>() {
+            private AccountDAO accountDAO = ServiceLocator.instance()
+                .getInstance(AccountDAO.class);
+
+            /**
+             * Fetches all records.
+             *
+             * @return A list of all records to be managed by the filter.
+             */
+            @Override
+            protected List<HAccount> fetchAll() {
+                if (StringUtils.isEmpty(getAutocomplete().getQuery())) {
+                    return Collections.emptyList();
+                }
+                List<HAccount> hAccounts =
+                    accountDAO.searchQuery(getAutocomplete().getQuery(),
+                        -1, 0);
+                Collections.sort(hAccounts, userComparator);
+                return hAccounts;
+            }
+
+            /**
+             * Indicates whether the element should be included in the results.
+             *
+             * @param elem   The element to analyze
+             * @param filter The filter string being used.
+             * @return True if the element passes the filter. False otherwise.
+             */
+            @Override
+            protected boolean include(HAccount elem, String filter) {
+                return true; //no internal filter
+            }
+        };
+
+
     public int getTotalProjectCount() {
+        if(StringUtils.isEmpty(getAutocomplete().getQuery())) {
+            return 0;
+        }
         try {
             return projectDAO.getQueryProjectSize(getAutocomplete().getQuery(),
                     includeObsolete);
@@ -201,11 +234,19 @@ public class ZanataSearch implements Serializable {
     }
 
     public int getTotalUserCount() {
-        return 0;
+        if(StringUtils.isEmpty(getAutocomplete().getQuery())) {
+            return 0;
+        }
+        return accountDAO.searchQuery(getAutocomplete().getQuery(), -1, 0)
+                .size();
     }
 
     public String getHowLongAgoDescription(Date date) {
         return DateUtil.getHowLongAgoDescription(date);
+    }
+
+    public String formatDate(Date date) {
+        return DateUtil.formatShortDate(date);
     }
 
     /**
@@ -213,6 +254,10 @@ public class ZanataSearch implements Serializable {
      */
     public void sortProjectList() {
         projectTabProjectFilter.reset();
+    }
+
+    public void sortUserList() {
+        userTabUserFilter.reset();
     }
 
     private class ProjectComparator implements Comparator<HProject> {
@@ -239,6 +284,28 @@ public class ZanataSearch implements Serializable {
                 return o1.getName().toLowerCase().compareTo(
                     o2.getName().toLowerCase());
             }
+        }
+    }
+
+    private class UserComparator implements Comparator<HAccount> {
+        private SortingType sortingType;
+
+        public UserComparator(SortingType sortingType) {
+            this.sortingType = sortingType;
+        }
+
+        @Override
+        public int compare(HAccount o1, HAccount o2) {
+            SortingType.SortOption selectedSortOption =
+                sortingType.getSelectedSortOption();
+
+            if (!selectedSortOption.isAscending()) {
+                HAccount temp = o1;
+                o1 = o2;
+                o2 = temp;
+            }
+            return o1.getPerson().getName().toLowerCase().compareTo(
+                o2.getPerson().getName().toLowerCase());
         }
     }
 }
