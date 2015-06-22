@@ -78,7 +78,7 @@ public class ProjectSearchTest extends ZanataTestCase {
                 .expectSearchListContains("Search Zanata for 'arodef'")
                 .submitSearch();
 
-        assertThat(projectsPage.getProjectNamesOnCurrentPage().isEmpty())
+        assertThat(projectsPage.getProjectNamesOnSearchPage().isEmpty())
                 .isTrue()
                 .as("No projects are displayed");
     }

@@ -162,8 +162,7 @@ public class ZanataSearch implements Serializable {
                 try {
                     List<HProject> projects =
                             projectDAO.searchProjects(getAutocomplete()
-                                    .getQuery(), -1, 0,
-                                    includeObsolete);
+                                    .getQuery(), -1, 0, includeObsolete);
                     Collections.sort(projects, projectComparator);
                     return projects;
                 } catch (ParseException e) {

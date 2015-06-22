@@ -52,7 +52,7 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
     public ProjectVersionsPage createNewSimpleProject(String projectId,
             String projectName) {
         ProjectsPage projectsPage = goToHome().goToProjects();
-        List<String> projects = projectsPage.getProjectNamesOnCurrentPage();
+        List<String> projects = projectsPage.getProjectNamesOnSearchPage();
         log.info("current projects: {}", projects);
 
         if (projects.contains(projectName)) {
@@ -79,7 +79,7 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
      */
     public ProjectVersionsPage createNewProject(HashMap<String, String> settings) {
         ProjectsPage projectsPage = goToHome().goToProjects();
-        List<String> projects = projectsPage.getProjectNamesOnCurrentPage();
+        List<String> projects = projectsPage.getProjectNamesOnSearchPage();
         log.info("current projects: {}", projects);
         CreateProjectPage createProjectPage = projectsPage
                 .clickOnCreateProjectLink()
@@ -148,7 +148,7 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
     public ProjectVersionsPage goToProjectByName(String projectName) {
         ProjectsPage projects = goToHome().goToProjects();
         log.info("go to project by name with current projects: {}, name: {}",
-                projects.getProjectNamesOnCurrentPage(), projectName);
+                projects.getProjectNamesOnSearchPage(), projectName);
         return projects.goToProject(projectName);
     }
 

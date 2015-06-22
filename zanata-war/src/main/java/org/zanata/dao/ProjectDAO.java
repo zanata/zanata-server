@@ -267,8 +267,7 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
 
     public int getQueryProjectSize(@Nonnull String searchQuery,
             boolean includeObsolete) throws ParseException {
-        FullTextQuery query = buildSearchQuery(searchQuery, includeObsolete);
-        return query.getResultSize();
+        return searchProjects(searchQuery, -1, 0, includeObsolete).size();
     }
 
     private FullTextQuery buildSearchQuery(@Nonnull String searchQuery,
