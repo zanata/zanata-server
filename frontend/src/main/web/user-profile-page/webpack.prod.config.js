@@ -1,18 +1,13 @@
 var webpack = require('webpack');
 var path = require('path');
 
-// default destination
-var bundleDest = __dirname;
-process.argv.forEach(function(arg) {
-  if (/^bundleDest=.+$/.test(arg)) {
-    bundleDest = arg.split('=')[1];
-  }
-});
+// bundle destination (default is current directory)
+var bundleDest = process.env.npm_config_env_bundleDest || __dirname;
 
 module.exports = {
   context: __dirname,
   entry: [
-    './index.js',
+    './index.js'
   ],
   output: {
     path: bundleDest,
@@ -31,7 +26,11 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({ "global.GENTLY": false }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+        compress: {
+            warnings: false
+        }
+    }),
     new webpack.optimize.DedupePlugin(),
     new webpack.DefinePlugin({
       "process.env": {

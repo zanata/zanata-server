@@ -186,10 +186,11 @@ public class FilterConstraintToQuery {
         if (targetConjunction.isEmpty()) {
             return null;
         }
-        targetConjunction.add(eq("textFlow", "tf"));
-        targetConjunction.add(eq("locale", Locale.placeHolder()));
+        targetConjunction.add(eq("tft.textFlow", "tf"));
+        targetConjunction.add(eq("tft.locale", Locale.placeHolder()));
 
-        return QueryBuilder.exists().from("HTextFlowTarget")
+        return QueryBuilder.exists().from("HTextFlowTarget tft").leftJoin(
+            "tft.lastModifiedBy.account acc")
                 .where(and(targetConjunction)).toQueryString();
     }
 
@@ -227,7 +228,7 @@ public class FilterConstraintToQuery {
         if (Strings.isNullOrEmpty(transComment)) {
             return null;
         }
-        return ilike("comment.comment", TargetComment.placeHolder());
+        return ilike("tft.comment.comment", TargetComment.placeHolder());
     }
 
     private String buildLastModifiedDateCondition() {
@@ -240,12 +241,12 @@ public class FilterConstraintToQuery {
         String changedBefore = null;
         if (changedAfterTime != null) {
             changedAfter =
-                    HqlCriterion.gt("lastChanged",
+                    HqlCriterion.gt("tft.lastChanged",
                             LastChangedAfter.placeHolder());
         }
         if (changedBeforeTime != null) {
             changedBefore =
-                    HqlCriterion.lt("lastChanged",
+                    HqlCriterion.lt("tft.lastChanged",
                             LastChangedBefore.placeHolder());
         }
         return QueryBuilder.and(changedAfter, changedBefore);
@@ -288,16 +289,16 @@ public class FilterConstraintToQuery {
         if (Strings.isNullOrEmpty(constraints.getLastModifiedByUser())) {
             return null;
         }
-        if(isExcludeSearchTerm(constraints.getLastModifiedByUser())) {
-            String nullLastModifiedByCondition = isNull("lastModifiedBy");
-            String excludeUsernameCondition = ne("lastModifiedBy.account.username",
+        if(!isExcludeSearchTerm(constraints.getLastModifiedByUser())) {
+            return eq("acc.username",
                 LastModifiedBy.placeHolder());
-            return "("
-                    + QueryBuilder.or(nullLastModifiedByCondition,
-                            excludeUsernameCondition) + ")";
         }
-        return eq("lastModifiedBy.account.username",
-                LastModifiedBy.placeHolder());
+
+        String nullLastModifiedByCondition = isNull("tft.lastModifiedBy");
+        String excludeUsernameCondition = ne("acc.username",
+            LastModifiedBy.placeHolder());
+        return QueryBuilder.or(nullLastModifiedByCondition,
+                        excludeUsernameCondition);
     }
 
     private boolean isExcludeSearchTerm(@Nonnull String term) {
