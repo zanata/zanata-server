@@ -228,7 +228,7 @@ It's possible to configure Zanata to use a single pre-defined Open Id authentica
 
 Java 1.7 is unable to connect to some websites, such as the [Fedora OpenID provider](https://id.fedoraproject.org/).  See [Fedora bug 1163501](https://bugzilla.redhat.com/show_bug.cgi?id=1163501) for details.
 
-**If you are have the option, you will probably find it easier to use Java 1.8 for your server.**
+**If you have the option, you will probably find it easier to use Java 1.8 for your server.**
 
 This workaround should allow Zanata to contact such OpenID providers.  You will need to know your JAVA_HOME, which may be `/usr/lib/jvm/jre-1.7.0/` or similar.
 
