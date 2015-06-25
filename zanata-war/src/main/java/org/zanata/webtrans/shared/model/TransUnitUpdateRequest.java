@@ -42,6 +42,7 @@ public class TransUnitUpdateRequest implements IsSerializable {
     private ContentState newContentState;
     private int baseTranslationVersion;
     private String targetComment;
+    private String revisionComment;
 
     // required for GWT rpc serialization
     @SuppressWarnings("unused")
@@ -55,6 +56,13 @@ public class TransUnitUpdateRequest implements IsSerializable {
         this.newContents = newContents;
         this.newContentState = newContentState;
         this.baseTranslationVersion = baseTranslationVersion;
+    }
+
+    public TransUnitUpdateRequest(TransUnitId transUnitId,
+        List<String> newContents, ContentState newContentState,
+        int baseTranslationVersion, String revisionComment) {
+        this(transUnitId, newContents, newContentState, baseTranslationVersion);
+        this.revisionComment = revisionComment;
     }
 
     public TransUnitUpdateRequest addTargetComment(String comment) {
@@ -78,6 +86,10 @@ public class TransUnitUpdateRequest implements IsSerializable {
         return baseTranslationVersion;
     }
 
+    public String getRevisionComment() {
+        return revisionComment;
+    }
+
     public boolean hasTargetComment() {
         return !Strings.isNullOrEmpty(targetComment);
     }
@@ -95,6 +107,7 @@ public class TransUnitUpdateRequest implements IsSerializable {
             add("newContentState", newContentState).
             add("baseTranslationVersion", baseTranslationVersion).
             add("targetComment", targetComment).
+            add("revisionComment", revisionComment).
             toString();
       // @formatter:on
     }

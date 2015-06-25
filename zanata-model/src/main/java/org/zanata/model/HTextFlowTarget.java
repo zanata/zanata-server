@@ -416,6 +416,7 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         setLastModifiedBy(null);
         setTranslator(null);
         setReviewer(null);
+        setRevisionComment(null);
     }
 
     protected boolean logPersistence() {

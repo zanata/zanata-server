@@ -233,10 +233,16 @@ public class TranslationServiceImpl implements TranslationService {
                     .getVersionNum()) {
                 try {
                     int nPlurals = getNumPlurals(hLocale, hTextFlow);
+                    Optional<String> revisionComment =
+                            StringUtils.isEmpty(request.getRevisionComment()) ? Optional
+                                    .<String> absent() : Optional.of(request
+                                    .getRevisionComment());
                     result.targetChanged =
                             translate(hTextFlowTarget,
                                     request.getNewContents(),
-                                    request.getNewContentState(), nPlurals);
+                                    request.getNewContentState(),
+                                    nPlurals,
+                                    revisionComment);
                     result.isSuccess = true;
                 } catch (HibernateException e) {
                     result.isSuccess = false;
@@ -330,7 +336,7 @@ public class TranslationServiceImpl implements TranslationService {
 
     private boolean translate(@Nonnull HTextFlowTarget hTextFlowTarget,
             @Nonnull List<String> contentsToSave, ContentState requestedState,
-            int nPlurals) {
+            int nPlurals, Optional<String> revisionComment) {
         boolean targetChanged = false;
         ContentState currentState = hTextFlowTarget.getState();
         targetChanged |= setContentIfChanged(hTextFlowTarget, contentsToSave);
@@ -343,6 +349,9 @@ public class TranslationServiceImpl implements TranslationService {
             hTextFlowTarget.setVersionNum(hTextFlowTarget.getVersionNum() + 1);
             hTextFlowTarget.setTextFlowRevision(textFlow.getRevision());
             hTextFlowTarget.setLastModifiedBy(authenticatedAccount.getPerson());
+            if(revisionComment.isPresent()) {
+                hTextFlowTarget.setRevisionComment(revisionComment.get());
+            }
             log.debug("last modified by :{}", authenticatedAccount.getPerson()
                     .getName());
         }

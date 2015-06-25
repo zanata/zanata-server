@@ -42,6 +42,7 @@ import org.zanata.service.TransMemoryMergeService;
 import org.zanata.service.TranslationMemoryService;
 import org.zanata.service.TranslationService;
 import org.zanata.util.Event;
+import org.zanata.util.MessageGenerator;
 import org.zanata.webtrans.server.rpc.TransMemoryMergeStatusResolver;
 import org.zanata.webtrans.shared.model.TransMemoryDetails;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
@@ -182,13 +183,14 @@ public class TransMemoryMergeServiceImpl implements TransMemoryMergeService {
 
         Long tmSourceId = tmResult.getSourceIdList().get(0);
         ContentState statusToSet;
-        String comment;
+        String comment, revisionComment;
         if (tmResult.getMatchType() == TransMemoryResultItem.MatchType.Imported) {
             TransMemoryUnit tu = transMemoryUnitDAO.findById(tmSourceId);
             statusToSet =
                     TransMemoryMergeStatusResolver.newInstance().decideStatus(
                             action, tmResult, oldTarget);
             comment = buildTargetComment(tu);
+            revisionComment = MessageGenerator.getTMMergeMessage(tu);
         } else {
             HTextFlow tmSource = textFlowDAO.findById(tmSourceId, false);
             TransMemoryDetails tmDetail =
@@ -199,16 +201,19 @@ public class TransMemoryMergeServiceImpl implements TransMemoryMergeService {
                             action, hTextFlowToBeFilled, tmDetail, tmResult,
                             oldTarget);
             comment = buildTargetComment(tmDetail);
+            revisionComment = MessageGenerator.getTMMergeMessage(tmDetail);
         }
 
         if (statusToSet != null) {
             TransUnitUpdateRequest unfilledRequest =
                     requestMap.get(hTextFlowToBeFilled.getId());
+
             TransUnitUpdateRequest request =
                     new TransUnitUpdateRequest(
                             unfilledRequest.getTransUnitId(),
                             tmResult.getTargetContents(), statusToSet,
-                            unfilledRequest.getBaseTranslationVersion());
+                            unfilledRequest.getBaseTranslationVersion(),
+                            revisionComment);
             request.addTargetComment(comment);
             log.debug("auto translate from translation memory {}", request);
             return request;

@@ -23,7 +23,10 @@ package org.zanata.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.zanata.model.HDocument;
+import org.zanata.model.HPerson;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.tm.TransMemoryUnit;
+import org.zanata.webtrans.shared.model.TransMemoryDetails;
 
 /**
  * Generate messages/comments of Zanata business actions
@@ -38,6 +41,7 @@ public class MessageGenerator {
     public static final String PREFIX_MERGE_TRANS = "Merge translations";
     public static final String PREFIX_COPY_TRANS = "Copy translation";
     public static final String PREFIX_COPY_VERSION = "Copy version";
+    public static final String PREFIX_TM_MERGE = "TM Merge";
 
     /**
      * Create revision comment for translation that is copied by merge
@@ -50,15 +54,11 @@ public class MessageGenerator {
     public static final String getMergeTranslationMessage(
             HTextFlowTarget tft) {
         HDocument document = tft.getTextFlow().getDocument();
-        String author = "";
-        if (tft.getLastModifiedBy() != null) {
-            author = tft.getLastModifiedBy().getName();
-        }
-
         return generateAutoCopiedMessage(PREFIX_MERGE_TRANS,
                 document.getProjectIteration().getProject().getName(),
                 document.getProjectIteration()
-                        .getSlug(), document.getDocId(), author);
+                        .getSlug(), document.getDocId(),
+                        getAuthor(tft.getLastModifiedBy()));
     }
 
     /**
@@ -69,14 +69,11 @@ public class MessageGenerator {
      */
     public static final String getCopyTransMessage(HTextFlowTarget tft) {
         HDocument document = tft.getTextFlow().getDocument();
-        String author = "";
-        if (tft.getLastModifiedBy() != null) {
-            author = tft.getLastModifiedBy().getName();
-        }
         return generateAutoCopiedMessage(PREFIX_COPY_TRANS,
                 document.getProjectIteration()
                         .getProject().getName(), document.getProjectIteration()
-                        .getSlug(), document.getDocId(), author);
+                        .getSlug(), document.getDocId(),
+                        getAuthor(tft.getLastModifiedBy()));
     }
 
     /**
@@ -87,30 +84,67 @@ public class MessageGenerator {
      */
     public static final String getCopyVersionMessage(HTextFlowTarget tft) {
         HDocument document = tft.getTextFlow().getDocument();
-        String author = "";
-        if (tft.getLastModifiedBy() != null) {
-            author = tft.getLastModifiedBy().getName();
-        }
         return generateAutoCopiedMessage(PREFIX_COPY_VERSION,
                 document.getProjectIteration().getProject().getName(),
                 document.getProjectIteration()
-                        .getSlug(), document.getDocId(), author);
+                        .getSlug(), document.getDocId(),
+                        getAuthor(tft.getLastModifiedBy()));
+    }
+
+    /**
+     * Create revision comment for translation that is copied by TM Merge
+     * @see org.zanata.service.TransMemoryMergeService
+     *
+     * @param tu
+     */
+    public static final String getTMMergeMessage(TransMemoryUnit tu) {
+        StringBuilder comment = new StringBuilder();
+
+        comment.append(PREFIX_TM_MERGE)
+            .append(": translation auto-copied from Translation memory '")
+            .append(tu.getTranslationMemory().getSlug())
+            .append("', description '")
+            .append(tu.getTranslationMemory().getDescription())
+            .append("'");
+
+       return comment.toString();
+    }
+
+    /**
+     * Create revision comment for translation that is copied by TM Merge
+     * @see org.zanata.service.TransMemoryMergeService
+     *
+     * @param tu
+     */
+    public static final String getTMMergeMessage(TransMemoryDetails tmDetails) {
+        return generateAutoCopiedMessage(PREFIX_TM_MERGE,
+            tmDetails.getProjectName(),
+            tmDetails.getIterationName(), tmDetails.getDocId(),
+            tmDetails.getLastModifiedBy());
+    }
+
+    private static String getAuthor(HPerson person) {
+        if (person != null) {
+            return person.getName();
+        }
+        return null;
     }
 
     private static final String generateAutoCopiedMessage(String prefix,
         String projectName, String versionSlug, String docId, String author) {
         StringBuilder comment = new StringBuilder();
 
-        comment.append(prefix + ": translation auto-copied from project ")
-                .append(projectName)
-                .append(", version ")
-                .append(versionSlug)
-                .append(", document ")
-                .append(docId);
+        comment.append(prefix)
+            .append(": translation auto-copied from project '")
+            .append(projectName)
+            .append("', version '")
+            .append(versionSlug)
+            .append("', document '")
+            .append(docId)
+            .append("'");
 
         if (!StringUtils.isEmpty(author)) {
-            comment.append(", author ")
-                    .append(author);
+            comment.append(", author '").append(author).append("'");
         }
         return comment.toString();
     }
