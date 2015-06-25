@@ -19,24 +19,40 @@
  * site: http://www.fsf.org.
  */
 
-package org.zanata.model.type;
+package org.zanata.util;
 
-import lombok.Getter;
 import org.zanata.model.HTextFlowTarget;
-import org.zanata.model.tm.TransMemoryUnit;
+import org.zanata.model.type.TranslationEntityType;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public enum TranslationEntityType {
-    TMX(TransMemoryUnit.class),
-    TFT(HTextFlowTarget.class);
-    //    MT(null);
+public class TranslationUtil {
+    public static void copyHTextFlowTargetEntity(@Nonnull HTextFlowTarget from,
+            @Nonnull HTextFlowTarget to) {
+        if (from != null && to != null) {
+            to.setEntityType(getEntityType(from));
+            to.setEntityId(getEntityId(from));
+        }
+    }
 
-    @Getter
-    private final Class clazz;
+    public static Long getEntityId(@Nonnull HTextFlowTarget from) {
+        if (from != null) {
+            return from.getEntityId() == null ? from.getId() :
+                    from.getEntityId();
+        }
+        return null;
+    }
 
-    private TranslationEntityType(Class clazz) {
-        this.clazz = clazz;
+    public static TranslationEntityType getEntityType(
+            @Nonnull HTextFlowTarget from) {
+        if (from != null) {
+            return from.getEntityType() == null ? TranslationEntityType.TFT :
+                    from
+                            .getEntityType();
+        }
+        return null;
     }
 }

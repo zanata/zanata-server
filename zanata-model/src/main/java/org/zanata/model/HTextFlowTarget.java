@@ -261,6 +261,8 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Transient
     public void setContent(String content) {
         this.setContents(Arrays.asList(content));
+        clearEntity();
+        this.setSourceType(null);
     }
 
     @Override
@@ -293,6 +295,8 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
             for (int i = 0; i < contents.size(); i++) {
                 this.setContent(i, contents.get(i));
             }
+            clearEntity();
+            this.setSourceType(null);
         }
     }
 
@@ -350,6 +354,8 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         default:
             throw new RuntimeException("Invalid Content index: " + idx);
         }
+        clearEntity();
+        this.setSourceType(null);
     }
 
     protected String getContent0() {
@@ -438,6 +444,15 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         setTranslator(null);
         setReviewer(null);
         setRevisionComment(null);
+        setSourceType(null);
+        clearEntity();
+    }
+
+    //This should be trigger whenever content changes
+    @Transient
+    public void clearEntity() {
+        setEntityId(null);
+        setEntityType(null);
     }
 
     protected boolean logPersistence() {

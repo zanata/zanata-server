@@ -21,22 +21,27 @@
 
 package org.zanata.model.type;
 
-import lombok.Getter;
-import org.zanata.model.HTextFlowTarget;
-import org.zanata.model.tm.TransMemoryUnit;
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public enum TranslationEntityType {
-    TMX(TransMemoryUnit.class),
-    TFT(HTextFlowTarget.class);
-    //    MT(null);
+public class TranslationSourceTypeTest {
 
-    @Getter
-    private final Class clazz;
-
-    private TranslationEntityType(Class clazz) {
-        this.clazz = clazz;
+    @Test
+    public void testGetFromAbbr() {
+        for (TranslationSourceType type : TranslationSourceType.values()) {
+            TranslationSourceType.getValueOf(type.getAbbr());
+            assertThat(TranslationSourceType.getValueOf(type.getAbbr()))
+                    .isEqualTo(type);
+        }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetFromAbbrException() {
+        TranslationSourceType.getValueOf("non-exist-abbr");
+    }
+
 }

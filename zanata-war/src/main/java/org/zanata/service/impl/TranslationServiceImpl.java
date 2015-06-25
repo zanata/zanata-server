@@ -73,6 +73,8 @@ import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.HTextFlowTargetHistory;
+import org.zanata.model.type.TranslationEntityType;
+import org.zanata.model.type.TranslationSourceType;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.rest.service.ResourceUtils;
@@ -233,16 +235,12 @@ public class TranslationServiceImpl implements TranslationService {
                     .getVersionNum()) {
                 try {
                     int nPlurals = getNumPlurals(hLocale, hTextFlow);
-                    Optional<String> revisionComment =
-                            StringUtils.isEmpty(request.getRevisionComment()) ? Optional
-                                    .<String> absent() : Optional.of(request
-                                    .getRevisionComment());
                     result.targetChanged =
                             translate(hTextFlowTarget,
                                     request.getNewContents(),
                                     request.getNewContentState(),
                                     nPlurals,
-                                    revisionComment);
+                                    new TranslationDetails(request));
                     result.isSuccess = true;
                 } catch (HibernateException e) {
                     result.isSuccess = false;
@@ -334,9 +332,54 @@ public class TranslationServiceImpl implements TranslationService {
         }
     }
 
+    public class TranslationDetails {
+        private final String revisionComment;
+        private final TranslationEntityType entityType;
+        private final TranslationSourceType sourceType;
+        private final Long entityId;
+
+        public TranslationDetails(String revisionComment,
+            TranslationEntityType entityType, TranslationSourceType sourceType,
+            Long entityId) {
+            this.revisionComment = revisionComment;
+            this.entityType = entityType;
+            this.sourceType = sourceType;
+            this.entityId = entityId;
+        }
+
+        public TranslationDetails(TransUnitUpdateRequest request) {
+            this.revisionComment = request.getRevisionComment();
+            this.entityId = request.getEntityId();
+            entityType =
+                    StringUtils.isEmpty(request.getEntityType()) ? null
+                            : TranslationEntityType.valueOf(request
+                                    .getEntityType());
+            sourceType =
+                    StringUtils.isEmpty(request.getSourceType()) ? null
+                            : TranslationSourceType.getValueOf(request
+                                    .getSourceType());
+        }
+
+        public String getRevisionComment() {
+            return revisionComment;
+        }
+
+        public TranslationEntityType getEntityType() {
+            return entityType;
+        }
+
+        public TranslationSourceType getSourceType() {
+            return sourceType;
+        }
+
+        public Long getEntityId() {
+            return entityId;
+        }
+    }
+
     private boolean translate(@Nonnull HTextFlowTarget hTextFlowTarget,
             @Nonnull List<String> contentsToSave, ContentState requestedState,
-            int nPlurals, Optional<String> revisionComment) {
+            int nPlurals, TranslationDetails details) {
         boolean targetChanged = false;
         ContentState currentState = hTextFlowTarget.getState();
         targetChanged |= setContentIfChanged(hTextFlowTarget, contentsToSave);
@@ -349,9 +392,12 @@ public class TranslationServiceImpl implements TranslationService {
             hTextFlowTarget.setVersionNum(hTextFlowTarget.getVersionNum() + 1);
             hTextFlowTarget.setTextFlowRevision(textFlow.getRevision());
             hTextFlowTarget.setLastModifiedBy(authenticatedAccount.getPerson());
-            if(revisionComment.isPresent()) {
-                hTextFlowTarget.setRevisionComment(revisionComment.get());
-            }
+
+            hTextFlowTarget.setRevisionComment(details.getRevisionComment());
+            hTextFlowTarget.setEntityType(details.getEntityType());
+            hTextFlowTarget.setSourceType(details.getSourceType());
+            hTextFlowTarget.setEntityId(details.getEntityId());
+
             log.debug("last modified by :{}", authenticatedAccount.getPerson()
                     .getName());
         }
@@ -505,7 +551,7 @@ public class TranslationServiceImpl implements TranslationService {
             String iterationSlug, String docId, LocaleId locale,
             TranslationsResource translations, Set<String> extensions,
             MergeType mergeType, boolean assignCreditToUploader, boolean lock,
-            AsyncTaskHandle handle) {
+            AsyncTaskHandle handle, TranslationSourceType translationSourceType) {
         // Lock this document for push
         Lock transLock = null;
         if (lock) {
@@ -519,7 +565,7 @@ public class TranslationServiceImpl implements TranslationService {
             messages =
                     this.translateAllInDoc(projectSlug, iterationSlug, docId,
                             locale, translations, extensions, mergeType,
-                            assignCreditToUploader, handle);
+                            assignCreditToUploader, handle, translationSourceType);
         } finally {
             if (lock) {
                 lockManagerServiceImpl.release(transLock);
@@ -568,10 +614,11 @@ public class TranslationServiceImpl implements TranslationService {
             final String iterationSlug, final String docId,
             final LocaleId locale, final TranslationsResource translations,
             final Set<String> extensions, final MergeType mergeType,
-            final boolean assignCreditToUploader) {
+            final boolean assignCreditToUploader,
+            final TranslationSourceType translationSourceType) {
         return translateAllInDoc(projectSlug, iterationSlug, docId, locale,
                 translations, extensions, mergeType, assignCreditToUploader,
-                null);
+                null, translationSourceType);
     }
 
     @Override
@@ -579,7 +626,8 @@ public class TranslationServiceImpl implements TranslationService {
             final String iterationSlug, final String docId,
             final LocaleId locale, final TranslationsResource translations,
             final Set<String> extensions, final MergeType mergeType,
-            final boolean assignCreditToUploader, AsyncTaskHandle handle) {
+            final boolean assignCreditToUploader, AsyncTaskHandle handle,
+            final TranslationSourceType translationSourceType) {
         final HProjectIteration hProjectIteration =
                 projectIterationDAO.getBySlug(projectSlug, iterationSlug);
 
@@ -668,6 +716,7 @@ public class TranslationServiceImpl implements TranslationService {
                 work.setProjectIterationId(hProjectIteration.getId());
                 work.setBatch(batch);
                 work.setAssignCreditToUploader(assignCreditToUploader);
+                work.setTranslationSourceType(translationSourceType);
                 changed |= work.workInTransaction();
             } catch (Exception e) {
                 log.error("exception in SaveBatchWork:{}", e.getMessage());
@@ -736,6 +785,7 @@ public class TranslationServiceImpl implements TranslationService {
         private Long projectIterationId;
         private List<TextFlowTarget> batch;
         private boolean assignCreditToUploader;
+        private TranslationSourceType translationSourceType;
 
         @Override
         protected Boolean work() throws Exception {
@@ -846,6 +896,9 @@ public class TranslationServiceImpl implements TranslationService {
                             hTarget.setLastModifiedBy(authenticatedAccount.getPerson());
                             actorId = null;
                         }
+                        hTarget.setSourceType(translationSourceType);
+                        hTarget.setEntityId(null);
+                        hTarget.setEntityId(null);
                         textFlowTargetDAO.makePersistent(hTarget);
                         signalPostTranslateEvent(actorId, hTarget, currentState);
                     }
@@ -951,7 +1004,11 @@ public class TranslationServiceImpl implements TranslationService {
                         ContentState oldState = oldTarget.getState();
                         TransUnitUpdateRequest request =
                                 new TransUnitUpdateRequest(tuId, oldContents,
-                                        oldState, versionNum);
+                                        oldState, versionNum,
+                                        oldTarget.getRevisionComment(),
+                                        oldTarget.getEntityId(), oldTarget
+                                                .getEntityType().name(),
+                                        oldTarget.getSourceType().getAbbr());
                         // add to list
                         updateRequests.add(request);
                     } else {
@@ -965,7 +1022,8 @@ public class TranslationServiceImpl implements TranslationService {
                         }
                         TransUnitUpdateRequest request =
                                 new TransUnitUpdateRequest(tuId, emptyContents,
-                                        ContentState.New, versionNum);
+                                        ContentState.New, versionNum,
+                                        TranslationSourceType.UNKNOWN.getAbbr());
                         updateRequests.add(request);
                     }
                 } else {

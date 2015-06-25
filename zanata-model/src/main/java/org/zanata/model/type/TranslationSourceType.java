@@ -25,9 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 
 /**
@@ -38,11 +36,11 @@ public enum TranslationSourceType {
     COPY_VERSION("CV"),
     MERGE_VERSION("MV"),
     TM_MERGE("TM"),
+    MACHINE_TRANS("MT"),
     GWT_EDITOR_ENTRY("GWT"),
     JS_EDITOR_ENTRY("JS"),
     API_UPLOAD("API"),
     WEB_UPLOAD("WEB"),
-    MACHINE_TRANS("MT"),
     UNKNOWN("UNK");
 
     public static final Collection<TranslationSourceType> AUTOMATED_ENTRIES;
@@ -82,7 +80,7 @@ public enum TranslationSourceType {
                 return TranslationSourceType.WEB_UPLOAD;
             case "MT":
                 return TranslationSourceType.MACHINE_TRANS;
-            case "UNKNOWN":
+            case "UNK":
                 return TranslationSourceType.UNKNOWN;
             default:
                 throw new IllegalArgumentException(String.valueOf(abbr));

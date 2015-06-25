@@ -51,6 +51,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.type.TranslationSourceType;
 import org.zanata.rest.editor.service.LocalesService;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
@@ -204,11 +205,13 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
         // check use latest translated if enabled
         for(HTextFlowTarget[] data: expectedMergeData) {
             assertThat(data[0].getState()).isIn(ContentState.TRANSLATED_STATES);
-            assertThat(data[1].getState()).isIn(ContentState.TRANSLATED_STATES);
+            assertThat(data[1].getState()).isEqualTo(data[0].getState());
+
             assertThat(data[0].getContents()).isEqualTo(data[1].getContents());
-            assertThat(data[0].getState()).isEqualTo(data[1].getState());
             assertThat(data[1].getRevisionComment()).contains(
                 MessageGenerator.PREFIX_MERGE_TRANS);
+            assertThat(data[1].getSourceType()).isEqualTo(
+                TranslationSourceType.MERGE_VERSION);
         }
     }
 

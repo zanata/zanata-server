@@ -114,7 +114,6 @@ public class HTextFlowTargetHistory extends HTextContainer implements
 
     @Getter
     @Setter
-    @NotNull
     private TranslationEntityType entityType;
 
     @Getter

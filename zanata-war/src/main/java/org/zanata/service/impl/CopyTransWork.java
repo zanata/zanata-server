@@ -13,13 +13,14 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.type.TranslationSourceType;
 import org.zanata.service.TranslationFinder;
 import org.zanata.service.ValidationService;
 import org.zanata.service.VersionStateCache;
 import org.zanata.util.MessageGenerator;
+import org.zanata.util.TranslationUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import com.google.common.base.Optional;
-import com.google.common.base.Stopwatch;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 
@@ -260,6 +261,9 @@ class CopyTransWork extends Work<Integer> {
             }
             hTarget.setRevisionComment(MessageGenerator
                 .getCopyTransMessage(matchingTarget));
+            hTarget.setSourceType(TranslationSourceType.COPY_TRANS);
+
+            TranslationUtil.copyHTextFlowTargetEntity(matchingTarget, hTarget);
 
             // TODO Maybe we should think about registering a Hibernate
             // integrator for these updates
