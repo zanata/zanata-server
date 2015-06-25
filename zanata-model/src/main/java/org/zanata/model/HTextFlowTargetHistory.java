@@ -37,13 +37,17 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.zanata.common.ContentState;
+import org.zanata.model.type.TranslationEntityType;
+import org.zanata.model.type.TranslationSourceType;
 
 import com.google.common.base.Objects;
 import lombok.Getter;
@@ -76,6 +80,7 @@ import lombok.Setter;
                 name = HTextFlowTargetHistory.QUERY_MATCHING_HISTORY + 6,
                 query = "select count(*) from HTextFlowTargetHistory t where t.textFlowTarget = :tft and size(t.contents) = :contentCount "
                         + "and contents[0] = :content0 and contents[1] = :content1 and contents[2] = :content2 and contents[3] = :content3 and contents[4] = :content4 and contents[5] = :content5") })
+@TypeDef(name = "sourceType", typeClass = TranslationSourceType.class)
 public class HTextFlowTargetHistory extends HTextContainer implements
         Serializable, ITextFlowTargetHistory {
     static final String QUERY_MATCHING_HISTORY =
@@ -109,6 +114,24 @@ public class HTextFlowTargetHistory extends HTextContainer implements
 
     @Getter
     @Setter
+    @NotNull
+    private TranslationEntityType entityType;
+
+    @Getter
+    @Setter
+    private Long entityId;
+
+    @Getter
+    @Setter
+    @Type(type = "sourceType")
+    private TranslationSourceType sourceType;
+
+    @Getter
+    @Setter
+    private Boolean automatedEntry;
+
+    @Getter
+    @Setter
     private String revisionComment;
 
     public HTextFlowTargetHistory() {
@@ -125,7 +148,10 @@ public class HTextFlowTargetHistory extends HTextContainer implements
         this.reviewer = target.getReviewer();
         this.setContents(target.getContents());
         this.revisionComment = target.getRevisionComment();
-
+        this.automatedEntry = target.getAutomatedEntry();
+        this.sourceType = target.getSourceType();
+        this.entityId = target.getEntityId();
+        this.entityType = target.getEntityType();
     }
 
     @Id

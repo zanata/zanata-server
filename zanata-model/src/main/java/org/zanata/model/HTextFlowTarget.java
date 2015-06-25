@@ -32,6 +32,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -53,6 +55,8 @@ import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.AnalyzerDiscriminator;
 import org.hibernate.search.annotations.Field;
@@ -69,6 +73,8 @@ import org.zanata.hibernate.search.LocaleIdBridge;
 import org.zanata.hibernate.search.StringListBridge;
 import org.zanata.hibernate.search.TextContainerAnalyzerDiscriminator;
 import org.zanata.model.type.EntityType;
+import org.zanata.model.type.TranslationEntityType;
+import org.zanata.model.type.TranslationSourceType;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -85,6 +91,7 @@ import com.google.common.collect.Lists;
 @Entity
 @EntityListeners({ HTextFlowTarget.EntityListener.class })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@TypeDef(name = "sourceType", typeClass = TranslationSourceType.class)
 @Indexed
 @Setter
 @NoArgsConstructor
@@ -120,6 +127,20 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
 
     @Getter
     private String revisionComment;
+
+    @Getter
+    private TranslationEntityType entityType;
+
+    @Getter
+    private Long entityId;
+
+    @Getter
+    @Type(type = "sourceType")
+    private TranslationSourceType sourceType;
+
+    @Getter
+    @Setter(AccessLevel.PRIVATE)
+    private Boolean automatedEntry;
 
     private boolean revisionCommentSet = false;
 
@@ -425,7 +446,7 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
 
     @Override
     @Transient
-    public EntityType getEntityType() {
+    public EntityType getType() {
         return EntityType.HTexFlowTarget;
     }
 
@@ -434,7 +455,17 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         private void preUpdate(HTextFlowTarget tft) {
             // insert history if this has changed from its initial state
             if (tft.initialState != null && tft.initialState.hasChanged(tft)) {
+                if (tft.initialState.getSourceType() == null) {
+                    tft.initialState.setSourceType(TranslationSourceType.UNKNOWN);
+                }
+                tft.initialState.setAutomatedEntry(tft.initialState
+                        .getSourceType().isAutomatedEntry());
+
                 tft.getHistory().put(tft.oldVersionNum, tft.initialState);
+                if (tft.getSourceType() == null) {
+                    tft.setSourceType(TranslationSourceType.UNKNOWN);
+                }
+                tft.setAutomatedEntry(tft.getSourceType().isAutomatedEntry());
                 if (!tft.isRevisionCommentSet()) {
                     tft.setRevisionComment(null);
                 }

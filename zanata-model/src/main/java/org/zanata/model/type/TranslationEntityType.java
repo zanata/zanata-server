@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2015, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,15 +18,23 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.model;
 
-import org.zanata.model.type.EntityType;
+package org.zanata.model.type;
+
+import lombok.Getter;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public interface IsEntityWithType {
-    Long getId();
+public enum TranslationEntityType {
+    TMX("Translation memory"),
+    TFT("HTextFlowTarget"),
+    MT("Machine translation");
 
-    EntityType getType();
+    @Getter
+    private final String desc;
+
+    private TranslationEntityType(String desc) {
+        this.desc = desc;
+    }
 }
