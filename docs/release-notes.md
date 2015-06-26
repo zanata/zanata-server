@@ -30,6 +30,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 
 
 <h5>Bug fixes</h5>
+* [1203521](https://bugzilla.redhat.com/show_bug.cgi?id=1203521) - Alpha Editor doesn't escape reserved characters
 * [1194543](https://bugzilla.redhat.com/show_bug.cgi?id=1194543) - Manual document re-upload makes previous translations fuzzy
 * [1029734](https://bugzilla.redhat.com/show_bug.cgi?id=1029734) - po header contains invalid entry will cause upload/push failure
 * [895881](https://bugzilla.redhat.com/show_bug.cgi?id=895881) - 'Restore Defaults' in editor options does not properly restore defaults
@@ -56,6 +57,9 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1230419](https://bugzilla.redhat.com/show_bug.cgi?id=1230419) - Only show "approved" figure in version page if "Review required" is enable or value more than 0
 * [1229940](https://bugzilla.redhat.com/show_bug.cgi?id=1229940) - When deleting a version or project remove links and replace icon from the activity feed
 * [1230424](https://bugzilla.redhat.com/show_bug.cgi?id=1230424) - Update message "Archived" to "Deleted" in activity table
+* [1231054](https://bugzilla.redhat.com/show_bug.cgi?id=1231054) - Exception when clicking "more activity" when there is no valid "editor url"
+* [1234687](https://bugzilla.redhat.com/show_bug.cgi?id=1234687) - [REGRESSION] can not upload pot file from web UI 
+* [1235495](https://bugzilla.redhat.com/show_bug.cgi?id=1235495) - [REGRESSION] can not upload po file from web UI
 
 -----------------------
 
