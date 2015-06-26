@@ -1,6 +1,7 @@
 package org.zanata.security;
 
 import java.util.Arrays;
+import java.util.List;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
@@ -62,19 +63,16 @@ public class SmartEntitySecurityListener extends EntitySecurityListener {
             isEntityRestricted(Object entity, EntityAction action) {
         EntityRestrict entityRestrict =
                 entity.getClass().getAnnotation(EntityRestrict.class);
-        Restrict restrict = entity.getClass().getAnnotation(Restrict.class);
-        if (restrict != null) {
-            if (entityRestrict != null) {
-                if (Arrays.asList(entityRestrict.value()).contains(action)) {
-                    return true; // restricted
-                } else {
-                    return false; // not restricted
-                }
+        if (entityRestrict != null) {
+            List<EntityAction> restrictedActions = Arrays.asList(
+                    entityRestrict.value());
+            if (restrictedActions.isEmpty() || restrictedActions.contains(action)) {
+                return true; // restricted
             } else {
-                return true; // restricted, just not specifically
+                return false; // not restricted
             }
         } else {
-            return false; // not restricted
+            return false; // restricted, just not specifically
         }
     }
 
