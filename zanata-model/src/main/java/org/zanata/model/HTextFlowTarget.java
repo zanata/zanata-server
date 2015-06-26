@@ -32,8 +32,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -79,6 +77,7 @@ import org.zanata.model.type.TranslationSourceType;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import org.zanata.model.type.TranslationSourceTypeType;
 
 /**
  * Represents a flow of translated text that should be processed as a
@@ -91,7 +90,7 @@ import com.google.common.collect.Lists;
 @Entity
 @EntityListeners({ HTextFlowTarget.EntityListener.class })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@TypeDef(name = "sourceType", typeClass = TranslationSourceType.class)
+@TypeDef(name = "sourceType", typeClass = TranslationSourceTypeType.class)
 @Indexed
 @Setter
 @NoArgsConstructor
@@ -134,8 +133,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Getter
     private Long entityId;
 
-    @Getter
-    @Type(type = "sourceType")
     private TranslationSourceType sourceType;
 
     @Getter
@@ -147,6 +144,11 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     // Only for internal use (persistence transient)
     @Setter(AccessLevel.PRIVATE)
     private Integer oldVersionNum;
+
+    @Type(type = "sourceType")
+    public TranslationSourceType getSourceType() {
+        return sourceType;
+    }
 
     public void setRevisionComment(String revisionComment) {
         this.revisionComment = revisionComment;

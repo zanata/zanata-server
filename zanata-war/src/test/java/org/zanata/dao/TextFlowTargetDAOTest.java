@@ -28,6 +28,7 @@ import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.model.type.TranslationEntityType;
 import org.zanata.model.type.TranslationSourceType;
 
@@ -74,25 +75,30 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest {
 
     @Test
     public void entityTypeAndSourceTypeTest() {
-        //get target with no history
+        //get target with no history, revision = 0
         HTextFlowTarget target = textFlowTargetDAO.findById(1L);
 
-        TranslationEntityType entityType = TranslationEntityType.TFT;
-        TranslationSourceType sourceType = TranslationSourceType.COPY_TRANS;
+        //create revision = 1
+        TranslationEntityType entityType1 = TranslationEntityType.TFT;
+        TranslationSourceType sourceType1 = TranslationSourceType.COPY_TRANS;
+        Long entityId1 = 2L;
 
-        target.setEntityType(entityType);
-        target.setSourceType(sourceType);
+        target.setEntityType(entityType1);
+        target.setSourceType(sourceType1);
+        target.setEntityId(entityId1);
 
         target = textFlowTargetDAO.makePersistent(target);
         textFlowTargetDAO.flush();
 
-        assertThat(target.getEntityType()).isEqualTo(entityType);
-        assertThat(target.getSourceType()).isEqualTo(sourceType);
+        assertThat(target.getEntityType()).isEqualTo(entityType1);
+        assertThat(target.getSourceType()).isEqualTo(sourceType1);
+        assertThat(target.getEntityId()).isEqualTo(entityId1);
 
-        sourceType = TranslationSourceType.COPY_VERSION;
+        //Create new revision = 2
+        TranslationSourceType sourceType2 = TranslationSourceType.COPY_VERSION;
 
         target.setContents("new content");
-        target.setSourceType(sourceType);
+        target.setSourceType(sourceType2);
         textFlowTargetDAO.makePersistent(target);
         textFlowTargetDAO.flush();
 
@@ -100,6 +106,11 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest {
 
         assertThat(target.getEntityType()).isEqualTo(null);
         assertThat(target.getEntityId()).isEqualTo(null);
-        assertThat(target.getSourceType()).isEqualTo(sourceType);
+        assertThat(target.getSourceType()).isEqualTo(sourceType2);
+
+        HTextFlowTargetHistory history1 = target.getHistory().get(2);
+        assertThat(history1.getEntityType()).isEqualTo(entityType1);
+        assertThat(history1.getSourceType()).isEqualTo(sourceType1);
+        assertThat(history1.getEntityId()).isEqualTo(entityId1);
     }
 }

@@ -45,6 +45,7 @@
             <g:Anchor ui:field="copyIntoEditor" text="Copy to Editor" />
           </li>
         </ul>
+        <g:HTMLPanel ui:field="revisionComment"/>
       </div>
     </div>
   </g:HTMLPanel>

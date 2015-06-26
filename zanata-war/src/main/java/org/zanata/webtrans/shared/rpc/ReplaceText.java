@@ -37,7 +37,7 @@ public class ReplaceText extends UpdateTransUnit {
     /**
      * See {@link org.zanata.model.type.TranslationSourceType#GWT_EDITOR_ENTRY}
      */
-    private final String sourceType = "GWT";
+    private String sourceType = "GWT";
 
     private ReplaceText() {
         super(UpdateType.NonEditorSave);

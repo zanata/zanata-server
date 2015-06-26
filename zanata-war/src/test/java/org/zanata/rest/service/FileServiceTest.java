@@ -118,7 +118,7 @@ public class FileServiceTest extends ZanataTest {
     public void translationUploadParamsHandledCorrectly() {
         when(
                 transUploader.tryUploadTranslationFile(eq(id), eq(LOCALE),
-                        eq(MERGE), eq(false), formCaptor.capture(), TranslationSourceType.API_UPLOAD))
+                        eq(MERGE), eq(false), formCaptor.capture(), eq(TranslationSourceType.API_UPLOAD)))
                 .thenReturn(okResponse);
         fileService.uploadTranslationFile(PROJ_SLUG, VER_SLUG, LOCALE, DOC_ID,
                 MERGE, form);

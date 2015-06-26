@@ -46,7 +46,7 @@ public class TranslationSourceTypeTypeDescriptor extends
 
     @Override
     public String toString(TranslationSourceType value) {
-        return value.toString();
+        return value.getAbbr();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TranslationSourceTypeTypeDescriptor extends
             return null;
         }
         if (String.class.isAssignableFrom(type)) {
-            return (X) value.toString();
+            return (X) String.valueOf(value.getAbbr());
         }
         throw unknownUnwrap(type);
     }

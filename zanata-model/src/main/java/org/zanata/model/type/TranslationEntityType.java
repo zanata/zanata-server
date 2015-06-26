@@ -25,10 +25,12 @@ import lombok.Getter;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.tm.TransMemoryUnit;
 
+import java.io.Serializable;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public enum TranslationEntityType {
+public enum TranslationEntityType implements Serializable {
     TMX(TransMemoryUnit.class),
     TFT(HTextFlowTarget.class);
     //    MT(null);

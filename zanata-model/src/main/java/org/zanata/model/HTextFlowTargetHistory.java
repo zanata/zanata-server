@@ -37,7 +37,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Immutable;
@@ -52,6 +51,7 @@ import org.zanata.model.type.TranslationSourceType;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import org.zanata.model.type.TranslationSourceTypeType;
 
 @Entity
 @Immutable
@@ -80,7 +80,7 @@ import lombok.Setter;
                 name = HTextFlowTargetHistory.QUERY_MATCHING_HISTORY + 6,
                 query = "select count(*) from HTextFlowTargetHistory t where t.textFlowTarget = :tft and size(t.contents) = :contentCount "
                         + "and contents[0] = :content0 and contents[1] = :content1 and contents[2] = :content2 and contents[3] = :content3 and contents[4] = :content4 and contents[5] = :content5") })
-@TypeDef(name = "sourceType", typeClass = TranslationSourceType.class)
+@TypeDef(name = "sourceType", typeClass = TranslationSourceTypeType.class)
 public class HTextFlowTargetHistory extends HTextContainer implements
         Serializable, ITextFlowTargetHistory {
     static final String QUERY_MATCHING_HISTORY =
@@ -120,9 +120,7 @@ public class HTextFlowTargetHistory extends HTextContainer implements
     @Setter
     private Long entityId;
 
-    @Getter
     @Setter
-    @Type(type = "sourceType")
     private TranslationSourceType sourceType;
 
     @Getter
@@ -263,6 +261,11 @@ public class HTextFlowTargetHistory extends HTextContainer implements
         this.reviewer = reviewer;
     }
 
+    @Type(type = "sourceType")
+    public TranslationSourceType getSourceType() {
+        return sourceType;
+    }
+
     /**
      * Determines whether a Text Flow Target has changed when compared to this
      * history object.
@@ -286,6 +289,8 @@ public class HTextFlowTargetHistory extends HTextContainer implements
                 || !Objects.equal(current.getTextFlow().getId(),
                         this.textFlowTarget.getId())
                 || !Objects.equal(current.getVersionNum(), this.versionNum)
-                || !Objects.equal(current.getRevisionComment(), this.revisionComment);
+                || !Objects.equal(current.getRevisionComment(), this.revisionComment)
+                || !Objects.equal(current.getEntityId(), this.entityId)
+                || !Objects.equal(current.getEntityType(), this.entityType);
     }
 }

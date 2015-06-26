@@ -101,7 +101,7 @@ public class MessageGenerator {
         StringBuilder comment = new StringBuilder();
 
         comment.append(PREFIX_TM_MERGE)
-            .append(": translation auto-copied from Translation memory '")
+            .append(": translation copied from translation memory '")
             .append(tu.getTranslationMemory().getSlug())
             .append("', description '")
             .append(tu.getTranslationMemory().getDescription())
@@ -135,7 +135,7 @@ public class MessageGenerator {
         StringBuilder comment = new StringBuilder();
 
         comment.append(prefix)
-            .append(": translation auto-copied from project '")
+            .append(": translation copied from project '")
             .append(projectName)
             .append("', version '")
             .append(versionSlug)

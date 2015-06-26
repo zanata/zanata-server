@@ -26,7 +26,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
 import org.hibernate.type.DiscriminatorType;
 import org.hibernate.type.StringType;
-import org.zanata.common.EntityStatus;
 
 
 public class TranslationSourceTypeType extends AbstractSingleColumnStandardBasicType<TranslationSourceType>
