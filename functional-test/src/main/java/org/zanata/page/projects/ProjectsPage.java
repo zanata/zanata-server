@@ -40,13 +40,10 @@ public class ProjectsPage extends BasePage {
     public static final int PROJECT_NAME_COLUMN = 0;
 
     private By createProjectButton = By.id("createProjectLink");
-    private By searchProjectForm = By.id("search-project_form");
+    private By mainContentDiv = By.id("main_body_content");
     private By projectTable = By.id("main_content:form:projectList");
     private By activeCheckBox = By.xpath("//*[@data-original-title='Filter active projects']");
     private By readOnlyCheckBox = By.xpath("//*[@data-original-title='Filter read-only projects']");
-
-    private By projectTabSearchPage = By.id("projects_tab");
-    private By userTabSearchPage = By.id("users_tab");
 
     public ProjectsPage(final WebDriver driver) {
         super(driver);
@@ -75,24 +72,15 @@ public class ProjectsPage extends BasePage {
         }, "Find and go to project " + projectName);
     }
 
-    public List<String> getProjectNamesOnSearchPage() {
+    public List<String> getProjectNamesOnCurrentPage() {
         log.info("Query Projects list");
-        waitForPageSilence();
-        gotoProjectTabInSearchPage();
-
-        log.info("Query Group project versions");
-
-        List<String> names = new ArrayList<String>();
-        for (WebElement row : readyElement(searchProjectForm)
-            .findElements(By.xpath("//h3[@class='list__title']"))) {
-            names.add(row.getText());
+        if (readyElement(mainContentDiv)
+                .getText().contains("No project exists")) {
+            return Collections.emptyList();
         }
-        return names;
 
-    }
-
-    public void gotoProjectTabInSearchPage() {
-        clickElement(projectTabSearchPage);
+        return WebElementUtil.getColumnContents(getDriver(), projectTable,
+                PROJECT_NAME_COLUMN);
     }
 
     /**
@@ -103,7 +91,7 @@ public class ProjectsPage extends BasePage {
     public ProjectsPage expectProjectVisible(final String projectName) {
         log.info("Wait for project {} visible", projectName);
         waitForPageSilence();
-        assertThat(getProjectNamesOnSearchPage()).contains(projectName);
+        assertThat(getProjectNamesOnCurrentPage()).contains(projectName);
         return new ProjectsPage(getDriver());
     }
 
@@ -115,7 +103,7 @@ public class ProjectsPage extends BasePage {
     public ProjectsPage expectProjectNotVisible(final String projectName) {
         log.info("Wait for project {} not visible", projectName);
         waitForPageSilence();
-        assertThat(getProjectNamesOnSearchPage()).doesNotContain(
+        assertThat(getProjectNamesOnCurrentPage()).doesNotContain(
                 projectName);
         return new ProjectsPage(getDriver());
     }

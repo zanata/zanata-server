@@ -38,7 +38,7 @@ public class SetProjectVisibilityTest extends ZanataTestCase {
                 .confirmDeleteProject()
                 .goToProjects();
 
-        assertThat(projectsPage.getProjectNamesOnSearchPage())
+        assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .doesNotContain("about fedora")
                 .as("The project is not displayed");
 
@@ -47,7 +47,7 @@ public class SetProjectVisibilityTest extends ZanataTestCase {
 
         projectsPage.expectProjectVisible("about fedora");
 
-        assertThat(projectsPage.getProjectNamesOnSearchPage())
+        assertThat(projectsPage.getProjectNamesOnCurrentPage())
                 .contains("about fedora")
                 .as("The project is now displayed");
 
@@ -56,7 +56,7 @@ public class SetProjectVisibilityTest extends ZanataTestCase {
         assertThat(new LoginWorkFlow()
                 .signIn("translator", "translator")
                 .goToProjects()
-                .getProjectNamesOnSearchPage())
+                .getProjectNamesOnCurrentPage())
                 .doesNotContain("about fedora")
                 .as("User cannot navigate to the archived project");
     }
