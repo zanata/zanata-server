@@ -1,3 +1,13 @@
+## 3.8
+
+<h5>Bug fixes</h5>
+* [1233524](https://bugzilla.redhat.com/show_bug.cgi?id=1233524) - Update project search page to include user
+
+-----------------------
+
+<h5>New Features</h5>
+
+
 ## 3.7
 
 <h5>Deployment</h5>
@@ -59,6 +69,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1230424](https://bugzilla.redhat.com/show_bug.cgi?id=1230424) - Update message "Archived" to "Deleted" in activity table
 * [1231054](https://bugzilla.redhat.com/show_bug.cgi?id=1231054) - Exception when clicking "more activity" when there is no valid "editor url"
 * [1234687](https://bugzilla.redhat.com/show_bug.cgi?id=1234687) - [REGRESSION] can not upload pot file from web UI 
+* [1235495](https://bugzilla.redhat.com/show_bug.cgi?id=1235495) - [REGRESSION] can not upload po file from web UI
 
 -----------------------
 
