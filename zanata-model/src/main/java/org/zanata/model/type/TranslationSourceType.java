@@ -27,9 +27,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 
 /**
+ * Source of action on how translation are being copied.
+ *
+ * Usage {@link org.zanata.model.HTextFlowTarget.sourceType} and
+ * {@link org.zanata.model.HTextFlowTargetHistory.sourceType}
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public enum TranslationSourceType implements Serializable {
@@ -47,11 +54,11 @@ public enum TranslationSourceType implements Serializable {
     public static final Collection<TranslationSourceType> AUTOMATED_ENTRIES;
 
     static {
-        AUTOMATED_ENTRIES = Collections.unmodifiableCollection(new HashSet(
-            Arrays.asList(TranslationSourceType.COPY_TRANS,
-                TranslationSourceType.COPY_VERSION,
-                TranslationSourceType.MERGE_VERSION,
-                TranslationSourceType.TM_MERGE)));
+        AUTOMATED_ENTRIES =
+                ImmutableSet.of(TranslationSourceType.COPY_TRANS,
+                        TranslationSourceType.COPY_VERSION,
+                        TranslationSourceType.MERGE_VERSION,
+                        TranslationSourceType.TM_MERGE);
     }
 
     @Getter

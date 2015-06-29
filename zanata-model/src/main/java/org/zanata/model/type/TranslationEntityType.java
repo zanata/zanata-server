@@ -28,6 +28,11 @@ import org.zanata.model.tm.TransMemoryUnit;
 import java.io.Serializable;
 
 /**
+ * Entity type of origin for translation copied.
+ *
+ * Usage {@link org.zanata.model.HTextFlowTarget.entityType} and
+ * {@link org.zanata.model.HTextFlowTargetHistory.entityType}
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public enum TranslationEntityType implements Serializable {

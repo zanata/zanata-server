@@ -158,7 +158,6 @@ public class AsynchronousProcessResourceService implements
     }
 
     /**
-     * This is used by functional test ZanataRestCaller for testing purposes.
      *
      * @param idNoSlash
      * @param projectSlug
