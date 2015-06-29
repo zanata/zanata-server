@@ -99,6 +99,9 @@ public class TextFlowTargetDAOTest extends ZanataDbunitJpaTest {
 
         target.setContents("new content");
         target.setSourceType(sourceType2);
+        target.setEntityId(null);
+        target.setEntityType(null);
+
         textFlowTargetDAO.makePersistent(target);
         textFlowTargetDAO.flush();
 
