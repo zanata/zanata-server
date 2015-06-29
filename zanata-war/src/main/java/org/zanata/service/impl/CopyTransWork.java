@@ -17,7 +17,6 @@ import org.zanata.model.type.TranslationSourceType;
 import org.zanata.service.TranslationFinder;
 import org.zanata.service.ValidationService;
 import org.zanata.service.VersionStateCache;
-import org.zanata.util.MessageGenerator;
 import org.zanata.util.TranslationUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import com.google.common.base.Optional;
@@ -259,7 +258,7 @@ class CopyTransWork extends Work<Integer> {
                 }
                 hComment.setComment(matchingTarget.getComment().getComment());
             }
-            hTarget.setRevisionComment(MessageGenerator
+            hTarget.setRevisionComment(TranslationUtil
                 .getCopyTransMessage(matchingTarget));
             hTarget.setSourceType(TranslationSourceType.COPY_TRANS);
 

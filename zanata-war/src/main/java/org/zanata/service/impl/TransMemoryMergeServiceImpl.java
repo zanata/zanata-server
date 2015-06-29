@@ -44,7 +44,6 @@ import org.zanata.service.TransMemoryMergeService;
 import org.zanata.service.TranslationMemoryService;
 import org.zanata.service.TranslationService;
 import org.zanata.util.Event;
-import org.zanata.util.MessageGenerator;
 import org.zanata.util.TranslationUtil;
 import org.zanata.webtrans.server.rpc.TransMemoryMergeStatusResolver;
 import org.zanata.webtrans.shared.model.TransMemoryDetails;
@@ -194,7 +193,7 @@ public class TransMemoryMergeServiceImpl implements TransMemoryMergeService {
                     TransMemoryMergeStatusResolver.newInstance().decideStatus(
                             action, tmResult, oldTarget);
             comment = buildTargetComment(tu);
-            revisionComment = MessageGenerator.getTMMergeMessage(tu);
+            revisionComment = TranslationUtil.getTMMergeMessage(tu);
             entityId = tu.getId();
             entityType = TranslationEntityType.TMX.name();
         } else {
@@ -207,7 +206,7 @@ public class TransMemoryMergeServiceImpl implements TransMemoryMergeService {
                             action, hTextFlowToBeFilled, tmDetail, tmResult,
                             oldTarget);
             comment = buildTargetComment(tmDetail);
-            revisionComment = MessageGenerator.getTMMergeMessage(tmDetail);
+            revisionComment = TranslationUtil.getTMMergeMessage(tmDetail);
 
             HTextFlowTarget target = tmSource.getTargets().get(hLocale.getId());
             entityId = TranslationUtil.getEntityId(target);

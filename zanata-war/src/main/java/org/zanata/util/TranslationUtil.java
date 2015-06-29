@@ -21,8 +21,13 @@
 
 package org.zanata.util;
 
+import org.apache.commons.lang.StringUtils;
+import org.zanata.model.HDocument;
+import org.zanata.model.HPerson;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.tm.TransMemoryUnit;
 import org.zanata.model.type.TranslationEntityType;
+import org.zanata.webtrans.shared.model.TransMemoryDetails;
 
 import javax.annotation.Nonnull;
 
@@ -30,18 +35,143 @@ import javax.annotation.Nonnull;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class TranslationUtil {
-    public static void copyHTextFlowTargetEntity(@Nonnull HTextFlowTarget from,
-            @Nonnull HTextFlowTarget to) {
-        if (from != null && to != null) {
-            to.setEntityType(getEntityType(from));
-            to.setEntityId(getEntityId(from));
+    /**
+     * Prefix of action type for generated message
+     */
+    public static final String PREFIX_MERGE_VERSION = "Merge version";
+    public static final String PREFIX_COPY_TRANS = "Copy translation";
+    public static final String PREFIX_COPY_VERSION = "Copy version";
+    public static final String PREFIX_TM_MERGE = "TM Merge";
+
+    /**
+     * Copy entityId and entityType from copyFrom to copyTo
+     *
+     * copyFrom.id will be used if copyFrom.entityId = null
+     * {@link org.zanata.model.type.TranslationEntityType.TFT} be used if
+     * copyFrom.entityType = null
+     *
+     *
+     * @param copyFrom
+     * @param copyTo
+     */
+    public static void copyHTextFlowTargetEntity(@Nonnull HTextFlowTarget copyFrom,
+            @Nonnull HTextFlowTarget copyTo) {
+        if (copyFrom != null && copyTo != null) {
+            copyTo.setEntityType(getEntityType(copyFrom));
+            copyTo.setEntityId(getEntityId(copyFrom));
         }
+    }
+
+    /**
+     * Create revision comment for translation that is copied by merge
+     * translation
+     *
+     * @see org.zanata.service.MergeTranslationsService
+     *
+     * @param tft - HTextFlowTarget to copy from
+     */
+    public static final String getMergeTranslationMessage(
+        HTextFlowTarget tft) {
+        HDocument document = tft.getTextFlow().getDocument();
+        return generateAutoCopiedMessage(PREFIX_MERGE_VERSION,
+            document.getProjectIteration().getProject().getName(),
+            document.getProjectIteration()
+                .getSlug(), document.getDocId(),
+            getAuthor(tft.getLastModifiedBy()));
+    }
+
+    /**
+     * Create revision comment for translation that is copied by copy trans
+     * @see org.zanata.service.CopyTransService
+     *
+     * @param tft - HTextFlowTarget to copy from
+     */
+    public static final String getCopyTransMessage(HTextFlowTarget tft) {
+        HDocument document = tft.getTextFlow().getDocument();
+        return generateAutoCopiedMessage(PREFIX_COPY_TRANS,
+            document.getProjectIteration()
+                .getProject().getName(), document.getProjectIteration()
+                .getSlug(), document.getDocId(),
+            getAuthor(tft.getLastModifiedBy()));
+    }
+
+    /**
+     * Create revision comment for translation that is copied by copy version
+     * @see org.zanata.service.CopyVersionService
+     *
+     * @param tft - HTextFlowTarget to copy from
+     */
+    public static final String getCopyVersionMessage(HTextFlowTarget tft) {
+        HDocument document = tft.getTextFlow().getDocument();
+        return generateAutoCopiedMessage(PREFIX_COPY_VERSION,
+            document.getProjectIteration().getProject().getName(),
+            document.getProjectIteration()
+                .getSlug(), document.getDocId(),
+            getAuthor(tft.getLastModifiedBy()));
+    }
+
+    /**
+     * Create revision comment for translation that is copied by TM Merge
+     * @see org.zanata.service.TransMemoryMergeService
+     *
+     * @param tu
+     */
+    public static final String getTMMergeMessage(TransMemoryUnit tu) {
+        StringBuilder comment = new StringBuilder();
+
+        comment.append(PREFIX_TM_MERGE)
+            .append(": translation copied from translation memory '")
+            .append(tu.getTranslationMemory().getSlug())
+            .append("', description '")
+            .append(tu.getTranslationMemory().getDescription())
+            .append("'");
+
+        return comment.toString();
+    }
+
+    /**
+     * Create revision comment for translation that is copied by TM Merge
+     * @see org.zanata.service.TransMemoryMergeService
+     *
+     * @param tmDetails
+     */
+    public static final String getTMMergeMessage(TransMemoryDetails tmDetails) {
+        return generateAutoCopiedMessage(PREFIX_TM_MERGE,
+            tmDetails.getProjectName(),
+            tmDetails.getIterationName(), tmDetails.getDocId(),
+            tmDetails.getLastModifiedBy());
+    }
+
+    private static String getAuthor(HPerson person) {
+        if (person != null) {
+            return person.getName();
+        }
+        return null;
+    }
+
+    private static final String generateAutoCopiedMessage(String prefix,
+        String projectName, String versionSlug, String docId, String author) {
+        StringBuilder comment = new StringBuilder();
+
+        comment.append(prefix)
+            .append(": translation copied from project '")
+            .append(projectName)
+            .append("', version '")
+            .append(versionSlug)
+            .append("', document '")
+            .append(docId)
+            .append("'");
+
+        if (!StringUtils.isEmpty(author)) {
+            comment.append(", author '").append(author).append("'");
+        }
+        return comment.toString();
     }
 
     public static Long getEntityId(@Nonnull HTextFlowTarget from) {
         if (from != null) {
-            return from.getEntityId() == null ? from.getId() :
-                    from.getEntityId();
+            return from.getEntityId() == null ? from.getId() : from
+                    .getEntityId();
         }
         return null;
     }
@@ -50,8 +180,7 @@ public class TranslationUtil {
             @Nonnull HTextFlowTarget from) {
         if (from != null) {
             return from.getEntityType() == null ? TranslationEntityType.TFT :
-                    from
-                            .getEntityType();
+                    from.getEntityType();
         }
         return null;
     }

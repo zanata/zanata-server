@@ -35,7 +35,6 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.CopyVersionService;
 import org.zanata.service.VersionStateCache;
 import org.zanata.util.JPACopier;
-import org.zanata.util.MessageGenerator;
 import org.zanata.util.TranslationUtil;
 
 import javax.annotation.Nonnull;
@@ -357,7 +356,7 @@ public class CopyVersionServiceImpl implements CopyVersionService {
         if(tft.getComment() != null) {
             copy.setComment(new HSimpleComment(tft.getComment().getComment()));
         }
-        copy.setRevisionComment(MessageGenerator.getCopyVersionMessage(tft));
+        copy.setRevisionComment(TranslationUtil.getCopyVersionMessage(tft));
         copy.setSourceType(TranslationSourceType.COPY_VERSION);
         TranslationUtil.copyHTextFlowTargetEntity(tft, copy);
 

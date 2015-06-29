@@ -26,6 +26,8 @@ import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.client.util.ContentStateToStyleUtil;
 import org.zanata.webtrans.client.util.DateUtil;
 import org.zanata.webtrans.shared.model.TransHistoryItem;
+
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.common.base.Strings;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.SpanElement;
@@ -66,8 +68,8 @@ public class TransHistoryItemLine extends Composite {
     Anchor copyIntoEditor;
     @UiField
     SpanElement icon;
-    @UiField
-    HTMLPanel revisionComment;
+    @UiField(provided = true)
+    InlineHTML revisionComment;
 
 
     public TransHistoryItemLine(TransHistoryItem item,
@@ -98,10 +100,10 @@ public class TransHistoryItemLine extends Composite {
         }
 
         if(!Strings.isNullOrEmpty(item.getRevisionComment())) {
-            revisionComment = new HTMLPanel(template.revisionComment(
+            revisionComment = new InlineHTML(template.revisionComment(
                     item.getRevisionComment()));
         } else {
-            revisionComment = new HTMLPanel("");
+            revisionComment = new InlineHTML("");
         }
 
         initWidget(ourUiBinder.createAndBindUi(this));

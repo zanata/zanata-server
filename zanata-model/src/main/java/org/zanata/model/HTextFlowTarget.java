@@ -41,6 +41,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -263,8 +264,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Transient
     public void setContent(String content) {
         this.setContents(Arrays.asList(content));
-        clearEntity();
-        this.setSourceType(null);
     }
 
     @Override
@@ -297,8 +296,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
             for (int i = 0; i < contents.size(); i++) {
                 this.setContent(i, contents.get(i));
             }
-            clearEntity();
-            this.setSourceType(null);
         }
     }
 
@@ -356,8 +353,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         default:
             throw new RuntimeException("Invalid Content index: " + idx);
         }
-        clearEntity();
-        this.setSourceType(null);
     }
 
     protected String getContent0() {
@@ -447,12 +442,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
         setReviewer(null);
         setRevisionComment(null);
         setSourceType(null);
-        clearEntity();
-    }
-
-    //This should be trigger whenever content changes
-    @Transient
-    public void clearEntity() {
         setEntityId(null);
         setEntityType(null);
     }
@@ -477,16 +466,25 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
                 }
                 tft.initialState.setAutomatedEntry(tft.initialState
                         .getSourceType().isAutomatedEntry());
-
                 tft.getHistory().put(tft.oldVersionNum, tft.initialState);
-                if (tft.getSourceType() == null) {
-                    tft.setSourceType(TranslationSourceType.UNKNOWN);
-                }
-                tft.setAutomatedEntry(tft.getSourceType().isAutomatedEntry());
+
+                setAutomatedEntry(tft);
                 if (!tft.isRevisionCommentSet()) {
                     tft.setRevisionComment(null);
                 }
             }
+        }
+
+        @PrePersist
+        private void prePersist(HTextFlowTarget tft) {
+            setAutomatedEntry(tft);
+        }
+
+        private void setAutomatedEntry(HTextFlowTarget tft) {
+            if (tft.getSourceType() == null) {
+                tft.setSourceType(TranslationSourceType.UNKNOWN);
+            }
+            tft.setAutomatedEntry(tft.getSourceType().isAutomatedEntry());
         }
 
         @PostUpdate
