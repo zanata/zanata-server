@@ -122,6 +122,8 @@ public class HProject extends SlugEntityBase implements Serializable,
 
     private boolean restrictedByRoles = false;
 
+    private boolean allowGlobalTranslation = true;
+
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "default_copy_trans_opts_id")
     private HCopyTransOptions defaultCopyTransOpts;
