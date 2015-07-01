@@ -467,12 +467,11 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
                 tft.initialState.setAutomatedEntry(tft.initialState
                         .getSourceType().isAutomatedEntry());
                 tft.getHistory().put(tft.oldVersionNum, tft.initialState);
-
-                setAutomatedEntry(tft);
                 if (!tft.isRevisionCommentSet()) {
                     tft.setRevisionComment(null);
                 }
             }
+            setAutomatedEntry(tft);
         }
 
         @PrePersist
