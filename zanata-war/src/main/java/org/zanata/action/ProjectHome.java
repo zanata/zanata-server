@@ -50,6 +50,7 @@ import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
+import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.faces.FacesManager;
 import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.security.management.JpaIdentityStore;
@@ -619,6 +620,13 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void setRestrictedByRole(String key, boolean checked) {
         identity.checkPermission(instance, "update");
         getInstance().setRestrictedByRoles(checked);
+        update();
+    }
+
+    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
+    public void setInviteOnly(boolean inviteOnly) {
+        log.info("setInviteOnly({})", inviteOnly);
+        getInstance().setAllowGlobalTranslation(!inviteOnly);
         update();
     }
 
