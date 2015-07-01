@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Contains static helper functions used inside the rules files.
+ * Contains static security rules functions used to determine permissions.
  *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
@@ -137,10 +137,12 @@ public class SecurityFunctions {
      * Translation rules
      **************************************************************************/
 
-    /* Language Team members can add a translation for their language teams */
+    /* Global Language Team members can add a translation for their language
+     * teams, unless global translation is restricted. */
     @GrantsPermission(actions = { "add-translation", "modify-translation" })
     public static boolean canTranslate(HProject project, HLocale lang) {
-        return isUserAllowedAccess(project) && isUserTranslatorOfLanguage(lang);
+        return project.isAllowGlobalTranslation() &&
+                isUserAllowedAccess(project) && isUserTranslatorOfLanguage(lang);
     }
 
     public static boolean isUserTranslatorOfLanguage(HLocale lang) {
@@ -176,13 +178,15 @@ public class SecurityFunctions {
     /***************************************************************************
      * Review translation rules
      **************************************************************************/
-    /* Language Team reviewer can approve/reject translation */
+    /* Global Language Team reviewer can approve/reject translation, unless
+     * global translation is restricted. */
     // TODO Unify these two permission actions into a single one
     @GrantsPermission(
             actions = { "review-translation", "translation-review" })
     public static boolean
             canReviewTranslation(HProject project, HLocale locale) {
-        return isUserAllowedAccess(project) && isUserReviewerOfLanguage(locale);
+        return project.isAllowGlobalTranslation() &&
+                isUserAllowedAccess(project) && isUserReviewerOfLanguage(locale);
     }
 
     public static boolean isUserReviewerOfLanguage(HLocale lang) {
@@ -219,6 +223,7 @@ public class SecurityFunctions {
         return account.isPresent() && account.get().getPerson().isMaintainer(projectIteration.getProject());
     }
 
+    /* Membership in global language teams. */
     public static boolean isLanguageTeamMember(HLocale lang) {
         Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
         PersonDAO personDAO =
@@ -366,7 +371,8 @@ public class SecurityFunctions {
 
     @GrantsPermission(actions = "review-comment")
     public static boolean canCommentOnReview(HLocale locale, HProject project) {
-        return isUserAllowedAccess(project) && isLanguageTeamMember(locale);
+        return project.isAllowGlobalTranslation() &&
+                isUserAllowedAccess(project) && isLanguageTeamMember(locale);
     }
 
     @GrantsPermission(actions = "review-comment")
