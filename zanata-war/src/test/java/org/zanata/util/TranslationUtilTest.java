@@ -23,6 +23,7 @@ package org.zanata.util;
 
 import org.junit.Test;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.model.type.TranslationEntityType;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -83,6 +84,25 @@ public class TranslationUtilTest {
     }
 
     @Test
+    public void getEntityTypeWithNullTarget() {
+        Long id = 10L;
+        Long entityId = 1L;
+
+        HTextFlowTarget target = generateTarget(id, entityId, null);
+        assertThat(TranslationUtil.getEntityType(target)).isEqualTo(
+            TranslationEntityType.TFT);
+    }
+
+    @Test
+    public void getEntityTypeWithNullTargetHistory() {
+        Long entityId = 1L;
+
+        HTextFlowTargetHistory history = generateTargetHistory(entityId, null);
+        assertThat(TranslationUtil.getEntityType(history)).isEqualTo(
+            TranslationEntityType.TTH);
+    }
+
+    @Test
     public void copyHTextFlowTargetEntity() {
         Long id = 10L;
         Long entityId = 1L;
@@ -91,7 +111,7 @@ public class TranslationUtilTest {
         HTextFlowTarget from = generateTarget(id, entityId, entityType);
         HTextFlowTarget to = new HTextFlowTarget();
 
-        TranslationUtil.copyHTextFlowTargetEntity(from, to);
+        TranslationUtil.copyEntity(from, to);
         assertThat(to.getEntityId()).isEqualTo(entityId);
         assertThat(to.getEntityType()).isEqualTo(entityType);
     }
@@ -108,5 +128,13 @@ public class TranslationUtilTest {
         HTextFlowTarget target = generateTarget(id, entityId);
         target.setEntityType(entityType);
         return target;
+    }
+
+    public HTextFlowTargetHistory generateTargetHistory(Long entityId,
+        TranslationEntityType entityType) {
+        HTextFlowTargetHistory history = new HTextFlowTargetHistory();
+        history.setEntityId(entityId);
+        history.setEntityType(entityType);
+        return history;
     }
 }

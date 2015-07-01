@@ -262,7 +262,7 @@ class CopyTransWork extends Work<Integer> {
                 .getCopyTransMessage(matchingTarget));
             hTarget.setSourceType(TranslationSourceType.COPY_TRANS);
 
-            TranslationUtil.copyHTextFlowTargetEntity(matchingTarget, hTarget);
+            TranslationUtil.copyEntity(matchingTarget, hTarget);
 
             // TODO Maybe we should think about registering a Hibernate
             // integrator for these updates

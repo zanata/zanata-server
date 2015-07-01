@@ -358,7 +358,7 @@ public class CopyVersionServiceImpl implements CopyVersionService {
         }
         copy.setRevisionComment(TranslationUtil.getCopyVersionMessage(tft));
         copy.setSourceType(TranslationSourceType.COPY_VERSION);
-        TranslationUtil.copyHTextFlowTargetEntity(tft, copy);
+        TranslationUtil.copyEntity(tft, copy);
 
         // copy review comment
         copy.setReviewComments(Lists
@@ -373,6 +373,8 @@ public class CopyVersionServiceImpl implements CopyVersionService {
                     JPACopier.<HTextFlowTargetHistory> copyBean(history,
                             "textFlowTarget", "content");
             newHistory.setTextFlowTarget(copy);
+            newHistory.setSourceType(TranslationSourceType.COPY_VERSION);
+            TranslationUtil.copyEntity(history, newHistory);
             copy.getHistory().put(newHistory.getVersionNum(), newHistory);
         }
         return copy;

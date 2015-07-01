@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.HTextFlowTargetHistory;
+import org.zanata.model.ITextFlowTargetHistory;
 import org.zanata.model.tm.TransMemoryUnit;
 import org.zanata.model.type.TranslationEntityType;
 import org.zanata.webtrans.shared.model.TransMemoryDetails;
@@ -47,15 +49,15 @@ public class TranslationUtil {
      * Copy entityId and entityType from copyFrom to copyTo
      *
      * copyFrom.id will be used if copyFrom.entityId = null
-     * {@link org.zanata.model.type.TranslationEntityType.TFT} be used if
+     * {@link org.zanata.model.type.TranslationEntityType#TFT} be used if
      * copyFrom.entityType = null
      *
      *
      * @param copyFrom
      * @param copyTo
      */
-    public static void copyHTextFlowTargetEntity(@Nonnull HTextFlowTarget copyFrom,
-            @Nonnull HTextFlowTarget copyTo) {
+    public static void copyEntity(@Nonnull ITextFlowTargetHistory copyFrom,
+        @Nonnull ITextFlowTargetHistory copyTo) {
         if (copyFrom != null && copyTo != null) {
             copyTo.setEntityType(getEntityType(copyFrom));
             copyTo.setEntityId(getEntityId(copyFrom));
@@ -168,19 +170,26 @@ public class TranslationUtil {
         return comment.toString();
     }
 
-    public static Long getEntityId(@Nonnull HTextFlowTarget from) {
-        if (from != null) {
-            return from.getEntityId() == null ? from.getId() : from
-                    .getEntityId();
+    public static Long getEntityId(@Nonnull ITextFlowTargetHistory from) {
+        if (from == null) {
+            return null;
         }
-        return null;
+        return from.getEntityId() == null ? from.getId() : from
+                .getEntityId();
     }
 
     public static TranslationEntityType getEntityType(
-            @Nonnull HTextFlowTarget from) {
+            @Nonnull ITextFlowTargetHistory from) {
         if (from != null) {
-            return from.getEntityType() == null ? TranslationEntityType.TFT :
-                    from.getEntityType();
+            if(from.getEntityType() != null) {
+                return from.getEntityType();
+            } else {
+                if(from instanceof HTextFlowTarget) {
+                    return TranslationEntityType.TFT;
+                } else if(from instanceof HTextFlowTargetHistory) {
+                    return TranslationEntityType.TTH;
+                }
+            }
         }
         return null;
     }

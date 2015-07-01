@@ -32,6 +32,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -128,7 +130,6 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Getter
     private String revisionComment;
 
-    @Getter
     private TranslationEntityType entityType;
 
     @Getter
@@ -264,6 +265,11 @@ public class HTextFlowTarget extends ModelEntityBase implements HasContents,
     @Transient
     public void setContent(String content) {
         this.setContents(Arrays.asList(content));
+    }
+
+    @Enumerated(EnumType.STRING)
+    public TranslationEntityType getEntityType() {
+        return entityType;
     }
 
     @Override

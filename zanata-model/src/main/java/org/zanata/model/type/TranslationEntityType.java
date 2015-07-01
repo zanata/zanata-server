@@ -23,6 +23,7 @@ package org.zanata.model.type;
 
 import lombok.Getter;
 import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.HTextFlowTargetHistory;
 import org.zanata.model.tm.TransMemoryUnit;
 
 import java.io.Serializable;
@@ -37,7 +38,8 @@ import java.io.Serializable;
  */
 public enum TranslationEntityType implements Serializable {
     TMX(TransMemoryUnit.class),
-    TFT(HTextFlowTarget.class);
+    TFT(HTextFlowTarget.class),
+    TTH(HTextFlowTargetHistory.class);
     //    MT(null);
 
     @Getter

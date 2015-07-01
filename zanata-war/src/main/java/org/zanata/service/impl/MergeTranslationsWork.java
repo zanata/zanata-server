@@ -141,7 +141,7 @@ public class MergeTranslationsWork extends Work<Integer> {
         targetTft.setRevisionComment(TranslationUtil
             .getMergeTranslationMessage(sourceTft));
         targetTft.setSourceType(TranslationSourceType.MERGE_VERSION);
-        TranslationUtil.copyHTextFlowTargetEntity(sourceTft, targetTft);
+        TranslationUtil.copyEntity(sourceTft, targetTft);
 
         raiseSuccessEvent(targetTft, oldState);
     }
