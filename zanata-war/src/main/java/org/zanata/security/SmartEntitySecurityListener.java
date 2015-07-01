@@ -7,7 +7,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
-import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.security.EntityAction;
 import org.jboss.seam.security.EntitySecurityListener;
 import org.jboss.seam.security.Identity;
