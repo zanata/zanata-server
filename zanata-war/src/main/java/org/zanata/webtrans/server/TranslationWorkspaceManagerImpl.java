@@ -199,6 +199,9 @@ public class TranslationWorkspaceManagerImpl implements
     }
 
     void projectUpdate(HProject project, String oldProjectSlug) {
+        // need to reload the entity since it's in separate thread/transaction
+        project = ServiceLocator.instance().getEntityManager()
+                .find(HProject.class, project.getId());
         String projectSlug = project.getSlug();
         log.info("Project newSlug={}, oldSlug={} updated, status={}",
                 projectSlug, oldProjectSlug, project.getStatus());

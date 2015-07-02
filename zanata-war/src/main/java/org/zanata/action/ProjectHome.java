@@ -58,6 +58,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
+import org.zanata.dao.PersonDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
@@ -1086,9 +1087,17 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     private class ProjectMaintainersAutocomplete extends MaintainerAutocomplete {
 
+        private ZanataIdentity identity =
+                ServiceLocator.instance().getInstance(ZanataIdentity.class);
+
+        private PersonDAO personDAO =
+                ServiceLocator.instance().getInstance(PersonDAO.class);
+
         @Override
         protected List<HPerson> getMaintainers() {
-            return getInstanceMaintainers();
+            List<HPerson> list = Lists.newArrayList(getInstance().getMaintainers());
+            Collections.sort(list, ComparatorUtil.PERSON_NAME_COMPARATOR);
+            return list;
         }
 
         /**
@@ -1099,15 +1108,18 @@ public class ProjectHome extends SlugHome<HProject> implements
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
-
-            HPerson maintainer = personDAO.findByUsername(getSelectedItem());
+            identity.checkPermission(getInstance(), "update");
+            HPerson maintainer = personDAO
+                    .findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
-            update();
+            ProjectHome projectHome = ServiceLocator.instance()
+                    .getInstance("projectHome", ProjectHome.class);
+            projectHome.update();
             reset();
 
             getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.project.MaintainerAdded",
-                    maintainer.getName()));
+                    msgs.format("jsf.project.MaintainerAdded",
+                            maintainer.getName()));
         }
 
         private FacesMessages getFacesMessages() {

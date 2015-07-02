@@ -23,7 +23,6 @@ package org.zanata.feature.versionGroup;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
@@ -33,7 +32,6 @@ import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.groups.CreateVersionGroupPage;
 import org.zanata.page.groups.VersionGroupPage;
 import org.zanata.page.groups.VersionGroupsPage;
-import org.zanata.util.AddUsersRule;
 import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
@@ -48,11 +46,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(DetailedTest.class)
 public class VersionGroupTest extends ZanataTestCase {
 
-    @ClassRule
-    public static AddUsersRule addUsersRule = new AddUsersRule();
+//    @ClassRule
+//    public static AddUsersRule addUsersRule = new AddUsersRule();
 
-    @Rule
-    public SampleProjectRule sampleProjectRule = new SampleProjectRule();
+    @ClassRule
+    public static SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
     private VersionGroupsPage versionGroupsPageBase;
 
@@ -220,5 +218,26 @@ public class VersionGroupTest extends ZanataTestCase {
         assertThat(groupPage.getErrors())
                 .contains(CreateVersionGroupPage.VALIDATION_ERROR)
                 .as("Validation error is displayed for " + inputText);
+    }
+
+    // TODO [missing test] change group language
+    @Test
+    public void addLanguageToGroup() {
+        String groupID = "add-version-to-empty-group";
+        String groupName = "AddVersionToEmptyGroup";
+        VersionGroupPage versionGroupPage = versionGroupsPageBase
+                .createNewGroup()
+                .inputGroupId(groupID)
+                .inputGroupName(groupName)
+                .saveGroup()
+                .goToGroup(groupName)
+                .clickLanguagesTab()
+                .clickAddLanguagesButton()
+                .activateLanguageList()
+                .selectLanguage("French[fr]")
+                .clickLanguagesTab();
+
+        assertThat(versionGroupPage.getLanguagesForGroup()).contains(
+                "French\nfr");
     }
 }
