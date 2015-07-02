@@ -36,4 +36,29 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="2" author="damason@redhat.com">
+    <comment>Add table HProject_Member.</comment>
+    <createTable tableName="HProject_Member">
+      <column name="projectId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="personId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role" type="char"
+          remarks="Single character comes from ProjectRole enum constructor argument.">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="3" author="damason@redhat.com">
+    <comment>Migrate all HProject_Maintainer to HProject_Member with role "maintainer" (M).</comment>
+    <sql>
+      INSERT INTO HProject_Member (projectId, personId, role)
+      SELECT projectId, personId, 'M'
+      FROM HProject_Maintainer
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>

@@ -32,6 +32,7 @@ import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -42,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
@@ -51,14 +53,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.hibernate.annotations.Where;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -70,6 +69,7 @@ import org.zanata.common.ProjectType;
 import org.zanata.hibernate.search.CaseInsensitiveWhitespaceAnalyzer;
 import org.zanata.model.type.EntityStatusType;
 import org.zanata.model.type.LocaleIdType;
+import org.zanata.model.type.ProjectRoleType;
 import org.zanata.model.validator.Url;
 import org.zanata.rest.dto.Project;
 
@@ -97,6 +97,7 @@ import com.google.common.collect.Sets;
 @Getter
 @Indexed
 @ToString(callSuper = true, of = "name")
+@TypeDef(name = "projectRole", typeClass = ProjectRoleType.class)
 public class HProject extends SlugEntityBase implements Serializable,
         HasEntityStatus, HasUserFriendlyToString {
     private static final long serialVersionUID = 1L;
@@ -156,6 +157,14 @@ public class HProject extends SlugEntityBase implements Serializable,
             name = "personId"))
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<HPerson> maintainers = Sets.newHashSet();
+
+
+    @ElementCollection(targetClass = ProjectRole.class)
+    @CollectionTable(name = "HProject_Member", joinColumns = @JoinColumn(name = "projectId"))
+    @MapKeyJoinColumn(name = "personId")
+    @Column(name = "role", nullable = false)
+    @Type(type = "projectRole")
+    private Map<HPerson, ProjectRole> members = Maps.newHashMap();
 
     @ManyToMany
     @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(
