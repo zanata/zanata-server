@@ -426,11 +426,11 @@ public class CopyVersionServiceImplTest extends ZanataDbunitJpaTest {
             assertThat(newHistory.getState()).isEqualTo(
                     existingHistory.getState());
             assertThat(newHistory.getEntityId()).isEqualTo(
-                existingHistory.getEntityId());
+                TranslationUtil.getEntityId(existingHistory));
             assertThat(newHistory.getEntityType()).isEqualTo(
-                existingHistory.getEntityType());
+                TranslationUtil.getEntityType(existingHistory));
             assertThat(newHistory.getSourceType()).isEqualTo(
-                existingHistory.getSourceType());
+                TranslationSourceType.COPY_VERSION);
             assertThat(newHistory.getVersionNum()).isEqualTo(
                     existingHistory.getVersionNum());
         }
