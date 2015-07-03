@@ -220,11 +220,10 @@ public class VersionGroupTest extends ZanataTestCase {
                 .as("Validation error is displayed for " + inputText);
     }
 
-    // TODO [missing test] change group language
     @Test
     public void addLanguageToGroup() {
-        String groupID = "add-version-to-empty-group";
-        String groupName = "AddVersionToEmptyGroup";
+        String groupID = "add-language-to-a-group";
+        String groupName = "AddLanguageToGroup";
         VersionGroupPage versionGroupPage = versionGroupsPageBase
                 .createNewGroup()
                 .inputGroupId(groupID)
