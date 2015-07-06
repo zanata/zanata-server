@@ -1087,12 +1087,6 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     private class ProjectMaintainersAutocomplete extends MaintainerAutocomplete {
 
-        private ZanataIdentity identity =
-                ServiceLocator.instance().getInstance(ZanataIdentity.class);
-
-        private PersonDAO personDAO =
-                ServiceLocator.instance().getInstance(PersonDAO.class);
-
         @Override
         protected List<HPerson> getMaintainers() {
             List<HPerson> list = Lists.newArrayList(getInstance().getMaintainers());
@@ -1108,9 +1102,11 @@ public class ProjectHome extends SlugHome<HProject> implements
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
-            identity.checkPermission(getInstance(), "update");
-            HPerson maintainer = personDAO
-                    .findByUsername(getSelectedItem());
+            ServiceLocator.instance().getInstance(ZanataIdentity.class)
+                    .checkPermission(getInstance(), "update");
+            HPerson maintainer =
+                    ServiceLocator.instance().getInstance(PersonDAO.class)
+                            .findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
             ProjectHome projectHome = ServiceLocator.instance()
                     .getInstance("projectHome", ProjectHome.class);
