@@ -163,6 +163,11 @@ public class FilterConstraintToQuery {
                 .or(searchInSourceCondition, searchInTargetCondition);
     }
 
+
+    protected boolean needToQueryNullTarget() {
+        return isExcludeSearchTerm(constraints.getLastModifiedByUser());
+    }
+
     protected String buildSourceConditionsOtherThanSearch() {
         List<String> sourceConjunction = Lists.newArrayList();
         addToJunctionIfNotNull(sourceConjunction,
@@ -186,12 +191,27 @@ public class FilterConstraintToQuery {
         if (targetConjunction.isEmpty()) {
             return null;
         }
-        targetConjunction.add(eq("tft.textFlow", "tf"));
-        targetConjunction.add(eq("tft.locale", Locale.placeHolder()));
+        String textFlowTargetJoin = eq("tft.textFlow", "tf");
+        String localeJoin = eq("tft.locale", Locale.placeHolder());
 
-        return QueryBuilder.exists().from("HTextFlowTarget tft").leftJoin(
-            "tft.lastModifiedBy.account acc")
-                .where(and(targetConjunction)).toQueryString();
+        targetConjunction.add(textFlowTargetJoin);
+        targetConjunction.add(localeJoin);
+
+        String existQuery =
+                QueryBuilder.exists().from("HTextFlowTarget tft").leftJoin(
+                        "tft.lastModifiedBy.account acc")
+                        .where(and(targetConjunction)).toQueryString();
+
+        if(!needToQueryNullTarget()) {
+            return existQuery;
+        }
+
+        String notExistQuery =
+                QueryBuilder.notExists().from("HTextFlowTarget tft").leftJoin(
+                    "tft.lastModifiedBy.account acc")
+                    .where(and(textFlowTargetJoin, localeJoin)).toQueryString();
+
+        return QueryBuilder.or(existQuery, notExistQuery);
     }
 
     private static boolean addToJunctionIfNotNull(List<String> junction,
@@ -290,8 +310,7 @@ public class FilterConstraintToQuery {
             return null;
         }
         if(!isExcludeSearchTerm(constraints.getLastModifiedByUser())) {
-            return eq("acc.username",
-                LastModifiedBy.placeHolder());
+            return eq("acc.username", LastModifiedBy.placeHolder());
         }
 
         String nullLastModifiedByCondition = isNull("tft.lastModifiedBy");
@@ -301,9 +320,18 @@ public class FilterConstraintToQuery {
                         excludeUsernameCondition);
     }
 
+    // check if the term have exclude sign '-'
     private boolean isExcludeSearchTerm(@Nonnull String term) {
         return StringUtils.isEmpty(term) ? false
                 : (term.startsWith("-") && term.length() > 1);
+    }
+
+    // remove exclude sign '-' from term
+    private String getExcludeSearchTerm(@Nonnull String term) {
+        if(isExcludeSearchTerm(term)) {
+            return term.substring(1); //remove '-' sign in front
+        }
+        return term;
     }
 
     public Query setQueryParameters(Query textFlowQuery, HLocale hLocale) {
@@ -331,10 +359,9 @@ public class FilterConstraintToQuery {
                 constraints.getSourceComment(), SourceComment);
         addWildcardSearchParamIfPresent(textFlowQuery,
                 constraints.getTransComment(), TargetComment);
-        String lastModifiedByUser = constraints.getLastModifiedByUser();
-        if(isExcludeSearchTerm(lastModifiedByUser)) {
-            lastModifiedByUser = lastModifiedByUser.substring(1);
-        }
+        String lastModifiedByUser = getExcludeSearchTerm(
+                constraints.getLastModifiedByUser());
+
         addExactMatchParamIfPresent(textFlowQuery, lastModifiedByUser,
             LastModifiedBy);
         if (constraints.getChangedAfter() != null) {
@@ -362,7 +389,7 @@ public class FilterConstraintToQuery {
             String escapedAndLowered =
                     HqlCriterion.escapeWildcard(filterProperty.toLowerCase());
             textFlowQuery.setParameter(filterParam.namedParam(),
-                    HqlCriterion.match(escapedAndLowered, MatchMode.ANYWHERE));
+                HqlCriterion.match(escapedAndLowered, MatchMode.ANYWHERE));
         }
         return textFlowQuery;
     }
