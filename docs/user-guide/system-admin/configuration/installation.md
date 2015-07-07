@@ -6,7 +6,7 @@ Zanata can be installed by downloading a web archive (war) file, and configuring
 - ... OR WildFly (recommended version is 9.0) which can be [downloaded here](http://wildfly.org/downloads/)
 - A suitable MySQL database. This is NOT included in the Zanata archive. You can [download MySQL here](http://dev.mysql.com/downloads/mysql/).
 - An email (SMTP) server for email verification and notifications.
-- JDK version 1.7 or later. (Java 1.8 is recommended if you need OpenID support: see [OpenID](authentication#openid).). [OpenJDK](http://openjdk.java.net/install/) is recommended, but you can also download [Oracle's JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- JDK version 1.7 or later. [OpenJDK](http://openjdk.java.net/install/) is recommended, but you can also download [Oracle's JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
 The following packages are optional, but recommended:
 

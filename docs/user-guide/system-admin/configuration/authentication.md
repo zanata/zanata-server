@@ -182,7 +182,9 @@ The principal and keyTab attributes in the example above should be replaced with
 
 ## OpenID
 
-Important note: If you are running your server on Java 1.7, it will not be able to contact some OpenID providers (eg Fedora's) unless you upgrade the security provider.  See the section "Upgrading the Java security provider".  **This is not required for Java 1.8 servers**.
+Important note: If you are running your server on Java 1.7, it will not be able to contact some OpenID providers (eg Fedora's) unless you upgrade the security provider.  See the section "Upgrading the Java security provider".
+
+Java 1.8 on *some* Fedora-based systems has a similar problem contacting some OpenID providers (related to https://bugzilla.redhat.com/show_bug.cgi?id=1167153).  See the section "Disabling the SunEC provider".
 
 
 Make sure `standalone.xml` has the following jndi property:
@@ -240,7 +242,18 @@ This workaround should allow Zanata to contact such OpenID providers.  You will 
 
        ln -s /usr/share/java/bcprov.jar /usr/lib/jvm/jre-1.7.0/jre/lib/ext/
 
-3. Add a reference to Bouncy Castle in the file `$JAVA_HOME/jre/lib/security/java.security`.  Assuming largest existing `security.provider` entry is `security.provider.9`, add this line:
+3. Add a reference to Bouncy Castle in the file `$JAVA_HOME/jre/lib/security/java.security`.  Assuming the last `security.provider` entry was `security.provider.9`, add this line:
 
        security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider
 
+### Disabling the SunEC provider (for Java 1.8 on some Fedora-based systems)
+
+#### Option 1:
+
+Delete sunec.jar from the Java installation, for instance `$JAVA_HOME/jre/lib/ext/sunec.jar`.
+
+#### Option 2:
+
+Add this line to $JBOSS_HOME/bin/standalone.conf:
+
+    JAVA_OPTS="$JAVA_OPTS -Dcom.sun.net.ssl.enableECC=false"
