@@ -54,19 +54,19 @@
         <changeSetExecuted id="3" author="aeng@redhat.com" changeLogFile="db/changelogs/db.changelog-3.7.xml"/>
       </not>
     </preConditions>
-    <comment>Add entityType, entityId, sourceType, automatedEntry, revisionComment to HTextFlowTarget</comment>
+    <comment>Add copiedEntityType, copiedEntityId, sourceType, automatedEntry, revisionComment to HTextFlowTarget</comment>
     <addColumn tableName="HTextFlowTarget">
       <column name="revisionComment" type="longtext">
         <constraints nullable="true" />
       </column>
     </addColumn>
     <addColumn tableName="HTextFlowTarget">
-      <column name="entityType" type="char(3)">
+      <column name="copiedEntityType" type="char(3)">
         <constraints nullable="true" />
       </column>
     </addColumn>
     <addColumn tableName="HTextFlowTarget">
-      <column name="entityId" type="longtext">
+      <column name="copiedEntityId" type="longtext">
         <constraints nullable="true" />
       </column>
     </addColumn>
@@ -84,19 +84,19 @@
         <changeSetExecuted id="3" author="aeng@redhat.com" changeLogFile="db/changelogs/db.changelog-3.7.xml"/>
       </not>
     </preConditions>
-    <comment>Add entityType, entityId, sourceType, automatedEntry, revisionComment to HTextFlowTargetHistory</comment>
+    <comment>Add copiedEntityType, copiedEntityId, sourceType, automatedEntry, revisionComment to HTextFlowTargetHistory</comment>
     <addColumn tableName="HTextFlowTargetHistory">
       <column name="revisionComment" type="longtext">
         <constraints nullable="true" />
       </column>
     </addColumn>
     <addColumn tableName="HTextFlowTargetHistory">
-      <column name="entityType" type="char(3)">
+      <column name="copiedEntityType" type="char(3)">
         <constraints nullable="true" />
       </column>
     </addColumn>
     <addColumn tableName="HTextFlowTargetHistory">
-      <column name="entityId" type="longtext">
+      <column name="copiedEntityId" type="longtext">
         <constraints nullable="true" />
       </column>
     </addColumn>

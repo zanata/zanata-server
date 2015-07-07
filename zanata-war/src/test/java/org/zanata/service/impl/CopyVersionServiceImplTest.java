@@ -31,10 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.dbunit.operation.DatabaseOperation;
-import org.infinispan.manager.CacheContainer;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -425,10 +423,10 @@ public class CopyVersionServiceImplTest extends ZanataDbunitJpaTest {
                     existingHistory.getTextFlowRevision());
             assertThat(newHistory.getState()).isEqualTo(
                     existingHistory.getState());
-            assertThat(newHistory.getEntityId()).isEqualTo(
-                TranslationUtil.getEntityId(existingHistory));
-            assertThat(newHistory.getEntityType()).isEqualTo(
-                TranslationUtil.getEntityType(existingHistory));
+            assertThat(newHistory.getCopiedEntityId()).isEqualTo(
+                TranslationUtil.getCopiedEntityId(existingHistory));
+            assertThat(newHistory.getCopiedEntityType()).isEqualTo(
+                TranslationUtil.getCopiedEntityType(existingHistory));
             assertThat(newHistory.getSourceType()).isEqualTo(
                 TranslationSourceType.COPY_VERSION);
             assertThat(newHistory.getVersionNum()).isEqualTo(
@@ -579,10 +577,10 @@ public class CopyVersionServiceImplTest extends ZanataDbunitJpaTest {
                 existingTarget.getLocale());
         assertThat(newTarget.getLastModifiedBy()).isEqualTo(
                 existingTarget.getLastModifiedBy());
-        assertThat(newTarget.getEntityId()).isEqualTo(
-            TranslationUtil.getEntityId(existingTarget));
+        assertThat(newTarget.getCopiedEntityId()).isEqualTo(
+            TranslationUtil.getCopiedEntityId(existingTarget));
         assertThat(newTarget.getEntityType()).isEqualTo(
-            TranslationUtil.getEntityType(existingTarget));
+            TranslationUtil.getCopiedEntityType(existingTarget));
         assertThat(newTarget.getSourceType()).isEqualTo(
             TranslationSourceType.COPY_VERSION);
         if (existingTarget.getTranslator() != null) {
