@@ -106,6 +106,14 @@ public class EssentialDataCreator {
                 adminExists = false;
             }
 
+            if (!accountRoleDAO.roleExists("project-creator")) {
+                log.info("Creating 'project-creator' role");
+                if (accountRoleDAO.create("project-creator", MANUAL, "user") == null) {
+                    throw new RuntimeException(
+                        "Couldn't create 'project-creator' role");
+                }
+            }
+
             for (String adminUsername : applicationConfiguration
                     .getAdminUsers()) {
                 HAccount adminAccount = accountDAO.getByUsername(adminUsername);

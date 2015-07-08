@@ -88,7 +88,7 @@ public class SecurityFunctions {
     /* Any authenticated user can create a project */
     @GrantsPermission(actions = "insert")
     public static boolean canCreateProject(HProject target) {
-        return getIdentity().isLoggedIn();
+        return getIdentity().hasRole("project-creator");
     }
 
     /* anyone can read a project */
