@@ -74,7 +74,7 @@ public class EssentialDataCreator {
             if (!accountRoleDAO.roleExists("user")) {
                 log.info("Creating 'user' role");
                 if (accountRoleDAO.create("user", MANUAL) == null) {
-                    throw new RuntimeException("Couldn't create 'user' role");
+                    throw new RuntimeException("Could not create 'user' role");
                 }
             }
 
@@ -82,7 +82,7 @@ public class EssentialDataCreator {
                 log.info("Creating 'glossarist' role");
                 if (accountRoleDAO.create("glossarist", MANUAL) == null) {
                     throw new RuntimeException(
-                            "Couldn't create 'glossarist' role");
+                            "Could not create 'glossarist' role");
                 }
             }
             if (!accountRoleDAO.roleExists("glossary-admin")) {
@@ -90,7 +90,7 @@ public class EssentialDataCreator {
                 if (accountRoleDAO.create("glossary-admin", MANUAL,
                         "glossarist") == null) {
                     throw new RuntimeException(
-                            "Couldn't create 'glossary-admin' role");
+                            "Could not create 'glossary-admin' role");
                 }
             }
 
@@ -101,7 +101,7 @@ public class EssentialDataCreator {
                 log.info("Creating 'admin' role");
                 if (accountRoleDAO.create("admin", MANUAL, "user",
                         "glossary-admin") == null) {
-                    throw new RuntimeException("Couldn't create 'admin' role");
+                    throw new RuntimeException("Could not create 'admin' role");
                 }
                 adminExists = false;
             }
@@ -110,7 +110,7 @@ public class EssentialDataCreator {
                 log.info("Creating 'project-creator' role");
                 if (accountRoleDAO.create("project-creator", MANUAL, "user") == null) {
                     throw new RuntimeException(
-                        "Couldn't create 'project-creator' role");
+                        "Could not create 'project-creator' role");
                 }
             }
 
@@ -140,7 +140,7 @@ public class EssentialDataCreator {
                 en_US.setActive(true);
                 en_US.setEnabledByDefault(false);
                 if (localeDAO.makePersistent(en_US) == null) {
-                    throw new RuntimeException("Couldn't create 'en-US' locale");
+                    throw new RuntimeException("Could not create 'en-US' locale");
                 }
             }
 

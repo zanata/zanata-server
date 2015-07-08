@@ -85,7 +85,7 @@ public class SecurityFunctions {
      * Project ownership rules
      **************************************************************************/
 
-    /* Any authenticated user can create a project */
+    /* 'project-creator' can create project */
     @GrantsPermission(actions = "insert")
     public static boolean canCreateProject(HProject target) {
         return getIdentity().hasRole("project-creator");
