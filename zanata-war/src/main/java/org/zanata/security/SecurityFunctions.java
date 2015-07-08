@@ -24,13 +24,16 @@ import com.google.common.base.Optional;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.PersonDAO;
+import org.zanata.dao.ProjectMemberDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.HIterationGroup;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
+import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.ProjectRole;
 import org.zanata.security.permission.GrantsPermission;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
@@ -39,6 +42,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static org.zanata.model.ProjectRole.Maintainer;
+import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 /**
  * Contains static security rules functions used to determine permissions.
@@ -58,9 +64,29 @@ public class SecurityFunctions {
     }
 
     public static boolean isProjectMaintainer(HProject project) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && account.get().getPerson().isMaintainer(project);
+        return isProjectRole(project, Maintainer);
     }
+
+    public static boolean isProjectTranslationMaintainer(HProject project) {
+        return isProjectRole(project, TranslationMaintainer);
+    }
+
+    /* Check whether the authenticated person has the given role in the given
+     * project.
+     */
+    private static boolean isProjectRole(HProject project, ProjectRole role) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+
+        if (account.isPresent()) {
+            HPerson person = account.get().getPerson();
+            return ServiceLocator.instance().getInstance(ProjectMemberDAO.class)
+                    .hasProjectRole(person, project, role);
+        }
+
+        // No authenticated user
+        return false;
+    }
+
 
     /***************************************************************************
      * The Following Rules are for Identity Management
@@ -131,6 +157,26 @@ public class SecurityFunctions {
     public static boolean canInsertOrUpdateProjectIteration(
             HProjectIteration iteration) {
         return isProjectMaintainer(iteration.getProject());
+    }
+
+    /***************************************************************************
+     * Project team management rules
+     **************************************************************************/
+
+    /* Maintainer can manage all project roles */
+    @GrantsPermission(actions = {"manage-members"})
+    public static boolean canManageProjectMembers(HProject project) {
+        return getIdentity().isLoggedIn() && isProjectMaintainer(project);
+    }
+
+    /* Translation Maintainer can manage project translation team */
+    @GrantsPermission(actions = {"manage-translation-members"})
+    public static boolean canManageProjectTranslationMembers(HProject project) {
+        // TODO add a DAO check for multiple project roles at once (single query
+        // instead of two)
+        return getIdentity().isLoggedIn() &&
+                (isProjectTranslationMaintainer(project) ||
+                isProjectMaintainer(project));
     }
 
     /***************************************************************************

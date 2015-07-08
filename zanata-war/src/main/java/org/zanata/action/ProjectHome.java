@@ -143,6 +143,9 @@ public class ProjectHome extends SlugHome<HProject> implements
     private Messages msgs;
 
     @In
+    private PersonDAO personDAO;
+
+    @In
     private AccountRoleDAO accountRoleDAO;
 
     @In
@@ -784,7 +787,11 @@ public class ProjectHome extends SlugHome<HProject> implements
         updateProjectType();
 
         if (authenticatedAccount != null) {
-            getInstance().addMaintainer(authenticatedAccount.getPerson());
+            // authenticatedAccount person is a detached entity, so fetch a copy
+            // that is attached to the current session.
+            HPerson creator = personDAO.findById(
+                    authenticatedAccount.getPerson().getId());
+            getInstance().addMaintainer(creator);
             getInstance().getCustomizedValidations().clear();
             for (ValidationAction validationAction : validationServiceImpl
                     .getValidationActions("")) {
@@ -822,7 +829,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                 msgs.get("jsf.project.NeedAtLeastOneMaintainer"));
         } else {
-            getInstance().getMaintainers().remove(person);
+            getInstance().removeMaintainer(person);
             maintainerFilter.reset();
             update();
 

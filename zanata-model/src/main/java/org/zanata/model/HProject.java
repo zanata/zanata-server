@@ -25,6 +25,7 @@ import static org.jboss.seam.security.EntityAction.INSERT;
 import static org.jboss.seam.security.EntityAction.UPDATE;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,6 @@ import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -43,16 +43,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -81,6 +84,7 @@ import com.google.common.collect.Sets;
  * @see Project
  *
  */
+@Slf4j
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Access(AccessType.FIELD)
@@ -149,22 +153,26 @@ public class HProject extends SlugEntityBase implements Serializable,
     private ProjectType defaultProjectType;
 
     /**
+     * Immutable list of maintainers for this project.
+     *
+     * To change maintainers, use other methods in this class.
+     *
      * @see {@link #addMaintainer(HPerson)}
+     * @see {@link #removeMaintainer(HPerson)}
      */
-    @ManyToMany
-    @JoinTable(name = "HProject_Maintainer", joinColumns = @JoinColumn(
-            name = "projectId"), inverseJoinColumns = @JoinColumn(
-            name = "personId"))
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private Set<HPerson> maintainers = Sets.newHashSet();
+    @Transient
+    public Set<HPerson> getMaintainers() {
+        Set<HProjectMember> maintainerMembers =
+                Sets.filter(members, HProjectMember.IS_MAINTAINER);
+        Collection<HPerson> maintainers =
+                Collections2.transform(maintainerMembers, HProjectMember.TO_PERSON);
 
+        return ImmutableSet.<HPerson>copyOf(maintainers);
+    }
 
-    @ElementCollection(targetClass = ProjectRole.class)
-    @CollectionTable(name = "HProject_Member", joinColumns = @JoinColumn(name = "projectId"))
-    @MapKeyJoinColumn(name = "personId")
-    @Column(name = "role", nullable = false)
-    @Type(type = "projectRole")
-    private Map<HPerson, ProjectRole> members = Maps.newHashMap();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project",
+            orphanRemoval = true)
+    private Set<HProjectMember> members = Sets.newHashSet();
 
     @ManyToMany
     @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(
@@ -193,9 +201,31 @@ public class HProject extends SlugEntityBase implements Serializable,
         iteration.setProject(this);
     }
 
+    /**
+     * Add a maintainer to this project.
+     *
+     * @param maintainer person to add as a maintainer
+     * @see {@link #getMaintainers}
+     */
     public void addMaintainer(HPerson maintainer) {
-        this.getMaintainers().add(maintainer);
-        maintainer.getMaintainerProjects().add(this);
+        getMembers().add(asMaintainerMember(maintainer));
+    }
+
+    /**
+     * Remove a maintainer from this project.
+     *
+     * @param maintainer person to remove as a maintainer
+     * @see {@link #getMaintainers}
+     */
+    public void removeMaintainer(HPerson maintainer) {
+        getMembers().remove(asMaintainerMember(maintainer));
+    }
+
+    /**
+     * Create a maintainer member object for the given person in this project.
+     */
+    private HProjectMember asMaintainerMember(HPerson maintainer) {
+        return new HProjectMember(this, maintainer, ProjectRole.Maintainer);
     }
 
     @Override

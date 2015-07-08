@@ -61,4 +61,9 @@
     </sql>
   </changeSet>
 
+  <changeSet id="4" author="damason@redhat.com">
+    <comment>Drop the obsolete HProject_Maintainer table.</comment>
+    <dropTable tableName="HProject_Maintainer" cascadeConstraints="true" />
+  </changeSet>
+
 </databaseChangeLog>
