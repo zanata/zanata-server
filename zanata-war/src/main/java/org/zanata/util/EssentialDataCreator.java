@@ -4,6 +4,7 @@ import static org.zanata.model.HAccountRole.RoleType.MANUAL;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -71,47 +72,25 @@ public class EssentialDataCreator {
     public void prepare() {
         if (!prepared) {
             boolean adminExists;
-            if (!accountRoleDAO.roleExists("user")) {
-                log.info("Creating 'user' role");
-                if (accountRoleDAO.create("user", MANUAL) == null) {
-                    throw new RuntimeException("Could not create 'user' role");
-                }
+
+            createRoleIfNotExist("project-creator");
+
+            if(accountRoleDAO.roleExists("user")) {
+                addIncludeRole("user", "project-creator");
+            } else {
+                createRoleIfNotExist("user", "project-creator");
             }
 
-            if (!accountRoleDAO.roleExists("glossarist")) {
-                log.info("Creating 'glossarist' role");
-                if (accountRoleDAO.create("glossarist", MANUAL) == null) {
-                    throw new RuntimeException(
-                            "Could not create 'glossarist' role");
-                }
-            }
-            if (!accountRoleDAO.roleExists("glossary-admin")) {
-                log.info("Creating 'glossary-admin' role");
-                if (accountRoleDAO.create("glossary-admin", MANUAL,
-                        "glossarist") == null) {
-                    throw new RuntimeException(
-                            "Could not create 'glossary-admin' role");
-                }
-            }
+            createRoleIfNotExist("glossarist");
+            createRoleIfNotExist("glossary-admin", "glossarist");
+
 
             if (accountRoleDAO.roleExists("admin")) {
                 List<?> adminUsers = accountRoleDAO.listMembers("admin");
                 adminExists = !adminUsers.isEmpty();
             } else {
-                log.info("Creating 'admin' role");
-                if (accountRoleDAO.create("admin", MANUAL, "user",
-                        "glossary-admin") == null) {
-                    throw new RuntimeException("Could not create 'admin' role");
-                }
+                createRole("admin", "user", "glossary-admin");
                 adminExists = false;
-            }
-
-            if (!accountRoleDAO.roleExists("project-creator")) {
-                log.info("Creating 'project-creator' role");
-                if (accountRoleDAO.create("project-creator", MANUAL, "user") == null) {
-                    throw new RuntimeException(
-                        "Could not create 'project-creator' role");
-                }
             }
 
             for (String adminUsername : applicationConfiguration
@@ -148,4 +127,21 @@ public class EssentialDataCreator {
         }
     }
 
+    private void createRoleIfNotExist(@Nonnull String role, String... includesRoles) {
+        if (!accountRoleDAO.roleExists(role)) {
+            createRole(role, includesRoles);
+        }
+    }
+
+    private void createRole(@Nonnull String role, String... includesRoles) {
+        log.info("Creating '{}' role", role);
+        if (accountRoleDAO.create(role, MANUAL, includesRoles) == null) {
+            throw new RuntimeException("Could not create '" + role + "' role");
+        }
+    }
+
+    private void addIncludeRole(@Nonnull String role, String... includesRoles) {
+        log.info("Updating '{}' to include '{}'", role, includesRoles);
+        accountRoleDAO.updateIncludeRoles(role, includesRoles);
+    }
 }
