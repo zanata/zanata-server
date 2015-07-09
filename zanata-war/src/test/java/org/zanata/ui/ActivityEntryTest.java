@@ -301,7 +301,7 @@ public class ActivityEntryTest {
         when(activityService.getEntity(eq(EntityType.HTexFlowTarget), anyLong()))
                 .thenReturn(textFlowTarget);
         String expectedUrl = "http://localhost/goes/to/document/list";
-        when(urlUtil.editorDocumentListUrl(project.getSlug(),
+        when(urlUtil.editorDocumentListUrl(false, project.getSlug(),
                 iteration.getSlug(), targetLocale.getLocaleId(),
                 textFlow.getLocale())).thenReturn(
                 expectedUrl);
@@ -340,7 +340,7 @@ public class ActivityEntryTest {
                 .thenReturn(document);
         when(documentDAO.getLastTranslatedTargetOrNull(document.getId())).thenReturn(textFlowTarget);
         String expectedUrl = "http://localhost/goes/to/editor";
-        when(urlUtil.editorDocumentListUrl(project.getSlug(),
+        when(urlUtil.editorDocumentListUrl(false, project.getSlug(),
                 iteration.getSlug(), targetLocale.getLocaleId(),
                 textFlow.getLocale())).thenReturn(
                 expectedUrl);

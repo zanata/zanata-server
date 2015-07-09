@@ -22,36 +22,42 @@
 package org.zanata.service.impl;
 
 import javax.annotation.Nonnull;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
-import org.zanata.events.JSONType;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.zanata.events.WebhookEventType;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Do http post for webhook event
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j
 public class WebHooksPublisher {
 
-    private static ClientResponse publish(@Nonnull String url,
+    private static Response publish(@Nonnull String url,
             @Nonnull String data, @Nonnull MediaType acceptType,
             @Nonnull MediaType mediaType) {
         try {
-            ClientRequest request = new ClientRequest(url);
-            request.accept(acceptType);
-            request.body(mediaType, data);
-            return request.post();
+            ResteasyClient client = new ResteasyClientBuilder().build();
+            ResteasyWebTarget target = client.target(url);
+
+            return target.request().accept(acceptType)
+                    .post(Entity.entity(data, mediaType));
         } catch (Exception e) {
-            log.error("Error on webHooks post {}", e, url);
+            log.error("Error on webHooks post {}, {}", url, e);
             return null;
         }
     }
 
-    public static ClientResponse publish(@Nonnull String url,
-        @Nonnull JSONType event) {
+    public static Response publish(@Nonnull String url,
+        @Nonnull WebhookEventType event) {
         return publish(url, event.getJSON(), MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE);
     }
