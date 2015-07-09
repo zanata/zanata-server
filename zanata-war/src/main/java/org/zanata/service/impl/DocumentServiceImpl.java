@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -281,7 +282,8 @@ public class DocumentServiceImpl implements DocumentService {
                                     version.getSlug(), document.getDocId(),
                                     event.getLocaleId(), docUrl, message);
                     for (WebHook webHook : project.getWebHooks()) {
-                        publishDocumentMilestoneEvent(webHook, milestoneEvent);
+                        publishDocumentMilestoneEvent(webHook, milestoneEvent,
+                                project.getWebhookKey());
                     }
                 }
             }
@@ -289,8 +291,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public void publishDocumentMilestoneEvent(WebHook webHook,
-            DocumentMilestoneEvent milestoneEvent) {
-        WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent);
+            DocumentMilestoneEvent milestoneEvent, String webhookKey) {
+        WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent,
+                Optional.fromNullable(webhookKey),
+                applicationConfiguration.getServerPath());
         log.info("firing webhook: {}:{}:{}:{}",
                 webHook.getUrl(), milestoneEvent.getProject(),
                 milestoneEvent.getVersion(), milestoneEvent.getDocId());
