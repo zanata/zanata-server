@@ -50,8 +50,8 @@ public class TranslationSourceTypeTypeDescriptor extends
     }
 
     @Override
-    public <X> X
-            unwrap(TranslationSourceType value, Class<X> type, WrapperOptions options) {
+    public <X> X unwrap(TranslationSourceType value, Class<X> type,
+            WrapperOptions options) {
         if (value == null) {
             return null;
         }

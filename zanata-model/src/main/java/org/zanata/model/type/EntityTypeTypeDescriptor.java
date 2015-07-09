@@ -52,8 +52,8 @@ public class EntityTypeTypeDescriptor extends
     }
 
     @Override
-    public <X> X
-    unwrap(EntityType value, Class<X> type, WrapperOptions options) {
+    public <X> X unwrap(EntityType value, Class<X> type,
+            WrapperOptions options) {
         if (value == null) {
             return null;
         }

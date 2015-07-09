@@ -53,8 +53,8 @@ public class TransUnitUpdateRequest implements IsSerializable {
     }
 
     public TransUnitUpdateRequest(TransUnitId transUnitId,
-        List<String> newContents, ContentState newContentState,
-        int baseTranslationVersion, String sourceType) {
+            List<String> newContents, ContentState newContentState,
+            int baseTranslationVersion, String sourceType) {
         this.transUnitId = transUnitId;
         this.newContents = newContents;
         this.newContentState = newContentState;
