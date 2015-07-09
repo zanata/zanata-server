@@ -50,4 +50,13 @@
     </createIndex>
   </changeSet>
 
+  <changeSet id="3" author="aeng@redhat.com">
+    <comment>WebhookKey to HProject</comment>
+    <addColumn tableName="HProject">
+      <column name="webhookKey" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

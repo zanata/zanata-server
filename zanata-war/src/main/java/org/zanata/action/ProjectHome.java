@@ -411,6 +411,12 @@ public class ProjectHome extends SlugHome<HProject> implements
         showRemovedAliasesMessage(removed);
     }
 
+    public void addWebhookSecretKey(String secretKey) {
+        getInstance().setWebhookKey(secretKey);
+        update();
+        facesMessages.addGlobal(msgs.get("jsf.project.UpdateWebhookKey"));
+    }
+
     public void removeAllLocaleAliases() {
         identity.checkPermission(instance, "update");
         List<LocaleId> removed = new ArrayList<>();

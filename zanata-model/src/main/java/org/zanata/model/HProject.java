@@ -177,6 +177,9 @@ public class HProject extends SlugEntityBase implements Serializable,
     @Field
     private EntityStatus status = EntityStatus.ACTIVE;
 
+    @Size(max = 255)
+    private String webhookKey;
+
     public void addIteration(HProjectIteration iteration) {
         projectIterations.add(iteration);
         iteration.setProject(this);
