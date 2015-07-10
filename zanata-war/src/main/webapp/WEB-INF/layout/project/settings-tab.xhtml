@@ -34,14 +34,16 @@
 </script>
 
 <a4j:jsFunction name="addWebhook"
-  onbegin="zanata.loader.activate('#add-url-loader')"
-  oncomplete="zanata.loader.deactivate('#add-url-loader');"
+  onbegin="zanata.loader.activate('#add-webhook-button');jQuery('#add-webhook-button').removeClass('button--primary')"
+  oncomplete="zanata.loader.deactivate('#add-webhook-button');jQuery('#add-webhook-button').addClass('button--primary')"
   action="#{projectHome.addWebHook(url)}"
   render="settings-webhooks-list">
   <a4j:param name="val1" assignTo="#{url}"/>
 </a4j:jsFunction>
 
 <a4j:jsFunction name="addWebhookSecretKey"
+  onbegin="zanata.loader.activate('#add-webhook-key');jQuery('#add-webhook-key').removeClass('button--primary')"
+  oncomplete="zanata.loader.deactivate('#add-webhook-key');jQuery('#add-webhook-key').addClass('button--primary')"
   action="#{projectHome.addWebhookSecretKey(secretKey)}">
   <a4j:param name="val1" assignTo="#{secretKey}"/>
 </a4j:jsFunction>
@@ -217,9 +219,9 @@
           class="form--inline__input" value="#{projectHome.instance.webhookKey}"/>
 
         <div class="form--inline__suffix">
-          <button class="form--inline__addon button--primary"
+          <button id="add-webhook-key" class="form--inline__addon button--primary button loader"
             onclick="addWebhookSecretKey(jQuery('#secretKeyInput').val())">
-            #{msgs['jsf.project.AddWebhookSecretKey']}
+            <span class="loader__label">#{msgs['jsf.project.AddWebhookSecretKey']}</span>
           </button>
         </div>
       </div>
@@ -241,7 +243,6 @@
           </a4j:commandLink>
         </li>
       </ui:repeat>
-      <zanata:loader id="add-url-loader" type="loader--large" visible="false"/>
       <li class="list--highlight__item--none">
         <label for="payloadUrlInput">
           #{msgs['jsf.project.AddWebhook']}
@@ -254,9 +255,9 @@
             class="form--inline__input"/>
 
           <div class="form--inline__suffix">
-            <button class="form--inline__addon button--primary"
+            <button id="add-webhook-button" class="form--inline__addon button--primary button loader"
               onclick="addWebhook(jQuery('#payloadUrlInput').val())">
-              #{msgs['jsf.project.AddWebhook']}
+              <span class="loader__label">#{msgs['jsf.project.AddWebhook']}</span>
             </button>
           </div>
         </div>
