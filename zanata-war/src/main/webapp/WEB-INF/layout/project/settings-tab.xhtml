@@ -41,6 +41,11 @@
   <a4j:param name="val1" assignTo="#{url}"/>
 </a4j:jsFunction>
 
+<a4j:jsFunction name="addWebhookSecretKey"
+  action="#{projectHome.addWebhookSecretKey(secretKey)}">
+  <a4j:param name="val1" assignTo="#{secretKey}"/>
+</a4j:jsFunction>
+
 <a4j:jsFunction name="bindRestrictedByRoleValue" render="user-roles"
   oncomplete="zanata.form.appendCheckboxes(getUserRoleId())"
   action="#{projectHome.setRestrictedByRole(key, checked)}">
@@ -203,18 +208,37 @@
       #{msgs['jsf.project.WebHooks']}
   </h2>
   <h:form  id="settings-webhooks-list" onclick="return false">
+
+    <h3 class="heading--secondary">#{msgs['jsf.project.WebHooks.secretKey']}</h3>
+    <div class="form__item">
+      <div class="form--inline">
+        <input type="text" id="secretKeyInput" autocomplete="off" maxlength="255"
+          placeholder="#{msgs['jsf.project.WebHooks.secretKey.placeholder']}"
+          class="form--inline__input" value="#{projectHome.instance.webhookKey}"/>
+
+        <div class="form--inline__suffix">
+          <button class="form--inline__addon button--primary"
+            onclick="addWebhookSecretKey(jQuery('#secretKeyInput').val())">
+            #{msgs['jsf.project.AddWebhookSecretKey']}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="l--push-top-1">
+    <h3 class="heading--secondary">#{msgs['jsf.project.PayloadURL']}</h3>
     <ul class="list--slat list--highlight l--push-top-half">
       <ui:repeat value="#{projectHome.instance.webHooks}" var="webhook">
         <li class="list-item">
-            #{webhook.url}
-            <a4j:commandLink onbegin="onRemoveWebHook(this)"
-              action="#{projectHome.removeWebHook(webhook)}"
-              styleClass="l--float-right txt--danger"
-              render="settings-webhooks-list">
-              <i class="i--large i--remove"></i>
-              <zanata:loader layout="inline" type="loader--small"
-                jsHandle="true" id="loader" visible="false"/>
-            </a4j:commandLink>
+          #{webhook.url}
+          <a4j:commandLink onbegin="onRemoveWebHook(this)"
+            action="#{projectHome.removeWebHook(webhook)}"
+            styleClass="l--float-right txt--danger"
+            render="settings-webhooks-list">
+            <i class="i--large i--remove"></i>
+            <zanata:loader layout="inline" type="loader--small"
+              jsHandle="true" id="loader" visible="false"/>
+          </a4j:commandLink>
         </li>
       </ui:repeat>
       <zanata:loader id="add-url-loader" type="loader--large" visible="false"/>
@@ -238,6 +262,7 @@
         </div>
       </li>
     </ul>
+    </div>
   </h:form>
 </li>
 

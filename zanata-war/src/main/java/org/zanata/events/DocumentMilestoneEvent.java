@@ -27,10 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
-
-import java.util.Collection;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -39,9 +36,9 @@ import java.util.Collection;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonPropertyOrder({ "project", "version", "docId", "locale", "milestone"})
+@JsonPropertyOrder({ "project", "version", "docId", "locale", "url", "milestone"})
 @EqualsAndHashCode
-public class DocumentMilestoneEvent extends JSONType {
+public class DocumentMilestoneEvent extends WebhookEventType {
 
     public static final String EVENT_NAME =
         "org.zanata.events.DocumentMilestoneEvent";
@@ -50,6 +47,7 @@ public class DocumentMilestoneEvent extends JSONType {
     private String version;
     private String docId;
     private LocaleId locale;
+    private String url;
     private String milestone;
 
     @Override

@@ -302,7 +302,7 @@ public class ActivityEntry {
             HTextFlowTarget tft = (HTextFlowTarget) lastTarget;
 
             url =
-                urlUtil.editorDocumentListUrl(version.getProject()
+                urlUtil.editorDocumentListUrl(false, version.getProject()
                         .getSlug(), version.getSlug(), tft.getLocaleId(),
                     tft.getTextFlow().getLocale());
         } else if (activity.getActivityType() == UPLOAD_SOURCE_DOCUMENT) {
@@ -315,7 +315,7 @@ public class ActivityEntry {
 
             if (tft != null) {
                 url =
-                    urlUtil.editorDocumentListUrl(version.getProject()
+                    urlUtil.editorDocumentListUrl(false, version.getProject()
                         .getSlug(), version.getSlug(), tft
                         .getLocaleId(), tft.getTextFlow().getLocale());
             }
