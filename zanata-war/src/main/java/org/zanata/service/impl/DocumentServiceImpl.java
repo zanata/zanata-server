@@ -348,10 +348,13 @@ public class DocumentServiceImpl implements DocumentService {
     @VisibleForTesting
     public void init(ProjectIterationDAO projectIterationDAO,
             DocumentDAO documentDAO,
-        TranslationStateCache translationStateCacheImpl, Messages msgs) {
+            TranslationStateCache translationStateCacheImpl, UrlUtil urlUtil,
+            ApplicationConfiguration applicationConfiguration, Messages msgs) {
         this.projectIterationDAO = projectIterationDAO;
         this.documentDAO = documentDAO;
         this.translationStateCacheImpl = translationStateCacheImpl;
+        this.urlUtil = urlUtil;
+        this.applicationConfiguration = applicationConfiguration;
         this.msgs = msgs;
     }
 }

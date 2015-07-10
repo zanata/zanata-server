@@ -22,14 +22,11 @@
 package org.zanata.service.impl;
 
 import javax.annotation.Nonnull;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.codec.binary.Hex;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -37,7 +34,7 @@ import org.zanata.events.WebhookEventType;
 
 import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
-import sun.misc.BASE64Encoder;
+import org.zanata.util.HmacUtil;
 
 /**
  * Do http post for webhook event
@@ -47,13 +44,18 @@ import sun.misc.BASE64Encoder;
 @Slf4j
 public class WebHooksPublisher {
 
-    private static final String WEBHOOK_HEADER = "X-Zanata-Webhook";
+    public static final String WEBHOOK_HEADER = "X-Zanata-Webhook";
 
-    private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+    public static Response publish(@Nonnull String url,
+        @Nonnull WebhookEventType event, Optional<String> secretKey,
+        @Nonnull String serverUrl) {
+        return publish(url, event.getJSON(), MediaType.APPLICATION_JSON_TYPE,
+            MediaType.APPLICATION_JSON_TYPE, serverUrl, secretKey);
+    }
 
     private static Response publish(@Nonnull String url,
             @Nonnull String data, @Nonnull MediaType acceptType,
-            @Nonnull MediaType mediaType, String serverPath,
+            @Nonnull MediaType mediaType, String serverUrl,
             Optional<String> secretKey) {
         try {
             ResteasyClient client = new ResteasyClientBuilder().build();
@@ -62,48 +64,26 @@ public class WebHooksPublisher {
             Invocation.Builder postBuilder =
                     target.request().accept(acceptType);
 
+            String sha = signWebhookHeader(data, secretKey.get(), serverUrl);
             if (secretKey.isPresent()) {
-                postBuilder.header(WEBHOOK_HEADER,
-                        generateHeader(data, secretKey.get(), serverPath));
+                postBuilder.header(WEBHOOK_HEADER, sha);
             }
-            
             return postBuilder.post(Entity.entity(data, mediaType));
         } catch (Exception e) {
             log.error("Error on webHooks post {}, {}", url, e);
-            return null;
         }
+        return null;
     }
 
-    public static Response publish(@Nonnull String url,
-        @Nonnull WebhookEventType event, Optional<String> secretKey,
-        @Nonnull String serverPath) {
-        return publish(url, event.getJSON(), MediaType.APPLICATION_JSON_TYPE,
-                MediaType.APPLICATION_JSON_TYPE, serverPath, secretKey);
-    }
-
-    public static String generateHeader(String data, String key, 
-            String serverPath) {
-        return (calculateHMAC_SHA1(data + serverPath, key));
-    }
-
-    public static String calculateHMAC_SHA1(String value, String key) {
+    private static String signWebhookHeader(String data, String key,
+            String serverUrl) {
+        String valueToDigest = data + serverUrl;
         try {
-            // Get an hmac_sha1 key from the raw key bytes
-            byte[] keyBytes = key.getBytes();
-            SecretKeySpec signingKey =
-                    new SecretKeySpec(keyBytes, HMAC_SHA1_ALGORITHM);
-
-            // Get an hmac_sha1 Mac instance and initialize with the signing key
-            Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
-            mac.init(signingKey);
-
-            // Compute the hmac on input data bytes
-            byte[] rawHmac = mac.doFinal(value.getBytes());
-
-            BASE64Encoder encoder = new BASE64Encoder();
-            return encoder.encode(rawHmac);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return HmacUtil
+                .hmacSha1(key, HmacUtil.hmacSha1(key, valueToDigest));
+        } catch (IllegalArgumentException e) {
+            log.error("Unable to generate hmac sha1 for {} {}", key, valueToDigest);
+            throw new IllegalArgumentException(e);
         }
     }
 }

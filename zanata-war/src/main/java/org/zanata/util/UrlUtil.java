@@ -125,9 +125,9 @@ public class UrlUtil implements Serializable {
                 + versionSlug;
     }
 
-    public String editorDocumentListUrl(boolean fullPath, String projectSlug, 
-            String versionSlug, LocaleId targetLocaleId, 
-            LocaleId sourceLocaleId) {
+    public String editorDocumentListUrl(boolean fullPath, String projectSlug,
+                    String versionSlug, LocaleId targetLocaleId,
+                    LocaleId sourceLocaleId) {
         String prefix = fullPath ? applicationConfiguration.getServerPath()
                         : getContextPath();
 
@@ -140,14 +140,14 @@ public class UrlUtil implements Serializable {
             String versionSlug, LocaleId targetLocaleId,
             LocaleId sourceLocaleId, String docId) {
         return editorDocumentListUrl(false, projectSlug, versionSlug,
-                targetLocaleId, sourceLocaleId) + " #view:doc;doc:" + docId;
+                targetLocaleId, sourceLocaleId) + "#view:doc;doc:" + docId;
     }
 
     public String fullEditorDocumentUrl(String projectSlug,
         String versionSlug, LocaleId targetLocaleId,
         LocaleId sourceLocaleId, String docId) {
         return editorDocumentListUrl(true, projectSlug, versionSlug,
-            targetLocaleId, sourceLocaleId) + " #view:doc;doc:" + docId;
+            targetLocaleId, sourceLocaleId) + "#view:doc;doc:" + docId;
     }
 
     public String editorTransUnitUrl(String projectSlug,
