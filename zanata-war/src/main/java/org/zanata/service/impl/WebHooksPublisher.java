@@ -64,13 +64,14 @@ public class WebHooksPublisher {
             Invocation.Builder postBuilder =
                     target.request().accept(acceptType);
 
-            String sha = signWebhookHeader(data, secretKey.get(), serverUrl);
             if (secretKey.isPresent()) {
+                String sha =
+                        signWebhookHeader(data, secretKey.get(), serverUrl);
                 postBuilder.header(WEBHOOK_HEADER, sha);
             }
             return postBuilder.post(Entity.entity(data, mediaType));
         } catch (Exception e) {
-            log.error("Error on webHooks post {}, {}", url, e);
+            log.error("Error on webhooks post {}, {}", url, e);
         }
         return null;
     }

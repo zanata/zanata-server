@@ -412,7 +412,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     public void addWebhookSecretKey(String secretKey) {
-        getInstance().setWebhookKey(secretKey);
+        getInstance().setWebhookSecret(secretKey);
         update();
         facesMessages.addGlobal(msgs.get("jsf.project.UpdateWebhookKey"));
     }

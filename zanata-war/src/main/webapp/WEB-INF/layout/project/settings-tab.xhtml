@@ -207,7 +207,13 @@
 </li>
 <li id="settings-webhooks" class="js-tabs-content">
   <h2 class="l--push-all-0 gamma d--bottom l--push-bottom-half">
-      #{msgs['jsf.project.WebHooks']}
+    #{msgs['jsf.project.WebHooks']}
+    <span class="txt--meta">
+      <a href="http://docs.zanata.org/en/release/user-guide/projects/project-settings/#webhooks"
+        title="#{msgs['jsf.project.Webhooks.help.message']}">
+        <i class="i i--help"></i>
+      </a>
+    </span>
   </h2>
   <h:form  id="settings-webhooks-list" onclick="return false">
 
@@ -216,7 +222,7 @@
       <div class="form--inline">
         <input type="text" id="secretKeyInput" autocomplete="off" maxlength="255"
           placeholder="#{msgs['jsf.project.WebHooks.secretKey.placeholder']}"
-          class="form--inline__input" value="#{projectHome.instance.webhookKey}"/>
+          class="form--inline__input" value="#{projectHome.instance.webhookSecret}"/>
 
         <div class="form--inline__suffix">
           <button id="add-webhook-key" class="form--inline__addon button--primary button loader"

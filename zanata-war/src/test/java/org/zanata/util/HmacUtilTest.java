@@ -59,4 +59,32 @@ public class HmacUtilTest {
         assertThat(sha1).isNotEqualTo(sha3).isNotEqualTo(sha5)
                 .isNotEqualTo(sha7);
     }
+
+    /**
+     * Generate sha with given key and value from external hmac-sha1 util,
+     * e.g. http://hash.online-convert.com/sha1-generator
+     */
+    @Test
+    public void testCaseWithExternalSha() {
+        String expectedSha = "o+TFYqv4GXbyWF8HvxmYRW705g4=";
+        String key = "test_case_key";
+        String value = "test case 1: text to convert";
+
+        //make sure the external sha is equal to generated sha
+        assertThat(HmacUtil.hmacSha1(key, value)).isEqualTo(expectedSha);
+    }
+
+    /**
+     * Generate sha with given key and value from external hmac-sha1 util,
+     * e.g. http://hash.online-convert.com/sha1-generator
+     */
+    @Test
+    public void testCaseWithExternalSha2() {
+        String expectedSha = "v5q2sl79thg38jqnRCojX1BkDPM=";
+        String key = "test_case_key_2";
+        String value = "test case 2: text to convert";
+
+        //make sure the external sha is equal to generated sha
+        assertThat(HmacUtil.hmacSha1(key, value)).isEqualTo(expectedSha);
+    }
 }

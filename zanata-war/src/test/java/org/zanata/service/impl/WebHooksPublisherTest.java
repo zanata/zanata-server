@@ -24,8 +24,10 @@ package org.zanata.service.impl;
 import com.google.common.base.Optional;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
+import org.mockserver.junit.MockServerRule;
 import org.zanata.events.WebhookEventType;
 import org.zanata.util.HmacUtil;
 
@@ -43,21 +45,26 @@ import static org.mockserver.verify.VerificationTimes.exactly;
  */
 public class WebHooksPublisherTest {
 
-    private int port = 8180;
-    private String postUrl = "http://localhost:" + port + WebHookPublisherCallback.LISTENER_PATH;
     private String serverUrl = "http://localhost/zanata";
 
-    //mock server to listen to http POST
     private MockServerClient mockServerClient;
+
+    /**
+     * Start MockServer prior to test execution and stop MockServer after the
+     * tests have completed. This constructor dynamically allocates a free port
+     * for MockServer to use.
+     */
+    @Rule
+    public MockServerRule mockServerRule = new MockServerRule(this);
 
     @After
     public void stop() {
-        mockServerClient.stop();
+        //reset after each test
+        mockServerClient.reset();
     }
 
     @Before
     public void init() {
-        mockServerClient = startClientAndServer(port);
         mockServerClient
                 .when(request().withPath(WebHookPublisherCallback.LISTENER_PATH))
                 .callback(
@@ -72,6 +79,7 @@ public class WebHooksPublisherTest {
         final String key = "secret_key";
         final String eventName = "org.zanata.events.TestEvent";
         final String json = "{data: 'testing', event, '" + eventName + "'}";
+        String postUrl = "http://localhost:" + mockServerRule.getHttpPort() + WebHookPublisherCallback.LISTENER_PATH;
 
         WebhookEventType event = createEvent(eventName, json);
 

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
@@ -177,8 +178,12 @@ public class HProject extends SlugEntityBase implements Serializable,
     @Field
     private EntityStatus status = EntityStatus.ACTIVE;
 
+    /**
+     * Secret key used to generate webhook header in hmac-sha1 encryption.
+     */
     @Size(max = 255)
-    private String webhookKey;
+    @Column(nullable = true)
+    private String webhookSecret;
 
     public void addIteration(HProjectIteration iteration) {
         projectIterations.add(iteration);

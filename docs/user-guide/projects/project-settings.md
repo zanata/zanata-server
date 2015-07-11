@@ -140,9 +140,17 @@ The Webhooks feature is HTTP callbacks which are triggered when a document in a 
 
 When an event occurs, Zanata will make a HTTP POST to the URI configured in the project.
 
+### Webhook secret key
+
+![Project Webhooks secret key](/images/project-webhooks-secretkey-settings.png)
+
+- If secret key is provided, Zanata will include cryptographic signature in http header `X-Zanata-Webhook`.
+- The signature is generated with hmac-sha1 encryption with key provided and JSON value + Zanata's URL.
+- To add a secret key to the project, enter your key in the text input and click 'Add secret key' button.
+
 ### Adding a Webhook URI
 
-![Project Webhooks Settings tab](/images/project-webhooks-settings-2.png)
+![Project Webhooks payload URL](/images/project-webhooks-settings-2.png)
 Enter a valid URI into the provided text input. Hit the 'enter' key or click on 'Add webhook' button to add the URI.
 
 ------------

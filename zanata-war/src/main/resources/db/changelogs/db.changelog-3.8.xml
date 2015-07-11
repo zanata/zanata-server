@@ -7,7 +7,7 @@
   <changeSet id="1" author="aeng@redhat.com">
     <comment>WebhookKey to HProject</comment>
     <addColumn tableName="HProject">
-      <column name="webhookKey" type="varchar(255)">
+      <column name="webhookSecret" type="varchar(255)">
         <constraints nullable="true" />
       </column>
     </addColumn>

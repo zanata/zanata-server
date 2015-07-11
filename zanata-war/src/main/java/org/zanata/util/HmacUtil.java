@@ -40,6 +40,14 @@ public class HmacUtil {
 
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
+    /**
+     * Generate SHA with given key and valueToDigest.
+     * All values will using UTF-8 encoding.
+     *
+     * @param key - key for generate sha
+     * @param valueToDigest - value for generate sha
+     * @throws IllegalArgumentException
+     */
     public static String hmacSha1(final String key, final String valueToDigest)
             throws IllegalArgumentException {
         return hmacSha1(StringUtils.getBytesUtf8(key),
