@@ -7,7 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
-  template="../WEB-INF/template/template.xhtml">
+  template="/WEB-INF/template/template.xhtml">
 
 <ui:define name="page_title">
   #{msgs['jsf.Projects']} - #{projectHome.instance.name}
@@ -215,7 +215,7 @@
     <ul class="tabs__content panels__container js-tabs-content l--push-top-1">
       <li id="versions">
         <ui:include
-          src="../WEB-INF/layout/project/versions-tab.xhtml"/>
+          src="/WEB-INF/layout/project/versions-tab.xhtml"/>
       </li>
 
       <li id="maintainers">
@@ -243,7 +243,7 @@
         rendered="#{s:hasPermission(projectHome.instance, 'update')}">
         <li id="settings">
           <ui:include
-            src="../WEB-INF/layout/project/settings-tab.xhtml"/>
+            src="/WEB-INF/layout/project/settings-tab.xhtml"/>
         </li>
       </s:fragment>
     </ul>
