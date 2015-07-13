@@ -69,7 +69,7 @@ public class WebhooksPublisherITCase {
                 .callback(
                     callback()
                         .withCallbackClass(
-                            "org.zanata.service.impl.WebHookPublisherCallback")
+                            "org.zanata.service.impl.WebhookPublisherCallback")
                 );
     }
 
