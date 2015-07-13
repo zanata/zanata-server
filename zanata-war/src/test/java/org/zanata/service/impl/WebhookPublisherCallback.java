@@ -31,11 +31,11 @@ import static org.mockserver.model.HttpResponse.response;
 /**
  * This is to return same header and body from httpRequest to the response
  *
- * See {@link org.zanata.service.impl.WebHooksPublisherTest}
+ * See {@link WebhooksPublisherITCase}
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class WebHookPublisherCallback implements
+public class WebhookPublisherCallback implements
         ExpectationCallback {
 
     public static String LISTENER_PATH = "/listener";

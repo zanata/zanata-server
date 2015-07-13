@@ -35,7 +35,6 @@ import org.zanata.util.HmacUtil;
 import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpCallback.callback;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.verify.VerificationTimes.exactly;
@@ -43,7 +42,7 @@ import static org.mockserver.verify.VerificationTimes.exactly;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class WebHooksPublisherTest {
+public class WebhooksPublisherITCase {
 
     private String serverUrl = "http://localhost/zanata";
 
@@ -66,7 +65,7 @@ public class WebHooksPublisherTest {
     @Before
     public void init() {
         mockServerClient
-                .when(request().withPath(WebHookPublisherCallback.LISTENER_PATH))
+                .when(request().withPath(WebhookPublisherCallback.LISTENER_PATH))
                 .callback(
                     callback()
                         .withCallbackClass(
@@ -79,7 +78,7 @@ public class WebHooksPublisherTest {
         final String key = "secret_key";
         final String eventName = "org.zanata.events.TestEvent";
         final String json = "{data: 'testing', event, '" + eventName + "'}";
-        String postUrl = "http://localhost:" + mockServerRule.getHttpPort() + WebHookPublisherCallback.LISTENER_PATH;
+        String postUrl = "http://localhost:" + mockServerRule.getHttpPort() + WebhookPublisherCallback.LISTENER_PATH;
 
         WebhookEventType event = createEvent(eventName, json);
 
@@ -98,7 +97,7 @@ public class WebHooksPublisherTest {
         mockServerClient.verify(
                 request()
                         .withMethod("POST")
-                        .withPath(WebHookPublisherCallback.LISTENER_PATH)
+                        .withPath(WebhookPublisherCallback.LISTENER_PATH)
                         .withBody(json),
                 exactly(1)
                 );
