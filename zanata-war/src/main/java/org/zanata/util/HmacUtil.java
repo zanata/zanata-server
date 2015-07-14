@@ -63,12 +63,12 @@ public class HmacUtil {
     }
 
     // Get an hmac_sha1 key from the raw key bytes
-    public static Mac getHmacSha1(final byte[] key) {
+    private static Mac getHmacSha1(final byte[] key) {
         return getInitializedMac(HMAC_SHA1_ALGORITHM, key);
     }
 
     // Get an hmac_sha1 Mac instance and initialize with the signing key
-    public static Mac
+    private static Mac
             getInitializedMac(final String algorithm, final byte[] key) {
 
         if (key == null) {

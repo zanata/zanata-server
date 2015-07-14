@@ -39,7 +39,7 @@ import org.zanata.common.LocaleId;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonPropertyOrder({ "project", "version", "docId", "locale", "url", "milestone"})
+@JsonPropertyOrder({ "project", "version", "docId", "locale", "editorDocumentUrl", "milestone"})
 @EqualsAndHashCode
 public class DocumentMilestoneEvent extends WebhookEventType {
 
@@ -71,15 +71,15 @@ public class DocumentMilestoneEvent extends WebhookEventType {
     private LocaleId locale;
 
     /**
-     * Editor url in target document.
-     * {@link org.zanata.util.UrlUtil#fullEditorDocumentUrl}
-     */
-    private String url;
-
-    /**
      * Message for milestone reached.
      */
     private String milestone;
+
+    /**
+     * Editor url in target document.
+     * {@link org.zanata.util.UrlUtil#fullEditorDocumentUrl}
+     */
+    private String editorDocumentUrl;
 
     @Override
     public String getEventType() {

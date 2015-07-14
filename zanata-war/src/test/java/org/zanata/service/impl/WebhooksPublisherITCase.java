@@ -44,8 +44,6 @@ import static org.mockserver.verify.VerificationTimes.exactly;
  */
 public class WebhooksPublisherITCase {
 
-    private String serverUrl = "http://localhost/zanata";
-
     private MockServerClient mockServerClient;
 
     /**
@@ -78,19 +76,20 @@ public class WebhooksPublisherITCase {
         final String key = "secret_key";
         final String eventName = "org.zanata.events.TestEvent";
         final String json = "{data: 'testing', event, '" + eventName + "'}";
-        String postUrl = "http://localhost:" + mockServerRule.getHttpPort() + WebhookPublisherCallback.LISTENER_PATH;
+        String callbackUrl =
+                "http://localhost:" + mockServerRule.getHttpPort()
+                        + WebhookPublisherCallback.LISTENER_PATH;
 
         WebhookEventType event = createEvent(eventName, json);
 
-        Response res = WebHooksPublisher.publish(postUrl, event, Optional.of(key),
-                serverUrl);
+        Response res = WebHooksPublisher.publish(callbackUrl, event, Optional.of(key));
 
         String receivedSHA = res.getHeaderString(
             WebHooksPublisher.WEBHOOK_HEADER);
 
         String receivedBody = res.readEntity(String.class);
         String validateSHA =
-                HmacUtil.hmacSha1(key, HmacUtil.hmacSha1(key, receivedBody + serverUrl));
+                HmacUtil.hmacSha1(key, HmacUtil.hmacSha1(key, receivedBody + callbackUrl));
 
         assertThat(validateSHA).isEqualTo(receivedSHA);
 
@@ -101,6 +100,26 @@ public class WebhooksPublisherITCase {
                         .withBody(json),
                 exactly(1)
                 );
+    }
+
+    @Test
+    public void testGeneratedShaForHeader() {
+        final String json = "{data: 'testing', event, 'test event'}";
+        final String key= "secret_key";
+        final String callbackURL = "http://localhost:8080/listener";
+
+        String expectedSha = getExpectedShaForHeader(json, key, callbackURL);
+
+        String sha = WebHooksPublisher.signWebhookHeader(json, key, callbackURL);
+
+        assertThat(sha).isEqualTo(expectedSha);
+    }
+
+    public String getExpectedShaForHeader(String json, String key,
+        String callbackURL) {
+        String valueToDigest = json + callbackURL;
+        return HmacUtil
+            .hmacSha1(key, HmacUtil.hmacSha1(key, valueToDigest));
     }
 
     private WebhookEventType createEvent(final String eventName,

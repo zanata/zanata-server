@@ -46,39 +46,37 @@ public class WebHooksPublisher {
 
     public static final String WEBHOOK_HEADER = "X-Zanata-Webhook";
 
-    public static Response publish(@Nonnull String url,
-        @Nonnull WebhookEventType event, Optional<String> secretKey,
-        @Nonnull String serverUrl) {
-        return publish(url, event.getJSON(), MediaType.APPLICATION_JSON_TYPE,
-            MediaType.APPLICATION_JSON_TYPE, serverUrl, secretKey);
+    public static Response publish(@Nonnull String callbackURL,
+        @Nonnull WebhookEventType event, Optional<String> secretKey) {
+        return publish(callbackURL, event.getJSON(), MediaType.APPLICATION_JSON_TYPE,
+            MediaType.APPLICATION_JSON_TYPE, secretKey);
     }
 
-    private static Response publish(@Nonnull String url,
+    protected static Response publish(@Nonnull String callbackURL,
             @Nonnull String data, @Nonnull MediaType acceptType,
-            @Nonnull MediaType mediaType, String serverUrl,
-            Optional<String> secretKey) {
+            @Nonnull MediaType mediaType, Optional<String> secretKey) {
         try {
             ResteasyClient client = new ResteasyClientBuilder().build();
-            ResteasyWebTarget target = client.target(url);
+            ResteasyWebTarget target = client.target(callbackURL);
 
             Invocation.Builder postBuilder =
                     target.request().accept(acceptType);
 
             if (secretKey.isPresent()) {
                 String sha =
-                        signWebhookHeader(data, secretKey.get(), serverUrl);
+                        signWebhookHeader(data, secretKey.get(), callbackURL);
                 postBuilder.header(WEBHOOK_HEADER, sha);
             }
             return postBuilder.post(Entity.entity(data, mediaType));
         } catch (Exception e) {
-            log.error("Error on webhooks post {}, {}", url, e);
+            log.error("Error on webhooks post {}, {}", callbackURL, e);
         }
         return null;
     }
 
-    private static String signWebhookHeader(String data, String key,
-            String serverUrl) {
-        String valueToDigest = data + serverUrl;
+    protected static String signWebhookHeader(String data, String key,
+            String callbackURL) {
+        String valueToDigest = data + callbackURL;
         try {
             return HmacUtil
                 .hmacSha1(key, HmacUtil.hmacSha1(key, valueToDigest));

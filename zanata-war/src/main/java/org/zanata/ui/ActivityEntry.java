@@ -302,9 +302,9 @@ public class ActivityEntry {
             HTextFlowTarget tft = (HTextFlowTarget) lastTarget;
 
             url =
-                urlUtil.editorDocumentListUrl(false, version.getProject()
+                urlUtil.editorDocumentListUrl(version.getProject()
                         .getSlug(), version.getSlug(), tft.getLocaleId(),
-                    tft.getTextFlow().getLocale());
+                    tft.getTextFlow().getLocale(), false);
         } else if (activity.getActivityType() == UPLOAD_SOURCE_DOCUMENT) {
             // not supported for upload source action
         } else if (activity.getActivityType() == UPLOAD_TRANSLATION_DOCUMENT) {
@@ -315,9 +315,9 @@ public class ActivityEntry {
 
             if (tft != null) {
                 url =
-                    urlUtil.editorDocumentListUrl(false, version.getProject()
+                    urlUtil.editorDocumentListUrl(version.getProject()
                         .getSlug(), version.getSlug(), tft
-                        .getLocaleId(), tft.getTextFlow().getLocale());
+                        .getLocaleId(), tft.getTextFlow().getLocale(), false);
             }
         }
         return url;

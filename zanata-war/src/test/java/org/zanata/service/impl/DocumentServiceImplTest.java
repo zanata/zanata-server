@@ -139,9 +139,9 @@ public class DocumentServiceImplTest {
 
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug, versionSlug,
-                        docIdString, localeId, testUrl,
+                        docIdString, localeId,
                         msgs.format("jsf.webhook.response.state", milestone,
-                                ContentState.Translated));
+                                ContentState.Translated), testUrl);
 
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent, key);
@@ -184,8 +184,8 @@ public class DocumentServiceImplTest {
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug,
                         versionSlug, docIdString,
-                        localeId, testUrl, msgs.format("jsf.webhook.response.state",
-                                milestone, ContentState.Approved));
+                        localeId, msgs.format("jsf.webhook.response.state",
+                                milestone, ContentState.Approved), testUrl);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
                 milestoneEvent, key);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(1),
@@ -204,9 +204,9 @@ public class DocumentServiceImplTest {
 
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug, versionSlug,
-                        docIdString, localeId, testUrl, msgs.format(
+                        docIdString, localeId, msgs.format(
                                 "jsf.webhook.response.state", milestone,
-                                ContentState.Approved));
+                                ContentState.Approved), testUrl);
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent, key);
@@ -226,9 +226,9 @@ public class DocumentServiceImplTest {
 
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug, versionSlug,
-                        docIdString, localeId, testUrl, msgs.format(
+                        docIdString, localeId, msgs.format(
                                 "jsf.webhook.response.state", milestone,
-                                ContentState.Approved));
+                                ContentState.Approved), testUrl);
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent, key);
         verify(spyService, never()).publishDocumentMilestoneEvent(
@@ -248,9 +248,9 @@ public class DocumentServiceImplTest {
 
         DocumentMilestoneEvent milestoneEvent =
                 new DocumentMilestoneEvent(projectSlug, versionSlug,
-                        docIdString, localeId, testUrl, msgs.format(
+                        docIdString, localeId, msgs.format(
                                 "jsf.webhook.response.state", milestone,
-                                ContentState.Translated));
+                                ContentState.Translated), testUrl);
         verify(spyService, never()).publishDocumentMilestoneEvent(
                 webHooks.get(0), milestoneEvent, key);
         verify(spyService, never()).publishDocumentMilestoneEvent(

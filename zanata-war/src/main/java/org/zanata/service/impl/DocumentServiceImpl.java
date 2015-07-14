@@ -272,7 +272,7 @@ public class DocumentServiceImpl implements DocumentService {
                 if (shouldPublish) {
                     HDocument document = documentDAO.getById(event.getDocumentId());
 
-                    String docUrl =
+                    String editorUrl =
                             urlUtil.fullEditorDocumentUrl(project.getSlug(),
                                 version.getSlug(), event.getLocaleId(),
                                 LocaleId.EN_US, document.getDocId());
@@ -280,7 +280,7 @@ public class DocumentServiceImpl implements DocumentService {
                     DocumentMilestoneEvent milestoneEvent =
                             new DocumentMilestoneEvent(project.getSlug(),
                                     version.getSlug(), document.getDocId(),
-                                    event.getLocaleId(), docUrl, message);
+                                    event.getLocaleId(), message, editorUrl);
                     for (WebHook webHook : project.getWebHooks()) {
                         publishDocumentMilestoneEvent(webHook, milestoneEvent,
                                 project.getWebhookSecret());
@@ -293,8 +293,7 @@ public class DocumentServiceImpl implements DocumentService {
     public void publishDocumentMilestoneEvent(WebHook webHook,
             DocumentMilestoneEvent milestoneEvent, String webhookSecret) {
         WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent,
-                Optional.fromNullable(webhookSecret),
-                applicationConfiguration.getServerPath());
+                Optional.fromNullable(webhookSecret));
         log.info("firing webhook: {}:{}:{}:{}",
                 webHook.getUrl(), milestoneEvent.getProject(),
                 milestoneEvent.getVersion(), milestoneEvent.getDocId());
