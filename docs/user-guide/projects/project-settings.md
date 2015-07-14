@@ -133,18 +133,35 @@ The access restriction feature is intended for use with special roles that can b
 <figcaption>Project Webhooks Settings tab</figcaption>
 </figure>
 
-The Webhooks feature is HTTP callbacks which are triggered when a document in a language has reached a certain milestone. Currently, webhooks events will be triggered when
+The Webhooks feature is HTTP callbacks which are triggered when a document in a language has reached a certain milestone. 
+Currently, webhooks events will be triggered when
 
 - A document has reached 100% Translated
 - A document has reached 100% Approved (by reviewer)
 
-When an event occurs, Zanata will make a HTTP POST to the URI configured in the project.
+When an event occurs, Zanata will make a HTTP POST to the provided payload URL in the project.
+
+Example webhook response:
+
+```
+{
+    "eventType": "org.zanata.events.DocumentMilestoneEvent",
+    "milestone": "100% Translated",
+    "locale": "de",
+    "docId": "zanata-war/src/main/resources/messages",
+    "version": "master",
+    "project": "zanata-server",
+    "editorDocumentUrl": "https://translate.zanata.org/zanata/webtrans/Application.seam?project=zanata-server&iteration=master&localeId=de&locale=en#view:doc;doc:zanata-war/src/main/resources/messages"
+}
+```
+
+If a secret key is provided for that payload URL, Zanata will sign the webhook request with HTTP header `X-Zanata-Webhook`. 
+The header is a base64 digest of a `HMAC-SHA1` hash. The hashed generated from the full request body and the payload URL as provided.
 
 ### Adding a webhook
 1. Enter a valid URL and secret key (optional) into the provided text input. 
 2. Click on 'Add webhook' button to add the URL.
-3. If secret key is provided, Zanata will include cryptographic signature in http header `X-Zanata-Webhook`.
-4. The signature is generated with hmac-sha1 encryption with key provided and JSON value + Zanata's URL.
+3. If secret key is provided, Zanata will include cryptographic signature in HTTP header `X-Zanata-Webhook`.
 
 ### Remove a webhook
 - Click on the `X` sign on right side of the webhook to remove the entry.
