@@ -30,7 +30,9 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.security.Restrict;
+import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.security.annotations.CheckPermission;
+import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.email.ContactLanguageCoordinatorEmailStrategy;
@@ -38,6 +40,7 @@ import org.zanata.email.EmailStrategy;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
+import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.faces.FacesMessages;
@@ -52,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @AutoCreate
 @Name("languageContactCoordinatorAction")
 @Scope(ScopeType.PAGE)
+@ZanataSecured
 @Slf4j
 public class LanguageContactCoordinatorAction implements Serializable {
 
@@ -80,7 +84,7 @@ public class LanguageContactCoordinatorAction implements Serializable {
 
     private HLocale locale;
 
-    @Restrict("#{identity.loggedIn}")
+    @CheckLoggedIn
     public void send() {
         String fromName = authenticatedAccount.getPerson().getName();
         String fromLoginName = authenticatedAccount.getUsername();

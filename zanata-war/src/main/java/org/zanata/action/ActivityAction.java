@@ -28,10 +28,13 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.security.Restrict;
+import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.security.annotations.CheckPermission;
+import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
+import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.ActivityService;
 
 /**
@@ -39,7 +42,8 @@ import org.zanata.service.ActivityService;
  */
 @Name("activityAction")
 @Scope(ScopeType.PAGE)
-@Restrict("#{identity.loggedIn}")
+@ZanataSecured
+@CheckLoggedIn
 public class ActivityAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
