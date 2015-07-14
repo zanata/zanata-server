@@ -125,9 +125,8 @@ public class UrlUtil implements Serializable {
                 + versionSlug;
     }
 
-    public String editorDocumentListUrl(String projectSlug,
-                    String versionSlug, LocaleId targetLocaleId,
-                    LocaleId sourceLocaleId, boolean fullPath) {
+    public String editorDocumentListUrl(String projectSlug, String versionSlug,
+            LocaleId targetLocaleId, LocaleId sourceLocaleId, boolean fullPath) {
         String prefix = fullPath ? applicationConfiguration.getServerPath()
                         : getContextPath();
 
@@ -136,25 +135,23 @@ public class UrlUtil implements Serializable {
                 + "&locale=" + sourceLocaleId;
     }
 
-    public String editorDocumentUrl(String projectSlug,
-            String versionSlug, LocaleId targetLocaleId,
-            LocaleId sourceLocaleId, String docId) {
-        return editorDocumentListUrl(projectSlug, versionSlug,
-                targetLocaleId, sourceLocaleId, false) + "#view:doc;doc:" + docId;
+    public String editorDocumentUrl(String projectSlug, String versionSlug,
+            LocaleId targetLocaleId, LocaleId sourceLocaleId, String docId) {
+        return editorDocumentListUrl(projectSlug, versionSlug, targetLocaleId,
+                sourceLocaleId, false) + "#view:doc;doc:" + docId;
     }
 
-    public String fullEditorDocumentUrl(String projectSlug,
-        String versionSlug, LocaleId targetLocaleId,
-        LocaleId sourceLocaleId, String docId) {
-        return editorDocumentListUrl(projectSlug, versionSlug,
-            targetLocaleId, sourceLocaleId, true) + "#view:doc;doc:" + docId;
+    public String fullEditorDocumentUrl(String projectSlug, String versionSlug,
+        LocaleId targetLocaleId, LocaleId sourceLocaleId, String docId) {
+        return editorDocumentListUrl(projectSlug, versionSlug, targetLocaleId,
+                sourceLocaleId, true) + "#view:doc;doc:" + docId;
     }
 
-    public String editorTransUnitUrl(String projectSlug,
-            String versionSlug, LocaleId targetLocaleId,
-            LocaleId sourceLocaleId, String docId, Long tuId) {
-        return editorDocumentUrl(projectSlug, versionSlug,
-                targetLocaleId, sourceLocaleId, docId) + ";textflow:" + tuId;
+    public String editorTransUnitUrl(String projectSlug, String versionSlug,
+            LocaleId targetLocaleId, LocaleId sourceLocaleId, String docId,
+            Long tuId) {
+        return editorDocumentUrl(projectSlug, versionSlug, targetLocaleId,
+                sourceLocaleId, docId) + ";textflow:" + tuId;
     }
 
     public String dashboardUrl() {

@@ -282,8 +282,7 @@ public class DocumentServiceImpl implements DocumentService {
                                     version.getSlug(), document.getDocId(),
                                     event.getLocaleId(), message, editorUrl);
                     for (WebHook webHook : project.getWebHooks()) {
-                        publishDocumentMilestoneEvent(webHook, milestoneEvent,
-                                project.getWebhookSecret());
+                        publishDocumentMilestoneEvent(webHook, milestoneEvent);
                     }
                 }
             }
@@ -291,9 +290,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public void publishDocumentMilestoneEvent(WebHook webHook,
-            DocumentMilestoneEvent milestoneEvent, String webhookSecret) {
+            DocumentMilestoneEvent milestoneEvent) {
         WebHooksPublisher.publish(webHook.getUrl(), milestoneEvent,
-                Optional.fromNullable(webhookSecret));
+                Optional.fromNullable(webHook.getSecret()));
         log.info("firing webhook: {}:{}:{}:{}",
                 webHook.getUrl(), milestoneEvent.getProject(),
                 milestoneEvent.getVersion(), milestoneEvent.getDocId());

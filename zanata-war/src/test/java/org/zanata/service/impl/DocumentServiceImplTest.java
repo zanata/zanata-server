@@ -93,8 +93,6 @@ public class DocumentServiceImplTest {
 
     private String testUrl = "http://localhost/test/doc/url";
 
-    private String localhost = "http://localhost:8080/zanata";
-
     private String key = null;
 
     @Before
@@ -109,8 +107,8 @@ public class DocumentServiceImplTest {
         HDocument document = Mockito.mock(HDocument.class);
 
         webHooks = Lists.newArrayList();
-        webHooks.add(new WebHook(project, "http://test.example.com"));
-        webHooks.add(new WebHook(project, "http://test1.example.com"));
+        webHooks.add(new WebHook(project, "http://test.example.com", key));
+        webHooks.add(new WebHook(project, "http://test1.example.com", key));
 
         when(projectIterationDAO.findById(versionId)).thenReturn(version);
         when(version.getProject()).thenReturn(project);
@@ -123,8 +121,6 @@ public class DocumentServiceImplTest {
         when(urlUtil.fullEditorDocumentUrl(anyString(), anyString(),
                 any(LocaleId.class), any(LocaleId.class), anyString()))
                 .thenReturn(testUrl);
-
-        when(applicationConfiguration.getServerPath()).thenReturn(localhost);
     }
 
     @Test
@@ -144,9 +140,9 @@ public class DocumentServiceImplTest {
                                 ContentState.Translated), testUrl);
 
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
-                milestoneEvent, key);
+                milestoneEvent);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(1),
-                milestoneEvent, key);
+                milestoneEvent);
     }
 
     @Test
@@ -166,9 +162,9 @@ public class DocumentServiceImplTest {
                                 ContentState.Translated));
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(0), milestoneEvent, key);
+                webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(1), milestoneEvent, key);
+                webHooks.get(1), milestoneEvent);
     }
 
     @Test
@@ -187,9 +183,9 @@ public class DocumentServiceImplTest {
                         localeId, msgs.format("jsf.webhook.response.state",
                                 milestone, ContentState.Approved), testUrl);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(0),
-                milestoneEvent, key);
+                milestoneEvent);
         verify(spyService).publishDocumentMilestoneEvent(webHooks.get(1),
-                milestoneEvent, key);
+                milestoneEvent);
     }
 
     @Test
@@ -209,9 +205,9 @@ public class DocumentServiceImplTest {
                                 ContentState.Approved), testUrl);
 
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(0), milestoneEvent, key);
+                webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(1), milestoneEvent, key);
+                webHooks.get(1), milestoneEvent);
     }
 
     @Test
@@ -230,9 +226,9 @@ public class DocumentServiceImplTest {
                                 "jsf.webhook.response.state", milestone,
                                 ContentState.Approved), testUrl);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(0), milestoneEvent, key);
+                webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(1), milestoneEvent, key);
+                webHooks.get(1), milestoneEvent);
     }
 
     @Test
@@ -252,9 +248,9 @@ public class DocumentServiceImplTest {
                                 "jsf.webhook.response.state", milestone,
                                 ContentState.Translated), testUrl);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(0), milestoneEvent, key);
+                webHooks.get(0), milestoneEvent);
         verify(spyService, never()).publishDocumentMilestoneEvent(
-                webHooks.get(1), milestoneEvent, key);
+                webHooks.get(1), milestoneEvent);
     }
 
     private void runDocumentStatisticUpdatedTest(

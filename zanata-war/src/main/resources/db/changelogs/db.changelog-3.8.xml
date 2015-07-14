@@ -5,9 +5,9 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
   <changeSet id="1" author="aeng@redhat.com">
-    <comment>WebhookKey to HProject</comment>
-    <addColumn tableName="HProject">
-      <column name="webhookSecret" type="varchar(255)">
+    <comment>WebhookKey to WebHook</comment>
+    <addColumn tableName="WebHook">
+      <column name="secret" type="varchar(255)">
         <constraints nullable="true" />
       </column>
     </addColumn>
