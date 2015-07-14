@@ -38,7 +38,7 @@
                   aria-labelledby="dropdownContent">
                   <li>
                     <s:link action="#{roleAction.createRole}" styleClass="i__item--right"
-                      rendered="#{s:hasPermission('seam.account', 'create', null)}"
+                      rendered="#{identity.hasPermission('seam.account', 'create', null)}"
                       value="#{msgs['jsf.CreateRole']}">
                       <i class="i i--plus i__item__icon"></i>
                     </s:link>
@@ -61,7 +61,7 @@
                       </a>
                       <ul class="dropdown__content js-dropdown__content">
                         <s:fragment
-                          rendered="#{s:hasPermission('seam.role', 'delete') and accountRoleDAO.findByName(role).roleType.toString() ne 'AUTO'}">
+                          rendered="#{identity.hasPermission('seam.role', 'delete') and accountRoleDAO.findByName(role).roleType.toString() ne 'AUTO'}">
                           <li>
                             <h:commandLink
                               action="#{identityManager.deleteRole(roleSearch.selectedRole)}"

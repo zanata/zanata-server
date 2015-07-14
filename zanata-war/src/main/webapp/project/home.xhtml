@@ -17,12 +17,12 @@
     <rich:panel id="loggedIn" rendered="#{hasActions}">
       <f:facet name="header">#{msgs['jsf.Actions']}</f:facet>
       <s:link id="createProjectLink" styleClass="action_link"
-        rendered="#{s:hasPermission(projectHome.instance, 'insert')}"
+        rendered="#{identity.hasPermission(projectHome.instance, 'insert')}"
         value="#{msgs['jsf.NewProject.Label']}"
         view="/project/create_project.xhtml"
         propagation="none"/>
       <h:outputLink id="exportTMXAllLink" styleClass="action_link"
-        rendered="#{s:hasRole('admin')}"
+        rendered="#{identity.hasRole('admin')}"
         onclick="return confirm('#{msgs['jsf.ConfirmExportTMXAll']}')"
         value="#{request.contextPath}/rest/tm/all">
         <h:outputText value="#{msgs['jsf.ExportTMXAll']}"/>
