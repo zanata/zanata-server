@@ -46,6 +46,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.security.AuthenticationType;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.RegisterService;
 import org.zanata.util.HashUtil;
 
@@ -92,12 +93,13 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public String register(final String username, final String name,
             String email) {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 identityStore.createUser(username, null);
                 identityStore.disableUser(username);
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         HAccount account = accountDAO.getByUsername(username);
         HPerson person = new HPerson();
@@ -119,12 +121,13 @@ public class RegisterServiceImpl implements RegisterService {
 
     public String register(final String username, final String password,
             String name, String email) {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 identityStore.createUser(username, password);
                 identityStore.disableUser(username);
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         HAccount account = accountDAO.getByUsername(username);
         HPerson person = new HPerson();
@@ -147,13 +150,14 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public String register(final String username, final String externalId,
             AuthenticationType authType, String name, String email) {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 identityStore.createUser(username, null); // no password
-                                                          // initially
+                // initially
                 identityStore.disableUser(username);
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         HAccount account = accountDAO.getByUsername(username);
         account.getCredentials().add(
@@ -284,6 +288,11 @@ public class RegisterServiceImpl implements RegisterService {
                 acc.setMergedInto(active);
             }
             obsolete.setMergedInto(active);
+        }
+
+        @Override
+        public void run() {
+            ZanataIdentity.instance().runAs(this);
         }
     }
 }

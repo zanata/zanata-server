@@ -31,12 +31,12 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.security.Identity;
 import org.zanata.dao.PersonDAO;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.model.HPersonEmailValidationKey;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.impl.EmailChangeService;
 import org.zanata.ui.faces.FacesMessages;
 
@@ -52,7 +52,7 @@ public class ValidateEmailAction implements Serializable {
     PersonDAO personDAO;
 
     @In
-    Identity identity;
+    private ZanataIdentity identity;
 
     @In("jsfMessages")
     private FacesMessages facesMessages;

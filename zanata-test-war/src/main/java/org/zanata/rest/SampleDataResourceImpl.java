@@ -14,6 +14,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.security.RunAsOperation;
+import org.zanata.Identity;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -40,36 +41,42 @@ public class SampleDataResourceImpl implements SampleDataResource {
     @In
     private EntityManager entityManager;
 
+    @In(create = true)
+    private Identity identity;
+
     @Override
     public Response makeSampleLanguages() {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             @Override
             public void execute() {
                 sampleProjectProfile.makeSampleLanguages();
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 
     @Override
     @Transactional
     public Response addLanguage(final String localeId) {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             @Override
             public void execute() {
                 sampleProjectProfile.makeLanguage(true, new LocaleId(localeId));
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 
     @Override
     public Response makeSampleUsers() {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 sampleProjectProfile.makeSampleUsers();
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 
@@ -95,31 +102,34 @@ public class SampleDataResourceImpl implements SampleDataResource {
         final List<HLocale> hLocales = entityManager
             .createQuery("from HLocale where localeId in (:locales)",
                 HLocale.class).setParameter("locales", locales).getResultList();
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 sampleProjectProfile.addUsersToLanguage(hPerson, hLocales);
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 
     @Override
     public Response makeSampleProject() {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 sampleProjectProfile.makeSampleProject();
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 
     @Override
     public Response deleteExceptEssentialData() {
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 sampleProjectProfile.deleteExceptEssentialData();
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        identity.runAs(operation);
         return Response.ok().build();
     }
 

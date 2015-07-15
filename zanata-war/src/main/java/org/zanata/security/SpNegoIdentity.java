@@ -91,11 +91,11 @@ public class SpNegoIdentity implements Serializable {
                 return;
             }
 
-            Field field = Identity.class.getDeclaredField(PRINCIPAL);
+            Field field = ZanataIdentity.class.getDeclaredField(PRINCIPAL);
             field.setAccessible(true);
             field.set(identity, SecurityContextAssociation.getPrincipal());
 
-            field = Identity.class.getDeclaredField(SUBJECT);
+            field = ZanataIdentity.class.getDeclaredField(SUBJECT);
             field.setAccessible(true);
             field.set(identity, SecurityContextAssociation.getSubject());
         } catch (Exception e) {

@@ -52,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @Install(precedence = APPLICATION)
 @BypassInterceptors
 @Slf4j
+// TODO [CDI] not extend Seam Credentials
 public class ZanataCredentials extends Credentials {
     private AuthenticationType authType;
 

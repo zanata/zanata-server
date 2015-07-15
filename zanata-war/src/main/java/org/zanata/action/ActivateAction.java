@@ -36,6 +36,7 @@ import org.zanata.dao.AccountActivationKeyDAO;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.exception.ActivationLinkExpiredException;
 import org.zanata.model.HAccountActivationKey;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.faces.FacesMessages;
 
 @Name("activate")
@@ -95,13 +96,14 @@ public class ActivateAction implements Serializable {
     @End
     public String activate() {
 
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 identityManager.enableUser(key.getAccount().getUsername());
                 identityManager.grantRole(key.getAccount().getUsername(),
                         "user");
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         accountActivationKeyDAO.makeTransient(key);
 

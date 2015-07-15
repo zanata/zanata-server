@@ -56,6 +56,7 @@ import org.zanata.model.HPerson;
 import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.security.AuthenticationManager;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdAuthCallback;
@@ -189,12 +190,13 @@ public class UserSettingsAction {
             return;
         }
 
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 identityManager.changePassword(
                         authenticatedAccount.getUsername(), newPassword);
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         facesMessages.addGlobal(
                 "Your password has been successfully changed.");

@@ -19,10 +19,10 @@ import org.jboss.resteasy.spi.NoLogWebApplicationException;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
-import org.jboss.seam.security.Identity;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.AccountRoleDAO;
@@ -61,7 +61,7 @@ public class AccountService implements AccountResource {
     private LocaleDAO localeDAO;
 
     @In
-    private Identity identity;
+    private ZanataIdentity identity;
 
     @In
     private Session session;

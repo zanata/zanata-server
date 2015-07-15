@@ -21,6 +21,7 @@ import org.jboss.seam.security.management.IdentityManager;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.faces.FacesMessages;
 
 @Name("passwordReset")
@@ -100,23 +101,20 @@ public class PasswordResetAction implements Serializable {
         if (!validatePasswordsMatch())
             return null;
 
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             public void execute() {
                 try {
                     passwordChanged =
                             identityManager.changePassword(getKey()
                                     .getAccount().getUsername(), getPassword());
-                } catch (AuthorizationException e) {
+                } catch (AuthorizationException | NotLoggedInException e) {
                     passwordChanged = false;
                     facesMessages.addGlobal(
                             "Error changing password: " + e.getMessage());
-                } catch (NotLoggedInException ex) {
-                    passwordChanged = false;
-                    facesMessages.addGlobal(
-                            "Error changing password: " + ex.getMessage());
                 }
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         entityManager.remove(getKey());
 

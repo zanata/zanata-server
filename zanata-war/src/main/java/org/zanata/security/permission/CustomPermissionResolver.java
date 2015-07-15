@@ -52,6 +52,8 @@ import org.zanata.util.ServiceLocator;
 public class CustomPermissionResolver implements PermissionResolver,
         Serializable {
 
+    private static final long serialVersionUID = 6302681723997573877L;
+
     @Override
     public boolean hasPermission(Object target, String action) {
         Object[] targetArray;

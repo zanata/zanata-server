@@ -161,7 +161,7 @@ public class AsyncTaskManager {
         @Override
         public void run() {
             Lifecycle.beginCall(); // Start contexts
-            super.run();
+            ZanataIdentity.instance().runAs(this);
             Lifecycle.endCall(); // End contexts
         }
     }

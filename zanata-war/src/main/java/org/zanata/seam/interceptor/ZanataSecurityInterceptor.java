@@ -19,7 +19,6 @@ import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.async.AsynchronousInterceptor;
 import org.jboss.seam.intercept.InvocationContext;
-import org.jboss.seam.security.Identity;
 import org.jboss.seam.util.Strings;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.util.ServiceLocator;
@@ -83,7 +82,7 @@ public class ZanataSecurityInterceptor extends AbstractInterceptor
 
         public void check() {
             // TODO [CDI] revisit this
-            if (!Identity.isSecurityEnabled()) {
+            if (!ZanataIdentity.isSecurityEnabled()) {
                 return;
             }
             if (expression != null) {

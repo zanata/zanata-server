@@ -161,7 +161,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
 
     public boolean loginImmediately() {
         if (authResult.isAuthenticated()) {
-            Identity.instance().acceptExternallyAuthenticatedPrincipal(
+            ZanataIdentity.instance().acceptExternallyAuthenticatedPrincipal(
                     (new OpenIdPrincipal(authResult.getAuthenticatedId())));
             return true;
         }
@@ -313,7 +313,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
             if (authenticatedAccount != null
                     && authenticatedAccount.isEnabled()) {
                 credentials.setUsername(authenticatedAccount.getUsername());
-                Identity.instance().acceptExternallyAuthenticatedPrincipal(
+                ZanataIdentity.instance().acceptExternallyAuthenticatedPrincipal(
                         (new OpenIdPrincipal(result.getAuthenticatedId())));
                 this.loginImmediate();
             } else if(authenticatedAccount != null) {

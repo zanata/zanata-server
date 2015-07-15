@@ -49,6 +49,7 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.EmailService;
 
 import javax.annotation.Nullable;
@@ -95,14 +96,15 @@ public class EmailServiceImpl implements EmailService {
     private List<HPerson> getAdmins() {
         // required to read admin users for a non-admin session
         final List<HPerson> admins = new ArrayList<HPerson>();
-        new RunAsOperation() {
+        RunAsOperation operation = new RunAsOperation() {
             @Override
             public void execute() {
                 for (Principal admin : identityManager.listMembers("admin")) {
                     admins.add(personDAO.findByUsername(admin.getName()));
                 }
             }
-        }.addRole("admin").run();
+        }.addRole("admin");
+        ZanataIdentity.instance().runAs(operation);
 
         return admins;
     }

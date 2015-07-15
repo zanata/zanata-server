@@ -46,7 +46,7 @@ public class CheckPermissionDecisionVoter extends
         AbstractAccessDecisionVoter {
 
     @Inject
-    private Identity identity;
+    private ZanataIdentity identity;
 
     @Override
     protected void checkPermission(
