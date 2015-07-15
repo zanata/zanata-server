@@ -1004,6 +1004,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void addWebHook(String url, String secret) {
         identity.checkPermission(instance, "update");
         if (isValidUrl(url)) {
+            secret = StringUtils.isBlank(secret) ? null : secret;
             WebHook webHook = new WebHook(this.getInstance(), url, secret);
             getInstance().getWebHooks().add(webHook);
             update();

@@ -27,6 +27,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -62,7 +63,8 @@ public class WebHooksPublisher {
             Invocation.Builder postBuilder =
                     target.request().accept(acceptType);
 
-            if (secretKey.isPresent()) {
+            if (secretKey.isPresent() &&
+                    StringUtils.isNotBlank(secretKey.get())) {
                 String sha =
                         signWebhookHeader(data, secretKey.get(), callbackURL);
                 postBuilder.header(WEBHOOK_HEADER, sha);
