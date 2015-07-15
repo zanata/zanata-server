@@ -48,7 +48,7 @@ def dbPassword
 
 // Download the war file
 if( downloadWarFile ) {
-    def fileUrl = "http://sourceforge.net/projects/zanata/files/webapp/zanata-war-${ZANATA_VERSION}.war/download"
+    def fileUrl = "https://github.com/zanata/zanata-server/releases/download/server-${ZANATA_VERSION}/zanata-war-${ZANATA_VERSION}.war"
     println "Downloading $fileUrl"
     println "This might take a few minutes."
 
