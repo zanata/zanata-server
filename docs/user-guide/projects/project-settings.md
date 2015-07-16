@@ -158,6 +158,18 @@ Example webhook response:
 If a secret key is provided for that payload URL, Zanata will sign the webhook request with HTTP header `X-Zanata-Webhook`. 
 The header is a `double` hash of `HMAC-SHA1` in base64 digest. The double hash is generated from the full request body and the payload URL as provided.
 
+Here is some sample pseudocode for checking the validity of a request:
+```
+boolean verifyRequest(request, secret, callbackURL) {
+    Bytes content = request.body.getBytes(UTF8) + callbackURL.getBytes(UTF8);
+    String expectedHash = base64(hmacSha1(secret, base64(hmacSha1(secret, content))));
+    String headerHash = request.getHeader("X-Zanata-Webhook");
+    return headerHash == expectedHash;
+}
+```
+
+
+
 ### Adding a webhook
 1. Enter a valid URL and secret key (optional) into the provided text input. 
 2. Click on 'Add webhook' button to add the URL.
