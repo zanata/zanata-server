@@ -156,7 +156,7 @@ Example webhook response:
 ```
 
 If a secret key is provided for that payload URL, Zanata will sign the webhook request with HTTP header `X-Zanata-Webhook`. 
-The header is a base64 digest of a `HMAC-SHA1` hash. The hashed generated from the full request body and the payload URL as provided.
+The header is a `double` hash of `HMAC-SHA1` in base64 digest. The double hash is generated from the full request body and the payload URL as provided.
 
 ### Adding a webhook
 1. Enter a valid URL and secret key (optional) into the provided text input. 
