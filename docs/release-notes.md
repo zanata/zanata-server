@@ -7,6 +7,7 @@
 * [1002386](https://bugzilla.redhat.com/show_bug.cgi?id=1002386) - Capitalised proper nouns in project type description
 * [1242679](https://bugzilla.redhat.com/show_bug.cgi?id=1242679) - Version entry does not update after copy version is completed
 * [1062476](https://bugzilla.redhat.com/show_bug.cgi?id=1062476) - User can attempt to upload an unspecified glossary file
+* [1243251](https://bugzilla.redhat.com/show_bug.cgi?id=1243251) - Project search does not sort correctly by date over multiple pages
 
 -----------------------
 
