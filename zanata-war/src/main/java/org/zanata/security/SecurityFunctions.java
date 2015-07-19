@@ -24,6 +24,7 @@ import com.google.common.base.Optional;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.PersonDAO;
+import org.zanata.dao.ProjectLocaleMemberDAO;
 import org.zanata.dao.ProjectMemberDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
@@ -33,6 +34,7 @@ import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.LocaleRole;
 import org.zanata.model.ProjectRole;
 import org.zanata.security.permission.GrantsPermission;
 import org.zanata.util.HttpUtil;
@@ -87,6 +89,19 @@ public class SecurityFunctions {
         return false;
     }
 
+    private static boolean isProjectLanguageRole(HProject project, HLocale lang,
+                                                 LocaleRole role) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+
+        if (account.isPresent()) {
+            HPerson person = account.get().getPerson();
+            return ServiceLocator.instance().getInstance(ProjectLocaleMemberDAO.class)
+                    .hasProjectLocaleRole(person, project, lang, role);
+        }
+
+        // No authenticated user
+        return false;
+    }
 
     /***************************************************************************
      * The Following Rules are for Identity Management
@@ -221,6 +236,16 @@ public class SecurityFunctions {
         }
     }
 
+    /* Project Language Translators can add a translation for their language
+     * regardless of global translation setting.
+     */
+    @GrantsPermission(actions = { "add-translation", "modify-translation" })
+    public static boolean projectTranslatorCanTranslate(HProject project, HLocale lang) {
+        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+        return authenticatedAccount.isPresent() &&
+                isProjectLanguageRole(project, lang, LocaleRole.Translator);
+    }
+
     /***************************************************************************
      * Review translation rules
      **************************************************************************/
@@ -261,12 +286,42 @@ public class SecurityFunctions {
         return authenticatedAccount.isPresent() && isProjectMaintainer(project);
     }
 
+    /* Project Translation Maintainers can add, modify or review a translation
+     * for their projects.
+     */
+    @GrantsPermission(actions = { "add-translation", "modify-translation",
+            "review-translation", "translation-review" })
+    public static boolean translationMaintainerCanTranslate(HProject project,
+                                                            HLocale locale) {
+        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+        return authenticatedAccount.isPresent() && isProjectTranslationMaintainer(project);
+    }
+
+    /* Project Translation Reviewer can perform translation and review for their
+     * language in the project, regardless of global translation permission.
+     */
+    @GrantsPermission(actions = { "add-translation", "modify-translation",
+            "review-translation", "translation-review" })
+    public static boolean projectReviewerCanTranslateAndReview(HProject project, HLocale lang) {
+        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+        return authenticatedAccount.isPresent() &&
+                isProjectLanguageRole(project, lang, LocaleRole.Reviewer);
+    }
+
     /* Project Maintainer can import translation (merge type is IMPORT) */
     @GrantsPermission(actions = "import-translation")
     public static boolean canImportTranslation(
             HProjectIteration projectIteration) {
         Optional<HAccount> account = getAuthenticatedAccount();
         return account.isPresent() && account.get().getPerson().isMaintainer(projectIteration.getProject());
+    }
+
+    /* Project Translation Maintainer can import translation (merge type is IMPORT) */
+    @GrantsPermission(actions = "import-translation")
+    public static boolean translationMaintainerCanImportTranslation(
+            HProjectIteration projectIteration) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+        return account.isPresent() && isProjectTranslationMaintainer(projectIteration.getProject());
     }
 
     /* Membership in global language teams. */
