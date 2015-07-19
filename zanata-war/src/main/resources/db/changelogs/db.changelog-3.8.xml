@@ -66,4 +66,23 @@
     <dropTable tableName="HProject_Maintainer" cascadeConstraints="true" />
   </changeSet>
 
+  <changeSet id="5" author="damason@redhat.com">
+    <comment>Add table HProject_LocaleMember.</comment>
+    <createTable tableName="HProject_LocaleMember">
+      <column name="projectId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="localeId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="personId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role" type="char"
+          remarks="Single character comes from LocaleRole enum constructor argument.">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
 </databaseChangeLog>

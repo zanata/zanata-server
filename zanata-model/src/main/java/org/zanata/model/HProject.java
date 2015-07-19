@@ -174,6 +174,10 @@ public class HProject extends SlugEntityBase implements Serializable,
             orphanRemoval = true)
     private Set<HProjectMember> members = Sets.newHashSet();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project",
+            orphanRemoval = true)
+    private Set<HProjectLocaleMember> localeMembers = Sets.newHashSet();
+
     @ManyToMany
     @JoinTable(name = "HProject_AllowedRole", joinColumns = @JoinColumn(
             name = "projectId"), inverseJoinColumns = @JoinColumn(
