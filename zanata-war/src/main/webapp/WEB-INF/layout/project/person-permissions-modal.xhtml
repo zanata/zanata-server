@@ -1,0 +1,145 @@
+<!--
+  Copyright 2015, Red Hat, Inc. and individual contributors
+  as indicated by the @author tags. See the copyright.txt file in the
+  distribution for a full listing of individual contributors.
+
+  This is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation; either version 2.1 of
+  the License, or (at your option) any later version.
+
+  This software is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this software; if not, write to the Free
+  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:s="http://jboss.org/schema/seam/taglib"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:a4j="http://richfaces.org/a4j"
+        xmlns:rich="http://richfaces.org/rich">
+
+<div class="modal" id="#{id}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal__dialog l--constrain-medium">
+    <header class="modal__header">
+      <h2 class="modal__title">#{title}</h2>
+      <button class="modal__close button--link" data-dismiss="modal">
+        <i class="i i--huge i--cancel"></i>
+      </button>
+    </header>
+    <div class="modal__content">
+      <div class="l--pad-all-1">
+
+        <!-- TODO custom user selection mechanism -->
+        <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
+        <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
+         <input type="text" id="add-person-user" placeholder="Search name or username"/>
+        <p class="txt--lead">
+          <a href="/djansen"><span class="w--r-1 bx--round l--push-right-quarter">
+            <img src="https://avatars1.githubusercontent.com/u/4597195?v=3&amp;s=460" alt=""/></span>djansen
+          </a>
+          <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
+              title="#{msgs['jsf.people.RemoveUser']}">
+            <i class="i i--small i--cross"></i>
+            <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
+          </button>
+        </p>
+
+        <hr/>
+
+        <h3>#{msgs['jsf.ProjectPermissions']}</h3>
+        <div class="g--tight">
+          <div class="g__item w--1-3">
+            <label class="l--push-bottom-0">
+              #{msgs['jsf.ProjectPermissions']}</label>
+          </div>
+          <!-- TODO disabled when #{!s:hasPermission(projectHome.instance, 'manage-members')} -->
+          <div class="g__item w--2-3">
+            <ul class="list--horizontal">
+              <!--<li class="form__checkbox js-form__checkbox">-->
+                <!--<input name="project-permission"-->
+                    <!--class="form__checkbox__input js-form__checkbox__input"-->
+                    <!--id="project-permission-translation-maintainer"-->
+                    <!--value="Translation Maintainer"-->
+                    <!--type="checkbox"/>-->
+                <!--<label for="project-permission-translation-maintainer"-->
+                    <!--class="form__checkbox__label js-form__checkbox__label">-->
+                  <!--#{msgs['jsf.projectPermissions.ManageTranslators']}-->
+                <!--</label>-->
+                <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
+              <!--</li>-->
+              <li class="form__checkbox js-form__checkbox">
+                <input name="project-permission"
+                    class="form__checkbox__input js-form__checkbox__input"
+                    id="project-permission-maintainer"
+                    value="Maintainer"
+                    type="checkbox"/>
+                <label for="project-permission-maintainer"
+                    class="form__checkbox__label js-form__checkbox__label">
+                    #{msgs['jsf.projectPermissions.MaintainProject']}
+                </label>
+                <span class="form__checkbox__item js-form__checkbox__item"></span>
+              </li>
+            </ul>
+
+            <!-- TODO set username, and change text depending on selection -->
+            <!--<p class="txt- -meta l- -push-top-half">-->
+              <!--<strong>djansen</strong> will be able to add/remove translators-->
+              <!--and reviewers to any language as well as translate or review any-->
+              <!--language. They are not able to change project settings.-->
+            <!--</p>-->
+          </div>
+        </div>
+
+
+        <!-- TODO add this section when project locale roles are added -->
+        <!--<hr/>-->
+
+        <!--<h3>Translation Permissions</h3>-->
+        <!--<ul class="list- -slat">-->
+          <!--&lt;!&ndash; TODO ui:repeat for each language in list (filterable list) &ndash;&gt;-->
+          <!--<li>-->
+            <!--<div class="g- -tight">-->
+              <!--<div class="g__item w- -1-3">-->
+                <!--<label class="l- -push-bottom-0" for="german-permission">German</label>-->
+              <!--</div>-->
+              <!--<div class="g__item w- -2-3">-->
+                <!--<ul class="list- -horizontal">-->
+                  <!--<li class="form__checkbox js-form__checkbox">-->
+                    <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>-->
+                    <!--<label for="german-permission-translator" class="form__checkbox__label js-form__checkbox__label">Translate</label>-->
+                    <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
+                  <!--</li>-->
+                  <!--<li class="form__checkbox js-form__checkbox">-->
+                    <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-reviewer" value="Review" type="checkbox"/>-->
+                    <!--<label for="german-permission-reviewer" class="form__checkbox__label js-form__checkbox__label">Review</label>-->
+                    <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
+                  <!--</li>-->
+                <!--</ul>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</li>-->
+        <!--</ul>-->
+      </div>
+
+      <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
+        <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
+          #{msgs['jsf.Cancel']}</button>
+        <button class="button--primary" disabled="disabled">
+          #{msgs['jsf.Add']}</button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+</ui:composition>

@@ -72,7 +72,10 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HProjectLocaleMember;
 import org.zanata.model.HProjectMember;
+import org.zanata.model.LocaleRole;
+import org.zanata.model.PersonProjectMemberships;
 import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
@@ -126,6 +129,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     private ZanataIdentity identity;
 
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+
     private HAccount authenticatedAccount;
 
     @In
@@ -190,7 +194,15 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Getter
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
+
     private ListMultimap<HPerson, ProjectRole> personRoles;
+
+    // TODO maybe just make this a Multimap<HPerson, PersonProjectMemberships.LocaleRoles>
+    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
+
+    // TODO does this need a setter?
+    @Getter
+    private PersonProjectMemberships permissionDialogData;
 
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
@@ -689,7 +701,7 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         update();
         facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
-            msgs.get("jsf.project.CopyTransOpts.updated"));
+                msgs.get("jsf.project.CopyTransOpts.updated"));
     }
 
     public void initialize() {
@@ -1113,20 +1125,20 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        ensurePersonRoles();
 
         // TODO consider sorting of roles
         // TODO something about how to display roles (here or utility function?)
         // TODO something with caching?
 
-        return personRoles.asMap();
+        return ensurePersonRoles().asMap();
     }
 
-    private void ensurePersonRoles() {
+    private ListMultimap<HPerson, ProjectRole> ensurePersonRoles() {
+        // TODO make sure this is cleared or updated when something changes
         if (personRoles == null) {
             populatePersonRoles();
         }
+        return personRoles;
     }
 
     private void populatePersonRoles() {
@@ -1135,6 +1147,27 @@ public class ProjectHome extends SlugHome<HProject> implements
         // iterate members, add each person+role to multimap
         for (HProjectMember membership : getInstance().getMembers()) {
             personRoles.put(membership.getPerson(), membership.getRole());
+        }
+    }
+
+    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> ensurePersonLocaleRoles() {
+        // TODO make sure this is cleared or updated when something changes
+        if (personLocaleRoles == null) {
+            populatePersonLocaleRoles();
+        }
+        return personLocaleRoles;
+    }
+
+    private void populatePersonLocaleRoles() {
+        personLocaleRoles = Maps.newHashMap();
+
+        for (HProjectLocaleMember membership : getInstance().getLocaleMembers()) {
+            final HPerson person = membership.getPerson();
+            if (!personLocaleRoles.containsKey(person)) {
+                final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
+                personLocaleRoles.put(person, localeRoles);
+            }
+            personLocaleRoles.get(person).put(membership.getLocale(), membership.getRole());
         }
     }
 
@@ -1148,6 +1181,37 @@ public class ProjectHome extends SlugHome<HProject> implements
                 return "";
         }
     }
+
+    // TODO make a method to set the person used in the dialog
+    // takes a person, sets a PersonProjectMemberships field
+    // Another method saves that PersonProjectMemberships data with the current
+    // selections in the modal dialog.
+
+    /**
+     * Prepare the permission dialog to update permissions for the given person.
+     *
+     * @param person to show in permission dialog
+     */
+    public void setPersonForPermissionDialog(HPerson person) {
+        List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
+        ListMultimap<HLocale, LocaleRole> localeRoles =
+                ensurePersonLocaleRoles().get(person);
+        permissionDialogData =
+                new PersonProjectMemberships(person, projectRoles, localeRoles);
+    }
+
+//    /**
+//     * The person selected in the "Add someone" dialog.
+//     *
+//     * @param memberToAdd the person that will be added when the dialog is submitted
+//     */
+//    public void setMemberToAdd(HPerson memberToAdd) {
+//        this.memberToAdd = memberToAdd;
+//    }
+//
+//    public HPerson getMemberToAdd() {
+//        return memberToAdd;
+//    }
 
     private class ProjectMaintainersAutocomplete extends MaintainerAutocomplete {
 

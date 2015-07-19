@@ -21,9 +21,13 @@
 
 package org.zanata.model;
 
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,12 +37,69 @@ import java.util.Set;
  * This is designed for use in the project permissions editing dialog.
  */
 @Getter
-@Setter
 public class PersonProjectMemberships {
 
     private HPerson person;
 
-    private Set<ProjectRole> projectRoles;
+    @Setter
+    private boolean maintainer;
+    @Setter
+    private boolean translationMaintainer;
 
-    private Map<HLocale, Set<LocaleRole>> localeRoles;
+    private Set<LocaleRoles> localeRoles;
+
+    public PersonProjectMemberships(HPerson person, Collection<ProjectRole> projectRoles,
+                                    ListMultimap<HLocale, LocaleRole> localeRoleMappings) {
+        this.person = person;
+
+        maintainer = projectRoles.contains(ProjectRole.Maintainer);
+        translationMaintainer = projectRoles.contains(ProjectRole.TranslationMaintainer);
+
+        localeRoles = Sets.newHashSet();
+        for (Map.Entry<HLocale, Collection<LocaleRole>> entry : localeRoleMappings.asMap().entrySet()) {
+            localeRoles.add(new LocaleRoles(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    /**
+     * Represents a locale and the membership in each locale role.
+     *
+     * Intended to use as a row for a single locale in a permission setting table.
+     */
+    @Getter
+    private class LocaleRoles {
+
+        private HLocale locale;
+
+        @Setter
+        private boolean translator;
+        @Setter
+        private boolean reviewer;
+        @Setter
+        private boolean coordinator;
+
+        public LocaleRoles(HLocale locale, Collection<LocaleRole> roles) {
+            this.locale = locale;
+            translator = roles.contains(LocaleRole.Translator);
+            reviewer = roles.contains(LocaleRole.Reviewer);
+            coordinator = roles.contains(LocaleRole.Coordinator);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            } else if (!(obj instanceof LocaleRoles)) {
+                return false;
+            } else {
+                final LocaleRoles other = (LocaleRoles) obj;
+                return locale.equals(other.locale);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return locale.hashCode();
+        }
+    }
 }

@@ -57,116 +57,43 @@
           </ul>
         </div>
 
-        <div class="modal" id="modal-add-someone" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="modal__dialog l--constrain-medium">
-            <header class="modal__header">
-              <h2 class="modal__title">#{msgs['jsf.people.AddSomeone']}</h2>
-              <button class="modal__close button--link" data-dismiss="modal">
-                <i class="i i--huge i--cancel"></i>
-              </button>
-            </header>
-            <div class="modal__content">
-              <div class="l--pad-all-1">
-                <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
-                <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
-                 <input type="text" id="add-person-user" placeholder="Search name or username"/>
-                <p class="txt--lead">
-                  <a href="/djansen"><span class="w--r-1 bx--round l--push-right-quarter">
-                    <img src="https://avatars1.githubusercontent.com/u/4597195?v=3&amp;s=460" alt=""/></span>djansen
-                  </a>
-                  <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
-                      title="#{msgs['jsf.people.RemoveUser']}">
-                    <i class="i i--small i--cross"></i>
-                    <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
-                  </button>
-                </p>
+        <!-- TODO this needs a bunch of params to customize it -->
+        <ui:decorate template="person-permissions-modal.xhtml">
+          <ui:param name="id" value="modal-add-someone"/>
+          <ui:param name="title" value="#{msgs['jsf.people.AddSomeone']}"/>
 
-                <hr/>
+          <!-- TODO use different field for this -->
+          <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
+          <!-- this property will allow the dialog to show the correct
+               starting permissions, and will be the value used when the
+               dialog is submitted.
+               Need to retrieve a PersonProjectMemberships from projectHome
+               representing the correct person. -->
+          <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
+          <ui:define name="testDefine">
+            <p>Then just some content goes in here</p>
+          </ui:define>
+        </ui:decorate>
 
-                <h3>#{msgs['jsf.ProjectPermissions']}</h3>
-                <div class="g--tight">
-                  <div class="g__item w--1-3">
-                    <label class="l--push-bottom-0">
-                      #{msgs['jsf.ProjectPermissions']}</label>
-                  </div>
-                  <!-- TODO disabled when #{!s:hasPermission(projectHome.instance, 'manage-members')} -->
-                  <div class="g__item w--2-3">
-                    <ul class="list--horizontal">
-                      <!--<li class="form__checkbox js-form__checkbox">-->
-                        <!--<input name="project-permission"-->
-                            <!--class="form__checkbox__input js-form__checkbox__input"-->
-                            <!--id="project-permission-translation-maintainer"-->
-                            <!--value="Translation Maintainer"-->
-                            <!--type="checkbox"/>-->
-                        <!--<label for="project-permission-translation-maintainer"-->
-                            <!--class="form__checkbox__label js-form__checkbox__label">-->
-                          <!--#{msgs['jsf.projectPermissions.ManageTranslators']}-->
-                        <!--</label>-->
-                        <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-                      <!--</li>-->
-                      <li class="form__checkbox js-form__checkbox">
-                        <input name="project-permission"
-                            class="form__checkbox__input js-form__checkbox__input"
-                            id="project-permission-maintainer"
-                            value="Maintainer"
-                            type="checkbox"/>
-                        <label for="project-permission-maintainer"
-                            class="form__checkbox__label js-form__checkbox__label">
-                            #{msgs['jsf.projectPermissions.MaintainProject']}
-                        </label>
-                        <span class="form__checkbox__item js-form__checkbox__item"></span>
-                      </li>
-                    </ul>
+        <ui:decorate template="person-permissions-modal.xhtml">
+          <ui:param name="id" value="modal-manage-permissions"/>
+          <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
 
-                    <!-- TODO set username, and change text depending on selection -->
-                    <!--<p class="txt- -meta l- -push-top-half">-->
-                      <!--<strong>djansen</strong> will be able to add/remove translators-->
-                      <!--and reviewers to any language as well as translate or review any-->
-                      <!--language. They are not able to change project settings.-->
-                    <!--</p>-->
-                  </div>
-                </div>
+          <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
+          <!-- this property will allow the dialog to show the correct
+               starting permissions, and will be the value used when the
+               dialog is submitted.
+               Need to retrieve a PersonProjectMemberships from projectHome
+               representing the correct person. -->
+          <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
+          <ui:define name="testDefine">
+            <p>Then just some content goes in here</p>
+          </ui:define>
+          </ui:decorate>
 
 
-                <!-- TODO add this section when project locale roles are added -->
-                <!--<hr/>-->
 
-                <!--<h3>Translation Permissions</h3>-->
-                <!--<ul class="list- -slat">-->
-                  <!--&lt;!&ndash; TODO ui:repeat for each language in list (filterable list) &ndash;&gt;-->
-                  <!--<li>-->
-                    <!--<div class="g- -tight">-->
-                      <!--<div class="g__item w- -1-3">-->
-                        <!--<label class="l- -push-bottom-0" for="german-permission">German</label>-->
-                      <!--</div>-->
-                      <!--<div class="g__item w- -2-3">-->
-                        <!--<ul class="list- -horizontal">-->
-                          <!--<li class="form__checkbox js-form__checkbox">-->
-                            <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>-->
-                            <!--<label for="german-permission-translator" class="form__checkbox__label js-form__checkbox__label">Translate</label>-->
-                            <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-                          <!--</li>-->
-                          <!--<li class="form__checkbox js-form__checkbox">-->
-                            <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-reviewer" value="Review" type="checkbox"/>-->
-                            <!--<label for="german-permission-reviewer" class="form__checkbox__label js-form__checkbox__label">Review</label>-->
-                            <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-                          <!--</li>-->
-                        <!--</ul>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                  <!--</li>-->
-                <!--</ul>-->
-              </div>
 
-              <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
-                <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
-                  #{msgs['jsf.Cancel']}</button>
-                <button class="button--primary" disabled="disabled">
-                  #{msgs['jsf.Add']}</button>
-              </footer>
-            </div>
-          </div>
-        </div>
       </div>
 
       <h2 class="panel__heading">#{msgs['jsf.People']}</h2>
@@ -220,7 +147,23 @@
               <s:fragment
                   rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
                            or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
-                <button class="button button--small">
+                <!-- TODO does this need its own dialog, or can it reuse the other?
+                  Differences:
+                    - different title
+                    - hard-coded person
+                    - different submit button text
+                    - different button state+text when nothing selected
+
+                  Similarities:
+                    - single person selected (may change later)
+                    - available permissions identical
+                    - display current permissions when user selected
+                    - permission check for each section is the same
+                -->
+                <!-- TODO onclick -> set person for permission dialog -->
+                <button class="button button--small"
+                        data-toggle="modal"
+                        data-target="#modal-manage-permissions">
                   <i class="i i--settings"></i>
                   #{msgs['jsf.projectPermissions.ManagePermissions']}
                 </button>
