@@ -38,7 +38,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.SetMultimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,9 +72,12 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HProjectMember;
+import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
@@ -183,6 +190,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Getter
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
+    private ListMultimap<HPerson, ProjectRole> personRoles;
 
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
@@ -1098,6 +1106,47 @@ public class ProjectHome extends SlugHome<HProject> implements
     private boolean checkViewObsolete() {
         return identity != null
                 && identity.hasPermission("HProject", "view-obsolete");
+    }
+
+    public List<HPerson> getAllMembers() {
+        return Lists.newArrayList(getMemberRoles().keySet());
+    }
+
+    public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
+        // TODO make sure this is cleared or updated when something changes
+        ensurePersonRoles();
+
+        // TODO consider sorting of roles
+        // TODO something about how to display roles (here or utility function?)
+        // TODO something with caching?
+
+        return personRoles.asMap();
+    }
+
+    private void ensurePersonRoles() {
+        if (personRoles == null) {
+            populatePersonRoles();
+        }
+    }
+
+    private void populatePersonRoles() {
+        personRoles = ArrayListMultimap.create();
+
+        // iterate members, add each person+role to multimap
+        for (HProjectMember membership : getInstance().getMembers()) {
+            personRoles.put(membership.getPerson(), membership.getRole());
+        }
+    }
+
+    public String projectRoleDisplayName(ProjectRole role) {
+        switch (role) {
+            case Maintainer:
+                return msgs.get("jsf.Maintainer");
+            case TranslationMaintainer:
+                return msgs.get("jsf.TranslationMaintainer");
+            default:
+                return "";
+        }
     }
 
     private class ProjectMaintainersAutocomplete extends MaintainerAutocomplete {
