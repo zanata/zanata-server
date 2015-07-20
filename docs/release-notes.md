@@ -8,6 +8,8 @@
 * [1242679](https://bugzilla.redhat.com/show_bug.cgi?id=1242679) - Version entry does not update after copy version is completed
 * [1062476](https://bugzilla.redhat.com/show_bug.cgi?id=1062476) - User can attempt to upload an unspecified glossary file
 * [1243251](https://bugzilla.redhat.com/show_bug.cgi?id=1243251) - Project search does not sort correctly by date over multiple pages
+* [1243688](https://bugzilla.redhat.com/show_bug.cgi?id=1243688) - Groups filter by archived not working
+
 
 -----------------------
 
