@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -29,7 +30,10 @@ public class TransUnitDetailsPanel extends Composite {
     DisclosurePanel disclosurePanel;
     @UiField
     Styles style;
+    @UiField
+    HTMLPanel lastModified;
     private String metaInfo = "";
+
 
     public TransUnitDetailsPanel() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -56,9 +60,16 @@ public class TransUnitDetailsPanel extends Composite {
         String person = Strings.nullToEmpty(transUnit.getLastModifiedBy());
         lastModifiedBy.setText(person);
 
-        if (transUnit.getLastModifiedTime() != null) {
-            lastModifiedTime.setText(DateUtil.formatShortDate(transUnit
-                    .getLastModifiedTime()));
+        String date =
+                transUnit.getLastModifiedTime() != null ? DateUtil
+                        .formatShortDate(transUnit
+                                .getLastModifiedTime()) : "";
+
+        lastModifiedTime.setText(date);
+
+        if (Strings.isNullOrEmpty(person)
+                || Strings.isNullOrEmpty(date)) {
+            lastModified.addStyleName("is-hidden");
         }
 
         metaInfo = append(metaInfo, getHeader("MsgCtx", context));

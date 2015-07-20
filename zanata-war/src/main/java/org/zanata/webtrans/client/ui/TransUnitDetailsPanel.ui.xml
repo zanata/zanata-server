@@ -43,13 +43,13 @@
         <g:InlineLabel ui:field="sourceComment" styleName="l--push-left-quarter"/>
       </li>
 
-      <li class="txt--meta">
+      <g:HTMLPanel tag="li" styleName="txt--meta" ui:field="lastModified">
         <span>Last Modified:</span>
         <i class="i i--user l--push-left-quarter" title="Modified by"></i>
         <g:InlineLabel ui:field="lastModifiedBy"/>
         <i class="i i--clock l--push-left-quarter" title="Modified date"></i>
         <g:InlineLabel ui:field="lastModifiedTime"/>
-      </li>
+      </g:HTMLPanel>
     </g:HTMLPanel>
   </g:DisclosurePanel>
 </ui:UiBinder>
