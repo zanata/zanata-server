@@ -401,9 +401,7 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore {
         if (userRoles == null) {
             userRoles = new HashSet<>();
             user.setRoles(userRoles);
-        }
-        else if (userRoles.contains(roleToGrant))
-        {
+        } else if (userRoles.contains(roleToGrant)) {
             return false;
         }
 
