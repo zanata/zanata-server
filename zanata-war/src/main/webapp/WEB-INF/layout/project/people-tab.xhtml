@@ -40,22 +40,14 @@
             <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
           </button>
         </s:fragment>
-        <div class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown">
-          <a class="dropdown__toggle js-dropdown__toggle" href="#">#{msgs['jsf.Sort']}</a>
-          <ul class="dropdown__content js-dropdown__content" role="content"
-              aria-labelledby="dropdownContent">
-            <li>
-              <a class="is-active" tabindex="-1" href="#">
-                #{msgs['jsf.people.SortByName']}
-              </a>
-            </li>
-            <li>
-              <a tabindex="-1" href="#">
-                #{msgs['jsf.people.SortByRole']}
-              </a>
-            </li>
-          </ul>
-        </div>
+
+        <zanata:sortlist id="project-people_sorting"
+          sortAction="#{projectHome.peopleFilter.sortPeopleList()}"
+          render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
+          oncomplete="refreshTooltip('#{rich:clientId('people_form')}')"
+          sortingList="#{projectHome.peopleSortingList}"
+          onbegin="clearHTML('#{rich:clientId('people_form')}')"
+          status="peopleTab-peopleLoader"/>
 
         <!-- TODO this needs a bunch of params to customize it -->
         <ui:decorate template="person-permissions-modal.xhtml">
@@ -100,79 +92,101 @@
     </div>
 
     <div class="panel__sub-header js-reveal">
-      <div class="form--search panel__search reveal__target--appear" id="people-search">
-        <label for="people-search__input" class="form--search__label"></label>
-        <input id="people-search__input"
-            type="search"
-            placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
-            class="form--search__input js-reveal__target__input"/>
-        <button class="button--link panel__search__cancel js-reveal__cancel"
-            data-target="#people-search">#{msgs['jsf.Cancel']}</button>
-      </div>
-      <div class="panel__results">
-        <div class="panel__results__type">
-          <i class="i i--language txt--neutral"></i>
-        </div>
-        <span class="txt--meta"><strong>3</strong> of 3</span>
-        <button class="button--link panel__search__reset js-reveal__reset is-hidden"
-            title="#{msgs['jsf.ClearSearch']}"
-            data-target="#people-search">
-          <i class="i--right i--cancel"></i>
-        </button>
-        <button class="button--link panel__search__button js-reveal__show"
-            data-target="#people-search">#{msgs['jsf.Search']}<i class="i--right i--search"></i>
-        </button>
-      </div>
+      <zanata:list-filter status="peopleTab-peopleLoader"
+        listId="people_form" iconClass="i--users"
+        render="people_form, peopleSearchBottom-pager, peopleSearchBottom-page-info"
+        id="peopleSearch"
+        placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
+        actionBean="#{projectHome.peopleFilter}"/>
     </div>
-    <ul class="list--slat l--push-all-half">
-      <ui:repeat value="#{projectHome.allMembers}" var="person">
 
-        <li>
-          <div class="g g--tighter">
-            <div class="g__item w--4-12">
-              <!-- TODO use a component for a person avatar + name + profile link -->
-              <a href="#{request.contextPath}/profile/view/#{person.account.username}">
-                <span class="w--r-1 bx--round l--push-right-quarter">
-                  <img src="#{gravatarServiceImpl.getUserImageUrl(48, person.email)}" alt=""/>
-                </span>
-                  #{person.account.username}
-              </a>
-            </div>
-            <div class="g__item w--4-12">
-              <ui:repeat value="#{projectHome.memberRoles.get(person).toArray()}" var="role">
-                <div class="txt--understated">#{projectHome.projectRoleDisplayName(role)}</div>
-              </ui:repeat>
-            </div>
-            <div class="g__item w--4-12 txt--align-right">
-              <s:fragment
-                  rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
-                           or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
-                <!-- TODO does this need its own dialog, or can it reuse the other?
-                  Differences:
-                    - different title
-                    - hard-coded person
-                    - different submit button text
-                    - different button state+text when nothing selected
+    <a4j:status name="peopleTab-peopleLoader">
+      <f:facet name="start">
+        <zanata:loader/>
+      </f:facet>
+    </a4j:status>
 
-                  Similarities:
-                    - single person selected (may change later)
-                    - available permissions identical
-                    - display current permissions when user selected
-                    - permission check for each section is the same
-                -->
-                <!-- TODO onclick -> set person for permission dialog -->
-                <button class="button button--small"
-                        data-toggle="modal"
-                        data-target="#modal-manage-permissions">
-                  <i class="i i--settings"></i>
-                  #{msgs['jsf.projectPermissions.ManagePermissions']}
-                </button>
-              </s:fragment>
-            </div>
-          </div>
-        </li>
-      </ui:repeat>
-    </ul>
+    <h:form id="people_form" styleClass="l--push-bottom-1">
+
+      <s:div styleClass="l--pad-all-half"
+        rendered="#{empty projectHome.allMembers}">
+        <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
+        <s:fragment
+          rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
+            or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
+          <p>
+            <button class="button button--primary"
+              data-toggle="modal"
+              data-target="#modal-add-someone">
+              <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
+            </button>
+          </p>
+        </s:fragment>
+      </s:div>
+
+      <s:div styleClass="l--pad-all-half"
+        rendered="#{not empty projectHome.allMembers and empty projectHome.peopleFilter.currentPage}">
+        <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
+      </s:div>
+
+      <s:fragment
+        rendered="#{!projectHome.peopleFilter.currentPage.isEmpty()}">
+        <ul class="list--slat l--push-all-half">
+          <ui:repeat value="#{projectHome.peopleFilter.currentPage}" var="person">
+            <li>
+              <div class="g g--tighter">
+                <div class="g__item w--4-12">
+                  <!-- TODO use a component for a person avatar + name + profile link -->
+                  <a href="#{request.contextPath}/profile/view/#{person.account.username}">
+                    <span class="w--r-1 bx--round l--push-right-quarter">
+                      <img src="#{gravatarServiceImpl.getUserImageUrl(48, person.email)}" alt=""/>
+                    </span>
+                      #{person.account.username}
+                  </a>
+                </div>
+                <div class="g__item w--4-12">
+                  <ui:repeat value="#{projectHome.memberRoles.get(person).toArray()}" var="role">
+                    <div class="txt--understated">#{projectHome.projectRoleDisplayName(role)}</div>
+                  </ui:repeat>
+                </div>
+                <div class="g__item w--4-12 txt--align-right">
+                  <s:fragment
+                      rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
+                               or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
+                    <!-- TODO does this need its own dialog, or can it reuse the other?
+                      Differences:
+                        - different title
+                        - hard-coded person
+                        - different submit button text
+                        - different button state+text when nothing selected
+
+                      Similarities:
+                        - single person selected (may change later)
+                        - available permissions identical
+                        - display current permissions when user selected
+                        - permission check for each section is the same
+                    -->
+                    <!-- TODO onclick -> set person for permission dialog -->
+                    <button class="button button--small"
+                            data-toggle="modal"
+                            data-target="#modal-manage-permissions">
+                      <i class="i i--settings"></i>
+                      #{msgs['jsf.projectPermissions.ManagePermissions']}
+                    </button>
+                  </s:fragment>
+                </div>
+              </div>
+            </li>
+          </ui:repeat>
+        </ul>
+      </s:fragment>
+    </h:form>
+    <zanata:list-filter status="peopleTab-peopleLoader"
+      listId="people_form" iconClass="i--users"
+      render="people_form, peopleSearch-pager, peopleSearch-page-info"
+      id="peopleSearchBottom" bottomPanel="true"
+      placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
+      actionBean="#{projectHome.peopleFilter}"/>
   </div>
 
 </ui:composition>

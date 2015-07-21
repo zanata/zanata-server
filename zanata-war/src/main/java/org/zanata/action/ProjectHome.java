@@ -40,9 +40,8 @@ import javax.persistence.EntityNotFoundException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.SetMultimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +63,7 @@ import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
+import org.zanata.dao.ProjectLocaleMemberDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
@@ -80,7 +80,6 @@ import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
@@ -98,6 +97,7 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -204,6 +204,14 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Getter
     private PersonProjectMemberships permissionDialogData;
 
+    @Getter
+    private SortingType PeopleSortingList = new SortingType(
+        Lists.newArrayList(SortingType.SortOption.NAME,
+            SortingType.SortOption.ROLE), SortingType.SortOption.NAME);
+
+    private final PeopleComparator peopleComparator = new PeopleComparator(
+        getPeopleSortingList());
+
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
     public Map<LocaleId, Boolean> getSelectedEnabledLocales() {
@@ -281,6 +289,12 @@ public class ProjectHome extends SlugHome<HProject> implements
                             filter);
                 }
             };
+
+    private ProjectRolePredicate projectRolePredicate =
+        new ProjectRolePredicate();
+
+    private ProjectLocalePredicate projectLocalePredicate =
+        new ProjectLocalePredicate();
 
     public void createNew() {
         getInstance().setDefaultProjectType(ProjectType.File);
@@ -1118,6 +1132,113 @@ public class ProjectHome extends SlugHome<HProject> implements
     private boolean checkViewObsolete() {
         return identity != null
                 && identity.hasPermission("HProject", "view-obsolete");
+    }
+
+    private class ProjectRolePredicate implements Predicate<ProjectRole> {
+        @Setter
+        private String filter;
+
+        @Override
+        public boolean apply(ProjectRole projectRole) {
+            return StringUtils.containsIgnoreCase(projectRole.name(), filter);
+        }
+    };
+
+    private class ProjectLocalePredicate implements Predicate<HLocale> {
+        @Setter
+        private String filter;
+
+        @Override
+        public boolean apply(HLocale locale) {
+
+            return StringUtils.containsIgnoreCase(locale.getDisplayName(),
+                    filter)
+                    || StringUtils.containsIgnoreCase(locale
+                            .getLocaleId().toString(), filter);
+        }
+    };
+
+    @Getter
+    private AbstractListFilter<HPerson> peopleFilter =
+        new InMemoryListFilter<HPerson>() {
+
+            List<HPerson> allMembers;
+
+            @Override
+            protected List<HPerson> fetchAll() {
+                if(allMembers == null) {
+                    allMembers = getAllMembers();
+                }
+                return allMembers;
+            }
+
+            @Override
+            protected boolean include(HPerson person, final String filter) {
+                projectRolePredicate.setFilter(filter);
+                projectLocalePredicate.setFilter(filter);
+
+                return hasMatchingName(person, filter)
+                        || hasMatchingRole(person)
+                        || hasMatchingLanguage(person);
+            }
+
+            private boolean hasMatchingName(HPerson person, String filter) {
+                return StringUtils.containsIgnoreCase(
+                    person.getName(), filter) || StringUtils.containsIgnoreCase(
+                    person.getAccount().getUsername(), filter);
+            }
+
+            private boolean hasMatchingRole(HPerson person) {
+                Iterable<ProjectRole> filtered = Iterables
+                    .filter(ensurePersonRoles().get(person),
+                        projectRolePredicate);
+                return filtered.iterator().hasNext();
+            }
+
+            private boolean hasMatchingLanguage(HPerson person) {
+                ListMultimap<HLocale, LocaleRole> map =
+                        ensurePersonLocaleRoles().get(person);
+
+                if(map == null || map.isEmpty()) {
+                    return false;
+                }
+
+                return !Sets.filter(map.keySet(), projectLocalePredicate)
+                        .isEmpty();
+            }
+
+            public void sortPeopleList() {
+                this.reset();
+                Collections.sort(fetchAll(), peopleComparator);
+            }
+
+        };
+
+    private class PeopleComparator implements Comparator<HPerson> {
+        private SortingType sortingType;
+
+        public PeopleComparator(SortingType sortingType) {
+            this.sortingType = sortingType;
+        }
+
+        @Override
+        public int compare(HPerson o1, HPerson o2) {
+            SortingType.SortOption selectedSortOption =
+                sortingType.getSelectedSortOption();
+
+            if (!selectedSortOption.isAscending()) {
+                HPerson temp = o1;
+                o1 = o2;
+                o2 = temp;
+            }
+
+            if (selectedSortOption.equals(SortingType.SortOption.ROLE)) {
+            } else {
+                return o1.getName().toLowerCase()
+                        .compareTo(o2.getName().toLowerCase());
+            }
+            return 0;
+        }
     }
 
     public List<HPerson> getAllMembers() {
