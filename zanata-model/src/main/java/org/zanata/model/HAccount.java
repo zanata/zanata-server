@@ -50,11 +50,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
-import org.jboss.seam.annotations.security.management.UserEnabled;
-import org.jboss.seam.annotations.security.management.UserPassword;
-import org.jboss.seam.annotations.security.management.UserPrincipal;
-import org.jboss.seam.annotations.security.management.UserRoles;
-import org.jboss.seam.security.management.PasswordHash;
 import org.zanata.model.security.HCredentials;
 import org.zanata.model.type.UserApiKey;
 import org.zanata.rest.dto.Account;
@@ -108,7 +103,7 @@ public class HAccount extends ModelEntityBase implements Serializable,
     }
 
     @NaturalId
-    @UserPrincipal
+//    @UserPrincipal
     @Field()
     public String getUsername() {
         return username;
@@ -119,12 +114,12 @@ public class HAccount extends ModelEntityBase implements Serializable,
         return person != null;
     }
 
-    @UserPassword(hash = PasswordHash.ALGORITHM_MD5)
+//    @UserPassword(hash = PasswordHash.ALGORITHM_MD5)
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    @UserEnabled
+//    @UserEnabled
     public boolean isEnabled() {
         return enabled;
     }
@@ -136,7 +131,7 @@ public class HAccount extends ModelEntityBase implements Serializable,
     }
 
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @UserRoles
+//    @UserRoles
     @ManyToMany(targetEntity = HAccountRole.class)
     @JoinTable(name = "HAccountMembership", joinColumns = @JoinColumn(
             name = "accountId"), inverseJoinColumns = @JoinColumn(

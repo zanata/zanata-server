@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.RunAsOperation;
-import org.jboss.seam.security.management.IdentityManager;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.action.VersionGroupJoinAction;
 import org.zanata.common.LocaleId;
@@ -50,6 +49,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.security.ZanataIdentityManager;
 import org.zanata.service.EmailService;
 
 import javax.annotation.Nullable;
@@ -72,7 +72,7 @@ public class EmailServiceImpl implements EmailService {
     private EmailBuilder emailBuilder;
 
     @In
-    private IdentityManager identityManager;
+    private ZanataIdentityManager identityManager;
 
     @In
     private PersonDAO personDAO;

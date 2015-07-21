@@ -295,7 +295,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) return true;
         if (permissionMapper == null) return false;
 
-        if (arg != null) {
+        if (arg != null && arg.length > 0) {
             return permissionMapper.resolvePermission(arg[0], action);
         } else {
             return permissionMapper.resolvePermission(name, action);

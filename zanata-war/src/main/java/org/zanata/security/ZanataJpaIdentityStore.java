@@ -20,83 +20,85 @@
  */
 package org.zanata.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.annotations.security.management.PasswordSalt;
-import org.jboss.seam.annotations.security.management.UserPassword;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.security.crypto.BinTools;
 import org.jboss.seam.security.management.IdentityManagementException;
 import org.jboss.seam.security.management.JpaIdentityStore;
+import org.jboss.seam.security.management.NoSuchRoleException;
+import org.jboss.seam.security.management.NoSuchUserException;
+import org.jboss.seam.security.management.PasswordHash;
 import org.jboss.seam.util.AnnotatedBeanProperty;
 import org.zanata.dao.AccountDAO;
+import org.zanata.model.HAccount;
+import org.zanata.model.HAccountRole;
 import org.zanata.model.type.UserApiKey;
 import org.zanata.util.ServiceLocator;
 
+import lombok.extern.slf4j.Slf4j;
+
 import static org.jboss.seam.ScopeType.APPLICATION;
 
+/**
+ * This class now combines the functionality of Seam's IdentityManager and
+ * JpaIdentityStore.
+ */
 @Name("org.jboss.seam.security.identityStore")
 @Install(precedence = Install.DEPLOYMENT, value = true)
 @Scope(APPLICATION)
 @Startup
 @BypassInterceptors
+@Slf4j
+// TODO [CDI] only 4 methods left not extended in JpaIdentityStore (which appears not used by us)
 public class ZanataJpaIdentityStore extends JpaIdentityStore {
+    public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
 
     /**
     *
     */
     private static final long serialVersionUID = 1L;
 
-    // private static final Log log =
-    // Logging.getLog(ZanataJpaIdentityStore.class);
-
-    private AnnotatedBeanProperty<UserApiKey> userApiKeyProperty;
-
-    private AnnotatedBeanProperty<PasswordSalt> passwordSaltProperty;
-    private AnnotatedBeanProperty<UserPassword> userPasswordProperty;
-
     @Create
     public void init() {
-        super.init();
         initProperties();
     }
 
     private void initProperties() {
-        userPasswordProperty =
-                new AnnotatedBeanProperty<UserPassword>(getUserClass(),
-                        UserPassword.class);
-        passwordSaltProperty =
-                new AnnotatedBeanProperty<PasswordSalt>(getUserClass(),
-                        PasswordSalt.class);
-
-        userApiKeyProperty =
-                new AnnotatedBeanProperty<UserApiKey>(getUserClass(),
+        AnnotatedBeanProperty<UserApiKey> userApiKeyProperty =
+                new AnnotatedBeanProperty<>(HAccount.class,
                         UserApiKey.class);
         if (!userApiKeyProperty.isSet()) {
             throw new IdentityManagementException(
                     "Invalid userClass "
-                            + getUserClass().getName()
+                            + HAccount.class.getName()
                             + " - required annotation @UserApiKey not found on any Field or Method.");
         }
 
     }
 
     public boolean apiKeyAuthenticate(String username, String apiKey) {
-        Object user = lookupUser(username);
+        HAccount user = lookupUser(username);
         if (user == null || !isUserEnabled(username)) {
             return false;
         }
 
-        if (!userApiKeyProperty.isSet()) {
-            return false;
-        }
-
-        String userApiKey = (String) userApiKeyProperty.getValue(user);
+        String userApiKey = user.getApiKey();
 
         if (userApiKey == null) {
             return false;
@@ -117,30 +119,15 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore {
      * @see {@link JpaIdentityStore#authenticate(String, String)}
      */
     public boolean authenticateEvenIfDisabled(String username, String password) {
-        Object user = lookupUser(username);
+        HAccount user = lookupUser(username);
         if (user == null) {
             return false;
         }
 
-        String passwordHash = null;
+        String passwordHash =
+                generatePasswordHash(password, user.getUsername());
 
-        if (passwordSaltProperty.isSet()) {
-            String encodedSalt = (String) passwordSaltProperty.getValue(user);
-            if (encodedSalt == null) {
-                throw new IdentityManagementException(
-                        "A @PasswordSalt property was found on entity " + user
-                                + ", but it contains no value");
-            }
-
-            passwordHash =
-                    generatePasswordHash(password,
-                            BinTools.hex2bin(encodedSalt));
-        } else {
-            passwordHash =
-                    generatePasswordHash(password, getUserAccountSalt(user));
-        }
-
-        return passwordHash.equals(userPasswordProperty.getValue(user));
+        return passwordHash.equals(user.getPasswordHash());
     }
 
     @Override
@@ -149,7 +136,25 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore {
         if (identity.isApiRequest()) {
             return apiKeyAuthenticate(username, password);
         } else {
-            return super.authenticate(username, password);
+            HAccount user = lookupUser(username);
+            if (user == null || !user.isEnabled()) {
+                return false;
+            }
+
+            String passwordHash =
+                    generatePasswordHash(password, user.getUsername());
+
+            boolean success = passwordHash.equals(user.getPasswordHash());
+
+            if (success && Events.exists()) {
+                if (Contexts.isEventContextActive()) {
+                    Contexts.getEventContext().set(AUTHENTICATED_USER, user);
+                }
+
+                Events.instance().raiseEvent(EVENT_USER_AUTHENTICATED, user);
+            }
+
+            return success;
         }
     }
 
@@ -176,4 +181,391 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore {
         }
     }
 
+    public List<String> listUsers() {
+        List<String> users = entityManager().createQuery(
+                "select u.username from HAccount u")
+                .getResultList();
+        Collections.sort(users, new Comparator<String>() {
+            public int compare(String value1, String value2) {
+                return value1.compareTo(value2);
+            }
+        });
+        return users;
+    }
+
+    @Override
+    public boolean deleteUser(String name) {
+        HAccount user = lookupUser(name);
+        if (user == null) {
+            throw new NoSuchUserException("Could not delete, user '" + name
+                    + "' does not exist");
+        }
+
+        entityManager().remove(user);
+        return true;
+    }
+
+    public boolean isUserEnabled(String name) {
+        HAccount user = lookupUser(name);
+        return user != null && user.isEnabled();
+    }
+
+    public boolean userExists(String name) {
+        return lookupUser(name) != null;
+    }
+
+    public boolean createUser(String username, String password) {
+        try {
+            if (userExists(username)) {
+                throw new IdentityManagementException(
+                        "Could not create account, already exists");
+            }
+
+            HAccount user = new HAccount();
+            user.setUsername(username);
+
+            if (password == null) {
+                user.setEnabled(false);
+            } else {
+                setUserPassword(user, password);
+                user.setEnabled(true);
+            }
+
+            if (Events.exists())
+                Events.instance().raiseEvent(EVENT_PRE_PERSIST_USER, user);
+
+            entityManager().persist(user);
+
+            if (Events.exists())
+                Events.instance().raiseEvent(EVENT_USER_CREATED, user);
+
+            return true;
+        } catch (Exception ex) {
+            if (ex instanceof IdentityManagementException) {
+                throw (IdentityManagementException) ex;
+            } else {
+                throw new IdentityManagementException(
+                        "Could not create account", ex);
+            }
+        }
+    }
+
+    public boolean enableUser(String name) {
+
+        HAccount user = lookupUser(name);
+        if (user == null) {
+            throw new NoSuchUserException("Could not enable user, user '" + name + "' does not exist");
+        }
+
+        // Can't enable an already-enabled user, return false
+        if (user.isEnabled()) {
+            return false;
+        }
+
+        user.setEnabled(true);
+        return true;
+    }
+
+    public boolean disableUser(String name) {
+        HAccount user = lookupUser(name);
+        if (user == null) {
+            throw new NoSuchUserException("Could not disable user, user '"
+                    + name + "' does not exist");
+        }
+
+        // Can't disable an already-disabled user, return false
+        if (!user.isEnabled()) {
+            return false;
+        }
+
+        user.setEnabled(false);
+        return true;
+    }
+
+    public boolean changePassword(String username, String password) {
+        HAccount user = lookupUser(username);
+        if (user == null) {
+            throw new NoSuchUserException("Could not change password, user '" + username + "' does not exist");
+        }
+
+        setUserPassword(user, password);
+
+        return true;
+    }
+
+    protected void setUserPassword(HAccount user, String password) {
+        user.setPasswordHash(generatePasswordHash(password, user.getUsername()));
+    }
+
+    /**
+     *
+     * @deprecated Use JpaIdentityStore.generatePasswordHash(String, byte[])
+     *             instead
+     */
+    @Deprecated
+    protected String generatePasswordHash(String password, String salt) {
+        String algorithm = "MD5";
+
+        if (salt == null || "".equals(salt)) {
+            return PasswordHash.instance()
+                    .generateHash(password, algorithm);
+        } else {
+            return PasswordHash.instance().generateSaltedHash(password,
+                    salt, algorithm);
+        }
+    }
+
+    public List<String> getGrantedRoles(String name) {
+        HAccount user = lookupUser(name);
+        if (user == null) {
+            throw new NoSuchUserException("No such user '" + name + "'");
+        }
+
+        List<String> roles = new ArrayList<>();
+
+        Set<HAccountRole> userRoles = user.getRoles();
+        if (userRoles != null) {
+            for (HAccountRole role : userRoles) {
+                roles.add(role.getName());
+            }
+        }
+
+        return roles;
+    }
+
+    public boolean revokeRole(String username, String role) {
+        HAccount user = lookupUser(username);
+        if (user == null) {
+            throw new NoSuchUserException("Could not revoke role, no such user '" + username + "'");
+        }
+
+        HAccountRole roleToRevoke = lookupRole(role);
+        if (roleToRevoke == null) {
+            throw new NoSuchRoleException("Could not revoke role, role '" + role + "' does not exist");
+        }
+
+        boolean success = false;
+
+        if (user.getRoles().contains(roleToRevoke)) {
+            user.getRoles().remove(roleToRevoke);
+            success = true;
+        }
+        return success;
+    }
+
+    public HAccount lookupUser(String username) {
+        try {
+            HAccount user =
+                    entityManager()
+                            .createQuery(
+                                    "select u from HAccount u where u.username = :username",
+                                    HAccount.class)
+                            .setParameter("username", username)
+                            .getSingleResult();
+
+            return user;
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public HAccountRole lookupRole(String role) {
+        try {
+            return entityManager().createQuery(
+                    "select r from HAccountRole r where name = :role", HAccountRole.class)
+                    .setParameter("role", role)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+
+    public boolean grantRole(String username, String role) {
+        HAccount user = lookupUser(username);
+        if (user == null) {
+            // We need to create a new user object
+            if (createUser(username, null)) {
+                user = lookupUser(username);
+            } else {
+                throw new IdentityManagementException(
+                        "Could not grant role - user does not exist and an attempt to create the user failed.");
+            }
+        }
+
+        HAccountRole roleToGrant = lookupRole(role);
+        if (roleToGrant == null) {
+            throw new NoSuchRoleException("Could not grant role, role '" + role + "' does not exist");
+        }
+
+        Set<HAccountRole> userRoles = user.getRoles();
+        if (userRoles == null) {
+            userRoles = new HashSet<>();
+            user.setRoles(userRoles);
+        }
+        else if (userRoles.contains(roleToGrant))
+        {
+            return false;
+        }
+
+        user.getRoles().add(roleToGrant);
+        return true;
+    }
+
+    public List<String> getRoleGroups(String name) {
+        HAccountRole role = lookupRole(name);
+        if (role == null) {
+            throw new NoSuchUserException("No such role '" + name + "'");
+        }
+
+        List<String> groups = new ArrayList<String>();
+
+        Collection<HAccountRole> roleGroups = role.getGroups();
+        if (roleGroups != null) {
+            for (HAccountRole group : roleGroups) {
+                groups.add(group.getName());
+            }
+        }
+
+        return groups;
+    }
+
+    public List<String> getImpliedRoles(String name) {
+        HAccount user = lookupUser(name);
+        if (user == null) {
+            throw new NoSuchUserException("No such user '" + name + "'");
+        }
+
+        Set<String> roles = new HashSet<>();
+        Set<HAccountRole> userRoles = user.getRoles();
+        if (userRoles != null) {
+            for (HAccountRole role : userRoles) {
+                addRoleAndMemberships(role.getName(), roles);
+            }
+        }
+
+        return new ArrayList<>(roles);
+    }
+
+    private void addRoleAndMemberships(String role, Set<String> roles) {
+        if (roles.add(role)) {
+            HAccountRole instance = lookupRole(role);
+            Set<HAccountRole> groups = instance.getGroups();
+            if (groups != null) {
+                for (HAccountRole group : groups) {
+                    addRoleAndMemberships(group.getName(), roles);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean deleteRole(String role) {
+        HAccountRole roleToDelete = lookupRole(role);
+        if (roleToDelete == null) {
+            throw new NoSuchRoleException("Could not delete role, role '" + role + "' does not exist");
+        }
+
+
+        List<String> roles = listRoleMembers(role);
+        for (String r : roles) {
+            removeRoleFromGroup(r, role);
+        }
+
+        removeEntity(roleToDelete);
+        return true;
+    }
+
+    @Override
+    public boolean removeRoleFromGroup(String role, String group) {
+        HAccountRole roleToRemove = lookupRole(role);
+        if (roleToRemove == null) {
+            throw new NoSuchUserException("Could not remove role from group, no such role '" + role + "'");
+        }
+
+        HAccountRole targetGroup = lookupRole(group);
+        if (targetGroup == null) {
+            throw new NoSuchRoleException("Could not remove role from group, no such group '" + group + "'");
+        }
+
+        return roleToRemove.getGroups().remove(targetGroup);
+    }
+
+    @Override
+    public boolean roleExists(String name) {
+        return lookupRole(name) != null;
+    }
+
+    @Override
+    public boolean createRole(String role) {
+        try {
+
+            if (roleExists(role)) {
+                throw new IdentityManagementException(
+                        "Could not create role, already exists");
+            }
+
+            HAccountRole newRole = new HAccountRole();
+            newRole.setName(role);
+            entityManager().persist(newRole);
+
+            return true;
+        } catch (Exception ex) {
+            if (ex instanceof IdentityManagementException) {
+                throw (IdentityManagementException) ex;
+            } else {
+                throw new IdentityManagementException("Could not create role",
+                        ex);
+            }
+        }
+    }
+
+    public boolean addRoleToGroup(String role, String group) {
+        HAccountRole targetRole = lookupRole(role);
+        if (targetRole == null) {
+            throw new NoSuchUserException(
+                    "Could not add role to group, no such role '" + role + "'");
+        }
+
+        HAccountRole targetGroup = lookupRole(group);
+        if (targetGroup == null) {
+            throw new NoSuchRoleException("Could not grant role, group '"
+                    + group + "' does not exist");
+        }
+
+        Set<HAccountRole> roleGroups = targetRole.getGroups();
+        if (roleGroups == null) {
+            roleGroups = new HashSet<>();
+            targetRole.setGroups(roleGroups);
+        } else if (targetRole.getGroups().contains(targetGroup)) {
+            return false;
+        }
+
+        targetRole.getGroups().add(targetGroup);
+        return true;
+    }
+
+    public List<String> listGrantableRoles() {
+        return entityManager().createQuery(
+                "select r.name from HAccountRole r where r.conditional" + " = false")
+                .getResultList();
+    }
+
+    public List<String> listRoles() {
+        return entityManager().createQuery(
+                "select r.name from HAccountRole r").getResultList();
+    }
+
+    private List<String> listRoleMembers(String role) {
+        HAccountRole roleEntity = lookupRole(role);
+
+        return entityManager().createQuery("select r.name" +
+                " from HAccountRole r where :role member of r.groups")
+                .setParameter("role", roleEntity)
+                .getResultList();
+
+    }
+
+    private EntityManager entityManager() {
+        return ServiceLocator.instance().getEntityManager();
+    }
 }

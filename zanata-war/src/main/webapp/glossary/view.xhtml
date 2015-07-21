@@ -41,7 +41,7 @@
             status="glossaryLoader"/>
 
           <s:fragment
-            rendered="#{identity.hasPermission('', 'glossary-delete') or s:hasPermission('', 'glossary-insert')}">
+            rendered="#{identity.hasPermission('', 'glossary-delete') or identity.hasPermission('', 'glossary-insert')}">
             <div
               class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown"
               id="glossary-more-actions">

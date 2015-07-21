@@ -10,7 +10,7 @@
     <div class="panel__header">
       <div class="panel__header__actions">
         <s:fragment
-          rendered="#{identity.loggedIn and s:hasPermission(languageAction.locale, 'manage-language-team')}">
+          rendered="#{identity.loggedIn and identity.hasPermission(languageAction.locale, 'manage-language-team')}">
           <a href="#" class="button button--snug l--push-all-half"
             id="add-team-member-button"
             data-toggle="modal"
@@ -106,7 +106,7 @@
                           listener="#{languageAction.saveTeamTranslator(member)}"/>
                       </h:selectBooleanCheckbox>
                       <s:fragment
-                        rendered="#{not s:hasPermission(languageAction.locale, 'manage-language-team')}">
+                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
                         <s:fragment rendered="#{member.translator}">
                           <i class="i i--checkmark"></i>
                         </s:fragment>
@@ -123,7 +123,7 @@
                           listener="#{languageAction.saveTeamReviewer(member)}"/>
                       </h:selectBooleanCheckbox>
                       <s:fragment
-                        rendered="#{not s:hasPermission(languageAction.locale, 'manage-language-team')}">
+                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
                         <s:fragment rendered="#{member.reviewer}">
                           <i class="i i--checkmark"></i>
                         </s:fragment>
@@ -141,7 +141,7 @@
                           listener="#{languageAction.saveTeamCoordinator(member)}"/>
                       </h:selectBooleanCheckbox>
                       <s:fragment
-                        rendered="#{not s:hasPermission(languageAction.locale, 'manage-language-team')}">
+                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
                         <s:fragment rendered="#{member.coordinator}">
                           <i class="i i--checkmark"></i>
                         </s:fragment>

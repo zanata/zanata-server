@@ -186,6 +186,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     public void init(boolean isNewInstance) {
         this.isNewInstance = isNewInstance;
         if (isNewInstance) {
+            identity.checkPermission(getInstance(), "insert");
             ProjectType projectType = getProject().getDefaultProjectType();
             if (projectType != null) {
                 selectedProjectType = projectType.name();

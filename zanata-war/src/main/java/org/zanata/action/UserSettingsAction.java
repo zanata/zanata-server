@@ -44,8 +44,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Conversation;
 import org.jboss.seam.security.RunAsOperation;
-import org.jboss.seam.security.management.IdentityManager;
-import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.CredentialsDAO;
 import org.zanata.dao.PersonDAO;
@@ -57,6 +55,8 @@ import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.security.ZanataIdentityManager;
+import org.zanata.security.ZanataJpaIdentityStore;
 import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdAuthCallback;
@@ -100,8 +100,8 @@ public class UserSettingsAction {
     @In
     private AccountDAO accountDAO;
 
-    @In
-    private IdentityManager identityManager;
+    @In(create = true)
+    private ZanataIdentityManager identityManager;
 
     @In
     private AuthenticationManager authenticationManager;
@@ -115,7 +115,7 @@ public class UserSettingsAction {
     @In
     private Messages msgs;
 
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     HAccount authenticatedAccount;
 
     @Getter

@@ -28,6 +28,7 @@ import javax.security.auth.login.LoginException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -59,6 +60,11 @@ public class ValidateEmailAction implements Serializable {
 
     @In
     EmailChangeService emailChangeService;
+
+    @Create
+    public void onCreate() {
+        identity.checkLoggedIn();
+    }
 
     @Transactional
     public String validate() throws LoginException {

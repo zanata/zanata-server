@@ -15,10 +15,10 @@ import javax.security.auth.spi.LoginModule;
 
 import org.jboss.seam.security.SimpleGroup;
 import org.jboss.seam.security.SimplePrincipal;
-import org.jboss.seam.security.management.IdentityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.security.ZanataIdentityManager;
 
 import static org.zanata.security.ZanataIdentity.*;
 
@@ -93,7 +93,7 @@ public class InternalLoginModule implements LoginModule {
         }
 
         // TODO [CDI] we will need to use other IdentityManager or use org.zanata.security.ZanataJpaIdentityStore directly
-        IdentityManager identityManager = IdentityManager.instance();
+        ZanataIdentityManager identityManager = ZanataIdentityManager.instance();
         if (identityManager != null && identityManager.isEnabled()) {
             ZanataIdentity identity = ZanataIdentity.instance();
 

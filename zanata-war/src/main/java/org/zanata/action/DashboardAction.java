@@ -34,6 +34,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.security.ZanataJpaIdentityStore;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
@@ -242,7 +243,7 @@ public class DashboardAction implements Serializable {
                     serviceLocator.getInstance(ProjectDAO.class);
             HAccount authenticatedAccount =
                     serviceLocator
-                            .getInstance(JpaIdentityStore.AUTHENTICATED_USER,
+                            .getInstance(ZanataJpaIdentityStore.AUTHENTICATED_USER,
                                     HAccount.class);
             return projectDAO.getMaintainedProjectCount(
                     authenticatedAccount.getPerson(), filter);

@@ -23,10 +23,13 @@ package org.zanata.security;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.international.StatusMessage;
+import org.jboss.seam.international.StatusMessages;
+import org.jboss.seam.security.Identity;
 
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
@@ -48,5 +51,14 @@ public class FacesSecurityEvents extends
     @Override
     public StatusMessage.Severity getLoginFailedMessageSeverity() {
         return StatusMessage.Severity.ERROR;
+    }
+
+    @Observer(Identity.EVENT_LOGIN_SUCCESSFUL)
+    public void addLoginSuccessfulMessage() {
+        StatusMessages.instance().addFromResourceBundleOrDefault(
+                getLoginSuccessfulMessageSeverity(),
+                getLoginSuccessfulMessageKey(),
+                getLoginSuccessfulMessage(),
+                ZanataIdentity.instance().getCredentials().getUsername());
     }
 }

@@ -20,7 +20,7 @@
       status="documentsTab-documentsLoader"/>
 
     <s:fragment
-      rendered="#{versionHomeAction.documentUploadAllowed or s:hasPermission(versionHomeAction.version, 'update')}">
+      rendered="#{versionHomeAction.documentUploadAllowed or identity.hasPermission(versionHomeAction.version, 'update')}">
       <div
         class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown">
         <a class="dropdown__toggle js-dropdown__toggle" href="#"

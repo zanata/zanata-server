@@ -66,6 +66,7 @@ import com.google.common.collect.Lists;
 @Scope(ScopeType.PAGE)
 @Slf4j
 public class TranslationMemoryAction implements Serializable {
+    private static final long serialVersionUID = -6791743907133760028L;
     @In("jsfMessages")
     private FacesMessages facesMessages;
 

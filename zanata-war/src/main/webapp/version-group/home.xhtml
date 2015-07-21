@@ -14,7 +14,7 @@
 
   <ui:define name="right_content">
     <rich:panel
-        rendered="#{identity.loggedIn and s:hasPermission(versionGroupHome.instance, 'insert')}">
+        rendered="#{identity.loggedIn and identity.hasPermission(versionGroupHome.instance, 'insert')}">
       <f:facet name="header">#{msgs['jsf.Actions']}</f:facet>
       <s:link styleClass="action_link" id="group-create"
         view="/version-group/create_version_group.xhtml"
