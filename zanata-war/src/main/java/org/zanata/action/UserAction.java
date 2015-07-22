@@ -293,4 +293,8 @@ public class UserAction implements Serializable {
     public List<String> getRoles() {
         return roles;
     }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }

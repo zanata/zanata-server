@@ -107,7 +107,7 @@
                     </li>
 
                     <s:fragment rendered="#{not languageAction.isUserInTeam()}">
-                      <s:fragment rendered="#{not s:hasRole('admin')}">
+                      <s:fragment rendered="#{not identity.hasRole('admin')}">
                         <li>
                           <a href="#" class="i__item--right"
                             data-toggle="modal"

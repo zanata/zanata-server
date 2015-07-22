@@ -20,6 +20,7 @@
  */
 package org.zanata.security;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +39,11 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.security.Role;
+import org.jboss.seam.security.SimplePrincipal;
 import org.jboss.seam.security.crypto.BinTools;
 import org.jboss.seam.security.management.IdentityManagementException;
+import org.jboss.seam.security.management.IdentityStore;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.security.management.NoSuchRoleException;
 import org.jboss.seam.security.management.NoSuchUserException;
@@ -65,8 +69,9 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 @Startup
 @BypassInterceptors
 @Slf4j
-// TODO [CDI] only 4 methods left not extended in JpaIdentityStore (which appears not used by us)
-public class ZanataJpaIdentityStore extends JpaIdentityStore {
+// TODO [CDI] only 3 methods left not extended in JpaIdentityStore (which appears not used by us)
+public class ZanataJpaIdentityStore extends JpaIdentityStore implements
+        IdentityStore {
     public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
 
     /**
@@ -425,6 +430,28 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore {
         }
 
         return groups;
+    }
+
+    public List<Principal> listMembers(String role) {
+        List<Principal> members = new ArrayList<>();
+
+        for (String user : listUserMembers(role)) {
+            members.add(new SimplePrincipal(user));
+        }
+
+        for (String roleName : listRoleMembers(role)) {
+            members.add(new Role(roleName));
+        }
+
+        return members;
+    }
+
+    private List<String> listUserMembers(String role) {
+        HAccountRole roleEntity = lookupRole(role);
+        return entityManager().createQuery("select u.username" +
+                " from HAccount u where :role member of u.roles")
+                .setParameter("role", roleEntity)
+                .getResultList();
     }
 
     public List<String> getImpliedRoles(String name) {
