@@ -31,7 +31,6 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.security.RunAsOperation;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.action.VersionGroupJoinAction;
 import org.zanata.common.LocaleId;
@@ -48,7 +47,7 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
-import org.zanata.security.ZanataIdentity;
+import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.ZanataIdentityManager;
 import org.zanata.service.EmailService;
 
@@ -96,15 +95,14 @@ public class EmailServiceImpl implements EmailService {
     private List<HPerson> getAdmins() {
         // required to read admin users for a non-admin session
         final List<HPerson> admins = new ArrayList<HPerson>();
-        RunAsOperation operation = new RunAsOperation() {
+        new AbstractRunAsOperation() {
             @Override
             public void execute() {
                 for (Principal admin : identityManager.listMembers("admin")) {
                     admins.add(personDAO.findByUsername(admin.getName()));
                 }
             }
-        }.addRole("admin");
-        ZanataIdentity.instance().runAs(operation);
+        }.addRole("admin").run();
 
         return admins;
     }

@@ -38,11 +38,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.security.RunAsOperation;
 import org.zanata.action.AuthenticationEvents;
 import org.zanata.config.AsyncConfig;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
+import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.ZanataJpaIdentityStore;
 import org.zanata.util.ServiceLocator;
@@ -155,8 +155,8 @@ public class AsyncTaskManager {
         }
     }
 
-    public abstract class RunnableOperation extends RunAsOperation implements
-            Runnable {
+    public abstract class RunnableOperation extends AbstractRunAsOperation
+            implements Runnable {
 
         @Override
         public void run() {

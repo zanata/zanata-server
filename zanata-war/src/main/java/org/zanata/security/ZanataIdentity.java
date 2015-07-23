@@ -49,9 +49,7 @@ import org.jboss.seam.security.AuthorizationException;
 import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.NotLoggedInException;
 import org.jboss.seam.security.Role;
-import org.jboss.seam.security.RunAsOperation;
 import org.jboss.seam.security.SimpleGroup;
-import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.security.permission.PermissionMapper;
 import org.jboss.seam.web.Session;
 import org.slf4j.Logger;
@@ -612,7 +610,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     public String getAccountUsername() {
         HAccount authenticatedAccount =
                 ServiceLocator.instance().getInstance(
-                        JpaIdentityStore.AUTHENTICATED_USER, HAccount.class);
+                        ZanataJpaIdentityStore.AUTHENTICATED_USER, HAccount.class);
         if (authenticatedAccount != null) {
             return authenticatedAccount.getUsername();
         }

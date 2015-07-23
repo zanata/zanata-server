@@ -1,8 +1,10 @@
 package org.zanata.rest;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.persistence.EntityManager;
+import javax.security.auth.Subject;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
@@ -13,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.security.RunAsOperation;
 import org.zanata.Identity;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
@@ -46,37 +47,37 @@ public class SampleDataResourceImpl implements SampleDataResource {
 
     @Override
     public Response makeSampleLanguages() {
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             @Override
             public void execute() {
                 sampleProjectProfile.makeSampleLanguages();
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
     @Override
     @Transactional
     public Response addLanguage(final String localeId) {
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             @Override
             public void execute() {
                 sampleProjectProfile.makeLanguage(true, new LocaleId(localeId));
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
     @Override
     public Response makeSampleUsers() {
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             public void execute() {
                 sampleProjectProfile.makeSampleUsers();
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
@@ -102,34 +103,34 @@ public class SampleDataResourceImpl implements SampleDataResource {
         final List<HLocale> hLocales = entityManager
             .createQuery("from HLocale where localeId in (:locales)",
                 HLocale.class).setParameter("locales", locales).getResultList();
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             public void execute() {
                 sampleProjectProfile.addUsersToLanguage(hPerson, hLocales);
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
     @Override
     public Response makeSampleProject() {
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             public void execute() {
                 sampleProjectProfile.makeSampleProject();
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
     @Override
     public Response deleteExceptEssentialData() {
-        RunAsOperation operation = new RunAsOperation() {
+        new RunAsOperationForTest() {
             public void execute() {
                 sampleProjectProfile.deleteExceptEssentialData();
             }
-        }.addRole("admin");
-        identity.runAs(operation);
+        }.run();
+
         return Response.ok().build();
     }
 
@@ -160,6 +161,30 @@ public class SampleDataResourceImpl implements SampleDataResource {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage()).build();
+        }
+    }
+
+    abstract class RunAsOperationForTest implements
+            org.zanata.Identity.RunAsOperation {
+        @Override
+        public Principal getPrincipal() {
+            return null;
+        }
+
+        @Override
+        public Subject getSubject() {
+            return null;
+        }
+
+        @Override
+        public boolean isSystemOperation() {
+            // A system operation allows any security checks to pass
+            return true;
+        }
+
+        @Override
+        public void run() {
+            identity.runAs(this);
         }
     }
 }

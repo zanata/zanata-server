@@ -43,7 +43,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.core.Conversation;
-import org.jboss.seam.security.RunAsOperation;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.CredentialsDAO;
 import org.zanata.dao.PersonDAO;
@@ -53,8 +52,8 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
+import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.AuthenticationManager;
-import org.zanata.security.ZanataIdentity;
 import org.zanata.security.ZanataIdentityManager;
 import org.zanata.security.ZanataJpaIdentityStore;
 import org.zanata.security.openid.FedoraOpenIdProvider;
@@ -190,13 +189,12 @@ public class UserSettingsAction {
             return;
         }
 
-        RunAsOperation operation = new RunAsOperation() {
+        new AbstractRunAsOperation() {
             public void execute() {
                 identityManager.changePassword(
                         authenticatedAccount.getUsername(), newPassword);
             }
-        }.addRole("admin");
-        ZanataIdentity.instance().runAs(operation);
+        }.addRole("admin").run();
 
         facesMessages.addGlobal(
                 "Your password has been successfully changed.");

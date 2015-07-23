@@ -21,7 +21,8 @@
 
 package org.zanata;
 
-import org.jboss.seam.security.RunAsOperation;
+import java.security.Principal;
+import javax.security.auth.Subject;
 
 /**
  * So that we can share code between zanata-war and zanata-test-war
@@ -29,6 +30,17 @@ import org.jboss.seam.security.RunAsOperation;
  *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public interface Identity {
-    // copied from org.jboss.seam.security.Identity
     void runAs(RunAsOperation operation);
+
+    interface RunAsOperation {
+        void execute();
+
+        Principal getPrincipal();
+
+        Subject getSubject();
+
+        boolean isSystemOperation();
+
+        void run();
+    }
 }

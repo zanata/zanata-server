@@ -16,13 +16,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.security.AuthorizationException;
 import org.jboss.seam.security.NotLoggedInException;
-import org.jboss.seam.security.RunAsOperation;
-import org.jboss.seam.ui.UnauthorizedCommandException;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
-import org.zanata.security.ZanataIdentity;
+import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.ZanataIdentityManager;
 import org.zanata.ui.faces.FacesMessages;
 
@@ -110,7 +108,7 @@ public class PasswordResetAction implements Serializable {
         if (!validatePasswordsMatch())
             return null;
 
-        RunAsOperation operation = new RunAsOperation() {
+        new AbstractRunAsOperation() {
             public void execute() {
                 try {
                     passwordChanged =
@@ -122,8 +120,7 @@ public class PasswordResetAction implements Serializable {
                             "Error changing password: " + e.getMessage());
                 }
             }
-        }.addRole("admin");
-        ZanataIdentity.instance().runAs(operation);
+        }.addRole("admin").run();
 
         entityManager.remove(getKey());
 
