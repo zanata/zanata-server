@@ -38,10 +38,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +61,6 @@ import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
-import org.zanata.dao.ProjectLocaleMemberDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
@@ -72,11 +69,6 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
-import org.zanata.model.HProjectLocaleMember;
-import org.zanata.model.HProjectMember;
-import org.zanata.model.LocaleRole;
-import org.zanata.model.PersonProjectMemberships;
-import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
@@ -97,7 +89,6 @@ import org.zanata.webtrans.shared.validation.ValidationFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -195,22 +186,6 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
 
-    private ListMultimap<HPerson, ProjectRole> personRoles;
-
-    // TODO maybe just make this a Multimap<HPerson, PersonProjectMemberships.LocaleRoles>
-    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
-
-    // TODO does this need a setter?
-    @Getter
-    private PersonProjectMemberships permissionDialogData;
-
-    @Getter
-    private SortingType PeopleSortingList = new SortingType(
-        Lists.newArrayList(SortingType.SortOption.NAME,
-            SortingType.SortOption.ROLE), SortingType.SortOption.NAME);
-
-    private final PeopleComparator peopleComparator = new PeopleComparator(
-        getPeopleSortingList());
 
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
@@ -289,12 +264,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                             filter);
                 }
             };
-
-    private ProjectRolePredicate projectRolePredicate =
-        new ProjectRolePredicate();
-
-    private ProjectLocalePredicate projectLocalePredicate =
-        new ProjectLocalePredicate();
 
     public void createNew() {
         getInstance().setDefaultProjectType(ProjectType.File);
@@ -953,13 +922,10 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     private List<HProjectIteration> fetchVersions() {
-        List<HProjectIteration> results = new ArrayList<HProjectIteration>();
+        List<HProjectIteration> results = Lists.newArrayList(Iterables.filter(
+                        getInstance().getProjectIterations(),
+                        notObsoleteVersionPredicate));
 
-        for (HProjectIteration iteration : getInstance().getProjectIterations()) {
-            if (iteration.getStatus() != EntityStatus.OBSOLETE) {
-                results.add(iteration);
-            }
-        }
         Collections.sort(results, new Comparator<HProjectIteration>() {
             @Override
             public int compare(HProjectIteration o1, HProjectIteration o2) {
@@ -980,11 +946,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                     }
                     return -1;
                 }
-
-                if (fromStatus.equals(EntityStatus.OBSOLETE)) {
-                    return 1;
-                }
-
                 return 0;
             }
         });
@@ -1129,197 +1090,12 @@ public class ProjectHome extends SlugHome<HProject> implements
         // Disable the default message from Seam
     }
 
-    private boolean checkViewObsolete() {
-        return identity != null
-                && identity.hasPermission("HProject", "view-obsolete");
-    }
-
-    private class ProjectRolePredicate implements Predicate<ProjectRole> {
-        @Setter
-        private String filter;
-
+    private final Predicate notObsoleteVersionPredicate = new Predicate<HProjectIteration>() {
         @Override
-        public boolean apply(ProjectRole projectRole) {
-            return StringUtils.containsIgnoreCase(projectRole.name(), filter);
+        public boolean apply(HProjectIteration input) {
+            return input.getStatus() != EntityStatus.OBSOLETE;
         }
     };
-
-    private class ProjectLocalePredicate implements Predicate<HLocale> {
-        @Setter
-        private String filter;
-
-        @Override
-        public boolean apply(HLocale locale) {
-
-            return StringUtils.containsIgnoreCase(locale.getDisplayName(),
-                    filter)
-                    || StringUtils.containsIgnoreCase(locale
-                            .getLocaleId().toString(), filter);
-        }
-    };
-
-    @Getter
-    private AbstractListFilter<HPerson> peopleFilter =
-        new InMemoryListFilter<HPerson>() {
-
-            List<HPerson> allMembers;
-
-            @Override
-            protected List<HPerson> fetchAll() {
-                if(allMembers == null) {
-                    allMembers = getAllMembers();
-                }
-                return allMembers;
-            }
-
-            @Override
-            protected boolean include(HPerson person, final String filter) {
-                projectRolePredicate.setFilter(filter);
-                projectLocalePredicate.setFilter(filter);
-
-                return hasMatchingName(person, filter)
-                        || hasMatchingRole(person)
-                        || hasMatchingLanguage(person);
-            }
-
-            private boolean hasMatchingName(HPerson person, String filter) {
-                return StringUtils.containsIgnoreCase(
-                    person.getName(), filter) || StringUtils.containsIgnoreCase(
-                    person.getAccount().getUsername(), filter);
-            }
-
-            private boolean hasMatchingRole(HPerson person) {
-                Iterable<ProjectRole> filtered = Iterables
-                    .filter(ensurePersonRoles().get(person),
-                        projectRolePredicate);
-                return filtered.iterator().hasNext();
-            }
-
-            private boolean hasMatchingLanguage(HPerson person) {
-                ListMultimap<HLocale, LocaleRole> map =
-                        ensurePersonLocaleRoles().get(person);
-
-                if(map == null || map.isEmpty()) {
-                    return false;
-                }
-
-                return !Sets.filter(map.keySet(), projectLocalePredicate)
-                        .isEmpty();
-            }
-
-            public void sortPeopleList() {
-                this.reset();
-                Collections.sort(fetchAll(), peopleComparator);
-            }
-
-        };
-
-    private class PeopleComparator implements Comparator<HPerson> {
-        private SortingType sortingType;
-
-        public PeopleComparator(SortingType sortingType) {
-            this.sortingType = sortingType;
-        }
-
-        @Override
-        public int compare(HPerson o1, HPerson o2) {
-            SortingType.SortOption selectedSortOption =
-                sortingType.getSelectedSortOption();
-
-            if (!selectedSortOption.isAscending()) {
-                HPerson temp = o1;
-                o1 = o2;
-                o2 = temp;
-            }
-
-            if (selectedSortOption.equals(SortingType.SortOption.ROLE)) {
-            } else {
-                return o1.getName().toLowerCase()
-                        .compareTo(o2.getName().toLowerCase());
-            }
-            return 0;
-        }
-    }
-
-    public List<HPerson> getAllMembers() {
-        return Lists.newArrayList(getMemberRoles().keySet());
-    }
-
-    public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
-
-        // TODO consider sorting of roles
-        // TODO something about how to display roles (here or utility function?)
-        // TODO something with caching?
-
-        return ensurePersonRoles().asMap();
-    }
-
-    private ListMultimap<HPerson, ProjectRole> ensurePersonRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        if (personRoles == null) {
-            populatePersonRoles();
-        }
-        return personRoles;
-    }
-
-    private void populatePersonRoles() {
-        personRoles = ArrayListMultimap.create();
-
-        // iterate members, add each person+role to multimap
-        for (HProjectMember membership : getInstance().getMembers()) {
-            personRoles.put(membership.getPerson(), membership.getRole());
-        }
-    }
-
-    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> ensurePersonLocaleRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        if (personLocaleRoles == null) {
-            populatePersonLocaleRoles();
-        }
-        return personLocaleRoles;
-    }
-
-    private void populatePersonLocaleRoles() {
-        personLocaleRoles = Maps.newHashMap();
-
-        for (HProjectLocaleMember membership : getInstance().getLocaleMembers()) {
-            final HPerson person = membership.getPerson();
-            if (!personLocaleRoles.containsKey(person)) {
-                final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
-                personLocaleRoles.put(person, localeRoles);
-            }
-            personLocaleRoles.get(person).put(membership.getLocale(), membership.getRole());
-        }
-    }
-
-    public String projectRoleDisplayName(ProjectRole role) {
-        switch (role) {
-            case Maintainer:
-                return msgs.get("jsf.Maintainer");
-            case TranslationMaintainer:
-                return msgs.get("jsf.TranslationMaintainer");
-            default:
-                return "";
-        }
-    }
-
-    // TODO make a method to set the person used in the dialog
-    // takes a person, sets a PersonProjectMemberships field
-    // Another method saves that PersonProjectMemberships data with the current
-    // selections in the modal dialog.
-
-    /**
-     * Prepare the permission dialog to update permissions for the given person.
-     *
-     * @param person to show in permission dialog
-     */
-    public void setPersonForPermissionDialog(HPerson person) {
-        List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
-        ListMultimap<HLocale, LocaleRole> localeRoles =
-                ensurePersonLocaleRoles().get(person);
-        permissionDialogData =
-                new PersonProjectMemberships(person, projectRoles, localeRoles);
-    }
 
 //    /**
 //     * The person selected in the "Add someone" dialog.

@@ -32,8 +32,8 @@
   <div class="panel l--push-top-1">
     <div class="panel__header">
       <div class="panel__header__actions">
-        <s:fragment rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
-            or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
+        <ui:param name="canManageMembers" value="#{identity.hasPermission(projectHome.instance, 'manage-members') or identity.hasPermission(projectHome.instance, 'manage-translation-members')}"/>
+        <s:fragment rendered="#{canManageMembers}">
           <button class="button button--primary panel__header__button"
               data-toggle="modal"
               data-target="#modal-add-someone">
@@ -42,10 +42,10 @@
         </s:fragment>
 
         <zanata:sortlist id="project-people_sorting"
-          sortAction="#{projectHome.peopleFilter.sortPeopleList()}"
+          sortAction="#{projectHomeAction.peopleFilterComparator.sortPeopleList()}"
           render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
           oncomplete="refreshTooltip('#{rich:clientId('people_form')}')"
-          sortingList="#{projectHome.peopleSortingList}"
+          sortingList="#{projectHomeAction.peopleSortingList}"
           onbegin="clearHTML('#{rich:clientId('people_form')}')"
           status="peopleTab-peopleLoader"/>
 
@@ -55,7 +55,7 @@
           <ui:param name="title" value="#{msgs['jsf.people.AddSomeone']}"/>
 
           <!-- TODO use different field for this -->
-          <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
+          <ui:param name="memberships" value="#{projectHomeAction.permissionDialogData}"/>
           <!-- this property will allow the dialog to show the correct
                starting permissions, and will be the value used when the
                dialog is submitted.
@@ -71,7 +71,7 @@
           <ui:param name="id" value="modal-manage-permissions"/>
           <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
 
-          <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
+          <ui:param name="memberships" value="#{projectHomeAction.permissionDialogData}"/>
           <!-- this property will allow the dialog to show the correct
                starting permissions, and will be the value used when the
                dialog is submitted.
@@ -82,12 +82,7 @@
             <p>Then just some content goes in here</p>
           </ui:define>
           </ui:decorate>
-
-
-
-
       </div>
-
       <h2 class="panel__heading">#{msgs['jsf.People']}</h2>
     </div>
 
@@ -97,7 +92,7 @@
         render="people_form, peopleSearchBottom-pager, peopleSearchBottom-page-info"
         id="peopleSearch"
         placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
-        actionBean="#{projectHome.peopleFilter}"/>
+        actionBean="#{projectHomeAction.peopleFilterComparator}"/>
     </div>
 
     <a4j:status name="peopleTab-peopleLoader">
@@ -109,11 +104,9 @@
     <h:form id="people_form" styleClass="l--push-bottom-1">
 
       <s:div styleClass="l--pad-all-half"
-        rendered="#{empty projectHome.allMembers}">
+        rendered="#{empty projectHomeAction.allMembers}">
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
-        <s:fragment
-          rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
-            or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
+        <s:fragment rendered="#{canManageMembers}">
           <p>
             <button class="button button--primary"
               data-toggle="modal"
@@ -125,60 +118,48 @@
       </s:div>
 
       <s:div styleClass="l--pad-all-half"
-        rendered="#{not empty projectHome.allMembers and empty projectHome.peopleFilter.currentPage}">
+        rendered="#{not empty projectHomeAction.allMembers and empty projectHomeAction.peopleFilterComparator.currentPage}">
         <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
       </s:div>
 
       <s:fragment
-        rendered="#{!projectHome.peopleFilter.currentPage.isEmpty()}">
-        <ul class="list--slat l--push-all-half">
-          <ui:repeat value="#{projectHome.peopleFilter.currentPage}" var="person">
-            <li>
-              <div class="g g--tighter">
-                <div class="g__item w--4-12">
-                  <!-- TODO use a component for a person avatar + name + profile link -->
-                  <a href="#{request.contextPath}/profile/view/#{person.account.username}">
-                    <span class="w--r-1 bx--round l--push-right-quarter">
-                      <img src="#{gravatarServiceImpl.getUserImageUrl(48, person.email)}" alt=""/>
-                    </span>
-                      #{person.account.username}
-                  </a>
-                </div>
-                <div class="g__item w--4-12">
-                  <ui:repeat value="#{projectHome.memberRoles.get(person).toArray()}" var="role">
-                    <div class="txt--understated">#{projectHome.projectRoleDisplayName(role)}</div>
-                  </ui:repeat>
-                </div>
-                <div class="g__item w--4-12 txt--align-right">
-                  <s:fragment
-                      rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
-                               or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
-                    <!-- TODO does this need its own dialog, or can it reuse the other?
-                      Differences:
-                        - different title
-                        - hard-coded person
-                        - different submit button text
-                        - different button state+text when nothing selected
+        rendered="#{!projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
 
-                      Similarities:
-                        - single person selected (may change later)
-                        - available permissions identical
-                        - display current permissions when user selected
-                        - permission check for each section is the same
-                    -->
-                    <!-- TODO onclick -> set person for permission dialog -->
-                    <button class="button button--small"
-                            data-toggle="modal"
-                            data-target="#modal-manage-permissions">
-                      <i class="i i--settings"></i>
-                      #{msgs['jsf.projectPermissions.ManagePermissions']}
-                    </button>
-                  </s:fragment>
-                </div>
-              </div>
-            </li>
-          </ui:repeat>
-        </ul>
+        <s:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+          <s:div styleClass="l--pad-h-half" rendered="#{not empty projectHomeAction.peopleFilterComparator.getMaintainers()}">
+            <h4>#{msgs['jsf.project.peoplelist.project.label']} <span class="txt--understated">#{projectHomeAction.peopleFilterComparator.getMaintainers().size}</span></h4>
+            <ul class="list--slat l--push-all-half">
+              <ui:repeat value="#{projectHomeAction.peopleFilterComparator.getMaintainers()}" var="person">
+                <zanata:people-entry person="#{person}"
+                  manageMembersDialogId="modal-manage-permissions"
+                  roles="#{projectHomeAction.projectRolesDisplayName(person)}"
+                  canManageMembers="#{canManageMembers}"/>
+              </ui:repeat>
+            </ul>
+          </s:div>
+
+          <s:div styleClass="l--pad-h-half" rendered="#{not empty projectHomeAction.peopleFilterComparator.getTranslators()}">
+            <h4>#{msgs['jsf.project.peoplelist.translation.label']} <span class="txt--understated">#{projectHomeAction.peopleFilterComparator.getTranslators().size}</span></h4>
+            <ul class="list--slat l--push-all-half">
+              <ui:repeat value="#{projectHomeAction.peopleFilterComparator.getTranslators()}" var="person">
+                <!-- loop through all locale in project -->
+                <!-- is person is in locale, display -->
+              </ui:repeat>
+            </ul>
+
+          </s:div>
+        </s:fragment>
+
+        <s:fragment rendered="#{not projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+          <ul class="list--slat l--push-all-half">
+            <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
+              <zanata:people-entry person="#{person}"
+                manageMembersDialogId="modal-manage-permissions"
+                roles="#{projectHomeAction.rolesDisplayName(person)}"
+                canManageMembers="#{canManageMembers}"/>
+            </ui:repeat>
+          </ul>
+        </s:fragment>
       </s:fragment>
     </h:form>
     <zanata:list-filter status="peopleTab-peopleLoader"
@@ -186,7 +167,7 @@
       render="people_form, peopleSearch-pager, peopleSearch-page-info"
       id="peopleSearchBottom" bottomPanel="true"
       placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
-      actionBean="#{projectHome.peopleFilter}"/>
+      actionBean="#{projectHomeAction.peopleFilterComparator}"/>
   </div>
 
 </ui:composition>

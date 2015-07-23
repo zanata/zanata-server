@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:composite="http://java.sun.com/jsf/composite"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:s="http://jboss.org/schema/seam/taglib">
+
+<composite:interface>
+  <composite:attribute name="person" type="org.zanata.model.HPerson"
+    shortDescription="person" required="true"/>
+
+  <composite:attribute name="roles" type="java.util.List"
+    shortDescription="list of roles" required="true"/>
+
+  <composite:attribute name="canManageMembers" type="java.lang.Boolean"
+    shortDescription="allow user to manage members" default="false"/>
+
+  <composite:attribute name="manageMembersDialogId" type="java.lang.String"
+    shortDescription="component id of manage members dialog" required="true"/>
+</composite:interface>
+
+<composite:implementation>
+  <li id="#{cc.attrs.person.email}">
+    <div class="g g--tighter">
+      <div class="g__item w--4-12">
+        <a href="#{request.contextPath}/profile/view/#{cc.attrs.person.account.username}">
+          <span class="w--r-1 bx--round l--push-right-quarter">
+            <img
+              src="#{gravatarServiceImpl.getUserImageUrl(48, cc.attrs.person.email)}"
+              alt=""/>
+          </span>
+          #{cc.attrs.person.account.username}
+        </a>
+      </div>
+      <div class="g__item w--4-12">
+        <ui:repeat value="#{cc.attrs.roles}" var="role">
+          <div class="txt--understated">#{role}</div>
+        </ui:repeat>
+      </div>
+      <div class="g__item w--4-12 txt--align-right">
+        <s:fragment rendered="#{cc.attrs.canManageMembers}">
+          <button class="button button--small"
+            data-toggle="modal"
+            data-target="#{cc.attrs.manageMembersDialogId}">
+            <i class="i i--settings"></i>
+            #{msgs['jsf.projectPermissions.ManagePermissions']}
+          </button>
+        </s:fragment>
+      </div>
+    </div>
+  </li>
+</composite:implementation>
+</html>

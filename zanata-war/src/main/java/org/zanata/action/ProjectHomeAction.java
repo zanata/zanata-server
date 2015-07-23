@@ -47,7 +47,14 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
+import org.zanata.model.HPerson;
+import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.model.HProjectLocaleMember;
+import org.zanata.model.HProjectMember;
+import org.zanata.model.LocaleRole;
+import org.zanata.model.PersonProjectMemberships;
+import org.zanata.model.ProjectRole;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ActivityService;
@@ -62,9 +69,14 @@ import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -138,6 +150,29 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }
             };
 
+    @Getter
+    private PersonProjectMemberships permissionDialogData;
+
+    @Getter
+    private final SortingType PeopleSortingList = new SortingType(
+        Lists.newArrayList(SortingType.SortOption.NAME,
+            SortingType.SortOption.ROLE), SortingType.SortOption.NAME);
+
+    @Getter
+    private final PeopleFilterComparator peopleFilterComparator =
+        new PeopleFilterComparator(getPeopleSortingList());
+
+    private final ProjectRolePredicate projectRolePredicate =
+        new ProjectRolePredicate();
+
+    private final ProjectLocalePredicate projectLocalePredicate =
+        new ProjectLocalePredicate();
+
+    private ListMultimap<HPerson, ProjectRole> personRoles;
+
+    // TODO maybe just make this a Multimap<HPerson, PersonProjectMemberships.LocaleRoles>
+    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
+
     private List<HProjectIteration> projectVersions;
 
     private Map<String, WordStatistic> statisticMap = Maps.newHashMap();
@@ -148,6 +183,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
     @Getter(lazy = true)
     private final List<Activity> projectLastActivity =
             fetchProjectLastActivity();
+
+    private HProject project;
 
     // for storing last activity date for the version
     private Map<Long, Date> versionLatestActivityDate = Maps.newHashMap();
@@ -402,6 +439,15 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
         return projectVersions;
     }
+    
+    public HProject getProject() {
+        if (project == null) {
+            ProjectDAO projectDAO =
+                    ServiceLocator.instance().getInstance(ProjectDAO.class);
+            project = projectDAO.getBySlug(slug);
+        }
+        return project;
+    }
 
     public boolean isUserAllowedToTranslateOrReview(HProjectIteration version,
             HLocale localeId) {
@@ -438,4 +484,271 @@ public class ProjectHomeAction extends AbstractSortAction implements
     protected String getMessage(String key, Object... args) {
         return msgs.format(key, args);
     }
+
+    public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
+
+        // TODO consider sorting of roles
+        // TODO something about how to display roles (here or utility function?)
+        // TODO something with caching?
+
+        return ensurePersonRoles().asMap();
+    }
+
+    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> ensurePersonLocaleRoles() {
+        // TODO make sure this is cleared or updated when something changes
+        if (personLocaleRoles == null) {
+            populatePersonLocaleRoles();
+        }
+        return personLocaleRoles;
+    }
+
+    private void populatePersonLocaleRoles() {
+        personLocaleRoles = Maps.newHashMap();
+
+        for (HProjectLocaleMember membership :  getProject().getLocaleMembers()) {
+            final HPerson person = membership.getPerson();
+            if (!personLocaleRoles.containsKey(person)) {
+                final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
+                personLocaleRoles.put(person, localeRoles);
+            }
+            personLocaleRoles.get(person).put(membership.getLocale(), membership.getRole());
+        }
+    }
+
+    private ListMultimap<HPerson, ProjectRole> ensurePersonRoles() {
+        // TODO make sure this is cleared or updated when something changes
+        if (personRoles == null) {
+            populatePersonRoles();
+        }
+        return personRoles;
+    }
+
+    private void populatePersonRoles() {
+        personRoles = ArrayListMultimap.create();
+
+        // iterate members, add each person+role to multimap
+        for (HProjectMember membership : getProject().getMembers()) {
+            personRoles.put(membership.getPerson(), membership.getRole());
+        }
+    }
+
+    public List<HPerson> getAllMembers() {
+        return Lists.newArrayList(getMemberRoles().keySet());
+    }
+
+    public boolean isTranslator(HPerson person) {
+        ListMultimap<HLocale, LocaleRole>
+            map = ensurePersonLocaleRoles().get(person);
+
+        return map != null && !map.isEmpty();
+
+    }
+    public boolean isMaintainer(HPerson person) {
+        List<ProjectRole> roles = ensurePersonRoles().get(person);
+        return (roles == null || roles.isEmpty()) ? false :
+            roles.contains(ProjectRole.Maintainer) ||
+                roles.contains(ProjectRole.TranslationMaintainer);
+    }
+
+    public List<String> projectRolesDisplayName(HPerson person) {
+        Collection<ProjectRole> roles = getMemberRoles().get(person);
+
+        if (roles == null || roles.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        return Lists
+            .newArrayList(Collections2.transform(roles,
+                new Function<ProjectRole, String>() {
+                    @Override
+                    public String apply(ProjectRole input) {
+                        return projectRoleDisplayName(input);
+                    }
+                }));
+    }
+
+    public List<String> languageRolesDisplayName(HPerson person,
+        boolean includeLanguageName) {
+        ListMultimap<HLocale, LocaleRole>
+            personLocaleRoles = ensurePersonLocaleRoles().get(person);
+
+        if (personLocaleRoles == null || personLocaleRoles.isEmpty()) {
+            return Lists.newArrayList();
+        }
+
+        List<String> displayNames = Lists.newArrayList();
+
+        for (Map.Entry<HLocale, LocaleRole> entry : personLocaleRoles
+            .entries()) {
+
+            String name = entry.getValue().name();
+            if (includeLanguageName) {
+                name = entry.getKey().getDisplayName() + " " + name;
+            }
+            displayNames.add(name);
+        }
+        return displayNames;
+    }
+
+    public List<String> rolesDisplayName(HPerson person) {
+        List<String> displayNames = Lists.newArrayList();
+        displayNames.addAll(projectRolesDisplayName(person));
+        displayNames.addAll(languageRolesDisplayName(person, true));
+        return displayNames;
+    }
+
+    public String projectRoleDisplayName(ProjectRole role) {
+        switch (role) {
+            case Maintainer:
+                return msgs.get("jsf.Maintainer");
+            case TranslationMaintainer:
+                return msgs.get("jsf.TranslationMaintainer");
+            default:
+                return "";
+        }
+    }
+
+    // TODO make a method to set the person used in the dialog
+    // takes a person, sets a PersonProjectMemberships field
+    // Another method saves that PersonProjectMemberships data with the current
+    // selections in the modal dialog.
+
+    /**
+     * Prepare the permission dialog to update permissions for the given person.
+     *
+     * @param person to show in permission dialog
+     */
+    public void setPersonForPermissionDialog(HPerson person) {
+        List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
+        ListMultimap<HLocale, LocaleRole> localeRoles =
+            ensurePersonLocaleRoles().get(person);
+        permissionDialogData =
+            new PersonProjectMemberships(person, projectRoles, localeRoles);
+    }
+
+    private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
+        implements Comparator<HPerson> {
+        private SortingType sortingType;
+
+        @Getter
+        @Setter
+        private boolean showMembersInGroup;
+
+        private List<HPerson> allMembers;
+
+        public PeopleFilterComparator(SortingType sortingType) {
+            this.sortingType = sortingType;
+        }
+
+        @Override
+        public int compare(HPerson o1, HPerson o2) {
+            SortingType.SortOption selectedSortOption =
+                sortingType.getSelectedSortOption();
+
+            if (!selectedSortOption.isAscending()) {
+                HPerson temp = o1;
+                o1 = o2;
+                o2 = temp;
+            }
+
+            if (selectedSortOption.equals(SortingType.SortOption.ROLE)) {
+                setShowMembersInGroup(true);
+            } else {
+                setShowMembersInGroup(false);
+                return o1.getName().toLowerCase()
+                    .compareTo(o2.getName().toLowerCase());
+            }
+            return 0;
+        }
+
+        @Override
+        protected List<HPerson> fetchAll() {
+            if(allMembers == null) {
+                return getAllMembers();
+            }
+            return allMembers;
+        }
+
+        @Override
+        protected boolean include(HPerson person, final String filter) {
+            projectRolePredicate.setFilter(filter);
+            projectLocalePredicate.setFilter(filter);
+
+            return hasMatchingName(person, filter)
+                || hasMatchingRole(person)
+                || hasMatchingLanguage(person);
+        }
+
+        public void sortPeopleList() {
+            this.reset();
+            Collections.sort(fetchAll(), peopleFilterComparator);
+        }
+
+        public Collection<HPerson> getMaintainers() {
+            return Lists.newArrayList(
+                Collections2.filter(fetchAll(), new Predicate<HPerson>() {
+                    @Override
+                    public boolean apply(HPerson input) {
+                        return isMaintainer(input);
+                    }
+                }));
+        }
+
+        public Collection<HPerson> getTranslators() {
+            return Lists.newArrayList(
+                Collections2.filter(fetchAll(), new Predicate<HPerson>() {
+                    @Override
+                    public boolean apply(HPerson input) {
+                        return isTranslator(input);
+                    }
+                }));
+        }
+
+        private boolean hasMatchingName(HPerson person, String filter) {
+            return StringUtils.containsIgnoreCase(
+                person.getName(), filter) || StringUtils.containsIgnoreCase(
+                person.getAccount().getUsername(), filter);
+        }
+
+        private boolean hasMatchingRole(HPerson person) {
+            Iterable<ProjectRole> filtered = Iterables
+                .filter(ensurePersonRoles().get(person),
+                    projectRolePredicate);
+            return filtered.iterator().hasNext();
+        }
+
+        private boolean hasMatchingLanguage(HPerson person) {
+            ListMultimap<HLocale, LocaleRole> map =
+                ensurePersonLocaleRoles().get(person);
+            if(map == null || map.isEmpty()) {
+                return false;
+            }
+            return !Sets.filter(map.keySet(), projectLocalePredicate)
+                .isEmpty();
+        }
+    }
+
+    private final class ProjectRolePredicate implements Predicate<ProjectRole> {
+        @Setter
+        private String filter;
+
+        @Override
+        public boolean apply(ProjectRole projectRole) {
+            return StringUtils.containsIgnoreCase(projectRole.name(), filter);
+        }
+    };
+
+    private final class ProjectLocalePredicate implements Predicate<HLocale> {
+        @Setter
+        private String filter;
+
+        @Override
+        public boolean apply(HLocale locale) {
+
+            return StringUtils.containsIgnoreCase(locale.getDisplayName(),
+                filter)
+                || StringUtils.containsIgnoreCase(locale
+                .getLocaleId().toString(), filter);
+        }
+    };
+
 }
