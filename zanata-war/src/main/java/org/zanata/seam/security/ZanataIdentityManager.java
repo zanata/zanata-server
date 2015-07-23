@@ -76,7 +76,7 @@ public class ZanataIdentityManager implements Serializable {
     public boolean createUser(String name, String password) {
         ZanataIdentity.instance().checkPermission(USER_PERMISSION_NAME,
                 PERMISSION_CREATE);
-        return identityStore.createUser(name, password, null, null);
+        return identityStore.createUser(name, password);
     }
 
     public boolean deleteUser(String name) {
@@ -159,20 +159,6 @@ public class ZanataIdentityManager implements Serializable {
         ZanataIdentity.instance().checkPermission(USER_PERMISSION_NAME,
                 PERMISSION_READ);
         List<String> users = identityStore.listUsers();
-
-        Collections.sort(users, new Comparator<String>() {
-            public int compare(String value1, String value2) {
-                return value1.compareTo(value2);
-            }
-        });
-
-        return users;
-    }
-
-    public List<String> listUsers(String filter) {
-        ZanataIdentity.instance().checkPermission(USER_PERMISSION_NAME,
-                PERMISSION_READ);
-        List<String> users = identityStore.listUsers(filter);
 
         Collections.sort(users, new Comparator<String>() {
             public int compare(String value1, String value2) {

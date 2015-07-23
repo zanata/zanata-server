@@ -25,14 +25,19 @@ import java.security.Principal;
 import javax.security.auth.Subject;
 
 /**
- * So that we can share code between zanata-war and zanata-test-war
- * @author Patrick Huang
- *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
+ * TODO move this to a separate module (zanata-seam, zanata-security?)
+ * So that we can share code between zanata-war and zanata-test-war.
+ *
+ * @author Patrick Huang <a
+ *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public interface Identity {
     void runAs(RunAsOperation operation);
 
     interface RunAsOperation {
+        /**
+         * All the operation logic should go into this method
+         */
         void execute();
 
         Principal getPrincipal();
@@ -41,6 +46,10 @@ public interface Identity {
 
         boolean isSystemOperation();
 
+        /**
+         * Typically implementation of this method will be identity.run(this);
+         * This is also the default implementation.
+         */
         void run();
     }
 }

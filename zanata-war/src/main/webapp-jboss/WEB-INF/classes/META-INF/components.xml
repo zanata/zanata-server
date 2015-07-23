@@ -93,9 +93,7 @@
     entity-manager-factory="#{entityManagerFactory}"
     persistence-unit-jndi-name="java:/zanataEntityManagerFactory" />
 
-  <security:jpa-identity-store
-    user-class="org.zanata.model.HAccount"
-    role-class="org.zanata.model.HAccountRole" />
+  <security:jpa-identity-store user-class="org.zanata.model.HAccount" />
 
   <event type="org.jboss.seam.security.notLoggedIn">
     <action execute="#{redirect.captureCurrentView}" />

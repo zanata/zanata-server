@@ -20,6 +20,7 @@
  */
 package org.zanata.seam.security;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,21 +42,22 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.security.Role;
 import org.jboss.seam.security.SimplePrincipal;
-import org.jboss.seam.security.crypto.BinTools;
 import org.jboss.seam.security.management.IdentityManagementException;
 import org.jboss.seam.security.management.IdentityStore;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.security.management.NoSuchRoleException;
 import org.jboss.seam.security.management.NoSuchUserException;
-import org.jboss.seam.security.management.PasswordHash;
 import org.jboss.seam.util.AnnotatedBeanProperty;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.type.UserApiKey;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.util.PasswordUtil;
 import org.zanata.util.ServiceLocator;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 
 import static org.jboss.seam.ScopeType.APPLICATION;
@@ -69,10 +71,14 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 @Startup
 @BypassInterceptors
 @Slf4j
-// TODO [CDI] only 3 methods left not extended in JpaIdentityStore (which appears not used by us)
-public class ZanataJpaIdentityStore extends JpaIdentityStore implements
-        IdentityStore {
+// TODO [CDI] for some reason we have to extend Seam's JpaIdentityStore otherwise authenticated user is not available to injection even though we add it to event context here.
+public class ZanataJpaIdentityStore extends JpaIdentityStore implements Serializable, IdentityStore {
     public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
+
+    public static final String EVENT_USER_AUTHENTICATED = "org.jboss.seam.security.management.userAuthenticated";
+    public static final String EVENT_USER_CREATED = "org.jboss.seam.security.management.userCreated";
+    public static final String EVENT_PRE_PERSIST_USER = "org.jboss.seam.security.management.prePersistUser";
+
 
     /**
     *
@@ -121,7 +127,7 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
      * @param username
      * @param password
      * @return
-     * @see {@link JpaIdentityStore#authenticate(String, String)}
+     * @see {@link ZanataJpaIdentityStore#authenticate(String, String)}
      */
     public boolean authenticateEvenIfDisabled(String username, String password) {
         HAccount user = lookupUser(username);
@@ -135,7 +141,6 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
         return passwordHash.equals(user.getPasswordHash());
     }
 
-    @Override
     public boolean authenticate(String username, String password) {
         ZanataIdentity identity = ZanataIdentity.instance();
         if (identity.isApiRequest()) {
@@ -198,7 +203,6 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
         return users;
     }
 
-    @Override
     public boolean deleteUser(String name) {
         HAccount user = lookupUser(name);
         if (user == null) {
@@ -217,6 +221,12 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
 
     public boolean userExists(String name) {
         return lookupUser(name) != null;
+    }
+
+    @Override
+    public boolean supportsFeature(Feature feature) {
+        // we support all features
+        return true;
     }
 
     public boolean createUser(String username, String password) {
@@ -302,22 +312,9 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
         user.setPasswordHash(generatePasswordHash(password, user.getUsername()));
     }
 
-    /**
-     *
-     * @deprecated Use JpaIdentityStore.generatePasswordHash(String, byte[])
-     *             instead
-     */
-    @Deprecated
     protected String generatePasswordHash(String password, String salt) {
-        String algorithm = "MD5";
-
-        if (salt == null || "".equals(salt)) {
-            return PasswordHash.instance()
-                    .generateHash(password, algorithm);
-        } else {
-            return PasswordHash.instance().generateSaltedHash(password,
-                    salt, algorithm);
-        }
+        Preconditions.checkState(!Strings.isNullOrEmpty(salt));
+        return PasswordUtil.generateSaltedHash(password, salt);
     }
 
     public List<String> getGrantedRoles(String name) {
@@ -483,7 +480,6 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
         }
     }
 
-    @Override
     public boolean deleteRole(String role) {
         HAccountRole roleToDelete = lookupRole(role);
         if (roleToDelete == null) {
@@ -496,11 +492,10 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
             removeRoleFromGroup(r, role);
         }
 
-        removeEntity(roleToDelete);
+        entityManager().remove(roleToDelete);
         return true;
     }
 
-    @Override
     public boolean removeRoleFromGroup(String role, String group) {
         HAccountRole roleToRemove = lookupRole(role);
         if (roleToRemove == null) {
@@ -515,12 +510,10 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements
         return roleToRemove.getGroups().remove(targetGroup);
     }
 
-    @Override
     public boolean roleExists(String name) {
         return lookupRole(name) != null;
     }
 
-    @Override
     public boolean createRole(String role) {
         try {
 
