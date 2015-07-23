@@ -21,7 +21,7 @@ import org.zanata.exception.KeyNotFoundException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
-import org.zanata.security.ZanataIdentityManager;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.ui.faces.FacesMessages;
 
 @Name("passwordReset")

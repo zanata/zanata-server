@@ -18,7 +18,7 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.security;
+package org.zanata.seam.security;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -53,6 +53,7 @@ import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.type.UserApiKey;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.util.ServiceLocator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 import static org.jboss.seam.ScopeType.APPLICATION;
 
 /**
- * This class now combines the functionality of Seam's IdentityManager and
- * JpaIdentityStore.
+ * This class is the replacement of seam's JpaIdentityStore. It no longer use seam's annotation. e.g. UserPrincipal, UserRoles etc.
  */
 @Name("org.jboss.seam.security.identityStore")
 @Install(precedence = Install.DEPLOYMENT, value = true)

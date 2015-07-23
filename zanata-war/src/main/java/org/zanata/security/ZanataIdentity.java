@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.zanata.events.Logout;
 import org.zanata.model.HAccount;
 import org.zanata.model.HasUserFriendlyToString;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.jaas.InternalLoginModule;
 import org.zanata.security.permission.MultiTargetList;
 import org.zanata.util.ServiceLocator;

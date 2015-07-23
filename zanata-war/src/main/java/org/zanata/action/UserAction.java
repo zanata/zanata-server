@@ -39,7 +39,7 @@ import org.jboss.seam.international.StatusMessages;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.i18n.Messages;
-import org.zanata.security.ZanataIdentityManager;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.service.EmailService;
 import org.zanata.service.UserAccountService;
 import org.zanata.ui.AbstractListFilter;

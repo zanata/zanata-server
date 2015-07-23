@@ -11,7 +11,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.security.ZanataJpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 
 import static org.jboss.seam.ScopeType.SESSION;
 import static org.jboss.seam.annotations.Install.APPLICATION;

@@ -35,7 +35,7 @@ import org.zanata.exception.KeyNotFoundException;
 import org.zanata.exception.ActivationLinkExpiredException;
 import org.zanata.model.HAccountActivationKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
-import org.zanata.security.ZanataIdentityManager;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.ui.faces.FacesMessages;
 
 @Name("activate")

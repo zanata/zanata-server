@@ -45,7 +45,7 @@ import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.AuthenticationType;
-import org.zanata.security.ZanataJpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.service.RegisterService;
 import org.zanata.util.HashUtil;
 

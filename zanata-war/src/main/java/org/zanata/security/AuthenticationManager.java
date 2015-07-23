@@ -35,6 +35,7 @@ import org.zanata.dao.CredentialsDAO;
 import org.zanata.events.LoginCompleted;
 import org.zanata.model.HAccount;
 import org.zanata.model.security.HCredentials;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.UserAccountService;

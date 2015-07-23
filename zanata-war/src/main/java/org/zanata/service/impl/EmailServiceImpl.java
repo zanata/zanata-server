@@ -48,7 +48,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.seam.security.AbstractRunAsOperation;
-import org.zanata.security.ZanataIdentityManager;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.service.EmailService;
 
 import javax.annotation.Nullable;

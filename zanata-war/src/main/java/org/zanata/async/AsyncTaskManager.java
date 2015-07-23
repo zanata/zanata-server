@@ -44,7 +44,7 @@ import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.security.ZanataJpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.util.ServiceLocator;
 
 import com.google.common.util.concurrent.ListenableFuture;

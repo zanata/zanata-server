@@ -1,4 +1,4 @@
-package org.zanata.security;
+package org.zanata.seam.security;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -14,6 +14,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.util.Strings;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.util.ServiceLocator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
+ * Based on seam's IdentityManager.
+ *
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */

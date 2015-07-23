@@ -18,7 +18,7 @@ import org.jboss.seam.security.SimplePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.security.ZanataIdentityManager;
+import org.zanata.seam.security.ZanataIdentityManager;
 
 import static org.zanata.security.ZanataIdentity.*;
 
