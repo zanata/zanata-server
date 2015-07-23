@@ -52,12 +52,16 @@ public class PersonProjectMemberships {
                                     ListMultimap<HLocale, LocaleRole> localeRoleMappings) {
         this.person = person;
 
-        maintainer = projectRoles.contains(ProjectRole.Maintainer);
-        translationMaintainer = projectRoles.contains(ProjectRole.TranslationMaintainer);
+        maintainer = projectRoles != null &&
+                projectRoles.contains(ProjectRole.Maintainer);
+        translationMaintainer = projectRoles != null &&
+                projectRoles.contains(ProjectRole.TranslationMaintainer);
 
         localeRoles = Sets.newHashSet();
-        for (Map.Entry<HLocale, Collection<LocaleRole>> entry : localeRoleMappings.asMap().entrySet()) {
-            localeRoles.add(new LocaleRoles(entry.getKey(), entry.getValue()));
+        if (localeRoleMappings != null) {
+            for (Map.Entry<HLocale, Collection<LocaleRole>> entry : localeRoleMappings.asMap().entrySet()) {
+                localeRoles.add(new LocaleRoles(entry.getKey(), entry.getValue()));
+            }
         }
     }
 

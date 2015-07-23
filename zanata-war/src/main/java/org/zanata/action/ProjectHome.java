@@ -1198,6 +1198,7 @@ public class ProjectHome extends SlugHome<HProject> implements
                 ensurePersonLocaleRoles().get(person);
         permissionDialogData =
                 new PersonProjectMemberships(person, projectRoles, localeRoles);
+        log.info("Set person {}", person.getAccount().getUsername());
     }
 
 //    /**

@@ -75,25 +75,6 @@
           </ui:define>
         </ui:decorate>
 
-        <ui:decorate template="person-permissions-modal.xhtml">
-          <ui:param name="id" value="modal-manage-permissions"/>
-          <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
-
-          <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
-          <!-- this property will allow the dialog to show the correct
-               starting permissions, and will be the value used when the
-               dialog is submitted.
-               Need to retrieve a PersonProjectMemberships from projectHome
-               representing the correct person. -->
-          <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
-          <ui:define name="testDefine">
-            <p>Then just some content goes in here</p>
-          </ui:define>
-          </ui:decorate>
-
-
-
-
       </div>
 
       <h2 class="panel__heading">#{msgs['jsf.People']}</h2>
@@ -161,11 +142,21 @@
                     - permission check for each section is the same
                 -->
                 <!-- TODO onclick -> set person for permission dialog -->
+                  <h:form id="permission-dialog-setup-form">
+                      <a4j:commandButton
+                              value="#{msgs['jsf.projectPermissions.ManagePermissions']}"
+                              onbegin="/* TODO set modal to loading state */"
+                              action="#{projectHome.setPersonForPermissionDialog(person)}"
+                              render="modal-manage-permissions"
+                              oncomplete="/* TODO show the modal */"
+                              />
+                  </h:form>
+
                 <button class="button button--small"
                         data-toggle="modal"
-                        data-target="#modal-manage-permissions">
+                        data-target="#modal-manage-permissions-content">
                   <i class="i i--settings"></i>
-                  #{msgs['jsf.projectPermissions.ManagePermissions']}
+                  #{msgs['jsf.projectPermissions.ManagePermissions']} SHOW MODAL
                 </button>
               </s:fragment>
             </div>
@@ -173,6 +164,25 @@
         </li>
       </ui:repeat>
     </ul>
+
+    <s:div id="modal-manage-permissions">
+      <ui:decorate template="person-permissions-modal.xhtml">
+        <ui:param name="id" value="modal-manage-permissions-content"/>
+        <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
+
+        <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
+        <!-- this property will allow the dialog to show the correct
+             starting permissions, and will be the value used when the
+             dialog is submitted.
+             Need to retrieve a PersonProjectMemberships from projectHome
+             representing the correct person. -->
+        <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
+        <ui:define name="testDefine">
+          <p>Then just some content goes in here</p>
+        </ui:define>
+      </ui:decorate>
+    </s:div>
+
   </div>
 
 </ui:composition>
