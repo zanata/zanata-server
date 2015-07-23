@@ -1,4 +1,4 @@
-package org.zanata.security.jass;
+package org.zanata.security.jaas;
 
 import java.security.acl.Group;
 import java.util.HashSet;
@@ -23,7 +23,8 @@ import org.zanata.security.ZanataIdentityManager;
 import static org.zanata.security.ZanataIdentity.*;
 
 /**
- * Based on SeamLoginModule.
+ * Login module for internal authentication.
+ *
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
@@ -92,7 +93,6 @@ public class InternalLoginModule implements LoginModule {
             throw le;
         }
 
-        // TODO [CDI] we will need to use other IdentityManager or use org.zanata.security.ZanataJpaIdentityStore directly
         ZanataIdentityManager identityManager = ZanataIdentityManager.instance();
         if (identityManager != null && identityManager.isEnabled()) {
             ZanataIdentity identity = ZanataIdentity.instance();

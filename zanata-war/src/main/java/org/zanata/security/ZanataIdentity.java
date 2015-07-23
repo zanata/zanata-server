@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.zanata.events.Logout;
 import org.zanata.model.HAccount;
 import org.zanata.model.HasUserFriendlyToString;
-import org.zanata.security.jass.InternalLoginModule;
+import org.zanata.security.jaas.InternalLoginModule;
 import org.zanata.security.permission.MultiTargetList;
 import org.zanata.util.ServiceLocator;
 
@@ -469,7 +469,8 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         // to avoid a class cast exception, we pass Identity here (FacesSecurityEvents is not doing anything with it)
         // TODO [CDI] revisit this
         if (Events.exists()) {
-            Events.instance().raiseEvent(Identity.EVENT_POST_AUTHENTICATE, new Identity());
+            Events.instance().raiseEvent(Identity.EVENT_POST_AUTHENTICATE,
+                    new Identity());
         }
     }
 
