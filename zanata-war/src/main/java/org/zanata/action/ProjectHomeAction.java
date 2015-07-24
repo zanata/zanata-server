@@ -69,6 +69,7 @@ import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
@@ -183,6 +184,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
     @Getter(lazy = true)
     private final List<Activity> projectLastActivity =
             fetchProjectLastActivity();
+
+    private final String role_separator = ", ";
 
     private HProject project;
 
@@ -439,7 +442,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
         return projectVersions;
     }
-    
+
     public HProject getProject() {
         if (project == null) {
             ProjectDAO projectDAO =
@@ -550,50 +553,44 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 roles.contains(ProjectRole.TranslationMaintainer);
     }
 
-    public List<String> projectRolesDisplayName(HPerson person) {
+    public String projectRolesDisplayName(HPerson person) {
         Collection<ProjectRole> roles = getMemberRoles().get(person);
 
         if (roles == null || roles.isEmpty()) {
-            return Lists.newArrayList();
+            return null;
         }
-        return Lists
-            .newArrayList(Collections2.transform(roles,
-                new Function<ProjectRole, String>() {
-                    @Override
-                    public String apply(ProjectRole input) {
-                        return projectRoleDisplayName(input);
-                    }
-                }));
+        return Joiner.on(',').join((Collections2.transform(roles,
+            new Function<ProjectRole, String>() {
+                @Override
+                public String apply(ProjectRole input) {
+                    return projectRoleDisplayName(input);
+                }
+            })));
     }
 
-    public List<String> languageRolesDisplayName(HPerson person,
-        boolean includeLanguageName) {
+    public String languageRolesDisplayName(HPerson person) {
         ListMultimap<HLocale, LocaleRole>
             personLocaleRoles = ensurePersonLocaleRoles().get(person);
 
         if (personLocaleRoles == null || personLocaleRoles.isEmpty()) {
-            return Lists.newArrayList();
+            return null;
         }
 
         List<String> displayNames = Lists.newArrayList();
 
         for (Map.Entry<HLocale, LocaleRole> entry : personLocaleRoles
             .entries()) {
-
-            String name = entry.getValue().name();
-            if (includeLanguageName) {
-                name = entry.getKey().getDisplayName() + " " + name;
-            }
+            String name = entry.getKey().retrieveDisplayName() + " " +
+                    entry.getValue().name();
             displayNames.add(name);
         }
-        return displayNames;
+        return Joiner.on(role_separator).join(displayNames);
     }
 
-    public List<String> rolesDisplayName(HPerson person) {
-        List<String> displayNames = Lists.newArrayList();
-        displayNames.addAll(projectRolesDisplayName(person));
-        displayNames.addAll(languageRolesDisplayName(person, true));
-        return displayNames;
+    public String rolesDisplayName(HPerson person) {
+        return Joiner.on(role_separator).skipNulls()
+            .join(projectRolesDisplayName(person),
+                languageRolesDisplayName(person));
     }
 
     public String projectRoleDisplayName(ProjectRole role) {
@@ -663,13 +660,17 @@ public class ProjectHomeAction extends AbstractSortAction implements
         @Override
         protected List<HPerson> fetchAll() {
             if(allMembers == null) {
-                return getAllMembers();
+                allMembers = getAllMembers();
             }
             return allMembers;
         }
 
         @Override
         protected boolean include(HPerson person, final String filter) {
+            if(StringUtils.isBlank(filter)) {
+                return true;
+            }
+
             projectRolePredicate.setFilter(filter);
             projectLocalePredicate.setFilter(filter);
 
@@ -688,19 +689,54 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 Collections2.filter(fetchAll(), new Predicate<HPerson>() {
                     @Override
                     public boolean apply(HPerson input) {
-                        return isMaintainer(input);
+                        return include(input, getFilter()) &&
+                            isMaintainer(input);
                     }
                 }));
         }
 
-        public Collection<HPerson> getTranslators() {
-            return Lists.newArrayList(
-                Collections2.filter(fetchAll(), new Predicate<HPerson>() {
-                    @Override
-                    public boolean apply(HPerson input) {
-                        return isTranslator(input);
+        private final Function<LocaleRole, String> roleNameFunction =
+            new Function<LocaleRole, String>() {
+                @Override
+                public String apply(LocaleRole input) {
+                    return input.name();
+                }
+            };
+
+
+        public Map<HLocale, Map<HPerson, String>> getTranslators() {
+            Map<HLocale, Map<HPerson, String>> localePersonMap =
+                Maps.newHashMap();
+
+            for (HPerson person : fetchAll()) {
+                if(!include(person, getFilter()) || !isTranslator(person)) {
+                    continue;
+                }
+
+                ListMultimap<HLocale, LocaleRole> map =
+                        ensurePersonLocaleRoles().get(person);
+
+                for (HLocale locale : map.keySet()) {
+                    Collection<String> rolesInLocale = Collections2.transform(
+                        map.get(locale), roleNameFunction);
+
+                    Map<HPerson, String> personRoles =
+                        localePersonMap.get(locale);
+
+                    if(personRoles == null) {
+                        personRoles = Maps.newHashMap();
                     }
-                }));
+
+                    String languageRoles = Joiner.on(role_separator).skipNulls()
+                        .join(personRoles.get(person),
+                            Joiner.on(role_separator).skipNulls()
+                                .join(rolesInLocale));
+
+                    personRoles.put(person, languageRoles);
+                    localePersonMap.put(locale, personRoles);
+                }
+            }
+            return localePersonMap;
         }
 
         private boolean hasMatchingName(HPerson person, String filter) {

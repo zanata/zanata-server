@@ -102,7 +102,6 @@
     </a4j:status>
 
     <h:form id="people_form" styleClass="l--push-bottom-1">
-
       <s:div styleClass="l--pad-all-half"
         rendered="#{empty projectHomeAction.allMembers}">
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
@@ -117,40 +116,14 @@
         </s:fragment>
       </s:div>
 
-      <s:div styleClass="l--pad-all-half"
-        rendered="#{not empty projectHomeAction.allMembers and empty projectHomeAction.peopleFilterComparator.currentPage}">
-        <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
-      </s:div>
+      <s:fragment rendered="#{not projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+        <s:div styleClass="l--pad-all-half"
+          rendered="#{not empty projectHomeAction.allMembers and empty projectHomeAction.peopleFilterComparator.currentPage}">
+          <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
+        </s:div>
 
-      <s:fragment
-        rendered="#{!projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
-
-        <s:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
-          <s:div styleClass="l--pad-h-half" rendered="#{not empty projectHomeAction.peopleFilterComparator.getMaintainers()}">
-            <h4>#{msgs['jsf.project.peoplelist.project.label']} <span class="txt--understated">#{projectHomeAction.peopleFilterComparator.getMaintainers().size}</span></h4>
-            <ul class="list--slat l--push-all-half">
-              <ui:repeat value="#{projectHomeAction.peopleFilterComparator.getMaintainers()}" var="person">
-                <zanata:people-entry person="#{person}"
-                  manageMembersDialogId="modal-manage-permissions"
-                  roles="#{projectHomeAction.projectRolesDisplayName(person)}"
-                  canManageMembers="#{canManageMembers}"/>
-              </ui:repeat>
-            </ul>
-          </s:div>
-
-          <s:div styleClass="l--pad-h-half" rendered="#{not empty projectHomeAction.peopleFilterComparator.getTranslators()}">
-            <h4>#{msgs['jsf.project.peoplelist.translation.label']} <span class="txt--understated">#{projectHomeAction.peopleFilterComparator.getTranslators().size}</span></h4>
-            <ul class="list--slat l--push-all-half">
-              <ui:repeat value="#{projectHomeAction.peopleFilterComparator.getTranslators()}" var="person">
-                <!-- loop through all locale in project -->
-                <!-- is person is in locale, display -->
-              </ui:repeat>
-            </ul>
-
-          </s:div>
-        </s:fragment>
-
-        <s:fragment rendered="#{not projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+        <s:fragment
+          rendered="#{!projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
               <zanata:people-entry person="#{person}"
@@ -160,6 +133,60 @@
             </ui:repeat>
           </ul>
         </s:fragment>
+      </s:fragment>
+
+      <s:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+        <ui:param name="maintainers" value="#{projectHomeAction.peopleFilterComparator.getMaintainers()}"/>
+        <ui:param name="translators" value="#{projectHomeAction.peopleFilterComparator.getTranslators()}"/>
+
+        <s:div styleClass="l--pad-all-half"
+          rendered="#{not empty projectHomeAction.allMembers and empty maintainers and empty translators}">
+          <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
+        </s:div>
+
+        <s:div styleClass="l--pad-h-half l--push-bottom-1" rendered="#{not empty maintainers}">
+          <h3 class="heading--secondary l--push-bottom-quarter">
+            #{msgs['jsf.project.peoplelist.project.label']}
+            <span class="txt--mini l--push-left-quarter">
+              <span class="badge">#{maintainers.size}</span>
+            </span>
+          </h3>
+          <ul class="list--slat">
+            <ui:repeat value="#{maintainers}" var="person">
+              <zanata:people-entry person="#{person}"
+                manageMembersDialogId="modal-manage-permissions"
+                roles="#{projectHomeAction.projectRolesDisplayName(person)}"
+                canManageMembers="#{canManageMembers}"/>
+            </ui:repeat>
+          </ul>
+        </s:div>
+
+        <s:div styleClass="l--pad-h-half" rendered="#{not empty translators}">
+          <h3 class="heading--secondary l--push-bottom-quarter">
+            #{msgs['jsf.project.peoplelist.translation.label']}
+            <span class="txt--mini l--push-left-quarter">
+              <span class="badge">#{translators.size}</span>
+            </span>
+          </h3>
+          <ui:repeat value="#{translators.entrySet().toArray()}" var="entry">
+            <h4 class="heading--sub delta">
+              #{entry.key.retrieveDisplayName()}
+              <span class="txt--mini l--push-left-quarter">
+                <span class="badge">#{entry.value.size}</span>
+              </span>
+            </h4>
+            <ul class="list--slat l--push-bottom-1">
+              <ui:repeat value="#{entry.value.entrySet().toArray()}" var="personEntry">
+                <zanata:people-entry person="#{personEntry.key}"
+                  manageMembersDialogId="modal-manage-permissions"
+                  roles="#{personEntry.value}"
+                  canManageMembers="#{canManageMembers}"/>
+              </ui:repeat>
+            </ul>
+            <!-- loop through all locale in project -->
+            <!-- is person is in locale, display -->
+          </ui:repeat>
+        </s:div>
       </s:fragment>
     </h:form>
     <zanata:list-filter status="peopleTab-peopleLoader"

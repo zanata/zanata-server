@@ -9,8 +9,8 @@
   <composite:attribute name="person" type="org.zanata.model.HPerson"
     shortDescription="person" required="true"/>
 
-  <composite:attribute name="roles" type="java.util.List"
-    shortDescription="list of roles" required="true"/>
+  <composite:attribute name="roles" type="java.lang.String"
+    shortDescription="roles" required="true"/>
 
   <composite:attribute name="canManageMembers" type="java.lang.Boolean"
     shortDescription="allow user to manage members" default="false"/>
@@ -32,10 +32,8 @@
           #{cc.attrs.person.account.username}
         </a>
       </div>
-      <div class="g__item w--4-12">
-        <ui:repeat value="#{cc.attrs.roles}" var="role">
-          <div class="txt--understated">#{role}</div>
-        </ui:repeat>
+      <div class="g__item #{cc.attrs.canManageMembers ? 'w--4-12' : 'w--7-12'}">
+        <span class="txt--understated">#{cc.attrs.roles}</span>
       </div>
       <div class="g__item w--4-12 txt--align-right">
         <s:fragment rendered="#{cc.attrs.canManageMembers}">
