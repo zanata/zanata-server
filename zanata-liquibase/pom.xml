@@ -9,6 +9,10 @@
 
   <artifactId>zanata-liquibase</artifactId>
 
+  <properties>
+    <coverage.halt.failure>false</coverage.halt.failure>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

@@ -21,9 +21,7 @@
 
   <properties>
     <byteman.version>2.1.2</byteman.version>
-    <cobertura.total-line-rate>50</cobertura.total-line-rate>
-    <cobertura.total-branch-rate>30</cobertura.total-branch-rate>
-    <cobertura.halt.failure>false</cobertura.halt.failure>
+    <coverage.halt.failure>true</coverage.halt.failure>
     <delombok.dir>${project.build.directory}/delombok/org/zanata</delombok.dir>
     <!-- failsafe.version needs to be at least 2.19-20150503.223005-71: -->
     <failsafe.rerunFailingTestsCount>3</failsafe.rerunFailingTestsCount>
@@ -1330,17 +1328,6 @@
         <updatePolicy>never</updatePolicy>
       </snapshots>
     </pluginRepository>
-
-    <pluginRepository>
-      <id>cobertura-it-maven-plugin-maven2-release</id>
-      <url>http://cobertura-it-maven-plugin.googlecode.com/svn/maven2/releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
   </pluginRepositories>
 
 
@@ -1422,7 +1409,6 @@
               </allowedRepositories>
               <allowedPluginRepositories combine.children="append">
                 <allowedPluginRepository>apache.snapshots.https</allowedPluginRepository>
-                <allowedPluginRepository>cobertura-it-maven-plugin-maven2-release</allowedPluginRepository>
                 <allowedPluginRepository>jboss-public-repository-group</allowedPluginRepository>
               </allowedPluginRepositories>
             </requireNoRepositories>
@@ -1509,22 +1495,64 @@
           <!-- NB In some cases, we might not want to use gwt.version here -->
           <version>${gwt.version}</version>
         </plugin>
+
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>cobertura-maven-plugin</artifactId>
-          <version>2.6</version>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.7.5.201505241946</version>
           <configuration>
-            <formats>
-              <format>xml</format>
-            </formats>
-            <instrumentation>
-              <ignoreMethodAnnotations>
-                <ignoreMethodAnnotation>org.zanata.util.CoverageIgnore</ignoreMethodAnnotation>
-              </ignoreMethodAnnotations>
-              <ignoreTrivial>true</ignoreTrivial>
-            </instrumentation>
+            <excludes>
+              <!--General exclusion-->
+              <exclude>**/test/**/*</exclude>
+              <exclude>**/*Exception*</exclude>
+              <exclude>**/*Test</exclude>
+              <exclude>**/*Tests</exclude>
+              <exclude>**/*ITCase</exclude>
+            </excludes>
+            <haltOnFailure>${coverage.halt.failure}</haltOnFailure>
+            <!-- Can't do these in jacoco (yet?)
+            See https://github.com/jacoco/jacoco/issues/15 -->
+            <!--<ignoreMethodAnnotation>org.zanata.util.CoverageIgnore</ignoreMethodAnnotation>-->
+            <!--<ignoreTrivial>true</ignoreTrivial>-->
+            <rules>
+              <rule>
+                <!-- overall... -->
+                <element>BUNDLE</element>
+                <limits>
+                  <limit>
+                    <!-- 55% of classes must be executed -->
+                    <!-- TODO Make this 100% -->
+                    <counter>CLASS</counter>
+                    <value>COVEREDRATIO</value>
+                    <minimum>0.55</minimum>
+                    <!--<minimum>0.50</minimum>-->
+                  </limit>
+                  <limit>
+                    <!-- 38% of instructions must be covered -->
+                    <!-- TODO Make this 80% -->
+                    <counter>INSTRUCTION</counter>
+                    <value>COVEREDRATIO</value>
+                    <minimum>0.38</minimum>
+                  </limit>
+                </limits>
+              </rule>
+              <!-- TODO enable this -->
+              <!--<rule>-->
+              <!--&lt;!&ndash; within each class... &ndash;&gt;-->
+              <!--<element>CLASS</element>-->
+              <!--<limits>-->
+              <!--<limit>-->
+              <!--&lt;!&ndash; 50% of instructions must be covered &ndash;&gt;-->
+              <!--<counter>INSTRUCTIONS</counter>-->
+              <!--<value>COVEREDRATIO</value>-->
+              <!--<minimum>0.50</minimum>-->
+              <!--</limit>-->
+              <!--</limits>-->
+              <!--</rule>-->
+            </rules>
           </configuration>
         </plugin>
+
         <!-- change maven-release-plugin back to defaults (instead of oss-parent's settings)  -->
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
@@ -1577,6 +1605,48 @@
   </build>
 
   <profiles>
+
+    <profile>
+      <!-- use with jacoco-maven-plugin -->
+      <!-- Warning: always execute tests again *without instrumentation*
+       (ie without -Dcoverage) before a release.  See
+       http://stackoverflow.com/a/15799871/14379 -->
+      <id>coverage</id>
+      <activation>
+        <property>
+          <name>coverage</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
     <profile>
       <!-- This profile runs a single integration test with

@@ -19,6 +19,8 @@
   </scm>
 
   <properties>
+    <!-- Improve coverage to match the thresholds in server/pom.xml -->
+    <coverage.halt.failure>false</coverage.halt.failure>
   </properties>
 
   <build>

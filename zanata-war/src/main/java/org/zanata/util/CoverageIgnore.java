@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Cobertura 2.0+ will ignore any method with this annotation.
+ * TODO: not currently understood by jacoco filtering
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
