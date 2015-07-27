@@ -29,13 +29,18 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.international.StatusMessages;
-import org.jboss.seam.security.Identity;
+import org.zanata.events.AlreadyLoggedInEvent;
+import org.zanata.events.LoginFailedEvent;
+import org.zanata.events.LoginSuccessfulEvent;
+import org.zanata.events.NotLoggedInEvent;
 
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
  * Override the {@link org.jboss.seam.security.FacesSecurityEvents} component to
  * alter default values.
+ *
+ * TODO [CDI] need to find a CDI replacement.
  *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
@@ -46,19 +51,41 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
         classDependencies = "javax.faces.context.FacesContext")
 @BypassInterceptors
 @Startup
-public class FacesSecurityEvents extends
-        org.jboss.seam.security.FacesSecurityEvents {
-    @Override
-    public StatusMessage.Severity getLoginFailedMessageSeverity() {
-        return StatusMessage.Severity.ERROR;
+public class FacesSecurityEvents {
+
+    @Observer(LoginFailedEvent.EVENT_NAME)
+    public void addLoginFailedMessage(LoginFailedEvent loginFailedEvent) {
+        StatusMessages.instance().addFromResourceBundleOrDefault(
+                StatusMessage.Severity.ERROR,
+                "org.jboss.seam.loginFailed",
+                "Login failed",
+                loginFailedEvent.getException());
     }
 
-    @Observer(Identity.EVENT_LOGIN_SUCCESSFUL)
+    @Observer(LoginSuccessfulEvent.EVENT_NAME)
     public void addLoginSuccessfulMessage() {
         StatusMessages.instance().addFromResourceBundleOrDefault(
-                getLoginSuccessfulMessageSeverity(),
-                getLoginSuccessfulMessageKey(),
-                getLoginSuccessfulMessage(),
+                StatusMessage.Severity.INFO,
+                "org.jboss.seam.loginSuccessful",
+                "Welcome, #0",
                 ZanataIdentity.instance().getCredentials().getUsername());
+    }
+
+    @Observer(NotLoggedInEvent.EVENT_NAME)
+    public void addNotLoggedInMessage() {
+        StatusMessages.instance().addFromResourceBundleOrDefault(
+                StatusMessage.Severity.WARN,
+                "org.jboss.seam.NotLoggedIn",
+                "Please log in first"
+                );
+    }
+
+    @Observer(AlreadyLoggedInEvent.EVENT_NAME)
+    public void addAlreadyLoggedInMessage() {
+        StatusMessages.instance().addFromResourceBundleOrDefault(
+                StatusMessage.Severity.WARN,
+                "org.jboss.seam.AlreadyLoggedIn",
+                "You are already logged in, please log out first if you wish to log in again"
+                );
     }
 }

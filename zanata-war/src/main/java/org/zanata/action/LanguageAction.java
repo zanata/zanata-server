@@ -36,7 +36,7 @@ import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.LocaleMemberDAO;
@@ -86,7 +86,7 @@ public class LanguageAction implements Serializable {
     @In
     private LocaleService localeServiceImpl;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In

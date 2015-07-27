@@ -34,7 +34,7 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
 import org.zanata.email.EmailStrategy;
@@ -97,7 +97,7 @@ public class LanguageJoinAction implements Serializable {
     @Setter
     private String message;
 
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
+    @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
     public boolean hasSelectedRole() {

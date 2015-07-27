@@ -47,12 +47,13 @@ import org.jboss.seam.security.SimplePrincipal;
 import org.jboss.seam.security.management.IdentityManagementException;
 import org.jboss.seam.security.management.NoSuchRoleException;
 import org.jboss.seam.security.management.NoSuchUserException;
-import org.jboss.seam.util.AnnotatedBeanProperty;
 import org.zanata.dao.AccountDAO;
+import org.zanata.events.UserCreatedEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.type.UserApiKey;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.util.Event;
 import org.zanata.util.PasswordUtil;
 import org.zanata.util.ServiceLocator;
 
@@ -74,14 +75,6 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 public class ZanataJpaIdentityStore implements Serializable {
     public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
 
-    public static final String EVENT_USER_AUTHENTICATED = "org.jboss.seam.security.management.userAuthenticated";
-    public static final String EVENT_USER_CREATED = "org.jboss.seam.security.management.userCreated";
-    public static final String EVENT_PRE_PERSIST_USER = "org.jboss.seam.security.management.prePersistUser";
-
-
-    /**
-    *
-    */
     private static final long serialVersionUID = 1L;
 
     @Create
@@ -159,15 +152,8 @@ public class ZanataJpaIdentityStore implements Serializable {
 
             boolean success = passwordHash.equals(user.getPasswordHash());
 
-            if (success && Events.exists()) {
-                if (Contexts.isEventContextActive()) {
-                    Contexts.getEventContext().set(AUTHENTICATED_USER, user);
-                }
-                if (Contexts.isSessionContextActive()) {
-                    Contexts.getSessionContext().set(AUTHENTICATED_USER, user);
-                }
-
-                Events.instance().raiseEvent(EVENT_USER_AUTHENTICATED, user);
+            if (success) {
+                setAuthenticateUser(user);
             }
 
             return success;
@@ -175,7 +161,7 @@ public class ZanataJpaIdentityStore implements Serializable {
     }
 
     public boolean isNewUser(String username) {
-        Object user = lookupUser(username);
+        HAccount user = lookupUser(username);
         // also look in the credentials table
         if (user == null) {
             AccountDAO accountDAO =
@@ -185,7 +171,7 @@ public class ZanataJpaIdentityStore implements Serializable {
         return user == null;
     }
 
-    public void setAuthenticateUser(Object user) {
+    public void setAuthenticateUser(HAccount user) {
         if (Events.exists()) {
             if (Contexts.isEventContextActive()) {
                 Contexts.getEventContext().set(AUTHENTICATED_USER, user);
@@ -193,7 +179,6 @@ public class ZanataJpaIdentityStore implements Serializable {
             if (Contexts.isSessionContextActive()) {
                 Contexts.getSessionContext().set(AUTHENTICATED_USER, user);
             }
-            Events.instance().raiseEvent(EVENT_USER_AUTHENTICATED, user);
         }
     }
 
@@ -246,13 +231,10 @@ public class ZanataJpaIdentityStore implements Serializable {
                 user.setEnabled(true);
             }
 
-            if (Events.exists())
-                Events.instance().raiseEvent(EVENT_PRE_PERSIST_USER, user);
 
             entityManager().persist(user);
 
-            if (Events.exists())
-                Events.instance().raiseEvent(EVENT_USER_CREATED, user);
+            getUserCreatedEvent().fire(new UserCreatedEvent(user));
 
             return true;
         } catch (Exception ex) {
@@ -263,6 +245,11 @@ public class ZanataJpaIdentityStore implements Serializable {
                         "Could not create account", ex);
             }
         }
+    }
+
+    // TODO [CDI] revisit
+    private Event<UserCreatedEvent> getUserCreatedEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
     }
 
     public boolean enableUser(String name) {

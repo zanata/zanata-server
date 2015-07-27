@@ -44,9 +44,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.core.Events;
 import org.jboss.seam.security.AuthorizationException;
-import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.NotLoggedInException;
 import org.jboss.seam.security.Role;
 import org.jboss.seam.security.SimpleGroup;
@@ -54,12 +52,17 @@ import org.jboss.seam.security.permission.PermissionMapper;
 import org.jboss.seam.web.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.events.AlreadyLoggedInEvent;
+import org.zanata.events.LoginFailedEvent;
+import org.zanata.events.LoginSuccessfulEvent;
 import org.zanata.events.Logout;
+import org.zanata.events.NotLoggedInEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HasUserFriendlyToString;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.jaas.InternalLoginModule;
 import org.zanata.security.permission.MultiTargetList;
+import org.zanata.util.Event;
 import org.zanata.util.ServiceLocator;
 
 import com.google.common.collect.Lists;
@@ -95,7 +98,6 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     private PermissionMapper permissionMapper;
     private ZanataCredentials credentials;
     private boolean authenticating;
-    private String jaasConfigName;
 
     @Create
     public void create() {
@@ -179,16 +181,19 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
 
     @Observer("org.jboss.seam.preDestroyContext.SESSION")
     public void logout() {
-        if (Events.exists() && getCredentials() != null) {
-            Events.instance().raiseEvent(Logout.EVENT_NAME,
-                    new Logout(getCredentials().getUsername()));
+        if (getCredentials() != null) {
+            getLogoutEvent().fire(new Logout(getCredentials().getUsername()));
         }
         if (isLoggedIn()) {
             unAuthenticate();
             Session.instance().invalidate();
-            // used by Seam's RememberMe and RuleBsedPermissionResolver
-            if (Events.exists()) Events.instance().raiseEvent(Identity.EVENT_LOGGED_OUT);
+            // used by Seam's RememberMe and RuleBasedPermissionResolver
+//            if (Events.exists()) Events.instance().raiseEvent(Identity.EVENT_LOGGED_OUT);
         }
+    }
+
+    private Event<Logout> getLogoutEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
     }
 
     public boolean hasRole(String role) {
@@ -212,14 +217,10 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
 
         if (!hasRole(role)) {
             if (!isLoggedIn()) {
-                // used by org.jboss.seam.security.FacesSecurityEvents.addNotLoggedInMessage()
-                if (Events.exists())
-                    Events.instance().raiseEvent(Identity.EVENT_NOT_LOGGED_IN);
+                // used by org.zanata.security.FacesSecurityEvents.addNotLoggedInMessage()
+                getNotLoggedInEvent().fire(new NotLoggedInEvent());
                 throw new NotLoggedInException();
             } else {
-                // Nowhere uses this event
-                if (Events.exists())
-                    Events.instance().raiseEvent(Identity.EVENT_NOT_AUTHORIZED);
                 throw new AuthorizationException(String.format(
                         "Authorization check failed for role [%s]", role));
             }
@@ -365,19 +366,19 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         if (!hasPermission(target, action)) {
             if (!isLoggedIn()) {
                 // used by
-                // org.jboss.seam.security.FacesSecurityEvents.addNotLoggedInMessage()
-                if (Events.exists())
-                    Events.instance().raiseEvent(Identity.EVENT_NOT_LOGGED_IN);
+                // org.zanata.security.FacesSecurityEvents.addNotLoggedInMessage()
+                getNotLoggedInEvent().fire(new NotLoggedInEvent());
                 throw new NotLoggedInException();
             } else {
-                // Nowhere uses this event
-                if (Events.exists())
-                    Events.instance().raiseEvent(Identity.EVENT_NOT_AUTHORIZED);
                 throw new AuthorizationException(String.format(
                         "Authorization check failed for permission[%s,%s]",
                         target, action));
             }
         }
+    }
+
+    private Event<NotLoggedInEvent> getNotLoggedInEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
     }
 
     // copied from org.jboss.seam.security.Identity.tryLogin()
@@ -438,8 +439,6 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     // copied from org.jboss.seam.security.Identity
     private void preAuthenticate() {
         preAuthenticationRoles.clear();
-        // Nowhere uses this event
-        if (Events.exists()) Events.instance().raiseEvent(Identity.EVENT_PRE_AUTHENTICATE);
     }
 
     // copied from org.jboss.seam.security.Identity
@@ -468,11 +467,11 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         // - org.jboss.seam.security.FacesSecurityEvents.postAuthenticate(Identity)
         // -org.jboss.seam.security.RememberMe.postAuthenticate(Identity)
         // to avoid a class cast exception, we pass Identity here (FacesSecurityEvents is not doing anything with it)
-        // TODO [CDI] revisit this
-        if (Events.exists()) {
-            Events.instance().raiseEvent(Identity.EVENT_POST_AUTHENTICATE,
-                    new Identity());
-        }
+        // We already set authenticatedUser in session so no need to raise this event any more
+//        if (Events.exists()) {
+//            Events.instance().raiseEvent(Identity.EVENT_POST_AUTHENTICATE,
+//                    new Identity());
+//        }
     }
 
     // copied from org.jboss.seam.security.Identity
@@ -498,24 +497,11 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         }
     }
 
-    public String getJaasConfigName() {
-        return jaasConfigName;
-    }
-
-    public void setJaasConfigName(String jaasConfigName) {
-        this.jaasConfigName = jaasConfigName;
-    }
-
     public LoginContext getLoginContext() throws LoginException {
         if (isApiRequest()) {
             return new LoginContext(JAAS_DEFAULT, getSubject(),
                     getCredentials().createCallbackHandler(),
                     ZanataConfiguration.INSTANCE);
-        }
-        if (getJaasConfigName() != null
-                && !getJaasConfigName().equals(JAAS_DEFAULT)) {
-            return new LoginContext(getJaasConfigName(), getSubject(),
-                    getCredentials().createCallbackHandler());
         }
 
         return new LoginContext(JAAS_DEFAULT, getSubject(), getCredentials()
@@ -555,16 +541,12 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
                 // and then return.
                 if (Contexts.isEventContextActive()
                         && Contexts.getEventContext().isSet(SILENT_LOGIN)) {
-                    if (Events.exists())
-                        Events.instance().raiseEvent(
-                                Identity.EVENT_LOGIN_SUCCESSFUL);
+                    getLoginSuccessfulEvent().fire(new LoginSuccessfulEvent());
                     return "loggedIn";
                 }
 
-                // used by org.jboss.seam.security.FacesSecurityEvents.addAlreadyLoggedInMessage()
-                if (Events.exists())
-                    Events.instance().raiseEvent(
-                            Identity.EVENT_ALREADY_LOGGED_IN);
+                // used by org.zanata.security.FacesSecurityEvents.addAlreadyLoggedInMessage()
+                getAlreadyLoggedInEvent().fire(new AlreadyLoggedInEvent());
                 return "loggedIn";
             }
 
@@ -579,9 +561,8 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
                         + getCredentials().getUsername());
             }
 
-            // used by org.jboss.seam.security.FacesSecurityEvents.addLoginSuccessfulMessage()
-            if (Events.exists())
-                Events.instance().raiseEvent(Identity.EVENT_LOGIN_SUCCESSFUL);
+            // used by org.zanata.security.FacesSecurityEvents.addLoginSuccessfulMessage()
+            getLoginSuccessfulEvent().fire(new LoginSuccessfulEvent());
             return "loggedIn";
         } catch (LoginException ex) {
             credentials.invalidate();
@@ -591,12 +572,23 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
                         "Login failed for: " + getCredentials().getUsername(),
                         ex);
             }
-            // used by org.jboss.seam.security.FacesSecurityEvents.addLoginFailedMessage()
-            if (Events.exists())
-                Events.instance().raiseEvent(Identity.EVENT_LOGIN_FAILED, ex);
+            // used by org.zanata.security.FacesSecurityEvents.addLoginFailedMessage()
+            getLoginFailedEvent().fire(new LoginFailedEvent(ex));
         }
 
         return null;
+    }
+
+    private Event<AlreadyLoggedInEvent> getAlreadyLoggedInEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
+    }
+
+    private Event<LoginSuccessfulEvent> getLoginSuccessfulEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
+    }
+
+    private Event<LoginFailedEvent> getLoginFailedEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
     }
 
     /**

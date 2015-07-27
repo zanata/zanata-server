@@ -24,7 +24,6 @@ import java.security.Principal;
 import java.security.acl.Group;
 import javax.security.auth.Subject;
 
-import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.SimpleGroup;
 import org.jboss.seam.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
@@ -67,13 +66,13 @@ public abstract class AbstractRunAsOperation implements
 
     public AbstractRunAsOperation addRole(String role) {
         for (Group sg : getSubject().getPrincipals(Group.class)) {
-            if (Identity.ROLES_GROUP.equals(sg.getName())) {
+            if (ZanataIdentity.ROLES_GROUP.equals(sg.getName())) {
                 sg.addMember(new SimplePrincipal(role));
                 break;
             }
         }
 
-        SimpleGroup roleGroup = new SimpleGroup(Identity.ROLES_GROUP);
+        SimpleGroup roleGroup = new SimpleGroup(ZanataIdentity.ROLES_GROUP);
         roleGroup.addMember(new SimplePrincipal(role));
         getSubject().getPrincipals().add(roleGroup);
 

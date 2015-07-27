@@ -40,7 +40,7 @@ import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.international.LocaleSelector;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.ProjectDAO;
@@ -83,7 +83,7 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
     @In
     private VersionGroupDAO versionGroupDAO;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @Getter

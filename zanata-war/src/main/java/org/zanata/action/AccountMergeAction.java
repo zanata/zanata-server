@@ -34,7 +34,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.security.AuthenticationManager;
@@ -55,7 +55,7 @@ import org.zanata.util.ServiceLocator;
 public class AccountMergeAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In("jsfMessages")

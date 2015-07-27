@@ -31,7 +31,7 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
 import org.zanata.security.annotations.ZanataSecured;
@@ -50,7 +50,7 @@ public class ActivityAction implements Serializable {
     @In
     private ActivityService activityServiceImpl;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     private final int ACTIVITY_COUNT_PER_LOAD = 5;

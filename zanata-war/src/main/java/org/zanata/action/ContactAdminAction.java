@@ -31,7 +31,7 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.email.ContactAdminAnonymousEmailStrategy;
 import org.zanata.email.ContactAdminEmailStrategy;
 import org.zanata.email.EmailStrategy;
@@ -60,7 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 @ZanataSecured
 public class ContactAdminAction implements Serializable {
 
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
+    @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
     @In

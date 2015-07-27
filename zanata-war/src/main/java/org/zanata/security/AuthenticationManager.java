@@ -357,7 +357,7 @@ public class AuthenticationManager {
     }
 
     public void setAuthenticateUser(String username) {
-        Object user = identityStore.lookupUser(username);
+        HAccount user = identityStore.lookupUser(username);
         identityStore.setAuthenticateUser(user);
     }
 
