@@ -21,6 +21,8 @@
 package org.zanata.seam.security;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,8 +45,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.security.Role;
 import org.jboss.seam.security.SimplePrincipal;
 import org.jboss.seam.security.management.IdentityManagementException;
-import org.jboss.seam.security.management.IdentityStore;
-import org.jboss.seam.security.management.JpaIdentityStore;
 import org.jboss.seam.security.management.NoSuchRoleException;
 import org.jboss.seam.security.management.NoSuchUserException;
 import org.jboss.seam.util.AnnotatedBeanProperty;
@@ -71,8 +71,7 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 @Startup
 @BypassInterceptors
 @Slf4j
-// TODO [CDI] for some reason we have to extend Seam's JpaIdentityStore otherwise authenticated user is not available to injection even though we add it to event context here.
-public class ZanataJpaIdentityStore extends JpaIdentityStore implements Serializable, IdentityStore {
+public class ZanataJpaIdentityStore implements Serializable {
     public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
 
     public static final String EVENT_USER_AUTHENTICATED = "org.jboss.seam.security.management.userAuthenticated";
@@ -87,19 +86,23 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements Serializ
 
     @Create
     public void init() {
-        initProperties();
-    }
-
-    private void initProperties() {
-        AnnotatedBeanProperty<UserApiKey> userApiKeyProperty =
-                new AnnotatedBeanProperty<>(HAccount.class,
-                        UserApiKey.class);
-        if (!userApiKeyProperty.isSet()) {
-            throw new IdentityManagementException(
-                    "Invalid userClass "
-                            + HAccount.class.getName()
-                            + " - required annotation @UserApiKey not found on any Field or Method.");
+        // TODO [CDI] is this check still necessary?
+        Field[] declaredFields = HAccount.class.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            if (declaredField.isAnnotationPresent(UserApiKey.class)) {
+                return;
+            }
         }
+        Method[] methods = HAccount.class.getMethods();
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(UserApiKey.class)) {
+                return;
+            }
+        }
+        throw new IllegalStateException(
+                "Invalid userClass "
+                        + HAccount.class.getName()
+                        + " - required annotation @UserApiKey not found on any Field or Method.");
 
     }
 
@@ -159,6 +162,9 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements Serializ
             if (success && Events.exists()) {
                 if (Contexts.isEventContextActive()) {
                     Contexts.getEventContext().set(AUTHENTICATED_USER, user);
+                }
+                if (Contexts.isSessionContextActive()) {
+                    Contexts.getSessionContext().set(AUTHENTICATED_USER, user);
                 }
 
                 Events.instance().raiseEvent(EVENT_USER_AUTHENTICATED, user);
@@ -221,12 +227,6 @@ public class ZanataJpaIdentityStore extends JpaIdentityStore implements Serializ
 
     public boolean userExists(String name) {
         return lookupUser(name) != null;
-    }
-
-    @Override
-    public boolean supportsFeature(Feature feature) {
-        // we support all features
-        return true;
     }
 
     public boolean createUser(String username, String password) {
