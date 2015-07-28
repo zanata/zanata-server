@@ -487,7 +487,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.security.AuthorizationException"
+  <exception class="org.zanata.exception.AuthorizationException"
     log-level="debug">
     <redirect view-id="/error.xhtml">
       <message
@@ -496,7 +496,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.security.NotLoggedInException"
+  <exception class="org.zanata.exception.NotLoggedInException"
     log-level="debug">
     <redirect view-id="/account/login.xhtml">
       <message severity="warn">#{msgs['org.jboss.seam.NotLoggedIn']}

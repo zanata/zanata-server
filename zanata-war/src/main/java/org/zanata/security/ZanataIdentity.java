@@ -44,8 +44,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.security.AuthorizationException;
-import org.jboss.seam.security.NotLoggedInException;
+import org.zanata.exception.AuthorizationException;
+import org.zanata.exception.NotLoggedInException;
 import org.jboss.seam.web.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -333,7 +333,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
      *            Targets for permissions.
      * @throws NotLoggedInException
      *             if not authorised and not logged in
-     * @throws org.jboss.seam.security.AuthorizationException
+     * @throws org.zanata.exception.AuthorizationException
      *             if logged in but not authorised
      */
     public void checkPermission(String action, Object... targets) {

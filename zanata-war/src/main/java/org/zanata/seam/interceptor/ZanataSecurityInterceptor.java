@@ -12,7 +12,7 @@ import org.jboss.seam.annotations.intercept.AroundInvoke;
 import org.jboss.seam.annotations.intercept.Interceptor;
 import org.jboss.seam.annotations.intercept.InterceptorType;
 import org.jboss.seam.intercept.AbstractInterceptor;
-import org.jboss.seam.security.NotLoggedInException;
+import org.zanata.exception.NotLoggedInException;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;

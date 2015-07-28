@@ -29,7 +29,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.security.AuthorizationException;
+import org.zanata.exception.AuthorizationException;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.i18n.Messages;
 import org.zanata.security.AuthenticationType;
