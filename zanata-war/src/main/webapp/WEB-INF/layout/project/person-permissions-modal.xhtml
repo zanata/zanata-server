@@ -43,11 +43,10 @@
         <!-- TODO custom user selection mechanism -->
         <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
         <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
-         <input type="text" id="add-person-user" placeholder="Search name or username"/>
+        <input type="text" id="add-person-user" placeholder="Search name or username"/>
+
         <p class="txt--lead">
-          <a href="/djansen"><span class="w--r-1 bx--round l--push-right-quarter">
-            <img src="https://avatars1.githubusercontent.com/u/4597195?v=3&amp;s=460" alt=""/></span>#{projectHome.permissionDialogData.person.account.username}
-          </a>
+          <zanata:person-tile person="#{memberships.person}"/>
           <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
               title="#{msgs['jsf.people.RemoveUser']}">
             <i class="i i--small i--cross"></i>
@@ -66,29 +65,21 @@
           <!-- TODO disabled when #{!s:hasPermission(projectHome.instance, 'manage-members')} -->
           <div class="g__item w--2-3">
             <ul class="list--horizontal">
-              <!--<li class="form__checkbox js-form__checkbox">-->
-                <!--<input name="project-permission"-->
-                    <!--class="form__checkbox__input js-form__checkbox__input"-->
-                    <!--id="project-permission-translation-maintainer"-->
-                    <!--value="Translation Maintainer"-->
-                    <!--type="checkbox"/>-->
-                <!--<label for="project-permission-translation-maintainer"-->
-                    <!--class="form__checkbox__label js-form__checkbox__label">-->
-                  <!--#{msgs['jsf.projectPermissions.ManageTranslators']}-->
-                <!--</label>-->
-                <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-              <!--</li>-->
-              <li class="form__checkbox js-form__checkbox">
-                <input name="project-permission"
-                    class="form__checkbox__input js-form__checkbox__input"
-                    id="project-permission-maintainer"
-                    value="Maintainer"
-                    type="checkbox"/>
-                <label for="project-permission-maintainer"
-                    class="form__checkbox__label js-form__checkbox__label">
-                    #{msgs['jsf.projectPermissions.MaintainProject']}
-                </label>
-                <span class="form__checkbox__item js-form__checkbox__item"></span>
+              <li>
+                <zanata:checkbox
+                  label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
+                  labelStyle="form__checkbox__label js-form__checkbox__label"
+                  checked="#{memberships.translationMaintainer}"
+                  onValueChanged=""
+                  value="Translation Maintainer"/>
+              </li>
+              <li>
+                <zanata:checkbox
+                  label="#{msgs['jsf.projectPermissions.MaintainProject']}"
+                  labelStyle="form__checkbox__label js-form__checkbox__label"
+                  checked="#{memberships.maintainer}"
+                  onValueChanged=""
+                  value="Maintainer"/>
               </li>
             </ul>
 
@@ -101,35 +92,49 @@
           </div>
         </div>
 
+        <hr/>
 
-        <!-- TODO add this section when project locale roles are added -->
-        <!--<hr/>-->
-
-        <!--<h3>Translation Permissions</h3>-->
-        <!--<ul class="list- -slat">-->
-          <!--&lt;!&ndash; TODO ui:repeat for each language in list (filterable list) &ndash;&gt;-->
-          <!--<li>-->
-            <!--<div class="g- -tight">-->
-              <!--<div class="g__item w- -1-3">-->
-                <!--<label class="l- -push-bottom-0" for="german-permission">German</label>-->
-              <!--</div>-->
-              <!--<div class="g__item w- -2-3">-->
-                <!--<ul class="list- -horizontal">-->
-                  <!--<li class="form__checkbox js-form__checkbox">-->
-                    <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>-->
-                    <!--<label for="german-permission-translator" class="form__checkbox__label js-form__checkbox__label">Translate</label>-->
-                    <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-                  <!--</li>-->
-                  <!--<li class="form__checkbox js-form__checkbox">-->
-                    <!--<input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-reviewer" value="Review" type="checkbox"/>-->
-                    <!--<label for="german-permission-reviewer" class="form__checkbox__label js-form__checkbox__label">Review</label>-->
-                    <!--<span class="form__checkbox__item js-form__checkbox__item"></span>-->
-                  <!--</li>-->
-                <!--</ul>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</li>-->
-        <!--</ul>-->
+        <h3>Translation Permissions</h3>
+        <ul class="list--slat">
+          <!-- TODO add filtering for list -->
+          <!-- TODO empty list message -->
+          <ui:repeat value="#{memberships.localeRoles.toArray()}" var="roles">
+            <li>
+              <div class="g--tight">
+                <div class="g__item w--1-3">
+                  <label class="l--push-bottom-0">
+                    #{roles.locale.retrieveDisplayName()}
+                  </label>
+                </div>
+                <div class="g__item w--2-3">
+                  <ul class="list--horizontal">
+                    <li>
+                      <zanata:checkbox
+                        label="Translate"
+                        labelStyle="form__checkbox__label js-form__checkbox__label"
+                        onValueChanged=""
+                        value="Translator"
+                        checked="#{roles.translator}"/>
+                        <ui:remove>
+                          <input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>
+                          <label for="german-permission-translator" class="form__checkbox__label js-form__checkbox__label">Translate</label>
+                          <span class="form__checkbox__item js-form__checkbox__item"></span>
+                        </ui:remove>
+                    </li>
+                    <li>
+                      <zanata:checkbox
+                        label="Review"
+                        labelStyle="form__checkbox__label js-form__checkbox__label"
+                        onValueChanged=""
+                        value="Reviewer"
+                        checked="#{roles.reviewer}"/>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </li>
+          </ui:repeat>
+        </ul>
       </div>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
@@ -140,6 +145,11 @@
       </footer>
     </div>
   </div>
+  <script type="text/javascript">
+  //<![CDATA[
+    zanata.form.appendCheckboxes(jQuery('##{cc.attrs.id}').element);
+  //]]>
+  </script>
 </div>
 
 </ui:composition>
