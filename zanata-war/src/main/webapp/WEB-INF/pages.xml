@@ -440,6 +440,7 @@
     </navigation>
   </page>
 
+  <!-- TODO [CDI] we will probably use something like this http://stackoverflow.com/a/18411362/345718 -->
   <!-- Exceptions -->
   <exception class="org.zanata.exception.KeyNotFoundException"
     log-level="warn">

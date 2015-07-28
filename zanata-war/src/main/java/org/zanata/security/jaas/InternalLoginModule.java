@@ -13,10 +13,10 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.jboss.seam.security.SimpleGroup;
-import org.jboss.seam.security.SimplePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.security.SimpleGroup;
+import org.zanata.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.seam.security.ZanataIdentityManager;
 
@@ -57,7 +57,6 @@ public class InternalLoginModule implements LoginModule {
         }
 
         if (roleGroup == null) {
-            // TODO [CDI] replace with other Group Implementation (PicketBox from JBOSS?)
             roleGroup = new SimpleGroup(ROLES_GROUP);
         }
 

@@ -37,13 +37,15 @@ import javax.persistence.NoResultException;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.security.Role;
-import org.jboss.seam.security.SimplePrincipal;
+import org.jboss.seam.security.Identity;
+import org.zanata.events.PostAuthenticateEvent;
+import org.zanata.security.Role;
 import org.jboss.seam.security.management.IdentityManagementException;
 import org.jboss.seam.security.management.NoSuchRoleException;
 import org.jboss.seam.security.management.NoSuchUserException;
@@ -52,6 +54,7 @@ import org.zanata.events.UserCreatedEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
 import org.zanata.model.type.UserApiKey;
+import org.zanata.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.util.Event;
 import org.zanata.util.PasswordUtil;
@@ -153,10 +156,22 @@ public class ZanataJpaIdentityStore implements Serializable {
             boolean success = passwordHash.equals(user.getPasswordHash());
 
             if (success) {
-                setAuthenticateUser(user);
+                getPostAuthenticateEvent().fire(new PostAuthenticateEvent(user));
             }
 
             return success;
+        }
+    }
+
+    private Event<PostAuthenticateEvent> getPostAuthenticateEvent() {
+        return ServiceLocator.instance().getInstance("event", Event.class);
+    }
+
+    @Observer(PostAuthenticateEvent.EVENT_NAME)
+    public void setUserAccountForSession(PostAuthenticateEvent event) {
+        if (Contexts.isSessionContextActive()) {
+            Contexts.getSessionContext().set(AUTHENTICATED_USER,
+                    event.getAuthenticatedAccount());
         }
     }
 

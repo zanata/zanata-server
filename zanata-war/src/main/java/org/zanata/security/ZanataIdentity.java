@@ -46,8 +46,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.security.AuthorizationException;
 import org.jboss.seam.security.NotLoggedInException;
-import org.jboss.seam.security.Role;
-import org.jboss.seam.security.SimpleGroup;
 import org.jboss.seam.web.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -497,7 +495,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
                 }
             }
 
-            SimpleGroup roleGroup = new SimpleGroup(ROLES_GROUP);
+            Group roleGroup = new SimpleGroup(ROLES_GROUP);
             roleGroup.addMember(new Role(role));
             getSubject().getPrincipals().add(roleGroup);
             return true;
