@@ -11,7 +11,7 @@ module.exports = {
   ],
   output: {
     path: bundleDest,
-    filename: path.basename(__dirname) + '.bundle.min.js',
+    filename: 'frontend.bundle.min.js',
     pathinfo: true
   },
   module: {
