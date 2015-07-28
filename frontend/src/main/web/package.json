@@ -1,7 +1,7 @@
 {
-  "name": "react-profile",
+  "name": "zanata-frontend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Zanata front-end package",
   "main": "index.js",
   "scripts": {
     "test": "jest",
@@ -9,7 +9,6 @@
     "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js --bail --display-error-details",
     "start": "node server.js"
   },
-  "author": "Patrick Huang <pahuang@redhat.com>",
   "license": "LGPL",
   "devDependencies": {
     "babel-core": "^4.3.0",
