@@ -111,13 +111,7 @@
         <li>
           <div class="g g--tighter">
             <div class="g__item w--4-12">
-              <!-- TODO use a component for a person avatar + name + profile link -->
-              <a href="#{request.contextPath}/profile/view/#{person.account.username}">
-                <span class="w--r-1 bx--round l--push-right-quarter">
-                  <img src="#{gravatarServiceImpl.getUserImageUrl(48, person.email)}" alt=""/>
-                </span>
-                  #{person.account.username}
-              </a>
+              <zanata:person-tile person="#{person}"/>
             </div>
             <div class="g__item w--4-12">
               <ui:repeat value="#{projectHome.memberRoles.get(person).toArray()}" var="role">
