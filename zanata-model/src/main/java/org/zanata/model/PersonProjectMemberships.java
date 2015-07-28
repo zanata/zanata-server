@@ -27,7 +27,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,8 +70,7 @@ public class PersonProjectMemberships {
      * Intended to use as a row for a single locale in a permission setting table.
      */
     @Getter
-    private class LocaleRoles {
-
+    public class LocaleRoles {
         private HLocale locale;
 
         @Setter
