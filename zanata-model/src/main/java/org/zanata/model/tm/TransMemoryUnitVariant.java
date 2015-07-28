@@ -20,6 +20,7 @@
  */
 package org.zanata.model.tm;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -32,6 +33,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 
+import java8.util.J8Arrays;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,8 +48,6 @@ import org.zanata.hibernate.search.TransUnitVariantClassBridge;
 import org.zanata.model.ModelEntityBase;
 import org.zanata.util.HashUtil;
 import org.zanata.util.OkapiUtil;
-
-import com.google.common.collect.Maps;
 
 /**
  * A translation unit variant. This is the equivalent of a translated string.
@@ -138,10 +138,9 @@ public class TransMemoryUnitVariant extends ModelEntityBase implements
 
     public static Map<String, TransMemoryUnitVariant> newMap(
             TransMemoryUnitVariant... tuvs) {
-        Map<String, TransMemoryUnitVariant> map = Maps.newHashMap();
-        for (TransMemoryUnitVariant target : tuvs) {
-            map.put(target.getLanguage(), target);
-        }
+        Map<String, TransMemoryUnitVariant> map = new HashMap<>();
+        J8Arrays.stream(tuvs)
+                .forEach(tuv -> map.put(tuv.getLanguage(), tuv));
         return map;
     }
 
