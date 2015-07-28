@@ -48,7 +48,6 @@ import org.jboss.seam.security.AuthorizationException;
 import org.jboss.seam.security.NotLoggedInException;
 import org.jboss.seam.security.Role;
 import org.jboss.seam.security.SimpleGroup;
-import org.jboss.seam.security.permission.PermissionMapper;
 import org.jboss.seam.web.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +60,7 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HasUserFriendlyToString;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.jaas.InternalLoginModule;
+import org.zanata.security.permission.CustomPermissionResolver;
 import org.zanata.security.permission.MultiTargetList;
 import org.zanata.util.Event;
 import org.zanata.util.ServiceLocator;
@@ -95,7 +95,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     private Subject subject;
     private Principal principal;
     private List<String> preAuthenticationRoles = new ArrayList<>();
-    private PermissionMapper permissionMapper;
+    CustomPermissionResolver permissionResolver;
     private ZanataCredentials credentials;
     private boolean authenticating;
     private String jaasConfigName = "zanata";
@@ -105,9 +105,8 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         subject = new Subject();
 
         if (Contexts.isApplicationContextActive()) {
-            // TODO [CDI] this uses Seam's PermissionMapper which resolves the resolver chain to use our CustomPermissionResolver
-            permissionMapper = ServiceLocator.instance()
-                    .getInstance(PermissionMapper.class);
+            permissionResolver = ServiceLocator.instance()
+                    .getInstance(CustomPermissionResolver.class);
         }
 
         if (Contexts.isSessionContextActive()) {
@@ -240,7 +239,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
 
     public boolean hasPermission(Object target, String action) {
         log.trace("ENTER hasPermission({}, {})", target, action);
-        boolean result = seamHasPermission(target, action);
+        boolean result = resolvePermission(target, action);
         if (result) {
             if (log.isDebugEnabled()) {
                 log.debug("ALLOWED hasPermission({}, {}) for user {}",
@@ -256,16 +255,21 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         return result;
     }
 
-    // copied from org.jboss.seam.security.Identity.hasPermission(java.lang.Object, java.lang.String)
-    private boolean seamHasPermission(Object target, String action) {
-        if (!securityEnabled) return true;
-        if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) return true;
-        if (permissionMapper == null) return false;
-        if (target == null) return false;
+    private boolean resolvePermission(Object target, String action) {
+        if (!securityEnabled) {
+            return true;
+        }
+        if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) {
+            return true;
+        }
+        if (permissionResolver == null) {
+            return false;
+        }
+        if (target == null) {
+            return false;
+        }
 
-        // TODO [CDI] [pre] we could just use our own org.zanata.security.permission.CustomPermissionResolver directly here
-
-        return permissionMapper.resolvePermission(target, action);
+        return permissionResolver.hasPermission(target, action);
     }
 
     public boolean hasPermission(String name, String action, Object... arg) {
@@ -273,7 +277,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
             log.trace("ENTER hasPermission({})",
                     Lists.newArrayList(name, action, arg));
         }
-        boolean result = seamHasPermission(name, action, arg);
+        boolean result = resolvePermission(name, action, arg);
         if (result) {
             if (log.isDebugEnabled()) {
                 log.debug("ALLOWED hasPermission({}, {}, {}) for user {}",
@@ -289,18 +293,21 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         return result;
     }
 
-    /**
-     * copied from org.jboss.seam.security.Identity#hasPermission(java.lang.String, java.lang.String, java.lang.Object...)
-     */
-    private boolean seamHasPermission(String name, String action, Object...arg) {
-        if (!securityEnabled) return true;
-        if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) return true;
-        if (permissionMapper == null) return false;
+    private boolean resolvePermission(String name, String action, Object... arg) {
+        if (!securityEnabled) {
+            return true;
+        }
+        if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) {
+            return true;
+        }
+        if (permissionResolver == null) {
+            return false;
+        }
 
         if (arg != null && arg.length > 0) {
-            return permissionMapper.resolvePermission(arg[0], action);
+            return permissionResolver.hasPermission(arg[0], action);
         } else {
-            return permissionMapper.resolvePermission(name, action);
+            return permissionResolver.hasPermission(name, action);
         }
     }
 
@@ -333,7 +340,8 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
      */
     public void checkPermission(String action, Object... targets) {
         try {
-            seamCheckPermission(MultiTargetList.fromTargets(targets), action);
+            internalCheckPermission(MultiTargetList.fromTargets(targets),
+                    action);
         } catch (AuthorizationException exception) {
             // try to produce a better than default error message
             List<String> meaningfulTargets = Lists.newArrayList();
@@ -356,11 +364,11 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     }
 
     public void checkPermission(Object target, String action) {
-        seamCheckPermission(target, action);
+        internalCheckPermission(target, action);
     }
 
-    // copied from org.jboss.seam.security.Identity
-    private void seamCheckPermission(Object target, String action) {
+    // based on org.jboss.seam.security.Identity
+    private void internalCheckPermission(Object target, String action) {
         if (systemOp != null && Boolean.TRUE.equals(systemOp.get())) return;
 
         tryLogin();
@@ -405,7 +413,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
             // Ensure that we haven't been authenticated as a result of the EVENT_QUIET_LOGIN event
             if (!isLoggedIn()) {
                 if (credentials.isSet()) {
-                    seamAuthenticate();
+                    authenticate();
                     if (isLoggedIn() && Contexts.isEventContextActive()) {
                         Contexts.getEventContext().set(SILENT_LOGIN, true);
                     }
@@ -416,28 +424,25 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         }
     }
 
-    // copied from org.jboss.seam.security.Identity.authenticate()
-    private synchronized void seamAuthenticate() throws LoginException {
+    // based on org.jboss.seam.security.Identity.authenticate()
+    private synchronized void authenticate() throws LoginException {
         // If we're already authenticated, then don't authenticate again
         if (!isLoggedIn() && !credentials.isInvalid()) {
             principal = null;
             subject = new Subject();
-            authenticate(getLoginContext());
+            try {
+                authenticating = true;
+                preAuthenticate();
+                getLoginContext().login();
+                postAuthenticate();
+            } finally {
+                // Set password to null whether authentication is successful or not
+                credentials.setPassword(null);
+                authenticating = false;
+            }
         }
     }
-    // copied from org.jboss.seam.security.Identity
-    private void authenticate(LoginContext loginContext) throws LoginException {
-        try {
-            authenticating = true;
-            preAuthenticate();
-            loginContext.login();
-            postAuthenticate();
-        } finally {
-            // Set password to null whether authentication is successful or not
-            credentials.setPassword(null);
-            authenticating = false;
-        }
-    }
+
     // copied from org.jboss.seam.security.Identity
     private void preAuthenticate() {
         preAuthenticationRoles.clear();
@@ -538,15 +543,6 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
 
     public String login(AuthenticationType authType) {
         getCredentials().setAuthType(authType);
-        String result = seamLogin();
-        if (result != null && result.equals("loggedIn")) {
-            this.preAuthenticated = true;
-        }
-        return result;
-    }
-
-    // copied from org.jboss.seam.security.Identity
-    public String seamLogin() {
         try {
             if (isLoggedIn()) {
                 // If authentication has already occurred during this request
@@ -557,15 +553,17 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
                 if (Contexts.isEventContextActive()
                         && Contexts.getEventContext().isSet(SILENT_LOGIN)) {
                     getLoginSuccessfulEvent().fire(new LoginSuccessfulEvent());
+                    this.preAuthenticated = true;
                     return "loggedIn";
                 }
 
                 // used by org.zanata.security.FacesSecurityEvents.addAlreadyLoggedInMessage()
                 getAlreadyLoggedInEvent().fire(new AlreadyLoggedInEvent());
+                this.preAuthenticated = true;
                 return "loggedIn";
             }
 
-            seamAuthenticate();
+            authenticate();
 
             if (!isLoggedIn()) {
                 throw new LoginException();
@@ -578,6 +576,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
 
             // used by org.zanata.security.FacesSecurityEvents.addLoginSuccessfulMessage()
             getLoginSuccessfulEvent().fire(new LoginSuccessfulEvent());
+            this.preAuthenticated = true;
             return "loggedIn";
         } catch (LoginException ex) {
             credentials.invalidate();
