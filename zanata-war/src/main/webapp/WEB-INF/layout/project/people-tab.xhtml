@@ -120,8 +120,8 @@
             </div>
             <div class="g__item w--4-12 txt--align-right">
               <s:fragment
-                  rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
-                           or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
+                rendered="#{s:hasPermission(projectHome.instance, 'manage-members')
+                         or s:hasPermission(projectHome.instance, 'manage-translation-members')}">
                 <!-- TODO does this need its own dialog, or can it reuse the other?
                   Differences:
                     - different title
@@ -135,23 +135,18 @@
                     - display current permissions when user selected
                     - permission check for each section is the same
                 -->
-                <!-- TODO onclick -> set person for permission dialog -->
-                  <h:form id="permission-dialog-setup-form">
-                      <a4j:commandButton
-                              value="#{msgs['jsf.projectPermissions.ManagePermissions']}"
-                              onbegin="/* TODO set modal to loading state */"
-                              action="#{projectHome.setPersonForPermissionDialog(person)}"
-                              render="modal-manage-permissions"
-                              oncomplete="/* TODO show the modal */"
-                              />
-                  </h:form>
-
-                <button class="button button--small"
-                        data-toggle="modal"
-                        data-target="#modal-manage-permissions-content">
-                  <i class="i i--settings"></i>
-                  #{msgs['jsf.projectPermissions.ManagePermissions']} SHOW MODAL
-                </button>
+                <h:form id="permission-dialog-setup-form">
+                  <zanata:ajax-command-button
+                    styleClass="button button--small"
+                    action="#{projectHome.setPersonForPermissionDialog(person)}"
+                    render="modal-manage-permissions"
+                    oncomplete="zanata.modal.show(jQuery('#modal-manage-permissions-content'))">
+                    <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
+                    <f:facet name="loading">
+                      <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
+                    </f:facet>
+                  </zanata:ajax-command-button>
+                </h:form>
               </s:fragment>
             </div>
           </div>
