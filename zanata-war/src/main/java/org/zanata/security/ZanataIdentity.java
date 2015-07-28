@@ -98,6 +98,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
     private PermissionMapper permissionMapper;
     private ZanataCredentials credentials;
     private boolean authenticating;
+    private String jaasConfigName = "zanata";
 
     @Create
     public void create() {
@@ -263,6 +264,7 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         if (target == null) return false;
 
         // TODO [CDI] [pre] we could just use our own org.zanata.security.permission.CustomPermissionResolver directly here
+
         return permissionMapper.resolvePermission(target, action);
     }
 
@@ -497,11 +499,24 @@ public class ZanataIdentity implements org.zanata.Identity, Serializable {
         }
     }
 
+    public String getJaasConfigName() {
+        return jaasConfigName;
+    }
+
+    public void setJaasConfigName(String jaasConfigName) {
+        this.jaasConfigName = jaasConfigName;
+    }
+
     public LoginContext getLoginContext() throws LoginException {
         if (isApiRequest()) {
             return new LoginContext(JAAS_DEFAULT, getSubject(),
                     getCredentials().createCallbackHandler(),
                     ZanataConfiguration.INSTANCE);
+        }
+        if (getJaasConfigName() != null
+                && !getJaasConfigName().equals(JAAS_DEFAULT)) {
+            return new LoginContext(getJaasConfigName(), getSubject(),
+                    getCredentials().createCallbackHandler());
         }
 
         return new LoginContext(JAAS_DEFAULT, getSubject(), getCredentials()
