@@ -22,15 +22,13 @@ public class SimpleGroup implements Group, Serializable {
     /**
      * The members of this group
      */
-    private Set<Principal> members = new HashSet<Principal>();
+    private Set<Principal> members = new HashSet<>();
 
-    public SimpleGroup(String name)
-    {
+    public SimpleGroup(String name) {
         this.name = name;
     }
 
-    public boolean addMember(Principal user)
-    {
+    public boolean addMember(Principal user) {
         return members.add(user);
     }
 
