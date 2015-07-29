@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.Identity;
+import org.zanata.security.Identity;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -165,7 +165,7 @@ public class SampleDataResourceImpl implements SampleDataResource {
     }
 
     abstract class RunAsOperationForTest implements
-            org.zanata.Identity.RunAsOperation {
+            Identity.RunAsOperation {
         @Override
         public Principal getPrincipal() {
             return null;

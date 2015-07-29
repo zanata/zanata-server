@@ -24,6 +24,7 @@ import java.security.Principal;
 import java.security.acl.Group;
 import javax.security.auth.Subject;
 
+import org.zanata.security.Identity;
 import org.zanata.security.SimpleGroup;
 import org.zanata.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
@@ -33,7 +34,7 @@ import org.zanata.security.ZanataIdentity;
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public abstract class AbstractRunAsOperation implements
-        org.zanata.Identity.RunAsOperation {
+        Identity.RunAsOperation {
     private Principal principal;
     private Subject subject;
 

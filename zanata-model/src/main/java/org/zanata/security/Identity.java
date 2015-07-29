@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.zanata;
+package org.zanata.security;
 
 import java.security.Principal;
 import javax.security.auth.Subject;

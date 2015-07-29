@@ -1,4 +1,4 @@
-package org.zanata;
+package org.zanata.security;
 
 /**
  * @author Patrick Huang <a

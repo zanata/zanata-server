@@ -20,9 +20,9 @@
  */
 package org.zanata.model;
 
-import static org.zanata.EntityAction.DELETE;
-import static org.zanata.EntityAction.INSERT;
-import static org.zanata.EntityAction.UPDATE;
+import static org.zanata.security.EntityAction.DELETE;
+import static org.zanata.security.EntityAction.INSERT;
+import static org.zanata.security.EntityAction.UPDATE;
 
 import java.util.Iterator;
 import java.util.List;

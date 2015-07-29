@@ -10,7 +10,6 @@ import javax.persistence.PreUpdate;
 
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.persistence.PersistenceProvider;
-import org.zanata.EntityAction;
 import org.zanata.annotation.EntityRestrict;
 
 /**

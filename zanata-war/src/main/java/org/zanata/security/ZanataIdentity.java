@@ -70,7 +70,7 @@ import com.google.common.collect.Lists;
 @Install(precedence = APPLICATION)
 @BypassInterceptors
 @Startup
-public class ZanataIdentity implements org.zanata.Identity, Serializable {
+public class ZanataIdentity implements Identity, Serializable {
     private static final Logger log = LoggerFactory.getLogger(
             ZanataIdentity.class);
 
