@@ -1,38 +1,26 @@
 import React from 'react';
+import Router from 'react-router';
 import RootContent from './lib/components/RootContent';
 import Views from './lib/constants/Views.js';
 import Configs from './lib/constants/Configs';
+import StringUtils from './lib/utils/StringUtils';
 
 var mountNode = document.getElementById('main-content'),
   baseUrl = mountNode.getAttribute('base-url'),
   user = JSON.parse(mountNode.getAttribute('user')),
-  view = mountNode.getAttribute('view'),
+  view = Views.getView(mountNode.getAttribute('view')),
   authenticated = mountNode.getAttribute('authenticated') === 'true';
 
+// base rest url, e.g http://localhost:8080/rest
 Configs.baseUrl = baseUrl;
 // see org.zanata.rest.editor.dto.User
 Configs.user = user;
-//boolean
+//is user authenticated
 Configs.authenticated = authenticated;
-//TODO: currently its passed from xhtml on view,
-// final solution should be using react-router + processing url
-Configs.view = Views.getView(view);
-//dev environment uses local data store, if its invalid url, use test data
-Configs.production = ValidUrl(baseUrl);
 
-if(!Configs.production) {
-  console.warn("Invalid base url, running on test data", baseUrl);
-}
+var routes = Views.getRoutes(view);
 
+Router.run(routes, Router.HashLocation, (RootContent) => {
+  React.render(<RootContent/>, mountNode);
+});
 
-function ValidUrl(str) {
-  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-  return !pattern.test(str);
-}
-
-React.render(<RootContent />, mountNode);

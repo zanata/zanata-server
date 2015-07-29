@@ -18,8 +18,8 @@
       "resolved": "https://registry.npmjs.org/moment-range/-/moment-range-1.2.0.tgz"
     },
     "react": {
-      "version": "0.12.2",
-      "from": "react@>=0.12.2 <0.13.0",
+      "version": "0.13.3",
+      "from": "react@>=0.13.3 <0.14.0",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
@@ -63,6 +63,10 @@
     "react-chartjs": {
       "version": "0.4.0",
       "from": "react-chartjs@>=0.4.0 <0.5.0"
+    },
+    "react-router": {
+      "version": "0.13.3",
+      "from": "react-router@>=0.13.0 <0.14.0"
     },
     "superagent": {
       "version": "0.21.0",

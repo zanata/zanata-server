@@ -21,18 +21,19 @@
     "react-tools": "~0.13.0"
   },
   "dependencies": {
+    "chart.js": "git://github.com/huangp/Chart.js",
+    "es6-promise": "~2.0.1",
+    "events": "~1.0.2",
+    "flux": "~2.0.1",
+    "keymirror": "~0.1.1",
     "lodash": "^3.2.0",
     "moment": "^2.9.0",
     "moment-range": "^1.0.6",
-    "react": "^0.12.2",
-    "react-chartjs": "^0.4.0",
-    "superagent": "~0.21.0",
-    "flux": "~2.0.1",
     "object-assign": "~2.0.0",
-    "events": "~1.0.2",
-    "es6-promise": "~2.0.1",
-    "keymirror": "~0.1.1",
-    "chart.js": "git://github.com/huangp/Chart.js"
+    "react": "^0.13.3",
+    "react-chartjs": "^0.4.0",
+    "react-router": "^0.13.3",
+    "superagent": "~0.21.0"
   },
   "jest": {
     "unmockedModulePathPatterns": [

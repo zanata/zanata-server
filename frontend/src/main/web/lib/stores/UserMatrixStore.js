@@ -24,14 +24,14 @@ var _state = {
   }
 };
 
-function getBaseUrl() {
-  return Configs.production ? Configs.baseUrl + "/stats/user/" + Configs.user.username + "/": Configs.baseUrl;
+function statsAPIUrl() {
+  return Configs.baseUrl + "/stats/user/" + Configs.user.username + "/";
 }
 
 function loadFromServer() {
   var dateRangeOption = _state['dateRangeOption'],
     dateRange = utilsDate.getDateRangeFromOption(dateRangeOption),
-    url = getBaseUrl() + dateRange.fromDate + '..' + dateRange.toDate;
+    url = statsAPIUrl() + dateRange.fromDate + '..' + dateRange.toDate;
 
   _state['dateRange'] = dateRange;
   //console.log('about to load from server: %s', url);
