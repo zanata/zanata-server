@@ -21,8 +21,6 @@
 package org.zanata.seam.security;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +32,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -52,7 +49,6 @@ import org.zanata.dao.AccountDAO;
 import org.zanata.events.UserCreatedEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
-import org.zanata.model.type.UserApiKey;
 import org.zanata.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.util.Event;
@@ -78,28 +74,6 @@ public class ZanataJpaIdentityStore implements Serializable {
     public static final String AUTHENTICATED_USER = "org.jboss.seam.security.management.authenticatedUser";
 
     private static final long serialVersionUID = 1L;
-
-    @Create
-    public void init() {
-        // TODO [CDI] is this check still necessary?
-        Field[] declaredFields = HAccount.class.getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            if (declaredField.isAnnotationPresent(UserApiKey.class)) {
-                return;
-            }
-        }
-        Method[] methods = HAccount.class.getMethods();
-        for (Method method : methods) {
-            if (method.isAnnotationPresent(UserApiKey.class)) {
-                return;
-            }
-        }
-        throw new IllegalStateException(
-                "Invalid userClass "
-                        + HAccount.class.getName()
-                        + " - required annotation @UserApiKey not found on any Field or Method.");
-
-    }
 
     public boolean apiKeyAuthenticate(String username, String apiKey) {
         HAccount user = lookupUser(username);

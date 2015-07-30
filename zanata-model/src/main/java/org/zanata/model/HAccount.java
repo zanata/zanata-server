@@ -51,7 +51,6 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.zanata.model.security.HCredentials;
-import org.zanata.model.type.UserApiKey;
 import org.zanata.rest.dto.Account;
 
 /**
@@ -124,7 +123,6 @@ public class HAccount extends ModelEntityBase implements Serializable,
         return enabled;
     }
 
-    @UserApiKey
     @Size(min = 32, max = 32)
     public String getApiKey() {
         return apiKey;
