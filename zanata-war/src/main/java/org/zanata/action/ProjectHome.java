@@ -195,14 +195,6 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
 
-    private ListMultimap<HPerson, ProjectRole> personRoles;
-
-    // TODO maybe just make this a Multimap<HPerson, PersonProjectMemberships.LocaleRoles>
-    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
-
-    // TODO does this need a setter?
-    @Getter
-    private PersonProjectMemberships permissionDialogData;
 
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
@@ -939,13 +931,10 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     private List<HProjectIteration> fetchVersions() {
-        List<HProjectIteration> results = new ArrayList<HProjectIteration>();
+        List<HProjectIteration> results = Lists.newArrayList(Iterables.filter(
+                        getInstance().getProjectIterations(),
+                        notObsoleteVersionPredicate));
 
-        for (HProjectIteration iteration : getInstance().getProjectIterations()) {
-            if (iteration.getStatus() != EntityStatus.OBSOLETE) {
-                results.add(iteration);
-            }
-        }
         Collections.sort(results, new Comparator<HProjectIteration>() {
             @Override
             public int compare(HProjectIteration o1, HProjectIteration o2) {
@@ -966,11 +955,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                     }
                     return -1;
                 }
-
-                if (fromStatus.equals(EntityStatus.OBSOLETE)) {
-                    return 1;
-                }
-
                 return 0;
             }
         });
@@ -1115,6 +1099,13 @@ public class ProjectHome extends SlugHome<HProject> implements
         // Disable the default message from Seam
     }
 
+    private final Predicate notObsoleteVersionPredicate = new Predicate<HProjectIteration>() {
+        @Override
+        public boolean apply(HProjectIteration input) {
+            return input.getStatus() != EntityStatus.OBSOLETE;
+        }
+    };
+
     private boolean checkViewObsolete() {
         return identity != null
                 && identity.hasPermission("HProject", "view-obsolete");
@@ -1182,7 +1173,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-
     /**
      * Prepare the permission dialog to update permissions for the given person.
      *
@@ -1194,7 +1184,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                 ensurePersonLocaleRoles().get(person);
         permissionDialogData =
                 new PersonProjectMemberships(person, projectRoles, localeRoles);
-        log.info("Set person {}", person.getAccount().getUsername());
     }
 
     /**
