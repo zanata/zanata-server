@@ -2,6 +2,7 @@ package org.zanata.security;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.zanata.security.annotations.CheckRole;
 import org.zanata.security.annotations.ZanataSecured;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 
 /**
  * A sanity test to check whether annotations are set properly. e.g. all classes
@@ -35,14 +37,19 @@ public class SecurityAnnotationTest {
     private File srcBase;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         URL propUrl =
                 Thread.currentThread().getContextClassLoader()
                         .getResource("testProp.properties");
         Preconditions.checkNotNull(propUrl);
 
         Properties properties = new Properties();
-        properties.load(propUrl.openStream());
+        try (InputStream in = propUrl.openStream()){
+            properties.load(in);
+        }
+        catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
         srcBase = new File(properties.getProperty("srcBase"));
     }
 

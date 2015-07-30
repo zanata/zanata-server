@@ -9,7 +9,6 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.persistence.PersistenceProvider;
 import org.zanata.annotation.EntityRestrict;
 
 /**
@@ -86,14 +85,7 @@ public class SmartEntitySecurityListener {
         ZanataIdentity identity = ZanataIdentity.instance();
 
         identity.tryLogin();
-
-        // TODO [CDI] need to revisit this
-        PersistenceProvider provider = PersistenceProvider.instance();
-        Class beanClass = provider.getBeanClass(entity);
-
-        if (beanClass != null) {
-            identity.checkPermission(entity, action.toString().toLowerCase());
-        }
+        identity.checkPermission(entity, action.toString().toLowerCase());
     }
 
 }

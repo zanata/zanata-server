@@ -35,8 +35,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesManager;
 import org.jboss.seam.faces.Redirect;
-import org.jboss.seam.security.Credentials;
-import org.jboss.seam.security.openid.OpenIdPrincipal;
 import org.openid4java.OpenIDException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
@@ -83,7 +81,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
     private FacesMessages facesMessages;
 
     @In
-    private Credentials credentials;
+    private ZanataCredentials credentials;
 
     @In
     private UserRedirectBean userRedirect;
@@ -165,7 +163,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
     public boolean loginImmediately() {
         if (authResult.isAuthenticated()) {
             ZanataIdentity.instance().acceptExternallyAuthenticatedPrincipal(
-                    (new OpenIdPrincipal(authResult.getAuthenticatedId())));
+                    (new SimplePrincipal(authResult.getAuthenticatedId())));
             return true;
         }
 
@@ -320,7 +318,7 @@ public class ZanataOpenId implements OpenIdAuthCallback {
                     && authenticatedAccount.isEnabled()) {
                 credentials.setUsername(authenticatedAccount.getUsername());
                 ZanataIdentity.instance().acceptExternallyAuthenticatedPrincipal(
-                        (new OpenIdPrincipal(result.getAuthenticatedId())));
+                        (new SimplePrincipal(result.getAuthenticatedId())));
                 this.loginImmediate();
             } else if(authenticatedAccount != null) {
                 credentials.setUsername(authenticatedAccount.getUsername());

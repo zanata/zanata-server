@@ -8,10 +8,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import org.jboss.seam.security.crypto.BinTools;
-import org.jboss.seam.security.crypto.PBKDF2;
-import org.jboss.seam.security.crypto.PBKDF2Engine;
-import org.jboss.seam.security.crypto.PBKDF2Parameters;
 import org.jboss.seam.util.Base64;
 
 /**
@@ -51,24 +47,24 @@ public class PasswordUtil {
     /**
      * Copied from Seam.
      */
-    public static String createPasswordKey(@Nullable String hashAlgorithm,
-            char[] password, byte[] salt, int iterations)
-            throws GeneralSecurityException {
-        if (hashAlgorithm != null) {
-            PBEKeySpec passwordKeySpec =
-                    new PBEKeySpec(password, salt, iterations, 256);
-            SecretKeyFactory secretKeyFactory =
-                    SecretKeyFactory.getInstance(hashAlgorithm);
-            SecretKey passwordKey =
-                    secretKeyFactory.generateSecret(passwordKeySpec);
-            passwordKeySpec.clearPassword();
-            return BinTools.bin2hex(passwordKey.getEncoded());
-        } else {
-            PBKDF2Parameters params =
-                    new PBKDF2Parameters("HmacSHA1", "ISO-8859-1", salt,
-                            iterations);
-            PBKDF2 pbkdf2 = new PBKDF2Engine(params);
-            return BinTools.bin2hex(pbkdf2.deriveKey(new String(password)));
-        }
-    }
+//    public static String createPasswordKey(@Nullable String hashAlgorithm,
+//            char[] password, byte[] salt, int iterations)
+//            throws GeneralSecurityException {
+//        if (hashAlgorithm != null) {
+//            PBEKeySpec passwordKeySpec =
+//                    new PBEKeySpec(password, salt, iterations, 256);
+//            SecretKeyFactory secretKeyFactory =
+//                    SecretKeyFactory.getInstance(hashAlgorithm);
+//            SecretKey passwordKey =
+//                    secretKeyFactory.generateSecret(passwordKeySpec);
+//            passwordKeySpec.clearPassword();
+//            return BinTools.bin2hex(passwordKey.getEncoded());
+//        } else {
+//            PBKDF2Parameters params =
+//                    new PBKDF2Parameters("HmacSHA1", "ISO-8859-1", salt,
+//                            iterations);
+//            PBKDF2 pbkdf2 = new PBKDF2Engine(params);
+//            return BinTools.bin2hex(pbkdf2.deriveKey(new String(password)));
+//        }
+//    }
 }
