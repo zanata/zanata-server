@@ -26,7 +26,8 @@ var Views = {
 
   getRoutes: function(view) {
     var Route = Router.Route,
-      DefaultRoute = Router.DefaultRoute;
+      DefaultRoute = Router.DefaultRoute,
+      NotFoundRoute = Router.NotFoundRoute;
 
     if(StringUtils.isEmptyOrNull(view)) {
       //request from index.html (dev)
@@ -35,6 +36,7 @@ var Views = {
           <Route path="glossary" handler={GlobalGlossaries}/>
           <Route path="profile" handler={UserProfile}/>
           <DefaultRoute handler={UserProfile}/>
+          <NotFoundRoute handler={RootContent} />
         </Route>
       );
     } else {
@@ -44,6 +46,7 @@ var Views = {
           return (
             <Route handler={RootContent}>
               <DefaultRoute handler={UserProfile}/>
+              <NotFoundRoute handler={RootContent} />
             </Route>
           );
           break;
@@ -51,6 +54,7 @@ var Views = {
           return (
             <Route handler={RootContent}>
               <DefaultRoute handler={GlobalGlossaries}/>
+              <NotFoundRoute handler={RootContent} />
             </Route>
           );
           break;
@@ -58,6 +62,7 @@ var Views = {
           return (
             <Route handler={RootContent}>
               <DefaultRoute handler={RootContent}/>
+              <NotFoundRoute handler={RootContent} />
             </Route>
           );
           break;

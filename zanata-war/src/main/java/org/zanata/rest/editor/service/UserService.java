@@ -1,15 +1,18 @@
 package org.zanata.rest.editor.service;
 
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.dao.AccountDAO;
+import org.zanata.dao.PersonDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -35,7 +38,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserService implements UserResource {
 
-    @In(value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(value = JpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
     @In
@@ -44,41 +47,62 @@ public class UserService implements UserResource {
     @In
     private AccountDAO accountDAO;
 
+    @In
+    private PersonDAO personDAO;
+
     @Override
     public Response getMyInfo() {
-        return createUser(authenticatedAccount);
+        User user = generateUser(authenticatedAccount);
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(user).build();
     }
 
     @Override
     public Response getUserInfo(String username) {
-        HAccount account = accountDAO.getByUsername(username);
-        return createUser(account);
-    }
-
-    private Response createUser(HAccount account) {
-        if (account == null) {
+        User user = generateUser(username);
+        if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-        HPerson person = account.getPerson();
-        String email = person.getEmail();
-
-        User user =
-                new User(account.getUsername(), email, person.getName(),
-                        gravatarServiceImpl.getGravatarHash(email),
-                        gravatarServiceImpl.getUserImageUrl(
-                                GravatarService.USER_IMAGE_SIZE, email),
-                        getUserLanguageTeams(person));
         return Response.ok(user).build();
     }
 
-    private String getUserLanguageTeams(HPerson person) {
-        Set<HLocale> languageMemberships = person.getLanguageMemberships();
+    @Override
+    public User generateUser(String username) {
+        if(StringUtils.isBlank(username)) {
+            return null;
+        }
+        HAccount account = accountDAO.getByUsername(username);
+        return generateUser(account);
+    }
 
+    @Override
+    public User generateUser(HAccount account) {
+        if(account == null) {
+            return null;
+        }
+        //need to use dao to load entity due to lazy loading of languageMemberships
+        HPerson person = personDAO.findById(account.getPerson().getId());
+
+        String email = person.getEmail();
+
+        String userImageUrl = gravatarServiceImpl
+            .getUserImageUrl(GravatarService.USER_IMAGE_SIZE, email);
+
+        String userLanguageTeams =
+            getUserLanguageTeams(person.getLanguageMemberships());
+
+        return new User(account.getUsername(), email, person.getName(),
+                gravatarServiceImpl.getGravatarHash(email), userImageUrl,
+                userLanguageTeams);
+    }
+
+    private String getUserLanguageTeams(Set<HLocale> languageMemberships) {
         return Joiner.on(", ").skipNulls().join(
                 Collections2.transform(languageMemberships, languageNameFn));
     }
-    
+
     private final Function<HLocale, String> languageNameFn =
             new Function<HLocale, String>() {
                 @Override

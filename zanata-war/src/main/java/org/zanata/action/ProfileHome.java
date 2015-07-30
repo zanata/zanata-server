@@ -43,6 +43,7 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GravatarService;
 
@@ -70,13 +71,11 @@ public class ProfileHome implements Serializable {
     @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
     @In
-    private PersonDAO personDAO;
-    @In
     private AccountDAO accountDAO;
     @In
-    private GravatarService gravatarServiceImpl;
-    @In
     private Messages msgs;
+    @In(value = "editor.userService", create = true)
+    private UserService userService;
 
     private String username;
 
@@ -98,23 +97,7 @@ public class ProfileHome implements Serializable {
                 return;
             }
         }
-        HPerson person =
-                personDAO.findById(account.getPerson().getId());
-        Set<HLocale> languageMemberships = person.getLanguageMemberships();
-        String userImageUrl = gravatarServiceImpl
-                .getUserImageUrl(GravatarService.USER_IMAGE_SIZE,
-                        person.getEmail());
-        String userLanguageTeams = Joiner.on(", ").skipNulls().join(
-                Collections2.transform(languageMemberships,
-                        new Function<HLocale, Object>() {
-                            @Nullable
-                            @Override
-                            public Object apply(@NonNull HLocale locale) {
-                                return locale.retrieveDisplayName();
-                            }
-                        }));
-        user = new User(username, person.getEmail(), person.getName(),
-            null, userImageUrl, userLanguageTeams);
+        user = userService.generateUser(account);
     }
 
     private HAccount useAuthenticatedAccount() {
