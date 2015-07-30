@@ -23,6 +23,11 @@ package org.zanata.model;
 import static org.jboss.seam.security.EntityAction.DELETE;
 import static org.jboss.seam.security.EntityAction.INSERT;
 import static org.jboss.seam.security.EntityAction.UPDATE;
+import static org.zanata.model.LocaleRole.Coordinator;
+import static org.zanata.model.LocaleRole.Reviewer;
+import static org.zanata.model.LocaleRole.Translator;
+import static org.zanata.model.ProjectRole.Maintainer;
+import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -212,7 +217,7 @@ public class HProject extends SlugEntityBase implements Serializable,
      * @see {@link #getMaintainers}
      */
     public void addMaintainer(HPerson maintainer) {
-        getMembers().add(asMaintainerMember(maintainer));
+        getMembers().add(asMember(maintainer, Maintainer));
     }
 
     /**
@@ -222,14 +227,60 @@ public class HProject extends SlugEntityBase implements Serializable,
      * @see {@link #getMaintainers}
      */
     public void removeMaintainer(HPerson maintainer) {
-        getMembers().remove(asMaintainerMember(maintainer));
+        getMembers().remove(asMember(maintainer, Maintainer));
     }
 
     /**
-     * Create a maintainer member object for the given person in this project.
+     * Update all security settings for a person.
      */
-    private HProjectMember asMaintainerMember(HPerson maintainer) {
-        return new HProjectMember(this, maintainer, ProjectRole.Maintainer);
+    public void updatePermissions(PersonProjectMemberships memberships) {
+        log.info("Update permissions for person {}", memberships.getPerson().getAccount().getUsername());
+        final HPerson person = memberships.getPerson();
+        ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
+        ensureMembership(memberships.isTranslationMaintainer(),
+                asMember(person, TranslationMaintainer));
+
+        for (PersonProjectMemberships.LocaleRoles localeRoles
+                : memberships.getLocaleRoles()) {
+            HLocale locale = localeRoles.getLocale();
+            ensureMembership(localeRoles.isTranslator(), asMember(locale, person, Translator));
+            ensureMembership(localeRoles.isReviewer(), asMember(locale, person, Reviewer));
+            ensureMembership(localeRoles.isCoordinator(), asMember(locale, person, Coordinator));
+        }
+    }
+
+    private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
+        return new HProjectLocaleMember(this, locale, person, role);
+    }
+
+    private HProjectMember asMember(HPerson person, ProjectRole role) {
+        return new HProjectMember(this, person, role);
+    }
+
+    /**
+     * Ensure the given membership is present or absent.
+     */
+    private void ensureMembership(boolean present, HProjectMember membership) {
+        log.info("ensure project membership ({}, {})", present, membership.getPerson().getAccount().getUsername());
+        final Set<HProjectMember> members = getMembers();
+        if (present && !members.contains(membership)) {
+            members.add(membership);
+            return;
+        }
+        members.remove(membership);
+    }
+
+    /**
+     * Ensure the given locale membership is present or absent.
+     */
+    private void ensureMembership(boolean present, HProjectLocaleMember membership) {
+        log.info("ensure project locale membership ({}, {}, {})", present, membership.getLocale().retrieveDisplayName(), membership.getPerson().getAccount().getUsername());
+        final Set<HProjectLocaleMember> members = getLocaleMembers();
+        if (present && !members.contains(membership)) {
+            members.add(membership);
+        } else {
+            members.remove(membership);
+        }
     }
 
     @Override
