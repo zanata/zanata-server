@@ -38,6 +38,7 @@
       </button>
     </header>
     <div class="modal__content">
+      <h:form>
       <div class="l--pad-all-1">
 
         <!-- TODO custom user selection mechanism -->
@@ -56,6 +57,8 @@
 
         <hr/>
 
+
+
         <h3>#{msgs['jsf.ProjectPermissions']}</h3>
         <div class="g--tight">
           <div class="g__item w--1-3">
@@ -70,7 +73,7 @@
                   label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
                   labelStyle="form__checkbox__label js-form__checkbox__label"
                   checked="#{memberships.translationMaintainer}"
-                  onValueChanged=""
+                  onValueChanged="function(){}"
                   value="Translation Maintainer"/>
               </li>
               <li>
@@ -78,7 +81,7 @@
                   label="#{msgs['jsf.projectPermissions.MaintainProject']}"
                   labelStyle="form__checkbox__label js-form__checkbox__label"
                   checked="#{memberships.maintainer}"
-                  onValueChanged=""
+                  onValueChanged="function(){}"
                   value="Maintainer"/>
               </li>
             </ul>
@@ -140,14 +143,31 @@
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
         <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
           #{msgs['jsf.Cancel']}</button>
-        <button class="button--primary" disabled="disabled">
-          #{msgs['jsf.Add']}</button>
+        <button class="button--primary" onclick="savePermissionDialogSelections();console.log('trying to do it')">
+          Addled
+        </button>
+        <!--<button class="button- -primary" disabled="disabled">-->
+        <zanata:ajax-command-button
+                styleClass="button--primary"
+                onclick="#{action}"
+                action="#{action}"
+                oncomplete="zanata.modal.hide(jQuery('##{id}'));console.log('hid modal #{id}')">
+            #{msgs['jsf.Add']}
+            <f:facet name="loading">
+                #{msgs['jsf.Add']}
+            </f:facet>
+        </zanata:ajax-command-button>
+        <!--<button class="button- -primary">-->
+          <!--#{msgs['jsf.Add']}</button>-->
       </footer>
-    </div>
+
+    </h:form>
+
+  </div>
   </div>
   <script type="text/javascript">
   //<![CDATA[
-    zanata.form.appendCheckboxes(jQuery('##{cc.attrs.id}').element);
+    zanata.form.appendCheckboxes(jQuery('##{id}').element);
   //]]>
   </script>
 </div>

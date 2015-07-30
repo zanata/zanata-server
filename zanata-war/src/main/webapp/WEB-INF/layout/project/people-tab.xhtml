@@ -29,6 +29,7 @@
         xmlns:a4j="http://richfaces.org/a4j"
         xmlns:rich="http://richfaces.org/rich">
 
+
   <div class="panel l--push-top-1">
     <div class="panel__header">
       <div class="panel__header__actions">
@@ -155,9 +156,15 @@
     </ul>
 
     <s:div id="modal-manage-permissions">
+      <!-- This is needed because actions invoked form a modal to not work. Instead, this
+           jsFunction is invoked from the modal. -->
+      <a4j:jsFunction name="savePermissionDialogSelections"
+        action="#{projectHome.savePermissionDialogSelections(projectHome.permissionDialogData)}"/>
+
       <ui:decorate template="person-permissions-modal.xhtml">
         <ui:param name="id" value="modal-manage-permissions-content"/>
         <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
+        <ui:param name="action" value="savePermissionDialogSelections()"/>
 
         <ui:param name="memberships" value="#{projectHome.permissionDialogData}"/>
         <!-- this property will allow the dialog to show the correct
