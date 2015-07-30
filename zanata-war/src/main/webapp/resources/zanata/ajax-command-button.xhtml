@@ -26,13 +26,19 @@
   <composite:attribute name="oncomplete" type="java.lang.String"
     required="false"
     shortDescription="Javascript code to execute on completion of the ajax request."/>
+
+  <composite:attribute name="onclick" type="java.lang.String"
+    required="false"
+    shortDescription="Javascript code to execute when the button clicks."/>
+
+
 </composite:interface>
 
 <composite:implementation>
   <zui:commandButton
     action="#{cc.attrs.action}"
     styleClass="#{cc.attrs.styleClass}"
-    onclick="event.stopPropagation();"
+    onclick="event.stopPropagation();#{onclick};"
     onbegin="zanata.loader.activate($(this).find('.js-loader')); $(this).find('.js-default').addClass('is-hidden'); $(this).find('.js-in-progress').removeClass('is-hidden');"
     oncomplete="$(this).find('.js-in-progress').addClass('is-hidden'); $(this).find('.js-default').removeClass('is-hidden'); zanata.loader.deactivate($(this).find('.js-loader')); #{cc.attrs.oncomplete}"
     render="#{cc.attrs.render}">
