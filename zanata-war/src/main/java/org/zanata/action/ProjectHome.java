@@ -1182,10 +1182,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-    // TODO make a method to set the person used in the dialog
-    // takes a person, sets a PersonProjectMemberships field
-    // Another method saves that PersonProjectMemberships data with the current
-    // selections in the modal dialog.
 
     /**
      * Prepare the permission dialog to update permissions for the given person.
@@ -1200,6 +1196,20 @@ public class ProjectHome extends SlugHome<HProject> implements
                 new PersonProjectMemberships(person, projectRoles, localeRoles);
         log.info("Set person {}", person.getAccount().getUsername());
     }
+
+    /**
+     * Save the permissions selections from permissionDialogData to the database.
+     */
+    public void savePermissionDialogSelections(PersonProjectMemberships data) {
+        if (data == null) {
+            log.error("Tried to save permissionDialogData but it is null");
+            return;
+        }
+        log.info("Saving permission dialog selections. Person: {}", data.getPerson().getAccount().getUsername());
+        getInstance().updatePermissions(data);
+    }
+
+
 
 //    /**
 //     * The person selected in the "Add someone" dialog.
