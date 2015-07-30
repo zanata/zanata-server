@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
@@ -40,9 +44,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.common.LocaleId;
+import org.zanata.common.util.GlossaryUtil;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.rest.dto.GlossaryLocaleStats;
+import org.zanata.rest.dto.LocaleDetails;
+import org.zanata.rest.service.GlossaryService;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 /**
@@ -69,15 +77,46 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return (HGlossaryEntry) getSession().load(HGlossaryEntry.class, id);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<HGlossaryEntry> getEntriesByLocaleId(LocaleId locale) {
-        Query query =
-                getSession()
-                        .createQuery(
-                                "from HGlossaryEntry as e WHERE e.id IN (SELECT t.glossaryEntry.id FROM HGlossaryTerm as t WHERE t.locale.localeId= :localeId)");
-        query.setParameter("localeId", locale);
-        query.setComment("GlossaryDAO.getEntriesByLocaleId");
+    public List<HGlossaryEntry> getEntriesByLocaleId(LocaleId locale,
+            int offset, int maxResults) {
+        String queryString =
+                "from HGlossaryEntry as e WHERE e.id IN (SELECT t.glossaryEntry.id FROM HGlossaryTerm as t WHERE t.locale.localeId= :localeId)";
+        Query query = getSession().createQuery(queryString)
+                .setParameter("localeId", locale)
+                .setComment("GlossaryDAO.getEntriesByLocaleId");
+
+        if (offset > 0 && maxResults > 0) {
+            query.setFirstResult(offset).setMaxResults(maxResults);
+        }
         return query.list();
+    }
+
+    public List<GlossaryLocaleStats> getLocalesStats() {
+        String queryString =
+                "select t.locale, count(*) from HGlossaryTerm t group by t.locale";
+        Query query = getSession()
+                .createQuery(queryString)
+                .setComment("GlossaryDAO.getLocalesStats");
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> list = query.list();
+
+        List<GlossaryLocaleStats> glossaryLocales =
+            Lists.newArrayList();
+
+        for (Object[] obj : list) {
+            HLocale locale = (HLocale) obj[0];
+            Long count = (Long) obj[1];
+            int countInt = count == null ? 0 : count.intValue();
+
+            LocaleDetails localeDetails =
+                    new LocaleDetails(locale.getLocaleId(),
+                            locale.retrieveDisplayName(), "");
+
+            glossaryLocales.add(new GlossaryLocaleStats(
+                localeDetails, countInt));
+        }
+        return glossaryLocales;
     }
 
     @SuppressWarnings("unchecked")
@@ -110,20 +149,18 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public HGlossaryEntry getEntryBySrcLocaleAndContent(LocaleId localeid,
-            String content) {
-        Query query =
-                getSession()
-                        .createQuery(
-                                "from HGlossaryEntry as e "
-                                        + "WHERE e.srcLocale.localeId= :localeid "
-                                        + "AND e.id IN "
-                                        + "(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t "
-                                        + "WHERE t.locale.localeId=e.srcLocale.localeId "
-                                        + "AND t.content= :content)");
-        query.setParameter("localeid", localeid);
-        query.setParameter("content", content);
-        query.setComment("GlossaryDAO.getEntryBySrcLocaleAndContent");
+    public HGlossaryEntry getEntryBySourceTermResId(String srcResId,
+            LocaleId srcLocaleId) {
+        Query query = getSession().createQuery(
+                "from HGlossaryEntry as e "
+                        + "WHERE e.srcLocale.localeId= :localeId "
+                        + "AND e.id IN "
+                        + "(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t "
+                        + "WHERE t.locale.localeId=e.srcLocale.localeId "
+                        + "AND t.resId= :resId)");
+        query.setParameter("localeId", srcLocaleId);
+        query.setParameter("resId", srcResId);
+        query.setComment("GlossaryDAO.getEntryBySourceTermResId");
         return (HGlossaryEntry) query.uniqueResult();
     }
 

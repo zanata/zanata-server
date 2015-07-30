@@ -82,7 +82,7 @@ public class GlossaryRawRestITCase extends RestTest {
 
                 // Glossary Entry
                 GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
-                assertThat(entry.getSourcereference(), is("source reference"));
+                assertThat(entry.getSourceReference(), is("source reference"));
                 assertThat(entry.getSrcLang(), is(LocaleId.EN_US));
                 assertThat(entry.getGlossaryTerms().size(), is(3));
 
@@ -134,7 +134,7 @@ public class GlossaryRawRestITCase extends RestTest {
 
                 // Glossary Entry
                 GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
-                assertThat(entry.getSourcereference(), is("source reference"));
+                assertThat(entry.getSourceReference(), is("source reference"));
                 assertThat(entry.getSrcLang(), is(LocaleId.EN_US));
                 assertThat(entry.getGlossaryTerms().size(), is(1));
             }
@@ -182,7 +182,7 @@ public class GlossaryRawRestITCase extends RestTest {
 
                 // Glossary Entry
                 GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
-                assertThat(entry.getSourcereference(), is("source reference"));
+                assertThat(entry.getSourceReference(), is("source reference"));
                 assertThat(entry.getSrcLang(), is(LocaleId.EN_US));
                 assertThat(entry.getGlossaryTerms().size(), is(3));
 
@@ -318,7 +318,7 @@ public class GlossaryRawRestITCase extends RestTest {
         Glossary glossary = new Glossary();
         GlossaryEntry glossaryEntry1 = new GlossaryEntry();
         glossaryEntry1.setSrcLang(LocaleId.EN_US);
-        glossaryEntry1.setSourcereference("TEST SOURCE REF DATA");
+        glossaryEntry1.setSourceReference("TEST SOURCE REF DATA");
 
         GlossaryTerm glossaryTerm1 = new GlossaryTerm();
         glossaryTerm1.setLocale(LocaleId.EN_US);
@@ -335,7 +335,7 @@ public class GlossaryRawRestITCase extends RestTest {
 
         GlossaryEntry glossaryEntry2 = new GlossaryEntry();
         glossaryEntry2.setSrcLang(LocaleId.EN_US);
-        glossaryEntry2.setSourcereference("TEST SOURCE REF DATA2");
+        glossaryEntry2.setSourceReference("TEST SOURCE REF DATA2");
 
         GlossaryTerm glossaryTerm3 = new GlossaryTerm();
         glossaryTerm3.setLocale(LocaleId.EN_US);

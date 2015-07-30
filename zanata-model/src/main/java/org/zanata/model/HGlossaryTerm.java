@@ -70,13 +70,21 @@ import org.zanata.hibernate.search.LocaleIdBridge;
 @ToString(doNotUseGetters = true)
 public class HGlossaryTerm extends ModelEntityBase {
     private static final long serialVersionUID = 1854278563597070432L;
+
+    private String resId;
     private String content;
     private List<HTermComment> comments;
     private HGlossaryEntry glossaryEntry;
     private HLocale locale;
 
-    public HGlossaryTerm(String content) {
+    public HGlossaryTerm(String resId, String content) {
+        setResId(resId);
         setContent(content);
+    }
+
+    @NotNull
+    public String getResId() {
+        return resId;
     }
 
     @NotNull

@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
@@ -57,7 +56,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     @Test
     public void testGetTermByLocaleId() {
         log.debug("testGetTermByLocaleId");
-        List<HGlossaryEntry> entryList = dao.getEntriesByLocaleId(LocaleId.DE);
+        List<HGlossaryEntry> entryList = dao.getEntriesByLocaleId(LocaleId.DE, -1, -1);
         assertThat(entryList.size(), is(1));
     }
 
@@ -85,8 +84,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     public void testGetEntryBySrcContentLocale() {
         log.debug("testGetEntryBySrcContentLocale");
         HGlossaryEntry entry =
-                dao.getEntryBySrcLocaleAndContent(LocaleId.EN_US,
-                        "test data content 1 (source lang)");
+                dao.getEntryBySourceTermResId("rest1", LocaleId.EN_US);
         Assert.assertNotNull(entry);
         assertThat(entry.getSrcLocale().getLocaleId(), is(LocaleId.EN_US));
     }

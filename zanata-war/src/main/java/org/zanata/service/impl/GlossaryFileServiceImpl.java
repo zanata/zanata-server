@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.adapter.glossary.GlossaryCSVReader;
 import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
+import org.zanata.common.util.GlossaryUtil;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
@@ -87,7 +88,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     public void saveGlossary(Glossary glossary) {
         int counter = 0;
         for (int i = 0; i < glossary.getGlossaryEntries().size(); i++) {
-            transferGlossaryEntry(glossary.getGlossaryEntries().get(i));
+            transferGlossaryEntryAndSave(glossary.getGlossaryEntries().get(i));
             counter++;
 
             if (counter == BATCH_SIZE
@@ -127,12 +128,12 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         glossaryDAO.clear();
     }
 
-    private void transferGlossaryEntry(GlossaryEntry from) {
+    private void transferGlossaryEntryAndSave(GlossaryEntry from) {
         HGlossaryEntry to =
                 getOrCreateGlossaryEntry(from.getSrcLang(),
                         getSrcGlossaryTerm(from));
 
-        to.setSourceRef(from.getSourcereference());
+        to.setSourceRef(from.getSourceReference());
 
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {
             HLocale termHLocale =
@@ -156,10 +157,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     public HGlossaryEntry getOrCreateGlossaryEntry(LocaleId srcLocale,
-            String srcContent) {
-        HGlossaryEntry hGlossaryEntry =
-                glossaryDAO
-                        .getEntryBySrcLocaleAndContent(srcLocale, srcContent);
+            GlossaryTerm srcTerm) {
+        String resId = GlossaryUtil.getResId(srcLocale, srcTerm.getContent());
+
+        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryBySourceTermResId(
+            resId, srcLocale);
 
         if (hGlossaryEntry == null) {
             hGlossaryEntry = new HGlossaryEntry();
@@ -176,7 +178,10 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 hGlossaryEntry.getGlossaryTerms().get(termHLocale);
 
         if (hGlossaryTerm == null) {
-            hGlossaryTerm = new HGlossaryTerm(newTerm.getContent());
+            String resId =
+                    GlossaryUtil.getResId(termHLocale.getLocaleId(),
+                            newTerm.getContent());
+            hGlossaryTerm = new HGlossaryTerm(resId, newTerm.getContent());
             hGlossaryTerm.setLocale(termHLocale);
             hGlossaryTerm.setGlossaryEntry(hGlossaryEntry);
         } else if (!hGlossaryTerm.getContent().equals(newTerm.getContent())) {
@@ -186,10 +191,10 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         return hGlossaryTerm;
     }
 
-    private String getSrcGlossaryTerm(GlossaryEntry entry) {
+    private GlossaryTerm getSrcGlossaryTerm(GlossaryEntry entry) {
         for (GlossaryTerm term : entry.getGlossaryTerms()) {
             if (term.getLocale().equals(entry.getSrcLang())) {
-                return term.getContent();
+                return term;
             }
         }
         return null;

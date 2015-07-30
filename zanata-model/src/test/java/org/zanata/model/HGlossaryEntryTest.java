@@ -133,7 +133,7 @@ public class HGlossaryEntryTest {
 
     private HLocale setupTerm(Long id, String content, LocaleId locale,
             Long localeId) {
-        HGlossaryTerm term = new HGlossaryTerm(content);
+        HGlossaryTerm term = new HGlossaryTerm("resId", content);
         term.setId(id);
         term.setVersionNum(1);
         term.setCreationDate(new Date());

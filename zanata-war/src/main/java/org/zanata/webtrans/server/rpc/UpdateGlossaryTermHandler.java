@@ -9,6 +9,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.util.GlossaryUtil;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
@@ -43,10 +44,13 @@ public class UpdateGlossaryTermHandler
 
         GlossaryDetails selectedDetailEntry = action.getSelectedDetailEntry();
 
-        HGlossaryEntry entry =
-                glossaryDAO.getEntryBySrcLocaleAndContent(
-                        selectedDetailEntry.getSrcLocale(),
+        String resId =
+                GlossaryUtil.getResId(selectedDetailEntry.getSrcLocale(),
                         selectedDetailEntry.getSource());
+
+        HGlossaryEntry entry =
+                glossaryDAO.getEntryBySourceTermResId(resId,
+                        selectedDetailEntry.getSrcLocale());
 
         HLocale targetLocale =
                 localeServiceImpl.getByLocaleId(selectedDetailEntry

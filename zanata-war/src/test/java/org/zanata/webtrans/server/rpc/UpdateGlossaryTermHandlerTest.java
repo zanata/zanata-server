@@ -5,11 +5,11 @@ import java.util.Date;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.zanata.ZanataTest;
 import org.zanata.common.LocaleId;
+import org.zanata.common.util.GlossaryUtil;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
@@ -17,6 +17,7 @@ import org.zanata.model.HLocale;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
+import org.zanata.util.HashUtil;
 import org.zanata.webtrans.shared.model.GlossaryDetails;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermResult;
@@ -68,21 +69,21 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         Lists.newArrayList("new comment"));
-        when(
-                glossaryDAO.getEntryBySrcLocaleAndContent(
-                        selectedDetailEntry.getSrcLocale(),
-                        selectedDetailEntry.getSource())).thenReturn(
+        String resId =
+                GlossaryUtil.getResId(selectedDetailEntry.getSrcLocale(),
+                        selectedDetailEntry.getSource());
+        when(glossaryDAO.getEntryBySourceTermResId(
+                resId, selectedDetailEntry.getSrcLocale())).thenReturn(
                 hGlossaryEntry);
-        when(
-                localeServiceImpl.getByLocaleId(selectedDetailEntry
+        when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
-        HGlossaryTerm targetTerm = new HGlossaryTerm("target");
+        HGlossaryTerm targetTerm = new HGlossaryTerm("resId", "target");
         targetTerm.setVersionNum(0);
         targetTerm.setLastChanged(new Date());
         hGlossaryEntry.getGlossaryTerms().put(targetHLocale, targetTerm);
         hGlossaryEntry.setSrcLocale(srcLocale);
         hGlossaryEntry.getGlossaryTerms().put(srcLocale,
-                new HGlossaryTerm("source")); // source term
+                new HGlossaryTerm("resId", "source")); // source term
         when(glossaryDAO.makePersistent(hGlossaryEntry)).thenReturn(
                 hGlossaryEntry);
 
@@ -109,13 +110,13 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         Lists.newArrayList("new comment"));
-        when(
-                glossaryDAO.getEntryBySrcLocaleAndContent(
-                        selectedDetailEntry.getSrcLocale(),
-                        selectedDetailEntry.getSource())).thenReturn(
+        String resId =
+            GlossaryUtil.getResId(selectedDetailEntry.getSrcLocale(),
+                selectedDetailEntry.getSource());
+        when(glossaryDAO.getEntryBySourceTermResId(
+                resId, selectedDetailEntry.getSrcLocale())).thenReturn(
                 hGlossaryEntry);
-        when(
-                localeServiceImpl.getByLocaleId(selectedDetailEntry
+        when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
         when(glossaryDAO.makePersistent(hGlossaryEntry)).thenReturn(
                 hGlossaryEntry);
@@ -132,15 +133,15 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         Lists.newArrayList("new comment"));
-        when(
-                glossaryDAO.getEntryBySrcLocaleAndContent(
-                        selectedDetailEntry.getSrcLocale(),
-                        selectedDetailEntry.getSource())).thenReturn(
+        String resId =
+                GlossaryUtil.getResId(selectedDetailEntry.getSrcLocale(),
+                        selectedDetailEntry.getSource());
+        when(glossaryDAO.getEntryBySourceTermResId(resId,
+                selectedDetailEntry.getSrcLocale())).thenReturn(
                 hGlossaryEntry);
-        when(
-                localeServiceImpl.getByLocaleId(selectedDetailEntry
-                        .getTargetLocale())).thenReturn(targetHLocale);
-        HGlossaryTerm targetTerm = new HGlossaryTerm("target");
+        when(localeServiceImpl.getByLocaleId(selectedDetailEntry
+                .getTargetLocale())).thenReturn(targetHLocale);
+        HGlossaryTerm targetTerm = new HGlossaryTerm("resId", "target");
         targetTerm.setVersionNum(1); // different version
         hGlossaryEntry.getGlossaryTerms().put(targetHLocale, targetTerm);
 
