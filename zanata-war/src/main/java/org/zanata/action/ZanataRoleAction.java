@@ -14,7 +14,6 @@ import org.jboss.seam.core.Conversation;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.annotations.CheckLoggedIn;
-import org.zanata.security.annotations.CheckRole;
 import org.zanata.security.annotations.ZanataSecured;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
@@ -29,7 +28,6 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @Install(precedence = APPLICATION)
 @ZanataSecured
 @CheckLoggedIn
-@CheckRole("admin")
 public class ZanataRoleAction implements Serializable {
     private static final long serialVersionUID = -3830647911484729768L;
     private String originalRole;
@@ -41,11 +39,6 @@ public class ZanataRoleAction implements Serializable {
 
     @In
     ZanataIdentity identity;
-
-    @Create
-    public void onCreate() {
-        identity.checkPermission("seam.role", "read");
-    }
 
     @Begin
     public void createRole() {

@@ -9,7 +9,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
+import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.security.annotations.CheckRole;
+import org.zanata.security.annotations.ZanataSecured;
 
 import static org.jboss.seam.ScopeType.SESSION;
 import static org.jboss.seam.annotations.Install.APPLICATION;
@@ -21,6 +23,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @Name("org.jboss.seam.security.management.userSearch")
 @Scope(SESSION)
 @Install(precedence = APPLICATION)
+@ZanataSecured
 public class ZanataUserSearch implements Serializable {
     private static final long serialVersionUID = -4792732235757055958L;
     @DataModel
@@ -30,14 +33,15 @@ public class ZanataUserSearch implements Serializable {
     String selectedUser;
 
     @In
-    ZanataJpaIdentityStore identityStore;
+    ZanataIdentityManager identityManager;
 
+    @CheckRole("admin")
     public void loadUsers() {
-        users = identityStore.listUsers();
+        users = identityManager.listUsers();
     }
 
     public String getUserRoles(String username) {
-        List<String> roles = identityStore.getGrantedRoles(username);
+        List<String> roles = identityManager.getGrantedRoles(username);
 
         if (roles == null) {
             return "";
@@ -46,7 +50,7 @@ public class ZanataUserSearch implements Serializable {
         StringBuilder sb = new StringBuilder();
 
         for (String role : roles) {
-            sb.append((sb.length() > 0 ? ", " : "") + role);
+            sb.append(sb.length() > 0 ? ", " : "").append(role);
         }
 
         return sb.toString();

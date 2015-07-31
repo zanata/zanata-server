@@ -9,18 +9,22 @@ import org.zanata.exception.AuthorizationException;
 import org.zanata.exception.NotLoggedInException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
+import org.zanata.model.HProject;
+import org.zanata.model.HProjectIteration;
 import org.zanata.seam.AutowireContexts;
 import org.zanata.seam.SeamAutowire;
 import org.zanata.security.permission.CustomPermissionResolver;
 import org.zanata.security.permission.PermissionEvaluator;
 import org.zanata.util.Event;
+import org.zanata.util.PasswordUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.zanata.util.PasswordUtil.generateSaltedHash;
 
 public class ZanataIdentityTest extends ZanataJpaTest {
     private static final SeamAutowire seam = SeamAutowire.instance();
     private static final String apiKey = "d83882201764f7d339e97c4b087f0806";
-    private final String validPassword = "translator";
+    private static final String validPassword = "translator";
     private ZanataIdentity identity;
     @Mock
     private Event event;
@@ -55,8 +59,8 @@ public class ZanataIdentityTest extends ZanataJpaTest {
     private static HAccount makeAccount() {
         HAccount account = new HAccount();
         account.setUsername("translator");
-        // hash for password "translator"
-        account.setPasswordHash("Fr5JHlcaEqKLSHjnBm4gXg==");
+        account.setPasswordHash(
+                generateSaltedHash(validPassword, account.getUsername()));
         account.setApiKey(apiKey);
         account.setEnabled(true);
         return account;
@@ -137,6 +141,14 @@ public class ZanataIdentityTest extends ZanataJpaTest {
     }
 
     @Test
+    public void canNotLogInIfApiKeyIsWrong() {
+        identity.getCredentials().setUsername("translator");
+        identity.setApiKey("invalid_api_token");
+        identity.login();
+        assertThat(identity.isLoggedIn()).isFalse();
+    }
+
+    @Test
     public void canTestPermission() {
         HAccountRole target = new HAccountRole();
         target.setName("user");
@@ -147,8 +159,27 @@ public class ZanataIdentityTest extends ZanataJpaTest {
         identity.getCredentials().setPassword(validPassword);
         identity.login();
 
+        identity.addRole("user");
+
+        assertThat(identity.hasPermission(target, "seam.insert")).isFalse()
+                .as("ordinary user do not have permission to create role");
+
         identity.addRole("admin");
 
         assertThat(identity.hasPermission(target, "seam.insert")).isTrue();
+    }
+
+    @Test(expected = AuthorizationException.class)
+    public void canCheckPermission() {
+        identity.getCredentials().setUsername(account.getUsername());
+        identity.getCredentials().setPassword(validPassword);
+        identity.login();
+
+        identity.checkPermission(new HProjectIteration(), "importTranslation");
+    }
+
+    @Test
+    public void ordinaryUserDoNotHaveAdminPermission() {
+
     }
 }
