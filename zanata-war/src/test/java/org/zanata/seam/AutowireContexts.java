@@ -38,6 +38,7 @@ public class AutowireContexts {
     private static final Logger log = LoggerFactory.getLogger(AutowireContexts.class);
 
     private static boolean simulateSessionContext = false;
+    private static boolean simulateEventContext = false;
 
     public enum ContextType {
         // TODO implement other contexts as required
@@ -148,7 +149,11 @@ public class AutowireContexts {
     }
 
     public static boolean isEventContextActive() {
-        return true;
+        return simulateEventContext;
+    }
+
+    public static void simulateEventContext(boolean simulate) {
+        simulateEventContext = simulate;
     }
 
 }

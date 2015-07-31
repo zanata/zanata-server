@@ -123,11 +123,20 @@ public class SeamAutowire {
     }
 
     /**
-     * Indicates if the prescence of a session context will be simulated.
+     * Indicates if the presence of a session context will be simulated.
      * By default contexts are not simulated.
      */
     public SeamAutowire simulateSessionContext(boolean simulate) {
         AutowireContexts.simulateSessionContext(simulate);
+        return this;
+    }
+
+    /**
+     * Indicates if the presence of an event context will be simulated.
+     * By default contexts are not simulated.
+     */
+    public SeamAutowire simulateEventContext(boolean simulate) {
+        AutowireContexts.simulateEventContext(simulate);
         return this;
     }
 
@@ -610,5 +619,6 @@ public class SeamAutowire {
         Preconditions.checkNotNull(name);
         return ((Name) name).value();
     }
+
 
 }

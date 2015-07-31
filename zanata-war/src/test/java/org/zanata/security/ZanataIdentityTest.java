@@ -1,6 +1,8 @@
 package org.zanata.security;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,11 +27,25 @@ public class ZanataIdentityTest extends ZanataJpaTest {
     private static final SeamAutowire seam = SeamAutowire.instance();
     private static final String apiKey = "d83882201764f7d339e97c4b087f0806";
     private static final String validPassword = "translator";
+    private static boolean securityEnabled;
     private ZanataIdentity identity;
     @Mock
     private Event event;
     private HAccount account;
     //    private CustomPermissionResolver permissionResolver;
+
+    @BeforeClass
+    public static void setUpEnvironment() {
+        seam.simulateSessionContext(true).simulateEventContext(true);
+        securityEnabled = ZanataIdentity.isSecurityEnabled();
+        ZanataIdentity.setSecurityEnabled(true);
+    }
+
+    @AfterClass
+    public static void cleanUp() {
+        seam.simulateEventContext(false).simulateSessionContext(false);
+        ZanataIdentity.setSecurityEnabled(securityEnabled);
+    }
 
     @Before
     public void setUp() throws Exception {
