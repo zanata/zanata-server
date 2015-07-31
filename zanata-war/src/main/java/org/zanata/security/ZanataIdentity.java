@@ -36,6 +36,7 @@ import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -81,7 +82,7 @@ public class ZanataIdentity implements Identity, Serializable {
 
     protected static boolean securityEnabled = true;
     // Seam Context variables
-    // TODO [CDI] revisit this
+    // TODO [CDI] revisit this (the value and its usage in CDI)
     private static final String LOGIN_TRIED = "org.jboss.seam.security.loginTried";
     private static final String SILENT_LOGIN = "org.jboss.seam.security.silentLogin";
 
@@ -185,8 +186,6 @@ public class ZanataIdentity implements Identity, Serializable {
         if (isLoggedIn()) {
             unAuthenticate();
             Session.instance().invalidate();
-            // used by Seam's RememberMe and RuleBasedPermissionResolver
-//            if (Events.exists()) Events.instance().raiseEvent(Identity.EVENT_LOGGED_OUT);
         }
     }
 
@@ -627,11 +626,6 @@ public class ZanataIdentity implements Identity, Serializable {
         return principal;
     }
 
-    public void checkRestriction(String expression) {
-        log.warn("permission check as EL is not supported yet");
-        throw new UnsupportedOperationException("identity.checkRestriction(exp) is not supported");
-    }
-
     // copied from org.jboss.seam.security.Identity
     @Override
     public synchronized void runAs(RunAsOperation operation) {
@@ -654,6 +648,11 @@ public class ZanataIdentity implements Identity, Serializable {
             principal = savedPrincipal;
             subject = savedSubject;
         }
+    }
+
+    @VisibleForTesting
+    protected void setPermissionResolver(CustomPermissionResolver resolver) {
+        this.permissionResolver = resolver;
     }
 
     static class ZanataConfiguration extends

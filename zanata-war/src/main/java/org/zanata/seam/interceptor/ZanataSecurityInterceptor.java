@@ -48,25 +48,8 @@ public class ZanataSecurityInterceptor extends AbstractInterceptor
             new HashMap<>();
 
     private class Restriction {
-        private String expression;
-
-        private String permissionTarget;
-        private String permissionAction;
-
         private Set<String> roleRestrictions;
         private boolean loggedInRestriction;
-
-        public void setExpression(String expression) {
-            this.expression = expression;
-        }
-
-        public void setPermissionTarget(String target) {
-            this.permissionTarget = target;
-        }
-
-        public void setPermissionAction(String action) {
-            this.permissionAction = action;
-        }
 
         public void addLoggedInRestriction() {
             this.loggedInRestriction = true;
@@ -81,12 +64,8 @@ public class ZanataSecurityInterceptor extends AbstractInterceptor
         }
 
         public void check() {
-            // TODO [CDI] revisit this
             if (!ZanataIdentity.isSecurityEnabled()) {
                 return;
-            }
-            if (expression != null) {
-                getIdentity().checkRestriction(expression);
             }
 
             if (loggedInRestriction) {
@@ -101,10 +80,6 @@ public class ZanataSecurityInterceptor extends AbstractInterceptor
                 }
             }
 
-            if (permissionTarget != null && permissionAction != null) {
-                getIdentity().checkPermission(permissionTarget,
-                        permissionAction);
-            }
         }
 
         private ZanataIdentity getIdentity() {
@@ -146,34 +121,6 @@ public class ZanataSecurityInterceptor extends AbstractInterceptor
                             getComponent().getBeanClass().getMethod(
                                     interfaceMethod.getName(),
                                     interfaceMethod.getParameterTypes());
-
-                    CheckPermission checkPermission = null;
-
-                    if (method.isAnnotationPresent(CheckPermission.class)) {
-                        checkPermission =
-                                method.getAnnotation(CheckPermission.class);
-                    } else if (getComponent().getBeanClass()
-                            .isAnnotationPresent(
-                                    CheckPermission.class)) {
-                        if (!getComponent().isLifecycleMethod(method)) {
-                            checkPermission =
-                                    getComponent().getBeanClass()
-                                            .getAnnotation(
-                                                    CheckPermission.class);
-                        }
-                    }
-
-                    if (checkPermission != null) {
-                        restriction = new Restriction();
-
-                        if (Strings.isEmpty(checkPermission.value())) {
-                            restriction.setPermissionTarget(getComponent()
-                                    .getName());
-                            restriction.setPermissionAction(method.getName());
-                        } else {
-                            restriction.setExpression(checkPermission.value());
-                        }
-                    }
 
                     for (Annotation annotation : method.getDeclaringClass()
                             .getAnnotations()) {

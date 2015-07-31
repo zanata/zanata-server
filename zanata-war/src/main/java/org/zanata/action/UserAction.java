@@ -147,7 +147,6 @@ public class UserAction implements Serializable {
         roles = identityManager.getGrantedRoles(username);
         enabled = identityManager.isUserEnabled(username);
         newUserFlag = false;
-        newUserFlag = false;
         originalUsername = username;
     }
 

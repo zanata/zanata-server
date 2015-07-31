@@ -37,8 +37,6 @@ import org.zanata.events.NotLoggedInEvent;
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
- * Override the {@link org.jboss.seam.security.FacesSecurityEvents} component to
- * alter default values.
  *
  * TODO [CDI] need to find a CDI replacement.
  *

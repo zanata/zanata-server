@@ -35,11 +35,15 @@ import org.zanata.security.CheckPermissionDecisionVoter;
  * Annotates methods and checks for the given permissions.
  * The target of the permission check will be any method parameters annotated
  * with {@link PermissionTarget}
+ * <p/>
+ * NOTE: this annotation is not supported in Seam. It's only intended to be used
+ * in CDI.
+ *
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  * @see PermissionTarget
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @Stereotype
 @Secured(CheckPermissionDecisionVoter.class)

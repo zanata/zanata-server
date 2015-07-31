@@ -77,7 +77,7 @@ public class ZanataJpaIdentityStore implements Serializable {
 
     public boolean apiKeyAuthenticate(String username, String apiKey) {
         HAccount user = lookupUser(username);
-        if (user == null || !isUserEnabled(username)) {
+        if (user == null || !user.isEnabled()) {
             return false;
         }
 
