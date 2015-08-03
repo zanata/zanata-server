@@ -1,9 +1,14 @@
 import keymirror from 'keymirror';
 
-var ActionTypes = keymirror({
+var UserMatrixActionTypes = keymirror({
   DATE_RANGE_UPDATE: null,
   CONTENT_STATE_UPDATE: null,
   DAY_SELECTED: null
 });
 
-export default ActionTypes;
+var GlossaryActionTypes = keymirror({
+  LOCALE_SELECTED: null
+});
+
+exports.UserMatrixActionTypes = UserMatrixActionTypes;
+exports.GlossaryActionTypes = GlossaryActionTypes;

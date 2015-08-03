@@ -4,6 +4,7 @@ import DropDown from './DropDown';
 import FilterableMatrixTable from './FilterableMatrixTable';
 import UserMatrixStore from '../stores/UserMatrixStore';
 import {DateRanges} from '../constants/Options';
+import Actions from '../actions/UserMatrixActions';
 
 var RecentContributions = React.createClass(
   {
@@ -35,7 +36,7 @@ var RecentContributions = React.createClass(
         <div className="l__wrapper">
           <div className="l--push-bottom-1">
             <div className="l--float-right txt--uppercase">
-              <DropDown options={DateRanges} selectedOption={this.state.dateRangeOption}  />
+              <DropDown options={DateRanges} selectedOption={this.state.dateRangeOption} onClick={Actions.changeDateRange}/>
             </div>
             <h2 className='delta txt--uppercase'>Recent Contributions</h2>
           </div>

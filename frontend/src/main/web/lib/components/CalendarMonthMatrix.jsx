@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment-range';
 import DayMatrix from './DayMatrix';
-import Actions from '../actions/Actions';
+import Actions from '../actions/UserMatrixActions';
 import {ContentStates} from '../constants/Options';
 import {DateRanges} from '../constants/Options';
 

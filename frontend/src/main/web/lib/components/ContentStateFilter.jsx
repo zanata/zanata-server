@@ -1,5 +1,5 @@
 import React from 'react';
-import Actions from '../actions/Actions';
+import Actions from '../actions/UserMatrixActions';
 import {ContentStates, ContentStateStyles} from '../constants/Options';
 import {PureRenderMixin} from 'react/addons';
 

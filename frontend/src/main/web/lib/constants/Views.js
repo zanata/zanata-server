@@ -3,7 +3,7 @@ import Router from 'react-router';
 import StringUtils from '../utils/StringUtils';
 import RootContent from '../components/RootContent';
 import UserProfile from '../components/UserProfile';
-import GlobalGlossaries from '../components/GlobalGlossaries';
+import GlobalGlossary from '../components/GlobalGlossary';
 
 var Views = {
   USER_PROFILE: 0,
@@ -33,7 +33,7 @@ var Views = {
       //request from index.html (dev)
       return (
         <Route handler={RootContent}>
-          <Route path="glossary" handler={GlobalGlossaries}/>
+          <Route path="glossary" handler={GlobalGlossary}/>
           <Route path="profile" handler={UserProfile}/>
           <DefaultRoute handler={UserProfile}/>
           <NotFoundRoute handler={RootContent} />
@@ -53,7 +53,7 @@ var Views = {
         case Views.GLOSSARY:
           return (
             <Route handler={RootContent}>
-              <DefaultRoute handler={GlobalGlossaries}/>
+              <DefaultRoute handler={GlobalGlossary}/>
               <NotFoundRoute handler={RootContent} />
             </Route>
           );

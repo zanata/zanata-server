@@ -1,5 +1,4 @@
 import React from 'react';
-import Actions from '../actions/Actions';
 import {PureRenderMixin} from 'react/addons';
 
 var DropDown = React.createClass({
@@ -9,9 +8,9 @@ var DropDown = React.createClass({
     return {dropdownIsActive: false};
   },
 
-  handleOptionClick: function(option) {
+  handleOptionClick: function(option, onClickFn) {
     if (this.props.selectedOption != option) {
-      Actions.changeDateRange(option);
+      onClickFn(option);
     }
     this.setState({dropdownIsActive: false});
   },
@@ -24,6 +23,7 @@ var DropDown = React.createClass({
   render: function() {
     var options = this.props.options,
       selected = this.props.selectedOption,
+      onClickFn = this.props.onClick,
       self = this,
       dropDownClass = 'Dropdown--simple',
       optionList;
@@ -34,7 +34,7 @@ var DropDown = React.createClass({
       var buttonClassName = 'button--link txt--nowrap';
       buttonClassName += option === selected ? ' is-active' : '';
       return <li key={option} className='Dropdown-item'>
-        <button className={buttonClassName} onClick={self.handleOptionClick.bind(self, option)}>{option}</button>
+        <button className={buttonClassName} onClick={self.handleOptionClick.bind(self, option, onClickFn)}>{option}</button>
       </li>
     });
 

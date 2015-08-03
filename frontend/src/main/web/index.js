@@ -9,7 +9,8 @@ var mountNode = document.getElementById('main-content'),
   baseUrl = mountNode.getAttribute('base-url'),
   user = JSON.parse(mountNode.getAttribute('user')),
   view = Views.getView(mountNode.getAttribute('view')),
-  authenticated = mountNode.getAttribute('authenticated') === 'true';
+  authenticated = mountNode.getAttribute('authenticated') === 'true',
+  dev = mountNode.getAttribute('dev');
 
 // base rest url, e.g http://localhost:8080/rest
 Configs.baseUrl = baseUrl;
@@ -17,6 +18,7 @@ Configs.baseUrl = baseUrl;
 Configs.user = user;
 //is user authenticated
 Configs.authenticated = authenticated;
+Configs.isDev = dev !== null;
 
 var routes = Views.getRoutes(view);
 

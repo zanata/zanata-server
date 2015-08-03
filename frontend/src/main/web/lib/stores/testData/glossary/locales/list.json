@@ -1,0 +1,18 @@
+[
+  {
+    "locale": {
+      "localeId": "en-US",
+      "displayName": "English (United States)",
+      "alias": ""
+    },
+    "count": 2
+  },
+  {
+    "locale": {
+      "localeId": "de",
+      "displayName": "German",
+      "alias": ""
+    },
+    "count": 2
+  }
+]

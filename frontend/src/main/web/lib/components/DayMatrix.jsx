@@ -1,6 +1,6 @@
 import React from 'react/addons';
 import {ContentStates, ContentStateStyles} from '../constants/Options';
-import Actions from '../actions/Actions';
+import Actions from '../actions/UserMatrixActions';
 import {PureRenderMixin} from 'react/addons';
 import dateUtil from '../utils/DateHelper';
 

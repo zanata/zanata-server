@@ -4,7 +4,7 @@ import {Promise} from 'es6-promise';
 import {EventEmitter} from 'events';
 import {ContentStates} from '../constants/Options';
 import {DateRanges} from '../constants/Options';
-import ActionTypes from '../constants/ActionTypes';
+import {UserMatrixActionTypes} from '../constants/ActionTypes';
 import Configs from '../constants/Configs';
 import utilsDate from '../utils/DateHelper';
 import Request from 'superagent';
@@ -25,7 +25,11 @@ var _state = {
 };
 
 function statsAPIUrl() {
-  return Configs.baseUrl + "/stats/user/" + Configs.user.username + "/";
+  if(Configs.isDev) {
+    return Configs.baseUrl + "/stats/user/" + Configs.user.username + ".json?/";
+  } else {
+    return Configs.baseUrl + "/stats/user/" + Configs.user.username + "/";
+  }
 }
 
 function loadFromServer() {
@@ -216,7 +220,7 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
   dispatchToken: Dispatcher.register(function(payload) {
     var action = payload.action;
     switch (action['actionType']) {
-      case ActionTypes.DATE_RANGE_UPDATE:
+      case UserMatrixActionTypes.DATE_RANGE_UPDATE:
         console.log('date range from %s -> %s', _state['dateRangeOption'], action.data);
         _state['dateRangeOption'] = action.data;
         _state['selectedDay'] = null;
@@ -229,14 +233,14 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
             console.error('something bad happen:' + err.stack);
           });
         break;
-      case ActionTypes.CONTENT_STATE_UPDATE:
+      case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
         console.log('content state from %s -> %s', _state['contentStateOption'], action.data);
         _state['contentStateOption'] = action.data;
         _state['wordCountsForEachDayFilteredByContentState'] = mapTotalWordCountByContentState(_state['matrixForAllDays'], _state['contentStateOption']);
         _state['wordCountsForSelectedDayFilteredByContentState'] = filterByContentStateAndDay(_state['matrix'], _state['contentStateOption'], _state['selectedDay']);
         UserMatrixStore.emitChange();
         break;
-      case ActionTypes.DAY_SELECTED:
+      case UserMatrixActionTypes.DAY_SELECTED:
         console.log('day selection from %s -> %s', _state['selectedDay'], action.data);
         _state['selectedDay'] = action.data;
         _state['wordCountsForSelectedDayFilteredByContentState'] = filterByContentStateAndDay(_state['matrix'], _state['contentStateOption'], _state['selectedDay']);

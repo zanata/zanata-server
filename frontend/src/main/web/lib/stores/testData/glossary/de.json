@@ -1,0 +1,38 @@
+{
+  "sourceLocales": [],
+  "glossaryEntries": [
+    {
+      "srcLang": "en-US",
+      "sourceReference": "bgroh@172.16.5.77",
+      "glossaryTerms": [
+        {
+          "content": "Prozess",
+          "comments": [
+            "bgroh@172.16.5.77",
+            "vfuehrer@172.16.44.7",
+            "~ vfuehrer@172.16.44.7",
+            "~ msgid \"information security update\"",
+            "~ msgstr \"Informationssicherheitsupdate\""
+          ],
+          "locale": "de"
+        }
+      ],
+      "sourcereference": "bgroh@172.16.5.77"
+    },
+    {
+      "srcLang": "en-US",
+      "sourceReference": "hpeters@10.64.1.231",
+      "glossaryTerms": [
+        {
+          "content": "Implementierung",
+          "comments": [
+            "bgroh@172.16.5.77"
+          ],
+          "locale": "de"
+        }
+      ],
+      "sourcereference": "hpeters@10.64.1.231"
+    }
+  ],
+  "targetLocales": []
+}

@@ -1,0 +1,30 @@
+{
+  "sourceLocales": [],
+  "glossaryEntries": [
+    {
+      "srcLang": "en-US",
+      "sourceReference": "bgroh@172.16.5.77",
+      "glossaryTerms": [
+        {
+          "content": "process",
+          "comments": [],
+          "locale": "en-US"
+        }
+      ],
+      "sourcereference": "bgroh@172.16.5.77"
+    },
+    {
+      "srcLang": "en-US",
+      "sourceReference": "hpeters@10.64.1.231",
+      "glossaryTerms": [
+        {
+          "content": "implementation",
+          "comments": [],
+          "locale": "en-US"
+        }
+      ],
+      "sourcereference": "hpeters@10.64.1.231"
+    }
+  ],
+  "targetLocales": []
+}

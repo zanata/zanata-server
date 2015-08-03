@@ -1,12 +1,12 @@
 import Dispatcher from '../dispatchers/UserMatrixDispatcher';
-import ActionTypes from '../constants/ActionTypes';
+import {UserMatrixActionTypes} from '../constants/ActionTypes';
 
 
-var Actions = {
+var UserMatrixActions = {
   changeDateRange: function(dateRangeOption) {
     Dispatcher.handleViewAction(
       {
-        actionType: ActionTypes.DATE_RANGE_UPDATE,
+        actionType: UserMatrixActionTypes.DATE_RANGE_UPDATE,
         data: dateRangeOption
       }
     );
@@ -15,7 +15,7 @@ var Actions = {
   changeContentState: function(contentState) {
     Dispatcher.handleViewAction(
       {
-        actionType: ActionTypes.CONTENT_STATE_UPDATE,
+        actionType: UserMatrixActionTypes.CONTENT_STATE_UPDATE,
         data: contentState
       }
     );
@@ -24,7 +24,7 @@ var Actions = {
   onDaySelected: function(day) {
     Dispatcher.handleViewAction(
       {
-        actionType: ActionTypes.DAY_SELECTED,
+        actionType: UserMatrixActionTypes.DAY_SELECTED,
         data: day
       }
     );
@@ -33,12 +33,11 @@ var Actions = {
   clearSelectedDay: function() {
     Dispatcher.handleViewAction(
       {
-        actionType: ActionTypes.DAY_SELECTED,
+        actionType: UserMatrixActionTypes.DAY_SELECTED,
         data: null
       }
     );
   }
-
 };
 
-export default Actions;
+export default UserMatrixActions;

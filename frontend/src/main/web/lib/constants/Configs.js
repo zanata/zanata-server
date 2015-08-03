@@ -1,7 +1,8 @@
 var Configs = {
   baseUrl: null,
   user: null,
-  authenticated: false
+  authenticated: false,
+  isDev: true
 };
 
 export default Configs
