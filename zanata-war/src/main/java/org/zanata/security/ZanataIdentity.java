@@ -644,6 +644,10 @@ public class ZanataIdentity implements Identity, Serializable {
 
             operation.execute();
         } finally {
+            // Since this bean is a session scoped bean and the threadlocal
+            // field is a trancient instance variable, we don't need to worry
+            // about removing the value from it (in turns of memory leak in
+            // multi-threading environment
             systemOp.set(false);
             principal = savedPrincipal;
             subject = savedSubject;

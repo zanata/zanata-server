@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.annotations.Begin;
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Conversation;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.ZanataSecured;
 
@@ -35,7 +34,7 @@ public class ZanataRoleAction implements Serializable {
     private List<String> groups;
 
     @In
-    ZanataJpaIdentityStore identityStore;
+    ZanataIdentityManager identityManager;
 
     @In
     ZanataIdentity identity;
@@ -49,16 +48,16 @@ public class ZanataRoleAction implements Serializable {
     public void editRole(String role) {
         this.originalRole = role;
         this.role = role;
-        groups = identityStore.getRoleGroups(role);
+        groups = identityManager.getRoleGroups(role);
     }
 
     public String save() {
         if (role != null && originalRole != null &&
                 !role.equals(originalRole)) {
-            identityStore.deleteRole(originalRole);
+            identityManager.deleteRole(originalRole);
         }
 
-        if (identityStore.roleExists(role)) {
+        if (identityManager.roleExists(role)) {
             return saveExistingRole();
         } else {
             return saveNewRole();
@@ -66,11 +65,11 @@ public class ZanataRoleAction implements Serializable {
     }
 
     private String saveNewRole() {
-        boolean success = identityStore.createRole(role);
+        boolean success = identityManager.createRole(role);
 
         if (success) {
             for (String r : groups) {
-                identityStore.addRoleToGroup(role, r);
+                identityManager.addRoleToGroup(role, r);
             }
 
             Conversation.instance().end();
@@ -80,19 +79,19 @@ public class ZanataRoleAction implements Serializable {
     }
 
     private String saveExistingRole() {
-        List<String> grantedRoles = identityStore.getRoleGroups(role);
+        List<String> grantedRoles = identityManager.getRoleGroups(role);
 
         if (grantedRoles != null) {
             for (String r : grantedRoles) {
                 if (!groups.contains(r)) {
-                    identityStore.removeRoleFromGroup(role, r);
+                    identityManager.removeRoleFromGroup(role, r);
                 }
             }
         }
 
         for (String r : groups) {
             if (grantedRoles == null || !grantedRoles.contains(r)) {
-                identityStore.addRoleToGroup(role, r);
+                identityManager.addRoleToGroup(role, r);
             }
         }
 
@@ -105,7 +104,7 @@ public class ZanataRoleAction implements Serializable {
     }
 
     public List<String> getAssignableRoles() {
-        List<String> roles = identityStore.listGrantableRoles();
+        List<String> roles = identityManager.listGrantableRoles();
         roles.remove(role);
         return roles;
     }

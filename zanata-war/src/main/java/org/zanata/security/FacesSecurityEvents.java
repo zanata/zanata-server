@@ -38,7 +38,12 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
  *
- * TODO [CDI] need to find a CDI replacement.
+ * TODO [CDI] use FacesMessage.addGlobal to achieve the same effect.
+ *
+ * what it does is add them to the global messages list, Seam's FacesMessages
+ * extends StatusMessages, and it displays any waiting global messages in
+ * beforeRenderResponse(). So FacesSecurityEvents could generate the status
+ * messages and call our FacesMessages.addGlobal to achieve the same effect.
  *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>

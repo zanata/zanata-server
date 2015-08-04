@@ -10,8 +10,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.zanata.seam.security.ZanataIdentityManager;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 
 import static org.jboss.seam.ScopeType.SESSION;
 import static org.jboss.seam.annotations.Install.APPLICATION;
@@ -32,7 +32,7 @@ public class ZanataRoleSearch implements Serializable {
     String selectedRole;
 
     @In
-    ZanataJpaIdentityStore identityStore;
+    ZanataIdentityManager identityManager;
 
     @In
     private ZanataIdentity identity;
@@ -43,11 +43,11 @@ public class ZanataRoleSearch implements Serializable {
     }
 
     public void loadRoles() {
-        roles = identityStore.listRoles();
+        roles = identityManager.listRoles();
     }
 
     public String getRoleGroups(String role) {
-        List<String> roles = identityStore.getRoleGroups(role);
+        List<String> roles = identityManager.getRoleGroups(role);
 
         if (roles == null) return "";
 

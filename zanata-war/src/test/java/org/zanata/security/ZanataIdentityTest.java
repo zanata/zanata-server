@@ -193,9 +193,4 @@ public class ZanataIdentityTest extends ZanataJpaTest {
 
         identity.checkPermission(new HProjectIteration(), "importTranslation");
     }
-
-    @Test
-    public void ordinaryUserDoNotHaveAdminPermission() {
-
-    }
 }
