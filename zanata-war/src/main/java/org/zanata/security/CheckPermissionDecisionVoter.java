@@ -60,7 +60,6 @@ public class CheckPermissionDecisionVoter extends
             InvocationContext invocationCtx =
                     accessDecisionVoterContext.<InvocationContext> getSource();
             List permissionTargets = getPermissionTargets(invocationCtx);
-            // FIXME Use Zanata's version of identity
             if (!identity.hasPermission(permissionTargets.toArray(),
                     permissionName)) {
                 violations.add(newSecurityViolation("You don't have permission to do this"));

@@ -49,5 +49,8 @@ import org.zanata.security.CheckPermissionDecisionVoter;
 @Stereotype
 @Secured(CheckPermissionDecisionVoter.class)
 public @interface CheckPermission {
+    /**
+     * Permission/action name
+     */
     String value();
 }
