@@ -25,11 +25,7 @@ var _state = {
 };
 
 function statsAPIUrl() {
-  if(Configs.isDev) {
-    return Configs.baseUrl + "/stats/user/" + Configs.user.username + ".json?/";
-  } else {
-    return Configs.baseUrl + "/stats/user/" + Configs.user.username + "/";
-  }
+  return Configs.baseUrl + "/stats/user/" + Configs.user.username + Configs.urlPostfix + "/";
 }
 
 function loadFromServer() {

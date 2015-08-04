@@ -1,11 +1,17 @@
 {
-  "sourceLocales": [],
   "glossaryEntries": [
     {
       "srcLang": "en-US",
       "sourceReference": "bgroh@172.16.5.77",
       "glossaryTerms": [
         {
+          "resId": "38dd937c8c7498b5d748f28a09cf1f1c",
+          "content": "process",
+          "comments": [],
+          "locale": "en-US"
+        },
+        {
+          "resId": "d26c9330b2160e253d54ba5af0e1311b",
           "content": "Prozess",
           "comments": [
             "bgroh@172.16.5.77",
@@ -17,13 +23,20 @@
           "locale": "de"
         }
       ],
-      "sourcereference": "bgroh@172.16.5.77"
+      "sourceReference": "bgroh@172.16.5.77"
     },
     {
       "srcLang": "en-US",
       "sourceReference": "hpeters@10.64.1.231",
       "glossaryTerms": [
         {
+          "resId": "d38fbf9dee9388587d5fc639d390a2a4",
+          "content": "implementation",
+          "comments": [],
+          "locale": "en-US"
+        },
+        {
+          "resId": "865f2f37db4bdfcb7c637cab522e6746",
           "content": "Implementierung",
           "comments": [
             "bgroh@172.16.5.77"
@@ -31,8 +44,7 @@
           "locale": "de"
         }
       ],
-      "sourcereference": "hpeters@10.64.1.231"
+      "sourceReference": "hpeters@10.64.1.231"
     }
-  ],
-  "targetLocales": []
+  ]
 }

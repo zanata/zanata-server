@@ -2,7 +2,7 @@ var Configs = {
   baseUrl: null,
   user: null,
   authenticated: false,
-  isDev: true
+  urlPostfix: ''
 };
 
 export default Configs

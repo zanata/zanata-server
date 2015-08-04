@@ -17,19 +17,13 @@ var _state = {
 var CHANGE_EVENT = "change";
 
 function localesStatisticAPIUrl() {
-  if(Configs.isDev) {
-    return Configs.baseUrl + "/glossary/locales/list.json";
-  } else {
-    return Configs.baseUrl + "/glossary/locales/list";
-  }
+  return Configs.baseUrl + "/glossary/locales/list" + Configs.urlPostfix
 }
 
 function loadLocalesStats() {
   var url = localesStatisticAPIUrl();
 
   return new Promise(function(resolve, reject) {
-    // we turn off cache because it seems like if server(maybe just node?)
-    // returns 304 unmodified, it won't even reach the callback!
     Request.get(url)
       .set("Cache-Control", "no-cache, no-store, must-revalidate")
       .set("Pragma", "no-cache")
@@ -58,11 +52,41 @@ function processLocalesStatistic(serverResponse) {
   return _state;
 }
 
-function loadGlossaryByLocale() {
-  //load glossary from rest
+function glossaryAPIUrl(localeId) {
+  return Configs.baseUrl + "/glossary/" + localeId + Configs.urlPostfix
+}
 
-  _state['glossary'] = {};
+function loadGlossaryByLocale() {
+  var selectedLocaleId = getLocaleIdByDisplayName(_state['localesStats'], _state['selectedLocale']),
+    url = glossaryAPIUrl(selectedLocaleId);
+
+  return new Promise(function(resolve, reject) {
+    Request.get(url)
+      .set("Cache-Control", "no-cache, no-store, must-revalidate")
+      .set("Pragma", "no-cache")
+      .set("Expires", 0)
+      .end((function (res) {
+        if (res.error) {
+          console.error(url, res.status, res.error.toString());
+          reject(Error(res.error.toString()));
+        } else {
+          resolve(res['body']);
+        }
+      }));
+  });
+}
+
+function processGlossaryList(serverResponse) {
+  _state['glossary'] = serverResponse;
   return _state;
+}
+
+function getLocaleIdByDisplayName(localeList, displayName) {
+  var localeId = _(localeList)
+    .filter(function(locale) { return locale.locale.displayName === displayName; })
+    .pluck('locale.localeId')
+    .value();
+  return localeId[0];
 }
 
 var GlossaryStore = assign({}, EventEmitter.prototype, {
@@ -73,6 +97,13 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         .then(function (newState) {
           GlossaryStore.emitChange();
         })
+        .then(function() {
+          loadGlossaryByLocale()
+            .then(processGlossaryList)
+            .then(function (newState) {
+              GlossaryStore.emitChange();
+            });
+        });
     }
     return _state;
   }.bind(this),
@@ -102,7 +133,10 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         console.log('locale from %s -> %s', _state['selectedLocale'], action.data);
         _state['selectedLocale'] = action.data;
         loadGlossaryByLocale()
-        .then(GlossaryStore.emitChange());
+          .then(processGlossaryList)
+          .then(function (newState) {
+            GlossaryStore.emitChange();
+          });
         break;
     }
   })

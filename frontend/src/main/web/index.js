@@ -18,7 +18,8 @@ Configs.baseUrl = baseUrl;
 Configs.user = user;
 //is user authenticated
 Configs.authenticated = authenticated;
-Configs.isDev = dev !== null;
+//append with .json extension in 'dev' environment
+Configs.urlPostfix = dev === null ? '' : '.json?';
 
 var routes = Views.getRoutes(view);
 

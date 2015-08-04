@@ -22,4 +22,9 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="3" author="aeng@redhat.com">
+    <comment>Generate resId for HGlossaryTerm</comment>
+    <customChange class="org.zanata.liquibase.custom.GenerateResIdForGlossaryTerm" />
+  </changeSet>
+
 </databaseChangeLog>

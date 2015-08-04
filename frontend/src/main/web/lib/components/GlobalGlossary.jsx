@@ -28,7 +28,12 @@ var GlobalGlossary = React.createClass({
 
   render: function() {
     var authenticated = Configs.authenticated,
-      user = Configs.user;
+      user = Configs.user, rows = [];
+
+    _.forOwn(this.state.glossary.glossaryEntries, function (glossaryEntry) {
+      var str = toString(glossaryEntry);
+      rows.push(<li>{str}</li>)
+    });
 
     return (
       <div className="g">
@@ -37,11 +42,24 @@ var GlobalGlossary = React.createClass({
           <div className="g--centered">
             <div className="g__item l--constrain-medium">
               <DropDown options={this.state.localeOptions} selectedOption={this.state.selectedLocale} onClick={Actions.changeGlossaryLocale} />
+              <ul>
+              {rows}
+              </ul>
             </div>
           </div>
         </div>
       </div>);
   }
 });
+
+function toString(entry) {
+  console.info(entry);
+  var termStr = "";
+
+  _.forOwn(entry.glossaryTerms, function (term) {
+    termStr += " resId:" + term.resId + ", content:" + term.content + ", locale:" + term.locale + ", comments:" + term.comments;
+  });
+  return "srcLang:" + entry.srcLang + ", srcRef:" + entry.sourceReference + ", terms:[" + termStr + "]";
+}
 
 export default GlobalGlossary;
