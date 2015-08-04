@@ -89,24 +89,59 @@ function getLocaleIdByDisplayName(localeList, displayName) {
   return localeId[0];
 }
 
+/**
+ * data: {
+ *  resId: term resId
+ *  srcLocale: source locale id
+ * }
+ * @param data
+ */
+function deleteGlossary(data) {
+  var url = Configs.baseUrl + "/glossary/" + data.srcLocale + "/" + data.resId + Configs.urlPostfix;
+
+  return new Promise(function(resolve, reject) {
+    Request.del(url)
+      .set("Cache-Control", "no-cache, no-store, must-revalidate")
+      .set("Pragma", "no-cache")
+      .set("Expires", 0)
+      .end((function (res) {
+        if (res.error) {
+          console.error(url, res.status, res.error.toString());
+          reject(Error(res.error.toString()));
+        } else {
+          resolve(res['body']);
+        }
+      }));
+  });
+}
+
+function processDelete(serverResponse) {
+  //reload from server
+  //show notification?
+}
+
 var GlossaryStore = assign({}, EventEmitter.prototype, {
-  getLocaleStats: function() {
+  init: function() {
     if (_state.localesStats === null) {
-      loadLocalesStats()
-        .then(processLocalesStatistic)
-        .then(function (newState) {
-          GlossaryStore.emitChange();
-        })
-        .then(function() {
-          loadGlossaryByLocale()
-            .then(processGlossaryList)
-            .then(function (newState) {
-              GlossaryStore.emitChange();
-            });
-        });
+      this.initialise();
     }
     return _state;
   }.bind(this),
+
+  initialise: function() {
+    loadLocalesStats()
+      .then(processLocalesStatistic)
+      .then(function (newState) {
+        GlossaryStore.emitChange();
+      })
+      .then(function() {
+        loadGlossaryByLocale()
+          .then(processGlossaryList)
+          .then(function (newState) {
+            GlossaryStore.emitChange();
+          });
+      });
+  },
 
   emitChange: function() {
     this.emit(CHANGE_EVENT);
@@ -136,6 +171,23 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           .then(processGlossaryList)
           .then(function (newState) {
             GlossaryStore.emitChange();
+          });
+        break;
+      case GlossaryActionTypes.INSERT_GLOSSARY:
+        //glossary data
+        console.log('creating glossary', action.data);
+        break;
+      case GlossaryActionTypes.UPDATE_GLOSSARY:
+        //glossary data with resId
+        console.log('updating glossary', action.data);
+        break;
+      case GlossaryActionTypes.DELETE_GLOSSARY:
+        //glossary resId with srcLocale
+        console.log('deleting glossary', action.data);
+        deleteGlossary(action.data)
+          .then(processDelete)
+          .then(function () {
+            this.initialise();
           });
         break;
     }

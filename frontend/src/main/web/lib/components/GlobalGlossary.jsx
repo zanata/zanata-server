@@ -7,7 +7,7 @@ import Actions from '../actions/GlossaryActions';
 var GlobalGlossary = React.createClass({
 
   getLocaleStats: function() {
-    return GlossaryStore.getLocaleStats();
+    return GlossaryStore.init();
   },
 
   getInitialState: function() {
