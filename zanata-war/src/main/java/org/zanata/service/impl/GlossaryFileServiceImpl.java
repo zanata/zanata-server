@@ -85,7 +85,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     @Override
-    public void saveGlossary(Glossary glossary) {
+    public void saveOrUpdateGlossary(Glossary glossary) {
         int counter = 0;
         for (int i = 0; i < glossary.getGlossaryEntries().size(); i++) {
             transferGlossaryEntryAndSave(glossary.getGlossaryEntries().get(i));

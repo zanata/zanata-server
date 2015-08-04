@@ -22,8 +22,7 @@
           ],
           "locale": "de"
         }
-      ],
-      "sourceReference": "bgroh@172.16.5.77"
+      ]
     },
     {
       "srcLang": "en-US",
@@ -43,8 +42,7 @@
           ],
           "locale": "de"
         }
-      ],
-      "sourceReference": "hpeters@10.64.1.231"
+      ]
     }
   ]
 }

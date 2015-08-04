@@ -5,6 +5,7 @@ import {Promise} from 'es6-promise';
 import Request from 'superagent';
 import Configs from '../constants/Configs';
 import {GlossaryActionTypes} from '../constants/ActionTypes';
+import GlossaryHelper from '../utils/GlossaryHelper'
 import _ from 'lodash';
 
 var _state = {
@@ -26,10 +27,11 @@ function loadLocalesStats() {
   return new Promise(function(resolve, reject) {
     Request.get(url)
       .set("Cache-Control", "no-cache, no-store, must-revalidate")
+      .set('Accept', 'application/json')
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end((function (res) {
-        //console.log('response:' + res.body);
+        console.log('response:' + res.body);
         if (res.error) {
           console.error(url, res.status, res.error.toString());
           reject(Error(res.error.toString()));
@@ -57,12 +59,14 @@ function glossaryAPIUrl(localeId) {
 }
 
 function loadGlossaryByLocale() {
-  var selectedLocaleId = getLocaleIdByDisplayName(_state['localesStats'], _state['selectedLocale']),
-    url = glossaryAPIUrl(selectedLocaleId);
+  var selectedLocaleId =
+      GlossaryHelper.getLocaleIdByDisplayName(_state['localesStats'], _state['selectedLocale']),
+      url = glossaryAPIUrl(selectedLocaleId);
 
   return new Promise(function(resolve, reject) {
     Request.get(url)
       .set("Cache-Control", "no-cache, no-store, must-revalidate")
+      .set('Accept', 'application/json')
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end((function (res) {
@@ -81,14 +85,6 @@ function processGlossaryList(serverResponse) {
   return _state;
 }
 
-function getLocaleIdByDisplayName(localeList, displayName) {
-  var localeId = _(localeList)
-    .filter(function(locale) { return locale.locale.displayName === displayName; })
-    .pluck('locale.localeId')
-    .value();
-  return localeId[0];
-}
-
 /**
  * data: {
  *  resId: term resId
@@ -101,9 +97,29 @@ function deleteGlossary(data) {
 
   return new Promise(function(resolve, reject) {
     Request.del(url)
-      .set("Cache-Control", "no-cache, no-store, must-revalidate")
-      .set("Pragma", "no-cache")
-      .set("Expires", 0)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .end((function (res) {
+        if (res.error) {
+          console.error(url, res.status, res.error.toString());
+          reject(Error(res.error.toString()));
+        } else {
+          resolve(res['body']);
+        }
+      }));
+  });
+}
+
+function saveOrUpdateGlossary(data) {
+  //create glossary object from data
+  var url = Configs.baseUrl + "/glossary/" + Configs.urlPostfix,
+    glossary = GlossaryHelper.generateGlossaryDTO(data);
+
+  return new Promise(function(resolve, reject) {
+    Request.post(url)
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .send(glossary)
       .end((function (res) {
         if (res.error) {
           console.error(url, res.status, res.error.toString());
@@ -116,32 +132,34 @@ function deleteGlossary(data) {
 }
 
 function processDelete(serverResponse) {
-  //reload from server
   //show notification?
+}
+
+function processSave(serverResponse) {
+  //show notification?
+}
+function initialise () {
+  loadLocalesStats()
+    .then(processLocalesStatistic)
+    .then(function (newState) {
+      GlossaryStore.emitChange();
+    })
+    .then(function() {
+      loadGlossaryByLocale()
+        .then(processGlossaryList)
+        .then(function (newState) {
+          GlossaryStore.emitChange();
+        });
+    });
 }
 
 var GlossaryStore = assign({}, EventEmitter.prototype, {
   init: function() {
     if (_state.localesStats === null) {
-      this.initialise();
+      initialise();
     }
     return _state;
   }.bind(this),
-
-  initialise: function() {
-    loadLocalesStats()
-      .then(processLocalesStatistic)
-      .then(function (newState) {
-        GlossaryStore.emitChange();
-      })
-      .then(function() {
-        loadGlossaryByLocale()
-          .then(processGlossaryList)
-          .then(function (newState) {
-            GlossaryStore.emitChange();
-          });
-      });
-  },
 
   emitChange: function() {
     this.emit(CHANGE_EVENT);
@@ -174,12 +192,13 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
       case GlossaryActionTypes.INSERT_GLOSSARY:
-        //glossary data
-        console.log('creating glossary', action.data);
-        break;
       case GlossaryActionTypes.UPDATE_GLOSSARY:
-        //glossary data with resId
-        console.log('updating glossary', action.data);
+        console.log('save/update glossary', action.data);
+        saveOrUpdateGlossary(action.data)
+          .then(processSave)
+          .then(function () {
+            initialise();
+          });
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
         //glossary resId with srcLocale
@@ -187,7 +206,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         deleteGlossary(action.data)
           .then(processDelete)
           .then(function () {
-            this.initialise();
+            initialise();
           });
         break;
     }

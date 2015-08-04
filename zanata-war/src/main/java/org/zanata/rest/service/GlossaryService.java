@@ -2,9 +2,7 @@ package org.zanata.rest.service;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -19,11 +17,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jboss.resteasy.util.GenericType;
@@ -34,18 +27,13 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
-import org.zanata.model.HLocale;
 import org.zanata.model.HTermComment;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocaleStats;
 import org.zanata.rest.dto.GlossaryTerm;
-import org.zanata.rest.dto.LocaleDetails;
-import org.zanata.rest.editor.dto.Locale;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
-
-import com.google.common.base.Function;
 
 @Name("glossaryService")
 @Path(GlossaryResource.SERVICE_PATH)
@@ -137,7 +125,7 @@ public class GlossaryService implements GlossaryResource {
         }
         response = Response.created(uri.getAbsolutePath());
 
-        glossaryFileServiceImpl.saveGlossary(glossary);
+        glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
 
         return response.build();
     }

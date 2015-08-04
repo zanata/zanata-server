@@ -124,7 +124,7 @@ public class GlossaryAction implements Serializable {
                             glossaryFileUpload.getCommentColsList());
 
             for (Glossary glossary : glossaries) {
-                glossaryFileServiceImpl.saveGlossary(glossary);
+                glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
             }
             facesMessages.addGlobal("Glossary file {0} uploaded.",
                     this.glossaryFileUpload.getFileName());

@@ -32,7 +32,7 @@ import org.zanata.rest.dto.Glossary;
  *
  */
 public interface GlossaryFileService {
-    void saveGlossary(Glossary glossary);
+    void saveOrUpdateGlossary(Glossary glossary);
 
     List<Glossary> parseGlossaryFile(InputStream fileContents, String fileName,
             LocaleId sourceLang, LocaleId transLang,

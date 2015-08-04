@@ -53,7 +53,6 @@ var GlobalGlossary = React.createClass({
 });
 
 function toString(entry) {
-  console.info(entry);
   var termStr = "";
 
   _.forOwn(entry.glossaryTerms, function (term) {
