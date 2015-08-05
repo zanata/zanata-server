@@ -25,10 +25,12 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
@@ -49,6 +51,9 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.FilterCacheModeType;
 import org.hibernate.search.annotations.FullTextFilterDef;
 import org.hibernate.search.annotations.Indexed;
+import org.jboss.seam.Component;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.hibernate.search.LocaleFilterFactory;
 import org.zanata.hibernate.search.LocaleIdBridge;
 
@@ -58,6 +63,7 @@ import org.zanata.hibernate.search.LocaleIdBridge;
  *
  **/
 @Entity
+@EntityListeners({HGlossaryTerm.EntityListener.class})
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Indexed
 @FullTextFilterDef(name = "glossaryLocaleFilter",
@@ -76,6 +82,7 @@ public class HGlossaryTerm extends ModelEntityBase {
     private List<HTermComment> comments;
     private HGlossaryEntry glossaryEntry;
     private HLocale locale;
+    private HPerson lastModifiedBy;
 
     public HGlossaryTerm(String resId, String content) {
         setResId(resId);
@@ -120,5 +127,25 @@ public class HGlossaryTerm extends ModelEntityBase {
     @FieldBridge(impl = LocaleIdBridge.class)
     public HLocale getLocale() {
         return locale;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_modified_by_id", nullable = true)
+    public HPerson getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public static class EntityListener {
+        @PreUpdate
+        private void onUpdate(HGlossaryTerm term) {
+            if (Contexts.isSessionContextActive()) {
+                HAccount account =
+                    (HAccount) Component.getInstance(
+                        JpaIdentityStore.AUTHENTICATED_USER);
+                if (account != null) {
+                    term.setLastModifiedBy(account.getPerson());
+                }
+            }
+        }
     }
 }

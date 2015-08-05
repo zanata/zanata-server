@@ -28,27 +28,30 @@ var GlobalGlossary = React.createClass({
 
   render: function() {
     var authenticated = Configs.authenticated,
-      user = Configs.user, rows = [];
+      user = Configs.user, contents, rows = [];
 
-    _.forOwn(this.state.glossary.glossaryEntries, function (glossaryEntry) {
-      var str = toString(glossaryEntry);
-      rows.push(<li>{str}</li>)
-    });
+    if(this.state.localeOptions.length > 0) {
+      _.forOwn(this.state.glossary.glossaryEntries, function (glossaryEntry) {
+        var str = toString(glossaryEntry);
+        rows.push(<li>{str}</li>)
+      });
 
-    return (
-      <div className="g">
-        <div id="glossaries" className="l__wrapper">
-          <h1>Glossary</h1>
-          <div className="g--centered">
-            <div className="g__item l--constrain-medium">
-              <DropDown options={this.state.localeOptions} selectedOption={this.state.selectedLocale} onClick={Actions.changeGlossaryLocale} />
-              <ul>
-              {rows}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>);
+      contents = (
+        <div className="g__item l--constrain-medium">
+          <DropDown options={this.state.localeOptions} selectedOption={this.state.selectedLocale} onClick={Actions.changeGlossaryLocale} />
+          <ul>{rows}</ul>
+        </div>);
+    } else {
+      contents = (<div>No glossary</div>)
+    }
+
+
+    return (<div id="glossaries" className="g--centered">
+              <div className="g__item w--2-3">
+                <h1>Glossary</h1>
+                {contents}
+              </div>
+            </div>);
   }
 });
 

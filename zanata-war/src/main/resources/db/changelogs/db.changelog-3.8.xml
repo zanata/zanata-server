@@ -20,6 +20,11 @@
         <constraints nullable="false" />
       </column>
     </addColumn>
+    <addColumn tableName="HGlossaryTerm">
+      <column name="last_modified_by_id" type="bigint">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
   </changeSet>
 
   <changeSet id="3" author="aeng@redhat.com">
