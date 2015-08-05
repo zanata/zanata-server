@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.zanata.security.SimpleGroup;
 import org.zanata.security.SimplePrincipal;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 
 import static org.zanata.security.ZanataIdentity.*;
 
@@ -92,7 +92,7 @@ public class InternalLoginModule implements LoginModule {
             throw le;
         }
 
-        ZanataIdentityManager identityManager = ZanataIdentityManager.instance();
+        IdentityManager identityManager = IdentityManager.instance();
         if (identityManager != null && identityManager.isEnabled()) {
             ZanataIdentity identity = ZanataIdentity.instance();
 

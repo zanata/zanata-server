@@ -34,7 +34,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @AutoCreate
 @BypassInterceptors
 @Slf4j
-public class ZanataIdentityManager implements Serializable {
+public class IdentityManager implements Serializable {
     public static final String USER_PERMISSION_NAME = "seam.user";
     public static final String ROLE_PERMISSION_NAME = "seam.role";
 
@@ -56,14 +56,14 @@ public class ZanataIdentityManager implements Serializable {
     }
 
     // TODO [CDI] revisit this
-    public static ZanataIdentityManager instance() {
+    public static IdentityManager instance() {
         if (!Contexts.isEventContextActive()) {
             throw new IllegalStateException("No active event context");
         }
 
-        ZanataIdentityManager instance =
+        IdentityManager instance =
                 ServiceLocator.instance().getInstance(
-                        ZanataIdentityManager.class);
+                        IdentityManager.class);
 
         if (instance == null) {
             throw new IllegalStateException(

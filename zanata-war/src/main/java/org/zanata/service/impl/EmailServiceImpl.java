@@ -48,7 +48,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.seam.security.AbstractRunAsOperation;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.service.EmailService;
 
 import javax.annotation.Nullable;
@@ -71,7 +71,7 @@ public class EmailServiceImpl implements EmailService {
     private EmailBuilder emailBuilder;
 
     @In
-    private ZanataIdentityManager identityManager;
+    private IdentityManager identityManager;
 
     @In
     private PersonDAO personDAO;

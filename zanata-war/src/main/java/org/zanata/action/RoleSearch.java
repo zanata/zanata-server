@@ -10,7 +10,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.ZanataIdentity;
 
 import static org.jboss.seam.ScopeType.SESSION;
@@ -23,7 +23,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @Name("zanataRoleSearch")
 @Scope(SESSION)
 @Install(precedence = APPLICATION)
-public class ZanataRoleSearch implements Serializable {
+public class RoleSearch implements Serializable {
     private static final long serialVersionUID = 1734703030195353735L;
     @DataModel
     List<String> roles;
@@ -32,7 +32,7 @@ public class ZanataRoleSearch implements Serializable {
     String selectedRole;
 
     @In
-    ZanataIdentityManager identityManager;
+    IdentityManager identityManager;
 
     @In
     private ZanataIdentity identity;

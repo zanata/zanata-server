@@ -10,7 +10,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Conversation;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.ZanataSecured;
@@ -27,14 +27,14 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @Install(precedence = APPLICATION)
 @ZanataSecured
 @CheckLoggedIn
-public class ZanataRoleAction implements Serializable {
+public class RoleAction implements Serializable {
     private static final long serialVersionUID = -3830647911484729768L;
     private String originalRole;
     private String role;
     private List<String> groups;
 
     @In
-    ZanataIdentityManager identityManager;
+    IdentityManager identityManager;
 
     @In
     ZanataIdentity identity;

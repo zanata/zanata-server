@@ -9,7 +9,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.annotations.CheckRole;
 import org.zanata.security.annotations.ZanataSecured;
 
@@ -24,7 +24,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
 @Scope(SESSION)
 @Install(precedence = APPLICATION)
 @ZanataSecured
-public class ZanataUserSearch implements Serializable {
+public class UserSearch implements Serializable {
     private static final long serialVersionUID = -4792732235757055958L;
     @DataModel
     List<String> users;
@@ -33,7 +33,7 @@ public class ZanataUserSearch implements Serializable {
     String selectedUser;
 
     @In
-    ZanataIdentityManager identityManager;
+    IdentityManager identityManager;
 
     @CheckRole("admin")
     public void loadUsers() {

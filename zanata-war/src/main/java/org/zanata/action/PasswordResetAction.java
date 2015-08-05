@@ -21,7 +21,7 @@ import org.zanata.exception.KeyNotFoundException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.ui.faces.FacesMessages;
 
 @Name("passwordReset")
@@ -34,7 +34,7 @@ public class PasswordResetAction implements Serializable {
     private EntityManager entityManager;
 
     @In
-    private ZanataIdentityManager identityManager;
+    private IdentityManager identityManager;
 
     @In("jsfMessages")
     private FacesMessages facesMessages;

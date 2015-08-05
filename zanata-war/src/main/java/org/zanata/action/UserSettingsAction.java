@@ -54,7 +54,7 @@ import org.zanata.model.security.HCredentials;
 import org.zanata.model.security.HOpenIdCredentials;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.security.AuthenticationManager;
-import org.zanata.seam.security.ZanataIdentityManager;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
@@ -100,7 +100,7 @@ public class UserSettingsAction {
     private AccountDAO accountDAO;
 
     @In(create = true)
-    private ZanataIdentityManager identityManager;
+    private IdentityManager identityManager;
 
     @In
     private AuthenticationManager authenticationManager;
