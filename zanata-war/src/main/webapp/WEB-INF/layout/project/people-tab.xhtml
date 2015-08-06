@@ -88,12 +88,6 @@
 
     <h:form id="people_form" styleClass="l--push-bottom-1">
 
-        <a4j:commandButton
-                action="#{projectHomeAction.savePermissionDialogSelections()}"
-                value="ADD EVERYTHING NOW">
-        </a4j:commandButton>
-
-
       <s:div styleClass="l--pad-all-half"
         rendered="#{empty projectHomeAction.allMembers}">
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
@@ -306,6 +300,10 @@
                           <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
                               #{msgs['jsf.Cancel']}</button>
 
+                          <a4j:commandButton
+                                  action="#{projectHomeAction.savePermissionDialogSelections()}"
+                                  value="Hey Alex. This is the broken button.">
+                          </a4j:commandButton>
                       </div>
 
                   </h:form>
