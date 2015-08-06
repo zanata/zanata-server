@@ -32,7 +32,8 @@
   <div class="panel l--push-top-1">
     <div class="panel__header">
       <div class="panel__header__actions">
-        <ui:param name="canManageMembers" value="#{identity.hasPermission(projectHome.instance, 'manage-members') or identity.hasPermission(projectHome.instance, 'manage-translation-members')}"/>
+        <ui:param name="canManageMembers" value="#{identity.hasPermission(projectHome.instance, 'manage-members')
+            or identity.hasPermission(projectHome.instance, 'manage-translation-members')}"/>
         <s:fragment rendered="#{canManageMembers}">
           <button class="button button--primary panel__header__button"
               data-toggle="modal"
@@ -66,22 +67,6 @@
             <p>Then just some content goes in here</p>
           </ui:define>
         </ui:decorate>
-
-        <ui:decorate template="person-permissions-modal.xhtml">
-          <ui:param name="id" value="modal-manage-permissions"/>
-          <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
-
-          <ui:param name="memberships" value="#{projectHomeAction.permissionDialogData}"/>
-          <!-- this property will allow the dialog to show the correct
-               starting permissions, and will be the value used when the
-               dialog is submitted.
-               Need to retrieve a PersonProjectMemberships from projectHome
-               representing the correct person. -->
-          <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
-          <ui:define name="testDefine">
-            <p>Then just some content goes in here</p>
-          </ui:define>
-          </ui:decorate>
       </div>
       <h2 class="panel__heading">#{msgs['jsf.People']}</h2>
     </div>
@@ -127,9 +112,9 @@
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
               <zanata:people-entry person="#{person}"
-                manageMembersDialogId="modal-manage-permissions"
-                roles="#{projectHomeAction.rolesDisplayName(person)}"
-                canManageMembers="#{canManageMembers}"/>
+                canManageMembers="#{canManageMembers}"
+                managePermissionsRender="modal-manage-permissions"
+                managePermissionsModal="modal-manage-permissions-content"/>
             </ui:repeat>
           </ul>
         </s:fragment>
@@ -154,9 +139,9 @@
           <ul class="list--slat">
             <ui:repeat value="#{maintainers}" var="person">
               <zanata:people-entry person="#{person}"
-                manageMembersDialogId="modal-manage-permissions"
-                roles="#{projectHomeAction.projectRolesDisplayName(person)}"
-                canManageMembers="#{canManageMembers}"/>
+                canManageMembers="#{canManageMembers}"
+                managePermissionsRender="modal-manage-permissions"
+                managePermissionsModal="modal-manage-permissions-content"/>
             </ui:repeat>
           </ul>
         </s:div>
@@ -178,9 +163,9 @@
             <ul class="list--slat l--push-bottom-1">
               <ui:repeat value="#{entry.value.entrySet().toArray()}" var="personEntry">
                 <zanata:people-entry person="#{personEntry.key}"
-                  manageMembersDialogId="modal-manage-permissions"
-                  roles="#{personEntry.value}"
-                  canManageMembers="#{canManageMembers}"/>
+                  canManageMembers="#{canManageMembers}"
+                  managePermissionsRender="modal-manage-permissions"
+                  managePermissionsModal="modal-manage-permissions-content"/>
               </ui:repeat>
             </ul>
             <!-- loop through all locale in project -->
@@ -196,5 +181,26 @@
       placeholder="#{msgs['jsf.people.SearchPlaceholder']}"
       actionBean="#{projectHomeAction.peopleFilterComparator}"/>
   </div>
+
+  <s:div id="modal-manage-permissions">
+    <ui:include src="person-permissions-modal.xhtml">
+      <ui:param name="id" value="modal-manage-permissions-content"/>
+      <ui:param name="title" value="#{msgs['jsf.projectPermissions.ManagePermissions']}"/>
+
+      <ui:param name="memberships" value="#{projectHomeAction.permissionDialogData}"/>
+      <!-- this property will allow the dialog to show the correct
+           starting permissions, and will be the value used when the
+           dialog is submitted.
+           Need to retrieve a PersonProjectMemberships from projectHomeAction
+           representing the correct person. -->
+      <!-- use ui:define, access in template as <ui:insert name="definedName"/>-->
+      <!--<ui:define name="testDefine">-->
+        <!--<p>Then just some content goes in here</p>-->
+      <!--</ui:define>-->
+    </ui:include>
+  </s:div>
+
+
+
 
 </ui:composition>

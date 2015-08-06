@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -87,6 +88,7 @@ import lombok.Setter;
  */
 @Name("projectHomeAction")
 @Scope(ScopeType.PAGE)
+@Slf4j
 public class ProjectHomeAction extends AbstractSortAction implements
         Serializable {
 
@@ -113,6 +115,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     @In
     private Messages msgs;
+
+//    @In
+//    private ProjectHome projectHome;
 
     @Setter
     @Getter
@@ -444,6 +449,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     public HProject getProject() {
+        log.info("getProject() in bean {}", this.toString());
         if (project == null) {
             ProjectDAO projectDAO =
                     ServiceLocator.instance().getInstance(ProjectDAO.class);
@@ -530,7 +536,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
         personRoles = ArrayListMultimap.create();
 
         // iterate members, add each person+role to multimap
-        for (HProjectMember membership : getProject().getMembers()) {
+        final HProject theProject = getProject();
+        log.info("Project is {}", theProject);
+        for (HProjectMember membership : theProject.getMembers()) {
             personRoles.put(membership.getPerson(), membership.getRole());
         }
     }
@@ -566,6 +574,60 @@ public class ProjectHomeAction extends AbstractSortAction implements
                     return projectRoleDisplayName(input);
                 }
             })));
+    }
+
+    /**
+     *
+     */
+    public List<String> allRoleDisplayNames(HPerson person) {
+        List<String> displayNames = Lists.newArrayList();
+        displayNames.addAll(projectRoleDisplayNames(person));
+        displayNames.addAll(languageRoleDisplayNames(person));
+        return displayNames;
+    }
+
+    /**
+     * Get a list of the display name for every project-related role for a
+     * person.
+     */
+    public Collection<String> projectRoleDisplayNames(HPerson person) {
+        Collection<ProjectRole> roles = getMemberRoles().get(person);
+
+        if (roles == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return Collections2.transform(roles,
+                new Function<ProjectRole, String>() {
+                    @Override
+                    public String apply(ProjectRole role) {
+                        return projectRoleDisplayName(role);
+                    }
+                });
+    }
+
+    /**
+     * Get a list of the display name for every language-related role for a
+     * person.
+     */
+    public Collection<String> languageRoleDisplayNames(HPerson person) {
+        ListMultimap<HLocale, LocaleRole>
+                localeRoles = ensurePersonLocaleRoles().get(person);
+
+        if (localeRoles == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        return Collections2.transform(localeRoles.entries(),
+                new Function<Map.Entry<HLocale, LocaleRole>, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable Map.Entry<HLocale, LocaleRole> entry) {
+                final String localeName = entry.getKey().retrieveDisplayName();
+                final String roleName = localeRoleDisplayName(entry.getValue());
+                return localeName + " " + roleName;
+            }
+        });
     }
 
     public String languageRolesDisplayName(HPerson person) {
@@ -604,6 +666,19 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
     }
 
+    public String localeRoleDisplayName(LocaleRole role) {
+        switch (role) {
+            case Translator:
+                return msgs.get("jsf.Translator");
+            case Reviewer:
+                return msgs.get("jsf.Reviewer");
+            case Coordinator:
+                return msgs.get("jsf.Coordinator");
+            default:
+                return "";
+        }
+    }
+
     // TODO make a method to set the person used in the dialog
     // takes a person, sets a PersonProjectMemberships field
     // Another method saves that PersonProjectMemberships data with the current
@@ -615,12 +690,40 @@ public class ProjectHomeAction extends AbstractSortAction implements
      * @param person to show in permission dialog
      */
     public void setPersonForPermissionDialog(HPerson person) {
+
+        log.info("setPersonForPermissionDialog() in {}", this.toString());
+
         List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
         ListMultimap<HLocale, LocaleRole> localeRoles =
             ensurePersonLocaleRoles().get(person);
+
         permissionDialogData =
             new PersonProjectMemberships(person, projectRoles, localeRoles);
     }
+
+    /**
+     * Save the permissions selections from permissionDialogData to the database.
+     */
+    public void savePermissionDialogSelections() {
+
+        log.info("savePermissionDialogSelections() in bean {}", this.toString());
+
+        PersonProjectMemberships data = permissionDialogData;
+
+        if (data == null) {
+            log.error("Tried to save permissionDialogData but it is null");
+            return;
+        }
+        log.info("Saving permission dialog selections. Person: {}", data.getPerson().getAccount().getUsername());
+        log.info("Project is {}", getProject());
+        getProject().updatePermissions(data);
+        // FIXME need to update/flush
+        // I think I would need to look up the session to use, or something.
+//        projectHome.update();
+
+    }
+
+
 
     private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
         implements Comparator<HPerson> {

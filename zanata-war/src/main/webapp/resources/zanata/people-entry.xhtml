@@ -3,46 +3,47 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:composite="http://java.sun.com/jsf/composite"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:z="http://java.sun.com/jsf/composite/zanata"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:s="http://jboss.org/schema/seam/taglib">
 
 <composite:interface>
   <composite:attribute name="person" type="org.zanata.model.HPerson"
     shortDescription="person" required="true"/>
 
-  <composite:attribute name="roles" type="java.lang.String"
-    shortDescription="roles" required="true"/>
-
   <composite:attribute name="canManageMembers" type="java.lang.Boolean"
-    shortDescription="allow user to manage members" default="false"/>
+    shortDescription="whether the current user is allowed to manage members" default="false"/>
 
-  <composite:attribute name="manageMembersDialogId" type="java.lang.String"
-    shortDescription="component id of manage members dialog" required="true"/>
+  <composite:attribute name="managePermissionsRender" type="java.lang.String"
+    shortDescription="component to re-render when manage permissions is clicked"/>
+
+  <composite:attribute name="managePermissionsModal" type="java.lang.String"
+    shortDescription="id of modal to show after person has been set for manage permissions (without leading #)"/>
 </composite:interface>
 
 <composite:implementation>
   <li id="#{cc.attrs.person.email}">
     <div class="g g--tighter">
       <div class="g__item w--4-12">
-        <a href="#{request.contextPath}/profile/view/#{cc.attrs.person.account.username}">
-          <span class="w--r-1 bx--round l--push-right-quarter">
-            <img
-              src="#{gravatarServiceImpl.getUserImageUrl(48, cc.attrs.person.email)}"
-              alt=""/>
-          </span>
-          #{cc.attrs.person.account.username}
-        </a>
+        <z:person-tile person="#{cc.attrs.person}"/>
       </div>
       <div class="g__item #{cc.attrs.canManageMembers ? 'w--4-12' : 'w--7-12'}">
-        <span class="txt--understated">#{cc.attrs.roles}</span>
+        <ui:repeat value="#{projectHomeAction.allRoleDisplayNames(cc.attrs.person)}" var="role">
+          <div class="txt--understated">#{role}</div>
+        </ui:repeat>
       </div>
       <div class="g__item w--4-12 txt--align-right">
         <s:fragment rendered="#{cc.attrs.canManageMembers}">
-          <button class="button button--small"
-            data-toggle="modal"
-            data-target="#{cc.attrs.manageMembersDialogId}">
-            <i class="i i--settings"></i>
-            #{msgs['jsf.projectPermissions.ManagePermissions']}
-          </button>
+            <z:ajax-command-button
+                styleClass="button button-small"
+                action="#{projectHomeAction.setPersonForPermissionDialog(cc.attrs.person)}"
+                render="#{cc.attrs.managePermissionsRender}"
+                oncomplete="zanata.modal.show(jQuery('##{cc.attrs.managePermissionsModal}'))">
+              <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
+              <f:facet name="loading">
+                <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
+              </f:facet>
+            </z:ajax-command-button>
         </s:fragment>
       </div>
     </div>

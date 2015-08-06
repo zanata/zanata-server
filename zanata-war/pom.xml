@@ -36,6 +36,7 @@
     <lombok.lib>${org.projectlombok:lombok:jar}</lombok.lib>
 
     <groovy.version>2.1.5</groovy.version>
+    <!-- TODO figure out whether we need this. -->
     <zanata.web.assets.version>7</zanata.web.assets.version>
 
     <as7.skip.deploy.marker>${jboss.home}/standalone/deployments/zanata.war.skipdeploy</as7.skip.deploy.marker>

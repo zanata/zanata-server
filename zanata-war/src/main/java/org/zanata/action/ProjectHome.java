@@ -41,6 +41,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SetMultimap;
 import lombok.Getter;
@@ -932,8 +933,8 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     private List<HProjectIteration> fetchVersions() {
         List<HProjectIteration> results = Lists.newArrayList(Iterables.filter(
-                        getInstance().getProjectIterations(),
-                        notObsoleteVersionPredicate));
+                getInstance().getProjectIterations(),
+                notObsoleteVersionPredicate));
 
         Collections.sort(results, new Comparator<HProjectIteration>() {
             @Override
@@ -1106,62 +1107,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     };
 
-    private boolean checkViewObsolete() {
-        return identity != null
-                && identity.hasPermission("HProject", "view-obsolete");
-    }
-
-    public List<HPerson> getAllMembers() {
-        return Lists.newArrayList(getMemberRoles().keySet());
-    }
-
-    public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
-
-        // TODO consider sorting of roles
-        // TODO something about how to display roles (here or utility function?)
-        // TODO something with caching?
-
-        return ensurePersonRoles().asMap();
-    }
-
-    private ListMultimap<HPerson, ProjectRole> ensurePersonRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        if (personRoles == null) {
-            populatePersonRoles();
-        }
-        return personRoles;
-    }
-
-    private void populatePersonRoles() {
-        personRoles = ArrayListMultimap.create();
-
-        // iterate members, add each person+role to multimap
-        for (HProjectMember membership : getInstance().getMembers()) {
-            personRoles.put(membership.getPerson(), membership.getRole());
-        }
-    }
-
-    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> ensurePersonLocaleRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        if (personLocaleRoles == null) {
-            populatePersonLocaleRoles();
-        }
-        return personLocaleRoles;
-    }
-
-    private void populatePersonLocaleRoles() {
-        personLocaleRoles = Maps.newHashMap();
-
-        for (HProjectLocaleMember membership : getInstance().getLocaleMembers()) {
-            final HPerson person = membership.getPerson();
-            if (!personLocaleRoles.containsKey(person)) {
-                final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
-                personLocaleRoles.put(person, localeRoles);
-            }
-            personLocaleRoles.get(person).put(membership.getLocale(), membership.getRole());
-        }
-    }
-
     public String projectRoleDisplayName(ProjectRole role) {
         switch (role) {
             case Maintainer:
@@ -1172,33 +1117,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                 return "";
         }
     }
-
-    /**
-     * Prepare the permission dialog to update permissions for the given person.
-     *
-     * @param person to show in permission dialog
-     */
-    public void setPersonForPermissionDialog(HPerson person) {
-        List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
-        ListMultimap<HLocale, LocaleRole> localeRoles =
-                ensurePersonLocaleRoles().get(person);
-        permissionDialogData =
-                new PersonProjectMemberships(person, projectRoles, localeRoles);
-    }
-
-    /**
-     * Save the permissions selections from permissionDialogData to the database.
-     */
-    public void savePermissionDialogSelections(PersonProjectMemberships data) {
-        if (data == null) {
-            log.error("Tried to save permissionDialogData but it is null");
-            return;
-        }
-        log.info("Saving permission dialog selections. Person: {}", data.getPerson().getAccount().getUsername());
-        getInstance().updatePermissions(data);
-    }
-
-
 
 //    /**
 //     * The person selected in the "Add someone" dialog.

@@ -143,22 +143,10 @@
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
         <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
           #{msgs['jsf.Cancel']}</button>
-        <button class="button--primary" onclick="savePermissionDialogSelections();console.log('trying to do it')">
-          Addled
-        </button>
-        <!--<button class="button- -primary" disabled="disabled">-->
-        <zanata:ajax-command-button
-                styleClass="button--primary"
-                onclick="#{action}"
-                action="#{action}"
-                oncomplete="zanata.modal.hide(jQuery('##{id}'));console.log('hid modal #{id}')">
-            #{msgs['jsf.Add']}
-            <f:facet name="loading">
-                #{msgs['jsf.Add']}
-            </f:facet>
-        </zanata:ajax-command-button>
-        <!--<button class="button- -primary">-->
-          <!--#{msgs['jsf.Add']}</button>-->
+        <h:commandButton
+                action="#{projectHomeAction.savePermissionDialogSelections()}"
+                value="ADD">
+        </h:commandButton>
       </footer>
 
     </h:form>

@@ -247,6 +247,7 @@ public class HProject extends SlugEntityBase implements Serializable,
             ensureMembership(localeRoles.isReviewer(), asMember(locale, person, Reviewer));
             ensureMembership(localeRoles.isCoordinator(), asMember(locale, person, Coordinator));
         }
+        // TODO trigger this to persist
     }
 
     private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
