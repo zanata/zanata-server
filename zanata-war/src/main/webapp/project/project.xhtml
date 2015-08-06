@@ -55,7 +55,8 @@
       render="versions_form"
       action="#{projectHomeAction.setPageRendered(true)}"/>
 
-    <a4j:jsFunction name="savePermissionDialog" action="#{projectHomeAction.savePermissionDialogSelections()}"/>
+    <a4j:jsFunction name="savePermissionDialog" action="#{projectHomeAction.savePermissionDialogSelections()}"
+      status="peopleTab-peopleLoader" render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"/>
 
     <a4j:jsFunction name="bindProjectPermissionRole" action="#{projectHomeAction.bindProjectPermissionRole(key, checked)}"
       limitRender="true">
