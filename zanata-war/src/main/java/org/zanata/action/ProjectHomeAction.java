@@ -83,6 +83,8 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
+import static org.zanata.model.ProjectRole.TranslationMaintainer;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -558,7 +560,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
         List<ProjectRole> roles = ensurePersonRoles().get(person);
         return (roles == null || roles.isEmpty()) ? false :
             roles.contains(ProjectRole.Maintainer) ||
-                roles.contains(ProjectRole.TranslationMaintainer);
+                roles.contains(TranslationMaintainer);
     }
 
     public String projectRolesDisplayName(HPerson person) {
@@ -699,6 +701,51 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
         permissionDialogData =
             new PersonProjectMemberships(person, projectRoles, localeRoles);
+    }
+
+    /**
+     * bind project permission role for a person
+     *
+     * @param role
+     * @param checked
+     */
+    public void bindProjectPermissionRole(String role, boolean checked) {
+        if(StringUtils.equalsIgnoreCase(role, ProjectRole.TranslationMaintainer.name())) {
+            permissionDialogData.setTranslationMaintainer(checked);
+        } else if(StringUtils.equalsIgnoreCase(role, ProjectRole.Maintainer.name())) {
+            permissionDialogData.setMaintainer(checked);
+        }
+    }
+
+    /**
+     * bind translation permission role for a person
+     * @param localeRole - format: {localeId}:{role}. e.g en-US:Reviewer
+     * @param checked
+     */
+    public void bindTranslationPermissionRole(String localeRole, boolean checked) {
+        boolean isLocaleInserted = false;
+        String[] localeRoleList = StringUtils.split(localeRole, ':');
+        HLocale hLocale = localeServiceImpl.getByLocaleId(localeRoleList[0]);
+        String role = localeRoleList[1];
+
+        for (PersonProjectMemberships.LocaleRoles localeRoles: permissionDialogData.getLocaleRoles()) {
+            if(localeRoles.getLocale() == hLocale) {
+                isLocaleInserted = true;
+                if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
+                    localeRoles.setTranslator(checked);
+                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Reviewer.name())) {
+                    localeRoles.setReviewer(checked);
+                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
+                    localeRoles.setCoordinator(checked);
+                }
+            }
+        }
+
+        //new locale
+        if (!isLocaleInserted) {
+            List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
+            permissionDialogData.addLocaleRoles(hLocale, roleList);
+        }
     }
 
     /**

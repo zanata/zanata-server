@@ -54,6 +54,20 @@
       oncomplete="refreshTooltip('#{rich:clientId('versions_form')}')"
       render="versions_form"
       action="#{projectHomeAction.setPageRendered(true)}"/>
+
+    <a4j:jsFunction name="savePermissionDialog" action="#{projectHomeAction.savePermissionDialogSelections()}"/>
+
+    <a4j:jsFunction name="bindProjectPermissionRole" action="#{projectHomeAction.bindProjectPermissionRole(key, checked)}"
+      limitRender="true">
+      <a4j:param name="val1" assignTo="#{key}"/>
+      <a4j:param name="val2" assignTo="#{checked}"/>
+    </a4j:jsFunction>
+
+    <a4j:jsFunction name="bindTranslationPermissionRole" action="#{projectHomeAction.bindTranslationPermissionRole(key, checked)}"
+      limitRender="true">
+      <a4j:param name="val1" assignTo="#{key}"/>
+      <a4j:param name="val2" assignTo="#{checked}"/>
+    </a4j:jsFunction>
   </h:form>
 
 <div class="g">

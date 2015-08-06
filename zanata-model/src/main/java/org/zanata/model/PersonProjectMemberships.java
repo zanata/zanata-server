@@ -64,6 +64,10 @@ public class PersonProjectMemberships {
         }
     }
 
+    public void addLocaleRoles(HLocale locale, Collection<LocaleRole> role) {
+        this.getLocaleRoles().add(new LocaleRoles(locale, role));
+    }
+
     /**
      * Represents a locale and the membership in each locale role.
      *

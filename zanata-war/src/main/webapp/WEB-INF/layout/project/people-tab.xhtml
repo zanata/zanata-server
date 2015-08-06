@@ -229,15 +229,15 @@
                                                   label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
                                                   labelStyle="form__checkbox__label js-form__checkbox__label"
                                                   checked="#{projectHomeAction.permissionDialogData.translationMaintainer}"
-                                                  onValueChanged="function(){}"
-                                                  value="Translation Maintainer"/>
+                                                  onValueChanged="bindProjectPermissionRole"
+                                                  value="TranslationMaintainer"/>
                                       </li>
                                       <li>
                                           <zanata:checkbox
                                                   label="#{msgs['jsf.projectPermissions.MaintainProject']}"
                                                   labelStyle="form__checkbox__label js-form__checkbox__label"
                                                   checked="#{projectHomeAction.permissionDialogData.maintainer}"
-                                                  onValueChanged="function(){}"
+                                                  onValueChanged="bindProjectPermissionRole"
                                                   value="Maintainer"/>
                                       </li>
                                   </ul>
@@ -271,8 +271,8 @@
                                                       <zanata:checkbox
                                                               label="Translate"
                                                               labelStyle="form__checkbox__label js-form__checkbox__label"
-                                                              onValueChanged=""
-                                                              value="Translator"
+                                                              onValueChanged="bindTranslationPermissionRole"
+                                                              value="#{roles.locale}:Translator"
                                                               checked="#{roles.translator}"/>
                                                       <ui:remove>
                                                           <input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>
@@ -284,8 +284,8 @@
                                                       <zanata:checkbox
                                                               label="Review"
                                                               labelStyle="form__checkbox__label js-form__checkbox__label"
-                                                              onValueChanged=""
-                                                              value="Reviewer"
+                                                              onValueChanged="bindTranslationPermissionRole"
+                                                              value="#{roles.locale}:Reviewer"
                                                               checked="#{roles.reviewer}"/>
                                                   </li>
                                               </ul>
@@ -300,7 +300,9 @@
                           <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
                               #{msgs['jsf.Cancel']}</button>
 
-                          <a4j:commandButton
+                          <button onclick="savePermissionDialog();return false;">This should work</button>
+
+                          <a4j:commandButton onclick="return false;"
                                   action="#{projectHomeAction.savePermissionDialogSelections()}"
                                   value="Hey Alex. This is the broken button.">
                           </a4j:commandButton>
