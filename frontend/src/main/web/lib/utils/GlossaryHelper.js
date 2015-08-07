@@ -60,6 +60,14 @@ var GlossaryHelper = {
       .value();
 
     return localeId[0];
+  },
+
+  getTermByLocale: function (terms, localeId) {
+    var srcTerm =  _(terms)
+      .filter(function(term) { return term.locale === localeId; })
+      .value();
+
+    return srcTerm[0];
   }
 };
 export default GlossaryHelper;

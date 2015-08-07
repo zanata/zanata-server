@@ -8,7 +8,9 @@
           "resId": "38dd937c8c7498b5d748f28a09cf1f1c",
           "content": "process",
           "comments": [],
-          "locale": "en-US"
+          "locale": "en-US",
+          "lastModifiedDate": 1439184045000,
+          "lastModifiedBy": ""
         },
         {
           "resId": "d26c9330b2160e253d54ba5af0e1311b",
@@ -20,7 +22,9 @@
             "~ msgid \"information security update\"",
             "~ msgstr \"Informationssicherheitsupdate\""
           ],
-          "locale": "de"
+          "locale": "de",
+          "lastModifiedDate": 1439184045000,
+          "lastModifiedBy": ""
         }
       ]
     },
@@ -32,7 +36,9 @@
           "resId": "d38fbf9dee9388587d5fc639d390a2a4",
           "content": "implementation",
           "comments": [],
-          "locale": "en-US"
+          "locale": "en-US",
+          "lastModifiedDate": 1439184045000,
+          "lastModifiedBy": ""
         },
         {
           "resId": "865f2f37db4bdfcb7c637cab522e6746",
@@ -40,7 +46,9 @@
           "comments": [
             "bgroh@172.16.5.77"
           ],
-          "locale": "de"
+          "locale": "de",
+          "lastModifiedDate": 1439184045000,
+          "lastModifiedBy": ""
         }
       ]
     }

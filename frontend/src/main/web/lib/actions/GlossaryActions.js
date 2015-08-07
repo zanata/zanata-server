@@ -3,9 +3,15 @@ import {GlossaryActionTypes} from '../constants/ActionTypes';
 
 
 var Actions = {
-  changeGlossaryLocale: function(selectedLocale) {
+  changeSrcLocale: function(selectedLocale) {
     Dispatcher.handleViewAction({
-      actionType: GlossaryActionTypes.LOCALE_SELECTED,
+      actionType: GlossaryActionTypes.SRC_LOCALE_SELECTED,
+      data: selectedLocale
+    });
+  },
+  changeTransLocale: function(selectedLocale) {
+    Dispatcher.handleViewAction({
+      actionType: GlossaryActionTypes.TRANS_LOCALE_SELECTED,
       data: selectedLocale
     });
   },

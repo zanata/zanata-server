@@ -1,18 +1,30 @@
-[
-  {
-    "locale": {
-      "localeId": "en-US",
-      "displayName": "English (United States)",
-      "alias": ""
+{
+  "sourceLocales": [
+    {
+      "locale": {
+        "localeId": "en-US",
+        "displayName": "English (United States)",
+        "alias": ""
+      },
+      "count": 1
+    }
+  ],
+  "translationLocales": [
+    {
+      "locale": {
+        "localeId": "de",
+        "displayName": "German",
+        "alias": ""
+      },
+      "count": 2
     },
-    "count": 2
-  },
-  {
-    "locale": {
-      "localeId": "de",
-      "displayName": "German",
-      "alias": ""
-    },
-    "count": 2
-  }
-]
+    {
+      "locale": {
+        "localeId": "fr",
+        "displayName": "French",
+        "alias": ""
+      },
+      "count": 2
+    }
+  ]
+}

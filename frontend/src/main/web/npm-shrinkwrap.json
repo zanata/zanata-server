@@ -189,6 +189,10 @@
       "from": "git://github.com/huangp/Chart.js.git",
       "resolved": "git://github.com/huangp/Chart.js.git#065c5d7206aac81acfcd823e7598e49147398649"
     },
+    "fixed-data-table": {
+      "version": "0.4.1",
+      "from": "fixed-data-table@>0.4.1"
+    },
     "node-libs-browser": {
       "version": "0.5.2",
       "from": "node-libs-browser@>=0.4.0 <=0.6.0",

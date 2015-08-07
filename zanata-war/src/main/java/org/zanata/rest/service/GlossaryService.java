@@ -1,6 +1,5 @@
 package org.zanata.rest.service;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.ws.rs.DefaultValue;
@@ -9,7 +8,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -19,7 +17,6 @@ import javax.ws.rs.core.UriInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -31,6 +28,7 @@ import org.zanata.model.HTermComment;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocaleStats;
+import org.zanata.rest.dto.GlossaryLocales;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
@@ -63,19 +61,21 @@ public class GlossaryService implements GlossaryResource {
     private ZanataIdentity identity;
 
 
-   @Override
-    public Response getLocales() {
+    @Override
+    public Response getLocaleStatistic() {
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
 
-        List<GlossaryLocaleStats> localeDetails = glossaryDAO.getLocalesStats();
-        Type genericType = new GenericType<List<GlossaryLocaleStats>>() {
-        }.getGenericType();
-        Object entity =
-            new GenericEntity<List<GlossaryLocaleStats>>(localeDetails, genericType);
-        return Response.ok(entity).build();
+        List<GlossaryLocaleStats> srcLocales = glossaryDAO.getSourceLocales();
+        List<GlossaryLocaleStats> transLocales =
+            glossaryDAO.getTranslationLocales();
+
+        GlossaryLocales glossaryLocales =
+            new GlossaryLocales(srcLocales, transLocales);
+
+        return Response.ok(glossaryLocales).build();
     }
 
     @Override
@@ -94,7 +94,8 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response get(@PathParam("locale") LocaleId locale,
+    public Response get(@PathParam("srcLocale") LocaleId srcLocale,
+        @PathParam("transLocale") LocaleId transLocale,
         @DefaultValue("-1") @QueryParam("page") int page,
         @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage) {
 
@@ -105,10 +106,12 @@ public class GlossaryService implements GlossaryResource {
 
         int offset = (page - 1) * sizePerPage;
         List<HGlossaryEntry> hGlosssaryEntries =
-            glossaryDAO.getEntriesByLocaleId(locale, offset, sizePerPage);
+            glossaryDAO.getEntriesByLocale(srcLocale, transLocale, offset,
+                sizePerPage);
+
         Glossary glossary = new Glossary();
 
-        transferEntriesLocaleResource(hGlosssaryEntries, glossary, locale);
+        transferEntriesLocaleResource(hGlosssaryEntries, glossary, transLocale);
 
         return Response.ok(glossary).build();
     }
@@ -222,6 +225,14 @@ public class GlossaryService implements GlossaryResource {
         GlossaryTerm glossaryTerm = new GlossaryTerm(hGlossaryTerm.getResId());
         glossaryTerm.setContent(hGlossaryTerm.getContent());
         glossaryTerm.setLocale(hGlossaryTerm.getLocale().getLocaleId());
+
+        String name = "";
+        if(hGlossaryTerm.getLastModifiedBy() != null) {
+            name = hGlossaryTerm.getLastModifiedBy().getName();
+        }
+        glossaryTerm.setLastModifiedBy(name);
+        glossaryTerm.setLastModifiedDate(hGlossaryTerm.getLastChanged());
+
 
         for (HTermComment hTermComment : hGlossaryTerm.getComments()) {
             glossaryTerm.getComments().add(hTermComment.getComment());

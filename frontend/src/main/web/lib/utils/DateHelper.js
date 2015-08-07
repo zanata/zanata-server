@@ -62,6 +62,14 @@ var DateHelper = {
 
   isInFuture: function(dateStr) {
     return moment(dateStr).isAfter(moment());
+  },
+
+  getDate: function(miliseconds) {
+    return new Date(miliseconds);
+  },
+
+  shortDate: function(date) {
+   return moment(date).format('DD-MM-YYYY');
   }
 };
 

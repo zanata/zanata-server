@@ -33,7 +33,8 @@
     "react": "^0.13.3",
     "react-chartjs": "^0.4.0",
     "react-router": "^0.13.3",
-    "superagent": "~0.21.0"
+    "superagent": "~0.21.0",
+    "fixed-data-table": "~0.4.1"
   },
   "jest": {
     "unmockedModulePathPatterns": [
