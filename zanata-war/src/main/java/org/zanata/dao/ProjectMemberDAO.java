@@ -20,19 +20,28 @@
  */
 package org.zanata.dao;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectMember;
+import org.zanata.model.PersonProjectMemberships;
 import org.zanata.model.ProjectRole;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.zanata.model.LocaleRole.Coordinator;
+import static org.zanata.model.LocaleRole.Reviewer;
+import static org.zanata.model.LocaleRole.Translator;
+import static org.zanata.model.ProjectRole.Maintainer;
+import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 /**
  * Provides methods to access data related to membership in a project.
@@ -40,6 +49,7 @@ import java.util.Set;
 @Name("projectMemberDAO")
 @AutoCreate
 @Scope(ScopeType.STATELESS)
+@Slf4j
 public class ProjectMemberDAO
         extends AbstractDAOImpl<HProjectMember, HProjectMember.HProjectMemberPK> {
 
@@ -81,4 +91,73 @@ public class ProjectMemberDAO
                 .setComment("ProjectMemberDAO.hasProjectRole");
         return ((Long) query.uniqueResult()) > 0;
     }
+
+    /**
+     * Update all memberships for a person in the given project
+     *
+     * @param project
+     * @param memberships
+     */
+    public void updatePermissions(HProject project, PersonProjectMemberships memberships) {
+        log.info("Update permissions for person {}", memberships.getPerson().getAccount().getUsername());
+
+        HPerson person = memberships.getPerson();
+
+        // per membership:
+        // look it up
+        //   remove if needed
+        //   add if needed
+
+
+        //        final HPerson person = memberships.getPerson();
+        ensureMembership(project, memberships.isMaintainer(), asMember(project, person, Maintainer));
+        ensureMembership(project, memberships.isTranslationMaintainer(),
+                asMember(project, person, TranslationMaintainer));
+
+
+        //        for (PersonProjectMemberships.LocaleRoles localeRoles
+        //                : memberships.getLocaleRoles()) {
+        //            HLocale locale = localeRoles.getLocale();
+        //            ensureMembership(localeRoles.isTranslator(), asMember(locale, person, Translator));
+        //            ensureMembership(localeRoles.isReviewer(), asMember(locale, person, Reviewer));
+        //            ensureMembership(localeRoles.isCoordinator(), asMember(locale, person, Coordinator));
+        //        }
+
+        getSession().flush();
+    }
+
+    private HProjectMember asMember(HProject project, HPerson person, ProjectRole role) {
+        return new HProjectMember(project, person, role);
+    }
+
+    /**
+     * Ensure the given membership is present or absent.
+     */
+    private void ensureMembership(HProject project, boolean shouldBePresent, HProjectMember membership) {
+        log.info("ensure project membership ({}, {}, {})",
+                membership.getPerson().getAccount().getUsername(),
+                membership.getRole(),
+                shouldBePresent);
+
+        final Set<HProjectMember> members = project.getMembers();
+        final boolean isPresent = members.contains(membership);
+
+        if (isPresent != shouldBePresent) {
+            // have to add or remove, so make sure it is in the session
+            if (!getSession().contains(membership)) {
+                membership = (HProjectMember) getSession().merge(membership);
+            }
+
+            if (shouldBePresent) {
+                getSession().save(membership);
+                members.add(membership);
+            } else {
+                getSession().delete(membership);
+                members.remove(membership);
+            }
+        }
+
+    }
+
+
 }

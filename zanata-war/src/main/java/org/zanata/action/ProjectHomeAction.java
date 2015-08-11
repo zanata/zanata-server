@@ -42,8 +42,10 @@ import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.LocaleMemberDAO;
+import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
+import org.zanata.dao.ProjectMemberDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
@@ -124,6 +126,15 @@ public class ProjectHomeAction extends AbstractSortAction implements
     @Setter
     @Getter
     private String slug;
+
+    @In
+    private PersonDAO personDAO;
+
+    @In
+    private ProjectDAO projectDAO;
+
+    @In
+    private ProjectMemberDAO projectMemberDAO;
 
     @In
     private ProjectIterationDAO projectIterationDAO;
@@ -653,7 +664,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public String rolesDisplayName(HPerson person) {
         return Joiner.on(role_separator).skipNulls()
-            .join(projectRolesDisplayName(person),
+                .join(projectRolesDisplayName(person),
                 languageRolesDisplayName(person));
     }
 
@@ -763,11 +774,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
         log.info("Saving permission dialog selections. Person: {}", data.getPerson().getAccount().getUsername());
         log.info("Project is {}", getProject());
-        getProject().updatePermissions(data);
-        // FIXME need to update/flush
-        // I think I would need to look up the session to use, or something.
-//        projectHome.update();
 
+        projectMemberDAO.updatePermissions(getProject(), data);
+
+//        HProject theProject = projectDAO.findById(getProject().getId());
+//        HPerson thePerson = personDAO.findById(data.getPerson().getId());
+//        theProject.updatePermissions(data, thePerson);
+//        projectDAO.makePersistent(theProject);
     }
 
 

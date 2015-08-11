@@ -233,9 +233,9 @@ public class HProject extends SlugEntityBase implements Serializable,
     /**
      * Update all security settings for a person.
      */
-    public void updatePermissions(PersonProjectMemberships memberships) {
+    public void updatePermissions(PersonProjectMemberships memberships, HPerson person) {
         log.info("Update permissions for person {}", memberships.getPerson().getAccount().getUsername());
-        final HPerson person = memberships.getPerson();
+//        final HPerson person = memberships.getPerson();
         ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
         ensureMembership(memberships.isTranslationMaintainer(),
                 asMember(person, TranslationMaintainer));
@@ -262,24 +262,35 @@ public class HProject extends SlugEntityBase implements Serializable,
      * Ensure the given membership is present or absent.
      */
     private void ensureMembership(boolean present, HProjectMember membership) {
-        log.info("ensure project membership ({}, {})", present, membership.getPerson().getAccount().getUsername());
+        log.info("ensure project membership ({}, {}, {})",
+                membership.getPerson().getAccount().getUsername(),
+                membership.getRole(),
+                present);
         final Set<HProjectMember> members = getMembers();
         if (present && !members.contains(membership)) {
             members.add(membership);
             return;
         }
-        members.remove(membership);
+        if (!present && members.contains(membership)) {
+            members.remove(membership);
+        }
     }
 
     /**
      * Ensure the given locale membership is present or absent.
      */
     private void ensureMembership(boolean present, HProjectLocaleMember membership) {
-        log.info("ensure project locale membership ({}, {}, {})", present, membership.getLocale().retrieveDisplayName(), membership.getPerson().getAccount().getUsername());
+        log.info("ensure project locale membership ({}, {}, {}, {})",
+                membership.getPerson().getAccount().getUsername(),
+                membership.getLocale().retrieveDisplayName(),
+                membership.getRole(),
+                present);
         final Set<HProjectLocaleMember> members = getLocaleMembers();
         if (present && !members.contains(membership)) {
             members.add(membership);
-        } else {
+            return;
+        }
+        if (!present && members.contains(membership)) {
             members.remove(membership);
         }
     }
