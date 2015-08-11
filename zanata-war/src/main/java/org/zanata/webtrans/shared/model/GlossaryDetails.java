@@ -8,8 +8,10 @@ import org.zanata.common.LocaleId;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GlossaryDetails implements IsSerializable {
-    private List<String> sourceComment;
-    private List<String> targetComment;
+    private String resId;
+    private String description;
+    private String pos;
+    private String targetComment;
     private String sourceRef;
     private LocaleId srcLocale;
     private LocaleId targetLocale;
@@ -20,16 +22,18 @@ public class GlossaryDetails implements IsSerializable {
 
     @SuppressWarnings("unused")
     private GlossaryDetails() {
-        this(null, null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public GlossaryDetails(String source, String target,
-            List<String> sourceComment, List<String> targetComment,
+    public GlossaryDetails(String resId, String source, String target,
+            String description, String pos, String targetComment,
             String sourceRef, LocaleId srcLocale, LocaleId targetLocale,
             Integer targetVersionNum, Date lastModifiedDate) {
+        this.resId = resId;
         this.source = source;
         this.target = target;
-        this.sourceComment = sourceComment;
+        this.description = description;
+        this.pos = pos;
         this.targetComment = targetComment;
         this.sourceRef = sourceRef;
         this.srcLocale = srcLocale;
@@ -38,11 +42,19 @@ public class GlossaryDetails implements IsSerializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public List<String> getSourceComment() {
-        return sourceComment;
+    public String getResId() {
+        return resId;
     }
 
-    public List<String> getTargetComment() {
+    public String getDescription() {
+        return description;
+    }
+
+    public String getPos() {
+        return pos;
+    }
+
+    public String getTargetComment() {
         return targetComment;
     }
 

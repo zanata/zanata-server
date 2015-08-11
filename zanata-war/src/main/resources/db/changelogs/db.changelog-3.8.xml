@@ -14,22 +14,53 @@
   </changeSet>
 
   <changeSet id="2" author="aeng@redhat.com">
-    <comment>Add resId to HGlossaryTerm</comment>
-    <addColumn tableName="HGlossaryTerm">
+    <comment>Add resId, pos and description to HGlossaryEntry</comment>
+    <addColumn tableName="HGlossaryEntry">
       <column name="resId" type="varchar(255)">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
     </addColumn>
-    <addColumn tableName="HGlossaryTerm">
-      <column name="last_modified_by_id" type="bigint">
+    <addColumn tableName="HGlossaryEntry">
+      <column name="pos" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+    <addColumn tableName="HGlossaryEntry">
+      <column name="description" type="varchar(255)">
         <constraints nullable="true" />
       </column>
     </addColumn>
   </changeSet>
 
   <changeSet id="3" author="aeng@redhat.com">
-    <comment>Generate resId for HGlossaryTerm</comment>
-    <customChange class="org.zanata.liquibase.custom.GenerateResIdForGlossaryTerm" />
+    <comment>Generate resId for HGlossaryEntry</comment>
+    <customChange class="org.zanata.liquibase.custom.GenerateResIdForGlossaryEntry" />
   </changeSet>
+
+  <changeSet id="4" author="aeng@redhat.com">
+    <comment>Add lastModifiedBy to HGlossaryTerm</comment>
+    <addColumn tableName="HGlossaryTerm">
+      <column name="last_modified_by_id" type="bigint"/>
+    </addColumn>
+    <addColumn tableName="HGlossaryTerm">
+      <column name="comment" type="longtext">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+    <addForeignKeyConstraint baseTableName="HGlossaryTerm"
+      baseColumnNames="last_modified_by_id" constraintName="UKglossaryterm_person_id"
+      referencedTableName="HPerson" referencedColumnNames="id" />
+  </changeSet>
+
+  <changeSet id="5" author="aeng@redhat.com">
+    <comment>Migrate HTermComment to HGlossaryTerm#comment</comment>
+    <customChange class="org.zanata.liquibase.custom.MigrateHTermCommentToString" />
+  </changeSet>
+
+  <changeSet id="6" author="aeng@redhat.com">
+    <comment>Drop HTermComment</comment>
+    <dropTable tableName="HTermComment"/>
+  </changeSet>
+
 
 </databaseChangeLog>

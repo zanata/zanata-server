@@ -35,6 +35,5 @@ public interface GlossaryFileService {
     void saveOrUpdateGlossary(Glossary glossary);
 
     List<Glossary> parseGlossaryFile(InputStream fileContents, String fileName,
-            LocaleId sourceLang, LocaleId transLang,
-            boolean treatSourceCommentsAsTarget, List<String> commentsColumn);
+            LocaleId sourceLang, LocaleId transLang);
 }

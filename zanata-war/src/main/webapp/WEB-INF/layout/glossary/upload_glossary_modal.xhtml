@@ -24,18 +24,12 @@
       enableWarningMessage(false);
       if (fileExtension == "CSV") {
         jQuery('#lang-selection').addClass('is-hidden');
-        jQuery('#comments-col-setting').removeClass('is-hidden');
-        jQuery('#comments-setting').removeClass('is-hidden');
         enableUploadGlossaryButton(true);
       } else if (fileExtension == "PO") {
         jQuery('#lang-selection').removeClass('is-hidden');
-        jQuery('#comments-col-setting').addClass('is-hidden');
-        jQuery('#comments-setting').removeClass('is-hidden');
         enableUploadGlossaryButton(true);
       } else {
         jQuery('#lang-selection').addClass('is-hidden');
-        jQuery('#comments-col-setting').addClass('is-hidden');
-        jQuery('#comments-setting').addClass('is-hidden');
         enableUploadGlossaryButton(false);
         enableWarningMessage(true);
       }
@@ -150,27 +144,6 @@
             </h:selectOneMenu>
           </div>
         </div>
-
-        <div class="form__item is-hidden" id="comments-setting">
-          <h:selectBooleanCheckbox styleClass="l--push-right-quarter"
-            value="#{glossaryAction.glossaryFileUpload.treatSourceCommentsAsTarget}"/>
-          <h:outputText
-            value="#{msgs['jsf.Glossary.TreatSourceCommentsAsTarget']}"/>
-           <span class="txt--meta"><i class="i i--info"
-             title="#{msgs['jsf.Glossary.TreatSourceCommentsAsTarget.Title']}"></i>
-          </span>
-        </div>
-
-        <div class="form__item is-hidden" id="comments-col-setting">
-          <label>
-            #{msgs['jsf.Glossary.CommentColumnNames']}
-            <span class="txt--meta"><i class="i i--info"
-              title="#{msgs['jsf.Glossary.CommentColumnNames.Title']}"></i>
-            </span>
-          </label>
-          <h:inputText value="#{glossaryAction.glossaryFileUpload.commentCols}"/>
-        </div>
-
       </div>
 
       <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">

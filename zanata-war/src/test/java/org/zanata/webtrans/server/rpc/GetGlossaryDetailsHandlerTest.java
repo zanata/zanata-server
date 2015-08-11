@@ -61,7 +61,7 @@ public class GetGlossaryDetailsHandlerTest extends ZanataTest {
     }
 
     private HGlossaryTerm glossaryTerm(String content, HLocale srcLocale) {
-        HGlossaryTerm glossaryTerm = new HGlossaryTerm("resId", content);
+        HGlossaryTerm glossaryTerm = new HGlossaryTerm(content);
         glossaryTerm.setVersionNum(0);
         glossaryTerm.setLastChanged(new Date());
         HGlossaryEntry glossaryEntry = new HGlossaryEntry();

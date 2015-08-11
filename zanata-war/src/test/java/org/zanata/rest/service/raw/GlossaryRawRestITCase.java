@@ -94,19 +94,19 @@ public class GlossaryRawRestITCase extends RestTest {
                 GlossaryTerm expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.EN_US);
                 expTerm.setContent("test data content 1 (source lang)");
-                expTerm.getComments().add("test data comment 1");
+                expTerm.setComment("test data comment 1");
                 expectedTerms.add(expTerm);
 
                 expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.DE);
                 expTerm.setContent("test data content 2");
-                expTerm.getComments().add("test data comment 2");
+                expTerm.setComment("test data comment 2");
                 expectedTerms.add(expTerm);
 
                 expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.ES);
                 expTerm.setContent("test data content 3");
-                expTerm.getComments().add("test data comment 3");
+                expTerm.setComment("test data comment 3");
                 expectedTerms.add(expTerm);
 
                 assertThat(actualTerms, is(expectedTerms));
@@ -194,19 +194,19 @@ public class GlossaryRawRestITCase extends RestTest {
                 GlossaryTerm expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.EN_US);
                 expTerm.setContent("test data content 1 (source lang)");
-                expTerm.getComments().add("test data comment 1");
+                expTerm.setComment("test data comment 1");
                 expectedTerms.add(expTerm);
 
                 expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.DE);
                 expTerm.setContent("test data content 2");
-                expTerm.getComments().add("test data comment 2");
+                expTerm.setComment("test data comment 2");
                 expectedTerms.add(expTerm);
 
                 expTerm = new GlossaryTerm();
                 expTerm.setLocale(LocaleId.ES);
                 expTerm.setContent("test data content 3");
-                expTerm.getComments().add("test data comment 3");
+                expTerm.setComment("test data comment 3");
                 expectedTerms.add(expTerm);
 
                 assertThat(actualTerms, is(expectedTerms));
@@ -323,12 +323,12 @@ public class GlossaryRawRestITCase extends RestTest {
         GlossaryTerm glossaryTerm1 = new GlossaryTerm();
         glossaryTerm1.setLocale(LocaleId.EN_US);
         glossaryTerm1.setContent("TEST DATA 1 EN_US");
-        glossaryTerm1.getComments().add("COMMENT 1");
+        glossaryTerm1.setComment("COMMENT 1");
 
         GlossaryTerm glossaryTerm2 = new GlossaryTerm();
         glossaryTerm2.setLocale(LocaleId.DE);
         glossaryTerm2.setContent("TEST DATA 2 DE");
-        glossaryTerm2.getComments().add("COMMENT 2");
+        glossaryTerm2.setComment("COMMENT 2");
 
         glossaryEntry1.getGlossaryTerms().add(glossaryTerm1);
         glossaryEntry1.getGlossaryTerms().add(glossaryTerm2);
@@ -340,12 +340,12 @@ public class GlossaryRawRestITCase extends RestTest {
         GlossaryTerm glossaryTerm3 = new GlossaryTerm();
         glossaryTerm3.setLocale(LocaleId.EN_US);
         glossaryTerm3.setContent("TEST DATA 3 EN_US");
-        glossaryTerm3.getComments().add("COMMENT 3");
+        glossaryTerm3.setComment("COMMENT 3");
 
         GlossaryTerm glossaryTerm4 = new GlossaryTerm();
         glossaryTerm4.setLocale(LocaleId.DE);
         glossaryTerm4.setContent("TEST DATA 4 DE");
-        glossaryTerm4.getComments().add("COMMENT 4");
+        glossaryTerm4.setComment("COMMENT 4");
 
         glossaryEntry2.getGlossaryTerms().add(glossaryTerm3);
         glossaryEntry2.getGlossaryTerms().add(glossaryTerm4);

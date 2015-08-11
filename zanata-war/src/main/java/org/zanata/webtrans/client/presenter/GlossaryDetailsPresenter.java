@@ -69,7 +69,7 @@ public class GlossaryDetailsPresenter extends
                 UpdateGlossaryTermAction action =
                         new UpdateGlossaryTermAction(selectedDetailEntry,
                                 display.getTargetText().getText(),
-                                display.getCurrentTargetComments());
+                                display.getTargetComment().getText());
 
                 dispatcher.execute(action,
                         new AsyncCallback<UpdateGlossaryTermResult>() {
@@ -101,17 +101,6 @@ public class GlossaryDetailsPresenter extends
     public void onDismissClick() {
         display.hide();
         selectedDetailEntry = null;
-    }
-
-    @Override
-    public void addNewComment(int index) {
-        if (!Strings.isNullOrEmpty(display.getNewCommentText().getText())
-                && userWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()) {
-            display.addRowIntoTargetComment(index, display.getNewCommentText()
-                    .getText());
-            display.getNewCommentText().setText("");
-        }
     }
 
     public void show(final GlossaryResultItem item) {
@@ -154,7 +143,8 @@ public class GlossaryDetailsPresenter extends
 
     private void populateDisplayData() {
         display.getSrcRef().setText(selectedDetailEntry.getSourceRef());
-        display.setSourceComment(selectedDetailEntry.getSourceComment());
+        display.setDescription(selectedDetailEntry.getDescription());
+        display.setPos(selectedDetailEntry.getPos());
         display.setTargetComment(selectedDetailEntry.getTargetComment());
         display.setLastModifiedDate(selectedDetailEntry.getLastModifiedDate());
     }

@@ -24,7 +24,6 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
-import org.zanata.model.HTermComment;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocaleStats;
@@ -32,6 +31,7 @@ import org.zanata.rest.dto.GlossaryLocales;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
+import org.zanata.util.HashUtil;
 
 @Name("glossaryService")
 @Path(GlossaryResource.SERVICE_PATH)
@@ -157,7 +157,7 @@ public class GlossaryService implements GlossaryResource {
         }
 
         HGlossaryEntry entry =
-                glossaryDAO.getEntryBySourceTermResId(resId, localeId);
+                glossaryDAO.getEntryByResIdAndLocale(resId, localeId);
 
         if(entry != null) {
             glossaryDAO.makeTransient(entry);
@@ -215,14 +215,16 @@ public class GlossaryService implements GlossaryResource {
 
     public static GlossaryEntry generateGlossaryEntry(
             HGlossaryEntry hGlossaryEntry) {
-        GlossaryEntry glossaryEntry = new GlossaryEntry();
+        GlossaryEntry glossaryEntry = new GlossaryEntry(hGlossaryEntry.getResId());
         glossaryEntry.setSrcLang(hGlossaryEntry.getSrcLocale().getLocaleId());
         glossaryEntry.setSourceReference(hGlossaryEntry.getSourceRef());
+        glossaryEntry.setPos(hGlossaryEntry.getPos());
+        glossaryEntry.setDescription(hGlossaryEntry.getDescription());
         return glossaryEntry;
     }
 
     public static GlossaryTerm generateGlossaryTerm(HGlossaryTerm hGlossaryTerm) {
-        GlossaryTerm glossaryTerm = new GlossaryTerm(hGlossaryTerm.getResId());
+        GlossaryTerm glossaryTerm = new GlossaryTerm();
         glossaryTerm.setContent(hGlossaryTerm.getContent());
         glossaryTerm.setLocale(hGlossaryTerm.getLocale().getLocaleId());
 
@@ -232,11 +234,8 @@ public class GlossaryService implements GlossaryResource {
         }
         glossaryTerm.setLastModifiedBy(name);
         glossaryTerm.setLastModifiedDate(hGlossaryTerm.getLastChanged());
+        glossaryTerm.setComment(hGlossaryTerm.getComment());
 
-
-        for (HTermComment hTermComment : hGlossaryTerm.getComments()) {
-            glossaryTerm.getComments().add(hTermComment.getComment());
-        }
         return glossaryTerm;
     }
 }

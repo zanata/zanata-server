@@ -82,6 +82,10 @@
           <g:InlineLabel styleName="headerLabel alignTop"
             text="Source Reference:" />
           <g:TextArea ui:field="srcRef" styleName="{style.textArea}" />
+
+          <g:InlineLabel styleName="headerLabel alignTop"
+            text="Part of speech:" />
+          <g:Label ui:field="pos"/>
         </g:HTMLPanel>
       </g:layer>
 
@@ -94,8 +98,8 @@
 
       <g:layer top="70px" height="85px" left="300px" right="0">
         <g:HTMLPanel>
-          <g:Label styleName="headerLabel" text="Comments:" />
-          <g:ListBox ui:field='sourceComment' styleName="{style.listBox}" />
+          <g:Label styleName="headerLabel" text="Description:" />
+          <g:TextArea ui:field='description' styleName="{style.textArea}" />
         </g:HTMLPanel>
       </g:layer>
 
@@ -106,23 +110,11 @@
         </g:HTMLPanel>
       </g:layer>
 
-      <g:layer top="165px" height="166px" left="300px" right="5px">
-        <g:HTMLPanel>
-          <g:Label styleName="headerLabel" text="Comments:" />
-          <g:ScrollPanel height="148px" styleName="{style.targetCommentList}"
-            ui:field="targetCommentScrollTable">
-            <g:FlexTable ui:field="targetCommentsTable" width="100%" />
-          </g:ScrollPanel>
-        </g:HTMLPanel>
-      </g:layer>
-
       <g:layer top="255px" height="80px" left="0" right="300px">
         <g:HTMLPanel>
-          <g:Label styleName="headerLabel" text="New target comment:" />
-          <g:TextArea ui:field="newTargetComment"
+          <g:Label styleName="headerLabel" text="Target comment:" />
+          <g:TextArea ui:field="targetComment"
             styleName="{style.newTargetCommentTextArea}" />
-          <g:Button ui:field="addNewCommentButton"
-            styleName="{style.targetCommentListButton}" />
         </g:HTMLPanel>
       </g:layer>
 

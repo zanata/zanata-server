@@ -35,18 +35,17 @@ import org.jboss.seam.annotations.Transactional;
 import org.zanata.adapter.glossary.GlossaryCSVReader;
 import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
-import org.zanata.common.util.GlossaryUtil;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.model.HTermComment;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
+import org.zanata.util.HashUtil;
 
 /**
  *
@@ -66,14 +65,12 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     @Override
     public List<Glossary> parseGlossaryFile(InputStream fileContents,
-            String fileName, LocaleId sourceLang, LocaleId transLang,
-            boolean treatSourceCommentsAsTarget, List<String> commentsColumn) {
+            String fileName, LocaleId sourceLang, LocaleId transLang) {
         try {
             if (StringUtils.endsWithIgnoreCase(fileName, ".csv")) {
-                return parseCsvFile(fileContents, commentsColumn);
+                return parseCsvFile(fileContents);
             } else if (StringUtils.endsWithIgnoreCase(fileName, ".po")) {
-                return parsePoFile(fileContents, sourceLang, transLang,
-                        treatSourceCommentsAsTarget);
+                return parsePoFile(fileContents, sourceLang, transLang);
             } else {
                 throw new ZanataServiceException("Unsupported Glossary file: "
                         + fileName);
@@ -99,23 +96,21 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         }
     }
 
-    private List<Glossary> parseCsvFile(InputStream fileContents,
-            List<String> commentsColumn) throws IOException {
+    private List<Glossary> parseCsvFile(InputStream fileContents)
+        throws IOException {
         GlossaryCSVReader csvReader =
-                new GlossaryCSVReader(commentsColumn, BATCH_SIZE);
+                new GlossaryCSVReader(BATCH_SIZE);
         return csvReader.extractGlossary(new InputStreamReader(fileContents));
     }
 
     private List<Glossary> parsePoFile(InputStream fileContents,
-            LocaleId sourceLang, LocaleId transLang,
-            boolean treatSourceCommentsAsTarget) throws IOException {
+            LocaleId sourceLang, LocaleId transLang) throws IOException {
         if (sourceLang == null || transLang == null) {
             throw new ZanataServiceException(
                     "Mandatory fields for PO file format: Source Language and Target Language");
         }
         GlossaryPoReader poReader =
-                new GlossaryPoReader(sourceLang, transLang,
-                        treatSourceCommentsAsTarget, BATCH_SIZE);
+                new GlossaryPoReader(sourceLang, transLang, BATCH_SIZE);
         return poReader.extractGlossary(new InputStreamReader(fileContents));
     }
 
@@ -129,11 +124,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     private void transferGlossaryEntryAndSave(GlossaryEntry from) {
-        HGlossaryEntry to =
-                getOrCreateGlossaryEntry(from.getSrcLang(),
-                        getSrcGlossaryTerm(from));
+        HGlossaryEntry to = getOrCreateGlossaryEntry(from);
 
         to.setSourceRef(from.getSourceReference());
+        to.setPos(from.getPos());
+        to.setDescription(from.getDescription());
 
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {
             HLocale termHLocale =
@@ -145,28 +140,27 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             HGlossaryTerm hGlossaryTerm =
                     getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
 
-            hGlossaryTerm.getComments().clear();
-
-            for (String comment : glossaryTerm.getComments()) {
-                hGlossaryTerm.getComments().add(new HTermComment(comment));
-            }
-
+            hGlossaryTerm.setComment(glossaryTerm.getComment());
             to.getGlossaryTerms().put(termHLocale, hGlossaryTerm);
         }
         glossaryDAO.makePersistent(to);
     }
 
-    public HGlossaryEntry getOrCreateGlossaryEntry(LocaleId srcLocale,
-            GlossaryTerm srcTerm) {
-        String resId = GlossaryUtil.getResId(srcLocale, srcTerm.getContent());
+    public HGlossaryEntry getOrCreateGlossaryEntry(GlossaryEntry from) {
 
-        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryBySourceTermResId(
+        LocaleId srcLocale = from.getSrcLang();
+        GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
+
+        String resId = getResId(srcLocale, srcTerm.getContent(), from.getPos());
+
+        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResIdAndLocale(
             resId, srcLocale);
 
         if (hGlossaryEntry == null) {
             hGlossaryEntry = new HGlossaryEntry();
             HLocale srcHLocale = localeServiceImpl.getByLocaleId(srcLocale);
             hGlossaryEntry.setSrcLocale(srcHLocale);
+            hGlossaryEntry.setResId(resId);
         }
         return hGlossaryEntry;
     }
@@ -178,10 +172,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 hGlossaryEntry.getGlossaryTerms().get(termHLocale);
 
         if (hGlossaryTerm == null) {
-            String resId =
-                    GlossaryUtil.getResId(termHLocale.getLocaleId(),
-                            newTerm.getContent());
-            hGlossaryTerm = new HGlossaryTerm(resId, newTerm.getContent());
+            hGlossaryTerm = new HGlossaryTerm(newTerm.getContent());
             hGlossaryTerm.setLocale(termHLocale);
             hGlossaryTerm.setGlossaryEntry(hGlossaryEntry);
         } else if (!hGlossaryTerm.getContent().equals(newTerm.getContent())) {
@@ -198,6 +189,14 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
         }
         return null;
+    }
+
+    private final static String SEPARATOR = "\u0000";
+
+    public static String getResId(LocaleId locale, String content, String pos) {
+        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos;
+
+        return HashUtil.generateHash(hashBase);
     }
 
 }

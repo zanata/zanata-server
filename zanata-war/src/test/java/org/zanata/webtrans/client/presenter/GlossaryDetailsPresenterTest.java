@@ -78,7 +78,7 @@ public class GlossaryDetailsPresenterTest {
     @Mock
     private HasText targetText;
     @Mock
-    private HasText mockNewCommentText;
+    private HasText targetCommentText;
 
     @Captor
     private ArgumentCaptor<UpdateGlossaryTermAction> updateGlossaryTermCaptor;
@@ -129,31 +129,32 @@ public class GlossaryDetailsPresenterTest {
     public void onSaveClick() {
         String targetText = "target Text";
         String newTargetText = "new target Text";
-        List<String> targetComments = Lists.newArrayList("new comment");
+        String targetComment = "new comment";
 
         GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
         when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(true);
+            mockUserWorkspaceContext.getWorkspaceRestrictions()
+                .isHasGlossaryUpdateAccess()).thenReturn(true);
         when(display.getTargetText()).thenReturn(this.targetText);
         when(this.targetText.getText()).thenReturn(newTargetText);
         when(glossaryDetails.getTarget()).thenReturn(targetText);
-        when(display.getCurrentTargetComments()).thenReturn(targetComments);
+        when(display.getTargetComment()).thenReturn(targetCommentText);
+        when(targetCommentText.getText()).thenReturn(targetComment);
         glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
 
         glossaryDetailsPresenter.onSaveClick();
 
         verify(display).showLoading(true);
         verify(mockDispatcher).execute(updateGlossaryTermCaptor.capture(),
-                updateGlossarycallbackCaptor.capture());
+            updateGlossarycallbackCaptor.capture());
         UpdateGlossaryTermAction glossaryTermAction =
                 updateGlossaryTermCaptor.getValue();
         assertThat(glossaryTermAction.getNewTargetComment(),
-                Matchers.equalTo(targetComments));
+            Matchers.equalTo(targetComment));
         assertThat(glossaryTermAction.getNewTargetTerm(),
-                Matchers.equalTo(newTargetText));
+            Matchers.equalTo(newTargetText));
         assertThat(glossaryTermAction.getSelectedDetailEntry(),
-                Matchers.equalTo(glossaryDetails));
+            Matchers.equalTo(glossaryDetails));
     }
 
     @Test
@@ -180,7 +181,8 @@ public class GlossaryDetailsPresenterTest {
 
         verify(glossaryListener).fireSearchEvent();
         verify(srcRef).setText(newDetails.getSourceRef());
-        verify(display).setSourceComment(newDetails.getSourceComment());
+        verify(display).setDescription(newDetails.getDescription());
+        verify(display).setPos(newDetails.getPos());
         verify(display).setTargetComment(newDetails.getTargetComment());
         verify(display).setLastModifiedDate(newDetails.getLastModifiedDate());
         verify(display).showLoading(false);
@@ -201,7 +203,7 @@ public class GlossaryDetailsPresenterTest {
 
         verify(display).showLoading(true);
         verify(mockDispatcher).execute(updateGlossaryTermCaptor.capture(),
-                updateGlossarycallbackCaptor.capture());
+            updateGlossarycallbackCaptor.capture());
         AsyncCallback<UpdateGlossaryTermResult> callback =
                 updateGlossarycallbackCaptor.getValue();
         callback.onFailure(new RuntimeException());
@@ -240,24 +242,6 @@ public class GlossaryDetailsPresenterTest {
         glossaryDetailsPresenter.onDismissClick();
 
         verify(display).hide();
-    }
-
-    @Test
-    public void addNewComment() {
-        String comment = "new comment";
-        int index = 0;
-
-        boolean hasAccess = true;
-        when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(hasAccess);
-        when(display.getNewCommentText()).thenReturn(mockNewCommentText);
-        when(mockNewCommentText.getText()).thenReturn(comment);
-
-        glossaryDetailsPresenter.addNewComment(index);
-
-        verify(display).addRowIntoTargetComment(index, comment);
-        verify(mockNewCommentText).setText("");
     }
 
     @Test

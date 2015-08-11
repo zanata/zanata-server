@@ -77,21 +77,14 @@ import org.zanata.hibernate.search.LocaleIdBridge;
 public class HGlossaryTerm extends ModelEntityBase {
     private static final long serialVersionUID = 1854278563597070432L;
 
-    private String resId;
     private String content;
-    private List<HTermComment> comments;
+    private String comment;
     private HGlossaryEntry glossaryEntry;
     private HLocale locale;
     private HPerson lastModifiedBy;
 
-    public HGlossaryTerm(String resId, String content) {
-        setResId(resId);
+    public HGlossaryTerm(String content) {
         setContent(content);
-    }
-
-    @NotNull
-    public String getResId() {
-        return resId;
     }
 
     @NotNull
@@ -101,14 +94,9 @@ public class HGlossaryTerm extends ModelEntityBase {
         return content;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @IndexColumn(name = "pos", base = 0, nullable = false)
-    @JoinColumn(name = "glossaryTermId", nullable = false)
-    public List<HTermComment> getComments() {
-        if (comments == null) {
-            comments = new ArrayList<HTermComment>();
-        }
-        return comments;
+
+    public String getComment() {
+        return comment;
     }
 
     // TODO PERF @NaturalId(mutable=false) for better criteria caching

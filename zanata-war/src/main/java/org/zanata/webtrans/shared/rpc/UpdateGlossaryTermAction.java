@@ -10,7 +10,7 @@ public class UpdateGlossaryTermAction extends
 
     private GlossaryDetails selectedDetailEntry;
     private String newTargetTerm;
-    private List<String> newTargetComment;
+    private String newTargetComment;
 
     @SuppressWarnings("unused")
     private UpdateGlossaryTermAction() {
@@ -18,7 +18,7 @@ public class UpdateGlossaryTermAction extends
     }
 
     public UpdateGlossaryTermAction(GlossaryDetails selectedDetailEntry,
-            String newTargetTerm, List<String> newTargetComment) {
+            String newTargetTerm, String newTargetComment) {
         this.selectedDetailEntry = selectedDetailEntry;
         this.newTargetComment = newTargetComment;
         this.newTargetTerm = newTargetTerm;
@@ -32,7 +32,7 @@ public class UpdateGlossaryTermAction extends
         return newTargetTerm;
     }
 
-    public List<String> getNewTargetComment() {
+    public String getNewTargetComment() {
         return newTargetComment;
     }
 }

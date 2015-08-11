@@ -29,6 +29,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
@@ -60,6 +61,11 @@ public class HGlossaryEntry extends ModelEntityBase {
 
     private Map<HLocale, HGlossaryTerm> glossaryTerms;
     private String sourceRef;
+
+    private String resId;
+    private String pos;
+    private String description;
+
     private HLocale srcLocale;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "glossaryEntry", orphanRemoval = true)
@@ -85,4 +91,16 @@ public class HGlossaryEntry extends ModelEntityBase {
         return srcLocale;
     }
 
+    @NotNull
+    public String getResId() {
+        return resId;
+    }
+
+    public String getPos() {
+        return pos;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

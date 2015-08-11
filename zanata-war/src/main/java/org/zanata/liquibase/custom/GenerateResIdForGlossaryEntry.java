@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zanata.common.LocaleId;
-import org.zanata.common.util.GlossaryUtil;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -38,15 +37,16 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
+import org.zanata.service.impl.GlossaryFileServiceImpl;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class GenerateResIdForGlossaryTerm implements CustomTaskChange {
+public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
 
     @Override
     public String getConfirmationMessage() {
-        return "GenerateResIdForGlossaryTerm generated resId column in HGlossaryTerm table";
+        return "GenerateResIdForGlossaryEntry generated resId column in HGlossaryEntry table";
     }
 
     @Override
@@ -69,28 +69,32 @@ public class GenerateResIdForGlossaryTerm implements CustomTaskChange {
                 conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                         ResultSet.CONCUR_UPDATABLE)) {
 
+            Map<Long, String> entryLocaleMap = new HashMap<Long, String>();
 
-            Map<Long, String> termLocaleMap = new HashMap<Long, String>();
-            String termLocaleSql =
-                "select term.id, locale.localeId from HGlossaryTerm term, HLocale locale where term.localeId = locale.id and term.resId = ''";
-            ResultSet rs1 = stmt.executeQuery(termLocaleSql);
+            String entryLocaleSql = "select entry.id, entry.pos, locale.localeId, term.content from " +
+                "HGlossaryEntry entry, HGlossaryTerm term, HLocale locale  " +
+                "where term.glossaryEntryId = entry.id and term.localeId = locale.id";
+            ResultSet rs1 = stmt.executeQuery(entryLocaleSql);
             while (rs1.next()) {
-                long termId = rs1.getLong(1);
-                String localeId = rs1.getString(2);
-                termLocaleMap.put(termId, localeId);
+                long entryId = rs1.getLong(1);
+                String pos = rs1.getString(2);
+                String localeId = rs1.getString(3);
+                String content = rs1.getString(4);
+
+                String resId =
+                        GlossaryFileServiceImpl.getResId(new LocaleId(localeId),
+                            content, pos);
+                entryLocaleMap.put(entryId, resId);
             }
 
-            String termSql =
-                    "select term.id, term.content, term.resId from HGlossaryTerm term where term.resId = ''";
-            ResultSet rs2 = stmt.executeQuery(termSql);
+            String entrySql =
+                "select entry.id, entry.resId from HGlossaryEntry entry";
+            ResultSet rs2 = stmt.executeQuery(entrySql);
 
             while (rs2.next()) {
                 long id = rs2.getLong(1);
-                String content = rs2.getString(2);
-                LocaleId localeId = new LocaleId(termLocaleMap.get(id));
-                String resId = GlossaryUtil.getResId(localeId, content);
-
-                rs2.updateString(3, resId);
+                String resId = entryLocaleMap.get(id);
+                rs2.updateString(2, resId);
                 rs2.updateRow();
             }
         } catch (SQLException e) {

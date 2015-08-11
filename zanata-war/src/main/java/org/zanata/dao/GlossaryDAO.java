@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
@@ -44,13 +41,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.common.LocaleId;
-import org.zanata.common.util.GlossaryUtil;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.GlossaryLocaleStats;
 import org.zanata.rest.dto.LocaleDetails;
-import org.zanata.rest.service.GlossaryService;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 /**
@@ -167,17 +162,17 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public HGlossaryEntry getEntryBySourceTermResId(String srcResId,
+    public HGlossaryEntry getEntryByResIdAndLocale(String resId,
             LocaleId srcLocaleId) {
         Query query = getSession().createQuery(
                 "from HGlossaryEntry as e "
                         + "WHERE e.srcLocale.localeId= :localeId "
+                        + "AND e.resId = :resId "
                         + "AND e.id IN "
                         + "(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t "
-                        + "WHERE t.locale.localeId=e.srcLocale.localeId "
-                        + "AND t.resId= :resId)");
+                        + "WHERE t.locale.localeId=e.srcLocale.localeId)");
         query.setParameter("localeId", srcLocaleId);
-        query.setParameter("resId", srcResId);
+        query.setParameter("resId", resId);
         query.setComment("GlossaryDAO.getEntryBySourceTermResId");
         return (HGlossaryEntry) query.uniqueResult();
     }

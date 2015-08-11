@@ -119,9 +119,7 @@ public class GlossaryAction implements Serializable {
                             glossaryFileUpload.getFileContents(),
                             glossaryFileUpload.getFileName(),
                             glossaryFileUpload.getSourceLocaleId(),
-                            glossaryFileUpload.getTransLocaleId(),
-                            glossaryFileUpload.treatSourceCommentsAsTarget,
-                            glossaryFileUpload.getCommentColsList());
+                            glossaryFileUpload.getTransLocaleId());
 
             for (Glossary glossary : glossaries) {
                 glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
@@ -194,14 +192,6 @@ public class GlossaryAction implements Serializable {
         @Setter
         private String transLang;
 
-        @Getter
-        @Setter
-        private boolean treatSourceCommentsAsTarget = false;
-
-        @Getter
-        @Setter
-        private String commentCols = "pos,description";
-
         public LocaleId getTransLocaleId() {
             return getLocaleId(getTransLang());
         }
@@ -215,12 +205,6 @@ public class GlossaryAction implements Serializable {
                 return new LocaleId(lang);
             }
             return null;
-        }
-
-        public List<String> getCommentColsList() {
-            String[] commentHeadersList =
-                    StringUtils.split(getCommentCols(), ",");
-            return Lists.newArrayList(commentHeadersList);
         }
     }
 
