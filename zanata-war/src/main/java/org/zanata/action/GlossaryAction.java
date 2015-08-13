@@ -15,7 +15,6 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.dao.LocaleDAO;
@@ -26,6 +25,9 @@ import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.editor.dto.User;
 import org.zanata.rest.editor.service.UserService;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
+import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
@@ -42,6 +44,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Name("glossaryAction")
 @Scope(ScopeType.PAGE)
+@ZanataSecured
+@CheckLoggedIn
 @Slf4j
 public class GlossaryAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -61,20 +65,11 @@ public class GlossaryAction implements Serializable {
     @In("jsfMessages")
     private FacesMessages facesMessages;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In(value = "editor.userService", create = true)
     private UserService userService;
-
-    private User user;
-
-    public User getUser() {
-        if (user == null) {
-            user = userService.generateUser(authenticatedAccount);
-        }
-        return user;
-    }
 
     @Getter
     private GlossaryFileUploadHelper glossaryFileUpload =
@@ -87,12 +82,21 @@ public class GlossaryAction implements Serializable {
             Lists.newArrayList(SortingType.SortOption.ALPHABETICAL,
                     SortingType.SortOption.Entry));
 
+    private User user;
+
     private final GlossaryEntryComparator glossaryEntryComparator =
             new GlossaryEntryComparator(
                     getGlossarySortingList());
 
     public String getDeleteConfirmationMessage(String localeId) {
         return msgs.format("jsf.Glossary.delete.confirm", localeId);
+    }
+
+    public User getUser() {
+        if (user == null) {
+            user = userService.generateUser(authenticatedAccount);
+        }
+        return user;
     }
 
     public List<HLocale> getAvailableLocales() {

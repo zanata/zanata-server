@@ -2,8 +2,10 @@ package org.zanata.webtrans.client.view;
 
 import java.util.Date;
 
+import org.zanata.ui.input.TextInput;
 import org.zanata.webtrans.client.resources.Resources;
 import org.zanata.webtrans.client.resources.UiMessages;
+import org.zanata.webtrans.client.ui.DialogBoxCloseButton;
 import org.zanata.webtrans.client.util.DateUtil;
 
 import com.google.gwt.core.shared.GWT;
@@ -15,45 +17,50 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 
-public class GlossaryDetailsView implements GlossaryDetailsDisplay {
+public class GlossaryDetailsView extends DialogBox
+    implements GlossaryDetailsDisplay {
 
     interface GlossaryDetailsIUiBinder extends
-            UiBinder<DialogBox, GlossaryDetailsView> {
-    }
-
-    interface Styles extends CssResource {
+            UiBinder<HTMLPanel, GlossaryDetailsView> {
     }
 
     private static GlossaryDetailsIUiBinder uiBinder = GWT
             .create(GlossaryDetailsIUiBinder.class);
 
-    DialogBox dialogBox;
+    @UiField
+    TextArea targetText, targetComment, description;
 
     @UiField
-    TextArea srcRef, sourceText, targetText, targetComment, description;
+    TextBox pos;
 
     @UiField
-    Label sourceLabel, targetLabel, lastModified, pos;
+    Label sourceLabel, targetLabel;
+
+    @UiField
+    InlineLabel lastModified, srcRef, sourceText;
 
     @UiField
     ListBox entryListBox;
 
     @UiField
-    Button dismissButton, saveButton;
+    Button saveButton;
+
+    @UiField(provided = true)
+    DialogBoxCloseButton dismissButton;
 
     @UiField
     Image loadingIcon;
-
-    @UiField
-    Styles style;
 
     private Listener listener;
 
@@ -61,22 +68,25 @@ public class GlossaryDetailsView implements GlossaryDetailsDisplay {
 
     @Inject
     public GlossaryDetailsView(UiMessages messages, Resources resources) {
-        dialogBox = uiBinder.createAndBindUi(this);
-        dialogBox.setText(messages.glossaryDetails());
+        super(true, false);
+        setGlassEnabled(true);
+        this.messages = messages;
+
+        dismissButton = new DialogBoxCloseButton(this);
+
+        HTMLPanel container = uiBinder.createAndBindUi(this);
+        getCaption().setText(messages.glossaryDetails());
+        setWidget(container);
+
         dismissButton.setText(messages.dismiss());
         saveButton.setText(messages.save());
 
-        description.setReadOnly(true);
-        sourceText.setReadOnly(true);
-        srcRef.setReadOnly(true);
-
         loadingIcon.setResource(resources.spinner());
         loadingIcon.setVisible(false);
-        this.messages = messages;
     }
 
     public void hide() {
-        dialogBox.hide();
+        hide(false);
     }
 
     @Override
@@ -94,13 +104,9 @@ public class GlossaryDetailsView implements GlossaryDetailsDisplay {
         targetComment.setText(targetCommentText);
     }
 
-    public void show() {
-        dialogBox.center();
-    }
-
     @Override
     public Widget asWidget() {
-        return dialogBox;
+        return this;
     }
 
     @Override
@@ -114,6 +120,16 @@ public class GlossaryDetailsView implements GlossaryDetailsDisplay {
     }
 
     @Override
+    public HasText getPos() {
+        return pos;
+    }
+
+    @Override
+    public HasText getDescription() {
+        return description;
+    }
+
+    @Override
     public HasText getTargetText() {
         return targetText;
     }
@@ -121,11 +137,6 @@ public class GlossaryDetailsView implements GlossaryDetailsDisplay {
     @UiHandler("entryListBox")
     public void onEntryListBoxChange(ChangeEvent event) {
         listener.selectEntry(entryListBox.getSelectedIndex());
-    }
-
-    @UiHandler("dismissButton")
-    public void onDismissButtonClick(ClickEvent event) {
-        listener.onDismissClick();
     }
 
     @UiHandler("saveButton")
@@ -166,8 +177,11 @@ public class GlossaryDetailsView implements GlossaryDetailsDisplay {
     @Override
     public void setHasUpdateAccess(boolean hasGlossaryUpdateAccess) {
         saveButton.setEnabled(hasGlossaryUpdateAccess);
+        saveButton.setVisible(hasGlossaryUpdateAccess);
         targetComment.setReadOnly(!hasGlossaryUpdateAccess);
         targetText.setReadOnly(!hasGlossaryUpdateAccess);
+        pos.setReadOnly(!hasGlossaryUpdateAccess);
+        description.setReadOnly(!hasGlossaryUpdateAccess);
     }
 
     @Override

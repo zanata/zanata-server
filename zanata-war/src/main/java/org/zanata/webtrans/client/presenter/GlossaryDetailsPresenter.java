@@ -18,7 +18,6 @@ import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermResult;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.common.base.Strings;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -64,12 +63,16 @@ public class GlossaryDetailsPresenter extends
             // check if there's any changes on the target term or the target
             // comments and save
             if (!display.getTargetText().getText()
-                    .equals(selectedDetailEntry.getTarget())) {
+                    .equals(selectedDetailEntry.getTarget()) ||
+                    !display.getTargetComment().getText().equals(
+                            selectedDetailEntry.getTargetComment())) {
                 display.showLoading(true);
                 UpdateGlossaryTermAction action =
                         new UpdateGlossaryTermAction(selectedDetailEntry,
                                 display.getTargetText().getText(),
-                                display.getTargetComment().getText());
+                                display.getTargetComment().getText(),
+                                display.getPos().getText(),
+                                display.getDescription().getText());
 
                 dispatcher.execute(action,
                         new AsyncCallback<UpdateGlossaryTermResult>() {
@@ -95,12 +98,6 @@ public class GlossaryDetailsPresenter extends
                         });
             }
         }
-    }
-
-    @Override
-    public void onDismissClick() {
-        display.hide();
-        selectedDetailEntry = null;
     }
 
     public void show(final GlossaryResultItem item) {
@@ -136,7 +133,7 @@ public class GlossaryDetailsPresenter extends
                             i++;
                         }
                         selectEntry(0);
-                        display.show();
+                        display.center();
                     }
                 });
     }

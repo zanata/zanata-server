@@ -239,7 +239,6 @@ public class GlossaryDetailsPresenterTest {
 
         glossaryDetailsPresenter.bind();
         glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-        glossaryDetailsPresenter.onDismissClick();
 
         verify(display).hide();
     }
@@ -282,6 +281,6 @@ public class GlossaryDetailsPresenterTest {
         verify(display).setSourceText(anyString());
         verify(targetLabel).setText(anyString());
         verify(display).addEntry("1");
-        verify(display).show();
+        verify(display).center();
     }
 }

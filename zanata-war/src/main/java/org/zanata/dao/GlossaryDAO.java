@@ -127,7 +127,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
                 new LocaleDetails(locale.getLocaleId(),
                     locale.retrieveDisplayName(), "");
 
-            localeStats.add(new GlossaryLocaleStats( localeDetails, countInt));
+            localeStats.add(new GlossaryLocaleStats(localeDetails, countInt));
         }
         return localeStats;
     }

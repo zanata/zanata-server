@@ -21,12 +21,8 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jboss.seam.ScopeType;
@@ -35,22 +31,16 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.editor.service.UserService;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
-import org.zanata.model.HLocale;
-import org.zanata.model.HPerson;
-import org.zanata.rest.editor.dto.User;
-import org.zanata.rest.editor.service.UserService;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.GravatarService;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 
 import static org.apache.commons.lang.StringUtils.abbreviate;
 
@@ -66,21 +56,23 @@ import static org.apache.commons.lang.StringUtils.abbreviate;
 @Slf4j
 public class ProfileHome implements Serializable {
     private static final long serialVersionUID = 1L;
-    @In
-    private ZanataIdentity identity;
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
-    private HAccount authenticatedAccount;
-    @In
-    private AccountDAO accountDAO;
-    @In
-    private Messages msgs;
-    @In(value = "editor.userService", create = true)
-    private UserService userService;
-
     private String username;
 
     @Getter
     private User user;
+
+    @In
+    ZanataIdentity identity;
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
+    HAccount authenticatedAccount;
+    @In
+    PersonDAO personDAO;
+    @In
+    AccountDAO accountDAO;
+    @In
+    Messages msgs;
+    @In(value = "editor.userService", create = true)
+    private UserService userService;
 
     private void init() {
         HAccount account;

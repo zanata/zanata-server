@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
-import org.jboss.seam.security.Identity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -13,6 +12,7 @@ import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
+import org.zanata.security.ZanataIdentity;
 
 import lombok.extern.slf4j.Slf4j;
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +36,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
 
     @BeforeClass
     public static void disableSecurity() {
-        Identity.setSecurityEnabled(false);
+        ZanataIdentity.setSecurityEnabled(false);
     }
 
     @Before

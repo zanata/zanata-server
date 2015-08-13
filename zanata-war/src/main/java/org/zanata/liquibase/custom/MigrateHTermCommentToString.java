@@ -108,7 +108,7 @@ public class MigrateHTermCommentToString implements CustomTaskChange {
             throw new CustomChangeException(e);
         }
     }
-    
+
     private String joinComment(String existingComment, String newComment) {
         if (StringUtils.isBlank(existingComment)
                 && StringUtils.isBlank(newComment)) {

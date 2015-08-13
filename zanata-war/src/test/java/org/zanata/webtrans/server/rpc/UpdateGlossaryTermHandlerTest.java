@@ -66,7 +66,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
 
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
-                        "new comment");
+                        "new comment", "new pos", "new description");
         String resId =
             GlossaryFileServiceImpl.getResId(selectedDetailEntry.getSrcLocale(),
                 selectedDetailEntry.getSource(), selectedDetailEntry.getPos());
@@ -106,7 +106,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                 targetHLocale.getLocaleId(), 0, new Date());
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
-                        "new comment");
+                        "new comment", "new pos", "new description");
         String resId =
             GlossaryFileServiceImpl.getResId(
                 selectedDetailEntry.getSrcLocale(),
@@ -130,7 +130,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                 targetHLocale.getLocaleId(), 0, new Date());
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
-                        "new comment");
+                        "new comment", "new pos", "new description");
         String resId =
             GlossaryFileServiceImpl.getResId(
                 selectedDetailEntry.getSrcLocale(),

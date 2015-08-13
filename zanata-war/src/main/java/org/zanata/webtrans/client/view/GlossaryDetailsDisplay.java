@@ -51,7 +51,7 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
 
     void addEntry(String entriesLabel);
 
-    void show();
+    void center();
 
     void hide();
 
@@ -65,10 +65,12 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
 
     HasText getTargetComment();
 
+    HasText getPos();
+
+    HasText getDescription();
+
     interface Listener {
         void selectEntry(int selected);
-
-        void onDismissClick();
 
         void onSaveClick();
     }

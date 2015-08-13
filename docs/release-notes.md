@@ -1,4 +1,11 @@
 ## 3.8
+<h5>Infrastructure Changes</h5>
+* In wildfly or EAP standalone.xml, change all occurrences of "org.jboss.seam.security.jaas.SeamLoginModule" to "org.zanata.security.jaas.InternalLoginModule"
+
+<h5>Infrastructure Changes</h5>
+
+Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly version 9.0.1.Final or later.
+
 
 <h5>Bug fixes</h5>
 * [1233524](https://bugzilla.redhat.com/show_bug.cgi?id=1233524) - Update project search page to include user

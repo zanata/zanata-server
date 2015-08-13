@@ -36,7 +36,7 @@ public class UpdateGlossaryTermHandler
     @Override
     public UpdateGlossaryTermResult execute(UpdateGlossaryTermAction action,
             ExecutionContext context) throws ActionException {
-        identity.checkLoggedIn();
+        identity.hasPermission("glossary-update", "");
 
         GlossaryDetails selectedDetailEntry = action.getSelectedDetailEntry();
 
@@ -67,6 +67,8 @@ public class UpdateGlossaryTermHandler
         } else {
             targetTerm.setContent(action.getNewTargetTerm());
             targetTerm.setComment(action.getNewTargetComment());
+            entry.setPos(action.getNewPos());
+            entry.setDescription(action.getNewDescription());
 
             HGlossaryEntry entryResult = glossaryDAO.makePersistent(entry);
             glossaryDAO.flush();
@@ -74,7 +76,7 @@ public class UpdateGlossaryTermHandler
             HGlossaryTerm srcTerm =
                     entryResult.getGlossaryTerms().get(
                             entryResult.getSrcLocale());
-            
+
             GlossaryDetails details =
                     new GlossaryDetails(entryResult.getResId(),
                             srcTerm.getContent(),
