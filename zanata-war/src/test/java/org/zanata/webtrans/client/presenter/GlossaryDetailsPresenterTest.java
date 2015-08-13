@@ -78,6 +78,12 @@ public class GlossaryDetailsPresenterTest {
     @Mock
     private HasText targetText;
     @Mock
+    private HasText targetComment;
+    @Mock
+    private HasText pos;
+    @Mock
+    private HasText description;
+    @Mock
     private HasText targetCommentText;
 
     @Captor
@@ -140,6 +146,11 @@ public class GlossaryDetailsPresenterTest {
         when(glossaryDetails.getTarget()).thenReturn(targetText);
         when(display.getTargetComment()).thenReturn(targetCommentText);
         when(targetCommentText.getText()).thenReturn(targetComment);
+        when(display.getPos()).thenReturn(pos);
+        when(pos.getText()).thenReturn("new part of speech");
+
+        when(display.getDescription()).thenReturn(description);
+        when(description.getText()).thenReturn("new description");
         glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
 
         glossaryDetailsPresenter.onSaveClick();
@@ -165,6 +176,16 @@ public class GlossaryDetailsPresenterTest {
                         .isHasGlossaryUpdateAccess()).thenReturn(true);
         when(display.getTargetText()).thenReturn(targetText);
         when(targetText.getText()).thenReturn("new target Text");
+
+        when(display.getTargetComment()).thenReturn(targetComment);
+        when(targetComment.getText()).thenReturn("new target comment");
+
+        when(display.getPos()).thenReturn(pos);
+        when(pos.getText()).thenReturn("new part of speech");
+
+        when(display.getDescription()).thenReturn(description);
+        when(description.getText()).thenReturn("new description");
+
         when(glossaryDetails.getTarget()).thenReturn("target Text");
         glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
 
@@ -197,6 +218,16 @@ public class GlossaryDetailsPresenterTest {
         when(display.getTargetText()).thenReturn(targetText);
         when(targetText.getText()).thenReturn("new target Text");
         when(glossaryDetails.getTarget()).thenReturn("target Text");
+
+        when(display.getTargetComment()).thenReturn(targetComment);
+        when(targetComment.getText()).thenReturn("new target comment");
+
+        when(display.getPos()).thenReturn(pos);
+        when(pos.getText()).thenReturn("new part of speech");
+
+        when(display.getDescription()).thenReturn(description);
+        when(description.getText()).thenReturn("new description");
+
         glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
 
         glossaryDetailsPresenter.onSaveClick();
@@ -226,21 +257,6 @@ public class GlossaryDetailsPresenterTest {
         glossaryDetailsPresenter.onSaveClick();
 
         verifyZeroInteractions(mockDispatcher);
-    }
-
-    @Test
-    public void onDismissClick() {
-        boolean hasAccess = true;
-        GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
-
-        when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(hasAccess);
-
-        glossaryDetailsPresenter.bind();
-        glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-
-        verify(display).hide();
     }
 
     @Test

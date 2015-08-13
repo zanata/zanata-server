@@ -46,6 +46,11 @@ public class UpdateGlossaryTermHandler
                 glossaryDAO.getEntryByResIdAndLocale(resId,
                     selectedDetailEntry.getSrcLocale());
 
+        if (entry == null) {
+            throw new ActionException(
+                "Cannot find glossary entry with resId " + resId);
+        }
+
         HLocale targetLocale =
                 localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale());

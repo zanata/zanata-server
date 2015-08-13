@@ -59,17 +59,15 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
 
     @Test
     public void testExecute() throws Exception {
+        String resId = "resId";
         GlossaryDetails selectedDetailEntry =
-            new GlossaryDetails("", "source", "target", "desc", "pos",
+            new GlossaryDetails(resId, "source", "target", "desc", "pos",
                 "target comment", "sourceRef", srcLocale.getLocaleId(),
                 targetHLocale.getLocaleId(), 0, new Date());
 
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         "new comment", "new pos", "new description");
-        String resId =
-            GlossaryFileServiceImpl.getResId(selectedDetailEntry.getSrcLocale(),
-                selectedDetailEntry.getSource(), selectedDetailEntry.getPos());
 
         when(glossaryDAO.getEntryByResIdAndLocale(
                 resId, selectedDetailEntry.getSrcLocale())).thenReturn(
@@ -88,7 +86,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
 
         UpdateGlossaryTermResult result = handler.execute(action, null);
 
-        verify(identity).checkLoggedIn();
+        verify(identity).hasPermission("glossary-update", "");
         assertThat(targetTerm.getComment(), Matchers.equalTo("new comment"));
         assertThat(targetTerm.getContent(), Matchers.equalTo("new target"));
         verify(glossaryDAO).makePersistent(hGlossaryEntry);
