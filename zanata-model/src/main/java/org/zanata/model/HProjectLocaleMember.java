@@ -122,9 +122,9 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
         } else {
             final HProjectLocaleMember other = (HProjectLocaleMember) obj;
             return new EqualsBuilder()
-                    .append(this.project.id, other.project.id)
-                    .append(this.locale.id, other.locale.id)
-                    .append(this.person.id, other.person.id)
+                    .append(this.project.getId(), other.project.getId())
+                    .append(this.locale.getId(), other.locale.getId())
+                    .append(this.person.getId(), other.person.getId())
                     .append(this.role, other.role)
                     .isEquals();
         }
@@ -133,9 +133,9 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(this.project.id)
-                .append(this.locale.id)
-                .append(this.person.id)
+                .append(this.project.getId())
+                .append(this.locale.getId())
+                .append(this.person.getId())
                 .append(this.role)
                 .toHashCode();
     }
@@ -185,9 +185,9 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
             } else {
                 final HProjectLocaleMemberPK other = (HProjectLocaleMemberPK) obj;
                 return new EqualsBuilder()
-                        .append(this.project.id, other.project.id)
-                        .append(this.locale.id, other.locale.id)
-                        .append(this.person.id, other.person.id)
+                        .append(this.project.getId(), other.project.getId())
+                        .append(this.locale.getId(), other.locale.getId())
+                        .append(this.person.getId(), other.person.getId())
                         .append(this.role, other.role)
                         .isEquals();
             }
@@ -196,9 +196,9 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
         @Override
         public int hashCode() {
             return new HashCodeBuilder()
-                    .append(this.project.id)
-                    .append(this.locale.id)
-                    .append(this.person.id)
+                    .append(this.project.getId())
+                    .append(this.locale.getId())
+                    .append(this.person.getId())
                     .append(this.role)
                     .toHashCode();
         }

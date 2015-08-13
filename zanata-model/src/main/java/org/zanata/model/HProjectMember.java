@@ -125,9 +125,10 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
             return false;
         } else {
             final HProjectMember other = (HProjectMember) obj;
+            // FIXME do not use database id since it will be null in some cases
             return new EqualsBuilder()
-                    .append(this.project.id, other.project.id)
-                    .append(this.person.id, other.person.id)
+                    .append(this.project.getId(), other.project.getId())
+                    .append(this.person.getId(), other.person.getId())
                     .append(this.role, other.role)
                     .isEquals();
         }
@@ -136,8 +137,8 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(this.project.id)
-                .append(this.person.id)
+                .append(this.project.getId())
+                .append(this.person.getId())
                 .append(this.role)
                 .toHashCode();
     }
@@ -183,8 +184,8 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
             } else {
                 final HProjectMemberPK other = (HProjectMemberPK) obj;
                 return new EqualsBuilder()
-                        .append(this.project.id, other.project.id)
-                        .append(this.person.id, other.person.id)
+                        .append(this.project.getId(), other.project.getId())
+                        .append(this.person.getId(), other.person.getId())
                         .append(this.role, other.role)
                         .isEquals();
             }
@@ -193,8 +194,8 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
         @Override
         public int hashCode() {
             return new HashCodeBuilder()
-                    .append(this.project.id)
-                    .append(this.person.id)
+                    .append(this.project.getId())
+                    .append(this.person.getId())
                     .append(this.role)
                     .toHashCode();
         }
