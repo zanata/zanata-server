@@ -1,6 +1,8 @@
 package org.zanata.rest.service;
 
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
@@ -8,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -15,8 +18,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -24,14 +29,15 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
+import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocaleStats;
-import org.zanata.rest.dto.GlossaryLocales;
 import org.zanata.rest.dto.GlossaryTerm;
+import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
-import org.zanata.util.HashUtil;
+import org.zanata.service.LocaleService;
 
 @Name("glossaryService")
 @Path(GlossaryResource.SERVICE_PATH)
@@ -60,6 +66,8 @@ public class GlossaryService implements GlossaryResource {
     @In
     private ZanataIdentity identity;
 
+    @In
+    private LocaleService localeServiceImpl;
 
     @Override
     public Response getLocaleStatistic() {
@@ -68,14 +76,42 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
-        List<GlossaryLocaleStats> srcLocales = glossaryDAO.getSourceLocales();
-        List<GlossaryLocaleStats> transLocales =
+        List<HLocale> supportedLocales =
+            localeServiceImpl.getSupportedAndEnabledLocales();
+        Map<LocaleId, Integer> srcLocales = glossaryDAO.getSourceLocales();
+        Map<LocaleId, Integer> transLocales =
             glossaryDAO.getTranslationLocales();
 
-        GlossaryLocales glossaryLocales =
-            new GlossaryLocales(srcLocales, transLocales);
+        List<GlossaryLocaleStats> result = Lists.newArrayList();
 
-        return Response.ok(glossaryLocales).build();
+        for(HLocale locale: supportedLocales) {
+            LocaleDetails localeDetails = generateLocaleDetails(locale);
+            LocaleId localeId = locale.getLocaleId();
+
+            GlossaryLocaleStats localeStats =
+                new GlossaryLocaleStats(localeDetails, 0, 0);
+
+            if (srcLocales.containsKey(localeId)) {
+                localeStats.setSrcCount(srcLocales.get(localeId));
+            }
+            if (transLocales.containsKey(localeId)) {
+                localeStats.setTransCount(transLocales.get(localeId));
+            }
+
+            result.add(localeStats);
+        }
+
+        Type genericType = new GenericType<List<GlossaryLocaleStats>>() {
+        }.getGenericType();
+
+        Object entity =
+            new GenericEntity<List<GlossaryLocaleStats>>(result, genericType);
+        return Response.ok(entity).build();
+    }
+
+    private LocaleDetails generateLocaleDetails(HLocale locale) {
+        return new LocaleDetails(locale.getLocaleId(),
+            locale.retrieveDisplayName(), "");
     }
 
     @Override

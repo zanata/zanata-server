@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
@@ -44,8 +44,6 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.rest.dto.GlossaryLocaleStats;
-import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 /**
@@ -91,7 +89,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public List<GlossaryLocaleStats> getSourceLocales() {
+    public Map<LocaleId, Integer> getSourceLocales() {
         String queryString =
             "select e.srcLocale, count(*) from HGlossaryEntry e group by e.srcLocale";
         Query query = getSession()
@@ -103,7 +101,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return getLocaleStats(list);
     }
 
-    public List<GlossaryLocaleStats> getTranslationLocales() {
+    public Map<LocaleId, Integer> getTranslationLocales() {
         String queryString =
                 "select t.locale, count(*) from HGlossaryTerm t where t.locale <> t.glossaryEntry.srcLocale group by t.locale";
         Query query = getSession()
@@ -115,19 +113,13 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return getLocaleStats(list);
     }
 
-    private List<GlossaryLocaleStats> getLocaleStats(List<Object[]> list) {
-        List<GlossaryLocaleStats> localeStats = Lists.newArrayList();
-
+    private Map<LocaleId, Integer> getLocaleStats(List<Object[]> list) {
+        Map<LocaleId, Integer> localeStats = Maps.newHashMap();
         for (Object[] obj : list) {
             HLocale locale = (HLocale) obj[0];
             Long count = (Long) obj[1];
             int countInt = count == null ? 0 : count.intValue();
-
-            LocaleDetails localeDetails =
-                new LocaleDetails(locale.getLocaleId(),
-                    locale.retrieveDisplayName(), "");
-
-            localeStats.add(new GlossaryLocaleStats(localeDetails, countInt));
+            localeStats.put(locale.getLocaleId(), countInt);
         }
         return localeStats;
     }
