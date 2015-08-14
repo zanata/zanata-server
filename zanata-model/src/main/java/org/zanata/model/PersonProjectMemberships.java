@@ -64,8 +64,30 @@ public class PersonProjectMemberships {
         }
     }
 
-    public void addLocaleRoles(HLocale locale, Collection<LocaleRole> role) {
-        this.getLocaleRoles().add(new LocaleRoles(locale, role));
+    public void addLocaleRoles(HLocale locale, Collection<LocaleRole> roles) {
+        this.getLocaleRoles().add(new LocaleRoles(locale, roles));
+    }
+
+    /**
+     * Replace the person with an equivalent attached person.
+     *
+     * Hibernate can fail if the person object is 'detached' so this allows
+     * replacement with an equivalent 'attached' version.
+     *
+     * The person must be equal to the existing person according to .equals()
+     * or an exception will be thrown.
+     *
+     * @param person to set, must be equal to the current person
+     */
+    public void setPerson(HPerson person) {
+        if (person.equals(this.person)) {
+            this.person = person;
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot set a different person. "
+                  + "This is only for replacing a detached HPerson with an"
+                  + "equivalent attached HPerson (according to .equals)");
+        }
     }
 
     /**
@@ -73,15 +95,15 @@ public class PersonProjectMemberships {
      *
      * Intended to use as a row for a single locale in a permission setting table.
      */
+    @Setter
     @Getter
     public class LocaleRoles {
         private HLocale locale;
 
-        @Setter
         private boolean translator;
-        @Setter
+
         private boolean reviewer;
-        @Setter
+
         private boolean coordinator;
 
         public LocaleRoles(HLocale locale, Collection<LocaleRole> roles) {
@@ -89,6 +111,30 @@ public class PersonProjectMemberships {
             translator = roles.contains(LocaleRole.Translator);
             reviewer = roles.contains(LocaleRole.Reviewer);
             coordinator = roles.contains(LocaleRole.Coordinator);
+        }
+
+        /**
+         * Set the locale to an equal locale object.
+         *
+         * This is just to work around Hibernate, which fails when trying to
+         * persist something with a 'detached' HLocale in it.
+         *
+         * This is to allow replacement of a 'detached' HLocale entity with an
+         * 'attached' HLocale entity. It is only intended to set an attached
+         * version of the same locale, and will throw an exception if a
+         * different locale is set.
+         *
+         * @param locale to set, must be equal to the current locale.
+         */
+        public void setLocale(HLocale locale) {
+            if (locale.equals(this.locale)) {
+                this.locale = locale;
+            } else {
+                throw new IllegalArgumentException(
+                        "Cannot set to a different locale. "
+                      + "This is only for replacing a detached HLocale with an "
+                      + "equivalent attached HLocale (according to .equals)");
+            }
         }
 
         @Override

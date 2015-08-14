@@ -232,10 +232,12 @@ public class HProject extends SlugEntityBase implements Serializable,
 
     /**
      * Update all security settings for a person.
+     *
+     * The HPerson and HLocale entities in memberships must be attached to avoid
+     * persistence problems with Hibernate.
      */
-    public void updatePermissions(PersonProjectMemberships memberships, HPerson person) {
-        log.info("Update permissions for person {}", memberships.getPerson().getAccount().getUsername());
-//        final HPerson person = memberships.getPerson();
+    public void updatePermissions(PersonProjectMemberships memberships) {
+        HPerson person = memberships.getPerson();
         ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
         ensureMembership(memberships.isTranslationMaintainer(),
                 asMember(person, TranslationMaintainer));
@@ -247,7 +249,6 @@ public class HProject extends SlugEntityBase implements Serializable,
             ensureMembership(localeRoles.isReviewer(), asMember(locale, person, Reviewer));
             ensureMembership(localeRoles.isCoordinator(), asMember(locale, person, Coordinator));
         }
-        // TODO trigger this to persist
     }
 
     private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
@@ -261,37 +262,30 @@ public class HProject extends SlugEntityBase implements Serializable,
     /**
      * Ensure the given membership is present or absent.
      */
-    private void ensureMembership(boolean present, HProjectMember membership) {
-        log.info("ensure project membership ({}, {}, {})",
-                membership.getPerson().getAccount().getUsername(),
-                membership.getRole(),
-                present);
+    private void ensureMembership(boolean shouldBePresent, HProjectMember membership) {
         final Set<HProjectMember> members = getMembers();
-        if (present && !members.contains(membership)) {
-            members.add(membership);
-            return;
-        }
-        if (!present && members.contains(membership)) {
-            members.remove(membership);
+        final boolean isPresent = members.contains(membership);
+        if (isPresent != shouldBePresent) {
+            if (shouldBePresent) {
+                members.add(membership);
+            } else {
+                members.remove(membership);
+            }
         }
     }
 
     /**
      * Ensure the given locale membership is present or absent.
      */
-    private void ensureMembership(boolean present, HProjectLocaleMember membership) {
-        log.info("ensure project locale membership ({}, {}, {}, {})",
-                membership.getPerson().getAccount().getUsername(),
-                membership.getLocale().retrieveDisplayName(),
-                membership.getRole(),
-                present);
+    private void ensureMembership(boolean shouldBePresent, HProjectLocaleMember membership) {
         final Set<HProjectLocaleMember> members = getLocaleMembers();
-        if (present && !members.contains(membership)) {
-            members.add(membership);
-            return;
-        }
-        if (!present && members.contains(membership)) {
-            members.remove(membership);
+        final boolean isPresent = members.contains(membership);
+        if (isPresent != shouldBePresent) {
+            if (shouldBePresent) {
+                members.add(membership);
+            } else {
+                members.remove(membership);
+            }
         }
     }
 

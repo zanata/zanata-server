@@ -462,7 +462,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     public HProject getProject() {
-        log.info("getProject() in bean {}", this.toString());
         if (project == null) {
             ProjectDAO projectDAO =
                     ServiceLocator.instance().getInstance(ProjectDAO.class);
@@ -550,7 +549,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
         // iterate members, add each person+role to multimap
         final HProject theProject = getProject();
-        log.info("Project is {}", theProject);
         for (HProjectMember membership : theProject.getMembers()) {
             personRoles.put(membership.getPerson(), membership.getRole());
         }
@@ -692,20 +690,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
     }
 
-    // TODO make a method to set the person used in the dialog
-    // takes a person, sets a PersonProjectMemberships field
-    // Another method saves that PersonProjectMemberships data with the current
-    // selections in the modal dialog.
-
     /**
      * Prepare the permission dialog to update permissions for the given person.
      *
      * @param person to show in permission dialog
      */
     public void setPersonForPermissionDialog(HPerson person) {
-
-        log.info("setPersonForPermissionDialog() in {}", this.toString());
-
         List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
         ListMultimap<HLocale, LocaleRole> localeRoles =
             ensurePersonLocaleRoles().get(person);
@@ -740,7 +730,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
         String role = localeRoleList[1];
 
         for (PersonProjectMemberships.LocaleRoles localeRoles: permissionDialogData.getLocaleRoles()) {
-            if(localeRoles.getLocale() == hLocale) {
+            if(localeRoles.getLocale().equals(hLocale)) {
                 isLocaleInserted = true;
                 if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
                     localeRoles.setTranslator(checked);
@@ -763,24 +753,30 @@ public class ProjectHomeAction extends AbstractSortAction implements
      * Save the permissions selections from permissionDialogData to the database.
      */
     public void savePermissionDialogSelections() {
-
-        log.info("savePermissionDialogSelections() in bean {}", this.toString());
-
         PersonProjectMemberships data = permissionDialogData;
 
         if (data == null) {
             log.error("Tried to save permissionDialogData but it is null");
             return;
         }
-        log.info("Saving permission dialog selections. Person: {}", data.getPerson().getAccount().getUsername());
-        log.info("Project is {}", getProject());
 
-        projectMemberDAO.updatePermissions(getProject(), data);
+        HProject project = projectDAO.findById(getProject().getId());
 
-//        HProject theProject = projectDAO.findById(getProject().getId());
-//        HPerson thePerson = personDAO.findById(data.getPerson().getId());
-//        theProject.updatePermissions(data, thePerson);
-//        projectDAO.makePersistent(theProject);
+        // Hibernate will have problems working with detached HPerson and HLocale
+        // so they are all attached before that is attempted.
+        HPerson person = personDAO.findById(data.getPerson().getId());
+        data.setPerson(person);
+        for (PersonProjectMemberships.LocaleRoles roles : data.getLocaleRoles()) {
+            roles.setLocale(localeServiceImpl
+                    .getByLocaleId(roles.getLocale().getLocaleId()));
+        }
+
+        project.updatePermissions(data);
+        projectDAO.makePersistent(project);
+
+        // Roles may have changed, so role lists are cleared so they will be regenerated
+        personRoles = null;
+        personLocaleRoles = null;
     }
 
 

@@ -272,7 +272,7 @@
                                                               label="Translate"
                                                               labelStyle="form__checkbox__label js-form__checkbox__label"
                                                               onValueChanged="bindTranslationPermissionRole"
-                                                              value="#{roles.locale}:Translator"
+                                                              value="#{roles.locale.localeId}:Translator"
                                                               checked="#{roles.translator}"/>
                                                       <ui:remove>
                                                           <input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>
@@ -285,7 +285,7 @@
                                                               label="Review"
                                                               labelStyle="form__checkbox__label js-form__checkbox__label"
                                                               onValueChanged="bindTranslationPermissionRole"
-                                                              value="#{roles.locale}:Reviewer"
+                                                              value="#{roles.locale.localeId}:Reviewer"
                                                               checked="#{roles.reviewer}"/>
                                                   </li>
                                               </ul>
@@ -297,14 +297,12 @@
                       </div>
 
                       <div class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
-                          <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
+                          <!-- FIXME this cancel button should not submit -->
+                          <button onclick="return false;" class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
                               #{msgs['jsf.Cancel']}</button>
 
-                          <button onclick="savePermissionDialog();return false;">This should work</button>
-
-                          <a4j:commandButton onclick="return false;"
-                                  action="#{projectHomeAction.savePermissionDialogSelections()}"
-                                  value="Hey Alex. This is the broken button.">
+                          <a4j:commandButton onclick="savePermissionDialog();zanata.modal.hide(jQuery('#modal-manage-permissions-content'));return false;"
+                                  value="Add">
                           </a4j:commandButton>
                       </div>
 
