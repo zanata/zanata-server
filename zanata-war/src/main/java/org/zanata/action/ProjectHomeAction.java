@@ -120,9 +120,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     @In
     private Messages msgs;
 
-//    @In
-//    private ProjectHome projectHome;
-
     @Setter
     @Getter
     private String slug;
@@ -760,7 +757,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
             return;
         }
 
-        HProject project = projectDAO.findById(getProject().getId());
+        project = projectDAO.findById(getProject().getId());
 
         // Hibernate will have problems working with detached HPerson and HLocale
         // so they are all attached before that is attempted.
@@ -777,6 +774,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
         // Roles may have changed, so role lists are cleared so they will be regenerated
         personRoles = null;
         personLocaleRoles = null;
+        project = null;
     }
 
 
