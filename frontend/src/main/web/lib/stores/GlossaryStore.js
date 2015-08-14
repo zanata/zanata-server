@@ -11,12 +11,12 @@ import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
 var _state = {
-  srcLocaleOptions: [],
-  transLocaleOptions: [],
+  canAddNewEntry: canAddNewEntry(),
+  canUpdateEntry: canUpdateEntry(),
+  localeOptions: [],
   selectedSrcLocale: null,
   selectedTransLocale: null,
-  srcLocales: null,
-  transLocales: null,
+  locales: null,
   glossary: {}
 };
 
@@ -47,26 +47,20 @@ function loadLocalesStats() {
 }
 
 function processLocalesStatistic(serverResponse) {
-  var srcLocalesMap = {}, srcLocaleOptions = [],
-    transLocalesMap = {}, transLocaleOptions = [];
+  var localesMap = {}, localeOptions = [];
 
-  _.forEach(serverResponse.sourceLocales, function(stats) {
-    srcLocalesMap[stats.locale.localeId] = stats;
-    srcLocaleOptions.push(stats.locale.displayName);
+  localeOptions.push("Select a language");
+
+  _.forEach(serverResponse, function(stats) {
+    localesMap[stats.locale.localeId] = stats;
+    localeOptions.push(stats.locale.displayName);
   });
 
-  _state['selectedSrcLocale'] = srcLocaleOptions[0];
-  _state['srcLocaleOptions'] = srcLocaleOptions;
-  _state['srcLocales'] = srcLocalesMap;
+  _state['selectedSrcLocale'] = localeOptions[1];
+  _state['selectedTransLocale'] = localeOptions[0];
 
-  _.forEach(serverResponse.translationLocales, function(stats) {
-    transLocalesMap[stats.locale.localeId] = stats;
-    transLocaleOptions.push(stats.locale.displayName);
-  });
-
-  _state['selectedTransLocale'] = transLocaleOptions[0];
-  _state['transLocaleOptions'] = transLocaleOptions;
-  _state['transLocales'] = transLocalesMap;
+  _state['localeOptions'] = localeOptions;
+  _state['locales'] = localesMap;
 
   return _state;
 }
@@ -77,31 +71,60 @@ function glossaryAPIUrl(srcLocale, transLocale) {
 
 function loadGlossaryByLocale() {
   var selectedSrcLocaleId =
-      GlossaryHelper.getLocaleIdByDisplayName(_state['srcLocales'], _state['selectedSrcLocale']),
+      GlossaryHelper.getLocaleIdByDisplayName(_state['locales'], _state['selectedSrcLocale']),
      selectedTransLocaleId =
-      GlossaryHelper.getLocaleIdByDisplayName(_state['transLocales'], _state['selectedTransLocale']),
+      GlossaryHelper.getLocaleIdByDisplayName(_state['locales'], _state['selectedTransLocale']),
       url = glossaryAPIUrl(selectedSrcLocaleId, selectedTransLocaleId);
 
-  return new Promise(function(resolve, reject) {
-    Request.get(url)
-      .set("Cache-Control", "no-cache, no-store, must-revalidate")
-      .set('Accept', 'application/json')
-      .set("Pragma", "no-cache")
-      .set("Expires", 0)
-      .end((function (res) {
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
-        }
-      }));
-  });
+  if(!_.isUndefined(selectedSrcLocaleId) && !_.isUndefined(selectedTransLocaleId)) {
+    return new Promise(function(resolve, reject) {
+      Request.get(url)
+        .set("Cache-Control", "no-cache, no-store, must-revalidate")
+        .set('Accept', 'application/json')
+        .set("Pragma", "no-cache")
+        .set("Expires", 0)
+        .end((function (res) {
+          if (res.error) {
+            console.error(url, res.status, res.error.toString());
+            reject(Error(res.error.toString()));
+          } else {
+            resolve(res['body']);
+          }
+        }));
+    });
+  }
+}
+
+function canAddNewEntry () {
+  //rest api to get permission
+ return true;
+}
+
+function canUpdateEntry() {
+  //rest api to get permission
+  return true;
+}
+
+function generateTransTerm() {
+  return {
+    content: '',
+    locale: '',
+    comment: '',
+    lastModifiedDate: '',
+    lastModifiedBy: ''
+  }
+}
+function generateSrcTerm() {
+  var term = generateTransTerm();
+  term['reference'] = '';
+  return term;
 }
 
 function processGlossaryList(serverResponse) {
-  _state['glossary'] = [];
-  var transLocaleId = GlossaryHelper.getLocaleIdByDisplayName(_state['transLocales'],  _state['selectedTransLocale']);
+  _state['glossary'] = {};
+  _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
+
+  var transLocaleId = GlossaryHelper.getLocaleIdByDisplayName(_state['locales'],  _state['selectedTransLocale']);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
@@ -119,8 +142,7 @@ function processGlossaryList(serverResponse) {
     if(!StringUtils.isEmptyOrNull(transTerm.lastModifiedDate)) {
       transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
     }
-
-    _state['glossary'].push({srcTerm: srcTerm, transTerm: transTerm});
+    _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, srcTerm: srcTerm, transTerm: transTerm};
   });
 
   return _state;
@@ -196,7 +218,7 @@ function initialise () {
 
 var GlossaryStore = assign({}, EventEmitter.prototype, {
   init: function() {
-    if (_state.srcLocales === null) {
+    if (_state.locales === null) {
       initialise();
     }
     return _state;

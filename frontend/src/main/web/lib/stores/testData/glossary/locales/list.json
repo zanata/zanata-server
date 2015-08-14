@@ -1,30 +1,110 @@
-{
-  "sourceLocales": [
-    {
-      "locale": {
-        "localeId": "en-US",
-        "displayName": "English (United States)",
-        "alias": ""
-      },
-      "count": 1
-    }
-  ],
-  "translationLocales": [
-    {
-      "locale": {
-        "localeId": "de",
-        "displayName": "German",
-        "alias": ""
-      },
-      "count": 2
+[
+  {
+    "locale": {
+      "localeId": "en-US",
+      "displayName": "English (United States)",
+      "alias": ""
     },
-    {
-      "locale": {
-        "localeId": "fr",
-        "displayName": "French",
-        "alias": ""
-      },
-      "count": 2
-    }
-  ]
-}
+    "srcCount": 476,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "zh-Hans",
+      "displayName": "Chinese (Simplified)",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "zh-Hant",
+      "displayName": "Chinese (Traditional)",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "fr",
+      "displayName": "French",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "de",
+      "displayName": "German",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 476
+  },
+  {
+    "locale": {
+      "localeId": "it",
+      "displayName": "Italian",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "ja",
+      "displayName": "Japanese",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "ja-JP",
+      "displayName": "Japanese (Japan)",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "ko",
+      "displayName": "Korean",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "pt-BR",
+      "displayName": "Portuguese (Brazil)",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "ru",
+      "displayName": "Russian",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  },
+  {
+    "locale": {
+      "localeId": "es",
+      "displayName": "Spanish",
+      "alias": ""
+    },
+    "srcCount": 0,
+    "transCount": 0
+  }
+]
