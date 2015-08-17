@@ -197,18 +197,23 @@
                   <h:form>
                       <div class="l--pad-all-1">
 
-                          <!-- TODO custom user selection mechanism -->
-                          <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
-                          <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
-                          <input type="text" id="add-person-user" placeholder="Search name or username"/>
+                          <ui:remove>
+                            <!-- TODO custom user selection mechanism -->
+                            <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
+                            <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
+                            <input type="text" id="add-person-user" placeholder="Search name or username"/>
+                          </ui:remove>
 
                           <p class="txt--lead">
                               <zanata:person-tile person="#{projectHomeAction.permissionDialogData.person}"/>
-                              <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
-                                      title="#{msgs['jsf.people.RemoveUser']}">
-                                  <i class="i i--small i--cross"></i>
-                                  <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
-                              </button>
+                              <ui:remove>
+                                <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
+                                        title="#{msgs['jsf.people.RemoveUser']}">
+                                    <i class="i i--small i--cross"></i>
+                                    <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
+                                </button>
+                              </ui:remove>
+
                           </p>
 
                           <hr/>
