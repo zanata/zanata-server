@@ -708,6 +708,16 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     /**
+     * Indicate whether any of the permissions are selected in the person
+     * permission dialog.
+     *
+     * @return false if no permissions are selected in the dialog, otherwise true
+     */
+    public boolean anyPermissionsSelected() {
+        return permissionDialogData != null && permissionDialogData.hasAnyPermissions();
+    }
+
+    /**
      * bind project permission role for a person
      *
      * @param role

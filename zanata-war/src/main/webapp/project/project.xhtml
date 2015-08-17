@@ -58,13 +58,17 @@
     <a4j:jsFunction name="savePermissionDialog" action="#{projectHomeAction.savePermissionDialogSelections()}"
       status="peopleTab-peopleLoader" render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"/>
 
-    <a4j:jsFunction name="bindProjectPermissionRole" action="#{projectHomeAction.bindProjectPermissionRole(key, checked)}"
+    <a4j:jsFunction name="bindProjectPermissionRole"
+      action="#{projectHomeAction.bindProjectPermissionRole(key, checked)}"
+      render="modal-manage-permissions-submit-buttons"
       limitRender="true">
       <a4j:param name="val1" assignTo="#{key}"/>
       <a4j:param name="val2" assignTo="#{checked}"/>
     </a4j:jsFunction>
 
-    <a4j:jsFunction name="bindTranslationPermissionRole" action="#{projectHomeAction.bindTranslationPermissionRole(key, checked)}"
+    <a4j:jsFunction name="bindTranslationPermissionRole"
+      action="#{projectHomeAction.bindTranslationPermissionRole(key, checked)}"
+      render="modal-manage-permissions-submit-buttons"
       limitRender="true">
       <a4j:param name="val1" assignTo="#{key}"/>
       <a4j:param name="val2" assignTo="#{checked}"/>

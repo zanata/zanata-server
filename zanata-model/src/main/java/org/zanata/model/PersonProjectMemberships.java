@@ -125,6 +125,25 @@ public class PersonProjectMemberships {
     }
 
     /**
+     * @return false if there are no selected membership permissions, otherwise true
+     */
+    public boolean hasAnyPermissions() {
+        return maintainer || translationMaintainer || hasAnyLocalePermissions();
+    }
+
+    /**
+     * @return false if there are no selected roles for any locale, otherwise true
+     */
+    private boolean hasAnyLocalePermissions() {
+        for (LocaleRoles roles : localeRoles) {
+            if (roles.isTranslator() || roles.isReviewer() || roles.isCoordinator()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Represents a locale and the membership in each locale role.
      *
      * Intended to use as a row for a single locale in a permission setting table.
