@@ -697,8 +697,14 @@ public class ProjectHomeAction extends AbstractSortAction implements
         ListMultimap<HLocale, LocaleRole> localeRoles =
             ensurePersonLocaleRoles().get(person);
 
+
         permissionDialogData =
             new PersonProjectMemberships(person, projectRoles, localeRoles);
+
+        List<HLocale> locales =
+                localeServiceImpl.getSupportedLanguageByProject(getProject().getSlug());
+
+        permissionDialogData.ensureLocalesPresent(locales);
     }
 
     /**

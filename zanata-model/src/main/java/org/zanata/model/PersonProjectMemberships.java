@@ -21,12 +21,17 @@
 
 package org.zanata.model;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,6 +72,35 @@ public class PersonProjectMemberships {
     public void addLocaleRoles(HLocale locale, Collection<LocaleRole> roles) {
         this.getLocaleRoles().add(new LocaleRoles(locale, roles));
     }
+
+    /**
+     * Ensure there is a representation for all of the given locales.
+     *
+     * This should be used to create LocaleRoles objects for locales that the
+     * person does not have any membership in. Locales that are already represented
+     * do not cause any change.
+     *
+     * @param locales all the locales that should be present, may include
+     *                locales that the person is already a member of.
+     */
+    public void ensureLocalesPresent(Collection<HLocale> locales) {
+        Collection<HLocale> presentLocales = Collections2.transform(localeRoles, TO_LOCALE);
+
+        for (HLocale locale : locales) {
+            if (!presentLocales.contains(locale)) {
+                localeRoles.add(new LocaleRoles(locale, Collections.EMPTY_SET));
+            }
+        }
+    }
+
+    public static final Function<LocaleRoles, HLocale> TO_LOCALE =
+            new Function<LocaleRoles, HLocale>() {
+                @Nullable
+                @Override
+                public HLocale apply(LocaleRoles input) {
+                    return input.getLocale();
+                }
+            };
 
     /**
      * Replace the person with an equivalent attached person.
