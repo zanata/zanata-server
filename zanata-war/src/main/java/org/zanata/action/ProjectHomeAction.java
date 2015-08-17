@@ -791,6 +791,11 @@ public class ProjectHomeAction extends AbstractSortAction implements
         personRoles = null;
         personLocaleRoles = null;
         project = null;
+
+        // Person may have no roles left and no longer belong in the list, so
+        // ensure the list of people is refreshed.
+        peopleFilterComparator.clearAllMembers();
+        peopleFilterComparator.sortPeopleList();
     }
 
 
@@ -836,6 +841,10 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 allMembers = getAllMembers();
             }
             return allMembers;
+        }
+
+        public void clearAllMembers() {
+            allMembers = null;
         }
 
         @Override
