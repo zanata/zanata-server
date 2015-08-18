@@ -43,7 +43,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.security.AuthorizationException;
+import org.zanata.exception.AuthorizationException;
 import org.jboss.seam.util.Hex;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.DocumentType;
@@ -67,6 +67,7 @@ import org.zanata.model.HRawDocument;
 import org.zanata.model.type.TranslationSourceType;
 import org.zanata.rest.StringSet;
 import org.zanata.rest.dto.extensions.ExtensionType;
+import org.zanata.rest.dto.extensions.comment.SimpleComment;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.rest.service.VirusScanner;
@@ -811,8 +812,11 @@ public class VersionHomeAction extends AbstractSortAction implements
             doc.setLang(new LocaleId(sourceFileUpload.getSourceLang()));
 
             // TODO Copy Trans values
+            StringSet extensions = new StringSet(ExtensionType.GetText.toString());
+            extensions.add(SimpleComment.ID);
+
             documentServiceImpl.saveDocument(projectSlug, versionSlug, doc,
-                    new StringSet(ExtensionType.GetText.toString()), false);
+                extensions, false);
 
             showUploadSuccessMessage();
         } catch (ZanataServiceException e) {

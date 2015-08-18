@@ -1,16 +1,32 @@
 ## 3.8
+<h5>Infrastructure Changes</h5>
+* In wildfly or EAP standalone.xml, change all occurrences of "org.jboss.seam.security.jaas.SeamLoginModule" to "org.zanata.security.jaas.InternalLoginModule"
+
+<h5>Infrastructure Changes</h5>
+
+Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly version 9.0.1.Final or later.
+
 
 <h5>Bug fixes</h5>
 * [1233524](https://bugzilla.redhat.com/show_bug.cgi?id=1233524) - Update project search page to include user
 * [1235070](https://bugzilla.redhat.com/show_bug.cgi?id=1235070) - Copied translations (using copy trans) should not be taken into account as contributions in the stats
 * [1004620](https://bugzilla.redhat.com/show_bug.cgi?id=1004620) - Import TM box should disable the Import button when no file specified
 * [1002386](https://bugzilla.redhat.com/show_bug.cgi?id=1002386) - Capitalised proper nouns in project type description
+* [1242679](https://bugzilla.redhat.com/show_bug.cgi?id=1242679) - Version entry does not update after copy version is completed
+* [1243672](https://bugzilla.redhat.com/show_bug.cgi?id=1243672) - Source refs does not shows up in editor
+* [1062476](https://bugzilla.redhat.com/show_bug.cgi?id=1062476) - User can attempt to upload an unspecified glossary file
+* [1243251](https://bugzilla.redhat.com/show_bug.cgi?id=1243251) - Project search does not sort correctly by date over multiple pages
+* [1243682](https://bugzilla.redhat.com/show_bug.cgi?id=1243682) - When uploading POT file using web UI, source comments are being ignored
+* [1243688](https://bugzilla.redhat.com/show_bug.cgi?id=1243688) - Groups filter by archived not working
+
 
 -----------------------
 
 <h5>New Features</h5>
 * [1224912] (https://bugzilla.redhat.com/show_bug.cgi?id=1224912) - Filter "Last modified by translators other than <user>"
+* [1213630](https://bugzilla.redhat.com/show_bug.cgi?id=1213630) - Webhook header needs to include cryptographic signature in header for identification
 * [1214502](https://bugzilla.redhat.com/show_bug.cgi?id=1214502) -  RFE: Grant project creation permission to certain sets of users
+
 ## 3.7.1
 
 <h5>Bug fixes</h5>
@@ -19,7 +35,9 @@
 
 -----------------------
 
-## 3.7
+## 3.7.0
+
+(Non public release. Database migrations executed directly by this release will not be compatible with future releases.)
 
 <h5>Deployment</h5>
 

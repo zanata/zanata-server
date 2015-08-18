@@ -58,7 +58,7 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.faces.FacesManager;
 import org.jboss.seam.faces.Redirect;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -129,8 +129,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     @In
     private ZanataIdentity identity;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
-
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In
@@ -195,7 +194,6 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Getter
     @Setter
     private Map<LocaleId, Boolean> selectedEnabledLocales = Maps.newHashMap();
-
 
     // Not sure if this is necessary, seems to work ok on selected disabled
     // locales without this.
@@ -276,6 +274,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             };
 
     public void createNew() {
+        identity.checkPermission(getInstance(), "insert");
         getInstance().setDefaultProjectType(ProjectType.File);
         selectedProjectType = getInstance().getDefaultProjectType().name();
         enteredLocaleAliases.putAll(getLocaleAliases());
@@ -694,7 +693,7 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         update();
         facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
-                msgs.get("jsf.project.CopyTransOpts.updated"));
+            msgs.get("jsf.project.CopyTransOpts.updated"));
     }
 
     public void initialize() {
@@ -1021,10 +1020,11 @@ public class ProjectHome extends SlugHome<HProject> implements
         return sortedList;
     }
 
-    public void addWebHook(String url) {
+    public void addWebHook(String url, String secret) {
         identity.checkPermission(instance, "update");
         if (isValidUrl(url)) {
-            WebHook webHook = new WebHook(this.getInstance(), url);
+            secret = StringUtils.isBlank(secret) ? null : secret;
+            WebHook webHook = new WebHook(this.getInstance(), url, secret);
             getInstance().getWebHooks().add(webHook);
             update();
             facesMessages.addGlobal(
@@ -1032,12 +1032,15 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-    public void removeWebHook(WebHook webHook) {
+    public void removeWebHook(Long webhookId) {
         identity.checkPermission(instance, "update");
-        getInstance().getWebHooks().remove(webHook);
-        webHookDAO.makeTransient(webHook);
-        facesMessages.addGlobal(
-            msgs.format("jsf.project.RemoveWebhook", webHook.getUrl()));
+        WebHook webHook = webHookDAO.findById(webhookId);
+        if (webHook != null) {
+            getInstance().getWebHooks().remove(webHook);
+            webHookDAO.makeTransient(webHook);
+            facesMessages.addGlobal(
+                msgs.format("jsf.project.RemoveWebhook", webHook.getUrl()));
+        }
     }
 
     private boolean isValidUrl(String url) {
@@ -1098,6 +1101,11 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Override
     protected void updatedMessage() {
         // Disable the default message from Seam
+    }
+
+    private boolean checkViewObsolete() {
+        return identity != null
+                && identity.hasPermission("HProject", "view-obsolete");
     }
 
     private final Predicate notObsoleteVersionPredicate = new Predicate<HProjectIteration>() {

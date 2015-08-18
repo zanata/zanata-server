@@ -15,23 +15,24 @@
     }
   }
 </script>
+<h:form>
+  <a4j:jsFunction name="clearVersionStats"
+    action="#{projectHomeAction.clearVersionStats(versionSlug)}">
+    <a4j:param name="val1" assignTo="#{versionSlug}"/>
+  </a4j:jsFunction>
 
-<a4j:jsFunction name="clearVersionStats"
-  action="#{projectHomeAction.clearVersionStats(versionSlug)}">
-  <a4j:param name="val1" assignTo="#{versionSlug}"/>
-</a4j:jsFunction>
+  <a4j:jsFunction name="renderVersionInfo" limitRender="true"
+    render="#{versionInfoId}">
+    <a4j:param name="val1" assignTo="#{versionInfoId}"/>
+  </a4j:jsFunction>
 
-<a4j:jsFunction name="renderVersionInfo" limitRender="true"
-  render="#{versionInfoId}">
-  <a4j:param name="val1" assignTo="#{versionInfoId}"/>
-</a4j:jsFunction>
-
-<a4j:jsFunction name="cancelCopyVersion" limitRender="true"
-  action="#{projectHomeAction.cancelCopyVersion(projectSlug, versionSlug)}"
-  render="poll, version-info, messages">
-  <a4j:param name="val1" assignTo="#{projectSlug}"/>
-  <a4j:param name="val2" assignTo="#{versionSlug}"/>
-</a4j:jsFunction>
+  <a4j:jsFunction name="cancelCopyVersion" limitRender="true"
+    action="#{projectHomeAction.cancelCopyVersion(projectSlug, versionSlug)}"
+    render="poll, version-info, messages">
+    <a4j:param name="val1" assignTo="#{projectSlug}"/>
+    <a4j:param name="val2" assignTo="#{versionSlug}"/>
+  </a4j:jsFunction>
+</h:form>
 
 <div class="panel">
 <div class="panel__header">
@@ -45,7 +46,7 @@
       status="versionTab-versionsLoader"/>
 
     <s:fragment
-      rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+      rendered="#{identity.hasPermission(projectHome.instance, 'update')}">
       <div
         class="dropdown dropdown--header dropdown--small dropdown--right dropdown--inline js-dropdown"
         id="versions-more-actions">
@@ -89,7 +90,7 @@
     rendered="#{empty projectHomeAction.projectVersions}">
     <p class="txt--meta">#{msgs['jsf.NoVersions']}</p>
     <s:fragment
-      rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+      rendered="#{identity.hasPermission(projectHome.instance, 'update')}">
       <p>
         <s:link styleClass="button--primary" propagation="none"
           value="#{msgs['jsf.project.NewVersion']}"
@@ -139,7 +140,7 @@
                 </a>
                 <ul class="dropdown__content js-dropdown__content">
                   <s:fragment
-                    rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+                    rendered="#{identity.hasPermission(projectHome.instance, 'update')}">
                     <li>
                       <s:link view="/project/add_iteration.xhtml"
                         propagation="none" styleClass="i__item--right"
@@ -209,7 +210,7 @@
                     </h:outputFormat>
                   </s:span>
                   <s:fragment
-                    rendered="#{s:hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}">
+                    rendered="#{identity.hasPermission(projectHome.instance, 'update') and projectHomeAction.isVersionCopying(version.project.slug, version.slug)}">
                     <button class="button--danger txt--mini l--push-left-half"
                       title="#{msgs['jsf.copyVersion.cancel.message']}"
                       onclick="onCancelCopyVersion('#{version.project.slug}', '#{version.slug}');return false;">

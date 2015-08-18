@@ -20,9 +20,9 @@
  */
 package org.zanata.model;
 
-import static org.jboss.seam.security.EntityAction.DELETE;
-import static org.jboss.seam.security.EntityAction.INSERT;
-import static org.jboss.seam.security.EntityAction.UPDATE;
+import static org.zanata.security.EntityAction.DELETE;
+import static org.zanata.security.EntityAction.INSERT;
+import static org.zanata.security.EntityAction.UPDATE;
 import static org.zanata.model.LocaleRole.Coordinator;
 import static org.zanata.model.LocaleRole.Reviewer;
 import static org.zanata.model.LocaleRole.Translator;
@@ -63,9 +63,11 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.Where;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;

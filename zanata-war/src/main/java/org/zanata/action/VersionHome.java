@@ -186,6 +186,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     public void init(boolean isNewInstance) {
         this.isNewInstance = isNewInstance;
         if (isNewInstance) {
+            identity.checkPermission(getProject(), "insert");
             ProjectType projectType = getProject().getDefaultProjectType();
             if (projectType != null) {
                 selectedProjectType = projectType.name();
@@ -370,8 +371,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public void copyVersion() {
-        getInstance().setStatus(EntityStatus.READONLY);
         getInstance().setSlug(inputSlugValue);
+        getInstance().setStatus(EntityStatus.READONLY);
 
         // create basic version here
         HProject project = getProject();

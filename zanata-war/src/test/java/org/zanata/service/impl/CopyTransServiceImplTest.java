@@ -30,7 +30,7 @@ import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.search.impl.FullTextSessionImpl;
 import org.hibernate.search.jpa.Search;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -108,7 +108,7 @@ public class CopyTransServiceImplTest extends ZanataDbunitJpaTest {
                 .use("entityManagerFactory", getEmf())
                 .use("session", new FullTextSessionImpl(getSession()))
                 .use("cacheContainer", new InfinispanTestCacheContainer())
-                .use(JpaIdentityStore.AUTHENTICATED_USER,
+                .use(ZanataJpaIdentityStore.AUTHENTICATED_USER,
                         seam.autowire(AccountDAO.class).getByUsername("demo"))
                 .useImpl(LocaleServiceImpl.class)
                 .useImpl(TranslationMemoryServiceImpl.class)
@@ -146,6 +146,7 @@ public class CopyTransServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     @UseDataProvider("copyTransParams")
+    // (about 2 seconds)
     @SlowTest
     public void testCopyTrans(CopyTransExecution execution) {
         // Prepare Execution

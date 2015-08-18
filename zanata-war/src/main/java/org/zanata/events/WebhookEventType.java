@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,26 +18,29 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.model.type;
+package org.zanata.events;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.IOException;
+import java.io.Serializable;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
- * Flags an entity field or method as representing the API key for a user
- *
- * @author Asgeir Frimannsson
+ * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Target({ METHOD, FIELD })
-@Documented
-@Retention(RUNTIME)
-@Inherited
-public @interface UserApiKey {
+public abstract class WebhookEventType implements Serializable {
 
+    public abstract String getEventType();
+
+    @JsonIgnore
+    public String getJSON() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (IOException e) {
+            return this.getClass().getName() + "@"
+                + Integer.toHexString(this.hashCode());
+        }
+    }
 }

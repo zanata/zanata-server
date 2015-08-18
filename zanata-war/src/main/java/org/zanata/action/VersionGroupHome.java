@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ValueChangeEvent;
-import javax.xml.ws.Service;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
@@ -35,7 +34,7 @@ import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
@@ -76,7 +75,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
     @Setter
     private String slug;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In("jsfMessages")
@@ -235,7 +234,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         List<HProjectIteration> list =
                 Lists.newArrayList(getInstance().getProjectIterations());
 
-        Collections.sort(list, ComparatorUtil.PROJECT_NAME_COMPARATOR);
+        Collections.sort(list, ComparatorUtil.VERSION_PROJECT_NAME_COMPARATOR);
 
         return list;
     }
