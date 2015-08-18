@@ -236,11 +236,15 @@ public class HProject extends SlugEntityBase implements Serializable,
      * The HPerson and HLocale entities in memberships must be attached to avoid
      * persistence problems with Hibernate.
      */
-    public void updatePermissions(PersonProjectMemberships memberships) {
+    public void updateProjectPermissions(PersonProjectMemberships memberships) {
         HPerson person = memberships.getPerson();
         ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
         ensureMembership(memberships.isTranslationMaintainer(),
                 asMember(person, TranslationMaintainer));
+    }
+
+    public void updateLocalePermissions(PersonProjectMemberships memberships) {
+        HPerson person = memberships.getPerson();
 
         for (PersonProjectMemberships.LocaleRoles localeRoles
                 : memberships.getLocaleRoles()) {

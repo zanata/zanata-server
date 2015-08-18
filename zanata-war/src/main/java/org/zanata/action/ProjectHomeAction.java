@@ -38,6 +38,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.security.management.JpaIdentityStore;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
@@ -784,7 +785,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
                     .getByLocaleId(roles.getLocale().getLocaleId()));
         }
 
-        project.updatePermissions(data);
+//        if (identity.hasPermission("manage-members", project)) {
+            updateProjectPermissions(data);
+//        }
+        if (identity.hasPermission(project, "manage-translation-members")) {
+            log.info("has permission to manage translation members");
+            project.updateLocalePermissions(data);
+        }
         projectDAO.makePersistent(project);
 
         // Roles may have changed, so role lists are cleared so they will be regenerated
@@ -798,7 +805,11 @@ public class ProjectHomeAction extends AbstractSortAction implements
         peopleFilterComparator.sortPeopleList();
     }
 
-
+    @Restrict("#{s:hasPermission(projectHome.instance, 'manage-members')}")
+    private void updateProjectPermissions(PersonProjectMemberships data) {
+        log.info("has permission to manage project members");
+        project.updateProjectPermissions(data);
+    }
 
     private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
         implements Comparator<HPerson> {

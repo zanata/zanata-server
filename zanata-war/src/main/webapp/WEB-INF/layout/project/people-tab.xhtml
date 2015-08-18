@@ -221,9 +221,9 @@
                   <label class="l--push-bottom-0">
                     #{msgs['jsf.ProjectPermissions']}</label>
                 </div>
-                <!-- TODO disabled when #{!s:hasPermission(projectHome.instance, 'manage-members')} -->
                 <div class="g__item w--2-3">
-                  <ul class="list--horizontal">
+                  <ul id="modal-manage-permissions-project-permissions"
+                      class="list--horizontal">
                     <li>
                       <zanata:checkbox
                           label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
@@ -241,6 +241,13 @@
                           value="Maintainer"/>
                     </li>
                   </ul>
+
+                    <s:fragment rendered="#{!identity.hasPermission(projectHome.instance, 'manage-members')}">
+                      <p class="txt--meta l--push-top-half">
+                        #{msgs['jsf.projectPermissions.YouCannotModify']}
+                      </p>
+                    </s:fragment>
+
                     <!-- TODO set username, and change text depending on selection -->
                     <!--<p class="txt- -meta l- -push-top-half">-->
                     <!--<strong>djansen</strong> will be able to add/remove translators-->
@@ -253,9 +260,11 @@
               <hr/>
 
               <h3>Translation Permissions</h3>
+              <s:fragment rendered="#{empty projectHomeAction.permissionDialogData.localeRoles.toArray()}">
+                  <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
+              </s:fragment>
               <ul class="list--slat">
                 <!-- TODO add filtering for list -->
-                <!-- TODO empty list message -->
                 <ui:repeat value="#{projectHomeAction.permissionDialogData.localeRoles.toArray()}" var="roles">
                   <li>
                     <div class="g--tight">
@@ -312,6 +321,15 @@
         zanata.form.appendCheckboxes(jQuery('#modal-manage-permissions-content').element);
         //]]>
       </script>
+      <s:fragment rendered="#{!identity.hasPermission(projectHome.instance, 'manage-members')}">
+        <script type="text/javascript">
+          //<![CDATA[
+          jQuery('#modal-manage-permissions-project-permissions')
+            .find(' input')
+            .trigger('disable');
+          //]]>
+        </script>
+      </s:fragment>
     </div>
   </s:div>
 
