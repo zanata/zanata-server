@@ -128,6 +128,11 @@ public class ModelEntityBase implements Serializable, HashableState {
             return true;
         if (obj == null)
             return false;
+        // Subclasses *must* override equals to check that their class is a
+        // match for the object they are comparing. Simple comparison of the
+        // result of getClass() is not possible here because the compared object
+        // may be a Hibernate proxy. Hibernate proxies are a subclass of the
+        // class that they are proxying.
         assert overridesEquals(this);
         assert overridesEquals(obj);
         ModelEntityBase other = (ModelEntityBase) obj;
