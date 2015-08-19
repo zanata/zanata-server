@@ -120,10 +120,10 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
         } else {
             final HProjectLocaleMember other = (HProjectLocaleMember) obj;
             return new EqualsBuilder()
-                    .append(this.project.getId(), other.project.getId())
-                    .append(this.locale.getId(), other.locale.getId())
-                    .append(this.person.getId(), other.person.getId())
-                    .append(this.role, other.role)
+                    .append(getProject().getId(), other.getProject().getId())
+                    .append(getLocale().getId(), other.getLocale().getId())
+                    .append(getPerson().getId(), other.getPerson().getId())
+                    .append(getRole(), other.getRole())
                     .isEquals();
         }
     }
@@ -131,10 +131,10 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(this.project.getId())
-                .append(this.locale.getId())
-                .append(this.person.getId())
-                .append(this.role)
+                .append(getProject().getId())
+                .append(getLocale().getId())
+                .append(getPerson().getId())
+                .append(getRole())
                 .toHashCode();
     }
 
@@ -183,10 +183,10 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
             } else {
                 final HProjectLocaleMemberPK other = (HProjectLocaleMemberPK) obj;
                 return new EqualsBuilder()
-                        .append(this.project.getId(), other.project.getId())
-                        .append(this.locale.getId(), other.locale.getId())
-                        .append(this.person.getId(), other.person.getId())
-                        .append(this.role, other.role)
+                        .append(getProject().getId(), other.getProject().getId())
+                        .append(getLocale().getId(), other.getLocale().getId())
+                        .append(getPerson().getId(), other.getPerson().getId())
+                        .append(getRole(), other.getRole())
                         .isEquals();
             }
         }
@@ -194,10 +194,10 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
         @Override
         public int hashCode() {
             return new HashCodeBuilder()
-                    .append(this.project.getId())
-                    .append(this.locale.getId())
-                    .append(this.person.getId())
-                    .append(this.role)
+                    .append(getProject().getId())
+                    .append(getLocale().getId())
+                    .append(getPerson().getId())
+                    .append(getRole())
                     .toHashCode();
         }
     }
