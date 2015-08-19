@@ -850,6 +850,11 @@ public class ProjectHomeAction extends AbstractSortAction implements
         protected List<HPerson> fetchAll() {
             if(allMembers == null) {
                 allMembers = getAllMembers();
+
+                // allMembers must be sorted or the initial display will be in
+                // an undefined ordering. This is a weakness of the parent classes,
+                // which do not ensure correct ordering for the initial display.
+                Collections.sort(allMembers, peopleFilterComparator);
             }
             return allMembers;
         }
