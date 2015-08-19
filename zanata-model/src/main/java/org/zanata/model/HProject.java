@@ -60,14 +60,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.hibernate.annotations.Where;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -91,7 +88,6 @@ import com.google.common.collect.Sets;
  * @see Project
  *
  */
-@Slf4j
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Access(AccessType.FIELD)
