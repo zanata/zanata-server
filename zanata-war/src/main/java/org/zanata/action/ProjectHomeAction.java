@@ -38,7 +38,6 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.security.Restrict;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
@@ -785,30 +784,31 @@ public class ProjectHomeAction extends AbstractSortAction implements
                     .getByLocaleId(roles.getLocale().getLocaleId()));
         }
 
-//        if (identity.hasPermission("manage-members", project)) {
-            updateProjectPermissions(data);
-//        }
-        if (identity.hasPermission(project, "manage-translation-members")) {
-            log.info("has permission to manage translation members");
+
+        final boolean canManageMembers = identity.hasPermission(project, "manage-members");
+        final boolean canManageTransMembers = identity.hasPermission(project, "manage-translation-members");
+        final boolean canChangeAnyMembers = canManageMembers || canManageTransMembers;
+
+        if (canManageMembers) {
+            project.updateProjectPermissions(data);
+        }
+        if (canManageTransMembers) {
             project.updateLocalePermissions(data);
         }
-        projectDAO.makePersistent(project);
 
-        // Roles may have changed, so role lists are cleared so they will be regenerated
-        personRoles = null;
-        personLocaleRoles = null;
-        project = null;
+        if (canChangeAnyMembers) {
+            projectDAO.makePersistent(project);
 
-        // Person may have no roles left and no longer belong in the list, so
-        // ensure the list of people is refreshed.
-        peopleFilterComparator.clearAllMembers();
-        peopleFilterComparator.sortPeopleList();
-    }
+            // Roles may have changed, so role lists are cleared so they will be regenerated
+            personRoles = null;
+            personLocaleRoles = null;
+            project = null;
 
-    @Restrict("#{s:hasPermission(projectHome.instance, 'manage-members')}")
-    private void updateProjectPermissions(PersonProjectMemberships data) {
-        log.info("has permission to manage project members");
-        project.updateProjectPermissions(data);
+            // Person may have no roles left and no longer belong in the list, so
+            // ensure the list of people is refreshed.
+            peopleFilterComparator.clearAllMembers();
+            peopleFilterComparator.sortPeopleList();
+        }
     }
 
     private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
