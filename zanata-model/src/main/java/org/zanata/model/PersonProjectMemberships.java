@@ -18,11 +18,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.zanata.model;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
@@ -38,7 +36,9 @@ import java.util.Set;
 /**
  * Describes all the membership roles of a person in a project.
  *
- * This is designed for use in the project permissions editing dialog.
+ * This is designed for use in the project permissions editing dialog. It uses
+ * boolean properties to represent all roles so they can be easily bound to
+ * individual UI elements (e.g. checkboxes).
  */
 @Getter
 public class PersonProjectMemberships {
@@ -69,6 +69,9 @@ public class PersonProjectMemberships {
         }
     }
 
+    /**
+     * Add a set of roles for this person in a particular locale.
+     */
     public void addLocaleRoles(HLocale locale, Collection<LocaleRole> roles) {
         this.getLocaleRoles().add(new LocaleRoles(locale, roles));
     }
@@ -93,6 +96,11 @@ public class PersonProjectMemberships {
         }
     }
 
+    /**
+     * Transform to extract the locale from a LocaleRoles.
+     *
+     * Use with {@link com.google.common.collect.Collections2#transform}
+     */
     public static final Function<LocaleRoles, HLocale> TO_LOCALE =
             new Function<LocaleRoles, HLocale>() {
                 @Nullable
@@ -103,10 +111,10 @@ public class PersonProjectMemberships {
             };
 
     /**
-     * Replace the person with an equivalent attached person.
+     * Replace the person with an equivalent person.
      *
-     * Hibernate can fail if the person object is 'detached' so this allows
-     * replacement with an equivalent 'attached' version.
+     * Hibernate can fail in persistence if the person object is 'detached' so
+     * this allows replacement with an equivalent 'attached' version.
      *
      * The person must be equal to the existing person according to .equals()
      * or an exception will be thrown.
@@ -114,7 +122,7 @@ public class PersonProjectMemberships {
      * @param person to set, must be equal to the current person
      */
     public void setPerson(HPerson person) {
-        if (person.equals(this.person)) {
+        if (person.equals(getPerson())) {
             this.person = person;
         } else {
             throw new IllegalArgumentException(
@@ -169,7 +177,7 @@ public class PersonProjectMemberships {
         /**
          * Set the locale to an equal locale object.
          *
-         * This is just to work around Hibernate, which fails when trying to
+         * This is to work around Hibernate, which fails when trying to
          * persist something with a 'detached' HLocale in it.
          *
          * This is to allow replacement of a 'detached' HLocale entity with an
@@ -180,7 +188,7 @@ public class PersonProjectMemberships {
          * @param locale to set, must be equal to the current locale.
          */
         public void setLocale(HLocale locale) {
-            if (locale.equals(this.locale)) {
+            if (locale.equals(getLocale())) {
                 this.locale = locale;
             } else {
                 throw new IllegalArgumentException(
@@ -198,7 +206,7 @@ public class PersonProjectMemberships {
                 return false;
             } else {
                 final LocaleRoles other = (LocaleRoles) obj;
-                return locale.equals(other.locale);
+                return getLocale().equals(other.getLocale());
             }
         }
 
