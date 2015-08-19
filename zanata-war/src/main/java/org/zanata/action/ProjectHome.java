@@ -638,8 +638,8 @@ public class ProjectHome extends SlugHome<HProject> implements
         update();
     }
 
-    @Restrict("#{s:hasPermission(projectHome.instance, 'update')}")
     public void setInviteOnly(boolean inviteOnly) {
+        identity.checkPermission(getInstance(), "update");
         log.info("setInviteOnly({})", inviteOnly);
         getInstance().setAllowGlobalTranslation(!inviteOnly);
         update();
