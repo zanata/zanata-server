@@ -125,11 +125,10 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
             return false;
         } else {
             final HProjectMember other = (HProjectMember) obj;
-            // FIXME do not use database id since it will be null in some cases
             return new EqualsBuilder()
-                    .append(this.project.getId(), other.project.getId())
-                    .append(this.person.getId(), other.person.getId())
-                    .append(this.role, other.role)
+                    .append(getProject().getId(), other.getProject().getId())
+                    .append(getPerson().getId(), other.getPerson().getId())
+                    .append(getRole(), other.getRole())
                     .isEquals();
         }
     }
@@ -137,13 +136,12 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(this.project.getId())
-                .append(this.person.getId())
-                .append(this.role)
+                .append(getProject().getId())
+                .append(getPerson().getId())
+                .append(getRole())
                 .toHashCode();
     }
 
-    // TODO lombok/apache tostring thingy
     @Override
     public String userFriendlyToString() {
         StringBuilder sb = new StringBuilder("\"Project membership(project=\"")
@@ -184,9 +182,9 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
             } else {
                 final HProjectMemberPK other = (HProjectMemberPK) obj;
                 return new EqualsBuilder()
-                        .append(this.project.getId(), other.project.getId())
-                        .append(this.person.getId(), other.person.getId())
-                        .append(this.role, other.role)
+                        .append(getProject().getId(), other.getProject().getId())
+                        .append(getPerson().getId(), other.getPerson().getId())
+                        .append(getRole(), other.getRole())
                         .isEquals();
             }
         }
@@ -194,9 +192,9 @@ public class HProjectMember implements Serializable, HasUserFriendlyToString  {
         @Override
         public int hashCode() {
             return new HashCodeBuilder()
-                    .append(this.project.getId())
-                    .append(this.person.getId())
-                    .append(this.role)
+                    .append(getProject().getId())
+                    .append(getPerson().getId())
+                    .append(getRole())
                     .toHashCode();
         }
     }

@@ -138,7 +138,6 @@ public class HProjectLocaleMember implements Serializable, HasUserFriendlyToStri
                 .toHashCode();
     }
 
-    // TODO lombok/apache tostring thingy
     @Override
     public String userFriendlyToString() {
 
