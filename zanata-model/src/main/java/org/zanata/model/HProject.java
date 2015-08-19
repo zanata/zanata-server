@@ -253,12 +253,18 @@ public class HProject extends SlugEntityBase implements Serializable,
         }
     }
 
-    private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
-        return new HProjectLocaleMember(this, locale, person, role);
-    }
-
+    /**
+     * Get a person as a member object in this project for a role.
+     */
     private HProjectMember asMember(HPerson person, ProjectRole role) {
         return new HProjectMember(this, person, role);
+    }
+
+    /**
+     * Get a person as a member object in this project for a locale-specific role.
+     */
+    private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
+        return new HProjectLocaleMember(this, locale, person, role);
     }
 
     /**
