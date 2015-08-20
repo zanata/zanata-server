@@ -1,23 +1,22 @@
 /*
+ * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
+ * @author tags. See the copyright.txt file in the distribution for a full
+ * listing of individual contributors.
  *
- *  * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
- *  * @author tags. See the copyright.txt file in the distribution for a full
- *  * listing of individual contributors.
- *  *
- *  * This is free software; you can redistribute it and/or modify it under the
- *  * terms of the GNU Lesser General Public License as published by the Free
- *  * Software Foundation; either version 2.1 of the License, or (at your option)
- *  * any later version.
- *  *
- *  * This software is distributed in the hope that it will be useful, but WITHOUT
- *  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- *  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- *  * details.
- *  *
- *  * You should have received a copy of the GNU Lesser General Public License
- *  * along with this software; if not, write to the Free Software Foundation,
- *  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- *  * site: http://www.fsf.org.
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
  */
 
 package org.zanata.action;
@@ -45,7 +44,6 @@ import org.zanata.dao.LocaleMemberDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.dao.ProjectMemberDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.Activity;
 import org.zanata.model.HAccount;
@@ -131,9 +129,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     private ProjectDAO projectDAO;
 
     @In
-    private ProjectMemberDAO projectMemberDAO;
-
-    @In
     private ProjectIterationDAO projectIterationDAO;
 
     @In
@@ -186,7 +181,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     private ListMultimap<HPerson, ProjectRole> personRoles;
 
-    // TODO maybe just make this a Multimap<HPerson, PersonProjectMemberships.LocaleRoles>
     private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
 
     private List<HProjectIteration> projectVersions;
@@ -638,31 +632,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
         });
     }
 
-    public String languageRolesDisplayName(HPerson person) {
-        ListMultimap<HLocale, LocaleRole>
-            personLocaleRoles = ensurePersonLocaleRoles().get(person);
-
-        if (personLocaleRoles == null || personLocaleRoles.isEmpty()) {
-            return null;
-        }
-
-        List<String> displayNames = Lists.newArrayList();
-
-        for (Map.Entry<HLocale, LocaleRole> entry : personLocaleRoles
-            .entries()) {
-            String name = entry.getKey().retrieveDisplayName() + " " +
-                    entry.getValue().name();
-            displayNames.add(name);
-        }
-        return Joiner.on(role_separator).join(displayNames);
-    }
-
-    public String rolesDisplayName(HPerson person) {
-        return Joiner.on(role_separator).skipNulls()
-                .join(projectRolesDisplayName(person),
-                languageRolesDisplayName(person));
-    }
-
     public String projectRoleDisplayName(ProjectRole role) {
         switch (role) {
             case Maintainer:
@@ -893,7 +862,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }));
         }
 
-        private final Function<LocaleRole, String> roleNameFunction =
+        private final Function<LocaleRole, String> ROLE_TO_NAME =
             new Function<LocaleRole, String>() {
                 @Override
                 public String apply(LocaleRole input) {
@@ -916,7 +885,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
                 for (HLocale locale : map.keySet()) {
                     Collection<String> rolesInLocale = Collections2.transform(
-                        map.get(locale), roleNameFunction);
+                        map.get(locale), ROLE_TO_NAME);
 
                     Map<HPerson, String> personRoles =
                         localePersonMap.get(locale);
