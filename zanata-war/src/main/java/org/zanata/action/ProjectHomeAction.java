@@ -864,7 +864,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }));
         }
 
-        public Map<HLocale, List<HPerson>> getTranslators() {
+        public Map<HLocale, List<HPerson>> getMembersByLocale() {
             Map<HLocale, List<HPerson>> localePersonMap =
                 Maps.newHashMap();
 
