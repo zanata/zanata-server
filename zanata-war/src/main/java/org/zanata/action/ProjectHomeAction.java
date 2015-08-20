@@ -83,6 +83,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
+import static org.zanata.model.ProjectRole.Maintainer;
 import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 /**
@@ -496,16 +497,24 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     public Map<HPerson, Collection<ProjectRole>> getMemberRoles() {
-
-        // TODO consider sorting of roles
-        // TODO something about how to display roles (here or utility function?)
-        // TODO something with caching?
-
-        return ensurePersonRoles().asMap();
+        return getPersonRoles().asMap();
     }
 
-    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> ensurePersonLocaleRoles() {
-        // TODO make sure this is cleared or updated when something changes
+    private ListMultimap<HPerson, ProjectRole> getPersonRoles() {
+        if (personRoles == null) {
+            populatePersonRoles();
+        }
+        return personRoles;
+    }
+
+    private void populatePersonRoles() {
+        personRoles = ArrayListMultimap.create();
+        for (HProjectMember membership : getProject().getMembers()) {
+            personRoles.put(membership.getPerson(), membership.getRole());
+        }
+    }
+
+    private Map<HPerson, ListMultimap<HLocale, LocaleRole>> getPersonLocaleRoles() {
         if (personLocaleRoles == null) {
             populatePersonLocaleRoles();
         }
@@ -521,25 +530,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
                 personLocaleRoles.put(person, localeRoles);
             }
-            personLocaleRoles.get(person).put(membership.getLocale(), membership.getRole());
-        }
-    }
-
-    private ListMultimap<HPerson, ProjectRole> ensurePersonRoles() {
-        // TODO make sure this is cleared or updated when something changes
-        if (personRoles == null) {
-            populatePersonRoles();
-        }
-        return personRoles;
-    }
-
-    private void populatePersonRoles() {
-        personRoles = ArrayListMultimap.create();
-
-        // iterate members, add each person+role to multimap
-        final HProject theProject = getProject();
-        for (HProjectMember membership : theProject.getMembers()) {
-            personRoles.put(membership.getPerson(), membership.getRole());
+            personLocaleRoles.get(person).put(membership.getLocale(),
+                    membership.getRole());
         }
     }
 
@@ -549,35 +541,19 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public boolean isTranslator(HPerson person) {
         ListMultimap<HLocale, LocaleRole>
-            map = ensurePersonLocaleRoles().get(person);
-
+            map = getPersonLocaleRoles().get(person);
         return map != null && !map.isEmpty();
 
     }
     public boolean isMaintainer(HPerson person) {
-        List<ProjectRole> roles = ensurePersonRoles().get(person);
+        List<ProjectRole> roles = getPersonRoles().get(person);
         return (roles == null || roles.isEmpty()) ? false :
             roles.contains(ProjectRole.Maintainer) ||
                 roles.contains(TranslationMaintainer);
     }
 
-    public String projectRolesDisplayName(HPerson person) {
-        Collection<ProjectRole> roles = getMemberRoles().get(person);
-
-        if (roles == null || roles.isEmpty()) {
-            return null;
-        }
-        return Joiner.on(',').join((Collections2.transform(roles,
-            new Function<ProjectRole, String>() {
-                @Override
-                public String apply(ProjectRole input) {
-                    return projectRoleDisplayName(input);
-                }
-            })));
-    }
-
     /**
-     *
+     * Get display names for all of a person's project and locale roles
      */
     public List<String> allRoleDisplayNames(HPerson person) {
         List<String> displayNames = Lists.newArrayList();
@@ -591,10 +567,18 @@ public class ProjectHomeAction extends AbstractSortAction implements
      * person.
      */
     public Collection<String> projectRoleDisplayNames(HPerson person) {
-        Collection<ProjectRole> roles = getMemberRoles().get(person);
+        final Collection<ProjectRole> rolesForPerson = getMemberRoles().get(person);
+        Collection<ProjectRole> roles;
+        if (rolesForPerson == null) {
+            roles = Lists.newArrayList();
+        } else {
+            roles = Lists.newArrayList(rolesForPerson);
+        }
 
-        if (roles == null) {
-            return Collections.EMPTY_LIST;
+        // Maintainer role includes TranslationMaintainer privileges, so do not
+        // show the lower-permission role.
+        if (roles.contains(Maintainer)) {
+            roles.remove(TranslationMaintainer);
         }
 
         return Collections2.transform(roles,
@@ -611,24 +595,40 @@ public class ProjectHomeAction extends AbstractSortAction implements
      * person.
      */
     public Collection<String> languageRoleDisplayNames(HPerson person) {
-        ListMultimap<HLocale, LocaleRole>
-                localeRoles = ensurePersonLocaleRoles().get(person);
+        final ListMultimap<HLocale, LocaleRole>
+                localeRolesMultimap = getPersonLocaleRoles().get(person);
 
-        if (localeRoles == null) {
+        if (localeRolesMultimap == null) {
             return Collections.EMPTY_LIST;
         }
 
-        return Collections2.transform(localeRoles.entries(),
-                new Function<Map.Entry<HLocale, LocaleRole>, String>() {
-            @Nullable
-            @Override
-            public String apply(@Nullable Map.Entry<HLocale, LocaleRole> entry) {
-                final String localeName = entry.getKey().retrieveDisplayName();
-                final String roleName = localeRoleDisplayName(entry.getValue());
-                return localeName + " " + roleName;
-            }
-        });
+        return Collections2.transform(localeRolesMultimap.asMap().entrySet(),
+                TO_LOCALE_ROLES_DISPLAY_STRING);
     }
+
+    private final Function<Map.Entry<HLocale, Collection<LocaleRole>>, String>
+            TO_LOCALE_ROLES_DISPLAY_STRING =
+            new Function<Map.Entry<HLocale, Collection<LocaleRole>>, String>() {
+                @Nullable @Override public String apply(
+                        @Nullable
+                        Map.Entry<HLocale, Collection<LocaleRole>> entry) {
+                    final String localeName = entry.getKey().retrieveDisplayName();
+
+                    final Collection<String> roleNames =
+                            Collections2.transform(entry.getValue(), TO_DISPLAY_NAME);
+
+                    return localeName + " " + Joiner.on(", ").join(roleNames);
+                }
+            };
+
+    private final Function<LocaleRole, String> TO_DISPLAY_NAME =
+            new Function<LocaleRole, String>() {
+                @Nullable @Override
+                public String apply(
+                        @Nullable LocaleRole role) {
+                    return localeRoleDisplayName(role);
+                }
+            };
 
     public String projectRoleDisplayName(ProjectRole role) {
         switch (role) {
@@ -660,9 +660,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
      * @param person to show in permission dialog
      */
     public void setPersonForPermissionDialog(HPerson person) {
-        List<ProjectRole> projectRoles = ensurePersonRoles().get(person);
+        List<ProjectRole> projectRoles = getPersonRoles().get(person);
         ListMultimap<HLocale, LocaleRole> localeRoles =
-            ensurePersonLocaleRoles().get(person);
+            getPersonLocaleRoles().get(person);
 
 
         permissionDialogData =
@@ -870,7 +870,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }
 
                 ListMultimap<HLocale, LocaleRole> localeRolesForPerson =
-                        ensurePersonLocaleRoles().get(person);
+                        getPersonLocaleRoles().get(person);
 
                 for (HLocale locale : localeRolesForPerson.keySet()) {
                     List<HPerson> peopleForLocale = localePersonMap.get(locale);
@@ -895,14 +895,14 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
         private boolean hasMatchingRole(HPerson person) {
             Iterable<ProjectRole> filtered = Iterables
-                .filter(ensurePersonRoles().get(person),
+                .filter(getPersonRoles().get(person),
                     projectRolePredicate);
             return filtered.iterator().hasNext();
         }
 
         private boolean hasMatchingLanguage(HPerson person) {
             ListMultimap<HLocale, LocaleRole> map =
-                ensurePersonLocaleRoles().get(person);
+                getPersonLocaleRoles().get(person);
             if(map == null || map.isEmpty()) {
                 return false;
             }
