@@ -194,8 +194,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     private final List<Activity> projectLastActivity =
             fetchProjectLastActivity();
 
-    private final String role_separator = ", ";
-
     private HProject project;
 
     // for storing last activity date for the version
@@ -862,17 +860,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }));
         }
 
-        private final Function<LocaleRole, String> ROLE_TO_NAME =
-            new Function<LocaleRole, String>() {
-                @Override
-                public String apply(LocaleRole input) {
-                    return input.name();
-                }
-            };
-
-
-        public Map<HLocale, Map<HPerson, String>> getTranslators() {
-            Map<HLocale, Map<HPerson, String>> localePersonMap =
+        public Map<HLocale, List<HPerson>> getTranslators() {
+            Map<HLocale, List<HPerson>> localePersonMap =
                 Maps.newHashMap();
 
             for (HPerson person : fetchAll()) {
@@ -880,27 +869,19 @@ public class ProjectHomeAction extends AbstractSortAction implements
                     continue;
                 }
 
-                ListMultimap<HLocale, LocaleRole> map =
+                ListMultimap<HLocale, LocaleRole> localeRolesForPerson =
                         ensurePersonLocaleRoles().get(person);
 
-                for (HLocale locale : map.keySet()) {
-                    Collection<String> rolesInLocale = Collections2.transform(
-                        map.get(locale), ROLE_TO_NAME);
-
-                    Map<HPerson, String> personRoles =
-                        localePersonMap.get(locale);
-
-                    if(personRoles == null) {
-                        personRoles = Maps.newHashMap();
+                for (HLocale locale : localeRolesForPerson.keySet()) {
+                    List<HPerson> peopleForLocale = localePersonMap.get(locale);
+                    if(peopleForLocale == null) {
+                        peopleForLocale = Lists.newArrayList();
+                        localePersonMap.put(locale, peopleForLocale);
                     }
 
-                    String languageRoles = Joiner.on(role_separator).skipNulls()
-                        .join(personRoles.get(person),
-                            Joiner.on(role_separator).skipNulls()
-                                .join(rolesInLocale));
-
-                    personRoles.put(person, languageRoles);
-                    localePersonMap.put(locale, personRoles);
+                    if (!peopleForLocale.contains(person)) {
+                        peopleForLocale.add(person);
+                    }
                 }
             }
             return localePersonMap;

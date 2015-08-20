@@ -162,8 +162,8 @@
               </span>
             </h4>
             <ul class="list--slat l--push-bottom-1">
-              <ui:repeat value="#{entry.value.entrySet().toArray()}" var="personEntry">
-                <zanata:people-entry person="#{personEntry.key}"
+              <ui:repeat value="#{entry.value}" var="person">
+                <zanata:people-entry person="#{person}"
                   canManageMembers="#{canManageMembers}"
                   managePermissionsRender="modal-manage-permissions"
                   managePermissionsModal="modal-manage-permissions-content"/>
