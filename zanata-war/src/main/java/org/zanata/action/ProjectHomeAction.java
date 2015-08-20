@@ -174,12 +174,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     private final PeopleFilterComparator peopleFilterComparator =
         new PeopleFilterComparator(getPeopleSortingList());
 
-    private final ProjectRolePredicate projectRolePredicate =
-        new ProjectRolePredicate();
-
-    private final ProjectLocalePredicate projectLocalePredicate =
-        new ProjectLocalePredicate();
-
     private ListMultimap<HPerson, ProjectRole> personRoles;
 
     private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
@@ -743,14 +737,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
         project = projectDAO.findById(getProject().getId());
 
         // Hibernate will have problems working with detached HPerson and HLocale
-        // so they are all attached before that is attempted.
+        // so they are all attached before any persistence is attempted.
         HPerson person = personDAO.findById(data.getPerson().getId());
         data.setPerson(person);
         for (PersonProjectMemberships.LocaleRoles roles : data.getLocaleRoles()) {
             roles.setLocale(localeServiceImpl
                     .getByLocaleId(roles.getLocale().getLocaleId()));
         }
-
 
         final boolean canManageMembers = identity.hasPermission(project, "manage-members");
         final boolean canManageTransMembers = identity.hasPermission(project, "manage-translation-members");
@@ -780,6 +773,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
         implements Comparator<HPerson> {
+
+        private final ProjectRolePredicate projectRolePredicate =
+                new ProjectRolePredicate();
+
+        private final ProjectLocalePredicate projectLocalePredicate =
+                new ProjectLocalePredicate();
+
         private SortingType sortingType;
 
         @Getter
@@ -810,6 +810,10 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 return o1.getName().toLowerCase()
                     .compareTo(o2.getName().toLowerCase());
             }
+
+            // FIXME aeng: this is either confusing, or it is a logic error.
+            //       If the sort option is ROLE, this method will always return 0.
+            //       Please add an explanation of why this is, or fix the logic.
             return 0;
         }
 
@@ -901,13 +905,10 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
 
         private boolean hasMatchingLanguage(HPerson person) {
-            ListMultimap<HLocale, LocaleRole> map =
-                getPersonLocaleRoles().get(person);
-            if(map == null || map.isEmpty()) {
-                return false;
-            }
-            return !Sets.filter(map.keySet(), projectLocalePredicate)
-                .isEmpty();
+            ListMultimap<HLocale, LocaleRole> languageRoles =
+                    getPersonLocaleRoles().get(person);
+            return languageRoles != null &&
+                    !Sets.filter(languageRoles.keySet(), projectLocalePredicate).isEmpty();
         }
     }
 
