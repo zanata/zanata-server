@@ -38,12 +38,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.SetMultimap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +51,6 @@ import org.hibernate.criterion.Restrictions;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.security.Restrict;
 import org.jboss.seam.faces.FacesManager;
 import org.jboss.seam.faces.Redirect;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -73,15 +68,9 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
-import org.zanata.model.HProjectLocaleMember;
-import org.zanata.model.HProjectMember;
-import org.zanata.model.LocaleRole;
-import org.zanata.model.PersonProjectMemberships;
-import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.GravatarService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
@@ -640,7 +629,6 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     public void setInviteOnly(boolean inviteOnly) {
         identity.checkPermission(getInstance(), "update");
-        log.info("setInviteOnly({})", inviteOnly);
         getInstance().setAllowGlobalTranslation(!inviteOnly);
         update();
     }
@@ -933,7 +921,7 @@ public class ProjectHome extends SlugHome<HProject> implements
     private List<HProjectIteration> fetchVersions() {
         List<HProjectIteration> results = Lists.newArrayList(Iterables.filter(
                 getInstance().getProjectIterations(),
-                notObsoleteVersionPredicate));
+                IS_NOT_OBSOLETE));
 
         Collections.sort(results, new Comparator<HProjectIteration>() {
             @Override
@@ -960,6 +948,13 @@ public class ProjectHome extends SlugHome<HProject> implements
         });
         return results;
     }
+
+    private final Predicate IS_NOT_OBSOLETE = new Predicate<HProjectIteration>() {
+        @Override
+        public boolean apply(HProjectIteration input) {
+            return input.getStatus() != EntityStatus.OBSOLETE;
+        }
+    };
 
     @Override
     public boolean isIdDefined() {
@@ -1107,37 +1102,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         return identity != null
                 && identity.hasPermission("HProject", "view-obsolete");
     }
-
-    private final Predicate notObsoleteVersionPredicate = new Predicate<HProjectIteration>() {
-        @Override
-        public boolean apply(HProjectIteration input) {
-            return input.getStatus() != EntityStatus.OBSOLETE;
-        }
-    };
-
-    public String projectRoleDisplayName(ProjectRole role) {
-        switch (role) {
-            case Maintainer:
-                return msgs.get("jsf.Maintainer");
-            case TranslationMaintainer:
-                return msgs.get("jsf.TranslationMaintainer");
-            default:
-                return "";
-        }
-    }
-
-//    /**
-//     * The person selected in the "Add someone" dialog.
-//     *
-//     * @param memberToAdd the person that will be added when the dialog is submitted
-//     */
-//    public void setMemberToAdd(HPerson memberToAdd) {
-//        this.memberToAdd = memberToAdd;
-//    }
-//
-//    public HPerson getMemberToAdd() {
-//        return memberToAdd;
-//    }
 
     private class ProjectMaintainersAutocomplete extends MaintainerAutocomplete {
 
