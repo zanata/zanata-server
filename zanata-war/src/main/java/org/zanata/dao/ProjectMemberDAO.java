@@ -20,28 +20,20 @@
  */
 package org.zanata.dao;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectMember;
-import org.zanata.model.PersonProjectMemberships;
 import org.zanata.model.ProjectRole;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.zanata.model.LocaleRole.Coordinator;
-import static org.zanata.model.LocaleRole.Reviewer;
-import static org.zanata.model.LocaleRole.Translator;
-import static org.zanata.model.ProjectRole.Maintainer;
-import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 /**
  * Provides methods to access data related to membership in a project.
@@ -49,7 +41,6 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
 @Name("projectMemberDAO")
 @AutoCreate
 @Scope(ScopeType.STATELESS)
-@Slf4j
 public class ProjectMemberDAO
         extends AbstractDAOImpl<HProjectMember, HProjectMember.HProjectMemberPK> {
 

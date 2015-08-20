@@ -21,7 +21,6 @@
 package org.zanata.security;
 
 import com.google.common.base.Optional;
-import org.jboss.seam.ScopeType;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectLocaleMemberDAO;
@@ -89,8 +88,9 @@ public class SecurityFunctions {
         return false;
     }
 
-    private static boolean isProjectLanguageRole(HProject project, HLocale lang,
-                                                 LocaleRole role) {
+    private static boolean userHasProjectLanguageRole(HProject project,
+            HLocale lang,
+            LocaleRole role) {
         Optional<HAccount> account = getAuthenticatedAccount();
 
         if (account.isPresent()) {
@@ -243,7 +243,7 @@ public class SecurityFunctions {
     public static boolean projectTranslatorCanTranslate(HProject project, HLocale lang) {
         Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
         return authenticatedAccount.isPresent() &&
-                isProjectLanguageRole(project, lang, LocaleRole.Translator);
+                userHasProjectLanguageRole(project, lang, LocaleRole.Translator);
     }
 
     /***************************************************************************
@@ -305,7 +305,7 @@ public class SecurityFunctions {
     public static boolean projectReviewerCanTranslateAndReview(HProject project, HLocale lang) {
         Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
         return authenticatedAccount.isPresent() &&
-                isProjectLanguageRole(project, lang, LocaleRole.Reviewer);
+                userHasProjectLanguageRole(project, lang, LocaleRole.Reviewer);
     }
 
     /* Project Maintainer can import translation (merge type is IMPORT) */

@@ -18,7 +18,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.zanata.dao;
 
 import org.hibernate.Query;
@@ -32,7 +31,6 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectLocaleMember;
 import org.zanata.model.LocaleRole;
-import org.zanata.model.ProjectRole;
 
 import java.util.HashSet;
 import java.util.Set;
