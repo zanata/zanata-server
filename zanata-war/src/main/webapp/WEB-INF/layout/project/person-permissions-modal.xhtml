@@ -24,140 +24,159 @@
         xmlns:s="http://jboss.org/schema/seam/taglib"
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:h="http://java.sun.com/jsf/html"
-        xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
-        xmlns:f="http://java.sun.com/jsf/core"
-        xmlns:a4j="http://richfaces.org/a4j"
-        xmlns:rich="http://richfaces.org/rich">
+        xmlns:z="http://java.sun.com/jsf/composite/zanata"
+        xmlns:a4j="http://richfaces.org/a4j">
 
-<div class="modal" id="#{id}" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal__dialog l--constrain-medium">
-    <header class="modal__header">
-      <h2 class="modal__title">#{title}</h2>
-      <button class="modal__close button--link" data-dismiss="modal">
-        <i class="i i--huge i--cancel"></i>
-      </button>
-    </header>
-    <div class="modal__content">
-      <h:form>
-      <div class="l--pad-all-1">
 
-        <!-- TODO custom user selection mechanism -->
-        <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
-        <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
-        <input type="text" id="add-person-user" placeholder="Search name or username"/>
-
-        <p class="txt--lead">
-          <zanata:person-tile person="#{memberships.person}"/>
-          <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
-              title="#{msgs['jsf.people.RemoveUser']}">
-            <i class="i i--small i--cross"></i>
-            <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
+  <s:div id="#{id}">
+    <div class="modal" id="modal-manage-permissions-content" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal__dialog l--constrain-medium">
+        <header class="modal__header">
+          <h2 class="modal__title">#{msgs['jsf.projectPermissions.ManagePermissions']}</h2>
+          <button class="modal__close button--link" data-dismiss="modal">
+            <i class="i i--huge i--cancel"></i>
           </button>
-        </p>
+        </header>
+        <div class="modal__content">
+          <h:form>
+            <div class="l--pad-all-1">
+              <ui:remove>
+                <!-- TODO custom user selection mechanism -->
+              <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
+                <label for="add-person-user" class="is-invisible">#{msgs['jsf.User']}</label>
+                <input type="text" id="add-person-user" placeholder="Search name or username"/>
+              </ui:remove>
 
-        <hr/>
+              <p class="txt--lead">
+                <z:person-tile person="#{projectHomeAction.permissionDialogData.person}"/>
+                <ui:remove>
+                  <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
+                      title="#{msgs['jsf.people.RemoveUser']}">
+                    <i class="i i--small i--cross"></i>
+                    <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
+                  </button>
+                </ui:remove>
+              </p>
 
+              <hr/>
 
-
-        <h3>#{msgs['jsf.ProjectPermissions']}</h3>
-        <div class="g--tight">
-          <div class="g__item w--1-3">
-            <label class="l--push-bottom-0">
-              #{msgs['jsf.ProjectPermissions']}</label>
-          </div>
-          <!-- TODO disabled when not identity.hasPermission(projectHome.instance, 'manage-members') -->
-          <div class="g__item w--2-3">
-            <ul class="list--horizontal">
-              <li>
-                <zanata:checkbox
-                  label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
-                  labelStyle="form__checkbox__label js-form__checkbox__label"
-                  checked="#{memberships.translationMaintainer}"
-                  onValueChanged="function(){}"
-                  value="Translation Maintainer"/>
-              </li>
-              <li>
-                <zanata:checkbox
-                  label="#{msgs['jsf.projectPermissions.MaintainProject']}"
-                  labelStyle="form__checkbox__label js-form__checkbox__label"
-                  checked="#{memberships.maintainer}"
-                  onValueChanged="function(){}"
-                  value="Maintainer"/>
-              </li>
-            </ul>
-
-            <!-- TODO set username, and change text depending on selection -->
-            <!--<p class="txt- -meta l- -push-top-half">-->
-              <!--<strong>djansen</strong> will be able to add/remove translators-->
-              <!--and reviewers to any language as well as translate or review any-->
-              <!--language. They are not able to change project settings.-->
-            <!--</p>-->
-          </div>
-        </div>
-
-        <hr/>
-
-        <h3>Translation Permissions</h3>
-        <ul class="list--slat">
-          <!-- TODO add filtering for list -->
-          <!-- TODO empty list message -->
-          <ui:repeat value="#{memberships.localeRoles.toArray()}" var="roles">
-            <li>
+              <h3>#{msgs['jsf.ProjectPermissions']}</h3>
               <div class="g--tight">
                 <div class="g__item w--1-3">
                   <label class="l--push-bottom-0">
-                    #{roles.locale.retrieveDisplayName()}
-                  </label>
+                    #{msgs['jsf.ProjectPermissions']}</label>
                 </div>
                 <div class="g__item w--2-3">
-                  <ul class="list--horizontal">
+                  <ul id="modal-manage-permissions-project-permissions"
+                      class="list--horizontal">
                     <li>
-                      <zanata:checkbox
-                        label="Translate"
-                        labelStyle="form__checkbox__label js-form__checkbox__label"
-                        onValueChanged=""
-                        value="Translator"
-                        checked="#{roles.translator}"/>
-                        <ui:remove>
-                          <input name="german-permission" class="form__checkbox__input js-form__checkbox__input" id="german-permission-translator" value="Translate" type="checkbox"/>
-                          <label for="german-permission-translator" class="form__checkbox__label js-form__checkbox__label">Translate</label>
-                          <span class="form__checkbox__item js-form__checkbox__item"></span>
-                        </ui:remove>
+                      <z:checkbox
+                          label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
+                          labelStyle="form__checkbox__label js-form__checkbox__label"
+                          checked="#{projectHomeAction.permissionDialogData.translationMaintainer}"
+                          onValueChanged="bindProjectPermissionRole"
+                          value="TranslationMaintainer"/>
                     </li>
                     <li>
-                      <zanata:checkbox
-                        label="Review"
-                        labelStyle="form__checkbox__label js-form__checkbox__label"
-                        onValueChanged=""
-                        value="Reviewer"
-                        checked="#{roles.reviewer}"/>
+                      <z:checkbox
+                          label="#{msgs['jsf.projectPermissions.MaintainProject']}"
+                          labelStyle="form__checkbox__label js-form__checkbox__label"
+                          checked="#{projectHomeAction.permissionDialogData.maintainer}"
+                          onValueChanged="bindProjectPermissionRole"
+                          value="Maintainer"/>
                     </li>
                   </ul>
+
+                  <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
+                    <p class="txt--meta l--push-top-half">
+                      #{msgs['jsf.projectPermissions.YouCannotModify']}
+                    </p>
+                  </s:fragment>
+
+                  <!-- TODO set username, and change text depending on selection -->
+                  <!--<p class="txt- -meta l- -push-top-half">-->
+                  <!--<strong>djansen</strong> will be able to add/remove translators-->
+                  <!--and reviewers to any language as well as translate or review any-->
+                  <!--language. They are not able to change project settings.-->
+                  <!--</p>-->
                 </div>
               </div>
-            </li>
-          </ui:repeat>
-        </ul>
+
+              <hr/>
+
+              <h3>Translation Permissions</h3>
+              <s:fragment rendered="#{empty projectHomeAction.permissionDialogData.localeRoles.toArray()}">
+                <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
+              </s:fragment>
+              <ul class="list--slat">
+                <!-- TODO add filtering for list -->
+                <ui:repeat value="#{projectHomeAction.permissionDialogData.localeRoles.toArray()}" var="roles">
+                  <li>
+                    <div class="g--tight">
+                      <div class="g__item w--1-3">
+                        <label class="l--push-bottom-0">
+                          #{roles.locale.retrieveDisplayName()}
+                        </label>
+                      </div>
+                      <div class="g__item w--2-3">
+                        <ul class="list--horizontal">
+                          <li>
+                            <z:checkbox
+                                label="Translate"
+                                labelStyle="form__checkbox__label js-form__checkbox__label"
+                                onValueChanged="bindTranslationPermissionRole"
+                                value="#{roles.locale.localeId}:Translator"
+                                checked="#{roles.translator}"/>
+                          </li>
+                          <li>
+                            <z:checkbox
+                                label="Review"
+                                labelStyle="form__checkbox__label js-form__checkbox__label"
+                                onValueChanged="bindTranslationPermissionRole"
+                                value="#{roles.locale.localeId}:Reviewer"
+                                checked="#{roles.reviewer}"/>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                </ui:repeat>
+              </ul>
+            </div>
+            <div class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
+              <button onclick="return false;" class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
+                #{msgs['jsf.Cancel']}</button>
+
+              <h:panelGroup id="modal-manage-permissions-submit-buttons">
+                <a4j:commandButton value="Save permissions"
+                    rendered="#{projectHomeAction.anyPermissionsSelected()}"
+                    onclick="savePermissionDialog();zanata.modal.hide(jQuery('#modal-manage-permissions-content'));return false;">
+                </a4j:commandButton>
+                <a4j:commandButton value="Remove person from project"
+                    rendered="#{not projectHomeAction.anyPermissionsSelected()}"
+                    onclick="savePermissionDialog();zanata.modal.hide(jQuery('#modal-manage-permissions-content'));return false;">
+                </a4j:commandButton>
+              </h:panelGroup>
+            </div>
+          </h:form>
+        </div>
       </div>
-
-      <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
-        <button class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
-          #{msgs['jsf.Cancel']}</button>
-        <h:commandButton
-                action="#{projectHomeAction.savePermissionDialogSelections()}"
-                value="ADD">
-        </h:commandButton>
-      </footer>
-
-    </h:form>
-
+    <script type="text/javascript">
+      //<![CDATA[
+      zanata.form.appendCheckboxes(jQuery('#modal-manage-permissions-content').element);
+      //]]>
+    </script>
+    <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
+      <script type="text/javascript">
+        //<![CDATA[
+        jQuery('#modal-manage-permissions-project-permissions')
+                .find(' input')
+                .trigger('disable');
+        //]]>
+      </script>
+    </s:fragment>
   </div>
-  </div>
-  <script type="text/javascript">
-  //<![CDATA[
-    zanata.form.appendCheckboxes(jQuery('##{id}').element);
-  //]]>
-  </script>
-</div>
+</s:div>
+
 
 </ui:composition>
