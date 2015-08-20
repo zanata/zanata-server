@@ -664,7 +664,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
         ListMultimap<HLocale, LocaleRole> localeRoles =
             getPersonLocaleRoles().get(person);
 
-
         permissionDialogData =
             new PersonProjectMemberships(person, projectRoles, localeRoles);
 
@@ -685,10 +684,11 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     /**
-     * bind project permission role for a person
+     * Update role membership for a project-specific role based on the current
+     * checkbox value.
      *
-     * @param role
-     * @param checked
+     * @param role the role to assign or remove for the current person
+     * @param checked the current checkbox value
      */
     public void bindProjectPermissionRole(String role, boolean checked) {
         if(StringUtils.equalsIgnoreCase(role, ProjectRole.TranslationMaintainer.name())) {
@@ -699,19 +699,20 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     /**
-     * bind translation permission role for a person
-     * @param localeRole - format: {localeId}:{role}. e.g en-US:Reviewer
-     * @param checked
+     * Update role membership for a locale-specific role based on the current
+     * checkbox value.
+     *
+     * @param localeRole represents both the locale and the role
+     *                   format: {localeId}:{role}. e.g en-US:Reviewer
+     * @param checked the current checkbox value
      */
     public void bindTranslationPermissionRole(String localeRole, boolean checked) {
-        boolean isLocaleInserted = false;
         String[] localeRoleList = StringUtils.split(localeRole, ':');
         HLocale hLocale = localeServiceImpl.getByLocaleId(localeRoleList[0]);
         String role = localeRoleList[1];
 
         for (PersonProjectMemberships.LocaleRoles localeRoles: permissionDialogData.getLocaleRoles()) {
             if(localeRoles.getLocale().equals(hLocale)) {
-                isLocaleInserted = true;
                 if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
                     localeRoles.setTranslator(checked);
                 } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Reviewer.name())) {
@@ -719,14 +720,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
                     localeRoles.setCoordinator(checked);
                 }
+                return;
             }
         }
 
-        //new locale
-        if (!isLocaleInserted) {
-            List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
-            permissionDialogData.addLocaleRoles(hLocale, roleList);
-        }
+        // No LocaleRoles for the given locale, so create a new one.
+        List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
+        permissionDialogData.addLocaleRoles(hLocale, roleList);
     }
 
     /**
