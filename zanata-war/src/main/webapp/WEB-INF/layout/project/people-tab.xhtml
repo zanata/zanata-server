@@ -24,7 +24,7 @@
         xmlns:s="http://jboss.org/schema/seam/taglib"
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:h="http://java.sun.com/jsf/html"
-        xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+        xmlns:z="http://java.sun.com/jsf/composite/zanata"
         xmlns:f="http://java.sun.com/jsf/core"
         xmlns:a4j="http://richfaces.org/a4j"
         xmlns:rich="http://richfaces.org/rich">
@@ -42,7 +42,7 @@
           </button>
         </s:fragment>
 
-        <zanata:sortlist id="project-people_sorting"
+        <z:sortlist id="project-people_sorting"
           sortAction="#{projectHomeAction.peopleFilterComparator.sortPeopleList()}"
           render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
           oncomplete="refreshTooltip('#{rich:clientId('people_form')}')"
@@ -72,7 +72,7 @@
     </div>
 
     <div class="panel__sub-header js-reveal">
-      <zanata:list-filter status="peopleTab-peopleLoader"
+      <z:list-filter status="peopleTab-peopleLoader"
         listId="people_form" iconClass="i--users"
         render="people_form, peopleSearchBottom-pager, peopleSearchBottom-page-info"
         id="peopleSearch"
@@ -82,7 +82,7 @@
 
     <a4j:status name="peopleTab-peopleLoader">
       <f:facet name="start">
-        <zanata:loader/>
+        <z:loader/>
       </f:facet>
     </a4j:status>
 
@@ -112,7 +112,7 @@
           rendered="#{!projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
-              <zanata:people-entry person="#{person}"
+              <z:people-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modal-manage-permissions"
                 managePermissionsModal="modal-manage-permissions-content"/>
@@ -139,7 +139,7 @@
           </h3>
           <ul class="list--slat">
             <ui:repeat value="#{maintainers}" var="person">
-              <zanata:people-entry person="#{person}"
+              <z:people-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modal-manage-permissions"
                 managePermissionsModal="modal-manage-permissions-content"/>
@@ -163,7 +163,7 @@
             </h4>
             <ul class="list--slat l--push-bottom-1">
               <ui:repeat value="#{entry.value}" var="person">
-                <zanata:people-entry person="#{person}"
+                <z:people-entry person="#{person}"
                   canManageMembers="#{canManageMembers}"
                   managePermissionsRender="modal-manage-permissions"
                   managePermissionsModal="modal-manage-permissions-content"/>
@@ -175,7 +175,7 @@
         </s:div>
       </s:fragment>
     </h:form>
-    <zanata:list-filter status="peopleTab-peopleLoader"
+    <z:list-filter status="peopleTab-peopleLoader"
       listId="people_form" iconClass="i--users"
       render="people_form, peopleSearch-pager, peopleSearch-page-info"
       id="peopleSearchBottom" bottomPanel="true"
@@ -203,7 +203,7 @@
               </ui:remove>
 
               <p class="txt--lead">
-                <zanata:person-tile person="#{projectHomeAction.permissionDialogData.person}"/>
+                <z:person-tile person="#{projectHomeAction.permissionDialogData.person}"/>
                 <ui:remove>
                   <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
                       title="#{msgs['jsf.people.RemoveUser']}">
@@ -225,7 +225,7 @@
                   <ul id="modal-manage-permissions-project-permissions"
                       class="list--horizontal">
                     <li>
-                      <zanata:checkbox
+                      <z:checkbox
                           label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
                           labelStyle="form__checkbox__label js-form__checkbox__label"
                           checked="#{projectHomeAction.permissionDialogData.translationMaintainer}"
@@ -233,7 +233,7 @@
                           value="TranslationMaintainer"/>
                     </li>
                     <li>
-                      <zanata:checkbox
+                      <z:checkbox
                           label="#{msgs['jsf.projectPermissions.MaintainProject']}"
                           labelStyle="form__checkbox__label js-form__checkbox__label"
                           checked="#{projectHomeAction.permissionDialogData.maintainer}"
@@ -276,7 +276,7 @@
                       <div class="g__item w--2-3">
                         <ul class="list--horizontal">
                           <li>
-                            <zanata:checkbox
+                            <z:checkbox
                                 label="Translate"
                                 labelStyle="form__checkbox__label js-form__checkbox__label"
                                 onValueChanged="bindTranslationPermissionRole"
@@ -284,7 +284,7 @@
                                 checked="#{roles.translator}"/>
                           </li>
                           <li>
-                            <zanata:checkbox
+                            <z:checkbox
                                 label="Review"
                                 labelStyle="form__checkbox__label js-form__checkbox__label"
                                 onValueChanged="bindTranslationPermissionRole"
