@@ -102,7 +102,7 @@
           rendered="#{not projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
-              <z:people-entry person="#{person}"
+              <z:person-permission-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modal-manage-permissions"
                 managePermissionsModal="modal-manage-permissions-content"/>
@@ -132,7 +132,7 @@
           <ul class="list--slat">
             <ui:repeat value="#{maintainers}" var="person">
               <!-- FIXME only show non-locale roles -->
-              <z:people-entry person="#{person}"
+              <z:person-permission-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modal-manage-permissions"
                 managePermissionsModal="modal-manage-permissions-content"/>
@@ -158,7 +158,7 @@
             <ul class="list--slat l--push-bottom-1">
               <ui:repeat value="#{localeAndMembers.value}" var="person">
                 <!-- FIXME only show role for this locale -->
-                <z:people-entry person="#{person}"
+                <z:person-permission-entry person="#{person}"
                   canManageMembers="#{canManageMembers}"
                   managePermissionsRender="modal-manage-permissions"
                   managePermissionsModal="modal-manage-permissions-content"/>
