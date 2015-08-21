@@ -236,9 +236,14 @@ public class HProject extends SlugEntityBase implements Serializable,
      */
     public void updateProjectPermissions(PersonProjectMemberships memberships) {
         HPerson person = memberships.getPerson();
+
         ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
-        ensureMembership(memberships.isTranslationMaintainer(),
-                asMember(person, TranslationMaintainer));
+
+        // business rule: if someone is a Maintainer, they must also be a TranslationMaintainer
+        boolean isTranslationMaintainer = memberships.isMaintainer() ||
+                memberships.isTranslationMaintainer();
+
+        ensureMembership(isTranslationMaintainer, asMember(person, TranslationMaintainer));
     }
 
     public void updateLocalePermissions(PersonProjectMemberships memberships) {

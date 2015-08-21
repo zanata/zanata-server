@@ -93,6 +93,14 @@
                     </p>
                   </s:fragment>
 
+                  <p id="#{id}-translation-maintainer-disabled-message"
+                      class="is-hidden txt--meta l--push-top-half">
+                    <i class="i i--info"></i>
+                    <strong>#{msgs['jsf.projectPermissions.MaintainProject']}</strong>
+                    includes all permissions for
+                    <strong>#{msgs['jsf.projectPermissions.ManageTranslators']}</strong>.
+                  </p>
+
                   <!-- TODO set username, and change text depending on selection -->
                   <!--<p class="txt- -meta l- -push-top-half">-->
                   <!--<strong>djansen</strong> will be able to add/remove translators-->
@@ -172,6 +180,40 @@
         jQuery('##{id}-project-permissions')
                 .find(' input')
                 .trigger('disable');
+        //]]>
+      </script>
+    </s:fragment>
+    <s:fragment rendered="#{identity.hasPermission(projectHome.instance, 'manage-members')}">
+      <!-- disable the TranslationMaintainer checkbox when Maintainer is checked,
+           (not needed if the user has no permission, since both are permanently disabled )-->
+      <script type="text/javascript">
+        //<![CDATA[
+        (function () {
+          var checkboxes = jQuery('##{id}-project-permissions').find('input');
+          var translationMaintainerCheckbox = checkboxes.first();
+          var maintainerCheckbox = checkboxes.eq(1);
+          var translationMaintainerMessage = jQuery('##{id}-translation-maintainer-disabled-message');
+
+          var refreshCheckboxDisplay = function () {
+            var checked = maintainerCheckbox.prop('checked'); // event.currentTarget.checked;
+
+            if (checked && !translationMaintainerCheckbox.prop('checked')) {
+              // zanata checkbox element behaviour is bound to clicking on the
+              // parent div rather than the input element itself.
+              // (ideal would be if it used oninput on the actual checkbox, then
+              // this could just set the checked state on the input).
+              translationMaintainerCheckbox.closest('.js-form__checkbox').click();
+            }
+
+            translationMaintainerCheckbox.trigger(checked ? 'disable' : 'enable');
+            translationMaintainerMessage.toggleClass('is-hidden', !checked);
+          };
+
+          jQuery(maintainerCheckbox).change(refreshCheckboxDisplay);
+
+          // make sure the initial state is right
+          refreshCheckboxDisplay();
+          })();
         //]]>
       </script>
     </s:fragment>
