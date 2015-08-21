@@ -159,7 +159,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxConcurrent(int max) {
         log.info("Enter maximum concurrent API requests {}", max);
         readyElement(maxConcurrentField).clear();
-        readyElement(maxConcurrentField).sendKeys(max + "");
+        enterText(readyElement(maxConcurrentField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
@@ -171,7 +171,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxActive(int max) {
         log.info("Enter maximum active API requests {}", max);
         readyElement(maxActiveField).clear();
-        readyElement(maxActiveField).sendKeys(max + "");
+        enterText(readyElement(maxActiveField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 

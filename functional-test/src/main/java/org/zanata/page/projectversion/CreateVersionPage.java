@@ -59,16 +59,7 @@ public class CreateVersionPage extends BasePage {
      */
     public CreateVersionPage inputVersionId(final String versionId) {
         log.info("Enter version ID {}", versionId);
-        waitForAMoment().until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver input) {
-                getVersionIdField().clear();
-                new Actions(getDriver()).moveToElement(getVersionIdField())
-                        .perform();
-                getVersionIdField().sendKeys(versionId);
-                return true;
-            }
-        });
+        enterTextActions(getVersionIdField(), versionId, true);
         return new CreateVersionPage(getDriver());
     }
 
