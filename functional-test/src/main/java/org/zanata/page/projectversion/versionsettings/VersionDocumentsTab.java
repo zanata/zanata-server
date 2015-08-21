@@ -95,8 +95,8 @@ public class VersionDocumentsTab extends VersionBasePage {
                         "arguments[0].style.width = '1px'; " +
                         "arguments[0].style.opacity = 1",
                         existingElement(fileUploadInput));
-
-        enterText(readyElement(fileUploadInput), filePath);
+        // Don't clear, inject text, don't check
+        enterText(readyElement(fileUploadInput), filePath, false, true, false);
         return new VersionDocumentsTab(getDriver());
     }
 

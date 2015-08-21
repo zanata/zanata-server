@@ -342,12 +342,17 @@ public class AbstractPage {
     /**
      * Convenience function for clicking elements.  Removes obstructing
      * elements, scrolls the item into view and clicks it when it is ready.
-     * @param findby
+     * @param findby locator for element to be clicked
      */
     public void clickElement(By findby) {
         clickElement(readyElement(findby));
     }
 
+    /**
+     * Convenience function for clicking elements.  Removes obstructing
+     * elements, scrolls the item into view and clicks it when it is ready.
+     * @param element element to be clicked
+     */
     public void clickElement(final WebElement element) {
         removeNotifications();
         waitForNotificationsGone();
