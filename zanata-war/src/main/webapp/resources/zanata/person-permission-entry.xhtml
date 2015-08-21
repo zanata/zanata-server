@@ -35,7 +35,7 @@
       <div class="g__item w--4-12 txt--align-right">
         <s:fragment rendered="#{cc.attrs.canManageMembers}">
             <z:ajax-command-button
-                styleClass="button button-small"
+                styleClass="button button--small"
                 action="#{projectHomeAction.setPersonForPermissionDialog(cc.attrs.person)}"
                 render="#{cc.attrs.managePermissionsRender}"
                 oncomplete="zanata.modal.show(jQuery('##{cc.attrs.managePermissionsModal}'))">
