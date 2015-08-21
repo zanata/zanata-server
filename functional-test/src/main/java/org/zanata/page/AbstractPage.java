@@ -30,6 +30,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -356,6 +357,39 @@ public class AbstractPage {
         element.click();
     }
 
+    public void enterText(final WebElement element, final String text) {
+        enterText(element, text, true);
+    }
+
+    public void enterText(final WebElement element, final String text,
+                          final boolean clear) {
+        removeNotifications();
+        waitForNotificationsGone();
+        scrollIntoView(element);
+        triggerScreenshot("_pretext");
+        if (clear) {
+            element.clear();
+        }
+        element.sendKeys(text);
+        triggerScreenshot("_text");
+    }
+
+    public void enterTextActions(final WebElement element, final String text,
+                                 final boolean clear) {
+        removeNotifications();
+        waitForNotificationsGone();
+        scrollIntoView(element);
+        triggerScreenshot("_pretext");
+        waitForAMoment().withMessage("editable: " + element.toString()).until(
+                ExpectedConditions.elementToBeClickable(element));
+        Actions actions = new Actions(getDriver()).moveToElement(element).click();
+        if (clear) {
+            actions= actions.sendKeys(Keys.chord(Keys.CONTROL, "a")).sendKeys(Keys.DELETE);
+        }
+        actions.sendKeys(text).perform();
+        triggerScreenshot("_text");
+    }
+
     private void waitForElementReady(final WebElement element) {
          waitForAMoment().withMessage("Waiting for element to be ready").until(
                 new Predicate<WebDriver>() {
@@ -482,6 +516,10 @@ public class AbstractPage {
     public String getHtmlSource(WebElement webElement) {
         return (String) getExecutor().executeScript(
                 "return arguments[0].innerHTML;", webElement);
+    }
+
+    public void triggerScreenshot(String tag) {
+        WebElementUtil.triggerScreenshot(tag);
     }
 
     // TODO: Deprecated functions, remove after 3.7

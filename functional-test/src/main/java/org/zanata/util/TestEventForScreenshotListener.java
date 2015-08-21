@@ -130,4 +130,8 @@ public class TestEventForScreenshotListener extends AbstractWebDriverEventListen
         }
     }
 
+    public void customEvent(final String tag) {
+        createScreenshot(tag);
+    }
+
 }
