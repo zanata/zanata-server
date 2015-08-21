@@ -73,8 +73,10 @@ public class TestEventForScreenshotListener extends AbstractWebDriverEventListen
             }
             File screenshotFile =
                     ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String filename = generateFileName(ofType);
+            log.info("Screenshot: {}", filename);
             FileUtils.copyFile(screenshotFile,
-                new File(testIDDir, generateFileName(ofType)));
+                new File(testIDDir, filename));
 
         } catch (WebDriverException wde) {
             throw new RuntimeException("[Screenshot]: Invalid WebDriver: "

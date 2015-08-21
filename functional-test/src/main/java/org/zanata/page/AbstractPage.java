@@ -342,12 +342,17 @@ public class AbstractPage {
     /**
      * Convenience function for clicking elements.  Removes obstructing
      * elements, scrolls the item into view and clicks it when it is ready.
-     * @param findby
+     * @param findby locator for element to be clicked
      */
     public void clickElement(By findby) {
         clickElement(readyElement(findby));
     }
 
+    /**
+     * Convenience function for clicking elements.  Removes obstructing
+     * elements, scrolls the item into view and clicks it when it is ready.
+     * @param element element to be clicked
+     */
     public void clickElement(final WebElement element) {
         removeNotifications();
         waitForNotificationsGone();
@@ -357,36 +362,66 @@ public class AbstractPage {
         element.click();
     }
 
+    /**
+     * Convenience function for enter text (common case)
+     *
+     * @param element element to pass text to
+     * @param text text to be entered
+     */
     public void enterText(final WebElement element, final String text) {
-        enterText(element, text, true);
+        enterText(element, text, true, false, true);
     }
 
-    public void enterText(final WebElement element, final String text,
-                          final boolean clear) {
-        removeNotifications();
-        waitForNotificationsGone();
-        scrollIntoView(element);
-        triggerScreenshot("_pretext");
-        if (clear) {
-            element.clear();
-        }
-        element.sendKeys(text);
-        triggerScreenshot("_text");
-    }
-
-    public void enterTextActions(final WebElement element, final String text,
-                                 final boolean clear) {
+    /**
+     * Enter text into an element.
+     *
+     * Waits for notifications to be dismissed and element to be ready and visible before entering
+     * the text.
+     * If no checking is performed, the resulting screenshot may not be accurate.
+     * @param element element to pass text to
+     * @param text text to be entered
+     * @param clear clear the element's text before entering new text
+     * @param inject use sendKeys rather than the Actions chain (direct injection)
+     * @param check check the 'value' attribute for success, and accurate screenshot delay
+     */
+    public void enterText(final WebElement element, final String text, boolean clear,
+                          boolean inject, final boolean check) {
         removeNotifications();
         waitForNotificationsGone();
         scrollIntoView(element);
         triggerScreenshot("_pretext");
         waitForAMoment().withMessage("editable: " + element.toString()).until(
                 ExpectedConditions.elementToBeClickable(element));
-        Actions actions = new Actions(getDriver()).moveToElement(element).click();
-        if (clear) {
-            actions= actions.sendKeys(Keys.chord(Keys.CONTROL, "a")).sendKeys(Keys.DELETE);
+        if (inject) {
+            if (clear) {
+                element.clear();
+            }
+            element.sendKeys(text);
+        } else {
+            Actions enterTextAction = new Actions(getDriver()).moveToElement(element);
+            enterTextAction = enterTextAction.click();
+            if (clear) {
+                enterTextAction = enterTextAction.sendKeys(Keys.chord(Keys.CONTROL, "a")).sendKeys(Keys.DELETE);
+            }
+            enterTextAction.sendKeys(text).perform();
         }
-        actions.sendKeys(text).perform();
+        if (check) {
+            waitForAMoment().withMessage("Text equal to entered")
+                    .until(new Predicate<WebDriver>() {
+                        @Override
+                        public boolean apply(WebDriver input) {
+                            String text = element.getAttribute("value");
+                            if (!text.equals(text)) {
+                                log.info("Found: {}", text);
+                                triggerScreenshot("_textWaiting");
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+        } else {
+            log.info("Not checking text entered");
+        }
         triggerScreenshot("_text");
     }
 
