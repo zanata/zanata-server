@@ -96,7 +96,7 @@ public class VersionDocumentsTab extends VersionBasePage {
                         "arguments[0].style.opacity = 1",
                         existingElement(fileUploadInput));
 
-        readyElement(fileUploadInput).sendKeys(filePath);
+        enterText(readyElement(fileUploadInput), filePath);
         return new VersionDocumentsTab(getDriver());
     }
 

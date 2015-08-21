@@ -22,7 +22,6 @@ package org.zanata.page.projects.projectsettings;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.zanata.page.projects.ProjectBasePage;
@@ -39,14 +38,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectWebHooksTab extends ProjectBasePage {
 
     private By webHooksList = By.id("settings-webhooks-list");
+    private By saveWebhookButton = By.id("add-webhook-button");
     private By urlInputField = By.id("payloadUrlInput");
+    private By secretInputField = By.id("secretInput");
 
     public ProjectWebHooksTab(WebDriver driver) {
         super(driver);
     }
 
-    public ProjectWebHooksTab enterUrl(String url) {
-        readyElement(urlInputField).sendKeys(url + Keys.ENTER);
+    public ProjectWebHooksTab enterUrl(String url, String key) {
+        enterText(readyElement(urlInputField), url);
+        enterText(readyElement(secretInputField), key);
+        readyElement(saveWebhookButton).click();
         return new ProjectWebHooksTab(getDriver());
     }
 
@@ -75,7 +78,7 @@ public class ProjectWebHooksTab extends ProjectBasePage {
         boolean clicked = false;
         for (WebElement listItem : listItems) {
             if (listItem.getText().contains(url)) {
-                listItem.findElement(By.tagName("a")).click();
+                listItem.findElement(By.tagName("button")).click();
                 clicked = true;
                 break;
             }
