@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 
@@ -530,7 +531,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     public List<HPerson> getAllMembers() {
-        return Lists.newArrayList(getMemberRoles().keySet());
+        final Set<HPerson> people = Sets.newHashSet(getMemberRoles().keySet());
+        people.addAll(getPersonLocaleRoles().keySet());
+        return Lists.newArrayList(people);
     }
 
     public boolean isTranslator(HPerson person) {
