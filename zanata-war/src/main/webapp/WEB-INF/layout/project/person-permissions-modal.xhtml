@@ -27,6 +27,7 @@
         xmlns:z="http://java.sun.com/jsf/composite/zanata"
         xmlns:a4j="http://richfaces.org/a4j">
 
+  <ui:param name="person" value="#{projectHomeAction.permissionDialogData.person}"/>
 
   <s:div id="#{id}">
     <div class="modal" id="#{id}-content" tabindex="-1" role="dialog" aria-hidden="true">
@@ -48,7 +49,7 @@
               </ui:remove>
 
               <p class="txt--lead">
-                <z:person-tile person="#{projectHomeAction.permissionDialogData.person}"/>
+                <z:person-tile person="#{person}"/>
                 <ui:remove>
                   <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
                       title="#{msgs['jsf.people.RemoveUser']}">
@@ -102,11 +103,18 @@
                   </p>
 
                   <!-- TODO set username, and change text depending on selection -->
-                  <!--<p class="txt- -meta l- -push-top-half">-->
-                  <!--<strong>djansen</strong> will be able to add/remove translators-->
-                  <!--and reviewers to any language as well as translate or review any-->
-                  <!--language. They are not able to change project settings.-->
-                  <!--</p>-->
+                  <p id="#{id}-translation-maintainer-info" class="txt--meta l--push-top-half is-hidden">
+                  <strong>#{person.account.username}</strong> will be able to add/remove translators
+                  and reviewers to any language as well as translate or review any
+                  language. They are not able to change project settings.
+                  </p>
+
+                  <p id="#{id}-maintainer-info" class="txt--meta l--push-top-half is-hidden">
+                    <strong>#{person.account.username}</strong> will be able to change project settings,
+                    add/remove maintainers and translation maintainers, add/remove translators
+                    and reviewers to any language as well as translate or review any
+                    language.
+                  </p>
                 </div>
               </div>
 
@@ -217,6 +225,30 @@
         //]]>
       </script>
     </s:fragment>
+    <script type="text/javascript">
+      //<![CDATA[
+      (function () {
+        var checkboxes = jQuery('##{id}-project-permissions').find('input');
+        var translationMaintainerCheckbox = checkboxes.first();
+        var maintainerCheckbox = checkboxes.eq(1);
+
+        var maintainerInfo = jQuery('##{id}-maintainer-info');
+        var translationMaintainerInfo = jQuery('##{id}-translation-maintainer-info');
+
+        checkboxes.change(refreshMaintainerMessages);
+
+        // make sure initial state is right
+        refreshMaintainerMessages();
+
+        function refreshMaintainerMessages () {
+          var isMaintainer = maintainerCheckbox.prop('checked');
+          var isTransMaintainer = translationMaintainerCheckbox.prop('checked');
+          maintainerInfo.toggleClass('is-hidden', !isMaintainer);
+          translationMaintainerInfo.toggleClass('is-hidden', isMaintainer || !isTransMaintainer);
+        }
+      })();
+      //]]>
+    </script>
   </div>
 </s:div>
 
