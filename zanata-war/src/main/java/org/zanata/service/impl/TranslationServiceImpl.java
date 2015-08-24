@@ -1002,13 +1002,27 @@ public class TranslationServiceImpl implements TranslationService {
                         // generate request
                         List<String> oldContents = oldTarget.getContents();
                         ContentState oldState = oldTarget.getState();
+
+                        final EntityType copiedEntityType = oldTarget.getCopiedEntityType();
+                        if (copiedEntityType == null) {
+                            log.error(
+                                    "Attempting to create a TransUnitUpdateRequest but copiedEntityType is null");
+                        }
+                        final String copiedEntityTypeAbbr = copiedEntityType == null ? "" :copiedEntityType.getAbbr();
+
+                        final TranslationSourceType sourceType = oldTarget.getSourceType();
+                        if (sourceType == null) {
+                            log.error("Attempting to create a TransUnitUpdateRequest but sourceType is null");
+                        }
+                        final String sourceTypeAbbr = sourceType == null ? "" : sourceType.getAbbr();
+
                         TransUnitUpdateRequest request =
                                 new TransUnitUpdateRequest(tuId, oldContents,
                                         oldState, versionNum,
                                         oldTarget.getRevisionComment(),
-                                        oldTarget.getCopiedEntityId(), oldTarget
-                                                .getCopiedEntityType().getAbbr(),
-                                        oldTarget.getSourceType().getAbbr());
+                                        oldTarget.getCopiedEntityId(),
+                                        copiedEntityTypeAbbr,
+                                        sourceTypeAbbr);
                         // add to list
                         updateRequests.add(request);
                     } else {
