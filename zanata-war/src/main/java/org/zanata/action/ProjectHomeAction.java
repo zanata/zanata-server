@@ -62,6 +62,8 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ActivityService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.VersionStateCache;
+import org.zanata.service.impl.LocaleServiceImpl;
+import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
@@ -660,13 +662,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
         List<ProjectRole> projectRoles = getPersonRoles().get(person);
         ListMultimap<HLocale, LocaleRole> localeRoles =
             getPersonLocaleRoles().get(person);
-
         permissionDialogData =
             new PersonProjectMemberships(person, projectRoles, localeRoles);
-
+        LocaleService localeServiceImpl = ServiceLocator.instance().getInstance(
+                LocaleServiceImpl.class);
         List<HLocale> locales =
                 localeServiceImpl.getSupportedLanguageByProject(getProject().getSlug());
-
         permissionDialogData.ensureLocalesPresent(locales);
     }
 
@@ -938,5 +939,31 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 .getLocaleId().toString(), filter);
         }
     };
+
+    @Getter
+    private AddPersonAutocomplete addPersonAutocomplete = new AddPersonAutocomplete();
+
+    private class AddPersonAutocomplete extends AbstractAutocomplete<HPerson> {
+
+        @Override public List<HPerson> suggest() {
+
+            // FIXME search shows nothing when query is a single character
+
+            return getPersonDAO().findAllContainingName(getQuery());
+        }
+
+        private PersonDAO getPersonDAO() {
+            return ServiceLocator.instance().getInstance(PersonDAO.class);
+        }
+
+        @Override public void onSelectItemAction() {
+            String selected = getSelectedItem();
+            HPerson selectedPerson = getPersonDAO().findByUsername(selected);
+
+            if (selectedPerson != null) {
+                setPersonForPermissionDialog(selectedPerson);
+            }
+        }
+    }
 
 }

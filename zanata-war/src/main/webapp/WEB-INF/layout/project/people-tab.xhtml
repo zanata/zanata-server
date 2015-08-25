@@ -38,9 +38,10 @@
     <div class="panel__header">
       <div class="panel__header__actions">
         <s:fragment rendered="#{canManageMembers}">
+            <!-- FIXME make this clear the selected person in the add-someone dialog -->
           <button class="button button--primary panel__header__button"
               data-toggle="modal"
-              data-target="#modal-add-someone">
+              data-target="#modalAddPerson">
             <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
           </button>
         </s:fragment>
@@ -80,11 +81,11 @@
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
         <s:fragment rendered="#{canManageMembers}">
           <p>
-            <!-- TODO make sure this opens the modal and does not submit the form -->
+            <!-- FIXME make this clear the selected person in the add-someone dialog -->
             <button class="button button--primary"
               onclick="return false;"
               data-toggle="modal"
-              data-target="#modal-add-someone">
+              data-target="#modalAddPerson">
               <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
             </button>
           </p>
@@ -180,6 +181,10 @@
 
   <ui:decorate template="person-permissions-modal.xhtml">
     <ui:param name="id" value="modalManagePermissions"/>
+  </ui:decorate>
+
+  <ui:decorate template="add-person-modal.xhtml">
+    <ui:param name="id" value="modalAddPerson"/>
   </ui:decorate>
 
 </ui:composition>
