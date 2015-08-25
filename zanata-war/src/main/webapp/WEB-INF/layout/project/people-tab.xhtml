@@ -104,8 +104,8 @@
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
               <z:person-permission-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
-                managePermissionsRender="modal-manage-permissions"
-                managePermissionsModal="modal-manage-permissions-content"/>
+                managePermissionsRender="modalManagePermissions-content"
+                managePermissionsModal="modalManagePermissions"/>
             </ui:repeat>
           </ul>
         </s:fragment>
@@ -134,8 +134,8 @@
               <!-- FIXME only show non-locale roles -->
               <z:person-permission-entry person="#{person}"
                 canManageMembers="#{canManageMembers}"
-                managePermissionsRender="modal-manage-permissions"
-                managePermissionsModal="modal-manage-permissions-content"/>
+                managePermissionsRender="modalManagePermissions-content"
+                managePermissionsModal="modalManagePermissions"/>
             </ui:repeat>
           </ul>
         </s:div>
@@ -160,8 +160,8 @@
                 <!-- FIXME only show role for this locale -->
                 <z:person-permission-entry person="#{person}"
                   canManageMembers="#{canManageMembers}"
-                  managePermissionsRender="modal-manage-permissions"
-                  managePermissionsModal="modal-manage-permissions-content"/>
+                  managePermissionsRender="modalManagePermissions-content"
+                  managePermissionsModal="modalManagePermissions"/>
               </ui:repeat>
             </ul>
           </ui:repeat>
@@ -179,7 +179,7 @@
   </div>
 
   <ui:decorate template="person-permissions-modal.xhtml">
-    <ui:param name="id" value="modal-manage-permissions"/>
+    <ui:param name="id" value="modalManagePermissions"/>
   </ui:decorate>
 
 </ui:composition>

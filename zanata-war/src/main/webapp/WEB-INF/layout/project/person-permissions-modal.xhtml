@@ -29,9 +29,8 @@
 
   <ui:param name="person" value="#{projectHomeAction.permissionDialogData.person}"/>
 
-  <s:div id="#{id}">
-    <div class="modal" id="#{id}-content" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal__dialog l--constrain-medium">
+    <div class="modal" id="#{id}" tabindex="-1" role="dialog" aria-hidden="true">
+      <s:div id="#{id}-content" styleClass="modal__dialog l--constrain-medium">
         <header class="modal__header">
           <h2 class="modal__title">#{msgs['jsf.projectPermissions.ManagePermissions']}</h2>
           <button class="modal__close button--link" data-dismiss="modal">
@@ -176,7 +175,6 @@
             </div>
           </h:form>
         </div>
-      </div>
     <script type="text/javascript">
       //<![CDATA[
       zanata.form.appendCheckboxes(jQuery('##{id}-content').element);
@@ -249,8 +247,8 @@
       })();
       //]]>
     </script>
+    </s:div>
   </div>
-</s:div>
 
 
 </ui:composition>
