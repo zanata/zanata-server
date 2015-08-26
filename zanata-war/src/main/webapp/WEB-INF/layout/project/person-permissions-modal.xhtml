@@ -101,107 +101,107 @@
                 <!-- without this, the above button only works the second time it is clicked -->
                 <h:outputScript library="script" name="jsp-ajax-viewstate-fix.js" target="head"/>
               </p>
-            </s:fragment>
 
-            <!-- FIXME hide most of this when there is no person selected -->
-            <hr/>
+              <hr/>
 
-            <h3>#{msgs['jsf.ProjectPermissions']}</h3>
-            <div class="g--tight">
-              <div class="g__item w--1-3">
-                <label class="l--push-bottom-0">#{msgs['jsf.ProjectPermissions']}</label>
-              </div>
-              <div class="g__item w--2-3">
-                <ul id="#{id}-project-permissions"
-                    class="list--horizontal">
-                  <li>
-                    <z:checkbox
-                        label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
-                        labelStyle="form__checkbox__label js-form__checkbox__label"
-                        checked="#{projectPermissionDialog.data.translationMaintainer}"
-                        onValueChanged="bindProjectPermissionRole"
-                        value="TranslationMaintainer"/>
-                  </li>
-                  <li>
-                    <z:checkbox
-                        label="#{msgs['jsf.projectPermissions.MaintainProject']}"
-                        labelStyle="form__checkbox__label js-form__checkbox__label"
-                        checked="#{projectPermissionDialog.data.maintainer}"
-                        onValueChanged="bindProjectPermissionRole"
-                        value="Maintainer"/>
-                  </li>
-                </ul>
+              <h3>#{msgs['jsf.ProjectPermissions']}</h3>
+              <div class="g--tight">
+                <div class="g__item w--1-3">
+                  <label class="l--push-bottom-0">#{msgs['jsf.ProjectPermissions']}</label>
+                </div>
+                <div class="g__item w--2-3">
+                  <ul id="#{id}-project-permissions"
+                      class="list--horizontal">
+                    <li>
+                      <z:checkbox
+                          label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
+                          labelStyle="form__checkbox__label js-form__checkbox__label"
+                          checked="#{projectPermissionDialog.data.translationMaintainer}"
+                          onValueChanged="bindProjectPermissionRole"
+                          value="TranslationMaintainer"/>
+                    </li>
+                    <li>
+                      <z:checkbox
+                          label="#{msgs['jsf.projectPermissions.MaintainProject']}"
+                          labelStyle="form__checkbox__label js-form__checkbox__label"
+                          checked="#{projectPermissionDialog.data.maintainer}"
+                          onValueChanged="bindProjectPermissionRole"
+                          value="Maintainer"/>
+                    </li>
+                  </ul>
 
-                <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
-                  <p class="txt--meta l--push-top-half">
-                    #{msgs['jsf.projectPermissions.YouCannotModify']}
+                  <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
+                    <p class="txt--meta l--push-top-half">
+                      #{msgs['jsf.projectPermissions.YouCannotModify']}
+                    </p>
+                  </s:fragment>
+
+                  <p id="#{id}-translation-maintainer-disabled-message"
+                      class="is-hidden txt--meta l--push-top-half">
+                    <i class="i i--info"></i>
+                    <strong>#{msgs['jsf.projectPermissions.MaintainProject']}</strong>
+                    includes all permissions for
+                    <strong>#{msgs['jsf.projectPermissions.ManageTranslators']}</strong>.
                   </p>
-                </s:fragment>
 
-                <p id="#{id}-translation-maintainer-disabled-message"
-                    class="is-hidden txt--meta l--push-top-half">
-                  <i class="i i--info"></i>
-                  <strong>#{msgs['jsf.projectPermissions.MaintainProject']}</strong>
-                  includes all permissions for
-                  <strong>#{msgs['jsf.projectPermissions.ManageTranslators']}</strong>.
-                </p>
+                  <p id="#{id}-translation-maintainer-info" class="txt--meta l--push-top-half is-hidden">
+                    <strong>#{person.account.username}</strong> will be able to add/remove translators
+                    and reviewers to any language as well as translate or review any
+                    language. They are not able to change project settings.
+                  </p>
 
-                <p id="#{id}-translation-maintainer-info" class="txt--meta l--push-top-half is-hidden">
-                  <strong>#{person.account.username}</strong> will be able to add/remove translators
-                  and reviewers to any language as well as translate or review any
-                  language. They are not able to change project settings.
-                </p>
-
-                <p id="#{id}-maintainer-info" class="txt--meta l--push-top-half is-hidden">
-                  <strong>#{person.account.username}</strong> will be able to change project settings,
-                  add/remove maintainers and translation maintainers, add/remove translators
-                  and reviewers to any language as well as translate or review any
-                  language.
-                </p>
+                  <p id="#{id}-maintainer-info" class="txt--meta l--push-top-half is-hidden">
+                    <strong>#{person.account.username}</strong> will be able to change project settings,
+                    add/remove maintainers and translation maintainers, add/remove translators
+                    and reviewers to any language as well as translate or review any
+                    language.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <hr/>
+              <hr/>
 
-            <h3>Translation Permissions</h3>
-            <s:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
-              <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
+              <h3>Translation Permissions</h3>
+              <s:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
+                <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
+              </s:fragment>
+              <ul class="list--slat">
+                <!-- TODO add filtering for list -->
+                <ui:repeat value="#{projectPermissionDialog.data.localeRoles.toArray()}" var="roles">
+                  <li>
+                    <div class="g--tight">
+                      <div class="g__item w--1-3">
+                        <label class="l--push-bottom-0">
+                          #{roles.locale.retrieveDisplayName()}
+                        </label>
+                      </div>
+                      <div class="g__item w--2-3">
+                        <ul class="list--horizontal">
+                          <li>
+                            <z:checkbox
+                                label="Translate"
+                                labelStyle="form__checkbox__label js-form__checkbox__label"
+                                onValueChanged="bindTranslationPermissionRole"
+                                value="#{roles.locale.localeId}:Translator"
+                                checked="#{roles.translator}"/>
+                          </li>
+                          <li>
+                            <z:checkbox
+                                label="Review"
+                                labelStyle="form__checkbox__label js-form__checkbox__label"
+                                onValueChanged="bindTranslationPermissionRole"
+                                value="#{roles.locale.localeId}:Reviewer"
+                                checked="#{roles.reviewer}"/>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                </ui:repeat>
+              </ul>
             </s:fragment>
-            <ul class="list--slat">
-              <!-- TODO add filtering for list -->
-              <ui:repeat value="#{projectPermissionDialog.data.localeRoles.toArray()}" var="roles">
-                <li>
-                  <div class="g--tight">
-                    <div class="g__item w--1-3">
-                      <label class="l--push-bottom-0">
-                        #{roles.locale.retrieveDisplayName()}
-                      </label>
-                    </div>
-                    <div class="g__item w--2-3">
-                      <ul class="list--horizontal">
-                        <li>
-                          <z:checkbox
-                              label="Translate"
-                              labelStyle="form__checkbox__label js-form__checkbox__label"
-                              onValueChanged="bindTranslationPermissionRole"
-                              value="#{roles.locale.localeId}:Translator"
-                              checked="#{roles.translator}"/>
-                        </li>
-                        <li>
-                          <z:checkbox
-                              label="Review"
-                              labelStyle="form__checkbox__label js-form__checkbox__label"
-                              onValueChanged="bindTranslationPermissionRole"
-                              value="#{roles.locale.localeId}:Reviewer"
-                              checked="#{roles.reviewer}"/>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-              </ui:repeat>
-            </ul>
           </div>
+
           <div class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
             <button onclick="return false;" class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
               #{msgs['jsf.Cancel']}</button>
