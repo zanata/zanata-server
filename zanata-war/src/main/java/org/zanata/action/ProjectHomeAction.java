@@ -536,6 +536,24 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
     }
 
+    /**
+     * Clear data related to memberships so that it will be re-loaded fro the
+     * database next time it is needed for display.
+     *
+     * This should be done whenever permissions are changed.
+     */
+    public void clearCachedMembershipData() {
+        // Roles may have changed, so role lists are cleared so they will be regenerated
+        personRoles = null;
+        personLocaleRoles = null;
+        project = null;
+
+        // Person may have no roles left and no longer belong in the list, so
+        // ensure the list of people is refreshed.
+        peopleFilterComparator.clearAllMembers();
+        peopleFilterComparator.sortPeopleList();
+    }
+
     public List<HPerson> getAllMembers() {
         final Set<HPerson> people = Sets.newHashSet(getMemberRoles().keySet());
         people.addAll(getPersonLocaleRoles().keySet());

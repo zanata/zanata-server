@@ -227,20 +227,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
 
         if (canChangeAnyMembers) {
             projectDAO.makePersistent(project);
-
-            // FIXME have to trigger these data refreshes in projectHomeAction
-            // or maybe pass in an onChange function to the template and trigger
-            // that somehow
-
-//            // Roles may have changed, so role lists are cleared so they will be regenerated
-//            personRoles = null;
-//            personLocaleRoles = null;
-//            project = null;
-//
-//            // Person may have no roles left and no longer belong in the list, so
-//            // ensure the list of people is refreshed.
-//            peopleFilterComparator.clearAllMembers();
-//            peopleFilterComparator.sortPeopleList();
         }
     }
 
