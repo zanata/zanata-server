@@ -58,13 +58,25 @@
             <s:fragment rendered="#{not empty person}">
               <p class="txt--lead">
                 <z:person-tile person="#{person}"/>
-                <ui:remove>
-                  <button class="button button--link link--neutral bx--inline-block l--pad-v-quarter"
-                      title="#{msgs['jsf.people.RemoveUser']}">
+                <z:ajax-command-button
+                    styleClass="button button--link link--neutral bx--inline-block l--pad-v-quarter"
+                    action="#{projectPermissionDialog.setData(projectHome.instance, null)}"
+                    render="modalManagePermissions-content"
+                    oncomplete="zanata.modal.show(jQuery('#modalManagePermissions'))">
+                  <span title="Select a different person">
                     <i class="i i--small i--cross"></i>
-                    <span class="is-sr-only">#{msgs['jsf.people.RemoveUser']}</span>
-                  </button>
-                </ui:remove>
+                    <span class="is-sr-only">Select a different person</span>
+                  </span>
+                  <f:facet name="loading">
+                    <span title="Select a different person">
+                      <i class="i i--small i--cross"></i>
+                      <span class="is-sr-only">Select a different person</span>
+                    </span>
+                  </f:facet>
+                </z:ajax-command-button>
+
+                <!-- without this, the above button only works the second time it is clicked -->
+                <h:outputScript library="script" name="jsp-ajax-viewstate-fix.js" target="head"/>
               </p>
             </s:fragment>
 
