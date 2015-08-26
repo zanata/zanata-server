@@ -34,7 +34,7 @@
 
   <a4j:jsFunction name="bindProjectPermissionRole"
       action="#{projectPermissionDialog.bindProjectRole(key, checked)}"
-      render="modal-manage-permissions-submit-buttons"
+      render="#{id}-submit-buttons"
       limitRender="true">
     <a4j:param name="val1" assignTo="#{key}"/>
     <a4j:param name="val2" assignTo="#{checked}"/>
@@ -42,7 +42,7 @@
 
   <a4j:jsFunction name="bindTranslationPermissionRole"
       action="#{projectPermissionDialog.bindTranslationRole(key, checked)}"
-      render="modal-manage-permissions-submit-buttons"
+      render="#{id}-submit-buttons"
       limitRender="true">
     <a4j:param name="val1" assignTo="#{key}"/>
     <a4j:param name="val2" assignTo="#{checked}"/>
@@ -213,15 +213,18 @@
           <div class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
             <button onclick="return false;" class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
               #{msgs['jsf.Cancel']}</button>
-
-            <!-- FIXME different labels depending on personSelected and selectedPersonIsMember -->
             <h:panelGroup id="#{id}-submit-buttons">
-              <a4j:commandButton value="Save permissions"
-                  rendered="#{projectPermissionDialog.anySelected()}"
+              <a4j:commandButton value="Add person"
+                  rendered="#{not memberSelected}"
+                  disabled="#{empty person or not projectPermissionDialog.anySelected()}"
                   onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
               <a4j:commandButton value="Remove person from project"
-                  rendered="#{not projectPermissionDialog.anySelected()}"
+                  rendered="#{memberSelected and not projectPermissionDialog.anySelected()}"
+                  onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
+              </a4j:commandButton>
+              <a4j:commandButton value="Save permissions"
+                  rendered="#{memberSelected and projectPermissionDialog.anySelected()}"
                   onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
             </h:panelGroup>
