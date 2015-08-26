@@ -556,6 +556,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     /**
+     * Check whether a person has any project or locale membership in this project.
+     */
+    public boolean isMember(HPerson person) {
+        return getAllMembers().contains(person);
+    }
+
+    /**
      * Get display names for all of a person's project and locale roles
      */
     public List<String> allRoleDisplayNames(HPerson person) {
