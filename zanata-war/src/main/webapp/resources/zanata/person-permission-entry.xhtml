@@ -11,6 +11,9 @@
   <composite:attribute name="person" type="org.zanata.model.HPerson"
     shortDescription="person" required="true"/>
 
+  <composite:attribute name="project" type="org.zanata.model.HProject"
+    shortDescription="project" required="true"/>
+
   <composite:attribute name="canManageMembers" type="java.lang.Boolean"
     shortDescription="whether the current user is allowed to manage members" default="false"/>
 
@@ -39,7 +42,7 @@
         <s:fragment rendered="#{cc.attrs.canManageMembers}">
             <z:ajax-command-button
                 styleClass="button button--small"
-                action="#{projectHomeAction.setPersonForPermissionDialog(cc.attrs.person)}"
+                action="#{projectPermissionDialog.setData(cc.attrs.project, cc.attrs.person)}"
                 render="#{cc.attrs.managePermissionsRender}"
                 oncomplete="zanata.modal.show(jQuery('##{cc.attrs.managePermissionsModal}'))">
               <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}

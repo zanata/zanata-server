@@ -55,15 +55,12 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.model.HProjectLocaleMember;
 import org.zanata.model.HProjectMember;
 import org.zanata.model.LocaleRole;
-import org.zanata.model.PersonProjectMemberships;
 import org.zanata.model.ProjectRole;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ActivityService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.VersionStateCache;
-import org.zanata.service.impl.LocaleServiceImpl;
-import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
@@ -164,9 +161,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
                             elem.getSlug(), filter);
                 }
             };
-
-    @Getter
-    private PersonProjectMemberships permissionDialogData;
 
     @Getter
     private final SortingType PeopleSortingList = new SortingType(
@@ -506,8 +500,14 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     private void populatePersonRoles() {
         personRoles = ArrayListMultimap.create();
-        for (HProjectMember membership : getProject().getMembers()) {
-            personRoles.put(membership.getPerson(), membership.getRole());
+
+        // This can be run from an ajax call that does not actually need to render
+        // personRoles. The null check prevents a NullPointerException in that
+        // case, and the unused empty list is adequate
+        if (getProject() != null) {
+            for (HProjectMember membership : getProject().getMembers()) {
+                personRoles.put(membership.getPerson(), membership.getRole());
+            }
         }
     }
 
@@ -521,14 +521,18 @@ public class ProjectHomeAction extends AbstractSortAction implements
     private void populatePersonLocaleRoles() {
         personLocaleRoles = Maps.newHashMap();
 
-        for (HProjectLocaleMember membership :  getProject().getLocaleMembers()) {
-            final HPerson person = membership.getPerson();
-            if (!personLocaleRoles.containsKey(person)) {
-                final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
-                personLocaleRoles.put(person, localeRoles);
+        // Project may be null if this is triggered from an ajax call that does
+        // not actually need to render personLocaleRoles
+        if (getProject() != null) {
+            for (HProjectLocaleMember membership :  getProject().getLocaleMembers()) {
+                final HPerson person = membership.getPerson();
+                if (!personLocaleRoles.containsKey(person)) {
+                    final ListMultimap<HLocale, LocaleRole> localeRoles = ArrayListMultimap.create();
+                    personLocaleRoles.put(person, localeRoles);
+                }
+                personLocaleRoles.get(person).put(membership.getLocale(),
+                        membership.getRole());
             }
-            personLocaleRoles.get(person).put(membership.getLocale(),
-                    membership.getRole());
         }
     }
 
@@ -668,128 +672,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 return msgs.get("jsf.Coordinator");
             default:
                 return "";
-        }
-    }
-
-    /**
-     * Prepare the permission dialog to update permissions for the given person.
-     *
-     * @param person to show in permission dialog
-     */
-    public void setPersonForPermissionDialog(HPerson person) {
-        List<ProjectRole> projectRoles = getPersonRoles().get(person);
-        ListMultimap<HLocale, LocaleRole> localeRoles =
-            getPersonLocaleRoles().get(person);
-        permissionDialogData =
-            new PersonProjectMemberships(person, projectRoles, localeRoles);
-        LocaleService localeServiceImpl = ServiceLocator.instance().getInstance(
-                LocaleServiceImpl.class);
-        List<HLocale> locales =
-                localeServiceImpl.getSupportedLanguageByProject(getProject().getSlug());
-        permissionDialogData.ensureLocalesPresent(locales);
-    }
-
-    /**
-     * Indicate whether any of the permissions are selected in the person
-     * permission dialog.
-     *
-     * @return false if no permissions are selected in the dialog, otherwise true
-     */
-    public boolean anyPermissionsSelected() {
-        return permissionDialogData != null && permissionDialogData.hasAnyPermissions();
-    }
-
-    /**
-     * Update role membership for a project-specific role based on the current
-     * checkbox value.
-     *
-     * @param role the role to assign or remove for the current person
-     * @param checked the current checkbox value
-     */
-    public void bindProjectPermissionRole(String role, boolean checked) {
-        if(StringUtils.equalsIgnoreCase(role, ProjectRole.TranslationMaintainer.name())) {
-            permissionDialogData.setTranslationMaintainer(checked);
-        } else if(StringUtils.equalsIgnoreCase(role, ProjectRole.Maintainer.name())) {
-            permissionDialogData.setMaintainer(checked);
-        }
-    }
-
-    /**
-     * Update role membership for a locale-specific role based on the current
-     * checkbox value.
-     *
-     * @param localeRole represents both the locale and the role
-     *                   format: {localeId}:{role}. e.g en-US:Reviewer
-     * @param checked the current checkbox value
-     */
-    public void bindTranslationPermissionRole(String localeRole, boolean checked) {
-        String[] localeRoleList = StringUtils.split(localeRole, ':');
-        HLocale hLocale = localeServiceImpl.getByLocaleId(localeRoleList[0]);
-        String role = localeRoleList[1];
-
-        for (PersonProjectMemberships.LocaleRoles localeRoles: permissionDialogData.getLocaleRoles()) {
-            if(localeRoles.getLocale().equals(hLocale)) {
-                if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
-                    localeRoles.setTranslator(checked);
-                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Reviewer.name())) {
-                    localeRoles.setReviewer(checked);
-                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
-                    localeRoles.setCoordinator(checked);
-                }
-                return;
-            }
-        }
-
-        // No LocaleRoles for the given locale, so create a new one.
-        List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
-        permissionDialogData.addLocaleRoles(hLocale, roleList);
-    }
-
-    /**
-     * Save the permissions selections from permissionDialogData to the database.
-     */
-    public void savePermissionDialogSelections() {
-        PersonProjectMemberships data = permissionDialogData;
-
-        if (data == null) {
-            log.error("Tried to save permissionDialogData but it is null");
-            return;
-        }
-
-        project = projectDAO.findById(getProject().getId());
-
-        // Hibernate will have problems working with detached HPerson and HLocale
-        // so they are all attached before any persistence is attempted.
-        HPerson person = personDAO.findById(data.getPerson().getId());
-        data.setPerson(person);
-        for (PersonProjectMemberships.LocaleRoles roles : data.getLocaleRoles()) {
-            roles.setLocale(localeServiceImpl
-                    .getByLocaleId(roles.getLocale().getLocaleId()));
-        }
-
-        final boolean canManageMembers = identity.hasPermission(project, "manage-members");
-        final boolean canManageTransMembers = identity.hasPermission(project, "manage-translation-members");
-        final boolean canChangeAnyMembers = canManageMembers || canManageTransMembers;
-
-        if (canManageMembers) {
-            project.updateProjectPermissions(data);
-        }
-        if (canManageTransMembers) {
-            project.updateLocalePermissions(data);
-        }
-
-        if (canChangeAnyMembers) {
-            projectDAO.makePersistent(project);
-
-            // Roles may have changed, so role lists are cleared so they will be regenerated
-            personRoles = null;
-            personLocaleRoles = null;
-            project = null;
-
-            // Person may have no roles left and no longer belong in the list, so
-            // ensure the list of people is refreshed.
-            peopleFilterComparator.clearAllMembers();
-            peopleFilterComparator.sortPeopleList();
         }
     }
 
@@ -957,31 +839,5 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 .getLocaleId().toString(), filter);
         }
     };
-
-    @Getter
-    private AddPersonAutocomplete addPersonAutocomplete = new AddPersonAutocomplete();
-
-    private class AddPersonAutocomplete extends AbstractAutocomplete<HPerson> {
-
-        @Override public List<HPerson> suggest() {
-
-            // FIXME search shows nothing when query is a single character
-
-            return getPersonDAO().findAllContainingName(getQuery());
-        }
-
-        private PersonDAO getPersonDAO() {
-            return ServiceLocator.instance().getInstance(PersonDAO.class);
-        }
-
-        @Override public void onSelectItemAction() {
-            String selected = getSelectedItem();
-            HPerson selectedPerson = getPersonDAO().findByUsername(selected);
-
-            if (selectedPerson != null) {
-                setPersonForPermissionDialog(selectedPerson);
-            }
-        }
-    }
 
 }

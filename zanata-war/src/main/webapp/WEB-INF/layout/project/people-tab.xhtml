@@ -38,12 +38,20 @@
     <div class="panel__header">
       <div class="panel__header__actions">
         <s:fragment rendered="#{canManageMembers}">
-            <!-- FIXME make this clear the selected person in the add-someone dialog -->
-          <button class="button button--primary panel__header__button"
-              data-toggle="modal"
-              data-target="#modalAddPerson">
-            <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
-          </button>
+
+          <h:form styleClass="bx--inline">
+            <z:ajax-command-button
+                styleClass="button button--primary panel__header__button"
+                action="#{projectPermissionDialog.setData(projectHome.instance, null)}"
+                render="modalManagePermissions-content"
+                oncomplete="zanata.modal.show(jQuery('#modalManagePermissions'))">
+                <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
+              <f:facet name="loading">
+                <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
+              </f:facet>
+            </z:ajax-command-button>
+          </h:form>
+
         </s:fragment>
         <z:sortlist id="project-people_sorting"
           sortAction="#{projectHomeAction.peopleFilterComparator.sortPeopleList()}"
@@ -81,13 +89,16 @@
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
         <s:fragment rendered="#{canManageMembers}">
           <p>
-            <!-- FIXME make this clear the selected person in the add-someone dialog -->
-            <button class="button button--primary"
-              onclick="return false;"
-              data-toggle="modal"
-              data-target="#modalAddPerson">
+            <z:ajax-command-button
+                styleClass="button button--primary panel__header__button"
+                action="#{projectPermissionDialog.setData(projectHome.instance, null)}"
+                render="modalManagePermissions-content"
+                oncomplete="zanata.modal.show(jQuery('#modalManagePermissions'))">
               <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
-            </button>
+              <f:facet name="loading">
+                <i class="i i--plus"></i> #{msgs['jsf.people.AddSomeone']}
+              </f:facet>
+            </z:ajax-command-button>
           </p>
         </s:fragment>
       </s:div>
@@ -183,12 +194,9 @@
       actionBean="#{projectHomeAction.peopleFilterComparator}"/>
   </div>
 
-  <ui:decorate template="person-permissions-modal.xhtml">
+  <ui:include src="person-permissions-modal.xhtml">
     <ui:param name="id" value="modalManagePermissions"/>
-  </ui:decorate>
-
-  <ui:decorate template="add-person-modal.xhtml">
-    <ui:param name="id" value="modalAddPerson"/>
-  </ui:decorate>
+      <ui:param name="dialogBean" value="#{projectPermissionDialog}"/>
+  </ui:include>
 
 </ui:composition>

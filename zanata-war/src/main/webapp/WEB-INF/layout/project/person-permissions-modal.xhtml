@@ -25,9 +25,31 @@
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:z="http://java.sun.com/jsf/composite/zanata"
-        xmlns:a4j="http://richfaces.org/a4j">
+        xmlns:a4j="http://richfaces.org/a4j"
+        xmlns:f="http://java.sun.com/jsf/composite">
 
-  <ui:param name="person" value="#{projectHomeAction.permissionDialogData.person}"/>
+
+  <a4j:jsFunction name="savePermissionDialog" action="#{projectPermissionDialog.saveSelections()}"
+      status="peopleTab-peopleLoader" render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"/>
+
+  <a4j:jsFunction name="bindProjectPermissionRole"
+      action="#{projectPermissionDialog.bindProjectRole(key, checked)}"
+      render="modal-manage-permissions-submit-buttons"
+      limitRender="true">
+    <a4j:param name="val1" assignTo="#{key}"/>
+    <a4j:param name="val2" assignTo="#{checked}"/>
+  </a4j:jsFunction>
+
+  <a4j:jsFunction name="bindTranslationPermissionRole"
+      action="#{projectPermissionDialog.bindTranslationRole(key, checked)}"
+      render="modal-manage-permissions-submit-buttons"
+      limitRender="true">
+    <a4j:param name="val1" assignTo="#{key}"/>
+    <a4j:param name="val2" assignTo="#{checked}"/>
+  </a4j:jsFunction>
+
+
+  <ui:param name="person" value="#{projectPermissionDialog.data.person}"/>
 
   <div class="modal" id="#{id}" tabindex="-1" role="dialog" aria-hidden="true">
     <s:div id="#{id}-content" styleClass="modal__dialog l--constrain-medium">
@@ -43,10 +65,11 @@
             <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
 
             <s:fragment rendered="#{empty person}">
-              <z:autocomplete actionBean="#{projectHomeAction.addPersonAutocomplete}"
+              <z:autocomplete actionBean="#{dialogBean}"
                   fetchValue="#{result.account.username}"
                   id="#{id}Autocomplete"
                   render="#{id}-content"
+                  minlength="1"
                   placeholder="Search name or username">
                 <span class="w--r-1 bx--round l--push-right-quarter">
                   <img src="#{gravatarServiceImpl.getUserImageUrl(48, result.email)}" alt=""/>
@@ -95,7 +118,7 @@
                     <z:checkbox
                         label="#{msgs['jsf.projectPermissions.ManageTranslators']}"
                         labelStyle="form__checkbox__label js-form__checkbox__label"
-                        checked="#{projectHomeAction.permissionDialogData.translationMaintainer}"
+                        checked="#{projectPermissionDialog.data.translationMaintainer}"
                         onValueChanged="bindProjectPermissionRole"
                         value="TranslationMaintainer"/>
                   </li>
@@ -103,7 +126,7 @@
                     <z:checkbox
                         label="#{msgs['jsf.projectPermissions.MaintainProject']}"
                         labelStyle="form__checkbox__label js-form__checkbox__label"
-                        checked="#{projectHomeAction.permissionDialogData.maintainer}"
+                        checked="#{projectPermissionDialog.data.maintainer}"
                         onValueChanged="bindProjectPermissionRole"
                         value="Maintainer"/>
                   </li>
@@ -141,12 +164,12 @@
             <hr/>
 
             <h3>Translation Permissions</h3>
-            <s:fragment rendered="#{empty projectHomeAction.permissionDialogData.localeRoles.toArray()}">
+            <s:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
               <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
             </s:fragment>
             <ul class="list--slat">
               <!-- TODO add filtering for list -->
-              <ui:repeat value="#{projectHomeAction.permissionDialogData.localeRoles.toArray()}" var="roles">
+              <ui:repeat value="#{projectPermissionDialog.data.localeRoles.toArray()}" var="roles">
                 <li>
                   <div class="g--tight">
                     <div class="g__item w--1-3">
@@ -186,12 +209,12 @@
             <!-- FIXME different labels depending on personSelected and selectedPersonIsMember -->
             <h:panelGroup id="#{id}-submit-buttons">
               <a4j:commandButton value="Save permissions"
-                  rendered="#{projectHomeAction.anyPermissionsSelected()}"
-                  onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}-content'));return false;">
+                  rendered="#{projectPermissionDialog.anySelected()}"
+                  onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
               <a4j:commandButton value="Remove person from project"
-                  rendered="#{not projectHomeAction.anyPermissionsSelected()}"
-                  onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}-content'));return false;">
+                  rendered="#{not projectPermissionDialog.anySelected()}"
+                  onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
             </h:panelGroup>
           </div>
@@ -202,7 +225,7 @@
         zanata.form.appendCheckboxes(jQuery('##{id}-content').element);
         //]]>
       </script>
-      <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
+      <s:fragment rendered="#{not identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
         <script type="text/javascript">
           //<![CDATA[
           jQuery('##{id}-project-permissions')
@@ -211,7 +234,7 @@
           //]]>
         </script>
       </s:fragment>
-      <s:fragment rendered="#{identity.hasPermission(projectHome.instance, 'manage-members')}">
+      <s:fragment rendered="#{identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
         <!-- disable the TranslationMaintainer checkbox when Maintainer is checked,
              (not needed if the user has no permission, since both are permanently disabled )-->
         <script type="text/javascript">
