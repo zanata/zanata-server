@@ -25,12 +25,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Begin;
-import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -55,13 +52,13 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
+/*
  * Backing bean for project permissions dialog.
  *
  * Template is person-permissions-modal.xhtml
  */
 @Name("projectPermissionDialog")
-@Scope(ScopeType.CONVERSATION)
+@Scope(ScopeType.PAGE)
 @Slf4j
 public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
 
@@ -87,8 +84,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
 
     private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
 
-    // This conversation will hang around if the dialog is closed without submitting.
-    @Begin(join = true)
     public void setData(HProject project, HPerson person) {
 
         log.info("setData in {}", this);
@@ -202,7 +197,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
     /**
      * Save the permissions selections from permissionDialogData to the database.
      */
-    @End
     public void saveSelections() {
         if (data == null) {
             log.error("Tried to save permissionDialogData but it is null");
@@ -250,11 +244,7 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
         }
     }
 
-
     @Override public List<HPerson> suggest() {
-
-        // FIXME search shows nothing when query is a single character
-
         return getPersonDAO().findAllContainingName(getQuery());
     }
 
@@ -267,8 +257,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
         HPerson selectedPerson = getPersonDAO().findByUsername(selected);
 
         if (selectedPerson != null) {
-//                ProjectHomeAction projHomeAction = ServiceLocator.instance().getInstance(
-//                        ProjectHomeAction.class);
             setPerson(selectedPerson);
         }
     }
