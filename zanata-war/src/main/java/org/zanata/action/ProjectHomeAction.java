@@ -580,13 +580,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
             roles.remove(TranslationMaintainer);
         }
 
-        return Collections2.transform(roles,
+        return Lists.newArrayList(Collections2.transform(roles,
                 new Function<ProjectRole, String>() {
                     @Override
                     public String apply(ProjectRole role) {
                         return projectRoleDisplayName(role);
                     }
-                });
+                }));
     }
 
     /**
@@ -603,6 +603,24 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
         return Collections2.transform(localeRolesMultimap.asMap().entrySet(),
                 TO_LOCALE_ROLES_DISPLAY_STRING);
+    }
+
+    /**
+     * Display string for just the roles for a person within a locale.
+     */
+    public Collection<String> rolesDisplayForLocale(HPerson person, HLocale locale) {
+        final ListMultimap<HLocale, LocaleRole> localesWithRoles =
+                getPersonLocaleRoles().get(person);
+        if (localesWithRoles == null) {
+            return Lists.newArrayList();
+        }
+        Collection<LocaleRole> roles = localesWithRoles.asMap().get(locale);
+        if (roles == null) {
+            return Lists.newArrayList();
+        }
+        final Collection<String> roleNames =
+                Collections2.transform(roles, TO_DISPLAY_NAME);
+        return Lists.newArrayList(Joiner.on(", ").join(roleNames));
     }
 
     private final Function<Map.Entry<HLocale, Collection<LocaleRole>>, String>

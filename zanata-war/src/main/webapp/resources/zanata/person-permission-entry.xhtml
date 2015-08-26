@@ -14,6 +14,9 @@
   <composite:attribute name="canManageMembers" type="java.lang.Boolean"
     shortDescription="whether the current user is allowed to manage members" default="false"/>
 
+  <composite:attribute name="roleNames" type="java.util.Collection"
+    shortDescription="List of role display names to show" required="true"/>
+
   <composite:attribute name="managePermissionsRender" type="java.lang.String"
     shortDescription="component to re-render when manage permissions is clicked"/>
 
@@ -28,7 +31,7 @@
         <z:person-tile person="#{cc.attrs.person}"/>
       </div>
       <div class="g__item #{cc.attrs.canManageMembers ? 'w--4-12' : 'w--7-12'}">
-        <ui:repeat value="#{projectHomeAction.allRoleDisplayNames(cc.attrs.person)}" var="role">
+        <ui:repeat value="#{cc.attrs.roleNames}" var="role">
           <div class="txt--understated">#{role}</div>
         </ui:repeat>
       </div>

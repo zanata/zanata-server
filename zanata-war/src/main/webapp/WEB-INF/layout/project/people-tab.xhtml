@@ -104,6 +104,8 @@
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
               <z:person-permission-entry person="#{person}"
+                project="#{projectHomeAction.project}"
+                roleNames="#{projectHomeAction.allRoleDisplayNames(person)}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modalManagePermissions-content"
                 managePermissionsModal="modalManagePermissions"/>
@@ -132,8 +134,9 @@
           </h3>
           <ul class="list--slat">
             <ui:repeat value="#{maintainers}" var="person">
-              <!-- FIXME only show non-locale roles -->
               <z:person-permission-entry person="#{person}"
+                project="#{projectHomeAction.project}"
+                roleNames="#{projectHomeAction.projectRoleDisplayNames(person)}"
                 canManageMembers="#{canManageMembers}"
                 managePermissionsRender="modalManagePermissions-content"
                 managePermissionsModal="modalManagePermissions"/>
@@ -158,8 +161,9 @@
             </h4>
             <ul class="list--slat l--push-bottom-1">
               <ui:repeat value="#{localeAndMembers.value}" var="person">
-                <!-- FIXME only show role for this locale -->
                 <z:person-permission-entry person="#{person}"
+                  project="#{projectHomeAction.project}"
+                  roleNames="#{projectHomeAction.rolesDisplayForLocale(person, localeAndMembers.key)}"
                   canManageMembers="#{canManageMembers}"
                   managePermissionsRender="modalManagePermissions-content"
                   managePermissionsModal="modalManagePermissions"/>
