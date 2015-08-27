@@ -156,7 +156,7 @@ public class HProject extends SlugEntityBase implements Serializable,
     private ProjectType defaultProjectType;
 
     /**
-     * Immutable list of maintainers for this project.
+     * Immutable set of maintainers for this project.
      *
      * To change maintainers, use other methods in this class.
      *
@@ -164,7 +164,7 @@ public class HProject extends SlugEntityBase implements Serializable,
      * @see {@link #removeMaintainer(HPerson)}
      */
     @Transient
-    public Set<HPerson> getMaintainers() {
+    public ImmutableSet<HPerson> getMaintainers() {
         Set<HProjectMember> maintainerMembers =
                 Sets.filter(members, HProjectMember.IS_MAINTAINER);
         Collection<HPerson> maintainers =
