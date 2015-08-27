@@ -85,12 +85,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
     private Map<HPerson, ListMultimap<HLocale, LocaleRole>> personLocaleRoles;
 
     public void setData(HProject project, HPerson person) {
-
-        log.info("setData in {}", this);
-        log.info("project: {}, person: {}", project, person);
-
-        log.info("definitely running the new code");
-
         this.project = project;
         setPerson(person);
 
@@ -104,9 +98,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
      * @param person to show in permission dialog
      */
     private void setPerson(HPerson person) {
-        log.info("set person for {}", this);
-        log.info("project: {}, person: {}", project, person);
-
         final List<ProjectRole> projectRoles = new ArrayList<>();
         for (HProjectMember membership : getProject().getMembers()) {
             if (membership.getPerson().equals(person)) {
@@ -134,7 +125,6 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
      * Ensure that the permission dialog has no person selected.
      */
     public void clearPerson() {
-        log.info("clear person from {}", this);
         data = null;
     }
 
