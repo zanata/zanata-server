@@ -537,7 +537,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
     }
 
     /**
-     * Clear data related to memberships so that it will be re-loaded fro the
+     * Clear data related to memberships so that it will be re-loaded from the
      * database next time it is needed for display.
      *
      * This should be done whenever permissions are changed.

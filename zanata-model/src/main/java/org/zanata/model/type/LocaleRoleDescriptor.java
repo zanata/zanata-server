@@ -47,7 +47,7 @@ public class LocaleRoleDescriptor
             return LocaleRole.valueOf(string.charAt(0));
         }
         throw new IllegalArgumentException(
-            "String to look up a ProjectRole must be exactly 1 character. " +
+            "String to look up a LocaleRole must be exactly 1 character. " +
             "Received \"" + string + "\"");
     }
 }
