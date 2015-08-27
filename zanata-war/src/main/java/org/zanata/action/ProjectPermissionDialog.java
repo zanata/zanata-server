@@ -21,7 +21,10 @@
 
 package org.zanata.action;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -163,25 +166,40 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
      */
     public void bindTranslationRole(String localeRole, boolean checked) {
         String[] localeRoleList = StringUtils.split(localeRole, ':');
-        HLocale hLocale = localeServiceImpl.getByLocaleId(localeRoleList[0]);
+        final HLocale hLocale = localeServiceImpl.getByLocaleId(localeRoleList[0]);
         String role = localeRoleList[1];
 
-        for (PersonProjectMemberships.LocaleRoles localeRoles: data.getLocaleRoles()) {
-            if(localeRoles.getLocale().equals(hLocale)) {
-                if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
-                    localeRoles.setTranslator(checked);
-                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Reviewer.name())) {
-                    localeRoles.setReviewer(checked);
-                } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
-                    localeRoles.setCoordinator(checked);
-                }
-                return;
-            }
-        }
+        final Optional<PersonProjectMemberships.LocaleRoles>
+                matchingLocaleRoles = Iterables
+                .tryFind(data.getLocaleRoles(), localeEqualsPredicate(hLocale));
 
-        // No LocaleRoles for the given locale, so create a new one.
-        List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
-        data.addLocaleRoles(hLocale, roleList);
+        if (matchingLocaleRoles.isPresent()) {
+            PersonProjectMemberships.LocaleRoles localeRoles = matchingLocaleRoles.get();
+            if (StringUtils.equalsIgnoreCase(role, LocaleRole.Translator.name())) {
+                localeRoles.setTranslator(checked);
+            } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Reviewer.name())) {
+                localeRoles.setReviewer(checked);
+            } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
+                localeRoles.setCoordinator(checked);
+            }
+        } else {
+            // No LocaleRoles for the given locale, so create a new one.
+            List<LocaleRole> roleList = Lists.newArrayList(LocaleRole.valueOf(role));
+            data.addLocaleRoles(hLocale, roleList);
+        }
+    }
+
+    /**
+     * Get a predicate that checks if a LocaleRoles.getLocale() is the given locale.
+     */
+    private Predicate<PersonProjectMemberships.LocaleRoles> localeEqualsPredicate(
+            final HLocale hLocale) {
+        return new Predicate<PersonProjectMemberships.LocaleRoles>() {
+            @Override
+            public boolean apply(PersonProjectMemberships.LocaleRoles input) {
+                return input.getLocale().equals(hLocale);
+            }
+        };
     }
 
     /**
