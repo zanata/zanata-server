@@ -609,6 +609,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
             roles.remove(TranslationMaintainer);
         }
 
+        // Wrapped in a concrete collection because the lazy collection returned
+        // by transform causes errors when it is used directly in a jsf template.
         return Lists.newArrayList(Collections2.transform(roles,
                 new Function<ProjectRole, String>() {
                     @Override
