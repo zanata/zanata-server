@@ -22,7 +22,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:z="http://java.sun.com/jsf/composite/zanata">
 
 <script type="text/javascript">
@@ -58,13 +57,13 @@
 
 <h:form id="settings-translation-form" styleClass="l--push-bottom-0">
 
-  <s:div styleClass="l--push-bottom-half" id="invite-only-setting">
+  <h:panelGroup layout="block" styleClass="l--push-bottom-half" id="invite-only-setting">
     <z:checkbox label="#{msgs['jsf.translation.permission.inviteOnly']}"
         onValueChanged="inviteOnlyValueChangedWrapper"
         labelStyle="js-reveal__toggle l--push-bottom-0"
         checked="#{!projectHome.instance.isAllowGlobalTranslation()}"
         value="allow-global-translation"/>
-  </s:div>
+  </h:panelGroup>
 
   <p>#{msgs['jsf.translation.permission.inviteOnly.detail']}</p>
 

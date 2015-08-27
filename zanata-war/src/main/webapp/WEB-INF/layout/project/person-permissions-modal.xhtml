@@ -21,7 +21,6 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:s="http://jboss.org/schema/seam/taglib"
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:z="http://java.sun.com/jsf/composite/zanata"
@@ -57,15 +56,15 @@
   <ui:param name="memberSelected" value="#{(not empty person) and projectHomeAction.isMember(person)}"/>
 
   <div class="modal" id="#{id}" tabindex="-1" role="dialog" aria-hidden="true">
-    <s:div id="#{id}-content" styleClass="modal__dialog l--constrain-medium">
+    <h:panelGroup layout="block" id="#{id}-content" styleClass="modal__dialog l--constrain-medium">
       <header class="modal__header">
         <h2 class="modal__title">
-          <s:fragment rendered="#{not memberSelected}">
+          <ui:fragment rendered="#{not memberSelected}">
             #{msgs['jsf.people.AddSomeone']}
-          </s:fragment>
-          <s:fragment rendered="#{memberSelected}">
+          </ui:fragment>
+          <ui:fragment rendered="#{memberSelected}">
             #{msgs['jsf.projectPermissions.ManagePermissions']}
-          </s:fragment>
+          </ui:fragment>
         </h2>
         <button class="modal__close button--link" data-dismiss="modal">
           <i class="i i--huge i--cancel"></i>
@@ -76,7 +75,7 @@
           <div class="l--pad-all-1">
             <h3 class="l--push-top-0">#{msgs['jsf.people.SelectUser']}</h3>
 
-            <s:fragment rendered="#{empty person}">
+            <ui:fragment rendered="#{empty person}">
               <z:autocomplete actionBean="#{dialogBean}"
                   fetchValue="#{result.account.username}"
                   id="#{id}Autocomplete"
@@ -88,9 +87,9 @@
                 </span>
                 <h:outputText value="#{result.account.username}"/>
               </z:autocomplete>
-            </s:fragment>
+            </ui:fragment>
 
-            <s:fragment rendered="#{not empty person}">
+            <ui:fragment rendered="#{not empty person}">
               <p class="txt--lead">
                 <z:person-tile person="#{person}"/>
                 <z:ajax-command-button
@@ -142,11 +141,11 @@
                     </li>
                   </ul>
 
-                  <s:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
+                  <ui:fragment rendered="#{not identity.hasPermission(projectHome.instance, 'manage-members')}">
                     <p class="txt--meta l--push-top-half">
                       #{msgs['jsf.projectPermissions.YouCannotModify']}
                     </p>
-                  </s:fragment>
+                  </ui:fragment>
 
                   <p id="#{id}-translation-maintainer-disabled-message"
                       class="is-hidden txt--meta l--push-top-half">
@@ -174,9 +173,9 @@
               <hr/>
 
               <h3>Translation Permissions</h3>
-              <s:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
+              <ui:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
                 <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
-              </s:fragment>
+              </ui:fragment>
               <ul class="list--slat">
                 <!-- TODO add filtering for list -->
                 <ui:repeat value="#{projectPermissionDialog.data.localeRoles.toArray()}" var="roles">
@@ -211,7 +210,7 @@
                   </li>
                 </ui:repeat>
               </ul>
-            </s:fragment>
+            </ui:fragment>
           </div>
 
           <div class="modal__footer l--pad-h-1 l--pad-v-half bg--highest txt--align-right">
@@ -240,7 +239,7 @@
         zanata.form.appendCheckboxes(jQuery('##{id}-content').element);
         //]]>
       </script>
-      <s:fragment rendered="#{not identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
+      <ui:fragment rendered="#{not identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
         <script type="text/javascript">
           //<![CDATA[
           jQuery('##{id}-project-permissions')
@@ -248,8 +247,8 @@
                   .trigger('disable');
           //]]>
         </script>
-      </s:fragment>
-      <s:fragment rendered="#{identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
+      </ui:fragment>
+      <ui:fragment rendered="#{identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
         <!-- disable the TranslationMaintainer checkbox when Maintainer is checked,
              (not needed if the user has no permission, since both are permanently disabled )-->
         <script type="text/javascript">
@@ -282,7 +281,7 @@
             })();
           //]]>
         </script>
-      </s:fragment>
+      </ui:fragment>
       <script type="text/javascript">
         //<![CDATA[
         (function () {
@@ -307,7 +306,7 @@
         })();
         //]]>
       </script>
-    </s:div>
+    </h:panelGroup>
   </div>
 
 

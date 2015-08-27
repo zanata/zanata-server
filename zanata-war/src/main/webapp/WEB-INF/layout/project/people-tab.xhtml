@@ -21,7 +21,6 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:s="http://jboss.org/schema/seam/taglib"
         xmlns:ui="http://java.sun.com/jsf/facelets"
         xmlns:h="http://java.sun.com/jsf/html"
         xmlns:z="http://java.sun.com/jsf/composite/zanata"
@@ -37,7 +36,7 @@
     <!-- Header row -->
     <div class="panel__header">
       <div class="panel__header__actions">
-        <s:fragment rendered="#{canManageMembers}">
+        <ui:fragment rendered="#{canManageMembers}">
 
           <h:form styleClass="bx--inline">
             <z:ajax-command-button
@@ -52,7 +51,7 @@
             </z:ajax-command-button>
           </h:form>
 
-        </s:fragment>
+        </ui:fragment>
         <z:sortlist id="project-people_sorting"
           sortAction="#{projectHomeAction.peopleFilterComparator.sortPeopleList()}"
           render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
@@ -84,10 +83,10 @@
     <h:form id="people_form" styleClass="l--push-bottom-1">
 
       <!-- No people message -->
-      <s:div styleClass="l--pad-all-half"
+      <h:panelGroup layout="block" styleClass="l--pad-all-half"
         rendered="#{empty projectHomeAction.allMembers}">
         <p class="txt--meta">#{msgs['jsf.NoPeople']}</p>
-        <s:fragment rendered="#{canManageMembers}">
+        <ui:fragment rendered="#{canManageMembers}">
           <p>
             <z:ajax-command-button
                 styleClass="button button--primary panel__header__button"
@@ -100,17 +99,17 @@
               </f:facet>
             </z:ajax-command-button>
           </p>
-        </s:fragment>
-      </s:div>
+        </ui:fragment>
+      </h:panelGroup>
 
       <!-- Alphabetical people list -->
-      <s:fragment rendered="#{not projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
-        <s:div styleClass="l--pad-all-half"
+      <ui:fragment rendered="#{not projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+        <h:panelGroup layout="block" styleClass="l--pad-all-half"
           rendered="#{not empty projectHomeAction.allMembers and empty projectHomeAction.peopleFilterComparator.currentPage}">
           <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
-        </s:div>
+        </h:panelGroup>
 
-        <s:fragment
+        <ui:fragment
           rendered="#{not projectHomeAction.peopleFilterComparator.currentPage.isEmpty()}">
           <ul class="list--slat l--push-all-half">
             <ui:repeat value="#{projectHomeAction.peopleFilterComparator.currentPage}" var="person">
@@ -122,21 +121,21 @@
                 managePermissionsModal="modalManagePermissions"/>
             </ui:repeat>
           </ul>
-        </s:fragment>
-      </s:fragment>
+        </ui:fragment>
+      </ui:fragment>
 
       <!-- People list grouped by role -->
-      <s:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
+      <ui:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
         <ui:param name="maintainers" value="#{projectHomeAction.peopleFilterComparator.getMaintainers()}"/>
         <ui:param name="localesWithMembers" value="#{projectHomeAction.peopleFilterComparator.getMembersByLocale()}"/>
 
-        <s:div styleClass="l--pad-all-half"
+        <h:panelGroup layout="block" styleClass="l--pad-all-half"
           rendered="#{not empty projectHomeAction.allMembers and empty maintainers and empty localesWithMembers}">
           <p class="txt--meta">#{msgs['jsf.search.NoResult']}</p>
-        </s:div>
+        </h:panelGroup>
 
         <!-- Project roles (Maintainers and Translation Maintainers) -->
-        <s:div styleClass="l--pad-h-half l--push-bottom-1" rendered="#{not empty maintainers}">
+        <h:panelGroup layout="block" styleClass="l--pad-h-half l--push-bottom-1" rendered="#{not empty maintainers}">
           <h3 class="heading--secondary l--push-bottom-quarter">
             #{msgs['jsf.project.peoplelist.project.label']}
             <span class="txt--mini l--push-left-quarter">
@@ -153,10 +152,10 @@
                 managePermissionsModal="modalManagePermissions"/>
             </ui:repeat>
           </ul>
-        </s:div>
+        </h:panelGroup>
 
         <!-- Translation roles, grouped by locale -->
-        <s:div styleClass="l--pad-h-half" rendered="#{not empty localesWithMembers}">
+        <h:panelGroup layout="block" styleClass="l--pad-h-half" rendered="#{not empty localesWithMembers}">
           <h3 class="heading--secondary l--push-bottom-quarter">
             #{msgs['jsf.project.peoplelist.translation.label']}
             <span class="txt--mini l--push-left-quarter">
@@ -181,8 +180,8 @@
               </ui:repeat>
             </ul>
           </ui:repeat>
-        </s:div>
-      </s:fragment>
+        </h:panelGroup>
+      </ui:fragment>
     </h:form>
 
     <!-- people count at bottom -->

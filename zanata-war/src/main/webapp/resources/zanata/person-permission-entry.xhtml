@@ -4,8 +4,7 @@
   xmlns:composite="http://java.sun.com/jsf/composite"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:z="http://java.sun.com/jsf/composite/zanata"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:s="http://jboss.org/schema/seam/taglib">
+  xmlns:f="http://java.sun.com/jsf/core">
 
 <composite:interface>
   <composite:attribute name="person" type="org.zanata.model.HPerson"
@@ -39,7 +38,7 @@
         </ui:repeat>
       </div>
       <div class="g__item w--4-12 txt--align-right">
-        <s:fragment rendered="#{cc.attrs.canManageMembers}">
+        <ui:fragment rendered="#{cc.attrs.canManageMembers}">
             <z:ajax-command-button
                 styleClass="button button--small"
                 action="#{projectPermissionDialog.setData(cc.attrs.project, cc.attrs.person)}"
@@ -50,7 +49,7 @@
                 <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
               </f:facet>
             </z:ajax-command-button>
-        </s:fragment>
+        </ui:fragment>
       </div>
     </div>
   </li>
