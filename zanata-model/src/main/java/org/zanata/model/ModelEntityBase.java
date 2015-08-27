@@ -38,6 +38,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -47,6 +48,7 @@ import org.zanata.hibernate.search.DateBridge;
 
 import com.google.common.annotations.VisibleForTesting;
 
+@Slf4j
 @EntityListeners({ ModelEntityBase.EntityListener.class })
 @MappedSuperclass
 public class ModelEntityBase implements Serializable, HashableState {
@@ -158,6 +160,7 @@ public class ModelEntityBase implements Serializable, HashableState {
         try {
             return obj.getClass().getDeclaredMethod("equals", Object.class) != null;
         } catch (NoSuchMethodException e) {
+            log.error("class does not override equals: " + obj.getClass(), e);
             return false;
         }
     }

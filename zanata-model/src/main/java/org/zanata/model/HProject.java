@@ -56,6 +56,7 @@ import javax.validation.constraints.Size;
 
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -100,6 +101,7 @@ import com.google.common.collect.Sets;
 
 })
 @EntityRestrict({ INSERT, UPDATE, DELETE })
+@EqualsAndHashCode(callSuper = true, of = {})
 @Setter
 @Getter
 @Indexed
