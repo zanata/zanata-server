@@ -5,6 +5,7 @@ import DropDown from './DropDown';
 import {PureRenderMixin} from 'react/addons';
 import Actions from '../actions/GlossaryActions';
 import GlossaryDataTable from './GlossaryDataTable'
+import { Input, Icons, Icon, Select } from 'zanata-ui'
 
 
 var SystemGlossary = React.createClass({
@@ -33,6 +34,17 @@ var SystemGlossary = React.createClass({
   render: function() {
     var contents;
 
+    var localeList = [
+      {
+        value: 'de',
+        label: 'German'
+      },
+      {
+        value: 'fr',
+        label: 'French'
+      }
+    ]
+
     if(this.state.glossary && _.size(this.state.glossary) > 0) {
       contents = (
           <GlossaryDataTable
@@ -49,24 +61,40 @@ var SystemGlossary = React.createClass({
       contents = (<div>No glossary</div>)
     }
 
-    return (<div id="glossaries l--push-bottom-1">
-                <div className="txt--lead l--push-bottom-half">
-                  <span className="txt--highlight">System Glossary</span>
-                  <i className="i i--arrow-right l--push-h-quarter"></i>
-                  <DropDown options={this.state.localeOptions} selectedOption={this.state.selectedTransLocale} onClick={Actions.changeTransLocale} />
-                  <a href="#" data-toggle="modal" data-target="#glossaryUploadDialog" className="l--float-right">
-                    <i className="i i--import i__item__icon"></i> Import Glossary
-                  </a>
+    return (<div>
+              <Icons fileName='./node_modules/zanata-ui/src/components/Icons/icons.svg' />
+              <div className='dfx aic mb1'>
+                <div className='fxauto dfx aic'>
+                  <h1 className='fz2 dib csec'>System Glossary</h1>
+                  <Icon name='chevron-right' className='mh1/2 csec50' size='s1'/>
+                  <Select
+                    name='language-selection'
+                    placeholder='Select a language'
+                    className='w16'
+                    options={localeList}
+                  />
                 </div>
-                <div className="g l--push-bottom-half">
-                  <div className="g__item w--1-3"><input type="text" placeholder="Search Glossary"></input></div>
-                  <div className="g__item w--2-3 txt--align-right">
-                    <label className="txt--align-right epsilon">{this.state.glossary.length}</label>
+                <div>
+                  <button className='cpri dfx aic'><Icon name='import' className='mr1/4' /><span>Import Glossary</span></button>
+                </div>
+              </div>
+              <div className='dfx aic mb1'>
+                <div className='fxauto'>
+                  <div className='posr w8'>
+                    <Input label='Search Glossary' outline className='w100p pr1&1/2' type='search' placeholder='Search Glossary' />
+                    <button className='posa r0 t0 fzn1 h1&1/2 p1/4 csec50 dfx aic'>
+                      <Icon name='search' size='s1' />
+                    </button>
                   </div>
                 </div>
-
-                <DropDown options={this.state.localeOptions} selectedOption={this.state.selectedSrcLocale} onClick={Actions.changeSrcLocale} />
+                <div className='dfx aic'>
+                  <Icon name='glossary' className='csec50 mr1/4' />
+                  <span className='csec'>{this.state.glossary.length}</span>
+                </div>
+              </div>
+              <div>
                 {contents}
+              </div>
             </div>);
   }
 });
