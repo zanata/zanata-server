@@ -11,6 +11,11 @@ import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
 var _state = {
+<<<<<<< HEAD
+=======
+  canAddNewEntry: canAddNewEntry(),
+  canUpdateEntry: canUpdateEntry(),
+>>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
   localeOptions: [],
   selectedSrcLocale: null,
   selectedTransLocale: null,
@@ -91,10 +96,43 @@ function loadGlossaryByLocale() {
         }));
     });
   }
+<<<<<<< HEAD
+=======
+}
+
+function canAddNewEntry () {
+  //rest api to get permission
+ return true;
+}
+
+function canUpdateEntry() {
+  //rest api to get permission
+  return true;
+}
+
+function generateTransTerm() {
+  return {
+    content: '',
+    locale: '',
+    comment: '',
+    lastModifiedDate: '',
+    lastModifiedBy: ''
+  }
+}
+function generateSrcTerm() {
+  var term = generateTransTerm();
+  term['reference'] = '';
+  return term;
+>>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
 }
 
 function processGlossaryList(serverResponse) {
   _state['glossary'] = {};
+<<<<<<< HEAD
+=======
+  _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
+
+>>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
   var transLocaleId = GlossaryHelper.getLocaleIdByDisplayName(_state['locales'],  _state['selectedTransLocale']);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {

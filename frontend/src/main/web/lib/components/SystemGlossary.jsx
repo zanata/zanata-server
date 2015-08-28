@@ -4,8 +4,8 @@ import GlossaryStore from '../stores/GlossaryStore';
 import DropDown from './DropDown';
 import {PureRenderMixin} from 'react/addons';
 import Actions from '../actions/GlossaryActions';
-import GlossaryDataTable from './GlossaryDataTable'
 import { Input, Icons, Icon, Select } from 'zanata-ui'
+import GlossaryDataTable from './glossary/GlossaryDataTable'
 
 
 var SystemGlossary = React.createClass({
@@ -52,6 +52,8 @@ var SystemGlossary = React.createClass({
             glossaryData={this.state.glossary}
             isGlossaryAdmin={false}
             isGlossarist={true}
+            canAddNewEntry={this.state.canAddNewEntry}
+            canUpdateEntry={this.state.canUpdateEntry}
             isAuthenticated={Configs.authenticated}
             user={Configs.user}
             selectedSrcLocale={this.state.selectedSrcLocale}
