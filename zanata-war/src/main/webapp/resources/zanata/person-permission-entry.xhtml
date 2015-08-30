@@ -43,7 +43,7 @@
                 styleClass="button button--small"
                 action="#{projectPermissionDialog.setData(cc.attrs.project, cc.attrs.person)}"
                 render="#{cc.attrs.managePermissionsRender}"
-                oncomplete="zanata.modal.show(jQuery('##{cc.attrs.managePermissionsModal}'))">
+                oncomplete="zanata.modal.show(jQuery('##{cc.attrs.managePermissionsModal}'));jQuery('##{cc.attrs.managePermissionsModal}').scrollTop(0)">
               <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
               <f:facet name="loading">
                 <i class="i i--settings"></i> #{msgs['jsf.projectPermissions.ManagePermissions']}
