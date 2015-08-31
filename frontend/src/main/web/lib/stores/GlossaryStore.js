@@ -11,11 +11,8 @@ import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
 var _state = {
-<<<<<<< HEAD
-=======
   canAddNewEntry: canAddNewEntry(),
   canUpdateEntry: canUpdateEntry(),
->>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
   localeOptions: [],
   selectedSrcLocale: null,
   selectedTransLocale: null,
@@ -52,15 +49,13 @@ function loadLocalesStats() {
 function processLocalesStatistic(serverResponse) {
   var localesMap = {}, localeOptions = [];
 
-  localeOptions.push("Select a language");
-
   _.forEach(serverResponse, function(stats) {
     localesMap[stats.locale.localeId] = stats;
-    localeOptions.push(stats.locale.displayName);
+    localeOptions.push({
+      value: stats.locale.localeId,
+      label: stats.locale.displayName
+    });
   });
-
-  _state['selectedSrcLocale'] = localeOptions[1];
-  _state['selectedTransLocale'] = localeOptions[0];
 
   _state['localeOptions'] = localeOptions;
   _state['locales'] = localesMap;
@@ -72,14 +67,12 @@ function glossaryAPIUrl(srcLocale, transLocale) {
   return Configs.baseUrl + "/glossary/src/" + srcLocale + "/trans/" + transLocale + Configs.urlPostfix
 }
 
-function loadGlossaryByLocale() {
-  var selectedSrcLocaleId =
-      GlossaryHelper.getLocaleIdByDisplayName(_state['locales'], _state['selectedSrcLocale']),
-     selectedTransLocaleId =
-      GlossaryHelper.getLocaleIdByDisplayName(_state['locales'], _state['selectedTransLocale']),
-      url = glossaryAPIUrl(selectedSrcLocaleId, selectedTransLocaleId);
+function loadGlossaryByLocale () {
+  var selectedSrcLocaleId = _state['selectedSrcLocale'] || 'en-US'
+  var selectedTransLocaleId = _state['selectedTransLocale']
+  var url = glossaryAPIUrl(selectedSrcLocaleId, _state['selectedTransLocale'])
 
-  if(!_.isUndefined(selectedSrcLocaleId) && !_.isUndefined(selectedTransLocaleId)) {
+  if(!_.isUndefined(selectedSrcLocaleId) && !_.isUndefined(_state['selectedTransLocale'])) {
     return new Promise(function(resolve, reject) {
       Request.get(url)
         .set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -96,8 +89,6 @@ function loadGlossaryByLocale() {
         }));
     });
   }
-<<<<<<< HEAD
-=======
 }
 
 function canAddNewEntry () {
@@ -123,17 +114,13 @@ function generateSrcTerm() {
   var term = generateTransTerm();
   term['reference'] = '';
   return term;
->>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
 }
 
 function processGlossaryList(serverResponse) {
   _state['glossary'] = {};
-<<<<<<< HEAD
-=======
   _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
 
->>>>>>> 1f268ef8297db8ac40b3e4b7d46648faf341edaf
-  var transLocaleId = GlossaryHelper.getLocaleIdByDisplayName(_state['locales'],  _state['selectedTransLocale']);
+  var transLocaleId = _state['selectedTransLocale'];
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =

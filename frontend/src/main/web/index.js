@@ -4,6 +4,7 @@ import RootContent from './lib/components/RootContent';
 import Views from './lib/constants/Views.js';
 import Configs from './lib/constants/Configs';
 import StringUtils from './lib/utils/StringUtils';
+import css from './index.css'
 
 var mountNode = document.getElementById('main-content'),
   baseUrl = mountNode.getAttribute('base-url'),

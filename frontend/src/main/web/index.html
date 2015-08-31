@@ -2,10 +2,8 @@
 <html class="new-zanata">
 <head lang="en">
   <meta charset="UTF-8">
-   <!-- <link type="text/css" rel="stylesheet" href="http://assets-zanata.rhcloud.com/master/assets/css/style.min.css"> -->
-   <link type="text/css" rel="stylesheet" href="/node_modules/zanata-ui/lib/styles/index.css">
-   <link type="text/css" rel="stylesheet" href="/node_modules/fixed-data-table/dist/fixed-data-table.css">
-
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <link type="text/css" rel="stylesheet" href="/node_modules/fixed-data-table/dist/fixed-data-table.css">
   <!--<link type="text/css" rel="stylesheet" href="http://localhost:5000/assets/css/style.css">-->
   <title>Zanata</title>
   <script type="text/javascript">
@@ -28,26 +26,18 @@
   </script>
 </head>
 
-<body class="new-zanata zanata ffsans cblack90 p1">
+<body class="ffsans cblack90 p1">
 
   <!-- for testing different view -->
-  <div class="l__wrapper">
-    <div class="g">
-      <div class="w--1-3 g__item">
-        <select id="views" onclick="viewChange(this.value)">
-          <option value="profile">Profile page</option>
-          <option value="glossary">Glossary page</option>
-        </select>
-      </div>
-    </div>
-  </div>
+  <select id="views" onclick="viewChange(this.value)">
+    <option value="profile">Profile page</option>
+    <option value="glossary">Glossary page</option>
+  </select>
 
-  <main role="main" class="l--pad-v-1">
-    <div class="l__wrapper">
-      <div id="main-content" base-url="http://localhost:3000/lib/stores/testData"
-        user='{"username": "test-user", "email":"zanata@zanata.org", "name": "admin-name", "imageUrl":"//www.gravatar.com/avatar/dda6e90e3f2a615fb8b31205e8b4894b?d=mm&r=g&s=115", "languageTeams": "English, French, German, Yodish (Yoda English)"}'
-        authenticated="true" dev>
-      </div>
+  <main role="main">
+    <div id="main-content" base-url="http://localhost:3000/lib/stores/testData"
+      user='{"username": "test-user", "email":"zanata@zanata.org", "name": "admin-name", "imageUrl":"//www.gravatar.com/avatar/dda6e90e3f2a615fb8b31205e8b4894b?d=mm&r=g&s=115", "languageTeams": "English, French, German, Yodish (Yoda English)"}'
+      authenticated="true" dev>
     </div>
   </main>
 

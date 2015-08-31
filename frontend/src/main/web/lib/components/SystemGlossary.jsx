@@ -1,8 +1,7 @@
 import React from 'react';
 import Configs from '../constants/Configs';
 import GlossaryStore from '../stores/GlossaryStore';
-import DropDown from './DropDown';
-import {PureRenderMixin} from 'react/addons';
+import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
 import { Input, Icons, Icon, Select } from 'zanata-ui'
 import GlossaryDataTable from './glossary/GlossaryDataTable'
@@ -31,19 +30,12 @@ var SystemGlossary = React.createClass({
     this.setState(this.getLocaleStats());
   },
 
+  _handleTransChange: function(localeId) {
+    Actions.changeTransLocale(localeId)
+  },
+
   render: function() {
     var contents;
-
-    var localeList = [
-      {
-        value: 'de',
-        label: 'German'
-      },
-      {
-        value: 'fr',
-        label: 'French'
-      }
-    ]
 
     if(this.state.glossary && _.size(this.state.glossary) > 0) {
       contents = (
@@ -71,9 +63,11 @@ var SystemGlossary = React.createClass({
                   <Icon name='chevron-right' className='mh1/2 csec50' size='s1'/>
                   <Select
                     name='language-selection'
-                    placeholder='Select a language'
+                    placeholder='Select a language…'
                     className='w16'
-                    options={localeList}
+                    value={this.state.selectedTransLocale}
+                    options={this.state.localeOptions}
+                    onChange={this._handleTransChange}
                   />
                 </div>
                 <div>
@@ -83,7 +77,7 @@ var SystemGlossary = React.createClass({
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
                   <div className='posr w8'>
-                    <Input label='Search Glossary' outline className='w100p pr1&1/2' type='search' placeholder='Search Glossary' />
+                    <Input name='glossarySearch' label='Search Glossary' outline className='w100p pr1&1/2' type='search' placeholder='Search Glossary' />
                     <button className='posa r0 t0 fzn1 h1&1/2 p1/4 csec50 dfx aic'>
                       <Icon name='search' size='s1' />
                     </button>
