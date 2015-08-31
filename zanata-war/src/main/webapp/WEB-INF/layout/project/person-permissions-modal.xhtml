@@ -81,7 +81,7 @@
                   id="#{id}Autocomplete"
                   render="#{id}-content"
                   minlength="1"
-                  placeholder="Search name or username">
+                  placeholder="#{msgs['jsf.SearchNameOrUsername']}">
                 <span class="w--r-1 bx--round l--push-right-quarter">
                   <img src="#{gravatarServiceImpl.getUserImageUrl(48, result.email)}" alt=""/>
                 </span>
@@ -97,14 +97,14 @@
                     action="#{projectPermissionDialog.setData(projectHome.instance, null)}"
                     render="modalManagePermissions-content"
                     oncomplete="zanata.modal.show(jQuery('#modalManagePermissions'))">
-                  <span title="Select a different person">
+                  <span title="#{msgs['jsf.projectPermissions.SelectDifferentPerson']}">
                     <i class="i i--small i--cross"></i>
-                    <span class="is-sr-only">Select a different person</span>
+                    <span class="is-sr-only">#{msgs['jsf.projectPermissions.SelectDifferentPerson']}</span>
                   </span>
                   <f:facet name="loading">
-                    <span title="Select a different person">
+                    <span title="#{msgs['jsf.projectPermissions.SelectDifferentPerson']}">
                       <i class="i i--small i--cross"></i>
-                      <span class="is-sr-only">Select a different person</span>
+                      <span class="is-sr-only">#{msgs['jsf.projectPermissions.SelectDifferentPerson']}</span>
                     </span>
                   </f:facet>
                 </z:ajax-command-button>
@@ -149,10 +149,11 @@
 
                   <p id="#{id}-translation-maintainer-disabled-message"
                       class="is-hidden txt--meta l--push-top-half">
-                    <i class="i i--info"></i>
-                    <strong>#{msgs['jsf.projectPermissions.MaintainProject']}</strong>
-                    includes all permissions for
-                    <strong>#{msgs['jsf.projectPermissions.ManageTranslators']}</strong>.
+                    <i class="i i--info"></i> <h:outputText
+                        value="#{msgs.format('jsf.projectPermissions.IncludedPermissionExplanation',
+                                   msgs['jsf.projectPermissions.MaintainProject'],
+                                   msgs['jsf.projectPermissions.ManageTranslators'])}"
+                        escape="false"/>
                   </p>
 
                   <p id="#{id}-translation-maintainer-info" class="txt--meta l--push-top-half is-hidden">
