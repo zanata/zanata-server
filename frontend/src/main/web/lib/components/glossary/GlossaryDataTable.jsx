@@ -3,7 +3,7 @@ import {PureRenderMixin} from '../../../node_modules/react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
-import DropDown from './../DropDown';
+import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 
 
@@ -73,8 +73,8 @@ var GlossaryDataTable = React.createClass({
     }
 
     return {
-      tbl_width: 1500,
-      tbl_height: 500,
+      tbl_width: window.innerWidth - 48,
+      tbl_height: window.innerHeight - 166,
       row_height: 50,
       header_height: 50,
       inputFields: {},
@@ -105,11 +105,12 @@ var GlossaryDataTable = React.createClass({
   },
 
   _renderHeaderLabel: function (label) {
-    return (<span className="epsilon">{label}</span>);
+    return (<span className='csec'>{label}</span>);
   },
 
   _renderSourceHeader: function (label) {
-    return (<DropDown options={this.props.localeOptions} selectedOption={this.props.selectedSrcLocale} onClick={Actions.changeSrcLocale} />);
+    console.log(this.props)
+    return (<span className='csec'>{this.props.selectedSrcLocale}</span>);
   },
 
   _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
@@ -217,36 +218,25 @@ var GlossaryDataTable = React.createClass({
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var self = this,
-      cancelButton = (<a onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</a>);
+    var self = this
+    var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>)
 
     if(rowIndex == 0 && self.props.canAddNewEntry) {
-      return (
-        <div className="g l--pad-all-quarter txt--align-center">
-          <div className="g__item w--1-2">
-            <button onClick={self._handleSave.bind(self, resId)} className="button--primary">Save</button>
-          </div>
-          <div className="g__item w--1-2">
-            {cancelButton}
-          </div>
-        </div>);
+      return (<div>
+                <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave.bind(self, resId)}>Save</button>
+                {cancelButton}
+              </div>)
     } else if(this.props.canUpdateEntry) {
-      return (
-        <div className="g l--pad-all-quarter txt--align-center">
-          <div className="g__item w--1-5">
-            <a><i className="i i--comment"></i></a>
-          </div>
-          <div className="g__item w--1-3">
-            <button onClick={self._handleUpdate.bind(self, resId)} className="button--primary">Update</button>
-          </div>
-          <div className="g__item w--1-3">
-            {cancelButton}
-          </div>
-        </div>)
+      return (<div>
+                <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
+                <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self, resId)}>Update</button>
+                {cancelButton}
+              </div>)
     } else {
       return (<div></div>)
     }
   },
+
 
   _getSourceColumn: function() {
     return (<Column

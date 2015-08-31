@@ -14,7 +14,7 @@ var _state = {
   canAddNewEntry: canAddNewEntry(),
   canUpdateEntry: canUpdateEntry(),
   localeOptions: [],
-  selectedSrcLocale: null,
+  selectedSrcLocale: 'en-US',
   selectedTransLocale: null,
   locales: null,
   glossary: {}
@@ -57,6 +57,7 @@ function processLocalesStatistic(serverResponse) {
     });
   });
 
+
   _state['localeOptions'] = localeOptions;
   _state['locales'] = localesMap;
 
@@ -64,6 +65,7 @@ function processLocalesStatistic(serverResponse) {
 }
 
 function glossaryAPIUrl(srcLocale, transLocale) {
+  console.log(srcLocale)
   return Configs.baseUrl + "/glossary/src/" + srcLocale + "/trans/" + transLocale + Configs.urlPostfix
 }
 
