@@ -11,10 +11,6 @@ var TextInput = React.createClass({
     onChangeCallback: React.PropTypes.func
   },
 
-  reset: function () {
-    console.info('reset');
-  },
-
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
@@ -23,11 +19,25 @@ var TextInput = React.createClass({
     };
   },
 
+  reset: function () {
+    this._setValue(this.props.value);
+  },
+
   _handleValueChange: function (event) {
-    if(this.props.onChangeCallback) {
-      this.props.onChangeCallback(this.props.id, this.props.field, event.target.value);
+    this._setValue(event.target.value);
+  },
+
+  _handleKeyDown: function (event) {
+    if(event.key == 'Escape') {
+      this.reset();
     }
-    this.setState({value: event.target.value});
+  },
+
+  _setValue: function (value) {
+    if(this.props.onChangeCallback) {
+      this.props.onChangeCallback(this, value);
+    }
+    this.setState({value: value});
   },
 
   render: function() {
@@ -37,7 +47,10 @@ var TextInput = React.createClass({
     if(readOnly) {
       return (<span title={this.props.title}>{this.state.value}</span>)
     } else {
-      return (<input type="text" placeholder={this.props.placeholder} onChange={this._handleValueChange} value={this.state.value}></input>)
+      return (<input type="text" placeholder={this.props.placeholder}
+        onChange={this._handleValueChange}
+        onKeyDown={this._handleKeyDown}
+        value={this.state.value}></input>)
     }
   }
 });

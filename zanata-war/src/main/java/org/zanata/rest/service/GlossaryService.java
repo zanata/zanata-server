@@ -77,7 +77,7 @@ public class GlossaryService implements GlossaryResource {
         }
 
         List<HLocale> supportedLocales =
-            localeServiceImpl.getSupportedAndEnabledLocales();
+            localeServiceImpl.getSupportedLocales();
         Map<LocaleId, Integer> srcLocales = glossaryDAO.getSourceLocales();
         Map<LocaleId, Integer> transLocales =
             glossaryDAO.getTranslationLocales();

@@ -124,6 +124,8 @@ function processGlossaryList(serverResponse) {
   _state['glossary'] = {};
   _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
 
+  console.info('response', serverResponse);
+
   var transLocaleId = GlossaryHelper.getLocaleIdByDisplayName(_state['locales'],  _state['selectedTransLocale']);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
@@ -144,7 +146,6 @@ function processGlossaryList(serverResponse) {
     }
     _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, srcTerm: srcTerm, transTerm: transTerm};
   });
-
   return _state;
 }
 
