@@ -32,6 +32,7 @@ import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
+import org.zanata.rest.dto.GlossaryLocale;
 import org.zanata.rest.dto.GlossaryLocaleStats;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.rest.dto.LocaleDetails;
@@ -76,37 +77,34 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
+        HLocale srcLocale = localeServiceImpl.getByLocaleId(LocaleId.EN_US);
+
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
-        Map<LocaleId, Integer> srcLocales = glossaryDAO.getSourceLocales();
-        Map<LocaleId, Integer> transLocales =
-            glossaryDAO.getTranslationLocales();
 
-        List<GlossaryLocaleStats> result = Lists.newArrayList();
+        Map<LocaleId, Integer> serverTransLocales =
+                glossaryDAO.getTranslationLocales();
+
+        List<GlossaryLocale> transLocale = Lists.newArrayList();
 
         for(HLocale locale: supportedLocales) {
             LocaleDetails localeDetails = generateLocaleDetails(locale);
             LocaleId localeId = locale.getLocaleId();
 
-            GlossaryLocaleStats localeStats =
-                new GlossaryLocaleStats(localeDetails, 0, 0);
-
-            if (srcLocales.containsKey(localeId)) {
-                localeStats.setSrcCount(srcLocales.get(localeId));
+            int count = 0;
+            if(serverTransLocales.containsKey(localeId)) {
+               count = serverTransLocales.get(localeId);
             }
-            if (transLocales.containsKey(localeId)) {
-                localeStats.setTransCount(transLocales.get(localeId));
-            }
-
-            result.add(localeStats);
+            GlossaryLocale glossaryLocale =
+                new GlossaryLocale(localeDetails, count);
+            transLocale.add(glossaryLocale);
         }
 
-        Type genericType = new GenericType<List<GlossaryLocaleStats>>() {
-        }.getGenericType();
+        GlossaryLocaleStats localeStats =
+            new GlossaryLocaleStats(generateLocaleDetails(srcLocale),
+                transLocale);
 
-        Object entity =
-            new GenericEntity<List<GlossaryLocaleStats>>(result, genericType);
-        return Response.ok(entity).build();
+        return Response.ok(localeStats).build();
     }
 
     private LocaleDetails generateLocaleDetails(HLocale locale) {
