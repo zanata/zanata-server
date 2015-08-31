@@ -21,6 +21,7 @@
 package org.zanata.security;
 
 import com.google.common.base.Optional;
+import org.hibernate.Session;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectLocaleMemberDAO;
@@ -42,6 +43,7 @@ import org.zanata.util.ServiceLocator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import lombok.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
 import static org.zanata.model.ProjectRole.Maintainer;
@@ -49,6 +51,15 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 /**
  * Contains static security rules functions used to determine permissions.
+ *
+ * <b>NOTE</b>:
+ * If you intended to use DAO and execute query in security functions, please
+ * make sure you use a new session to execute the query. The reason being, if
+ * you update an entity, SmartEntitySecurityListener will perform a check at
+ * pre-update. Any query executed within the same session will trigger a flush,
+ * which triggers another SmartEntitySecurityListener check and this will run
+ * into a loop.
+ *
  *
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
@@ -80,12 +91,29 @@ public class SecurityFunctions {
 
         if (account.isPresent()) {
             HPerson person = account.get().getPerson();
-            return ServiceLocator.instance().getInstance(ProjectMemberDAO.class)
-                    .hasProjectRole(person, project, role);
+
+            // see class level javadoc for why we need a new session here
+            try (AutoCloseSession autoCloseSession = newSession()) {
+                ProjectMemberDAO projectMemberDAO =
+                        new ProjectMemberDAO(autoCloseSession.session);
+                return projectMemberDAO
+                        .hasProjectRole(person, project, role);
+            }
         }
 
         // No authenticated user
         return false;
+    }
+
+    /**
+     *
+     * @return a new AutoClosable wrapper of a NEW session
+     */
+    private static AutoCloseSession newSession() {
+        Session session =
+                (Session) ServiceLocator.instance().getEntityManagerFactory()
+                        .createEntityManager().getDelegate();
+        return new AutoCloseSession(session);
     }
 
     private static boolean userHasProjectLanguageRole(HProject project,
@@ -571,5 +599,17 @@ public class SecurityFunctions {
      */
     private static boolean isTestServicePath(String servicePath) {
         return servicePath != null && servicePath.startsWith("/test");
+    }
+
+    private static class AutoCloseSession implements AutoCloseable {
+        private final Session session;
+
+        private AutoCloseSession(Session session) {
+            this.session = session;
+        }
+
+        public void close() {
+            session.close();
+        }
     }
 }
