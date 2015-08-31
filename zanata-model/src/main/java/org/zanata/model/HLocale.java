@@ -142,6 +142,7 @@ public class HLocale extends ModelEntityBase implements Serializable,
     // TODO these 'retrieve' methods are unconventional, replace them with
     //      getters so devs don't waste time trying to use 'get' methods that
     //      don't work properly.
+    // FIXME this exact thing just wasted another 15 mins of my time
     public String retrieveDisplayName() {
         if (displayName == null || displayName.equals("")) {
             return retrieveDefaultDisplayName();

@@ -22,14 +22,21 @@ package org.zanata.model;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,6 +76,13 @@ public class PersonProjectMemberships {
         }
     }
 
+    public ImmutableList<LocaleRoles> getSortedLocaleRoles() {
+        return ImmutableList.copyOf(ImmutableSortedSet
+                .orderedBy(localeNameOrdering)
+                .addAll(getLocaleRoles())
+                .build());
+    }
+
     /**
      * Add a set of roles for this person in a particular locale.
      */
@@ -95,6 +109,27 @@ public class PersonProjectMemberships {
             }
         }
     }
+
+    /**
+     * Transform to extract the name of the locale from a LocaleRoles (for sorting)
+     *
+     * Use with {@link com.google.common.collect.Collections2#transform}
+     */
+    public static final Function<LocaleRoles, String> TO_LOCALE_NAME =
+            new Function<LocaleRoles, String>() {
+                @Nullable
+                @Override
+                public String apply(LocaleRoles input) {
+                    // To lowercase to prevent non-caps values appearing after
+                    // all caps values (e.g. a appearing after Z)
+                    return input.getLocale().retrieveDisplayName().toLowerCase();
+                }
+            };
+
+    private static final Ordering<LocaleRoles> localeNameOrdering =
+            Ordering.natural().onResultOf(TO_LOCALE_NAME);
+
+
 
     /**
      * Transform to extract the locale from a LocaleRoles.

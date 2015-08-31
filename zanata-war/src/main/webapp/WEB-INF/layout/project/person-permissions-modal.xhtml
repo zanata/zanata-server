@@ -178,7 +178,7 @@
               </ui:fragment>
               <ul class="list--slat">
                 <!-- TODO add filtering for list -->
-                <ui:repeat value="#{projectPermissionDialog.data.localeRoles.toArray()}" var="roles">
+                <ui:repeat value="#{projectPermissionDialog.data.sortedLocaleRoles}" var="roles">
                   <li>
                     <div class="g--tight">
                       <div class="g__item w--1-3">
