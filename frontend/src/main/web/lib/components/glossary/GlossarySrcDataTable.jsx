@@ -7,24 +7,20 @@ import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 
 
-var GlossaryDataTable = React.createClass({
+var GlossarySrcDataTable = React.createClass({
   ENTRY: {
-      SRC: {
-        col: 1,
-        field: 'srcTerm.content'
-      },
-      TRANS: {
-        col: 2,
-        field: 'transTerm.content'
-      },
-      POS: {
-        col: 3,
-        field: 'pos'
-      },
-      DESC: {
-        col: 4,
-        field: 'description'
-      }
+    SRC: {
+      col: 1,
+      field: 'srcTerm.content'
+    },
+    POS: {
+      col: 2,
+      field: 'pos'
+    },
+    DESC: {
+      col: 3,
+      field: 'description'
+    }
   },
   propTypes: {
     glossaryData: React.PropTypes.object.isRequired,
@@ -74,14 +70,15 @@ var GlossaryDataTable = React.createClass({
       }).isRequired,
       count: React.PropTypes.number.isRequired
     }).isRequired,
-    selectedTransLocale: React.PropTypes.string.isRequired,
     totalCount: React.PropTypes.number.isRequired
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
-    delete this.props.glossaryData["NEW_ENTRY"];
+    if(!this.props.canAddNewEntry) {
+      delete this.props.glossaryData["NEW_ENTRY"];
+    }
 
     return {
       tbl_width: window.innerWidth - 48,
@@ -97,7 +94,7 @@ var GlossaryDataTable = React.createClass({
     var title = "";
     if(!_.isUndefined(term) && !_.isNull(term)) {
       if (!StringUtils.isEmptyOrNull(term.lastModifiedBy)
-          || !StringUtils.isEmptyOrNull(term.lastModifiedDate)) {
+        || !StringUtils.isEmptyOrNull(term.lastModifiedDate)) {
         title = "Last updated ";
         if (!StringUtils.isEmptyOrNull(term.lastModifiedBy)) {
           title += "by: " + term.lastModifiedBy;
@@ -126,47 +123,73 @@ var GlossaryDataTable = React.createClass({
                               columnData, width) {
     var entry = this._getGlossaryEntry(resId),
       term = entry.srcTerm,
+      readOnly = !(rowIndex == 0 && this.props.canAddNewEntry),
       title = this._generateTitle(term),
       key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
-
-    return <span title={title} key={key}>{term.content}</span>;
-  },
-
-  _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
-                              columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-        term = entry.transTerm,
-        title = this._generateTitle(term),
-        readOnly = !this.props.canUpdateEntry,
-        key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
 
     if(readOnly) {
       return <span title={title} key={key}>{term.content}</span>;
     } else {
-    return (<TextInput value={term.content}
-      placeholder="enter a translation"
-      title={title}
-      id={key}
-      resId={resId}
-      key={key}
-      field={this.ENTRY.TRANS.field}
-      onChangeCallback={this._onValueChange}/>);
+      return (<TextInput value={term.content}
+        placeholder="enter a term"
+        title={title}
+        id={key}
+        resId={resId}
+        key={key}
+        field={this.ENTRY.SRC.field}
+        onChangeCallback={this._onValueChange}/>);
     }
   },
 
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     var entry = this._getGlossaryEntry(resId),
-        key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
-    return <span key={key}>{entry.pos}</span>;
+      readOnly = !this.props.canUpdateEntry,
+      key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
+
+    if(readOnly) {
+      return <span key={key}>{entry.pos}</span>;
+    } else {
+      return (<TextInput value={entry.pos}
+        placeholder="enter part of speech"
+        title={entry.pos}
+        id={key}
+        resId={resId}
+        key={key}
+        field={this.ENTRY.POS.field}
+        onChangeCallback={this._onValueChange}/>);
+    }
   },
 
   _renderDescCell: function (resId, cellDataKey, rowData, rowIndex,
-                            columnData, width) {
+                             columnData, width) {
     var entry = this._getGlossaryEntry(resId),
-        key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
+      readOnly = !this.props.canUpdateEntry,
+      key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
 
-    return <span key={key}>{entry.description}</span>;
+    if(readOnly) {
+      return <span key={key}>{entry.description}</span>;
+    } else {
+      return (<TextInput value={entry.description}
+        placeholder="enter description"
+        title={entry.description}
+        id={key}
+        resId={resId}
+        key={key}
+        field={this.ENTRY.DESC.field}
+        onChangeCallback={this._onValueChange}/>);
+    }
+  },
+
+  _renderTransCell: function (resId, cellDataKey, rowData, rowIndex,
+                              columnData, width) {
+    var entry = this._getGlossaryEntry(resId),
+      count = entry.termsCount;
+
+    if(count === null) {
+      count = '';
+    }
+    return (<span>{count}</span>)
   },
 
   _onValueChange: function(inputField, value) {
@@ -175,9 +198,18 @@ var GlossaryDataTable = React.createClass({
     this.state.inputFields[inputField.props.id] = inputField;
   },
 
+  _handleSave: function(resId) {
+    var entry = this._getGlossaryEntry(resId);
+    Actions.createGlossary(entry);
+  },
+
   _handleUpdate: function(resId) {
     var entry = this._getGlossaryEntry(resId);
     Actions.updateGlossary(entry);
+  },
+
+  _handleDelete: function(resId) {
+    Actions.deleteGlossary(resId, this.props.srcLocale.locale.localeId);
   },
 
   /**
@@ -201,12 +233,19 @@ var GlossaryDataTable = React.createClass({
                             columnData, width) {
     var self = this;
 
-   if(this.props.canUpdateEntry) {
+    var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>);
+
+    if(rowIndex == 0 && self.props.canAddNewEntry) {
       return (<div>
-                <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
-                <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self, resId)}>Update</button>
-                <button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>
-              </div>)
+        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave.bind(self, resId)}>Save</button>
+                {cancelButton}
+      </div>)
+    } else if(this.props.canUpdateEntry) {
+      return (<div>
+        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleDelete.bind(self, resId)}>Delete</button>
+        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self, resId)}>Update</button>
+                {cancelButton}
+      </div>)
     } else {
       return (<div></div>)
     }
@@ -220,18 +259,7 @@ var GlossaryDataTable = React.createClass({
       flexGrow={1}
       cellRenderer={this._renderSourceCell}
       headerRenderer={this._renderSourceHeader}
-      />);
-  },
-
-  _getTransColumn: function() {
-    return (<Column
-      label="Translation"
-      width={150}
-      dataKey={0}
-      flexGrow={1}
-      cellRenderer={this._renderTransCell}
-      headerRenderer={this._renderHeaderLabel}
-      />);
+    />);
   },
 
   _getPosColumn: function() {
@@ -239,20 +267,31 @@ var GlossaryDataTable = React.createClass({
       label="Part of Speech"
       width={150}
       dataKey={0}
-      cellClassName="tac"
       cellRenderer={this._renderPosCell}
       headerRenderer={this._renderHeaderLabel}
-      />);
+    />);
   },
 
   _getDescColumn: function() {
     return (<Column
       label="Description"
       width={150}
+      flexGrow={1}
       dataKey={0}
       cellRenderer={this._renderDescCell}
       headerRenderer={this._renderHeaderLabel}
-      />);
+    />);
+  },
+
+  _getTransColumn: function() {
+    return (<Column
+      label="Translations"
+      width={120}
+      cellClassName="tac"
+      dataKey={0}
+      cellRenderer={this._renderTransCell}
+      headerRenderer={this._renderHeaderLabel}
+    />);
   },
 
   _getActionColumn: function() {
@@ -263,7 +302,7 @@ var GlossaryDataTable = React.createClass({
       dataKey={0}
       isResizable={false}
       cellRenderer={this._renderActions}
-      />)
+    />)
   },
 
   _getGlossaryEntry: function (resId) {
@@ -282,11 +321,10 @@ var GlossaryDataTable = React.createClass({
     function rowGetter(rowIndex) {
       return rows[rowIndex];
     }
-
     var srcColumn = this._getSourceColumn(),
-      transColumn = this._getTransColumn(),
       posColumn = this._getPosColumn(),
       descColumn = this._getDescColumn(),
+      transColumn = this._getTransColumn(),
       actionColumn = this._getActionColumn();
 
     var dataTable = (<Table
@@ -297,9 +335,9 @@ var GlossaryDataTable = React.createClass({
       height={this.state.tbl_height}
       headerHeight={this.state.header_height} >
       {srcColumn}
-      {transColumn}
       {posColumn}
       {descColumn}
+      {transColumn}
       {actionColumn}
     </Table>);
 
@@ -307,4 +345,4 @@ var GlossaryDataTable = React.createClass({
   }
 });
 
-export default GlossaryDataTable;
+export default GlossarySrcDataTable;

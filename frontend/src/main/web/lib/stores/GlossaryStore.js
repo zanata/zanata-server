@@ -14,12 +14,13 @@ var _state = {
   canAddNewEntry: canAddNewEntry(),
   canUpdateEntry: canUpdateEntry(),
   localeOptions: [],
-  selectedSrcLocale: null,
+  srcLocale: null,
   selectedTransLocale: null,
   locales: null,
   glossary: {},
   sizePerPage: 20,
-  page:0
+  page:1,
+  filter: ''
 };
 
 var CHANGE_EVENT = "change";
@@ -51,13 +52,13 @@ function loadLocalesStats() {
 function processLocalesStatistic(serverResponse) {
   var localesMap = {}, localeOptions = [];
 
-  _state['selectedSrcLocale'] = serverResponse['srcLocale'].localeId;
+  _state['srcLocale'] = serverResponse['srcLocale'];
 
-  _.forEach(serverResponse['transLocale'], function(stats) {
-    localesMap[stats.locale.localeId] = stats;
+  _.forEach(serverResponse['transLocale'], function(locale) {
+    localesMap[locale.localeId] = locale;
     localeOptions.push({
-      value: stats.locale.localeId,
-      label: stats.locale.displayName
+      value: locale.localeId,
+      label: locale.displayName
     });
   });
 
@@ -67,20 +68,26 @@ function processLocalesStatistic(serverResponse) {
   return _state;
 }
 
-function glossaryAPIUrl(srcLocale, transLocale) {
-  var  sizePerPage = _state['sizePerPage'], page = _state['page'];
-  return Configs.baseUrl
-    + "/glossary/src/" + srcLocale
-    + "/trans/" + transLocale + Configs.urlPostfix
-    + "?page=" + page + "&sizePerPage=" + sizePerPage;
+function glossaryAPIUrl(srcLocaleId, transLocale) {
+  var  sizePerPage = _state['sizePerPage'], page = _state['page'],
+    filter = _state['filter'];
+  var url = Configs.baseUrl + "/glossary/src/" + srcLocaleId;
+  if(!StringUtils.isEmptyOrNull(transLocale)) {
+    url = url + "/trans/" + transLocale;
+  }
+  if(!StringUtils.isEmptyOrNull(filter)) {
+    url = url + "?filter=" + filter;
+  }
+  url = url + Configs.urlPostfix;
+  return url;
 }
 
 function loadGlossaryByLocale () {
-  var selectedSrcLocaleId = _state['selectedSrcLocale'],
+  var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
 
-  if(!_.isNull(selectedSrcLocaleId) && !_.isNull(selectedTransLocaleId)) {
-    var url = glossaryAPIUrl(selectedSrcLocaleId, selectedTransLocaleId);
+  if(!_.isNull(srcLocale)) {
+    var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
 
     return new Promise(function(resolve, reject) {
       Request.get(url)
@@ -110,26 +117,28 @@ function canUpdateEntry() {
   return true;
 }
 
-function generateTransTerm() {
+function generateTransTerm(transLocaleId) {
   return {
     content: '',
-    locale: '',
+    locale: transLocaleId,
     comment: '',
     lastModifiedDate: '',
     lastModifiedBy: ''
   }
 }
-function generateSrcTerm() {
+function generateSrcTerm(localeId) {
   var term = generateTransTerm();
   term['reference'] = '';
   return term;
 }
 
 function processGlossaryList(serverResponse) {
-  _state['glossary'] = {};
-  _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
+  var transLocaleId = _state['selectedTransLocale'],
+  srcLocaleId = _state['srcLocale'].locale.localeId;
 
-  var transLocaleId = _state['selectedTransLocale'];
+  _state['glossary'] = {};
+  _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(srcLocaleId), transTerm: generateTransTerm(transLocaleId)};
+
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
@@ -144,10 +153,14 @@ function processGlossaryList(serverResponse) {
     var transTerm =
       GlossaryHelper.getTermByLocale(entry.glossaryTerms, transLocaleId);
 
-    if(!StringUtils.isEmptyOrNull(transTerm.lastModifiedDate)) {
-      transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
+    if(transTerm != null) {
+      if(!StringUtils.isEmptyOrNull(transTerm.lastModifiedDate)) {
+        transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
+      }
+    } else {
+      transTerm = generateTransTerm(transLocaleId);
     }
-    _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, srcTerm: srcTerm, transTerm: transTerm};
+    _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, termsCount: entry.termsCount, srcTerm: srcTerm, transTerm: transTerm};
   });
   return _state;
 }
@@ -249,15 +262,6 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
   dispatchToken: Dispatcher.register(function(payload) {
     var action = payload.action;
     switch (action['actionType']) {
-      case GlossaryActionTypes.SRC_LOCALE_SELECTED:
-        console.log('source locale from %s -> %s', _state['selectedSrcLocale'], action.data);
-        _state['selectedSrcLocale'] = action.data;
-        loadGlossaryByLocale()
-          .then(processGlossaryList)
-          .then(function (newState) {
-            GlossaryStore.emitChange();
-          });
-        break;
       case GlossaryActionTypes.TRANS_LOCALE_SELECTED:
         console.log('translation locale from %s -> %s', _state['selectedTransLocale'], action.data);
         _state['selectedTransLocale'] = action.data;

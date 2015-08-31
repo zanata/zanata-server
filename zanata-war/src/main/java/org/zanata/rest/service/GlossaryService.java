@@ -1,6 +1,5 @@
 package org.zanata.rest.service;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
@@ -21,7 +19,6 @@ import javax.ws.rs.core.UriInfo;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -78,31 +75,24 @@ public class GlossaryService implements GlossaryResource {
         }
 
         HLocale srcLocale = localeServiceImpl.getByLocaleId(LocaleId.EN_US);
+        int entryCount =
+                glossaryDAO.getEntryCountBySourceLocales(LocaleId.EN_US);
+        
+        GlossaryLocale srcGlossaryLocale =
+                new GlossaryLocale(generateLocaleDetails(srcLocale), entryCount);
 
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
 
-        Map<LocaleId, Integer> serverTransLocales =
-                glossaryDAO.getTranslationLocales();
-
-        List<GlossaryLocale> transLocale = Lists.newArrayList();
+        List<LocaleDetails> transLocale = Lists.newArrayList();
 
         for(HLocale locale: supportedLocales) {
             LocaleDetails localeDetails = generateLocaleDetails(locale);
-            LocaleId localeId = locale.getLocaleId();
-
-            int count = 0;
-            if(serverTransLocales.containsKey(localeId)) {
-               count = serverTransLocales.get(localeId);
-            }
-            GlossaryLocale glossaryLocale =
-                new GlossaryLocale(localeDetails, count);
-            transLocale.add(glossaryLocale);
+            transLocale.add(localeDetails);
         }
 
         GlossaryLocaleStats localeStats =
-            new GlossaryLocaleStats(generateLocaleDetails(srcLocale),
-                transLocale);
+            new GlossaryLocaleStats(srcGlossaryLocale, transLocale);
 
         return Response.ok(localeStats).build();
     }
@@ -131,7 +121,8 @@ public class GlossaryService implements GlossaryResource {
     public Response get(@PathParam("srcLocale") LocaleId srcLocale,
         @PathParam("transLocale") LocaleId transLocale,
         @DefaultValue("-1") @QueryParam("page") int page,
-        @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage) {
+        @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
+        @QueryParam("filter") String filter) {
 
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
@@ -140,12 +131,34 @@ public class GlossaryService implements GlossaryResource {
 
         int offset = (page - 1) * sizePerPage;
         List<HGlossaryEntry> hGlosssaryEntries =
-            glossaryDAO.getEntriesByLocale(srcLocale, transLocale, offset,
-                sizePerPage);
+            glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage, filter);
 
         Glossary glossary = new Glossary();
 
         transferEntriesLocaleResource(hGlosssaryEntries, glossary, transLocale);
+
+        return Response.ok(glossary).build();
+    }
+
+    @Override
+    public Response get(LocaleId srcLocaleId,
+        @DefaultValue("-1") @QueryParam("page") int page,
+        @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
+        @QueryParam("filter") String filter) {
+        ResponseBuilder response = request.evaluatePreconditions();
+        if (response != null) {
+            return response.build();
+        }
+        int offset = (page - 1) * sizePerPage;
+
+        List<HGlossaryEntry> hGlosssaryEntries =
+                glossaryDAO.getEntriesByLocale(srcLocaleId, offset,
+                        sizePerPage, filter);
+
+        Glossary glossary = new Glossary();
+
+        //filter out all terms other than source term
+        transferEntriesLocaleResource(hGlosssaryEntries, glossary, srcLocaleId);
 
         return Response.ok(glossary).build();
     }
@@ -196,6 +209,7 @@ public class GlossaryService implements GlossaryResource {
         if(entry != null) {
             glossaryDAO.makeTransient(entry);
         }
+        glossaryDAO.flush();
         return Response.ok().build();
     }
 
@@ -254,6 +268,7 @@ public class GlossaryService implements GlossaryResource {
         glossaryEntry.setSourceReference(hGlossaryEntry.getSourceRef());
         glossaryEntry.setPos(hGlossaryEntry.getPos());
         glossaryEntry.setDescription(hGlossaryEntry.getDescription());
+        glossaryEntry.setTermsCount(hGlossaryEntry.getGlossaryTerms().size());
         return glossaryEntry;
     }
 

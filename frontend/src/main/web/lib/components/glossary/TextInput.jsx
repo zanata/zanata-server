@@ -1,5 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
+import {Input} from 'zanata-ui';
 
 var TextInput = React.createClass({
   propTypes: {
@@ -42,17 +43,14 @@ var TextInput = React.createClass({
   },
 
   render: function() {
-    var self = this,
-      readOnly = self.props.readOnly;
-
-    if(readOnly) {
-      return (<span title={this.props.title}>{this.state.value}</span>)
-    } else {
-      return (<input type="text" placeholder={this.props.placeholder}
-        onChange={this._handleValueChange}
-        onKeyDown={this._handleKeyDown}
-        value={this.state.value}></input>)
-    }
+    return (<Input type="text" placeholder={this.props.placeholder}
+      label={this.props.field}
+      hideLabel
+      outline
+      className="db w100p"
+      onChange={this._handleValueChange}
+      onKeyDown={this._handleKeyDown}
+      value={this.state.value}/>)
   }
 });
 

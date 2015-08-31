@@ -7,7 +7,6 @@ var UserMatrixActionTypes = keymirror({
 });
 
 var GlossaryActionTypes = keymirror({
-  SRC_LOCALE_SELECTED: null,
   TRANS_LOCALE_SELECTED: null,
   INSERT_GLOSSARY: null,
   UPDATE_GLOSSARY: null,

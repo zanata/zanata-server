@@ -3,12 +3,6 @@ import {GlossaryActionTypes} from '../constants/ActionTypes';
 
 
 var Actions = {
-  changeSrcLocale: function(selectedLocale) {
-    Dispatcher.handleViewAction({
-      actionType: GlossaryActionTypes.SRC_LOCALE_SELECTED,
-      data: selectedLocale
-    });
-  },
   changeTransLocale: function(selectedLocale) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.TRANS_LOCALE_SELECTED,

@@ -5,6 +5,7 @@ import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
 import { Input, Icons, Icon, Select } from 'zanata-ui'
 import GlossaryDataTable from './glossary/GlossaryDataTable'
+import GlossarySrcDataTable from './glossary/GlossarySrcDataTable'
 
 
 var SystemGlossary = React.createClass({
@@ -35,32 +36,41 @@ var SystemGlossary = React.createClass({
   },
 
   render: function() {
-    var contents,
+    var contents, count = 0,
       selectedTransLocale = this.state.selectedTransLocale;
 
-    var count = 0;
-    if(selectedTransLocale) {
-      count = this.state.locales[selectedTransLocale].count;
-    }
-
     if(this.state.glossary && _.size(this.state.glossary) > 0) {
-      contents = (
-          <GlossaryDataTable
+      count = this.state.srcLocale.count;
+
+      if(selectedTransLocale) {
+        contents = (
+            <GlossaryDataTable
+              localeOptions={this.state.localeOptions}
+              glossaryData={this.state.glossary}
+              totalCount={this.state.srcLocale.count}
+              canAddNewEntry={this.state.canAddNewEntry}
+              canUpdateEntry={this.state.canUpdateEntry}
+              isAuthenticated={Configs.authenticated}
+              user={Configs.user}
+              srcLocale={this.state.srcLocale}
+              selectedTransLocale={selectedTransLocale}/>
+          );
+      } else {
+        contents = (
+          <GlossarySrcDataTable
             localeOptions={this.state.localeOptions}
             glossaryData={this.state.glossary}
-            totalCount={count}
+            totalCount={this.state.srcLocale.count}
             canAddNewEntry={this.state.canAddNewEntry}
             canUpdateEntry={this.state.canUpdateEntry}
             isAuthenticated={Configs.authenticated}
             user={Configs.user}
-            selectedSrcLocale={this.state.selectedSrcLocale}
-            selectedTransLocale={selectedTransLocale}/>
+            srcLocale={this.state.srcLocale}/>
         );
+      }
     } else {
       contents = (<div>No glossary</div>)
     }
-
-
 
     return (<div>
               <Icons fileName='./node_modules/zanata-ui/src/components/Icons/icons.svg' />

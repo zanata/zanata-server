@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import StringUtils from './StringUtils'
 
 var GlossaryHelper = {
 
@@ -23,13 +24,17 @@ var GlossaryHelper = {
     glossary['glossaryEntries'] = [];
 
     entry['resId'] = data.resId;
+    entry['pos'] = data.pos;
     entry['description'] = data.description;
     entry['srcLang'] = data.srcTerm.locale;
     entry['sourceReference'] = data.srcTerm.reference;
     entry['glossaryTerms'] = [];
 
-    entry['glossaryTerms'].push(this.generateGlossaryTermDTO(data.srcTerm));
-    entry['glossaryTerms'].push(this.generateGlossaryTermDTO(data.transTerm));
+    var srcTerm = this.generateGlossaryTermDTO(data.srcTerm);
+    entry['glossaryTerms'].push(srcTerm);
+
+    var transTerm = this.generateGlossaryTermDTO(data.transTerm);
+    entry['glossaryTerms'].push(transTerm);
 
     glossary['glossaryEntries'].push(entry);
     return glossary;
@@ -50,11 +55,11 @@ var GlossaryHelper = {
   },
 
   getTermByLocale: function (terms, localeId) {
-    var srcTerm =  _(terms)
+    var term =  _(terms)
       .filter(function(term) { return term.locale === localeId; })
       .value();
 
-    return srcTerm[0];
+    return term[0];
   }
 };
 export default GlossaryHelper;

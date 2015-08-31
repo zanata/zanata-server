@@ -57,7 +57,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     public void testGetTermByLocaleId() {
         log.debug("testGetTermByLocaleId");
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
-            LocaleId.EN_US, LocaleId.DE, -1, -1);
+            LocaleId.EN_US, -1, -1, "");
         assertThat(entryList.size(), is(1));
     }
 

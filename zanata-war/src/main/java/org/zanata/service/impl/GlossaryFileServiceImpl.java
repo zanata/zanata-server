@@ -131,12 +131,14 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         to.setDescription(from.getDescription());
 
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {
-            HLocale termHLocale =
-                    localeServiceImpl.validateSourceLocale(glossaryTerm
-                            .getLocale());
+            if(glossaryTerm.getLocale() == null || StringUtils.isBlank(
+                glossaryTerm.getContent())) {
+                continue;
+            }
+            HLocale termHLocale = localeServiceImpl.getByLocaleId(glossaryTerm
+                .getLocale());
 
-            // check if there's existing term with same content, overrides
-            // comments
+            // check if there's existing term
             HGlossaryTerm hGlossaryTerm =
                     getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
 
@@ -151,7 +153,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         LocaleId srcLocale = from.getSrcLang();
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
 
-        String resId = getResId(srcLocale, srcTerm.getContent(), from.getPos());
+        String resId = from.getResId();
+
+        if(StringUtils.isBlank(resId)) {
+            resId = getResId(srcLocale, srcTerm.getContent(), from.getPos());
+        }
 
         HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResIdAndLocale(
             resId, srcLocale);
@@ -178,7 +184,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         } else if (!hGlossaryTerm.getContent().equals(newTerm.getContent())) {
             hGlossaryTerm.setContent(newTerm.getContent());
         }
-
         return hGlossaryTerm;
     }
 

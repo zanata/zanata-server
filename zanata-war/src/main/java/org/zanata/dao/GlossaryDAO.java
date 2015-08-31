@@ -71,17 +71,24 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     }
 
     public List<HGlossaryEntry> getEntriesByLocale(LocaleId srcLocale,
-        LocaleId transLocale, int offset, int maxResults) {
+        int offset, int maxResults, String filter) {
         StringBuilder queryString = new StringBuilder();
         queryString.append("from HGlossaryEntry as e ")
-            .append("WHERE e.srcLocale.localeId = :srcLocale and e.id IN ")
+            .append("WHERE e.srcLocale.localeId = :srcLocale");
+
+        if(!StringUtils.isBlank(filter)) {
+            queryString.append(" and e.id IN")
                 .append("(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t ")
-                .append("WHERE t.locale.localeId= :transLocale)");
+                .append("where t.content like lower(:filter))");
+        }
 
         Query query = getSession().createQuery(queryString.toString())
             .setParameter("srcLocale", srcLocale)
-            .setParameter("transLocale", transLocale)
             .setComment("GlossaryDAO.getEntriesByLocale");
+
+        if(!StringUtils.isBlank(filter)) {
+            query.setParameter("filter", filter);
+        }
 
         if (offset > 0 && maxResults > 0) {
             query.setFirstResult(offset).setMaxResults(maxResults);
@@ -89,16 +96,18 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public Map<LocaleId, Integer> getSourceLocales() {
+    public int getEntryCountBySourceLocales(LocaleId localeId) {
         String queryString =
-            "select e.srcLocale, count(*) from HGlossaryEntry e group by e.srcLocale";
+                "select count(*) from HGlossaryEntry e where e.srcLocale.localeId = :localeId";
         Query query = getSession()
             .createQuery(queryString)
-            .setComment("GlossaryDAO.getSourceLocales");
+            .setParameter("localeId", localeId)
+            .setComment("GlossaryDAO.getEntryCountBySourceLocales");
 
-        @SuppressWarnings("unchecked")
-        List<Object[]> list = query.list();
-        return getLocaleStats(list);
+        Long totalCount = (Long) query.uniqueResult();
+        if (totalCount == null)
+            return 0;
+        return totalCount.intValue();
     }
 
     public Map<LocaleId, Integer> getTranslationLocales() {

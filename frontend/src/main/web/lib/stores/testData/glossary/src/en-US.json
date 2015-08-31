@@ -11,12 +11,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Prozess1",
-          "locale": "de",
-          "lastModifiedDate": 1441061429000,
-          "lastModifiedBy": "Administrator"
         }
       ],
       "termsCount": 2
@@ -29,13 +23,6 @@
         {
           "content": "implementation",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Implementierung",
-          "comment": "bgroh@172.16.5.77",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -52,13 +39,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Festplatte",
-          "comment": "bgroh@172.16.5.77\nbgroh@172.16.5.77\n~ hpeters@10.64.1.231\n~ msgid \"implementations\"\n~ msgstr \"Implementationen\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -71,12 +51,6 @@
         {
           "content": "mouse",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Maus",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -93,12 +67,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Katastrophe",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -111,12 +79,6 @@
         {
           "content": "system adminstrator",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Systemadministrator",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -133,13 +95,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Organisation",
-          "comment": "nrichter@172.16.5.86",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -152,13 +107,6 @@
         {
           "content": "hardware failure",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Hardware-Ausfall",
-          "comment": "nrichter@172.16.5.86\nnrichter@172.16.5.86",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -175,12 +123,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Software-Ausfall",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -193,12 +135,6 @@
         {
           "content": "environmental failure",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Umgebungs-Ausfall",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -215,12 +151,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Menschliches Versagen",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -233,12 +163,6 @@
         {
           "content": " Spare Hardware",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ersatz-Hardware",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -255,12 +179,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ersatzteile",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -273,12 +191,6 @@
         {
           "content": "skills",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kompetenz",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -295,12 +207,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Tool",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -313,13 +219,6 @@
         {
           "content": "maintenance contract",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Wartungsvertrag",
-          "comment": "nrichter@172.16.5.86\n~ hpeters@10.64.1.231\n~ msgid \"tip\"\n~ msgstr \"Tipp\"",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -336,12 +235,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ausfallzeit",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -354,12 +247,6 @@
         {
           "content": "data center",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Datencenter",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -376,12 +263,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Servicevertrag",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -394,12 +275,6 @@
         {
           "content": "hours of coverage",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verfügungsstunden",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -416,12 +291,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Reaktionszeit",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -434,12 +303,6 @@
         {
           "content": "depot service",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Depot-Service",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -456,12 +319,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Walk-In Service",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -474,12 +331,6 @@
         {
           "content": "drop-off service",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Drop-Off Service",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -496,13 +347,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "vor Ort",
-          "comment": "nrichter@172.16.5.86\nhpeters@10.64.1.231\n~ hpeters@10.64.1.231\n~ msgid \"note\"\n~ msgstr \"Anmerkung\"\nnrichter@172.16.5.86",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -517,12 +361,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ansatz, Methode",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -535,12 +373,6 @@
         {
           "content": "availability",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verfügbarkeit",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -557,12 +389,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Betriebssystem",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -575,13 +401,6 @@
         {
           "content": "support",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Unterstützung",
-          "comment": "nrichter@172.16.5.86\nbgroh@172.16.5.77\n~ hpeters@10.64.1.231\n~ msgid \"application\"\n~ msgstr \"Applikation\"\nnrichter@172.16.5.86",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -598,12 +417,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "E-Mail",
-          "locale": "de",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -616,13 +429,6 @@
         {
           "content": "policy",
           "locale": "en-US",
-          "lastModifiedDate": 1439435990000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Richtlinie",
-          "comment": "nrichter@172.16.5.86",
-          "locale": "de",
           "lastModifiedDate": 1439435990000,
           "lastModifiedBy": ""
         }
@@ -639,13 +445,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "ich bin ein berliner",
-          "comment": "ich bin ein\nberliner\njetzt kommt der test\nmore more more",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -658,13 +457,6 @@
         {
           "content": "Red Hat Network",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Red Hat Network",
-          "comment": "vfuehrer@172.16.44.7\n~ vfuehrer@172.16.44.7\n~ msgid \"ich bin ein\"\n~ msgstr \"Test\"",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -681,13 +473,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Interceptor Stack-Konfiguration",
-          "comment": "ttrinks@10.64.6.26\n~ hpeters@10.64.1.231\n~ msgid \"hello\"\n~ msgstr \"Hallo\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -700,12 +485,6 @@
         {
           "content": " web container",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Webcontainer",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -722,13 +501,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Anwendung",
-          "comment": "auch: Applikation",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -741,13 +513,6 @@
         {
           "content": "applet",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Applet",
-          "comment": "kleine Anwendung, kleines Programm",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -764,13 +529,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "aktualisieren",
-          "comment": "Test...\nttrinks@10.64.6.21",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -783,13 +541,6 @@
         {
           "content": "Note",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Anmerkung",
-          "comment": "Im farblich hervorgehobenen Hinweiskasten",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -806,13 +557,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Tipp",
-          "comment": "Im farblich hervorgehobenen Hinweiskasten",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -825,13 +569,6 @@
         {
           "content": "Important",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Wichtig",
-          "comment": "Im farblich hervorgehobenen Hinweiskasten",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -848,13 +585,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Warnung",
-          "comment": "Im farblich hervorgehobenen Hinweiskasten",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -867,13 +597,6 @@
         {
           "content": "Caution",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Achtung",
-          "comment": "Im farblich hervorgehobenen Hinweiskasten",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -890,13 +613,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Zusätzliche Informationsquellen",
-          "comment": "Am Ende eines Kapitels, Verweis auf Handbücher/Links etc",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -909,13 +625,6 @@
         {
           "content": "Useful Websites",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Hilfreiche Websites",
-          "comment": "Am Ende eines Kapitels, Verweise auf Websites",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -932,12 +641,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Dienstprogramm",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -950,12 +653,6 @@
         {
           "content": "to mount",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "einhängen",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -972,12 +669,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Einhängepunkt",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -990,13 +681,6 @@
         {
           "content": "vulnerability",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Schwachstelle",
-          "comment": "hpeters@10.64.1.231\n~ hpeters@10.64.0.109\n~ msgid \"troubleshooting\"\n~ msgstr \"Problembehandlung\"",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1013,12 +697,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheitslücke",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1031,13 +709,6 @@
         {
           "content": "credentials",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Berechtigungsnachweise",
-          "comment": "ggf. einmal englisch in Klammern",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1054,13 +725,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "angepasst/benutzerdefiniert",
-          "comment": "nicht: kundenspezifisch",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1073,12 +737,6 @@
         {
           "content": "advisory",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Hinweis",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1095,13 +753,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Übersicht",
-          "comment": "Kontext: Errata",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1114,13 +765,6 @@
         {
           "content": "base channel",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Basis-Channel",
-          "comment": "Kontext: RHN",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1137,13 +781,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sub-Channel",
-          "comment": "Kontext: RHN",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1156,13 +793,6 @@
         {
           "content": "physical",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "physisch",
-          "comment": "nicht: physikalisch",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1179,12 +809,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Zirkelbezug",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1197,13 +821,6 @@
         {
           "content": "desktop panel",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Menüleiste",
-          "comment": "Kontext: grafischer Desktop",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1220,13 +837,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Benachrichtigungsfeld",
-          "comment": "Kontext: grafischer Desktop",
-          "locale": "de",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1239,13 +849,6 @@
         {
           "content": "to purge",
           "locale": "en-US",
-          "lastModifiedDate": 1439435991000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "komplett entfernen",
-          "comment": "Timo: \"purge\" geht i.d.R über normales \"delete\" hinaus, da es nicht nur Binärdateien, sondern auch Konfigurationsdateien vom System entfernt",
-          "locale": "de",
           "lastModifiedDate": 1439435991000,
           "lastModifiedBy": ""
         }
@@ -1262,12 +865,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Leistung",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1280,12 +877,6 @@
         {
           "content": "access control list",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zugriffskontrollliste",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1302,13 +893,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Skripte",
-          "comment": "nicht: Skripts",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1321,12 +905,6 @@
         {
           "content": "bytecode enhancing",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bytecode-Anreicherung",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1343,12 +921,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Arbeitsplatzrechner",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1361,12 +933,6 @@
         {
           "content": "unmount",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "aushängen",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1383,12 +949,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "NFS-Freigabe",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1401,13 +961,6 @@
         {
           "content": "tab",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Reiter",
-          "comment": "Kontext: in GUI Fenstern/Bildschirmen",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1424,12 +977,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Dienst",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1442,13 +989,6 @@
         {
           "content": "button",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Schaltfläche",
-          "comment": "Kontext: in GUI Fenstern/Bildschirmen",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1465,12 +1005,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sternchen",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1483,12 +1017,6 @@
         {
           "content": "Samba share",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Samba-Freigabe",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1505,12 +1033,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Direktive",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1523,13 +1045,6 @@
         {
           "content": "statement",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Anweisung",
-          "comment": "z. B. SQL statement / SQL-Anweisung",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1546,12 +1061,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "horchen (auf einen Port ~)",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1564,13 +1073,6 @@
         {
           "content": "repository",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Repository (das)",
-          "comment": "hpeters@10.64.1.231\nhpeters@10.64.0.109\nhpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1587,12 +1089,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Schnittstelle",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1605,13 +1101,6 @@
         {
           "content": "graphical (user) interface",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "grafische (Benutzer)Oberfläche",
-          "comment": "hpeters@10.64.1.231",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1628,13 +1117,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kerberos-Realm",
-          "comment": "(m)",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1647,13 +1129,6 @@
         {
           "content": "How It Works",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Funktionsweise",
-          "comment": "Als Kapitelüberschrift",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1670,12 +1145,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Binärdatei",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1688,12 +1157,6 @@
         {
           "content": "binaries",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Binärdateien",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1710,12 +1173,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Abstraktion",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1728,12 +1185,6 @@
         {
           "content": "accessor",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zugriffsberechtigter",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1750,12 +1201,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Account",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1768,12 +1213,6 @@
         {
           "content": "account administrator",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Account Administrator",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1790,12 +1229,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Adressüberschreitung",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1808,12 +1241,6 @@
         {
           "content": "annotation",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Annotation",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1830,12 +1257,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Negativmuster",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1848,12 +1269,6 @@
         {
           "content": "AOP applications",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "AOP-Applikationen",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1870,12 +1285,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "AOP-Deployer",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1888,12 +1297,6 @@
         {
           "content": "AOP support",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "AOP-Support",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1910,13 +1313,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Appender",
-          "comment": "Application Programm Interface - Anwenderprogrammschnittstelle\njdimanos@10.64.6.29\njdimanos@10.64.6.1\n~ hpeters@10.64.0.109\n~ msgid \"API\"\n~ msgstr \"API\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1929,12 +1325,6 @@
         {
           "content": "application client",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Application Client",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1951,13 +1341,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Anwendungsrolle",
-          "comment": " auch (aber seltener) Applikationsrolle",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -1970,12 +1353,6 @@
         {
           "content": "application server  implementation",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Applikationsserver-Implementierung",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -1992,12 +1369,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Applikationsserver-Clustering",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2010,12 +1381,6 @@
         {
           "content": "applications isolation",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Anwendungsisolierung",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -2032,13 +1397,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "beliebig",
-          "comment": "jdimanos@10.64.6.29",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2051,13 +1409,6 @@
         {
           "content": "argument",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Parameter",
-          "comment": "bei Java. Sonst auch: Argument",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -2074,12 +1425,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Aspect Manager",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2092,12 +1437,6 @@
         {
           "content": "assign",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "zuweisen, zuteilen, bestimmen, festsetzen",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -2114,12 +1453,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "angeschlossen, angegliedert, verbunden, verknüpft, zugehörig",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2132,13 +1465,6 @@
         {
           "content": "association",
           "locale": "en-US",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Assoziation",
-          "comment": "jdimanos@10.64.6.29",
-          "locale": "de",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
         }
@@ -2155,13 +1481,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435992000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Attribut",
-          "comment": "Relation zwischen Instanzen verschiedener Klassen\njdimanos@10.64.6.29\n~ hpeters@10.64.0.109\n~ msgid \"association\"\n~ msgstr \"Assoziation\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435992000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2174,12 +1493,6 @@
         {
           "content": "authentication ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Authentifizierung",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -2196,12 +1509,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Auto-Discovery",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2214,12 +1521,6 @@
         {
           "content": "Automatic Dirty Checking",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "automatische Modifizierungsprüfung",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2236,12 +1537,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bean (das)",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2254,12 +1549,6 @@
         {
           "content": "bean shell deployer",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bean-Shell-Deployer",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2276,12 +1565,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bean-Shell-Skripts",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2294,12 +1577,6 @@
         {
           "content": "before completion phase",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Vorabschlussphase ",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2316,12 +1593,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "bidirektional",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2334,13 +1605,6 @@
         {
           "content": "binding IP address",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Binding-IP-Adresse (die zugewiesene IP-Adresse)",
-          "comment": "jdimanos@10.64.6.29\n~ hpeters@10.64.1.231\n~ msgid \"binary\"\n~ msgstr \"Binärdatei\"",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2357,12 +1621,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bindings",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2375,13 +1633,6 @@
         {
           "content": "bootstrap",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bootstrap",
-          "comment": "Ladeprogramm, Selbstaufbau. Das Bootstrap Protocol (BOOTP) dient dazu, einem Computer in einem TCP/IP-Netzwerk eine IP-Adresse und eine Reihe von weiteren Parametern zuzuweisen.",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2398,12 +1649,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Puffer, Zwischenspeicher",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2416,12 +1661,6 @@
         {
           "content": "buffer overflow",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Pufferüberlauf",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2438,12 +1677,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "bündeln",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2456,12 +1689,6 @@
         {
           "content": "by definition",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "definitionsgemäß",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2478,13 +1705,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Cachespeicher, Cache (der)",
-          "comment": "jdimanos@10.64.6.29",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2497,12 +1717,6 @@
         {
           "content": "cache region",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Cache-Bereich",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2519,13 +1733,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Caching, Zwischenspeichern",
-          "comment": "Man spricht auch von Caching, wenn ein Betriebssystem (Beispiel: AmigaOS) gewisse Ressourcen – wie z. B. Libraries oder Font-Daten – vorerst im Arbeitsspeicher belässt, obwohl sie nach Ende ihrer Benutzung nicht mehr gebraucht werden. So lange kein Speichermangel herrscht, können sie im Arbeitsspeicher verbleiben, um dann ohne Nachladen von der Festplatte sofort zur Verfügung zu stehen, wenn sie wieder gebraucht werden.\njdimanos@10.64.6.29",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2538,12 +1745,6 @@
         {
           "content": "Certificate Authority",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zertifizierungsstelle",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2560,13 +1761,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Zertifizierungsstelle",
-          "comment": "Certificate Authority",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2579,12 +1773,6 @@
         {
           "content": "volume",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenträger",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2601,12 +1789,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Volume Group",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2619,12 +1801,6 @@
         {
           "content": "physical volume",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "physischer Datenträger",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2641,12 +1817,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "logischer Datenträger",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2659,12 +1829,6 @@
         {
           "content": "Logical Volume Manager (LVM)",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Logical Volume Manager (LVM)",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2681,12 +1845,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "erstellen, erzeugen, anlegen",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2699,13 +1857,6 @@
         {
           "content": "e.g.",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "z.B. (ohne Leerzeichen)",
-          "comment": "hpeters@10.64.1.231",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2722,13 +1873,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "d.h. (ohne Leerzeichen)",
-          "comment": "hpeters@10.64.1.231",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2741,12 +1885,6 @@
         {
           "content": "certificate chain",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zertifikatskette ",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2763,12 +1901,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "zertifizierter Applikationsserver",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2781,12 +1913,6 @@
         {
           "content": "channel partners",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Channel Partner, auch: Vertriebspartner",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2803,12 +1929,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Klassenname",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2821,12 +1941,6 @@
         {
           "content": "classloader",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Klassenlader",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2843,12 +1957,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Klassenpfad",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2861,12 +1969,6 @@
         {
           "content": "client",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Client",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2883,12 +1985,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Clientbasierte Interzeptoren",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2901,13 +1997,6 @@
         {
           "content": "Cluster",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Cluster",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2924,12 +2013,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Clustering",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2942,12 +2025,6 @@
         {
           "content": "clustering architectures",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Clustering-Architekturen",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -2964,12 +2041,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Befehlszeile",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -2982,13 +2053,6 @@
         {
           "content": "compiler",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Compiler",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3005,12 +2069,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "gleichlaufend, gleichzeitig, simultan, nebenläufig",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3023,12 +2081,6 @@
         {
           "content": "configuration attribute",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Konfigurationseigenschaft",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3045,12 +2097,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Konfigurationsverzeichnis",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3063,12 +2109,6 @@
         {
           "content": "configuration files",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Konfigurationsdateien",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3085,12 +2125,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Konfigurationseinstellungen",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3103,12 +2137,6 @@
         {
           "content": "configuration set selection screen",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Auswahlfenster für die Konfigurationseinstellungen",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3125,12 +2153,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenkonvertierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3143,12 +2165,6 @@
         {
           "content": "core service",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kerndienst",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3165,12 +2181,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Datendatei",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3183,12 +2193,6 @@
         {
           "content": "data model ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenbankmodell, auch: Datenmodell",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3205,13 +2209,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Standardeinstellung",
-          "comment": "jdimanos@10.64.6.1\n~ hpeters@10.64.0.109\n~ msgid \"debug (to)\"\n~ msgstr \"Fehler beheben, Fehler bereinigen\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3224,12 +2221,6 @@
         {
           "content": "default location",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Standard-Speicherstelle",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3246,12 +2237,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Standardwert, voreingestellter Wert",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3264,12 +2249,6 @@
         {
           "content": "directory structure",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verzeichnisstruktur",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3286,12 +2265,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "DTD, kurz für Document Type Definition, Dokumenttyp-Definition",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3304,12 +2277,6 @@
         {
           "content": "Email Notification Process",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "E-Mail Benachrichtigungsprozess",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3326,12 +2293,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Verschlüsselungsalgorithmus",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3344,12 +2305,6 @@
         {
           "content": "End-Customer Fulfillment Notice",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Auslieferungsbestätigung an den Kunden",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3366,13 +2321,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "EAI, Enterprise Application Integration ",
-          "comment": "Ein Ansatz für die Integration von Applikationen und Datenquellen. Dieser soll den Austausch von Daten und die Verbindung von Geschäftsabläufen vereinfachen.",
-          "locale": "de",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3385,13 +2333,6 @@
         {
           "content": "entry point",
           "locale": "en-US",
-          "lastModifiedDate": 1439435993000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Einsprungpunkt, Einsprungstelle",
-          "comment": "Der \"Entry Point\" beschreibt die Stelle in einem Programm, wo der eigentliche Programmcode beginnt.\njdimanos@10.64.6.1",
-          "locale": "de",
           "lastModifiedDate": 1439435993000,
           "lastModifiedBy": ""
         }
@@ -3408,12 +2349,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Umgebung",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3426,12 +2361,6 @@
         {
           "content": "fully qualified name",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "vollständiger Name",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3448,13 +2377,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "vollständiger Name",
-          "comment": "fully qualified name",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3467,12 +2389,6 @@
         {
           "content": "garbage collection",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "automatische Speicherbereinigung",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3489,12 +2405,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "allgemeingültig",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3507,12 +2417,6 @@
         {
           "content": "gzipped ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "mit GZIP komprimiert",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3529,12 +2433,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Integritätsbedingung ",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3547,13 +2445,6 @@
         {
           "content": "lazy fetching",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "“Lazy Fetching”, Nachladen assoziierter Objekte bei Bedarf",
-          "comment": "Nachladen assoziierter Objekte bei Bedarf",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3570,12 +2461,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Altdaten, Stammdaten ",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3588,12 +2473,6 @@
         {
           "content": "library",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bibliothek",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3610,12 +2489,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Auslastung",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3628,12 +2501,6 @@
         {
           "content": "load balancer",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Lastverteiler",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3650,12 +2517,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Lastverteilungsfaktor",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3668,12 +2529,6 @@
         {
           "content": "local network",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "lokales Netzwerk",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3690,12 +2545,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "lokal gebundene Objekte",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3708,12 +2557,6 @@
         {
           "content": "location",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Speicherstelle",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3730,12 +2573,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Protokolldatei",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3748,12 +2585,6 @@
         {
           "content": "logging file",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Protokolldatei",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3770,12 +2601,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Methodenaufruf",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3788,12 +2613,6 @@
         {
           "content": "nest (to)",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "verschachteln",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3810,12 +2629,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Netzwerkverkehr",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3828,12 +2641,6 @@
         {
           "content": "No-Arg-Constructor",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Konstruktor ohne Parameter",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3850,12 +2657,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ausgabe, auch: Output, Meldung",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3868,12 +2669,6 @@
         {
           "content": "overflow",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Überlauf",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3890,12 +2685,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Paket",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3908,12 +2697,6 @@
         {
           "content": "package selection screen",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Paket-Auswahlfenster",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3930,12 +2713,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "parametrieren",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3948,12 +2725,6 @@
         {
           "content": "partition name",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Partitionsname",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -3970,13 +2741,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Pfad",
-          "comment": "bei hierarchischen Dateisystemen",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -3989,12 +2753,6 @@
         {
           "content": "pathname",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Pfadname",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4011,12 +2769,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Polymorphie",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4029,12 +2781,6 @@
         {
           "content": "portable",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "übertragbar",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4051,13 +2797,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Post-Compiler",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4070,13 +2809,6 @@
         {
           "content": "pre-compiler",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Pre-Compiler",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4093,13 +2825,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Primärschlüssel",
-          "comment": "Kontext: SQL",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4112,12 +2837,6 @@
         {
           "content": "replication queue",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Replikationswarteschlange",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4134,12 +2853,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Anfrage",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4152,12 +2865,6 @@
         {
           "content": "security configuration",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheitskonfiguration ",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4174,13 +2881,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bildschirm zur Sicherheitskonfiguration",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4193,12 +2893,6 @@
         {
           "content": "sent in the clear",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "unverschlüsselt verschickt",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4215,12 +2909,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Konfiguration",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4233,12 +2921,6 @@
         {
           "content": "server configuration name",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Konfigurationsname",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4255,12 +2937,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Instanz",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4273,12 +2949,6 @@
         {
           "content": "server code",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Code",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4295,13 +2965,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Serverlastverteilung",
-          "comment": "Der Begriff Serverlastverteilung oder englisch Server Load Balancing (SLB) beschreibt in der Netzwerktechnik Methoden zur Lastverteilung auf mehrere getrennte Server-Rechner im Netzwerk. Server Load Balancing kommt überall dort zum Einsatz, wo sehr viele Clients eine hohe Anfragendichte erzeugen und damit einen einzelnen Server-Rechner überlasten würden. Typische Kriterien zur Ermittlung der Notwendigkeit von SLB sind die Datenrate, die Anzahl der Clients und die Anfragerate.",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4314,12 +2977,6 @@
         {
           "content": "server name",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Name",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4336,12 +2993,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Server-Profil",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4354,12 +3005,6 @@
         {
           "content": "top-level directory",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verzeichnis der obersten Ebene, Ursprungspunkt der Verzeichnishierarchie",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4376,12 +3021,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Tomcat",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4394,12 +3033,6 @@
         {
           "content": "UUID ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "UUID, kurz für Universally Unique Identifier",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4416,12 +3049,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "SSO, kurz für Single Sign On",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4434,12 +3061,6 @@
         {
           "content": "command line option",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Befehlszeilenoption",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4456,12 +3077,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Nebenläufigkeitskontrolle",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4474,12 +3089,6 @@
         {
           "content": "recoverable",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "wiederherstellbar",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4496,12 +3105,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ereignis",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4514,12 +3117,6 @@
         {
           "content": "snippet",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Codestück",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4536,12 +3133,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Initialisierungsprogramm",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4554,12 +3145,6 @@
         {
           "content": "typecast",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Typumwandlung",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4576,12 +3161,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "schwerer Ausnahmefehler",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4594,12 +3173,6 @@
         {
           "content": "indexed",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "indiziert",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4616,12 +3189,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Getter- und Setter-Methoden",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4634,12 +3201,6 @@
         {
           "content": "optimistic locking",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "optimistisches Sperren",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4656,12 +3217,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Surrogatschlüssel",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4674,12 +3229,6 @@
         {
           "content": "increment",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Erhöhung",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4696,12 +3245,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "erhöhen",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4714,12 +3257,6 @@
         {
           "content": "isolation level",
           "locale": "en-US",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Isolationsebene",
-          "locale": "de",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
         }
@@ -4736,13 +3273,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435994000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Abwärtskompatibilität",
-          "comment": "jdimanos@10.64.6.1\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435994000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4755,12 +3285,6 @@
         {
           "content": "cartesian product",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "kartesisches Produkt",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4777,12 +3301,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Komponententyp",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4795,12 +3313,6 @@
         {
           "content": "typesafe",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "typsicher",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4817,12 +3329,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Zeilenvorschubzeichen",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4835,13 +3341,6 @@
         {
           "content": "Installation image",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Installations-Image",
-          "comment": "jdimanos@10.64.6.1",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4858,13 +3357,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Integrierte Entwicklungsumgebung",
-          "comment": "IDE ist eine Abkürzung für integrated development environment",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4877,12 +3369,6 @@
         {
           "content": "API",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "API, Programmierschnittstelle (Application Programming Interface)",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4899,12 +3385,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "JSP, JavaServerPage",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4917,13 +3397,6 @@
         {
           "content": "MVC ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "MVC, Model-View-Controller (wörtlich etwa „Modell-Präsentation-Steuerung“) ",
-          "comment": "Model-View-Controller (MVC, wörtlich etwa „Modell-Präsentation-Steuerung“) bezeichnet ein Architekturmuster zur Aufteilung von Softwaresystemen in die drei Einheiten: Datenmodell (engl. Model), Präsentation (engl. View) und Programmsteuerung (engl. Controller). Ziel des Musters ist ein flexibles Programmdesign, das u. a. eine spätere Änderung oder Erweiterung erleichtern und eine Wiederverwendbarkeit der einzelnen Komponenten ermöglichen soll.",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4940,12 +3413,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Referenzhandbuch",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4958,12 +3425,6 @@
         {
           "content": "source code",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Quellcode",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -4980,12 +3441,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Quelldatei",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -4998,13 +3453,6 @@
         {
           "content": "snapshot",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zwischensicherung, auch “Snapshot”",
-          "comment": "jdimanos@10.64.6.2",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5021,13 +3469,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Zwischensicherungsmodus, auch Snapshot-Modus",
-          "comment": "jdimanos@10.64.6.2",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5040,12 +3481,6 @@
         {
           "content": "physical extend",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "physische (Speicher-) Einheiten",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5062,12 +3497,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kennung",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5080,12 +3509,6 @@
         {
           "content": "flag",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Flag (das)",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5102,13 +3525,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheit auf Freigabenebene",
-          "comment": "Kontext: Samba\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5121,13 +3537,6 @@
         {
           "content": "user-level security",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheit auf Benutzerebene",
-          "comment": "Kontext: Samba",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5144,13 +3553,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Änderungsverzeichnis",
-          "comment": "Kontext: Samba\nhpeters@10.64.0.109\n~ hpeters@10.64.0.109\n~ msgid \"server-level security\"\n~ msgstr \"Sicherheit auf Server-Ebene\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5163,12 +3565,6 @@
         {
           "content": "guest operating system",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Gastbetriebssystem",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5185,12 +3581,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "analysieren",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5203,12 +3593,6 @@
         {
           "content": "Reauthentication",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Wiederauthentifizierung",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5225,12 +3609,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Blockgerät, blockorientiertes Gerät",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5243,12 +3621,6 @@
         {
           "content": "character device",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zeichengerät, zeichenorientiertes Gerät",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5265,12 +3637,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Chip-Satz",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5283,13 +3649,6 @@
         {
           "content": "re-base",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "grundlegend verändern",
-          "comment": "Kontext: in Release Notes, z. B. \"driver was re-based...\"",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5306,12 +3665,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Socket (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5324,13 +3677,6 @@
         {
           "content": "entitlement",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Berechtigung",
-          "comment": "Kontext: RHN",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5347,13 +3693,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Abonnement",
-          "comment": "Kontext: RHN",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5366,12 +3705,6 @@
         {
           "content": "remote",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Remote-, von Remote aus",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5388,12 +3721,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Protokollieren von Remote aus",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5406,13 +3733,6 @@
         {
           "content": "command line argument",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Befehlszeilenparameter",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5429,12 +3749,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Stapel",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5447,12 +3761,6 @@
         {
           "content": "driver stack",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Treiberstapel",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5469,12 +3777,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Migration",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5487,12 +3789,6 @@
         {
           "content": "live migration",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Live-Migration",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5509,12 +3805,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Offline-Migration",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5527,12 +3817,6 @@
         {
           "content": "read-only",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "schreibgeschützt",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5549,12 +3833,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Speicherleck",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5567,12 +3845,6 @@
         {
           "content": "virtualization",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Virtualisierung",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5589,12 +3861,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Host (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5607,12 +3873,6 @@
         {
           "content": "guest",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Gast",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5629,12 +3889,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "voll virtualisierter Gast",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5647,12 +3901,6 @@
         {
           "content": "paravirtualized guest",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "paravirtualisierter Gast",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5669,12 +3917,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "volle Virtualisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5687,12 +3929,6 @@
         {
           "content": "paravirtualization",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Paravirtualisierung",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5709,13 +3945,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Abhängigkeit",
-          "comment": "Kontext: Software-Abhängigkeiten z.B. bei Installation",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5728,12 +3957,6 @@
         {
           "content": "file system",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Dateisystem",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5750,12 +3973,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Objektspeicher",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5768,12 +3985,6 @@
         {
           "content": "property file",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Eigenschaftsdatei",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5790,12 +4001,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kontingent",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5808,12 +4013,6 @@
         {
           "content": "user quota",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Benutzerkontingente",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5830,12 +4029,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Festplattenkontingente",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5848,12 +4041,6 @@
         {
           "content": "fence",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "abgrenzen",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5870,13 +4057,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Methode zur Datenabgrenzung",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5889,13 +4069,6 @@
         {
           "content": "fence device",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Gerät zur Datenabgrenzung",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5912,12 +4085,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Dateideskriptor",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5930,12 +4097,6 @@
         {
           "content": "to scale",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "skalieren",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5952,12 +4113,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "CPU Geschwindigkeitsskalierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -5970,12 +4125,6 @@
         {
           "content": "kernel oops error message",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "CPU Geschwindigkeitsskalierung",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -5992,12 +4141,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "migrieren",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6010,12 +4153,6 @@
         {
           "content": "to resolve dependencies",
           "locale": "en-US",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Abhängigkeiten auflösen",
-          "locale": "de",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
         }
@@ -6032,12 +4169,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Namensraum",
-          "locale": "de",
-          "lastModifiedDate": 1439435995000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6052,12 +4183,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435995000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Thread (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6070,13 +4195,6 @@
         {
           "content": "quick reference",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kurzanleitung",
-          "comment": "in Handbüchern, oft tabellarisch",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6093,13 +4211,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "kompilieren",
-          "comment": "Compiler bleibt üblicherweise Englisch, alles andere mit K und Deutsch (kompiliert, Kompilierung etc)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6112,13 +4223,6 @@
         {
           "content": "compiled",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "kompiliert",
-          "comment": "Compiler bleibt üblicherweise Englisch, alles andere mit K und Deutsch (kompiliert, Kompilierung etc)",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6135,12 +4239,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "cachen, zwischenspeichern",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6153,12 +4251,6 @@
         {
           "content": "debugging",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Suche und Bereinigung von Programmfehlern (Debugging) (nur einmal EN in Klammern)",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6175,12 +4267,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Suche und Beseitigung von Fehlern (Troubleshooting) (nur einmal EN in Klammern)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6193,13 +4279,6 @@
         {
           "content": "image",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Image (das) (nur bei Fedora: Abbild)",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6216,13 +4295,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Gast-Image",
-          "comment": "Kontext: Virtualisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6235,13 +4307,6 @@
         {
           "content": "file-based image",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "dateibasiertes Image",
-          "comment": "Kontext: Virtualisierung",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6258,12 +4323,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Stanza",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6276,13 +4335,6 @@
         {
           "content": "relocation server",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Migrations-Server",
-          "comment": "Kontext: Migration virtualisierter Gäste",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6299,13 +4351,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Migrations-Port",
-          "comment": "Kontext: Migration virtualisierter Gäste",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6318,13 +4363,6 @@
         {
           "content": "python deprecation error",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Python-Fehler (Deprecation)",
-          "comment": "Deprecation ist Python-spezifisch, nicht direkt übersetzbar.",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6341,13 +4379,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "veraltet",
-          "comment": "Kontext: z.B. nicht mehr gebräuchliche Konfigurationsparameter",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6360,12 +4391,6 @@
         {
           "content": "remote management",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Remote-Verwaltung",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6382,12 +4407,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Domain (die)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6400,12 +4419,6 @@
         {
           "content": "resource",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ressource",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6422,12 +4435,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Erweiterung",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6440,12 +4447,6 @@
         {
           "content": "partition",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Partition",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6462,13 +4463,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Technologievorschau",
-          "comment": "Kontext: in Release Notes\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6481,13 +4475,6 @@
         {
           "content": "Known Issues",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bekannte Probleme",
-          "comment": "Kontext: Release Notes",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6504,13 +4491,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Behobene Probleme",
-          "comment": "Kontext: Release Notes",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6523,13 +4503,6 @@
         {
           "content": "Installation-Related Notes",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Installationsbezogene Hinweise",
-          "comment": "Kontext: Release Notes",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6546,12 +4519,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Echtzeituhr (engl. Real Time Clock, RTC)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6564,12 +4531,6 @@
         {
           "content": "loopback device",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Loopback-Gerät",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6586,13 +4547,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Durchsatz, Datendurchsatz",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6605,12 +4559,6 @@
         {
           "content": "kickstart",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kickstart (der)",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6627,12 +4575,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kickstart-Datei",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6645,13 +4587,6 @@
         {
           "content": "hypervisor",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Hypervisor (der)",
-          "comment": "Kontext: Virtualisierung",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6668,12 +4603,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Benutzerverzeichnis",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6686,12 +4615,6 @@
         {
           "content": "installation tree",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Installationsbaum",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6708,12 +4631,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Spiegelserver",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6726,12 +4643,6 @@
         {
           "content": "processor context switching, context switch",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kontextwechsel des Prozessors",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6748,13 +4659,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bridge (die)",
-          "comment": "Kontext: Netzwerk",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6767,12 +4671,6 @@
         {
           "content": "traffic",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenverkehr",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6789,12 +4687,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Daemon (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6807,12 +4699,6 @@
         {
           "content": "subnet",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Subnetz",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6829,13 +4715,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Gateway (das)",
-          "comment": "Kontext: Netzwerk",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6848,13 +4727,6 @@
         {
           "content": "netmask",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Netzmaske",
-          "comment": "Kontext: Netzwerk",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6871,12 +4743,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Lizenzvereinbarung",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6889,12 +4755,6 @@
         {
           "content": "dump",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Speicherauszug",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6911,12 +4771,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Passwort",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6929,13 +4783,6 @@
         {
           "content": "passphrase",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Passphrase",
-          "comment": "hpeters@10.64.0.109\nhpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6952,13 +4799,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Assistent",
-          "comment": "Kontext: z. B. intallation wizard",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -6971,12 +4811,6 @@
         {
           "content": "runlevel",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Runlevel (der)",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -6993,12 +4827,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Partitionstabelle",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7011,13 +4839,6 @@
         {
           "content": "Boolean",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Boolsche Variable (meist nur den Wert true/false)",
-          "comment": "meist nur den Wert true/false\nhpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7034,12 +4855,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Lastverteilung",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7052,12 +4867,6 @@
         {
           "content": "interrupt",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Interrupt (der)",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7074,13 +4883,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Handbuch zum Einstieg - Erste Schritte",
-          "comment": "Kontext: Als Titel eines Handbuchs/Kapitels\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7093,12 +4895,6 @@
         {
           "content": "nested",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "verschachtelt",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7115,12 +4911,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Backend (das)",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7133,13 +4923,6 @@
         {
           "content": "resource record",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ressourceneintrag",
-          "comment": "Kontext: DNS",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7156,12 +4939,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Aliasse",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7174,12 +4951,6 @@
         {
           "content": "intrusion detection systems (IDS) ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Intrusion-Detection-Systeme (IDS) ",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7196,13 +4967,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Weiterführende Literatur",
-          "comment": "Kontext: in Handbüchern Name eines Abschnitts unter \"Additional Resources\"",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7215,12 +4979,6 @@
         {
           "content": "idle task",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Leerlaufprozess",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7237,12 +4995,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "unidirektionaler Hash",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7255,13 +5007,6 @@
         {
           "content": "system request key",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Systemabfragetaste",
-          "comment": "Kontext: auf Tastatur, S-Abf",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7278,13 +5023,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "regulärer Ausdruck",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7297,13 +5035,6 @@
         {
           "content": "name resolution",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Namensauflösung",
-          "comment": "Kontext: DNS",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7320,13 +5051,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Binärübersetzung",
-          "comment": "Kontext: Virtualisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7339,12 +5063,6 @@
         {
           "content": "latency",
           "locale": "en-US",
-          "lastModifiedDate": 1439435996000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Latenz",
-          "locale": "de",
           "lastModifiedDate": 1439435996000,
           "lastModifiedBy": ""
         }
@@ -7361,12 +5079,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Befehlssatz",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7379,12 +5091,6 @@
         {
           "content": "keyboard layout",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Tastaturbelegung",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7401,13 +5107,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Lauschmodus",
-          "comment": "Kontext: VNC",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7420,13 +5119,6 @@
         {
           "content": "pull-quote",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Seitenansprache",
-          "comment": "Kontext: Typografie, http://www.typografie.info/typowiki/index.php?title=Seitenansprache",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7443,12 +5135,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Gebietsschema",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7461,12 +5147,6 @@
         {
           "content": "Lookup Table (LUT)",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Lookup-Tabelle (LUT)",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7483,12 +5163,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Array (das)",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7501,13 +5175,6 @@
         {
           "content": "Services Configuration Tool",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Services Configuration Tool (App. ist nicht lokalisiert, also engl. Name)",
-          "comment": "system-config-services",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7524,12 +5191,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Shadow-Passwort",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7542,12 +5203,6 @@
         {
           "content": "Mission Statement",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Firmenphilosophie",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7564,12 +5219,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Treiberaktualisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7582,12 +5231,6 @@
         {
           "content": "driver update disk",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenträger zur Treiberaktualisierung",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7604,12 +5247,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenträger-Image zur Treiberaktualisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7622,12 +5259,6 @@
         {
           "content": "driver disk",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Treiberdatenträger",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7644,13 +5275,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "einen IPL des Systems durchführen, einleitendes Programmladen durchführen",
-          "comment": "IPL = Initial Program Load\nhpeters@10.64.0.109\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7665,13 +5289,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Dieses Programm ist freie Software. Sie können es unter den Bedingungen\n der GNU General Public License, wie von der Free Software Foundation\n veröffentlicht, weitergeben und/oder modifizieren, entweder gemäß Version 2\n der Lizenz oder (nach Ihrer Option) jeder späteren Version.\n \n Die Veröffentlichung dieses Programms erfolgt in der Hoffnung, dass es\n Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE, sogar ohne\n die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN\n BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.\n \n Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem\n Programm erhalten haben. Falls nicht, schreiben Sie an die Free Software\n Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n",
-          "comment": "Fedora comment",
-          "locale": "de",
-          "lastModifiedDate": 1439439597000,
-          "lastModifiedBy": "Administrator"
         }
       ],
       "termsCount": 2
@@ -7684,12 +5301,6 @@
         {
           "content": "video card",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Grafikkarte",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7706,12 +5317,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Crossover-Kabel",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7724,12 +5329,6 @@
         {
           "content": "patch cable",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Patch-Kabel",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7746,12 +5345,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Screenshot (der) (nur bei Fedora: Bildschirmfoto)",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7764,13 +5357,6 @@
         {
           "content": "resource advertising",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Resource-Advertising",
-          "comment": "Kontext: mDNS",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7787,12 +5373,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Reverse-CHAP",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7805,12 +5385,6 @@
         {
           "content": "query",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Abfrage",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7827,12 +5401,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Installationshandbuch",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7845,12 +5413,6 @@
         {
           "content": "prompt (noun)",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Eingabeaufforderung",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7867,13 +5429,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "ISO-Image",
-          "comment": "ttrinks@10.67.4.210",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7886,12 +5441,6 @@
         {
           "content": "Bugfix",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Fehlerbehebung",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7908,12 +5457,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Ruhezustand",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7926,12 +5469,6 @@
         {
           "content": "x display manager",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "X-Anzeigemanager",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7948,12 +5485,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Deployment-Handbuch",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -7966,12 +5497,6 @@
         {
           "content": "content-based routing",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "inhaltsbasiertes Routing",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -7988,12 +5513,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Latency Tracer (wohl am besten), evtl. auch Latenz-Tracer",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8006,12 +5525,6 @@
         {
           "content": "connection factory",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verbindungs-Factory",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8028,13 +5541,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Maskierungszeichen, auch Fluchtsymbol",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8047,12 +5553,6 @@
         {
           "content": "deployment",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Deployment",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8069,12 +5569,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "einsetzen, implementieren - NICHT deployen, deployt etc.",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8087,12 +5581,6 @@
         {
           "content": "XYZ Quick Start Guide ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Handbuch zum schnellen Einstieg in die/das XYZ",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8109,13 +5597,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "EL-Ausdruck",
-          "comment": "Kontext: Java",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8128,13 +5609,6 @@
         {
           "content": "well-formed",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "wohlgeformt",
-          "comment": "Kontext: XML",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8151,12 +5625,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "HTML-Steuerelemente",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8169,12 +5637,6 @@
         {
           "content": "payload",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Nutzdaten",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8191,12 +5653,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Webservice",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8209,12 +5665,6 @@
         {
           "content": "thread of control",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Kontroll-Thread",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8231,12 +5681,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "protokollunabhängig",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8249,12 +5693,6 @@
         {
           "content": "stateful",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "zustandsbehaftet",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8271,12 +5709,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "zustandslos",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8289,13 +5721,6 @@
         {
           "content": "pluggable",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "modular, zuschaltbar",
-          "comment": "hpeters@10.64.0.109\n~ hpeters@10.64.0.109\n~ msgid \"pluggable\"\n~ msgstr \"zuschaltbar\"\nhpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8312,13 +5737,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sichtbarkeitsbereich (von Variablen) ...?, Geltungsbereich einer Transaktion",
-          "comment": "hpeters@10.64.0.109\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8331,13 +5749,6 @@
         {
           "content": "Preemption",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "zeitweise Unterbrechung ",
-          "comment": "zeitweise Unterbrechung der Bearbeitung einzelner Prozesse zugunsten anderer",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8354,13 +5765,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Adressbereich",
-          "comment": "auch: Adressraum",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8373,12 +5777,6 @@
         {
           "content": "motherboard",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Motherboard",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8395,13 +5793,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Energieverwaltung",
-          "comment": "http://de.wikipedia.org/wiki/Power_Management",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8414,12 +5805,6 @@
         {
           "content": " join type",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Verbundtyp",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8436,12 +5821,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Datenschutzerklärung",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8454,12 +5833,6 @@
         {
           "content": "namespace",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Namensraum",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8476,12 +5849,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "querschnittlichen Belange",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8494,12 +5861,6 @@
         {
           "content": "commodity hardware",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Standardhardware",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8516,13 +5877,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Registrierung",
-          "comment": "JBoss clustering",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8535,13 +5889,6 @@
         {
           "content": "Workaround",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Problemumgehung",
-          "comment": "auch: Zwischenlösung",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8558,12 +5905,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "autoritativ",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8576,13 +5917,6 @@
         {
           "content": "nagle -> den \"Nagle\"-Algorithmus anwenden",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "den \"Nagle\"-Algorithmus anwenden",
-          "comment": "hpeters@10.64.0.109\n~ hpeters@10.64.0.109\n~ msgid \"to nagle\"\n~ msgstr \"autoritativ\"\nhpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8599,12 +5933,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "den Nagle-Algorithmus anwenden",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8617,13 +5945,6 @@
         {
           "content": "tracing",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ablaufverfolgung",
-          "comment": "ttrinks@10.64.53.30",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8640,13 +5961,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Instrumentation, Instrumentierung",
-          "comment": "ttrinks@10.64.53.30\n~ hpeters@10.64.50.153\n~ msgid \"deployment\"\n~ msgstr \"bereitstellung\"\nhpeters@10.64.50.140\nhpeters@10.64.0.109",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8659,13 +5973,6 @@
         {
           "content": "hard / weak / soft / reference",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "harte / schwache / weiche Referenz",
-          "comment": "Kontext: Java",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8682,12 +5989,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "FAQ; Häufig gestellte Fragen ",
-          "locale": "de",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8700,12 +6001,6 @@
         {
           "content": "menu bar",
           "locale": "en-US",
-          "lastModifiedDate": 1439435997000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Menüleiste",
-          "locale": "de",
           "lastModifiedDate": 1439435997000,
           "lastModifiedBy": ""
         }
@@ -8722,12 +6017,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Integritätsprüfung",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8740,12 +6029,6 @@
         {
           "content": "to unlock",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "entsperren",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8762,12 +6045,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Flusskontrolle",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8780,13 +6057,6 @@
         {
           "content": "postback",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Postback (der)",
-          "comment": "hpeters@10.64.0.109",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8803,12 +6073,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Union-Klausel",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8821,12 +6085,6 @@
         {
           "content": "string representation",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Stringdarstellung",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8843,12 +6101,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Datensatz",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8861,13 +6113,6 @@
         {
           "content": "checksum",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Prüfsumme",
-          "comment": "auch: Kontrollsumme",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8884,12 +6129,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kontrollkästchen",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8902,12 +6141,6 @@
         {
           "content": "race condition",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Wettlaufsituation",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8924,12 +6157,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "starke Typisierung",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8942,13 +6169,6 @@
         {
           "content": "event queue",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ereignis-Queue",
-          "comment": "Kontext: JBoss Cache",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -8965,13 +6185,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Eviction (die)",
-          "comment": "Kontext: JBoss Cache",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -8984,13 +6197,6 @@
         {
           "content": "to evict",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "räumen, entfernen",
-          "comment": "Kontext: JBoss Cache",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9007,13 +6213,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Introspektion",
-          "comment": "Kontext: Java, auch Caches",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9026,12 +6225,6 @@
         {
           "content": "data alignment",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Speicherausrichtung",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9048,12 +6241,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "selbstbestätigt",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9066,12 +6253,6 @@
         {
           "content": "roles summary",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Rollenübersicht",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9088,12 +6269,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Erstentwurf",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9106,12 +6281,6 @@
         {
           "content": "power of two",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Zweierpotenz",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9128,13 +6297,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Aufwärtskompatibilität",
-          "comment": "hpeters@10.64.49.108",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9147,12 +6309,6 @@
         {
           "content": "file protection mode",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Dateischutzmodus",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9169,12 +6325,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Hook (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9187,13 +6337,6 @@
         {
           "content": "iterative ",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "iterativ",
-          "comment": "sich wiederholend",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9210,12 +6353,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "einzelner Ausfallpunkt",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9228,12 +6365,6 @@
         {
           "content": "failover",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Ausfallsicherung",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9250,12 +6381,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "zur Ausfallsicherung auf einen anderen Cluster-Knoten wechseln",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9268,12 +6393,6 @@
         {
           "content": "bijection",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Bijektion",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9290,12 +6409,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Patch (der)",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9308,12 +6421,6 @@
         {
           "content": "security vulnerability",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheitslücke",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9330,12 +6437,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Skriptsprache",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9348,12 +6449,6 @@
         {
           "content": "Boolean expression",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "boolescher Ausdruck",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9370,13 +6465,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Kreisdiagramm",
-          "comment": "auch: Kuchendiagramm, Tortendiagramm",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9389,12 +6477,6 @@
         {
           "content": "bar chart",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Balkendiagramm",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9411,12 +6493,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Liniendiagramm",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9429,12 +6505,6 @@
         {
           "content": "web browser",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Webbrowser",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9451,12 +6521,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Grafischer Installer",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9469,12 +6533,6 @@
         {
           "content": "production environment",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Produktionsumgebung",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9491,12 +6549,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Bestätigungsmodus",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9509,12 +6561,6 @@
         {
           "content": "audit trail",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Audit-Protokoll",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9531,12 +6577,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Sicherheitslücke",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9549,13 +6589,6 @@
         {
           "content": "RAM",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "RAM",
-          "comment": "Random Access Memory (das)",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9572,12 +6605,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Benutzerdaten",
-          "locale": "de",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
         }
       ],
       "termsCount": 2
@@ -9590,12 +6617,6 @@
         {
           "content": "search domain",
           "locale": "en-US",
-          "lastModifiedDate": 1439435998000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Suchdomäne",
-          "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
         }
@@ -9613,12 +6634,6 @@
           "locale": "en-US",
           "lastModifiedDate": 1441060773000,
           "lastModifiedBy": ""
-        },
-        {
-          "content": "Prozes2",
-          "locale": "de",
-          "lastModifiedDate": 1441060947000,
-          "lastModifiedBy": "Administrator"
         }
       ],
       "termsCount": 2
