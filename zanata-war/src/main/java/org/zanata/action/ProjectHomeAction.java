@@ -32,6 +32,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 
+import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -734,18 +735,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 o2 = temp;
             }
 
-            if (selectedSortOption.equals(SortingType.SortOption.ROLE)) {
-                setShowMembersInGroup(true);
-            } else {
-                setShowMembersInGroup(false);
-                return o1.getName().toLowerCase()
-                    .compareTo(o2.getName().toLowerCase());
-            }
+            // this is set here as a workaround to prevent a separate API call
+            // for the sort setting (according to aeng).
+            setShowMembersInGroup(selectedSortOption.equals(SortingType.SortOption.ROLE));
 
-            // FIXME aeng: this is either confusing, or it is a logic error.
-            //       If the sort option is ROLE, this method will always return 0.
-            //       Please add an explanation of why this is, or fix the logic.
-            return 0;
+            return o1.getAccount().getUsername().toLowerCase()
+                    .compareTo(o2.getAccount().getUsername().toLowerCase());
         }
 
         @Override
@@ -819,6 +814,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
                     }
                 }
             }
+
+            // ensure each list of people is in order
+            for (List<HPerson> people : localePersonMap.values()) {
+                Collections.sort(people, this);
+            }
+
             return localePersonMap;
         }
 
