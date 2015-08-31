@@ -35,7 +35,15 @@ var Actions = {
        srcLocale: srcLocaleId
       }
     });
-   }
+  },
+  resetGlossaryEntry: function(resId) {
+    Dispatcher.handleViewAction({
+        actionType: GlossaryActionTypes.RESET_GLOSSARY_ENTRY,
+        data: {
+         resId: resId
+        }
+    });
+  }
 };
 
 export default Actions;

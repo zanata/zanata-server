@@ -7,23 +7,10 @@ var GlossaryHelper = {
    * @param data
    */
   generateGlossaryTermDTO: function (data) {
-    //{
-    //    "resId": "38dd937c8c7498b5d748f28a09cf1f1c",
-    //    "content": "process",
-    //    "comments": [],
-    //    "locale": "en-US"
-    //  },
-
     var term = {};
-    term['resId'] = '';
-    term['content'] = '';
-    term['locale'] = '';
-    term['comments'] = [];
-
-    //_.forOwn(data.comments, function(comment) {
-    //  term['comments'].push(comment);
-    //});
-
+    term['content'] = data.content;
+    term['locale'] = data.locale;
+    term['comments'] = data.comment;
     return term;
   },
 
@@ -32,17 +19,17 @@ var GlossaryHelper = {
    * @param data
    */
   generateGlossaryDTO: function (data) {
-    var glossary = '{}', entry = "{}";
+    var glossary = {}, entry = {};
     glossary['glossaryEntries'] = [];
 
-    entry['srcLang'] = '';
-    entry['sourceReference'] = '';
-    entry['locale'] = '';
+    entry['resId'] = data.resId;
+    entry['description'] = data.description;
+    entry['srcLang'] = data.srcTerm.locale;
+    entry['sourceReference'] = data.srcTerm.reference;
     entry['glossaryTerms'] = [];
 
-    //_.forOwn(data.terms, function(term) {
-    //  entry['glossaryTerms'].push(this.generateGlossaryTermDTO(term))
-    //});
+    entry['glossaryTerms'].push(this.generateGlossaryTermDTO(data.srcTerm));
+    entry['glossaryTerms'].push(this.generateGlossaryTermDTO(data.transTerm));
 
     glossary['glossaryEntries'].push(entry);
     return glossary;

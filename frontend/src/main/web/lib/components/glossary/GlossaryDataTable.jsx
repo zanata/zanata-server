@@ -77,9 +77,8 @@ var GlossaryDataTable = React.createClass({
       tbl_height: window.innerHeight - 166,
       row_height: 50,
       header_height: 50,
-      inputFields: {},
-      data: _.cloneDeep(this.props.glossaryData),
-      original_data: this.props.glossaryData
+      data: this.props.glossaryData,
+      inputFields: {}
     };
   },
 
@@ -125,16 +124,14 @@ var GlossaryDataTable = React.createClass({
       title = this._generateTitle(term);
     }
 
-    var input = (<TextInput value={term.content}
+    return (<TextInput value={term.content}
       placeholder="enter a term"
       readOnly={readOnly}
       title={title}
-      id={resId}
+      id={key}
       key={key}
       field={this.ENTRY.SRC.field}
       onChangeCallback={this._onValueChange}/>);
-    this.state.inputFields[key] = input;
-    return (input);
   },
 
   _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
@@ -149,7 +146,7 @@ var GlossaryDataTable = React.createClass({
       placeholder="enter a translation"
       readOnly={readOnly}
       title={title}
-      id={resId}
+      id={key}
       key={key}
       field={this.ENTRY.TRANS.field}
       onChangeCallback={this._onValueChange}/>);
@@ -165,7 +162,7 @@ var GlossaryDataTable = React.createClass({
       placeholder="enter part of speech"
       readOnly={readOnly}
       title={entry.pos}
-      id={resId}
+      id={key}
       key={key}
       field={this.ENTRY.POS.field}
       onChangeCallback={this._onValueChange}/>);
@@ -181,15 +178,16 @@ var GlossaryDataTable = React.createClass({
       placeholder="enter description"
       readOnly={readOnly}
       title={entry.description}
-      id={resId}
+      id={key}
       key={key}
       field={this.ENTRY.DESC.field}
       onChangeCallback={this._onValueChange}/>);
   },
 
-  _onValueChange: function(resId, field, value) {
-    var entry = this._getGlossaryEntry(resId);
-    _.set(entry, field, value);
+  _onValueChange: function(inputField, value) {
+    var entry = this._getGlossaryEntry(inputField.props.id);
+    _.set(entry, inputField.props.field, value);
+    this.state.inputFields[inputField.props.id] = inputField;
   },
 
   _handleSave: function(resId) {
@@ -208,12 +206,15 @@ var GlossaryDataTable = React.createClass({
    * @param rowIndex
    */
   _handleCancel: function (resId, rowIndex) {
-    this.state['data'][resId] = this.state['original_data'][resId];
-    this.setState({data: this.state.data});
+    var self = this;
 
-    var key = this._generateKey(1, rowIndex, resId);
-    console.info(this.state.inputFields[key]);
-    //this.state.inputFields[key].type.reset();
+    _.forOwn(this.ENTRY, function(value, key) {
+      var key = self._generateKey(value.col, rowIndex, resId),
+        input = self.state.inputFields[key];
+      if(!_.isUndefined(input)) {
+        input.reset();
+      }
+    });
   },
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
