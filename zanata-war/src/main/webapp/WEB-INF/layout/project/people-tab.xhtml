@@ -127,7 +127,7 @@
       <!-- People list grouped by role -->
       <ui:fragment rendered="#{projectHomeAction.peopleFilterComparator.isShowMembersInGroup()}">
         <ui:param name="maintainers" value="#{projectHomeAction.peopleFilterComparator.getMaintainers()}"/>
-        <ui:param name="localesWithMembers" value="#{projectHomeAction.peopleFilterComparator.getMembersByLocale()}"/>
+        <ui:param name="localesWithMembers" value="#{projectHomeAction.peopleFilterComparator.getLocalesWithMembers()}"/>
 
         <h:panelGroup layout="block" styleClass="l--pad-all-half"
           rendered="#{not empty projectHomeAction.allMembers and empty maintainers and empty localesWithMembers}">
@@ -162,18 +162,20 @@
               <span class="badge">#{localesWithMembers.size}</span>
             </span>
           </h3>
-          <ui:repeat value="#{localesWithMembers.entrySet().toArray()}" var="localeAndMembers">
+          <!-- cannot use name var="locale" as that overwrites an existing param with that name and causes errors -->
+          <ui:repeat value="#{localesWithMembers}" var="localeGrouping">
+            <ui:param name="localeMembers" value="#{projectHomeAction.peopleFilterComparator.getMembersByLocale().get(localeGrouping)}"/>
             <h4 class="heading--sub delta">
-              #{localeAndMembers.key.retrieveDisplayName()}
+              #{localeGrouping.retrieveDisplayName()}
               <span class="txt--mini l--push-left-quarter">
-                <span class="badge">#{localeAndMembers.value.size}</span>
+                <span class="badge">#{localeMembers.size}</span>
               </span>
             </h4>
             <ul class="list--slat l--push-bottom-1">
-              <ui:repeat value="#{localeAndMembers.value}" var="person">
+              <ui:repeat value="#{localeMembers}" var="person">
                 <z:person-permission-entry person="#{person}"
                   project="#{projectHomeAction.project}"
-                  roleNames="#{projectHomeAction.rolesDisplayForLocale(person, localeAndMembers.key)}"
+                  roleNames="#{projectHomeAction.rolesDisplayForLocale(person, localeGrouping)}"
                   canManageMembers="#{canManageMembers}"
                   managePermissionsRender="modalManagePermissions-content"
                   managePermissionsModal="modalManagePermissions"/>

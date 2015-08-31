@@ -25,18 +25,14 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,7 +74,7 @@ public class PersonProjectMemberships {
 
     public ImmutableList<LocaleRoles> getSortedLocaleRoles() {
         return ImmutableList.copyOf(ImmutableSortedSet
-                .orderedBy(localeNameOrdering)
+                .orderedBy(LOCALE_NAME_ORDERING)
                 .addAll(getLocaleRoles())
                 .build());
     }
@@ -126,7 +122,7 @@ public class PersonProjectMemberships {
                 }
             };
 
-    private static final Ordering<LocaleRoles> localeNameOrdering =
+    private static final Ordering<LocaleRoles> LOCALE_NAME_ORDERING =
             Ordering.natural().onResultOf(TO_LOCALE_NAME);
 
 

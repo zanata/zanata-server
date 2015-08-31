@@ -22,6 +22,7 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -551,7 +552,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
         // Person may have no roles left and no longer belong in the list, so
         // ensure the list of people is refreshed.
-        peopleFilterComparator.clearAllMembers();
+        peopleFilterComparator.clearCachedData();
         peopleFilterComparator.sortPeopleList();
     }
 
@@ -703,6 +704,25 @@ public class ProjectHomeAction extends AbstractSortAction implements
         }
     }
 
+    /**
+     * Transform to extract the name of the locale from a HLocale (for sorting)
+     *
+     * Use with {@link java.util.Collections#sort}
+     */
+    public static final Function<HLocale, String> TO_LOCALE_NAME =
+            new Function<HLocale, String>() {
+                @Nullable
+                @Override
+                public String apply(HLocale input) {
+                    // To lowercase to prevent non-caps values appearing after
+                    // all caps values (e.g. a appearing after Z)
+                    return input.retrieveDisplayName().toLowerCase();
+                }
+            };
+
+    private static final Ordering<HLocale> LOCALE_NAME_ORDERING =
+            Ordering.natural().onResultOf(TO_LOCALE_NAME);
+
     private final class PeopleFilterComparator extends InMemoryListFilter<HPerson>
         implements Comparator<HPerson> {
 
@@ -719,6 +739,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
         private boolean showMembersInGroup;
 
         private List<HPerson> allMembers;
+
+        private Map<HLocale, List<HPerson>> localePersonMap;
 
         public PeopleFilterComparator(SortingType sortingType) {
             this.sortingType = sortingType;
@@ -756,8 +778,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
             return allMembers;
         }
 
-        public void clearAllMembers() {
+        public void clearCachedData() {
             allMembers = null;
+            localePersonMap = null;
         }
 
         @Override
@@ -790,7 +813,21 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }));
         }
 
+        public List<HLocale> getLocalesWithMembers() {
+            final ArrayList<HLocale> locales =
+                    Lists.newArrayList(getMembersByLocale().keySet());
+            Collections.sort(locales, LOCALE_NAME_ORDERING);
+            return locales;
+        }
+
         public Map<HLocale, List<HPerson>> getMembersByLocale() {
+            if (localePersonMap == null) {
+                localePersonMap = generateMembersByLocale();
+            }
+            return localePersonMap;
+        }
+
+        private Map<HLocale, List<HPerson>> generateMembersByLocale() {
             Map<HLocale, List<HPerson>> localePersonMap =
                 Maps.newHashMap();
 
