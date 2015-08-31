@@ -35,25 +35,32 @@ var SystemGlossary = React.createClass({
   },
 
   render: function() {
-    var contents;
+    var contents,
+      selectedTransLocale = this.state.selectedTransLocale;
+
+    var count = 0;
+    if(selectedTransLocale) {
+      count = this.state.locales[selectedTransLocale].count;
+    }
 
     if(this.state.glossary && _.size(this.state.glossary) > 0) {
       contents = (
           <GlossaryDataTable
             localeOptions={this.state.localeOptions}
             glossaryData={this.state.glossary}
-            isGlossaryAdmin={false}
-            isGlossarist={true}
+            totalCount={count}
             canAddNewEntry={this.state.canAddNewEntry}
             canUpdateEntry={this.state.canUpdateEntry}
             isAuthenticated={Configs.authenticated}
             user={Configs.user}
             selectedSrcLocale={this.state.selectedSrcLocale}
-            selectedTransLocale={this.state.selectedTransLocale}/>
+            selectedTransLocale={selectedTransLocale}/>
         );
     } else {
       contents = (<div>No glossary</div>)
     }
+
+
 
     return (<div>
               <Icons fileName='./node_modules/zanata-ui/src/components/Icons/icons.svg' />
@@ -85,7 +92,7 @@ var SystemGlossary = React.createClass({
                 </div>
                 <div className='dfx aic'>
                   <Icon name='glossary' className='csec50 mr1/4' />
-                  <span className='csec'>{this.state.glossary.length}</span>
+                  <span className='csec'>{count}</span>
                 </div>
               </div>
               <div>

@@ -7,7 +7,7 @@ var bundleDest = process.env.npm_config_env_bundleDest || __dirname;
 module.exports = {
   context: __dirname,
   entry: [
-    './index.js'
+    './index'
   ],
   output: {
     path: bundleDest,
@@ -19,9 +19,21 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
+        loaders: ['babel-loader']
+      },
+      {
+        test: /\.css$/,
+        loaders: ['style', 'css', 'cssnext']
       }
     ]
+  },
+  cssnext: {
+    compress: true,
+    features: {
+      rem: false,
+      pseudoElements: false,
+      colorRgba: false
+    }
   },
   plugins: [
     new webpack.DefinePlugin({ "global.GENTLY": false }),
@@ -40,7 +52,7 @@ module.exports = {
     new webpack.NoErrorsPlugin()
   ],
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json']
+    extensions: ['', '.js', '.jsx', '.json', '.css']
   },
   node: {
     __dirname: true

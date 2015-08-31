@@ -60,9 +60,15 @@ var GlossaryDataTable = React.createClass({
       imageUrl: React.PropTypes.string.isRequired,
       languageTeams: React.PropTypes.string.isRequired
     }),
-    localeOptions: React.PropTypes.arrayOf(React.PropTypes.string),
+    localeOptions: React.PropTypes.arrayOf(
+      React.PropTypes.shape({
+        label: React.PropTypes.string.isRequired,
+        value: React.PropTypes.string.isRequired
+      })
+    ),
     selectedSrcLocale: React.PropTypes.string.isRequired,
-    selectedTransLocale: React.PropTypes.string.isRequired
+    selectedTransLocale: React.PropTypes.string.isRequired,
+    totalCount: React.PropTypes.number.isRequired
   },
 
   mixins: [PureRenderMixin],
@@ -108,7 +114,6 @@ var GlossaryDataTable = React.createClass({
   },
 
   _renderSourceHeader: function (label) {
-    console.log(this.props)
     return (<span className='csec'>{this.props.selectedSrcLocale}</span>);
   },
 
@@ -129,6 +134,7 @@ var GlossaryDataTable = React.createClass({
       readOnly={readOnly}
       title={title}
       id={key}
+      resId={resId}
       key={key}
       field={this.ENTRY.SRC.field}
       onChangeCallback={this._onValueChange}/>);
@@ -147,6 +153,7 @@ var GlossaryDataTable = React.createClass({
       readOnly={readOnly}
       title={title}
       id={key}
+      resId={resId}
       key={key}
       field={this.ENTRY.TRANS.field}
       onChangeCallback={this._onValueChange}/>);
@@ -163,6 +170,7 @@ var GlossaryDataTable = React.createClass({
       readOnly={readOnly}
       title={entry.pos}
       id={key}
+      resId={resId}
       key={key}
       field={this.ENTRY.POS.field}
       onChangeCallback={this._onValueChange}/>);
@@ -179,13 +187,14 @@ var GlossaryDataTable = React.createClass({
       readOnly={readOnly}
       title={entry.description}
       id={key}
+      resId={resId}
       key={key}
       field={this.ENTRY.DESC.field}
       onChangeCallback={this._onValueChange}/>);
   },
 
   _onValueChange: function(inputField, value) {
-    var entry = this._getGlossaryEntry(inputField.props.id);
+    var entry = this._getGlossaryEntry(inputField.props.resId);
     _.set(entry, inputField.props.field, value);
     this.state.inputFields[inputField.props.id] = inputField;
   },
@@ -219,8 +228,9 @@ var GlossaryDataTable = React.createClass({
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var self = this
-    var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>)
+    var self = this;
+
+    var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>);
 
     if(rowIndex == 0 && self.props.canAddNewEntry) {
       return (<div>
@@ -296,7 +306,7 @@ var GlossaryDataTable = React.createClass({
   },
 
   render: function() {
-    var rows = [];
+    var rows = [], self = this;
 
     _.forOwn(this.state.data, function(entry, key) {
       var rowData = [];
@@ -305,6 +315,9 @@ var GlossaryDataTable = React.createClass({
     });
 
     function rowGetter(rowIndex) {
+      if(rowIndex > rows.length) {
+        console.info('get next load');
+      }
       return rows[rowIndex];
     }
 
@@ -317,7 +330,7 @@ var GlossaryDataTable = React.createClass({
     var dataTable = (<Table
       rowHeight={this.state.row_height}
       rowGetter={rowGetter}
-      rowsCount={rows.length}
+      rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}
       headerHeight={this.state.header_height} >

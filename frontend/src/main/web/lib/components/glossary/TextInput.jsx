@@ -5,6 +5,7 @@ var TextInput = React.createClass({
   propTypes: {
     value: React.PropTypes.string,
     id: React.PropTypes.string.isRequired,
+    resId: React.PropTypes.string.isRequired,
     field: React.PropTypes.string.isRequired,
     placeholder: React.PropTypes.string,
     title: React.PropTypes.string,

@@ -14,10 +14,12 @@ var _state = {
   canAddNewEntry: canAddNewEntry(),
   canUpdateEntry: canUpdateEntry(),
   localeOptions: [],
-  selectedSrcLocale: 'en-US',
+  selectedSrcLocale: null,
   selectedTransLocale: null,
   locales: null,
-  glossary: {}
+  glossary: {},
+  sizePerPage: 20,
+  page:0
 };
 
 var CHANGE_EVENT = "change";
@@ -49,14 +51,15 @@ function loadLocalesStats() {
 function processLocalesStatistic(serverResponse) {
   var localesMap = {}, localeOptions = [];
 
-  _.forEach(serverResponse, function(stats) {
+  _state['selectedSrcLocale'] = serverResponse['srcLocale'].localeId;
+
+  _.forEach(serverResponse['transLocale'], function(stats) {
     localesMap[stats.locale.localeId] = stats;
     localeOptions.push({
       value: stats.locale.localeId,
       label: stats.locale.displayName
     });
   });
-
 
   _state['localeOptions'] = localeOptions;
   _state['locales'] = localesMap;
@@ -65,16 +68,20 @@ function processLocalesStatistic(serverResponse) {
 }
 
 function glossaryAPIUrl(srcLocale, transLocale) {
-  console.log(srcLocale)
-  return Configs.baseUrl + "/glossary/src/" + srcLocale + "/trans/" + transLocale + Configs.urlPostfix
+  var  sizePerPage = _state['sizePerPage'], page = _state['page'];
+  return Configs.baseUrl
+    + "/glossary/src/" + srcLocale
+    + "/trans/" + transLocale + Configs.urlPostfix
+    + "?page=" + page + "&sizePerPage=" + sizePerPage;
 }
 
 function loadGlossaryByLocale () {
-  var selectedSrcLocaleId = _state['selectedSrcLocale'] || 'en-US'
-  var selectedTransLocaleId = _state['selectedTransLocale']
-  var url = glossaryAPIUrl(selectedSrcLocaleId, _state['selectedTransLocale'])
+  var selectedSrcLocaleId = _state['selectedSrcLocale'],
+    selectedTransLocaleId = _state['selectedTransLocale'];
 
-  if(!_.isUndefined(selectedSrcLocaleId) && !_.isUndefined(_state['selectedTransLocale'])) {
+  if(!_.isNull(selectedSrcLocaleId) && !_.isNull(selectedTransLocaleId)) {
+    var url = glossaryAPIUrl(selectedSrcLocaleId, selectedTransLocaleId);
+
     return new Promise(function(resolve, reject) {
       Request.get(url)
         .set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -123,8 +130,6 @@ function processGlossaryList(serverResponse) {
   _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(), transTerm: generateTransTerm()};
 
   var transLocaleId = _state['selectedTransLocale'];
-
-  console.info('response', serverResponse);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
