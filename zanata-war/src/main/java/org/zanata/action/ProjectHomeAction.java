@@ -33,6 +33,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -97,6 +98,9 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
 public class ProjectHomeAction extends AbstractSortAction implements
         Serializable {
 
+    public static final Ordering<LocaleRole>
+            LOCALE_ROLE_ORDERING = Ordering.explicit(LocaleRole.Translator,
+            LocaleRole.Reviewer, LocaleRole.Coordinator);
     @In
     private ActivityService activityServiceImpl;
 
@@ -622,11 +626,22 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 }));
     }
 
+
+    public static final Function<String, String> TO_LOWERCASE =
+            new Function<String, String>() {
+                @Nullable @Override
+                public String apply(@Nullable String input) {
+                    return Strings.isNullOrEmpty(input) ?
+                            "" :
+                            input.toLowerCase();
+                }
+            };
+
     /**
      * Get a list of the display name for every language-related role for a
      * person.
      */
-    public Collection<String> languageRoleDisplayNames(HPerson person) {
+    public List<String> languageRoleDisplayNames(HPerson person) {
         final ListMultimap<HLocale, LocaleRole>
                 localeRolesMultimap = getPersonLocaleRoles().get(person);
 
@@ -634,8 +649,13 @@ public class ProjectHomeAction extends AbstractSortAction implements
             return Collections.EMPTY_LIST;
         }
 
-        return Collections2.transform(localeRolesMultimap.asMap().entrySet(),
-                TO_LOCALE_ROLES_DISPLAY_STRING);
+        List<String> displayNames = Lists.newArrayList(Collections2.transform(
+                localeRolesMultimap.asMap().entrySet(),
+                TO_LOCALE_ROLES_DISPLAY_STRING));
+
+        Collections.sort(displayNames, Ordering.natural().onResultOf(TO_LOWERCASE));
+
+        return displayNames;
     }
 
     /**
@@ -651,8 +671,11 @@ public class ProjectHomeAction extends AbstractSortAction implements
         if (roles == null) {
             return Lists.newArrayList();
         }
-        final Collection<String> roleNames =
-                Collections2.transform(roles, TO_DISPLAY_NAME);
+        final List<LocaleRole> sortedRoles = LOCALE_ROLE_ORDERING.sortedCopy(
+                roles);
+
+        final List<String> roleNames = Lists.transform(sortedRoles, TO_DISPLAY_NAME);
+
         return Lists.newArrayList(Joiner.on(", ").join(roleNames));
     }
 
@@ -664,8 +687,10 @@ public class ProjectHomeAction extends AbstractSortAction implements
                         Map.Entry<HLocale, Collection<LocaleRole>> entry) {
                     final String localeName = entry.getKey().retrieveDisplayName();
 
-                    final Collection<String> roleNames =
-                            Collections2.transform(entry.getValue(), TO_DISPLAY_NAME);
+                    final List<LocaleRole> sortedRoles =
+                            LOCALE_ROLE_ORDERING.sortedCopy(entry.getValue());
+
+                    final List<String> roleNames = Lists.transform(sortedRoles, TO_DISPLAY_NAME);
 
                     return localeName + " " + Joiner.on(", ").join(roleNames);
                 }
