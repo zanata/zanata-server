@@ -1,12 +1,11 @@
 import React from 'react';
-import {PureRenderMixin} from '../../../node_modules/react/addons';
+import {PureRenderMixin} from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
-
 
 var GlossaryDataTable = React.createClass({
   ENTRY: {
@@ -80,13 +79,15 @@ var GlossaryDataTable = React.createClass({
 
   mixins: [PureRenderMixin],
 
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       tbl_width: window.innerWidth - this.CELL_HEIGHT,
       tbl_height: window.innerHeight - 166,
+      row_height: 48,
+      header_height: 48,
       inputFields: {},
       timeout: null
-    };
+    }
   },
 
   _generateTitle: function(term) {
