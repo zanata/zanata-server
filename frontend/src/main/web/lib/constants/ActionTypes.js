@@ -10,7 +10,8 @@ var GlossaryActionTypes = keymirror({
   TRANS_LOCALE_SELECTED: null,
   INSERT_GLOSSARY: null,
   UPDATE_GLOSSARY: null,
-  DELETE_GLOSSARY: null
+  DELETE_GLOSSARY: null,
+  UPDATE_FILTER: null
 });
 
 exports.UserMatrixActionTypes = UserMatrixActionTypes;

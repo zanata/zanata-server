@@ -6,7 +6,7 @@ import Actions from '../actions/GlossaryActions';
 import { Input, Icons, Icon, Select } from 'zanata-ui'
 import GlossaryDataTable from './glossary/GlossaryDataTable'
 import GlossarySrcDataTable from './glossary/GlossarySrcDataTable'
-
+import TextInput from './glossary/TextInput'
 
 var SystemGlossary = React.createClass({
   mixins: [PureRenderMixin],
@@ -16,7 +16,7 @@ var SystemGlossary = React.createClass({
   },
 
   getInitialState: function() {
-    return this.getLocaleStats();
+    return {localeStats: this.getLocaleStats(), filter: ''};
   },
 
   componentDidMount: function() {
@@ -33,6 +33,16 @@ var SystemGlossary = React.createClass({
 
   _handleTransChange: function(localeId) {
     Actions.changeTransLocale(localeId)
+  },
+
+  _handleFilterKeyDown: function(event) {
+    if(event.key == 'Enter') {
+      Actions.updateFilter(this.state.filter);
+    }
+  },
+
+  _handleFilterValueChange: function(input, value) {
+    this.state.filter = value;
   },
 
   render: function() {
@@ -94,7 +104,15 @@ var SystemGlossary = React.createClass({
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
                   <div className='posr w8'>
-                    <Input name='glossarySearch' label='Search Glossary' outline className='w100p pr1&1/2' type='search' placeholder='Search Glossary' />
+                    <TextInput value={this.state.filter}
+                      placeholder="Search Glossary"
+                      className="w100p pr1&1/2"
+                      id="search"
+                      resId="search"
+                      key="search"
+                      field="search"
+                      onKeyDownCallback={this._handleFilterKeyDown}
+                      onChangeCallback={this._handleFilterValueChange}/>
                     <button className='posa r0 t0 fzn1 h1&1/2 p1/4 csec50 dfx aic'>
                       <Icon name='search' size='s1' />
                     </button>

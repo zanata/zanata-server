@@ -289,6 +289,17 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
             initialise();
           });
         break;
+      case GlossaryActionTypes.UPDATE_FILTER:
+        console.log('update filter', action.data);
+        if(_state['filter']  !== action.data) {
+          _state['filter'] = action.data;
+          loadGlossaryByLocale()
+            .then(processGlossaryList)
+            .then(function (newState) {
+              GlossaryStore.emitChange();
+            });
+        }
+        break;
     }
   })
 });

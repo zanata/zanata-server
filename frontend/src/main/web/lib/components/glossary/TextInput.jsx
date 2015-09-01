@@ -10,7 +10,8 @@ var TextInput = React.createClass({
     field: React.PropTypes.string.isRequired,
     placeholder: React.PropTypes.string,
     title: React.PropTypes.string,
-    onChangeCallback: React.PropTypes.func
+    onChangeCallback: React.PropTypes.func,
+    onKeyDownCallback: React.PropTypes.func
   },
 
   mixins: [PureRenderMixin],
@@ -30,6 +31,10 @@ var TextInput = React.createClass({
   },
 
   _handleKeyDown: function (event) {
+    if(this.props.onKeyDownCallback) {
+      this.props.onKeyDownCallback(event);
+    }
+
     if(event.key == 'Escape') {
       this.reset();
     }

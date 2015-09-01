@@ -312,6 +312,8 @@ var GlossarySrcDataTable = React.createClass({
   render: function() {
     var rows = [], self = this;
 
+    this.state.data = this.props.glossaryData;
+
     _.forOwn(this.state.data, function(entry, key) {
       var rowData = [];
       rowData.push(key);

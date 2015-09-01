@@ -30,12 +30,10 @@ var Actions = {
       }
     });
   },
-  resetGlossaryEntry: function(resId) {
+  updateFilter: function(filter) {
     Dispatcher.handleViewAction({
-        actionType: GlossaryActionTypes.RESET_GLOSSARY_ENTRY,
-        data: {
-         resId: resId
-        }
+        actionType: GlossaryActionTypes.UPDATE_FILTER,
+        data: filter
     });
   }
 };
