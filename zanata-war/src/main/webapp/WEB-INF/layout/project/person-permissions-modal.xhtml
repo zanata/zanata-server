@@ -157,23 +157,24 @@
                   </p>
 
                   <p id="#{id}-translation-maintainer-info" class="txt--meta l--push-top-half is-hidden">
-                    <strong>#{person.account.username}</strong> will be able to add/remove translators
-                    and reviewers to any language as well as translate or review any
-                    language. They are not able to change project settings.
+                    <h:outputText
+                        value="#{msgs.format('jsf.projectPermissions.TranslationMaintainerPermissionDetails',
+                                   person.account.username)}"
+                        escape="false"/>
                   </p>
 
                   <p id="#{id}-maintainer-info" class="txt--meta l--push-top-half is-hidden">
-                    <strong>#{person.account.username}</strong> will be able to change project settings,
-                    add/remove maintainers and translation maintainers, add/remove translators
-                    and reviewers to any language as well as translate or review any
-                    language.
+                    <h:outputText
+                        value="#{msgs.format('jsf.projectPermissions.MaintainerPermissionDetails',
+                                   person.account.username)}"
+                        escape="false"/>
                   </p>
                 </div>
               </div>
 
               <hr/>
 
-              <h3>Translation Permissions</h3>
+              <h3>#{msgs['jsf.projectPermissions.TranslationPermissions']}</h3>
               <ui:fragment rendered="#{empty projectPermissionDialog.data.localeRoles.toArray()}">
                 <p>#{msgs['jsf.languages.NoLanguagesEnabled']}</p>
               </ui:fragment>
@@ -191,7 +192,7 @@
                         <ul class="list--horizontal">
                           <li>
                             <z:checkbox
-                                label="Translate"
+                                label="#{msgs['jsf.Translate']}"
                                 labelStyle="form__checkbox__label js-form__checkbox__label"
                                 onValueChanged="bindTranslationPermissionRole"
                                 value="#{roles.locale.localeId}:Translator"
@@ -199,7 +200,7 @@
                           </li>
                           <li>
                             <z:checkbox
-                                label="Review"
+                                label="#{msgs['jsf.label.review']}"
                                 labelStyle="form__checkbox__label js-form__checkbox__label"
                                 onValueChanged="bindTranslationPermissionRole"
                                 value="#{roles.locale.localeId}:Reviewer"
@@ -218,16 +219,16 @@
             <button onclick="return false;" class="button--link h--1-1-4 l--push-right-half" data-dismiss="modal">
               #{msgs['jsf.Cancel']}</button>
             <h:panelGroup id="#{id}-submit-buttons">
-              <a4j:commandButton value="Add person"
+              <a4j:commandButton value="#{msgs['jsf.people.AddPerson']}"
                   rendered="#{not memberSelected}"
                   disabled="#{empty person or not projectPermissionDialog.anySelected()}"
                   onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
-              <a4j:commandButton value="Remove person from project"
+              <a4j:commandButton value="#{msgs['jsf.people.RemovePerson']}"
                   rendered="#{memberSelected and not projectPermissionDialog.anySelected()}"
                   onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
-              <a4j:commandButton value="Save permissions"
+              <a4j:commandButton value="#{msgs['jsf.projectPermissions.SavePermissions']}"
                   rendered="#{memberSelected and projectPermissionDialog.anySelected()}"
                   onclick="savePermissionDialog();zanata.modal.hide(jQuery('##{id}'));return false;">
               </a4j:commandButton>
@@ -261,7 +262,7 @@
             var translationMaintainerMessage = jQuery('##{id}-translation-maintainer-disabled-message');
 
             var refreshCheckboxDisplay = function () {
-              var checked = maintainerCheckbox.prop('checked'); // event.currentTarget.checked;
+              var checked = maintainerCheckbox.prop('checked');
 
               if (checked && !translationMaintainerCheckbox.prop('checked')) {
                 // zanata checkbox element behaviour is bound to clicking on the
