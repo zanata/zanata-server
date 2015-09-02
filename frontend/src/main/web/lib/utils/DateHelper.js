@@ -1,4 +1,5 @@
 import moment from 'moment-range';
+import StringUtils from './StringUtils'
 
 var DateHelper = {
   dateFormat: 'YYYY-MM-DD',
@@ -65,11 +66,19 @@ var DateHelper = {
   },
 
   getDate: function(miliseconds) {
-    return new Date(miliseconds);
+    if(!StringUtils.isEmptyOrNull(miliseconds)) {
+      return new Date(miliseconds);
+    } else {
+      return null;
+    }
   },
 
   shortDate: function(date) {
-   return moment(date).format('MMM Do, YYYY');
+    if(date != null) {
+      return moment(date).format('MMM Do, YYYY');
+    } else {
+      return null;
+    }
   }
 };
 

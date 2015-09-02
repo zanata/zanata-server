@@ -57,6 +57,7 @@ var SystemGlossary = React.createClass({
             <GlossaryDataTable
               localeOptions={this.state.localeOptions}
               glossaryData={this.state.glossary}
+              glossaryResId={this.state.glossaryResId}
               totalCount={this.state.srcLocale.count}
               canAddNewEntry={this.state.canAddNewEntry}
               canUpdateEntry={this.state.canUpdateEntry}
@@ -70,6 +71,7 @@ var SystemGlossary = React.createClass({
           <GlossarySrcDataTable
             localeOptions={this.state.localeOptions}
             glossaryData={this.state.glossary}
+            glossaryResId={this.state.glossaryResId}
             totalCount={this.state.srcLocale.count}
             canAddNewEntry={this.state.canAddNewEntry}
             canUpdateEntry={this.state.canUpdateEntry}

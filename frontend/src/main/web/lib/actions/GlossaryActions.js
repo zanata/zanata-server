@@ -9,16 +9,16 @@ var Actions = {
       data: selectedLocale
     });
   },
-  createGlossary: function(glossary) {
+  createGlossary: function(resId) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.INSERT_GLOSSARY,
-      data: glossary
+      data: resId
     });
   },
-  updateGlossary: function(glossary) {
+  updateGlossary: function(resId) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPDATE_GLOSSARY,
-      data: glossary
+      data: resId
     });
   },
   deleteGlossary: function(resId, srcLocaleId) {

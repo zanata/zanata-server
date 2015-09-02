@@ -75,20 +75,18 @@ var GlossaryDataTable = React.createClass({
       count: React.PropTypes.number.isRequired
     }).isRequired,
     selectedTransLocale: React.PropTypes.string.isRequired,
-    totalCount: React.PropTypes.number.isRequired
+    totalCount: React.PropTypes.number.isRequired,
+    glossaryResId: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.string))
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
-    delete this.props.glossaryData["NEW_ENTRY"];
-
     return {
       tbl_width: window.innerWidth - 48,
       tbl_height: window.innerHeight - 166,
       row_height: 50,
       header_height: 50,
-      data: this.props.glossaryData,
       inputFields: {}
     };
   },
@@ -124,11 +122,11 @@ var GlossaryDataTable = React.createClass({
 
   _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
+
     var entry = this._getGlossaryEntry(resId),
       term = entry.srcTerm,
       title = this._generateTitle(term),
       key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
-
     return <span title={title} key={key}>{term.content}</span>;
   },
 
@@ -176,8 +174,7 @@ var GlossaryDataTable = React.createClass({
   },
 
   _handleUpdate: function(resId) {
-    var entry = this._getGlossaryEntry(resId);
-    Actions.updateGlossary(entry);
+    Actions.updateGlossary(resId);
   },
 
   /**
@@ -267,24 +264,14 @@ var GlossaryDataTable = React.createClass({
   },
 
   _getGlossaryEntry: function (resId) {
-    return this.state.data[resId];
+    return this.props.glossaryData[resId];
+  },
+
+  _rowGetter: function(rowIndex) {
+    return this.props.glossaryResId[rowIndex];
   },
 
   render: function() {
-    var rows = [], self = this;
-
-    this.state.data = this.props.glossaryData;
-
-    _.forOwn(this.state.data, function(entry, key) {
-      var rowData = [];
-      rowData.push(key);
-      rows.push(rowData);
-    });
-
-    function rowGetter(rowIndex) {
-      return rows[rowIndex];
-    }
-
     var srcColumn = this._getSourceColumn(),
       transColumn = this._getTransColumn(),
       posColumn = this._getPosColumn(),
@@ -293,7 +280,7 @@ var GlossaryDataTable = React.createClass({
 
     var dataTable = (<Table
       rowHeight={this.state.row_height}
-      rowGetter={rowGetter}
+      rowGetter={this._rowGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}

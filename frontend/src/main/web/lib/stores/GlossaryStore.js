@@ -18,6 +18,8 @@ var _state = {
   selectedTransLocale: null,
   locales: null,
   glossary: {},
+  original_glossary: {},
+  glossary_resId: [],
   sizePerPage: 20,
   page:1,
   filter: ''
@@ -117,7 +119,7 @@ function canUpdateEntry() {
   return true;
 }
 
-function generateTransTerm(transLocaleId) {
+function generateTerm(transLocaleId) {
   return {
     content: '',
     locale: transLocaleId,
@@ -127,7 +129,7 @@ function generateTransTerm(transLocaleId) {
   }
 }
 function generateSrcTerm(localeId) {
-  var term = generateTransTerm();
+  var term = generateTerm(localeId);
   term['reference'] = '';
   return term;
 }
@@ -137,12 +139,20 @@ function processGlossaryList(serverResponse) {
   srcLocaleId = _state['srcLocale'].locale.localeId;
 
   _state['glossary'] = {};
-  _state['glossary']['NEW_ENTRY'] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(srcLocaleId), transTerm: generateTransTerm(transLocaleId)};
+  _state['glossaryResId'] = [];
 
+  if(StringUtils.isEmptyOrNull(transLocaleId) && _state['canAddNewEntry']) {
+    var newEntryKey = 'NEW_ENTRY', rowData = [];
+    rowData.push(newEntryKey);
+
+    _state['glossary'][newEntryKey] = {resId: '', pos: '', description: '', srcTerm: generateSrcTerm(srcLocaleId), transTerm: generateTerm(transLocaleId)};
+    _state['glossaryResId'].push(rowData);
+  }
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
-      GlossaryHelper.getTermByLocale(entry.glossaryTerms, entry.srcLang);
+      GlossaryHelper.getTermByLocale(entry.glossaryTerms, entry.srcLang),
+        rowData = [];
 
     srcTerm.reference = entry.sourceReference;
 
@@ -154,14 +164,18 @@ function processGlossaryList(serverResponse) {
       GlossaryHelper.getTermByLocale(entry.glossaryTerms, transLocaleId);
 
     if(transTerm != null) {
-      if(!StringUtils.isEmptyOrNull(transTerm.lastModifiedDate)) {
-        transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
-      }
+      transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
     } else {
-      transTerm = generateTransTerm(transLocaleId);
+      transTerm = generateTerm(transLocaleId);
     }
     _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, termsCount: entry.termsCount, srcTerm: srcTerm, transTerm: transTerm};
+
+    rowData.push(entry.resId);
+    _state['glossaryResId'].push(rowData);
+
   });
+  _state['original_glossary'] = _.cloneDeep(_state['glossary']);
+
   return _state;
 }
 
@@ -274,7 +288,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.INSERT_GLOSSARY:
       case GlossaryActionTypes.UPDATE_GLOSSARY:
         console.log('save/update glossary', action.data);
-        saveOrUpdateGlossary(action.data)
+        saveOrUpdateGlossary(_state['glossary'][action.data])
           .then(processSave)
           .then(function () {
             initialise();

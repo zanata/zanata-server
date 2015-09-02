@@ -70,22 +70,18 @@ var GlossarySrcDataTable = React.createClass({
       }).isRequired,
       count: React.PropTypes.number.isRequired
     }).isRequired,
-    totalCount: React.PropTypes.number.isRequired
+    totalCount: React.PropTypes.number.isRequired,
+    glossaryResId: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.string))
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
-    if(!this.props.canAddNewEntry) {
-      delete this.props.glossaryData["NEW_ENTRY"];
-    }
-
     return {
       tbl_width: window.innerWidth - 48,
       tbl_height: window.innerHeight - 166,
       row_height: 50,
       header_height: 50,
-      data: this.props.glossaryData,
       inputFields: {}
     };
   },
@@ -199,13 +195,11 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _handleSave: function(resId) {
-    var entry = this._getGlossaryEntry(resId);
-    Actions.createGlossary(entry);
+    Actions.createGlossary(resId);
   },
 
   _handleUpdate: function(resId) {
-    var entry = this._getGlossaryEntry(resId);
-    Actions.updateGlossary(entry);
+    Actions.updateGlossary(resId);
   },
 
   _handleDelete: function(resId) {
@@ -306,23 +300,15 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _getGlossaryEntry: function (resId) {
-    return this.state.data[resId];
+    return this.props.glossaryData[resId];
   },
 
+  _rowGetter: function(rowIndex) {
+    return this.props.glossaryResId[rowIndex];
+  },
+
+
   render: function() {
-    var rows = [], self = this;
-
-    this.state.data = this.props.glossaryData;
-
-    _.forOwn(this.state.data, function(entry, key) {
-      var rowData = [];
-      rowData.push(key);
-      rows.push(rowData);
-    });
-
-    function rowGetter(rowIndex) {
-      return rows[rowIndex];
-    }
     var srcColumn = this._getSourceColumn(),
       posColumn = this._getPosColumn(),
       descColumn = this._getDescColumn(),
@@ -331,7 +317,7 @@ var GlossarySrcDataTable = React.createClass({
 
     var dataTable = (<Table
       rowHeight={this.state.row_height}
-      rowGetter={rowGetter}
+      rowGetter={this._rowGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}
