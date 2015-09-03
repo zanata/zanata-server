@@ -82,6 +82,8 @@ var GlossarySrcDataTable = React.createClass({
     return {
       tbl_width: window.innerWidth - this.CELL_HEIGHT,
       tbl_height: window.innerHeight - 166,
+      row_height: 48,
+      header_height: 48,
       inputFields: {},
       timeout: null
     };
@@ -116,29 +118,29 @@ var GlossarySrcDataTable = React.createClass({
     return (<span className='csec'>{this.props.srcLocale.locale.displayName}</span>);
   },
 
-  _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
+  _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
+    var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId)
 
-    if(resId === null) {
-      return (<LoadingCell key={key}/>);
+    if (resId === null) {
+      return (<LoadingCell key={key}/>)
     } else {
-      var entry = this._getGlossaryEntry(resId),
-        term = entry.srcTerm,
-        readOnly = !(rowIndex == 0 && this.props.canAddNewEntry),
-        title = this._generateTitle(term);
+      var entry = this._getGlossaryEntry(resId)
+      var term = entry.srcTerm
+      var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry)
+      var title = this._generateTitle(term)
 
-      if(readOnly) {
-        return <span title={title} key={key}>{term.content}</span>;
+      if (readOnly) {
+        return <span title={title} key={key}>{term.content}</span>
       } else {
         return (<TextInput value={term.content}
-          placeholder="enter a term"
+          placeholder='enter a new term'
           title={title}
           id={key}
           resId={resId}
           key={key}
           field={this.ENTRY.SRC.field}
-          onChangeCallback={this._onValueChange}/>);
+          onChangeCallback={this._onValueChange}/>)
       }
     }
   },
