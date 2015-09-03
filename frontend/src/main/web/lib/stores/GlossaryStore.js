@@ -72,9 +72,15 @@ function processLocalesStatistic(serverResponse) {
   return _state;
 }
 
+function getPreviousPage() {
+  var page = _state['page'] - 1;
+  return page < 1 ? 1 : page;
+}
+
 function glossaryAPIUrl(srcLocaleId, transLocale) {
-  var page = _state['page'],
+  var page = getPreviousPage(),
     filter = _state['filter'];
+
   var url = Configs.baseUrl + "/glossary/src/" + srcLocaleId;
   if(!StringUtils.isEmptyOrNull(transLocale)) {
     url = url + "/trans/" + transLocale;
@@ -138,6 +144,11 @@ function generateSrcTerm(localeId) {
   return term;
 }
 
+function getStartIndex() {
+  var startIndex = ((_state['page'] -1) * SIZE_PER_PAGE) - SIZE_PER_PAGE;
+  return startIndex < 0 ? 0 : startIndex;
+}
+
 function processGlossaryList(serverResponse) {
   var transLocaleId = _state['selectedTransLocale'],
   srcLocaleId = _state['srcLocale'].locale.localeId,
@@ -151,7 +162,7 @@ function processGlossaryList(serverResponse) {
     _state['glossaryResId'].push(null);
   }
 
-  var startIndex = ((page -1) * SIZE_PER_LOAD);
+  var startIndex = getStartIndex();
   if(StringUtils.isEmptyOrNull(transLocaleId) && _state['canAddNewEntry']) {
     var newEntryKey = 'NEW_ENTRY';
     _state['glossary'][newEntryKey] = {resId: '', pos: '', description: '',
@@ -160,6 +171,8 @@ function processGlossaryList(serverResponse) {
     _state['glossaryResId'].splice(0, 0, [newEntryKey]);
     startIndex +=1;
   }
+
+  console.info('start', page, startIndex, _state['glossaryResId']);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
@@ -183,6 +196,8 @@ function processGlossaryList(serverResponse) {
     _state['glossaryResId'].splice(startIndex, 1, [entry.resId]);
     startIndex+=1;
   });
+
+  console.info('end', startIndex, _state['glossaryResId']);
   _state['original_glossary'] = _.cloneDeep(_state['glossary']);
 
   return _state;
@@ -288,6 +303,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.TRANS_LOCALE_SELECTED:
         console.log('translation locale from %s -> %s', _state['selectedTransLocale'], action.data);
         _state['selectedTransLocale'] = action.data;
+        _state['page'] = 1;
         loadGlossaryByLocale()
           .then(processGlossaryList)
           .then(function (newState) {
@@ -325,7 +341,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         break;
       case GlossaryActionTypes.LOAD_GLOSSARY:
         console.log('load glossary from index', action.data);
-        _state['page'] = Math.ceil(action.data/SIZE_PER_LOAD);
+        _state['page'] = Math.ceil(action.data/SIZE_PER_PAGE);
         _state['page'] = _state['page'] < 1 ? 1 : _state['page'];
         loadGlossaryByLocale()
           .then(processGlossaryList)
