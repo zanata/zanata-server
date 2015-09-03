@@ -70,6 +70,7 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.jboss.seam.faces.FacesMessages;
 import org.zanata.annotation.EntityRestrict;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -227,7 +228,13 @@ public class HProject extends SlugEntityBase implements Serializable,
      * @see {@link #getMaintainers}
      */
     public void removeMaintainer(HPerson maintainer) {
-        getMembers().remove(asMember(maintainer, Maintainer));
+        // business rule: every project must have at least one maintainer
+        // No need to check whether the person is the actual last maintainer. If
+        // there is only one maintainer then removal of any other person would
+        // do nothing anyway.
+        if (getMaintainers().size() > 1) {
+            getMembers().remove(asMember(maintainer, Maintainer));
+        }
     }
 
     /**
@@ -239,7 +246,12 @@ public class HProject extends SlugEntityBase implements Serializable,
     public void updateProjectPermissions(PersonProjectMemberships memberships) {
         HPerson person = memberships.getPerson();
 
-        ensureMembership(memberships.isMaintainer(), asMember(person, Maintainer));
+        boolean wasMaintainer = getMaintainers().contains(memberships.getPerson());
+        boolean isLastMaintainer = wasMaintainer && getMaintainers().size() <= 1;
+        // business rule: every project must have at least one maintainer
+        boolean isMaintainer = isLastMaintainer || memberships.isMaintainer();
+
+        ensureMembership(isMaintainer, asMember(person, Maintainer));
 
         // business rule: if someone is a Maintainer, they must also be a TranslationMaintainer
         boolean isTranslationMaintainer = memberships.isMaintainer() ||

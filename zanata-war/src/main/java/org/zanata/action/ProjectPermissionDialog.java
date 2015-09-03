@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
@@ -48,8 +49,10 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 
+import javax.faces.application.FacesMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,12 @@ import java.util.Map;
 @Scope(ScopeType.PAGE)
 @Slf4j
 public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
+
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
+
+    @In
+    private Messages msgs;
 
     @In
     private ZanataIdentity identity;
@@ -129,6 +138,19 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
      */
     public void clearPerson() {
         data = null;
+    }
+
+    /**
+     * Check whether the selected person is the last maintainer of the project.
+     */
+    public boolean lastMaintainerSelected() {
+        if (data == null || data.getPerson() == null) {
+            return false;
+        }
+
+        project = projectDAO.findById(getProject().getId());
+        return project.getMaintainers().size() <= 1
+                && project.getMaintainers().contains(data.getPerson());
     }
 
     /**
@@ -227,6 +249,16 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
         final boolean canChangeAnyMembers = canManageMembers || canManageTransMembers;
 
         if (canManageMembers) {
+
+            // generate a warning if trying to remove last maintainer
+            // business rule in project will prevent actual removal
+            if (!data.isMaintainer()
+                    && project.getMaintainers().size() <= 1
+                    && project.getMaintainers().contains(data.getPerson())) {
+                facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+                        msgs.get("jsf.project.NeedAtLeastOneMaintainer"));
+            }
+
             project.updateProjectPermissions(data);
         }
         if (canManageTransMembers) {

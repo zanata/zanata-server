@@ -147,6 +147,16 @@
                     </p>
                   </ui:fragment>
 
+                  <ui:fragment rendered="#{identity.hasPermission(projectHome.instance, 'manage-members') and projectPermissionDialog.lastMaintainerSelected()}">
+                    <p class="txt--meta l--push-top-half">
+                        <i class="i i--info"></i> <h:outputText
+                            value="#{msgs.format('jsf.projectPermissions.CannotRemoveOnlyMaintainer',
+                                       person.account.username)}"
+                            escape="false"/>
+
+                    </p>
+                  </ui:fragment>
+
                   <p id="#{id}-translation-maintainer-disabled-message"
                       class="is-hidden txt--meta l--push-top-half">
                     <i class="i i--info"></i> <h:outputText
@@ -241,7 +251,7 @@
         zanata.form.appendCheckboxes(jQuery('##{id}-content').element);
         //]]>
       </script>
-      <ui:fragment rendered="#{not identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
+      <ui:fragment rendered="#{projectPermissionDialog.lastMaintainerSelected() or not identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
         <script type="text/javascript">
           //<![CDATA[
           jQuery('##{id}-project-permissions')
@@ -250,7 +260,7 @@
           //]]>
         </script>
       </ui:fragment>
-      <ui:fragment rendered="#{identity.hasPermission(projectPermissionDialog.project, 'manage-members')}">
+      <ui:fragment rendered="#{identity.hasPermission(projectPermissionDialog.project, 'manage-members') and not projectPermissionDialog.lastMaintainerSelected()}">
         <!-- disable the TranslationMaintainer checkbox when Maintainer is checked,
              (not needed if the user has no permission, since both are permanently disabled )-->
         <script type="text/javascript">
