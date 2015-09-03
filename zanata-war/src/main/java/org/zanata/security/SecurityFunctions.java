@@ -322,7 +322,8 @@ public class SecurityFunctions {
     public static boolean translationMaintainerCanTranslate(HProject project,
                                                             HLocale locale) {
         Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
-        return authenticatedAccount.isPresent() && isProjectTranslationMaintainer(project);
+        return authenticatedAccount.isPresent() && isProjectTranslationMaintainer(
+                project);
     }
 
     /* Project Translation Reviewer can perform translation and review for their
@@ -341,7 +342,8 @@ public class SecurityFunctions {
     public static boolean canImportTranslation(
             HProjectIteration projectIteration) {
         Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && account.get().getPerson().isMaintainer(projectIteration.getProject());
+        return account.isPresent() && account.get().getPerson().isMaintainer(
+                projectIteration.getProject());
     }
 
     /* Project Translation Maintainer can import translation (merge type is IMPORT) */
@@ -508,7 +510,30 @@ public class SecurityFunctions {
     public static boolean canMaintainerCommentOnReview(HLocale locale,
             HProject project) {
         Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && account.get().getPerson().isMaintainer(project);
+        return account.isPresent() && isProjectMaintainer(project);
+    }
+
+    @GrantsPermission(actions = "review-comment")
+    public static boolean canTranslationMaintainerCommentOnReview(HLocale locale,
+            HProject project) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+        return account.isPresent() && isProjectTranslationMaintainer(project);
+    }
+
+    @GrantsPermission(actions = "review-comment")
+    public static boolean canReviewerCommentOnReview(HLocale locale,
+            HProject project) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+        return account.isPresent() &&
+                userHasProjectLanguageRole(project, locale, LocaleRole.Reviewer);
+    }
+
+    @GrantsPermission(actions = "review-comment")
+    public static boolean canTranslatorCommentOnReview(HLocale locale,
+            HProject project) {
+        Optional<HAccount> account = getAuthenticatedAccount();
+        return account.isPresent() &&
+                userHasProjectLanguageRole(project, locale, LocaleRole.Translator);
     }
 
     private static final ZanataIdentity getIdentity() {
