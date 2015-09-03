@@ -29,7 +29,7 @@
 
   <a4j:jsFunction name="savePermissionDialog" action="#{projectHomeAction.clearCachedMembershipData()}"
       status="peopleTab-peopleLoader"
-      render="people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
+      render="people-size, people_form, peopleSearch-pager, peopleSearch-page-info, peopleSearchBottom-pager, peopleSearchBottom-page-info"
       oncomplete="console.log('savePermissionDialog -> oncomplete')">
     <!-- actionListener executes before the action -->
     <f:actionListener binding="#{projectPermissionDialog.saveSelections()}"/>
