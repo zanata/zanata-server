@@ -133,6 +133,13 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         return true;
     }
 
+    @Override
+    public void create() {
+        super.create();
+        // ensure maintainers list is loaded before this is detached
+        getInstance().getMaintainers();
+    }
+
     public boolean isSlugAvailable(String slug) {
         return slugEntityServiceImpl.isSlugAvailable(slug,
                 HIterationGroup.class);
