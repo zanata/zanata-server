@@ -282,7 +282,6 @@ var GlossaryDataTable = React.createClass({
   },
 
   _rowGetter: function(rowIndex) {
-    console.info('rowGetter', rowIndex);
     var self = this,
       row = self.props.glossaryResId[rowIndex];
     if(row === null) {
