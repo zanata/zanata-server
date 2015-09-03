@@ -83,4 +83,22 @@ public class ProjectMemberDAO
         return ((Long) query.uniqueResult()) > 0;
     }
 
+
+    /**
+     * Check whether a person is a maintainer for at least one project.
+     *
+     * @return true if the given person is a maintainer for at least one project.
+     */
+    public boolean isMaintainerOfAnyProject(HPerson person) {
+        Query query = getSession().createQuery(
+                "select count(m) from HProjectMember as m " +
+                        "where m.person = :person " +
+                        "and m.role = :role")
+                .setParameter("person", person)
+                .setParameter("role", ProjectRole.Maintainer)
+                .setComment("ProjectMemberDAO.isMaintainerOfAnyProject");
+        return ((Long) query.uniqueResult()) > 0;
+    }
+
+
 }
