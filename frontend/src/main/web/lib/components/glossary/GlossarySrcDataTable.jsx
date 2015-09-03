@@ -5,6 +5,7 @@ import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
+import LoadingCell from './LoadingCell'
 
 
 var GlossarySrcDataTable = React.createClass({
@@ -13,17 +14,25 @@ var GlossarySrcDataTable = React.createClass({
       col: 1,
       field: 'srcTerm.content'
     },
-    POS: {
+    TRANS: {
       col: 2,
+      field: 'transTerm.content'
+    },
+    POS: {
+      col: 3,
       field: 'pos'
     },
     DESC: {
-      col: 3,
+      col: 4,
       field: 'description'
     }
   },
+  CELL_HEIGHT: 48,
   propTypes: {
     glossaryData: React.PropTypes.object.isRequired,
+    glossaryResId: React.PropTypes.arrayOf(
+      React.PropTypes.arrayOf(React.PropTypes.string)
+    ),
     //glossaryData: React.PropTypes.arrayOf(
     //  React.PropTypes.shape({
     //      resId: React.PropTypes.string.isRequired,
@@ -56,12 +65,6 @@ var GlossarySrcDataTable = React.createClass({
       imageUrl: React.PropTypes.string.isRequired,
       languageTeams: React.PropTypes.string.isRequired
     }),
-    localeOptions: React.PropTypes.arrayOf(
-      React.PropTypes.shape({
-        label: React.PropTypes.string.isRequired,
-        value: React.PropTypes.string.isRequired
-      })
-    ),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({
         localeId: React.PropTypes.string.isRequired,
@@ -70,19 +73,17 @@ var GlossarySrcDataTable = React.createClass({
       }).isRequired,
       count: React.PropTypes.number.isRequired
     }).isRequired,
-    totalCount: React.PropTypes.number.isRequired,
-    glossaryResId: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.string))
+    totalCount: React.PropTypes.number.isRequired
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
     return {
-      tbl_width: window.innerWidth - 48,
+      tbl_width: window.innerWidth - this.CELL_HEIGHT,
       tbl_height: window.innerHeight - 166,
-      row_height: 50,
-      header_height: 50,
-      inputFields: {}
+      inputFields: {},
+      timeout: null
     };
   },
 
@@ -117,75 +118,93 @@ var GlossarySrcDataTable = React.createClass({
 
   _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-      term = entry.srcTerm,
-      readOnly = !(rowIndex == 0 && this.props.canAddNewEntry),
-      title = this._generateTitle(term),
-      key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
+    var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
 
-    if(readOnly) {
-      return <span title={title} key={key}>{term.content}</span>;
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
     } else {
-      return (<TextInput value={term.content}
-        placeholder="enter a term"
-        title={title}
-        id={key}
-        resId={resId}
-        key={key}
-        field={this.ENTRY.SRC.field}
-        onChangeCallback={this._onValueChange}/>);
+      var entry = this._getGlossaryEntry(resId),
+        term = entry.srcTerm,
+        readOnly = !(rowIndex == 0 && this.props.canAddNewEntry),
+        title = this._generateTitle(term);
+
+      if(readOnly) {
+        return <span title={title} key={key}>{term.content}</span>;
+      } else {
+        return (<TextInput value={term.content}
+          placeholder="enter a term"
+          title={title}
+          id={key}
+          resId={resId}
+          key={key}
+          field={this.ENTRY.SRC.field}
+          onChangeCallback={this._onValueChange}/>);
+      }
     }
   },
 
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-      readOnly = !this.props.canUpdateEntry,
-      key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
-
-    if(readOnly) {
-      return <span key={key}>{entry.pos}</span>;
+    var key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
     } else {
-      return (<TextInput value={entry.pos}
-        placeholder="enter part of speech"
-        title={entry.pos}
-        id={key}
-        resId={resId}
-        key={key}
-        field={this.ENTRY.POS.field}
-        onChangeCallback={this._onValueChange}/>);
+      var entry = this._getGlossaryEntry(resId),
+        readOnly = !this.props.canUpdateEntry;
+      if(readOnly) {
+        return <span key={key}>{entry.pos}</span>;
+      } else {
+        return (<TextInput value={entry.pos}
+          placeholder="enter part of speech"
+          title={entry.pos}
+          id={key}
+          resId={resId}
+          key={key}
+          field={this.ENTRY.POS.field}
+          onChangeCallback={this._onValueChange}/>);
+      }
     }
   },
 
   _renderDescCell: function (resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-      readOnly = !this.props.canUpdateEntry,
-      key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
+    var key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
 
-    if(readOnly) {
-      return <span key={key}>{entry.description}</span>;
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
     } else {
-      return (<TextInput value={entry.description}
-        placeholder="enter description"
-        title={entry.description}
-        id={key}
-        resId={resId}
-        key={key}
-        field={this.ENTRY.DESC.field}
-        onChangeCallback={this._onValueChange}/>);
+      var entry = this._getGlossaryEntry(resId),
+        readOnly = !this.props.canUpdateEntry;
+      if (readOnly) {
+        return <span key={key}>{entry.description}</span>;
+      } else {
+        return (<TextInput value={entry.description}
+          placeholder="enter description"
+          title={entry.description}
+          id={key}
+          resId={resId}
+          key={key}
+          field={this.ENTRY.DESC.field}
+          onChangeCallback={this._onValueChange}/>);
+      }
     }
   },
 
   _renderTransCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-      count = entry.termsCount;
+    var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
 
-    if(count === null) {
-      count = '';
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
+    } else {
+      var entry = this._getGlossaryEntry(resId),
+        count = entry.termsCount;
+
+      if (count === null) {
+        count = '';
+      }
+      return (<span key={key}>{count}</span>)
     }
-    return (<span>{count}</span>)
   },
 
   _onValueChange: function(inputField, value) {
@@ -225,23 +244,30 @@ var GlossarySrcDataTable = React.createClass({
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var self = this;
-
-    var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>);
-
-    if(rowIndex == 0 && self.props.canAddNewEntry) {
-      return (<div>
-        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave.bind(self, resId)}>Save</button>
-                {cancelButton}
-      </div>)
-    } else if(this.props.canUpdateEntry) {
-      return (<div>
-        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleDelete.bind(self, resId)}>Delete</button>
-        <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self, resId)}>Update</button>
-                {cancelButton}
-      </div>)
+    if(resId === null) {
+      return (<LoadingCell/>);
     } else {
-      return (<div></div>)
+      var self = this;
+      var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self,
+        resId, rowIndex)}>Cancel</button>);
+
+      if (rowIndex == 0 && self.props.canAddNewEntry) {
+        return (<div>
+          <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave.bind(self,
+            resId)}>Save</button>
+                {cancelButton}
+        </div>)
+      } else if (this.props.canUpdateEntry) {
+        return (<div>
+          <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleDelete.bind(self,
+            resId)}>Delete</button>
+          <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self,
+            resId)}>Update</button>
+                {cancelButton}
+        </div>)
+      } else {
+        return (<div></div>)
+      }
     }
   },
 
@@ -304,9 +330,20 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _rowGetter: function(rowIndex) {
-    return this.props.glossaryResId[rowIndex];
+    var self = this,
+      row = self.props.glossaryResId[rowIndex];
+    if(row === null) {
+      if(this.state.timeout !== null) {
+        clearTimeout(this.state.timeout);
+      }
+      this.state.timeout = setTimeout(function() {
+        Actions.loadGlossary(rowIndex);
+      }, 500);
+      return [null];
+    } else {
+      return row;
+    }
   },
-
 
   render: function() {
     var srcColumn = this._getSourceColumn(),
@@ -316,12 +353,12 @@ var GlossarySrcDataTable = React.createClass({
       actionColumn = this._getActionColumn();
 
     var dataTable = (<Table
-      rowHeight={this.state.row_height}
+      rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}
-      headerHeight={this.state.header_height} >
+      headerHeight={this.CELL_HEIGHT} >
       {srcColumn}
       {posColumn}
       {descColumn}

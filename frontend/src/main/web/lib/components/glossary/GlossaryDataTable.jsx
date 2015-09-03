@@ -5,6 +5,7 @@ import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
+import LoadingCell from './LoadingCell'
 
 
 var GlossaryDataTable = React.createClass({
@@ -26,8 +27,13 @@ var GlossaryDataTable = React.createClass({
         field: 'description'
       }
   },
+  CELL_HEIGHT: 48,
+
   propTypes: {
     glossaryData: React.PropTypes.object.isRequired,
+    glossaryResId: React.PropTypes.arrayOf(
+      React.PropTypes.arrayOf(React.PropTypes.string)
+    ),
     //glossaryData: React.PropTypes.arrayOf(
     //  React.PropTypes.shape({
     //      resId: React.PropTypes.string.isRequired,
@@ -60,12 +66,6 @@ var GlossaryDataTable = React.createClass({
       imageUrl: React.PropTypes.string.isRequired,
       languageTeams: React.PropTypes.string.isRequired
     }),
-    localeOptions: React.PropTypes.arrayOf(
-      React.PropTypes.shape({
-        label: React.PropTypes.string.isRequired,
-        value: React.PropTypes.string.isRequired
-      })
-    ),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({
         localeId: React.PropTypes.string.isRequired,
@@ -75,19 +75,17 @@ var GlossaryDataTable = React.createClass({
       count: React.PropTypes.number.isRequired
     }).isRequired,
     selectedTransLocale: React.PropTypes.string.isRequired,
-    totalCount: React.PropTypes.number.isRequired,
-    glossaryResId: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.string))
+    totalCount: React.PropTypes.number.isRequired
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
     return {
-      tbl_width: window.innerWidth - 48,
+      tbl_width: window.innerWidth - this.CELL_HEIGHT,
       tbl_height: window.innerHeight - 166,
-      row_height: 50,
-      header_height: 50,
-      inputFields: {}
+      inputFields: {},
+      timeout: null
     };
   },
 
@@ -122,49 +120,64 @@ var GlossaryDataTable = React.createClass({
 
   _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
+    var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
 
-    var entry = this._getGlossaryEntry(resId),
-      term = entry.srcTerm,
-      title = this._generateTitle(term),
-      key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId);
-    return <span title={title} key={key}>{term.content}</span>;
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
+    } else {
+      var entry = this._getGlossaryEntry(resId),
+        term = entry.srcTerm,
+        title = this._generateTitle(term);
+      return <span title={title} key={key}>{term.content}</span>;
+    }
   },
 
   _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-        term = entry.transTerm,
-        title = this._generateTitle(term),
-        readOnly = !this.props.canUpdateEntry,
-        key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
-
-    if(readOnly) {
-      return <span title={title} key={key}>{term.content}</span>;
+    var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
     } else {
-    return (<TextInput value={term.content}
-      placeholder="enter a translation"
-      title={title}
-      id={key}
-      resId={resId}
-      key={key}
-      field={this.ENTRY.TRANS.field}
-      onChangeCallback={this._onValueChange}/>);
+      var entry = this._getGlossaryEntry(resId),
+          term = entry.transTerm,
+          title = this._generateTitle(term),
+          readOnly = !this.props.canUpdateEntry;
+      if(readOnly) {
+        return <span title={title} key={key}>{term.content}</span>;
+      } else {
+        return (<TextInput value={term.content}
+          placeholder="enter a translation"
+          title={title}
+          id={key}
+          resId={resId}
+          key={key}
+          field={this.ENTRY.TRANS.field}
+          onChangeCallback={this._onValueChange}/>);
+      }
     }
   },
 
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-        key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
-    return <span key={key}>{entry.pos}</span>;
+    var key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
+    } else {
+      var entry = this._getGlossaryEntry(resId);
+      return <span key={key}>{entry.pos}</span>;
+    }
   },
 
   _renderDescCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var entry = this._getGlossaryEntry(resId),
-        key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
+    var key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
 
-    return <span key={key}>{entry.description}</span>;
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
+    } else {
+      var entry = this._getGlossaryEntry(resId);
+      return <span key={key}>{entry.description}</span>;
+    }
   },
 
   _onValueChange: function(inputField, value) {
@@ -268,7 +281,19 @@ var GlossaryDataTable = React.createClass({
   },
 
   _rowGetter: function(rowIndex) {
-    return this.props.glossaryResId[rowIndex];
+    var self = this,
+      row = self.props.glossaryResId[rowIndex];
+    if(row === null) {
+      if(this.state.timeout !== null) {
+        clearTimeout(this.state.timeout);
+      }
+      this.state.timeout = setTimeout(function() {
+        Actions.loadGlossary(rowIndex);
+      }, 500);
+      return [null];
+    } else {
+      return row;
+    }
   },
 
   render: function() {
@@ -279,12 +304,12 @@ var GlossaryDataTable = React.createClass({
       actionColumn = this._getActionColumn();
 
     var dataTable = (<Table
-      rowHeight={this.state.row_height}
+      rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}
-      headerHeight={this.state.header_height} >
+      headerHeight={this.CELL_HEIGHT} >
       {srcColumn}
       {transColumn}
       {posColumn}

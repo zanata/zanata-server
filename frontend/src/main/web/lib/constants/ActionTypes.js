@@ -11,7 +11,8 @@ var GlossaryActionTypes = keymirror({
   INSERT_GLOSSARY: null,
   UPDATE_GLOSSARY: null,
   DELETE_GLOSSARY: null,
-  UPDATE_FILTER: null
+  UPDATE_FILTER: null,
+  LOAD_GLOSSARY: null
 });
 
 exports.UserMatrixActionTypes = UserMatrixActionTypes;

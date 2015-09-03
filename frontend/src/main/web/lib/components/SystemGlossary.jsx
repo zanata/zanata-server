@@ -50,15 +50,12 @@ var SystemGlossary = React.createClass({
       selectedTransLocale = this.state.selectedTransLocale;
 
     if(this.state.glossary && _.size(this.state.glossary) > 0) {
-      count = this.state.srcLocale.count;
-
       if(selectedTransLocale) {
         contents = (
             <GlossaryDataTable
-              localeOptions={this.state.localeOptions}
               glossaryData={this.state.glossary}
               glossaryResId={this.state.glossaryResId}
-              totalCount={this.state.srcLocale.count}
+              totalCount={this.state.glossaryResId.length}
               canAddNewEntry={this.state.canAddNewEntry}
               canUpdateEntry={this.state.canUpdateEntry}
               isAuthenticated={Configs.authenticated}
@@ -69,10 +66,9 @@ var SystemGlossary = React.createClass({
       } else {
         contents = (
           <GlossarySrcDataTable
-            localeOptions={this.state.localeOptions}
             glossaryData={this.state.glossary}
             glossaryResId={this.state.glossaryResId}
-            totalCount={this.state.srcLocale.count}
+            totalCount={this.state.glossaryResId.length}
             canAddNewEntry={this.state.canAddNewEntry}
             canUpdateEntry={this.state.canUpdateEntry}
             isAuthenticated={Configs.authenticated}
@@ -82,6 +78,10 @@ var SystemGlossary = React.createClass({
       }
     } else {
       contents = (<div>No glossary</div>)
+    }
+
+    if(this.state.srcLocale) {
+      count = this.state.srcLocale.count;
     }
 
     return (<div>

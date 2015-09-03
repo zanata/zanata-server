@@ -35,6 +35,12 @@ var Actions = {
         actionType: GlossaryActionTypes.UPDATE_FILTER,
         data: filter
     });
+  },
+  loadGlossary: function(index) {
+    Dispatcher.handleViewAction({
+        actionType: GlossaryActionTypes.LOAD_GLOSSARY,
+        data: index
+    });
   }
 };
 

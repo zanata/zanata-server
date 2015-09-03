@@ -90,7 +90,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
             query.setParameter("filter", filter);
         }
 
-        if (offset > 0 && maxResults > 0) {
+        if (offset >=0 && maxResults > 0) {
             query.setFirstResult(offset).setMaxResults(maxResults);
         }
         return query.list();
