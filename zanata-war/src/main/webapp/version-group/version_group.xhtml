@@ -1,7 +1,6 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -9,6 +8,13 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   template="/WEB-INF/template/template.xhtml">
+
+  <f:metadata>
+    <f:viewParam name="versionGroupSlug" value="#{versionGroupHomeAction.slug}"/>
+    <f:viewParam name="versionGroupSlug" value="#{versionGroupHome.slug}"/>
+    <f:viewParam name="versionGroupSlug" value="#{versionGroupJoinAction.slug}"/>
+    <f:event type="preRenderView" listener="#{versionGroupHome.validateSuppliedId}"/>
+  </f:metadata>
 
 <ui:define name="page_title">
   #{msgs['jsf.Groups']} - #{versionGroupHome.instance.name}

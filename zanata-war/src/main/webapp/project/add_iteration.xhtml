@@ -1,11 +1,17 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   template="../WEB-INF/template/template.xhtml">
+
+  <f:metadata>
+    <f:viewParam name="projectSlug" value="#{versionHome.projectSlug}"/>
+    <f:viewParam name="copyFromVersionSlug" value="#{versionHome.copyFromVersionSlug}"/>
+    <f:event type="preRenderView" listener="#{versionHome.validateProjectSlug}"/>
+    <f:event type="preRenderView" listener="#{versionHome.init(true)}"/>
+  </f:metadata>
 
   <ui:define
     name="page_title">#{versionHome.project.name} - #{msgs['jsf.project.NewVersion']}</ui:define>

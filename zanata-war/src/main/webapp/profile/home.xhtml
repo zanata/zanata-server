@@ -1,10 +1,15 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   template="../WEB-INF/template/template.xhtml">
+
+  <f:metadata>
+    <f:event type="preRenderView" listener="#{breadcrumbs.clear}"/>
+    <f:viewParam name="username" value="#{profileHome.username}" />
+  </f:metadata>
 
   <ui:define
     name="page_title">#{msgs['jsf.Profile']}:#{msgs['jsf.Profile.User']}:#{profileHome.username}</ui:define>

@@ -3,10 +3,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:s="http://jboss.org/schema/seam/taglib">
+  >
 
 <ui:composition template="../WEB-INF/template/template.xhtml">
+  <f:metadata>
+    <f:event type="preRenderView" listener="#{zanataRoleSearch.loadRoles}"/>
+  </f:metadata>
 
   <ui:define name="page_title">#{msgs['jsf.ManageRoles']}</ui:define>
 
