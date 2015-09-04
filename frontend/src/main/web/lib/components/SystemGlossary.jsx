@@ -41,8 +41,8 @@ var SystemGlossary = React.createClass({
     }
   },
 
-  _handleFilterValueChange: function(input, value) {
-    this.state.filter = value;
+  _handleFilterValueChange: function(event) {
+    this.setState({filter: event.target.value});
   },
 
   render: function() {
@@ -113,8 +113,8 @@ var SystemGlossary = React.createClass({
                       placeholder="Search Glossary"
                       className="w100p pr1&1/2"
                       id="search"
-                      onKeyDownCallback={this._handleFilterKeyDown}
-                      onChangeCallback={this._handleFilterValueChange} />
+                      onKeyDown={this._handleFilterKeyDown}
+                      onChange={this._handleFilterValueChange} />
                     <button className='posa r0 t0 fzn1 h1&1/2 p1/4 csec50 dfx aic'>
                       <Icon name='search' size='s1' />
                     </button>

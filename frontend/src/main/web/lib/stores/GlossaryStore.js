@@ -10,7 +10,7 @@ import StringUtils from '../utils/StringUtils'
 import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
-var SIZE_PER_PAGE = 20;
+var SIZE_PER_PAGE = 1000;
 
 var _state = {
   canAddNewEntry: canAddNewEntry(),
@@ -74,19 +74,17 @@ function processLocalesStatistic(serverResponse) {
 }
 
 function glossaryAPIUrl(srcLocaleId, transLocale) {
-  var page = _state['page'],
-    filter = _state['filter'];
+  var page = _state['page'], filter = _state['filter'];
 
   var url = Configs.baseUrl + "/glossary/src/" + srcLocaleId;
   if(!StringUtils.isEmptyOrNull(transLocale)) {
     url = url + "/trans/" + transLocale;
   }
-  url = url + "?page=" + page + "&sizePerPage=" + SIZE_PER_PAGE;
+  url = url + Configs.urlPostfix + "?page=" + page + "&sizePerPage=" + SIZE_PER_PAGE;
 
   if(!StringUtils.isEmptyOrNull(filter)) {
     url = url + "&filter=" + filter;
   }
-  url = url + Configs.urlPostfix;
   return url;
 }
 
