@@ -4,15 +4,12 @@
 <f:view contentType="text/html" xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
-  xmlns:s="http://jboss.org/schema/seam/taglib">
+  xmlns:f="http://java.sun.com/jsf/core">
   <!--[if lt IE 7]>      <html class="no-js new-zanata lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
   <!--[if IE 7]>         <html class="no-js new-zanata lt-ie9 lt-ie8"> <![endif]-->
   <!--[if IE 8]>         <html class="no-js new-zanata lt-ie9"> <![endif]-->
   <!--[if gt IE 8]><!-->
-  <html class="no-js new-zanata">
+  <html class="no-js">
   <!--<![endif]-->
   <h:head>
     <ui:remove>
@@ -54,50 +51,12 @@
         s.parentNode.insertBefore(wf, s);
       })();
     </script>
-
-    <ui:insert name="head"/>
-
-    <script type="application/javascript">
-      var globalMessageTimer;
-
-      // automatically clear global message after 5 seconds
-      function startGlobalMessageTimer() {
-        if (typeof zanata == 'undefined') {
-          jQuery('#messages .message--global').addClass('is-active');
-        } else {
-          zanata.messages.activate('#messages .message--global');
-        }
-
-        //stop previous timeout counter
-        clearTimeout(globalMessageTimer);
-
-        globalMessageTimer = setTimeout(function() {
-          if (typeof zanata == 'undefined') {
-            jQuery('#messages .message--global').removeClass('is-active');
-          } else {
-            zanata.messages.deactivate('#messages .message--global');
-          }
-        }, 5000);
-      }
-    </script>
   </h:head>
 
-  <h:body styleClass="new-zanata">
-    <ui:include src="banner.xhtml"/>
-    <a4j:outputPanel layout="block" ajaxRendered="true" id="messages">
-      <s:fragment rendered="#{showGlobalMessages != 'false'}">
-        <ul class="list--no-bullets message--global">
-          <zanata:global-messages value="#{jsfMessages.globalMessagesList}"
-            rendered="#{not facesContext.validationFailed and not empty jsfMessages.globalMessagesList}"/>
-          <zanata:global-messages value="#{conversationScopeMessages.getAndClearMessages()}"
-            rendered="#{conversationScopeMessages.hasMessages()}"/>
-        </ul>
-        <h:outputScript
-          rendered="#{conversationScopeMessages.hasMessages() or (not facesContext.validationFailed and not empty jsfMessages.globalMessagesList)}">
-          startGlobalMessageTimer();
-        </h:outputScript>
-      </s:fragment>
-    </a4j:outputPanel>
+  <h:body>
+    <div class="new-zanata zanata-base">
+      <ui:include src="banner.xhtml"/>
+    </div>
 
     <main role="main" class="l--pad-v-1">
       <div class="l__wrapper">
@@ -105,14 +64,11 @@
       </div>
     </main>
 
-    <ui:include src="footer.xhtml"/>
-
-    <ui:include src="scripts.xhtml"/>
+    <div class="new-zanata zanata-base">
+      <ui:include src="footer.xhtml"/>
+      <ui:include src="scripts.xhtml"/>
+    </div>
   </h:body>
-  <ui:remove>
-    <!-- The javascriptFinished script needs to appear after all other
-            JavaScript, for accurate testing: -->
-  </ui:remove>
   <h:outputText value="#{ajaxCounter.javascriptFinishedScript}" escape="false" />
   </html>
 </f:view>

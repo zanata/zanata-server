@@ -81,14 +81,19 @@ public class GlossaryService implements GlossaryResource {
         GlossaryLocale srcGlossaryLocale =
                 new GlossaryLocale(generateLocaleDetails(srcLocale), entryCount);
 
+        Map<LocaleId, Integer> transMap = glossaryDAO.getTranslationLocales();
+
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
 
-        List<LocaleDetails> transLocale = Lists.newArrayList();
+        List<GlossaryLocale> transLocale = Lists.newArrayList();
 
         for(HLocale locale: supportedLocales) {
             LocaleDetails localeDetails = generateLocaleDetails(locale);
-            transLocale.add(localeDetails);
+            int count = transMap.containsKey(locale.getLocaleId()) ?
+                transMap.get(locale.getLocaleId()) : 0;
+
+            transLocale.add(new GlossaryLocale(localeDetails, count));
         }
 
         GlossaryLocaleStats localeStats =
