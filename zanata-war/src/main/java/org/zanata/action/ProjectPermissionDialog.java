@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.exception.AuthorizationException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
@@ -267,6 +268,8 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson> {
 
         if (canChangeAnyMembers) {
             projectDAO.makePersistent(project);
+        } else {
+            throw new AuthorizationException("You are not authorized to manage permissions for this project.");
         }
     }
 
