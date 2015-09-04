@@ -61,7 +61,8 @@ public class ProjectMemberDAO
                         "and m.project = :project")
                 .setParameter("person", person)
                 .setParameter("project", project)
-                .setComment("ProjectMemberDAO.getRolesInProject");
+                .setComment("ProjectMemberDAO.getRolesInProject")
+                .setCacheable(true);
         return new HashSet<>(query.list());
     }
 
@@ -79,7 +80,8 @@ public class ProjectMemberDAO
                 .setParameter("person", person)
                 .setParameter("project", project)
                 .setParameter("role", role)
-                .setComment("ProjectMemberDAO.hasProjectRole");
+                .setComment("ProjectMemberDAO.hasProjectRole")
+                .setCacheable(true);
         return ((Long) query.uniqueResult()) > 0;
     }
 
