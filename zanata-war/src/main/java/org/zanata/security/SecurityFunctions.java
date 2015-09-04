@@ -342,8 +342,7 @@ public class SecurityFunctions {
     public static boolean canImportTranslation(
             HProjectIteration projectIteration) {
         Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && account.get().getPerson().isMaintainer(
-                projectIteration.getProject());
+        return account.isPresent() && isProjectMaintainer(projectIteration.getProject());
     }
 
     /* Project Translation Maintainer can import translation (merge type is IMPORT) */
