@@ -9,9 +9,11 @@ var TextInput = React.createClass({
     resId: React.PropTypes.string.isRequired,
     field: React.PropTypes.string.isRequired,
     placeholder: React.PropTypes.string,
+    rowIndex: React.PropTypes.number,
     title: React.PropTypes.string,
     onChangeCallback: React.PropTypes.func,
-    onKeyDownCallback: React.PropTypes.func
+    onFocusCallback: React.PropTypes.func,
+    onBlurCallback: React.PropTypes.func
   },
 
   mixins: [PureRenderMixin],
@@ -30,13 +32,15 @@ var TextInput = React.createClass({
     this._setValue(event.target.value);
   },
 
-  _handleKeyDown: function (event) {
-    if(this.props.onKeyDownCallback) {
-      this.props.onKeyDownCallback(event);
+  _handleOnFocus: function (event) {
+    if(this.props.onFocusCallback) {
+      this.props.onFocusCallback(this, this.props.rowIndex);
     }
+  },
 
-    if(event.key == 'Escape') {
-      this.reset();
+  _handleOnBlur: function (event) {
+    if(this.props.onBlurCallback) {
+      this.props.onBlurCallback(this, this.props.rowIndex);
     }
   },
 
@@ -53,8 +57,9 @@ var TextInput = React.createClass({
       hideLabel
       outline
       className="db w100p"
+      onFocus={this._handleOnFocus}
+      onBlur={this._handleOnBlur}
       onChange={this._handleValueChange}
-      onKeyDown={this._handleKeyDown}
       value={this.state.value}/>)
   }
 });

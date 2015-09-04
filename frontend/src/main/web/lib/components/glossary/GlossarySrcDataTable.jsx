@@ -137,9 +137,12 @@ var GlossarySrcDataTable = React.createClass({
           placeholder='enter a new term'
           title={title}
           id={key}
+          rowIndex={rowIndex}
           resId={resId}
           key={key}
           field={this.ENTRY.SRC.field}
+          onFocusCallback={this._onInputFocus}
+          onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>)
       }
     }
@@ -158,11 +161,14 @@ var GlossarySrcDataTable = React.createClass({
       } else {
         return (<TextInput value={entry.pos}
           placeholder="enter part of speech"
+          rowIndex={rowIndex}
           title={entry.pos}
           id={key}
           resId={resId}
           key={key}
           field={this.ENTRY.POS.field}
+          onFocusCallback={this._onInputFocus}
+          onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>);
       }
     }
@@ -182,11 +188,14 @@ var GlossarySrcDataTable = React.createClass({
       } else {
         return (<TextInput value={entry.description}
           placeholder="enter description"
+          rowIndex={rowIndex}
           title={entry.description}
           id={key}
           resId={resId}
           key={key}
           field={this.ENTRY.DESC.field}
+          onFocusCallback={this._onInputFocus}
+          onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>);
       }
     }
@@ -216,14 +225,17 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _handleSave: function(resId) {
+    this.setState({focusedRow: -1});
     Actions.createGlossary(resId);
   },
 
   _handleUpdate: function(resId) {
+    this.setState({focusedRow: -1});
     Actions.updateGlossary(resId);
   },
 
   _handleDelete: function(resId) {
+    this.setState({focusedRow: -1});
     Actions.deleteGlossary(resId, this.props.srcLocale.locale.localeId);
   },
 
@@ -242,6 +254,7 @@ var GlossarySrcDataTable = React.createClass({
         input.reset();
       }
     });
+    this.setState({focusedRow: -1});
   },
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
@@ -347,6 +360,27 @@ var GlossarySrcDataTable = React.createClass({
     }
   },
 
+  _onRowClick: function (event, rowIndex) {
+
+  },
+
+  _onInputFocus: function (input, rowIndex) {
+    console.info('focus now', rowIndex);
+    this.setState({focusedRow: rowIndex});
+  },
+
+  _onInputBlur: function (input, rowIndex) {
+    console.info('blur now', rowIndex);
+    this.setState({focusedRow: -1});
+  },
+
+  _rowClassNameGetter: function (rowIndex) {
+    if(rowIndex == this.state.focusedRow) {
+      //Current row is focused (clicked)
+      return 'selectedClassAlex';
+    }
+  },
+
   render: function() {
     var srcColumn = this._getSourceColumn(),
       posColumn = this._getPosColumn(),
@@ -355,6 +389,8 @@ var GlossarySrcDataTable = React.createClass({
       actionColumn = this._getActionColumn();
 
     var dataTable = (<Table
+      onRowClick={this._onRowClick}
+      rowClassNameGetter={this._rowClassNameGetter}
       rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
       rowsCount={this.props.totalCount}
