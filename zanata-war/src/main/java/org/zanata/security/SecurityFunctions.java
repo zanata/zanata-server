@@ -493,7 +493,7 @@ public class SecurityFunctions {
     @GrantsPermission(actions = "copy-trans")
     public static boolean canRunCopyTrans(HProjectIteration iteration) {
         Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && account.get().getPerson().isMaintainer(iteration.getProject());
+        return account.isPresent() && isProjectMaintainer(iteration.getProject());
     }
 
     /*****************************************************************************************
