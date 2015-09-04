@@ -23,7 +23,8 @@ var _state = {
   original_glossary: {},
   glossaryResId: [],
   page:1,
-  filter: ''
+  filter: '',
+  loading: false
 };
 
 var CHANGE_EVENT = "change";
@@ -53,23 +54,20 @@ function loadLocalesStats() {
 }
 
 function processLocalesStatistic(serverResponse) {
-  var localesMap = {}, localeOptions = [];
+  _state['locales'] = {};
+  _state['localeOptions'] = [];
 
   _state['srcLocale'] = serverResponse['srcLocale'];
 
   resetCache(_state['srcLocale'].count);
 
-  _.forEach(serverResponse['transLocale'], function(locale) {
-    localesMap[locale.localeId] = locale;
-    localeOptions.push({
-      value: locale.localeId,
-      label: locale.displayName
+  _.forEach(serverResponse['transLocale'], function(transLocale) {
+    _state['locales'][transLocale.locale.localeId] = transLocale;
+    _state['localeOptions'].push({
+      value: transLocale.locale.localeId,
+      label: transLocale.locale.displayName + " - (" + transLocale.count + ")"
     });
   });
-
-  _state['localeOptions'] = localeOptions;
-  _state['locales'] = localesMap;
-
   return _state;
 }
 
@@ -89,6 +87,9 @@ function glossaryAPIUrl(srcLocaleId, transLocale) {
 }
 
 function loadGlossaryByLocale () {
+  _state['loading'] = true;
+  GlossaryStore.emitChange();
+
   var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
 
@@ -102,6 +103,7 @@ function loadGlossaryByLocale () {
         .set("Pragma", "no-cache")
         .set("Expires", 0)
         .end((function (res) {
+          _state['loading'] = false;
           if (res.error) {
             console.error(url, res.status, res.error.toString());
             reject(Error(res.error.toString()));
@@ -155,7 +157,7 @@ function processGlossaryList(serverResponse) {
     }
   }
 
-  console.info('start', page, startIndex, _state['glossaryResId']);
+  //console.info('start', page, startIndex, _state['glossaryResId']);
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
@@ -180,7 +182,7 @@ function processGlossaryList(serverResponse) {
     startIndex+=1;
   });
   _state['original_glossary'] = _.cloneDeep(_state['glossary']);
-  console.info('end', startIndex, _state['glossaryResId']);
+  //console.info('end', startIndex, _state['glossaryResId']);
   return _state;
 }
 

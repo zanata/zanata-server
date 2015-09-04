@@ -7,16 +7,17 @@ import { Input, Icons, Icon, Select } from 'zanata-ui'
 import GlossaryDataTable from './glossary/GlossaryDataTable'
 import GlossarySrcDataTable from './glossary/GlossarySrcDataTable'
 import TextInput from './glossary/TextInput'
+import _ from 'lodash';
 
 var SystemGlossary = React.createClass({
   mixins: [PureRenderMixin],
 
-  getLocaleStats: function() {
+  _init: function() {
     return GlossaryStore.init();
   },
 
   getInitialState: function() {
-    return {localeStats: this.getLocaleStats(), filter: ''};
+    return this._init();
   },
 
   componentDidMount: function() {
@@ -28,7 +29,7 @@ var SystemGlossary = React.createClass({
   },
 
   _onChange: function() {
-    this.setState(this.getLocaleStats());
+    this.setState(this._init());
   },
 
   _handleTransChange: function(localeId) {
@@ -49,20 +50,23 @@ var SystemGlossary = React.createClass({
     var contents, count = 0,
       selectedTransLocale = this.state.selectedTransLocale;
 
-    if(this.state.glossary && _.size(this.state.glossary) > 0) {
+    if(this.state.loading === true) {
+      //TODO: loading component
+      contents = (<span>Loading</span>);
+    } else if(this.state.glossary && _.size(this.state.glossary) > 0) {
       if(selectedTransLocale) {
         contents = (
-            <GlossaryDataTable
-              glossaryData={this.state.glossary}
-              glossaryResId={this.state.glossaryResId}
-              totalCount={this.state.glossaryResId.length}
-              canAddNewEntry={this.state.canAddNewEntry}
-              canUpdateEntry={this.state.canUpdateEntry}
-              isAuthenticated={Configs.authenticated}
-              user={Configs.user}
-              srcLocale={this.state.srcLocale}
-              selectedTransLocale={selectedTransLocale}/>
-          );
+          <GlossaryDataTable
+            glossaryData={this.state.glossary}
+            glossaryResId={this.state.glossaryResId}
+            totalCount={this.state.glossaryResId.length}
+            canAddNewEntry={this.state.canAddNewEntry}
+            canUpdateEntry={this.state.canUpdateEntry}
+            isAuthenticated={Configs.authenticated}
+            user={Configs.user}
+            srcLocale={this.state.srcLocale}
+            selectedTransLocale={selectedTransLocale}/>
+        );
       } else {
         contents = (
           <GlossarySrcDataTable

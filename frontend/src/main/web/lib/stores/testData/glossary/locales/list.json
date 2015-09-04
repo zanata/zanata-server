@@ -9,64 +9,100 @@
   },
   "transLocale": [
     {
-      "localeId": "zh-Hans",
-      "displayName": "Chinese (Simplified)",
-      "alias": ""
+      "locale": {
+        "localeId": "zh-Hans",
+        "displayName": "Chinese (Simplified)",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "zh-Hant",
-      "displayName": "Chinese (Traditional)",
-      "alias": ""
+      "locale": {
+        "localeId": "zh-Hant",
+        "displayName": "Chinese (Traditional)",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "en-US",
-      "displayName": "English (United States)",
-      "alias": ""
+      "locale": {
+        "localeId": "en-US",
+        "displayName": "English (United States)",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "fr",
-      "displayName": "French",
-      "alias": ""
+      "locale": {
+        "localeId": "fr",
+        "displayName": "French",
+        "alias": ""
+      },
+      "count": 500
     },
     {
-      "localeId": "de",
-      "displayName": "German",
-      "alias": ""
+      "locale": {
+        "localeId": "de",
+        "displayName": "German",
+        "alias": ""
+      },
+      "count": 476
     },
     {
-      "localeId": "it",
-      "displayName": "Italian",
-      "alias": ""
+      "locale": {
+        "localeId": "it",
+        "displayName": "Italian",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "ja",
-      "displayName": "Japanese",
-      "alias": ""
+      "locale": {
+        "localeId": "ja",
+        "displayName": "Japanese",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "ja-JP",
-      "displayName": "Japanese (Japan)",
-      "alias": ""
+      "locale": {
+        "localeId": "ja-JP",
+        "displayName": "Japanese (Japan)",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "ko",
-      "displayName": "Korean",
-      "alias": ""
+      "locale": {
+        "localeId": "ko",
+        "displayName": "Korean",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "pt-BR",
-      "displayName": "Portuguese (Brazil)",
-      "alias": ""
+      "locale": {
+        "localeId": "pt-BR",
+        "displayName": "Portuguese (Brazil)",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "ru",
-      "displayName": "Russian",
-      "alias": ""
+      "locale": {
+        "localeId": "ru",
+        "displayName": "Russian",
+        "alias": ""
+      },
+      "count": 0
     },
     {
-      "localeId": "es",
-      "displayName": "Spanish",
-      "alias": ""
+      "locale": {
+        "localeId": "es",
+        "displayName": "Spanish",
+        "alias": ""
+      },
+      "count": 0
     }
   ]
 }
