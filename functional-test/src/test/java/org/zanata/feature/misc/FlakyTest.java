@@ -32,6 +32,7 @@ import org.zanata.feature.testharness.TestPlan;
  * </p>
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
+@Category(TestPlan.DetailedTest.class)
 public class FlakyTest {
 
     static int n = 0;
