@@ -631,6 +631,10 @@ public class ProjectHome extends SlugHome<HProject> implements
         identity.checkPermission(getInstance(), "update");
         getInstance().setAllowGlobalTranslation(!inviteOnly);
         update();
+        String message = inviteOnly
+                ? msgs.get("jsf.translation.permission.inviteOnly.Active")
+                : msgs.get("jsf.translation.permission.inviteOnly.Inactive");
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO, message);
     }
 
     @Override
