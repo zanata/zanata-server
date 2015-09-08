@@ -358,6 +358,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           .then(function (newState) {
             GlossaryStore.emitChange();
           });
+        break;
        case GlossaryActionTypes.UPDATE_SORT_ORDER:
          console.log('update glossary sort order', action.data);
          _state['sort'][action.data.field] = action.data.ascending;

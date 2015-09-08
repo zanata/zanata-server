@@ -7,6 +7,7 @@ import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
 import ColumnHeader from './ColumnHeader'
+import _ from 'lodash';
 
 
 var GlossarySrcDataTable = React.createClass({
@@ -115,7 +116,7 @@ var GlossarySrcDataTable = React.createClass({
     var key = "src_content",
       asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
 
-    return (<ColumnHeader value={this.props.srcLocale.locale.displayName}
+    return (<ColumnHeader value={label}
       field={key}
       key={key}
       ascending={asc}
@@ -325,8 +326,12 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _getSourceColumn: function() {
+    var srcLocaleName = "";
+    if(this.props.srcLocale) {
+      srcLocaleName = this.props.srcLocale.locale.displayName;
+    }
     return (<Column
-      label=""
+      label={srcLocaleName}
       width={150}
       dataKey={0}
       flexGrow={1}

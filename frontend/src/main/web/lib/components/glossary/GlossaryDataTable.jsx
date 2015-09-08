@@ -6,6 +6,8 @@ import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
+import ColumnHeader from './ColumnHeader'
+import _ from 'lodash';
 
 var GlossaryDataTable = React.createClass({
   ENTRY: {
@@ -116,7 +118,38 @@ var GlossaryDataTable = React.createClass({
   },
 
   _renderSourceHeader: function (label) {
-    return (<span className='csec'>{this.props.srcLocale.locale.displayName}</span>);
+    var key = "src_content",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+
+    return (<ColumnHeader value={this.props.srcLocale.locale.displayName}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _renderPosHeader: function (label) {
+    var key = "part_of_speech",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    return (<ColumnHeader value={label}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _renderDescHeader: function (label) {
+    var key = "desc",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    return (<ColumnHeader value={label}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _onHeaderClick: function (field, ascending) {
+    Actions.updateSortOrder(field, ascending);
   },
 
   _renderSourceCell: function(resId, cellDataKey, rowData, rowIndex,
@@ -252,7 +285,7 @@ var GlossaryDataTable = React.createClass({
       dataKey={0}
       cellClassName="tac"
       cellRenderer={this._renderPosCell}
-      headerRenderer={this._renderHeaderLabel}
+      headerRenderer={this._renderPosHeader}
       />);
   },
 
@@ -262,7 +295,7 @@ var GlossaryDataTable = React.createClass({
       width={150}
       dataKey={0}
       cellRenderer={this._renderDescCell}
-      headerRenderer={this._renderHeaderLabel}
+      headerRenderer={this._renderDescHeader}
       />);
   },
 

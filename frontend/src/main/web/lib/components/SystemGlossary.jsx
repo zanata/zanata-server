@@ -48,42 +48,43 @@ var SystemGlossary = React.createClass({
 
   render: function() {
     var contents, count = 0,
-      selectedTransLocale = this.state.selectedTransLocale;
+      selectedTransLocale = this.state.selectedTransLocale,
+      loadingSection = (<span></span>);
 
     if(this.state.loading === true) {
       //TODO: loading component
-      contents = (<span>Loading</span>);
-    } else if(this.state.glossary && _.size(this.state.glossary) > 0) {
-      if(selectedTransLocale) {
-        contents = (
-          <GlossaryDataTable
-            glossaryData={this.state.glossary}
-            glossaryResId={this.state.glossaryResId}
-            totalCount={this.state.glossaryResId.length}
-            canAddNewEntry={this.state.canAddNewEntry}
-            canUpdateEntry={this.state.canUpdateEntry}
-            isAuthenticated={Configs.authenticated}
-            user={Configs.user}
-            srcLocale={this.state.srcLocale}
-            selectedTransLocale={selectedTransLocale}/>
-        );
-      } else {
-        contents = (
-          <GlossarySrcDataTable
-            glossaryData={this.state.glossary}
-            glossaryResId={this.state.glossaryResId}
-            totalCount={this.state.glossaryResId.length}
-            canAddNewEntry={this.state.canAddNewEntry}
-            canUpdateEntry={this.state.canUpdateEntry}
-            isAuthenticated={Configs.authenticated}
-            user={Configs.user}
-            sort={this.state.sort}
-            srcLocale={this.state.srcLocale}/>
-        );
-      }
-    } else {
-      contents = (<div>No glossary</div>)
+      loadingSection = (<span>Loading</span>);
     }
+
+    if(selectedTransLocale) {
+      contents = (
+        <GlossaryDataTable
+          glossaryData={this.state.glossary}
+          glossaryResId={this.state.glossaryResId}
+          totalCount={this.state.glossaryResId.length}
+          canAddNewEntry={this.state.canAddNewEntry}
+          canUpdateEntry={this.state.canUpdateEntry}
+          isAuthenticated={Configs.authenticated}
+          user={Configs.user}
+          sort={this.state.sort}
+          srcLocale={this.state.srcLocale}
+          selectedTransLocale={selectedTransLocale}/>
+      );
+    } else {
+      contents = (
+        <GlossarySrcDataTable
+          glossaryData={this.state.glossary}
+          glossaryResId={this.state.glossaryResId}
+          totalCount={this.state.glossaryResId.length}
+          canAddNewEntry={this.state.canAddNewEntry}
+          canUpdateEntry={this.state.canUpdateEntry}
+          isAuthenticated={Configs.authenticated}
+          user={Configs.user}
+          sort={this.state.sort}
+          srcLocale={this.state.srcLocale}/>
+      );
+    }
+
 
     if(this.state.srcLocale) {
       count = this.state.srcLocale.count;
@@ -131,6 +132,7 @@ var SystemGlossary = React.createClass({
                 </div>
               </div>
               <div>
+                {loadingSection}
                 {contents}
               </div>
             </div>);
