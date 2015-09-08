@@ -43,7 +43,6 @@ function loadFromServer() {
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end((function (res) {
-        //console.log('response:' + res.body);
         if (res.error) {
           console.error(url, res.status, res.error.toString());
           reject(Error(res.error.toString()));

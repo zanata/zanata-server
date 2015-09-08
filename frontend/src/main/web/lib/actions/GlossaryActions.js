@@ -45,7 +45,16 @@ var Actions = {
       }
     });
   },
-
+  uploadFile: function(uploadFile, srcLocale, transLocale) {
+    Dispatcher.handleViewAction({
+      actionType: GlossaryActionTypes.UPLOAD_FILE,
+      data: {
+        uploadFile:uploadFile,
+        srcLocale: srcLocale,
+        transLocale:transLocale
+      }
+    });
+  },
   loadGlossary: function(index) {
     Dispatcher.handleViewAction({
         actionType: GlossaryActionTypes.LOAD_GLOSSARY,

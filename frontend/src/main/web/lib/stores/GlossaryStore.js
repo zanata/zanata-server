@@ -113,7 +113,6 @@ function loadGlossaryByLocale () {
   if(!_.isNull(srcLocale)) {
     var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
 
-    console.info(url);
     return new Promise(function(resolve, reject) {
       Request.get(url)
         .set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -247,6 +246,30 @@ function saveOrUpdateGlossary(data) {
   });
 }
 
+function uploadFile(data) {
+  var url = Configs.baseUrl + "/glossary/src/" + data.srcLocale + "/trans/" + data.transLocale + "/upload",
+    uploadFile = data.uploadFile;
+
+  return new Promise(function(resolve, reject) {
+    Request.post(url)
+      .attach('file', uploadFile, uploadFile.name)
+      .field('name', uploadFile.name)
+      .field('size', uploadFile.size)
+      .set('Accept', 'application/json')
+      .on('progress', function(e) {
+        console.log('Percentage done: ', e.percent);
+      })
+      .end((function (res) {
+        if (res.error) {
+          console.error(url, res.status, res.error.toString());
+          reject(Error(res.error.toString()));
+        } else {
+          resolve(res['body']);
+        }
+      }));
+  });
+}
+
 function processDelete(serverResponse) {
   //show notification?
 }
@@ -368,6 +391,16 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
              GlossaryStore.emitChange();
            });
          break;
+      case GlossaryActionTypes.UPLOAD_FILE:
+        console.log('upload file', action.data);
+        uploadFile(action.data).then(
+          loadGlossaryByLocale()
+            .then(processGlossaryList)
+            .then(function (newState) {
+              GlossaryStore.emitChange();
+            })
+        );
+        break;
     }
   })
 });

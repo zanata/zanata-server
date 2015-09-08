@@ -1,5 +1,8 @@
 package org.zanata.rest.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -20,6 +24,8 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -29,6 +35,7 @@ import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocale;
@@ -79,7 +86,7 @@ public class GlossaryService implements GlossaryResource {
         HLocale srcLocale = localeServiceImpl.getByLocaleId(LocaleId.EN_US);
         int entryCount =
                 glossaryDAO.getEntryCountBySourceLocales(LocaleId.EN_US);
-        
+
         GlossaryLocale srcGlossaryLocale =
                 new GlossaryLocale(generateLocaleDetails(srcLocale), entryCount);
 
@@ -183,7 +190,7 @@ public class GlossaryService implements GlossaryResource {
 
         List<HGlossaryEntry> hGlosssaryEntries =
                 glossaryDAO.getEntriesByLocale(srcLocaleId, offset,
-                        sizePerPage, filter, convertToSortField(fields));
+                    sizePerPage, filter, convertToSortField(fields));
 
         Glossary glossary = new Glossary();
 
@@ -196,16 +203,50 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response put(Glossary glossary) {
         identity.checkPermission("", "glossary-insert");
-        ResponseBuilder response;
 
         // must be a create operation
-        response = request.evaluatePreconditions();
+        ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
         response = Response.created(uri.getAbsolutePath());
 
         glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
+
+        return response.build();
+    }
+
+    @Override
+    public Response upload(LocaleId srcLocaleId, LocaleId transLocaleId,
+        MultipartFormDataInput input) {
+        identity.checkPermission("", "glossary-insert");
+
+        ResponseBuilder response = request.evaluatePreconditions();
+        if (response != null) {
+            return response.build();
+        }
+        response = Response.created(uri.getAbsolutePath());
+
+        try {
+            Map<String, List<InputPart>> formParts = input.getFormDataMap();
+            List<InputPart> inPart = formParts.get("file");
+            String fileName = formParts.get("name").get(0).getBodyAsString();
+
+            for (InputPart inputPart : inPart) {
+                MultivaluedMap<String, String> headers =
+                    inputPart.getHeaders();
+                InputStream istream =
+                    inputPart.getBody(InputStream.class, null);
+                List<Glossary> glossaries =
+                    glossaryFileServiceImpl
+                        .parseGlossaryFile(istream, fileName, srcLocaleId,
+                            transLocaleId);
+                System.out.println("size:" + glossaries.size());
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return response.build();
     }
@@ -234,7 +275,7 @@ public class GlossaryService implements GlossaryResource {
         }
 
         HGlossaryEntry entry =
-                glossaryDAO.getEntryByResIdAndLocale(resId, localeId);
+            glossaryDAO.getEntryByResIdAndLocale(resId, localeId);
 
         if(entry != null) {
             glossaryDAO.makeTransient(entry);

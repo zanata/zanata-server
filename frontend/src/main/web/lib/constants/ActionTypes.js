@@ -13,7 +13,8 @@ var GlossaryActionTypes = keymirror({
   DELETE_GLOSSARY: null,
   UPDATE_FILTER: null,
   LOAD_GLOSSARY: null,
-  UPDATE_SORT_ORDER: null
+  UPDATE_SORT_ORDER: null,
+  UPLOAD_FILE: null
 });
 
 exports.UserMatrixActionTypes = UserMatrixActionTypes;

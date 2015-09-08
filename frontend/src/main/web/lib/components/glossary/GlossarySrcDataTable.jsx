@@ -74,7 +74,7 @@ var GlossarySrcDataTable = React.createClass({
         alias: React.PropTypes.string.isRequired
       }).isRequired,
       count: React.PropTypes.number.isRequired
-    }).isRequired,
+    }),
     totalCount: React.PropTypes.number.isRequired
   },
 
