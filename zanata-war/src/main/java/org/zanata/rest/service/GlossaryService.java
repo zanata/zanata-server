@@ -19,9 +19,11 @@ import javax.ws.rs.core.UriInfo;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
+import org.zanata.common.GlossarySortField;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
@@ -122,12 +124,33 @@ public class GlossaryService implements GlossaryResource {
         return Response.ok(glossary).build();
     }
 
+    private List<GlossarySortField> convertToSortField(
+        String commaSeparatedFields) {
+        List<GlossarySortField> result = Lists.newArrayList();
+
+        String[] fields = StringUtils.split(commaSeparatedFields, ",");
+        if(fields == null || fields.length <= 0) {
+            //default sorting
+            result.add(GlossarySortField.src_content);
+            return result;
+        }
+
+        for (String field : fields) {
+            GlossarySortField sortField = GlossarySortField.getByField(field);
+            if(sortField != null) {
+                result.add(sortField);
+            }
+        }
+        return result;
+    }
+
     @Override
     public Response get(@PathParam("srcLocale") LocaleId srcLocale,
         @PathParam("transLocale") LocaleId transLocale,
         @DefaultValue("-1") @QueryParam("page") int page,
         @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
-        @QueryParam("filter") String filter) {
+        @QueryParam("filter") String filter,
+        @QueryParam("sort") String fields) {
 
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
@@ -136,7 +159,8 @@ public class GlossaryService implements GlossaryResource {
 
         int offset = (page - 1) * sizePerPage;
         List<HGlossaryEntry> hGlosssaryEntries =
-            glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage, filter);
+            glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage,
+                filter, convertToSortField(fields));
 
         Glossary glossary = new Glossary();
 
@@ -149,7 +173,8 @@ public class GlossaryService implements GlossaryResource {
     public Response get(LocaleId srcLocaleId,
         @DefaultValue("-1") @QueryParam("page") int page,
         @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
-        @QueryParam("filter") String filter) {
+        @QueryParam("filter") String filter,
+        @QueryParam("sort") String fields) {
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
@@ -158,7 +183,7 @@ public class GlossaryService implements GlossaryResource {
 
         List<HGlossaryEntry> hGlosssaryEntries =
                 glossaryDAO.getEntriesByLocale(srcLocaleId, offset,
-                        sizePerPage, filter);
+                        sizePerPage, filter, convertToSortField(fields));
 
         Glossary glossary = new Glossary();
 

@@ -77,6 +77,7 @@ var SystemGlossary = React.createClass({
             canUpdateEntry={this.state.canUpdateEntry}
             isAuthenticated={Configs.authenticated}
             user={Configs.user}
+            sort={this.state.sort}
             srcLocale={this.state.srcLocale}/>
         );
       }

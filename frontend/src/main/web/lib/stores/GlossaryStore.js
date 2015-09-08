@@ -24,6 +24,9 @@ var _state = {
   glossaryResId: [],
   page:1,
   filter: '',
+  sort: {
+    src_content: true
+  },
   loading: false
 };
 
@@ -83,7 +86,21 @@ function glossaryAPIUrl(srcLocaleId, transLocale) {
   if(!StringUtils.isEmptyOrNull(filter)) {
     url = url + "&filter=" + filter;
   }
-  return url;
+  return url + generateSortOrderParam();
+}
+
+
+function generateSortOrderParam() {
+  var params = [];
+  _.forOwn(_state['sort'], function (value, field) {
+    var param = value === true ? field : "-" + field;
+    params.push(param);
+  });
+
+  if(_.size(params) > 0) {
+
+  }
+  return _.size(params) > 0 ? "&sort=" + params.join() : '';
 }
 
 function loadGlossaryByLocale () {
@@ -96,6 +113,7 @@ function loadGlossaryByLocale () {
   if(!_.isNull(srcLocale)) {
     var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
 
+    console.info(url);
     return new Promise(function(resolve, reject) {
       Request.get(url)
         .set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -157,8 +175,6 @@ function processGlossaryList(serverResponse) {
     }
   }
 
-  //console.info('start', page, startIndex, _state['glossaryResId']);
-
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
     var srcTerm =
       GlossaryHelper.getTermByLocale(entry.glossaryTerms, entry.srcLang);
@@ -182,7 +198,6 @@ function processGlossaryList(serverResponse) {
     startIndex+=1;
   });
   _state['original_glossary'] = _.cloneDeep(_state['glossary']);
-  //console.info('end', startIndex, _state['glossaryResId']);
   return _state;
 }
 
@@ -343,6 +358,15 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           .then(function (newState) {
             GlossaryStore.emitChange();
           });
+       case GlossaryActionTypes.UPDATE_SORT_ORDER:
+         console.log('update glossary sort order', action.data);
+         _state['sort'][action.data.field] = action.data.ascending;
+         loadGlossaryByLocale()
+           .then(processGlossaryList)
+           .then(function (newState) {
+             GlossaryStore.emitChange();
+           });
+         break;
     }
   })
 });

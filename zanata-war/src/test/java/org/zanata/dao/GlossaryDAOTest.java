@@ -2,6 +2,7 @@ package org.zanata.dao;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
 import org.junit.Assert;
@@ -9,6 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.common.GlossarySortField;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
@@ -57,7 +59,36 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     public void testGetTermByLocaleId() {
         log.debug("testGetTermByLocaleId");
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
-            LocaleId.EN_US, -1, -1, "");
+            LocaleId.EN_US, -1, -1, "", null);
+        assertThat(entryList.size(), is(1));
+    }
+
+    @Test
+    public void testGetTermByLocaleId2() {
+        log.debug("testGetTermByLocaleId");
+        List<GlossarySortField> sortFields = Lists
+            .newArrayList(GlossarySortField.desc,
+                GlossarySortField.src_content,
+                GlossarySortField.part_of_speech,
+                GlossarySortField.trans_count);
+        List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
+            LocaleId.EN_US, -1, -1, "", sortFields);
+        assertThat(entryList.size(), is(1));
+    }
+
+    @Test
+    public void testGetTermByLocaleId3() {
+        log.debug("testGetTermByLocaleId");
+        GlossarySortField DESC = GlossarySortField.desc;
+        DESC.setAscending(false);
+
+        List<GlossarySortField> sortFields = Lists
+            .newArrayList(DESC,
+                GlossarySortField.src_content,
+                GlossarySortField.part_of_speech,
+                GlossarySortField.trans_count);
+        List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
+            LocaleId.EN_US, -1, -1, "", sortFields);
         assertThat(entryList.size(), is(1));
     }
 

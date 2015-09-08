@@ -6,6 +6,7 @@ import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
+import ColumnHeader from './ColumnHeader'
 
 
 var GlossarySrcDataTable = React.createClass({
@@ -110,12 +111,49 @@ var GlossarySrcDataTable = React.createClass({
     return colIndex + ":" + rowIndex + ":" + resId
   },
 
-  _renderHeaderLabel: function (label) {
-    return (<span className='csec'>{label}</span>);
+  _renderSourceHeader: function (label) {
+    var key = "src_content",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+
+    return (<ColumnHeader value={this.props.srcLocale.locale.displayName}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
   },
 
-  _renderSourceHeader: function (label) {
-    return (<span className='csec'>{this.props.srcLocale.locale.displayName}</span>);
+  _renderPosHeader: function (label) {
+    var key = "part_of_speech",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    return (<ColumnHeader value={label}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _renderDescHeader: function (label) {
+    var key = "desc",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    return (<ColumnHeader value={label}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _renderTransHeader: function (label) {
+    var key = "trans_count",
+      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    return (<ColumnHeader value={label}
+      field={key}
+      key={key}
+      ascending={asc}
+      onClickCallback={this._onHeaderClick}/>);
+  },
+
+  _onHeaderClick: function (field, ascending) {
+    Actions.updateSortOrder(field, ascending);
   },
 
   _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
@@ -303,7 +341,7 @@ var GlossarySrcDataTable = React.createClass({
       width={150}
       dataKey={0}
       cellRenderer={this._renderPosCell}
-      headerRenderer={this._renderHeaderLabel}
+      headerRenderer={this._renderPosHeader}
     />);
   },
 
@@ -314,7 +352,7 @@ var GlossarySrcDataTable = React.createClass({
       flexGrow={1}
       dataKey={0}
       cellRenderer={this._renderDescCell}
-      headerRenderer={this._renderHeaderLabel}
+      headerRenderer={this._renderDescHeader}
     />);
   },
 
@@ -325,7 +363,7 @@ var GlossarySrcDataTable = React.createClass({
       cellClassName="tac"
       dataKey={0}
       cellRenderer={this._renderTransCell}
-      headerRenderer={this._renderHeaderLabel}
+      headerRenderer={this._renderTransHeader}
     />);
   },
 

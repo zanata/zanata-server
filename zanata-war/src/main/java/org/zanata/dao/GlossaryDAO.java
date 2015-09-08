@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -40,6 +42,7 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.GlossarySortField;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
@@ -71,15 +74,27 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     }
 
     public List<HGlossaryEntry> getEntriesByLocale(LocaleId srcLocale,
-        int offset, int maxResults, String filter) {
+        int offset, int maxResults, String filter,
+        List<GlossarySortField> sortFields) {
         StringBuilder queryString = new StringBuilder();
-        queryString.append("from HGlossaryEntry as e ")
-            .append("WHERE e.srcLocale.localeId = :srcLocale");
+        queryString.append("select term.glossaryEntry from HGlossaryTerm as term ")
+            .append("where term.glossaryEntry.srcLocale.localeId =:srcLocale ")
+            .append("and term.locale.localeId = term.glossaryEntry.srcLocale.localeId");
 
         if(!StringUtils.isBlank(filter)) {
-            queryString.append(" and e.id IN")
-                .append("(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t ")
-                .append("where t.content like lower(:filter))");
+            queryString.append(" and term.content like lower(:filter)");
+        }
+
+        if(sortFields!= null && !sortFields.isEmpty()) {
+            queryString.append(" order by ");
+            List<String> sortQuery = Lists.newArrayList();
+            for(GlossarySortField sortField: sortFields) {
+                String order = sortField.isAscending() ?
+                    " asc" : " desc";
+                sortQuery.add(
+                    sortField.getEntityField() + order);
+            }
+            queryString.append(Joiner.on(",").join(sortQuery));
         }
 
         Query query = getSession().createQuery(queryString.toString())

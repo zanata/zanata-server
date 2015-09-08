@@ -36,6 +36,16 @@ var Actions = {
         data: filter
     });
   },
+  updateSortOrder: function(field, ascending) {
+    Dispatcher.handleViewAction({
+      actionType: GlossaryActionTypes.UPDATE_SORT_ORDER,
+      data: {
+        field:field,
+        ascending: ascending
+      }
+    });
+  },
+
   loadGlossary: function(index) {
     Dispatcher.handleViewAction({
         actionType: GlossaryActionTypes.LOAD_GLOSSARY,
