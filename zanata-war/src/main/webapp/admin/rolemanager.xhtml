@@ -15,7 +15,6 @@
   <ui:define name="page_title">#{msgs['jsf.ManageRoles']}</ui:define>
 
   <ui:define name="center_content">
-    <a4j:jsFunction name="createRole" action="#{zanataRoleAction.createRole}"/>
 
     <script type="text/javascript">
       function confirmDelete() {
@@ -45,7 +44,7 @@
                   aria-labelledby="dropdownContent">
                   <li>
                     <h:link styleClass="i__item--right"
-                      onclick="createRole()"
+                      outcome="/admin/roledetail.xhtml"
                       rendered="#{identity.hasPermission('seam.account', 'create', null)}"
                       value="#{msgs['jsf.CreateRole']}">
                       <i class="i i--plus i__item__icon"></i>
@@ -82,9 +81,7 @@
                       </ul>
                     </div>
                   </div>
-                  <!-- TODO [CDI] change this to pass selected role as param to zanataRoleAction so that we don't need to use conversation scope -->
-                  <h:commandLink
-                    action="#{zanataRoleAction.editRole(zanataRoleSearch.selectedRole)}"
+                  <h:link outcome="/admin/roledetail.xhtml"
                     disabled="#{not identity.hasPermission('seam.role', 'update') or accountRoleDAO.findByName(role).roleType.toString() eq 'AUTO'}">
                     <div class="list__item__content">
                       <div class="list__item__info">
@@ -94,7 +91,8 @@
                         </h3>
                       </div>
                     </div>
-                  </h:commandLink>
+                    <f:param name="role" value="#{zanataRoleSearch.selectedRole}" />
+                  </h:link>
                 </li>
               </ui:repeat>
             </ul>
