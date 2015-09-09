@@ -66,7 +66,6 @@ import lombok.Setter;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-
 @Name("versionGroupHome")
 public class VersionGroupHome extends SlugHome<HIterationGroup> {
     private static final long serialVersionUID = 1L;
@@ -131,13 +130,6 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void create() {
-        super.create();
-        // ensure maintainers list is loaded before this is detached
-        getInstance().getMaintainers();
     }
 
     public boolean isSlugAvailable(String slug) {
@@ -293,7 +285,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
 
             HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().getMaintainers().add(maintainer);
-            update(conversationScopeMessages);
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.MaintainerAddedToGroup",
@@ -324,7 +316,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                                 @Override
                                 public boolean apply(
                                         @Nullable HProjectIteration input) {
-                                    return !input.getGroups().contains(
+                                    return input != null && !input.getGroups().contains(
                                             getInstance());
                                 }
                             });
@@ -343,9 +335,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                     projectIterationDAO.findById(new Long(getSelectedItem()));
             getInstance().getProjectIterations().add(version);
 
-            VersionGroupHome versionGroupHome =
-                    getVersionGroupHomeFromServiceLocator();
-            versionGroupHome.update(conversationScopeMessages);
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
 
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
@@ -354,7 +344,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         }
     }
 
-    private static VersionGroupHome getVersionGroupHomeFromServiceLocator() {
+    private static VersionGroupHome getVersionGroupHome() {
         return ServiceLocator.instance()
                         .getInstance("versionGroupHome", VersionGroupHome.class);
     }
@@ -403,9 +393,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
 
             getInstance().getActiveLocales().add(locale);
 
-            VersionGroupHome versionGroupHome =
-                    getVersionGroupHomeFromServiceLocator();
-            versionGroupHome.update(conversationScopeMessages);
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.LanguageAddedToGroup",
