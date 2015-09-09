@@ -10,15 +10,12 @@
 <ui:composition template="../WEB-INF/template/template.xhtml">
 
   <f:metadata>
+    <f:viewParam name="username" value="#{userAction.username}" />
     <f:event type="preRenderView" listener="#{userSearch.loadUsers}"/>
   </f:metadata>
 
   <ui:define name="page_title">#{msgs['jsf.ManageUsers']}</ui:define>
   <ui:define name="center_content">
-    <!-- TODO [CDI] change this to pass selected role as param to zanataUserAction so that we don't need to use conversation scope -->
-    <a4j:jsFunction name="editUser" action="#{userAction.editUser(username)}">
-      <a4j:param name="val1" assignTo="#{username}"/>
-    </a4j:jsFunction>
 
     <a4j:jsFunction name="deleteUser"
       action="#{userAction.deleteUser(username)}" render="usermanagerForm,
@@ -89,7 +86,7 @@
                     </div>
                   </div>
 
-                  <h:commandLink onclick="editUser('#{user}');return false"
+                  <h:link outcome="/admin/userdetail.xhtml"
                     disabled="#{not identity.hasPermission('seam.user', 'update')}">
                     <div class="list__item__content">
                       <div class="list__item__info">
@@ -112,7 +109,8 @@
                         </span>
                       </div>
                     </div>
-                  </h:commandLink>
+                    <f:param name="username" value="#{user}"/>
+                  </h:link>
                 </li>
               </ui:repeat>
             </ul>

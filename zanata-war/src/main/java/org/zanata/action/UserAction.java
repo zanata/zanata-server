@@ -30,7 +30,6 @@ import javax.persistence.PersistenceException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Begin;
-import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -49,7 +48,7 @@ import lombok.Getter;
 import org.zanata.ui.faces.FacesMessages;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.PAGE;
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
@@ -60,7 +59,7 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Name("org.jboss.seam.security.management.userAction")
-@Scope(CONVERSATION)
+@Scope(PAGE)
 @Install(precedence = APPLICATION)
 public class UserAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -136,15 +135,14 @@ public class UserAction implements Serializable {
         return personDAO.findByUsername(username).getName();
     }
 
+    // TODO this method is not used so as the newUserFlag. Clean up this class
     @Begin
     public void createUser() {
         roles = new ArrayList<>();
         newUserFlag = true;
     }
 
-    @Begin
-    public void editUser(String username) {
-        this.username = username;
+    public void loadUser() {
         roles = identityManager.getGrantedRoles(username);
         enabled = identityManager.isUserEnabled(username);
         newUserFlag = false;
@@ -238,7 +236,6 @@ public class UserAction implements Serializable {
             identityManager.disableUser(username);
         }
 
-        Conversation.instance().end();
         return "success";
     }
 
@@ -258,9 +255,8 @@ public class UserAction implements Serializable {
         }
     }
 
-    @End
     public String cancel() {
-        return "/admin/usermanager";
+        return "success";
     }
 
     public String getUsername() {
