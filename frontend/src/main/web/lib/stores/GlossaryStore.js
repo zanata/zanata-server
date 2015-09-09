@@ -24,6 +24,7 @@ var _state = {
   glossaryResId: [],
   page:1,
   filter: '',
+  uploadFile: null,
   sort: {
     src_content: true
   },
@@ -252,13 +253,8 @@ function uploadFile(data) {
 
   return new Promise(function(resolve, reject) {
     Request.post(url)
-      .attach('file', uploadFile, uploadFile.name)
-      .field('name', uploadFile.name)
-      .field('size', uploadFile.size)
+      .attach('file', uploadFile.file, uploadFile.file.name)
       .set('Accept', 'application/json')
-      .on('progress', function(e) {
-        console.log('Percentage done: ', e.percent);
-      })
       .end((function (res) {
         if (res.error) {
           console.error(url, res.status, res.error.toString());

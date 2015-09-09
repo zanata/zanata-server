@@ -52,12 +52,9 @@ var SystemGlossary = React.createClass({
 
     reader.onload = function(upload) {
       self.setState({
-        upload_file: {
-          data_uri: upload.target.result,
-          file:file,
-          name: file.name,
-          size: file.size,
-          type: file.type
+        uploadFile: {
+          uri: upload.target.result,
+          file:file
         }
       });
     };
@@ -65,9 +62,13 @@ var SystemGlossary = React.createClass({
   },
 
   _uploadFile: function() {
-    Actions.uploadFile(this.state.upload_file,
+    Actions.uploadFile(this.state.uploadFile,
       this.state.srcLocale.locale.localeId,
       this.state.selectedTransLocale);
+  },
+
+  _handleSubmit: function(e) {
+    e.preventDefault();
   },
 
   render: function() {
@@ -129,11 +130,9 @@ var SystemGlossary = React.createClass({
                   />
                 </div>
                 <div>
-                  <button className='cpri dfx aic'><Icon name='import' className='mr1/4' /><span>Import Glossary</span></button>
-
-                  <form onSubmit={this._uploadFile} encType="multipart/form-data">
+                  <form onSubmit={this._handleSubmit} encType="multipart/form-data">
                     <input type="file" onChange={this._handleFile} ref="file" multiple={false} />
-                    <input type="submit" onClick={this._uploadFile}/>
+                    <button className='cpri dfx aic' onClick={this._uploadFile}><Icon name='import' className='mr1/4' /><span>Import Glossary</span></button>
                   </form>
 
                 </div>

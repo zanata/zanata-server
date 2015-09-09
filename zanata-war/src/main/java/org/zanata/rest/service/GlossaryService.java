@@ -35,7 +35,6 @@ import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.rest.DocumentFileUploadForm;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryLocale;
@@ -230,27 +229,46 @@ public class GlossaryService implements GlossaryResource {
         try {
             Map<String, List<InputPart>> formParts = input.getFormDataMap();
             List<InputPart> inPart = formParts.get("file");
-            String fileName = formParts.get("name").get(0).getBodyAsString();
+            String fileName = "";
 
             for (InputPart inputPart : inPart) {
-                MultivaluedMap<String, String> headers =
-                    inputPart.getHeaders();
-                InputStream istream =
-                    inputPart.getBody(InputStream.class, null);
-                List<Glossary> glossaries =
-                    glossaryFileServiceImpl
-                        .parseGlossaryFile(istream, fileName, srcLocaleId,
-                            transLocaleId);
-                System.out.println("size:" + glossaries.size());
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+                MultivaluedMap<String, String> headers = inputPart.getHeaders();
+                fileName = parseFileName(headers);
+                InputStream stream =
+                        inputPart.getBody(InputStream.class, null);
 
-        return response.build();
+                List<Glossary> glossaries =
+                        glossaryFileServiceImpl
+                                .parseGlossaryFile(stream, fileName,
+                                        srcLocaleId, transLocaleId);
+
+                for (Glossary glossary : glossaries) {
+                    glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
+                }
+            }
+            return response.build();
+        } catch (IOException e) {
+            log.error(e.toString(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e).build();
+        }
     }
 
+    // Parse Content-Disposition header to get the original file name
+    private String parseFileName(MultivaluedMap<String, String> headers) {
+        String[] contentDispositionHeader =
+                headers.getFirst("Content-Disposition").split(";");
+        for (String name : contentDispositionHeader) {
+            if ((name.trim().startsWith("filename"))) {
+                String[] tmp = name.split("=");
+                String fileName = tmp[1].trim().replaceAll("\"", "");
+                return fileName;
+            }
+        }
+        return "randomName";
+    }
+
+    
     @Override
     public Response deleteGlossary(LocaleId targetLocale) {
         identity.checkPermission("", "glossary-delete");
