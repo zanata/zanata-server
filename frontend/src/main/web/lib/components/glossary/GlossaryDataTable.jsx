@@ -162,7 +162,7 @@ var GlossaryDataTable = React.createClass({
       var entry = this._getGlossaryEntry(resId),
         term = entry.srcTerm,
         title = this._generateTitle(term);
-      return <span title={title} key={key}>{term.content}</span>;
+      return <pre title={title} key={key}>{term.content}</pre>;
     }
   },
 
@@ -177,7 +177,7 @@ var GlossaryDataTable = React.createClass({
           title = this._generateTitle(term),
           readOnly = !this.props.canUpdateEntry;
       if(readOnly) {
-        return <span title={title} key={key}>{term.content}</span>;
+        return <pre title={title} key={key}>{term.content}</pre>;
       } else {
         return (<TextInput value={term.content}
           placeholder="enter a translation"
@@ -198,7 +198,7 @@ var GlossaryDataTable = React.createClass({
       return (<LoadingCell key={key}/>);
     } else {
       var entry = this._getGlossaryEntry(resId);
-      return <span key={key}>{entry.pos}</span>;
+      return <pre key={key}>{entry.pos}</pre>;
     }
   },
 
@@ -215,8 +215,7 @@ var GlossaryDataTable = React.createClass({
   },
 
   _onValueChange: function(inputField, value) {
-    var entry = this._getGlossaryEntry(inputField.props.resId);
-    _.set(entry, inputField.props.field, value);
+    Actions.updateEntryField(inputField.props.resId, inputField.props.field, value);
     this.state.inputFields[inputField.props.id] = inputField;
   },
 

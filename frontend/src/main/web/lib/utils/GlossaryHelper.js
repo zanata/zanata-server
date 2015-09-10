@@ -58,8 +58,13 @@ var GlossaryHelper = {
     var term =  _(terms)
       .filter(function(term) { return term.locale === localeId; })
       .value();
-
     return term[0];
+  },
+
+  isEqual: function (entry1, entry2) {
+    console.info(entry1, entry2);
+    return true;
   }
+
 };
 export default GlossaryHelper;

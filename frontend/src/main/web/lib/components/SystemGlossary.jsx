@@ -114,6 +114,17 @@ var SystemGlossary = React.createClass({
       count = this.state.srcLocale.count;
     }
 
+    var uploadSection = "";
+    if(this.state.canAddNewEntry) {
+      uploadSection = (
+        <div>
+          <form onSubmit={this._handleSubmit} encType="multipart/form-data">
+            <input type="file" onChange={this._handleFile} ref="file" multiple={false} />
+            <button className='cpri dfx aic' onClick={this._uploadFile}><Icon name='import' className='mr1/4' /><span>Import Glossary</span></button>
+          </form>
+      </div>)
+    }
+
     return (<div>
               <Icons fileName='./node_modules/zanata-ui/src/components/Icons/icons.svg' />
               <div className='dfx aic mb1'>
@@ -129,13 +140,7 @@ var SystemGlossary = React.createClass({
                     onChange={this._handleTransChange}
                   />
                 </div>
-                <div>
-                  <form onSubmit={this._handleSubmit} encType="multipart/form-data">
-                    <input type="file" onChange={this._handleFile} ref="file" multiple={false} />
-                    <button className='cpri dfx aic' onClick={this._uploadFile}><Icon name='import' className='mr1/4' /><span>Import Glossary</span></button>
-                  </form>
-
-                </div>
+                {uploadSection}
               </div>
               <div className='dfx aic mb1'>
                 <div className='fxauto'>

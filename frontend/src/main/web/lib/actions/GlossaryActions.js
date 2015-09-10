@@ -60,6 +60,16 @@ var Actions = {
         actionType: GlossaryActionTypes.LOAD_GLOSSARY,
         data: index
     });
+  },
+  updateEntryField: function (resId, field, value) {
+    Dispatcher.handleViewAction({
+          actionType: GlossaryActionTypes.UPDATE_ENTRY_FIELD,
+          data: {
+            resId: resId,
+            field: field,
+            value: value
+          }
+    });
   }
 };
 

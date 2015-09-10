@@ -3,6 +3,7 @@ package org.zanata.rest.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -153,8 +156,8 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response get(@PathParam("srcLocale") LocaleId srcLocale,
         @PathParam("transLocale") LocaleId transLocale,
-        @DefaultValue("-1") @QueryParam("page") int page,
-        @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("500") @QueryParam("sizePerPage") int sizePerPage,
         @QueryParam("filter") String filter,
         @QueryParam("sort") String fields) {
 
@@ -177,8 +180,8 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response get(LocaleId srcLocaleId,
-        @DefaultValue("-1") @QueryParam("page") int page,
-        @DefaultValue("-1") @QueryParam("sizePerPage") int sizePerPage,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("500") @QueryParam("sizePerPage") int sizePerPage,
         @QueryParam("filter") String filter,
         @QueryParam("sort") String fields) {
         ResponseBuilder response = request.evaluatePreconditions();
@@ -220,16 +223,13 @@ public class GlossaryService implements GlossaryResource {
         MultipartFormDataInput input) {
         identity.checkPermission("", "glossary-insert");
 
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-        response = Response.created(uri.getAbsolutePath());
+        final Response response;
 
         try {
             Map<String, List<InputPart>> formParts = input.getFormDataMap();
             List<InputPart> inPart = formParts.get("file");
             String fileName = "";
+            List<Glossary> allGlossaries = Lists.newArrayList();
 
             for (InputPart inputPart : inPart) {
                 MultivaluedMap<String, String> headers = inputPart.getHeaders();
@@ -241,12 +241,23 @@ public class GlossaryService implements GlossaryResource {
                         glossaryFileServiceImpl
                                 .parseGlossaryFile(stream, fileName,
                                         srcLocaleId, transLocaleId);
+                allGlossaries.addAll(glossaries);
 
                 for (Glossary glossary : glossaries) {
                     glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
                 }
             }
-            return response.build();
+
+            Type genericType = new GenericType<List<Glossary>>() {
+            }.getGenericType();
+            Object entity =
+                new GenericEntity<List<Glossary>>(allGlossaries, genericType);
+            response =
+                Response.ok()
+                    .header("Content-Disposition", "attachment; filename=\""
+                            + fileName + "\"")
+                    .type(MediaType.TEXT_PLAIN).entity(entity).build();
+            return response;
         } catch (IOException e) {
             log.error(e.toString(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -265,10 +276,9 @@ public class GlossaryService implements GlossaryResource {
                 return fileName;
             }
         }
-        return "randomName";
+        return "no-filename";
     }
 
-    
     @Override
     public Response deleteGlossary(LocaleId targetLocale) {
         identity.checkPermission("", "glossary-delete");

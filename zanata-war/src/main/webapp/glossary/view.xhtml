@@ -1,23 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:s="http://jboss.org/schema/seam/taglib">
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <ui:composition template="../WEB-INF/template/template_ui.xhtml">
 
 <ui:define name="page_title">#{msgs['jsf.Glossary']}</ui:define>
 <ui:define name="center_content">
-
-  <s:fragment
-    rendered="#{identity.hasPermission('', 'glossary-insert')}">
-    <li>
-      <a href="#" data-toggle="modal" data-target="#glossaryUploadDialog">
-        #{msgs['jsf.Glossary.upload']}
-        <i class="i i--import i__item__icon"></i>
-      </a>
-    </li>
-  </s:fragment>
 
   <div id="main-content"
     base-url="#{request.contextPath}/rest"
