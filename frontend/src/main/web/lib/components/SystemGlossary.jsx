@@ -142,19 +142,17 @@ var SystemGlossary = React.createClass({
               </div>
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
-                  <div className='posr w8'>
+                  <div className='w8'>
                     <Input value={this.state.filter}
                       hideLabel
                       outline
+                      reset
                       label='Search Glossary'
                       placeholder="Search Glossary"
                       className="w100p pr1&1/2"
                       id="search"
                       onKeyDown={this._handleFilterKeyDown}
                       onChange={this._handleFilterValueChange} />
-                    <button className='posa r0 t0 fzn1 h1&1/2 p1/4 csec50 dfx aic'>
-                      <Icon name='search' size='s1' />
-                    </button>
                   </div>
                 </div>
                 <div className='dfx aic'>
