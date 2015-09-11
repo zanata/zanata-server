@@ -6,7 +6,7 @@ import StringUtils from '../../utils/StringUtils'
 import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
-import ActionCell from './ActionCell'
+import SourceActionCell from './SourceActionCell'
 import ColumnHeader from './ColumnHeader'
 import _ from 'lodash';
 
@@ -263,21 +263,6 @@ var GlossarySrcDataTable = React.createClass({
     this.state.inputFields[inputField.props.id] = inputField;
   },
 
-  _handleSave: function(resId) {
-    this.setState({focusedRow: -1});
-    Actions.createGlossary(resId);
-  },
-
-  _handleUpdate: function(resId) {
-    this.setState({focusedRow: -1});
-    Actions.updateGlossary(resId);
-  },
-
-  _handleDelete: function(resId) {
-    this.setState({focusedRow: -1});
-    Actions.deleteGlossary(resId, this.props.srcLocale.locale.localeId);
-  },
-
   /**
    * restore glossary entry to original value
    * @param resId
@@ -285,7 +270,6 @@ var GlossarySrcDataTable = React.createClass({
    */
   _handleCancel: function (resId, rowIndex) {
     var self = this;
-
     _.forOwn(this.ENTRY, function(value, key) {
       var key = self._generateKey(value.col, rowIndex, resId),
         input = self.state.inputFields[key];
@@ -298,40 +282,21 @@ var GlossarySrcDataTable = React.createClass({
 
   _renderActions: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var isNewEntryCell = false;
-    return (
-      <ActionCell resId={resId} rowIndex={rowIndex}
-        srcLocaleId={this.props.srcLocale.locale.localeId}
-        newEntryCell={isNewEntryCell}
-        onCancel={this._handleCancel}/>
-    );
-    //var key = this._generateKey(this.ENTRY.ACTION.col, rowIndex, resId);
-    //
-    //if(resId === null) {
-    //  return (<LoadingCell key={key}/>);
-    //} else {
-    //  var self = this, entry = self._getGlossaryEntry(resId);
-    //  var cancelButton = (<button className='cpri' onClick={self._handleCancel.bind(self,
-    //    resId, rowIndex)}>Cancel</button>);
-    //
-    //  if (rowIndex == 0 && self.props.canAddNewEntry) {
-    //    return (<div key={key}>
-    //      <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave.bind(self,
-    //        resId)}>Save</button>
-    //            {cancelButton}
-    //    </div>)
-    //  } else if (this.props.canUpdateEntry) {
-    //    return (<div key={key}>
-    //      <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleDelete.bind(self,
-    //        resId)}>Delete</button>
-    //      <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self,
-    //        resId)}>Update</button>
-    //            {cancelButton}
-    //    </div>)
-    //  } else {
-    //    return (<div></div>)
-    //  }
-    //}
+    var isNewEntryCell = rowIndex === 0;
+    if(resId === null) {
+      return (<LoadingCell/>);
+    } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
+      return (<div></div>);
+    } else {
+      return (
+        <SourceActionCell resId={resId} rowIndex={rowIndex}
+          srcLocaleId={this.props.srcLocale.locale.localeId}
+          newEntryCell={isNewEntryCell}
+          canUpdateEntry={this.props.canUpdateEntry}
+          canAddNewEntry={this.props.canAddNewEntry}
+          onCancel={this._handleCancel}/>
+      );
+    }
   },
 
   _getSourceColumn: function() {
@@ -413,7 +378,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _onRowClick: function (event, rowIndex) {
-
+    this.setState({focusedRow: rowIndex});
   },
 
   _onInputFocus: function (input, rowIndex) {
@@ -426,9 +391,7 @@ var GlossarySrcDataTable = React.createClass({
 
   _rowClassNameGetter: function (rowIndex) {
     if(rowIndex == this.state.focusedRow) {
-      return 'op100';
-    } else {
-      return 'op50';
+      return 'bgcsec10';
     }
   },
 

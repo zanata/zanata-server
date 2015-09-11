@@ -61,9 +61,15 @@ var GlossaryHelper = {
     return term[0];
   },
 
-  isEqual: function (entry1, entry2) {
-    console.info(entry1, entry2);
-    return true;
+  compare: function (entry1, entry2) {
+    var isSrcModified = (entry1.description !== entry2.description) ||
+      (entry1.pos !== entry2.pos) || (entry1.srcTerm.content !== entry2.srcTerm.content);
+    var isTransModified = entry1.transTerm.content !== entry2.transTerm.content;
+
+    return {
+      source: isSrcModified,
+      trans: isTransModified
+    };
   }
 
 };

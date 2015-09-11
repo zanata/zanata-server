@@ -170,7 +170,12 @@ function processGlossaryList(serverResponse) {
     if(_.isUndefined(_state['glossary'][newEntryKey])) {
       _state['glossary'][newEntryKey] = {resId: '', pos: '', description: '',
         srcTerm: generateSrcTerm(srcLocaleId),
-        transTerm: generateTerm(transLocaleId)};
+        transTerm: generateTerm(transLocaleId),
+        modified: {
+          source: false,
+          trans: false
+        }
+      };
       _state['glossaryResId'][0] = [newEntryKey];
     }
   }
@@ -193,7 +198,18 @@ function processGlossaryList(serverResponse) {
     } else {
       transTerm = generateTerm(transLocaleId);
     }
-    _state['glossary'][entry.resId] = {resId: entry.resId, pos: entry.pos, description: entry.description, termsCount: entry.termsCount, srcTerm: srcTerm, transTerm: transTerm};
+    _state['glossary'][entry.resId] = {
+      resId: entry.resId,
+      pos: entry.pos,
+      description: entry.description,
+      termsCount: entry.termsCount,
+      srcTerm: srcTerm,
+      transTerm: transTerm,
+      modified: {
+        source: false,
+        trans: false
+      }
+    };
     _state['glossaryResId'][startIndex] = [entry.resId];
     startIndex+=1;
   });
@@ -307,7 +323,6 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
   }.bind(this),
 
   getEntry: function(resId) {
-    console.info(_state['glossary'][resId]);
     return _state['glossary'][resId];
   },
 
@@ -399,7 +414,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.UPDATE_ENTRY_FIELD:
         _.set(_state['glossary'][action.data.resId], action.data.field, action.data.value);
         _state['glossary'][action.data.resId]['modified'] =
-          GlossaryHelper.isEqual(_state['glossary'][action.data.resId], _state['original_glossary']);
+          GlossaryHelper.compare(_state['glossary'][action.data.resId], _state['original_glossary'][action.data.resId]);
         GlossaryStore.emitChange();
         break;
     }

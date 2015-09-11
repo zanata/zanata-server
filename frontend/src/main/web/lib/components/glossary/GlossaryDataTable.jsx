@@ -3,9 +3,9 @@ import {PureRenderMixin} from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
-import { Icon } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
+import ActionCell from './ActionCell'
 import ColumnHeader from './ColumnHeader'
 import _ from 'lodash';
 
@@ -186,6 +186,8 @@ var GlossaryDataTable = React.createClass({
           resId={resId}
           key={key}
           field={this.ENTRY.TRANS.field}
+          onFocusCallback={this._onInputFocus}
+          onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>);
       }
     }
@@ -219,10 +221,6 @@ var GlossaryDataTable = React.createClass({
     this.state.inputFields[inputField.props.id] = inputField;
   },
 
-  _handleUpdate: function(resId) {
-    Actions.updateGlossary(resId);
-  },
-
   /**
    * restore glossary entry to original value
    * @param resId
@@ -244,14 +242,14 @@ var GlossaryDataTable = React.createClass({
                             columnData, width) {
     var self = this;
 
-   if(this.props.canUpdateEntry) {
-      return (<div>
-                <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
-                <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate.bind(self, resId)}>Update</button>
-                <button className='cpri' onClick={self._handleCancel.bind(self, resId, rowIndex)}>Cancel</button>
-              </div>)
-    } else {
+    if(resId === null) {
+      return (<LoadingCell/>);
+    } else if(!this.props.canUpdateEntry) {
       return (<div></div>)
+    } else {
+      return (
+        <ActionCell resId={resId} rowIndex={rowIndex}onCancel={self._handleCancel}/>
+      );
     }
   },
 
@@ -329,6 +327,24 @@ var GlossaryDataTable = React.createClass({
     }
   },
 
+  _rowClassNameGetter: function (rowIndex) {
+    if(rowIndex == this.state.focusedRow) {
+      return 'bgcsec10';
+    }
+  },
+
+  _onRowClick: function (event, rowIndex) {
+    this.setState({focusedRow: rowIndex});
+  },
+
+  _onInputFocus: function (input, rowIndex) {
+    this.setState({focusedRow: rowIndex});
+  },
+
+  _onInputBlur: function (input, rowIndex) {
+    this.setState({focusedRow: -1});
+  },
+
   render: function() {
     var srcColumn = this._getSourceColumn(),
       transColumn = this._getTransColumn(),
@@ -337,8 +353,10 @@ var GlossaryDataTable = React.createClass({
       actionColumn = this._getActionColumn();
 
     var dataTable = (<Table
+      onRowClick={this._onRowClick}
       rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
+      rowClassNameGetter={this._rowClassNameGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}
       height={this.state.tbl_height}
