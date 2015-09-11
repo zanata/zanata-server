@@ -162,7 +162,7 @@ var GlossaryDataTable = React.createClass({
       var entry = this._getGlossaryEntry(resId),
         term = entry.srcTerm,
         title = this._generateTitle(term);
-      return <pre title={title} key={key}>{term.content}</pre>;
+      return <span title={title} key={key}>{term.content}</span>;
     }
   },
 
@@ -177,7 +177,7 @@ var GlossaryDataTable = React.createClass({
           title = this._generateTitle(term),
           readOnly = !this.props.canUpdateEntry;
       if(readOnly) {
-        return <pre title={title} key={key}>{term.content}</pre>;
+        return <span title={title} key={key}>{term.content}</span>;
       } else {
         return (<TextInput value={term.content}
           placeholder="enter a translation"
@@ -197,10 +197,10 @@ var GlossaryDataTable = React.createClass({
                             columnData, width) {
     var key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
     if(resId === null) {
-      return (<LoadingCell key={key}/>);
+      return (<LoadingCell key={key}/>)
     } else {
       var entry = this._getGlossaryEntry(resId);
-      return <pre key={key}>{entry.pos}</pre>;
+      return <span key={key}>{entry.pos}</span>
     }
   },
 

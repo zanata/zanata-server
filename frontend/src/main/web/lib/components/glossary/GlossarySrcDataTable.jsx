@@ -171,7 +171,7 @@ var GlossarySrcDataTable = React.createClass({
       var title = this._generateTitle(term)
 
       if (readOnly) {
-        return <pre title={title} key={key}>{term.content}</pre>
+        return <span title={title} key={key}>{term.content}</span>
       } else {
         return (<TextInput value={term.content}
           placeholder='enter a new term'
@@ -197,7 +197,7 @@ var GlossarySrcDataTable = React.createClass({
       var entry = this._getGlossaryEntry(resId),
         readOnly = !this.props.canUpdateEntry;
       if(readOnly) {
-        return <pre key={key}>{entry.pos}</pre>;
+        return <span key={key}>{entry.pos}</span>;
       } else {
         return (<TextInput value={entry.pos}
           placeholder="enter part of speech"
