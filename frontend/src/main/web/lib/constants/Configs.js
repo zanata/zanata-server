@@ -1,7 +1,7 @@
 var Configs = {
   baseUrl: null,
-  user: null,
-  authenticated: false,
+  user: null, // see org.zanata.rest.editor.dto.User
+  username: null,
   urlPostfix: ''
 };
 

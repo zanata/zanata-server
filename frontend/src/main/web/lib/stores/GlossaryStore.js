@@ -9,6 +9,7 @@ import GlossaryHelper from '../utils/GlossaryHelper'
 import StringUtils from '../utils/StringUtils'
 import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
+import UserStore from './UserStore'
 
 var SIZE_PER_PAGE = 1000;
 
@@ -32,6 +33,10 @@ var _state = {
 };
 
 var CHANGE_EVENT = "change";
+
+function processUserInfo(serverResponse) {
+  Configs.user = serverResponse;
+}
 
 function localesStatAPIUrl() {
   return Configs.baseUrl + "/glossary/locales/list" + Configs.urlPostfix
@@ -290,18 +295,31 @@ function processSave(serverResponse) {
   //show notification?
 }
 function initialise () {
-  loadLocalesStats()
-    .then(processLocalesStatistic)
-    .then(function (newState) {
-      GlossaryStore.emitChange();
-    })
-    .then(function() {
-      loadGlossaryByLocale()
-        .then(processGlossaryList)
-        .then(function (newState) {
-          GlossaryStore.emitChange();
-        });
-    });
+  if(Configs.user === null) {
+    UserStore.getUserInfo()
+      .then(processUserInfo)
+      .then(loadLocalesStats)
+      .then(processLocalesStatistic)
+      .then(function (newState) {
+        GlossaryStore.emitChange();
+      })
+      .then(loadGlossaryByLocale())
+      .then(processGlossaryList)
+      .then(function (newState) {
+        GlossaryStore.emitChange();
+      });
+  } else {
+    loadLocalesStats()
+      .then(processLocalesStatistic)
+      .then(function (newState) {
+        GlossaryStore.emitChange();
+      })
+      .then(loadGlossaryByLocale())
+      .then(processGlossaryList)
+      .then(function (newState) {
+        GlossaryStore.emitChange();
+      });
+  }
 }
 
 function resetCache(totalCount) {

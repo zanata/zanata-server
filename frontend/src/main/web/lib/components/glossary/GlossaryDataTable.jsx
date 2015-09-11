@@ -59,13 +59,13 @@ var GlossaryDataTable = React.createClass({
     //).isRequired,
     canAddNewEntry: React.PropTypes.bool.isRequired,
     canUpdateEntry: React.PropTypes.bool.isRequired,
-    isAuthenticated: React.PropTypes.bool.isRequired,
     user: React.PropTypes.shape({
-      username: React.PropTypes.string.isRequired,
-      email: React.PropTypes.string.isRequired,
-      name: React.PropTypes.string.isRequired,
-      imageUrl: React.PropTypes.string.isRequired,
-      languageTeams: React.PropTypes.string.isRequired
+      username: React.PropTypes.string,
+      email: React.PropTypes.string,
+      name: React.PropTypes.string,
+      imageUrl: React.PropTypes.string,
+      languageTeams: React.PropTypes.string,
+      authenticated: React.PropTypes.bool.isRequired
     }),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({

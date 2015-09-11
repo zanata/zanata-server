@@ -99,6 +99,10 @@ public class GlossaryAction implements Serializable {
         return user;
     }
 
+    public String getUsername() {
+        return authenticatedAccount.getUsername();
+    }
+
     public List<HLocale> getAvailableLocales() {
         return localeDAO.findAllActive();
     }

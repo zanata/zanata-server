@@ -8,6 +8,7 @@ import {UserMatrixActionTypes} from '../constants/ActionTypes';
 import Configs from '../constants/Configs';
 import utilsDate from '../utils/DateHelper';
 import Request from 'superagent';
+import UserStore from './UserStore'
 
 var CHANGE_EVENT = "change";
 
@@ -25,6 +26,7 @@ var _state = {
 };
 
 function statsAPIUrl() {
+  console.info(Configs);
   return Configs.baseUrl + "/stats/user/" + Configs.user.username + Configs.urlPostfix + "/";
 }
 
@@ -182,14 +184,34 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
   return filteredEntries;
 }
 
+function processUserInfo(serverResponse) {
+  Configs.user = serverResponse;
+}
+
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function() {
     if (_state.matrixForAllDays.length == 0) {
-      loadFromServer()
-        .then(handleServerResponse)
-        .then(function (newState) {
-          UserMatrixStore.emitChange();
-        })
+      if(Configs.user === null) {
+        UserStore.getUserInfo()
+          .then(processUserInfo)
+          .then(function () {
+            if(Configs.user.authenticated === true) {
+              loadFromServer()
+                .then(handleServerResponse)
+                .then(function (newState) {
+                  UserMatrixStore.emitChange();
+                });
+            }
+          });
+      } else {
+        if(Configs.user.authenticated === true) {
+          loadFromServer()
+            .then(handleServerResponse)
+            .then(function (newState) {
+              UserMatrixStore.emitChange();
+            })
+        }
+      }
     }
     return _state;
   }.bind(this),

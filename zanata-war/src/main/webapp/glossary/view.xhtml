@@ -10,8 +10,7 @@
 
   <div id="main-content"
     base-url="#{request.contextPath}/rest"
-    user="#{glossaryAction.user.getJSON()}"
-    authenticated="#{identity.loggedIn}"
+    username="#{glossaryAction.username}"
     view="glossary"/>
 
   <script type="text/javascript"

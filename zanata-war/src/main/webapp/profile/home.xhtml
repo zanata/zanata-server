@@ -11,8 +11,7 @@
 
     <div id="main-content"
       base-url="#{request.contextPath}/rest"
-      user="#{profileHome.user.getJSON()}"
-      authenticated="#{identity.loggedIn}"
+      username="#{profileHome.username}"
       view="profile"/>
 
     <script type="text/javascript"
