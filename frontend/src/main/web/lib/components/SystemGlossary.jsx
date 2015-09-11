@@ -124,7 +124,7 @@ var SystemGlossary = React.createClass({
     }
 
     return (<div>
-              <Icons fileName='./node_modules/zanata-ui/src/components/Icons/icons.svg' />
+              <Icons />
               <div className='dfx aic mb1'>
                 <div className='fxauto dfx aic'>
                   <h1 className='fz2 dib csec'>System Glossary</h1>
