@@ -102,6 +102,14 @@ public class ProfileHome implements Serializable {
         return null;
     }
 
+    public User getAuthenticatedUser() {
+        User authenticatedUser = new User();
+        if(authenticatedAccount == null) {
+            return authenticatedUser;
+        }
+        return userService.generateUser(authenticatedAccount);
+    }
+
     public String getUsername() {
         if (Strings.isNullOrEmpty(username) && identity.isLoggedIn()) {
             username = authenticatedAccount.getUsername();

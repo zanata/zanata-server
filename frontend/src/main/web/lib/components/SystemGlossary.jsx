@@ -7,6 +7,7 @@ import { Input, Icons, Icon, Select } from 'zanata-ui'
 import GlossaryDataTable from './glossary/GlossaryDataTable'
 import GlossarySrcDataTable from './glossary/GlossarySrcDataTable'
 import TextInput from './glossary/TextInput'
+import { Loader } from 'zanata-ui'
 import _ from 'lodash';
 
 var SystemGlossary = React.createClass({
@@ -74,10 +75,10 @@ var SystemGlossary = React.createClass({
   render: function() {
     var contents, count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
-      loadingSection = (<span></span>);
+      loadingSection = null;
 
     if(this.state.loading === true) {
-      loadingSection = (<span>Loading</span>);
+      loadingSection = (<Loader size='3' />);
     }
 
     if(selectedTransLocale) {

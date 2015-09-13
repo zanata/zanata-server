@@ -65,7 +65,6 @@ var GlossaryDataTable = React.createClass({
       name: React.PropTypes.string,
       imageUrl: React.PropTypes.string,
       languageTeams: React.PropTypes.string,
-      authenticated: React.PropTypes.bool.isRequired
     }),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({

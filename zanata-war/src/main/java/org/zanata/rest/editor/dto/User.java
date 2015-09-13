@@ -20,7 +20,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "username", "email", "name", "gravatarHash", "imageUrl", "languageTeams" })
+@JsonPropertyOrder({ "username", "email", "name", "gravatarHash", "imageUrl", "languageTeams", "loggedIn" })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @EqualsAndHashCode
 @AllArgsConstructor
@@ -49,6 +49,8 @@ public class User implements Serializable {
     private String imageUrl;
 
     private String languageTeams;
+
+    private boolean loggedIn;
 
     @JsonIgnore
     public String getJSON() {

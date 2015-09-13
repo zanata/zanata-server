@@ -8,10 +8,11 @@
 <ui:define name="page_title">#{msgs['jsf.Glossary']}</ui:define>
 <ui:define name="center_content">
 
+
   <div id="main-content"
     base-url="#{request.contextPath}/rest"
-    username="#{glossaryAction.username}"
-    view="glossary"/>
+    user="#{glossaryAction.user.getJSON()}"
+    data="{view: 'glossary'}"/>
 
   <script type="text/javascript"
     src="#{request.contextPath}/frontend.bundle.min.js"></script>

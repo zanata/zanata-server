@@ -26,16 +26,15 @@ var UserProfile = React.createClass({
   },
 
   render: function() {
-
-    var user = Configs.user, username = Configs.username,
-      authenticated = user ? user.authenticated : false,
+    var user = Configs.data.profileUser,
+      authenticated = Configs.user ? Configs.user.loggedIn : false,
       recentContribution = (<div></div>),
       imageUrl = '',
       name = '',
-      languageTeams = '';
+      languageTeams = '',
+      username;
 
-
-    if(user !== null && authenticated) {
+    if(authenticated) {
       recentContribution =
         (<div className="g__item w--3-4 w--1-2-m">
           <div className="bg--pop-highest l--pad-v-1">
@@ -52,6 +51,7 @@ var UserProfile = React.createClass({
     }
 
     if(user !== null) {
+      username =  user.username ? user.username : '';
       imageUrl = user.imageUrl ? user.imageUrl : '';
       name = user.name ? user.name : '';
       languageTeams = user.languageTeams ? user.languageTeams : '';

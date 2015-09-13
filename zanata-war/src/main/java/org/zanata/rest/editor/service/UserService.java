@@ -80,7 +80,7 @@ public class UserService implements UserResource {
     @Override
     public User generateUser(HAccount account) {
         if(account == null) {
-            return null;
+            return new User();
         }
         //need to use dao to load entity due to lazy loading of languageMemberships
         HPerson person = personDAO.findById(account.getPerson().getId());
@@ -95,7 +95,7 @@ public class UserService implements UserResource {
 
         return new User(account.getUsername(), email, person.getName(),
                 gravatarServiceImpl.getGravatarHash(email), userImageUrl,
-                userLanguageTeams);
+                userLanguageTeams, true);
     }
 
     private String getUserLanguageTeams(Set<HLocale> languageMemberships) {

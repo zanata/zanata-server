@@ -1,5 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
+import { Icon } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import GlossaryStore from '../../stores/GlossaryStore';
@@ -74,12 +75,15 @@ var SourceActionCell = React.createClass({
           return (<div></div>)
         }
       } else {
-        var deleteButton = (<button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleDelete}>Delete</button>);
+        var deleteButton = (<button className='cdanger pv1/4 ph1/2 mr1/2' onClick={self._handleDelete}>
+          <Icon name="trash"/>
+          <span className='sronly'>Delete</span>
+        </button>);
         if(isSrcModified) {
           return (<div>
-            {deleteButton}
             <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate}>Update</button>
             {cancelButton}
+            {deleteButton}
             </div>)
         } else {
           return (<div>{deleteButton}</div>)

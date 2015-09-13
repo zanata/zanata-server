@@ -8,7 +8,6 @@ import {UserMatrixActionTypes} from '../constants/ActionTypes';
 import Configs from '../constants/Configs';
 import utilsDate from '../utils/DateHelper';
 import Request from 'superagent';
-import UserStore from './UserStore'
 
 var CHANGE_EVENT = "change";
 
@@ -26,8 +25,7 @@ var _state = {
 };
 
 function statsAPIUrl() {
-  console.info(Configs);
-  return Configs.baseUrl + "/stats/user/" + Configs.user.username + Configs.urlPostfix + "/";
+  return Configs.baseUrl + "/stats/user/" + Configs.data.username + Configs.urlPostfix + "/";
 }
 
 function loadFromServer() {
@@ -184,34 +182,15 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
   return filteredEntries;
 }
 
-function processUserInfo(serverResponse) {
-  Configs.user = serverResponse;
-}
-
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function() {
-    if (_state.matrixForAllDays.length == 0) {
-      if(Configs.user === null) {
-        UserStore.getUserInfo()
-          .then(processUserInfo)
-          .then(function () {
-            if(Configs.user.authenticated === true) {
-              loadFromServer()
-                .then(handleServerResponse)
-                .then(function (newState) {
-                  UserMatrixStore.emitChange();
-                });
-            }
-          });
-      } else {
-        if(Configs.user.authenticated === true) {
-          loadFromServer()
-            .then(handleServerResponse)
-            .then(function (newState) {
-              UserMatrixStore.emitChange();
-            })
-        }
-      }
+    if (_state.matrixForAllDays.length == 0
+      && Configs.user.authenticated) {
+      loadFromServer()
+        .then(handleServerResponse)
+        .then(function (newState) {
+          UserMatrixStore.emitChange();
+        })
     }
     return _state;
   }.bind(this),
@@ -241,14 +220,16 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
         console.log('date range from %s -> %s', _state['dateRangeOption'], action.data);
         _state['dateRangeOption'] = action.data;
         _state['selectedDay'] = null;
-        loadFromServer()
-          .then(handleServerResponse)
-          .then(function(newState) {
-            UserMatrixStore.emitChange();
-          })
-          .catch(function(err) {
-            console.error('something bad happen:' + err.stack);
-          });
+        if(Config.user.authenticated) {
+          loadFromServer()
+            .then(handleServerResponse)
+            .then(function(newState) {
+              UserMatrixStore.emitChange();
+            })
+            .catch(function(err) {
+              console.error('something bad happen:' + err.stack);
+            });
+        }
         break;
       case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
         console.log('content state from %s -> %s', _state['contentStateOption'], action.data);

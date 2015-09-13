@@ -66,7 +66,6 @@ var GlossarySrcDataTable = React.createClass({
       name: React.PropTypes.string,
       imageUrl: React.PropTypes.string,
       languageTeams: React.PropTypes.string,
-      authenticated: React.PropTypes.bool.isRequired
     }),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({
@@ -113,44 +112,54 @@ var GlossarySrcDataTable = React.createClass({
     return colIndex + ":" + rowIndex + ":" + resId
   },
 
+  _getSort: function (key) {
+    if(_.isUndefined(this.props.sort[key])) {
+      return null;
+    } else if(this.props.sort[key] === true) {
+      return "ascending";
+    } else {
+      return "descending";
+    }
+  },
+
   _renderSourceHeader: function (label) {
     var key = "src_content",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+      asc = this._getSort(key);
 
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
   _renderPosHeader: function (label) {
     var key = "part_of_speech",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+      asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
   _renderDescHeader: function (label) {
     var key = "desc",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+      asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
   _renderTransHeader: function (label) {
     var key = "trans_count",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+      asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
@@ -377,6 +386,14 @@ var GlossarySrcDataTable = React.createClass({
     }
   },
 
+  _onRowMouseEnter: function (event, rowIndex) {
+    this.setState({hoveredRow: rowIndex});
+  },
+
+  _onRowMouseLeave: function (event, rowIndex) {
+    this.setState({hoveredRow: -1});
+  },
+
   _onRowClick: function (event, rowIndex) {
     this.setState({focusedRow: rowIndex});
   },
@@ -391,6 +408,8 @@ var GlossarySrcDataTable = React.createClass({
 
   _rowClassNameGetter: function (rowIndex) {
     if(rowIndex == this.state.focusedRow) {
+      return 'bgcsec20';
+    } else if(rowIndex == this.state.hoveredRow) {
       return 'bgcsec10';
     }
   },
@@ -398,6 +417,8 @@ var GlossarySrcDataTable = React.createClass({
   render: function() {
     var dataTable = (<Table
       onRowClick={this._onRowClick}
+      onRowMouseEnter={this._onRowMouseEnter}
+      onRowMouseLeave={this._onRowMouseLeave}
       rowClassNameGetter={this._rowClassNameGetter}
       rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
