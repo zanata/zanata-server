@@ -167,7 +167,8 @@ function processGlossaryList(serverResponse) {
     var newEntryKey = 'NEW_ENTRY';
     startIndex +=1;
     if(_.isUndefined(_state['glossary'][newEntryKey])) {
-      _state['glossary'][newEntryKey] = {resId: '', pos: '', description: '',
+      _state['glossary'][newEntryKey] = {
+        resId: '', pos: '', description: '',
         srcTerm: generateSrcTerm(srcLocaleId),
         transTerm: generateTerm(transLocaleId),
         modified: {
@@ -199,8 +200,8 @@ function processGlossaryList(serverResponse) {
     }
     _state['glossary'][entry.resId] = {
       resId: entry.resId,
-      pos: entry.pos,
-      description: entry.description,
+      pos: _.isUndefined(entry.pos) ? '' : entry.pos,
+      description: _.isUndefined(entry.description) ? '' : entry.description,
       termsCount: entry.termsCount,
       srcTerm: srcTerm,
       transTerm: transTerm,

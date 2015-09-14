@@ -185,7 +185,7 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function() {
     if (_state.matrixForAllDays.length == 0
-      && Configs.user.authenticated) {
+      && Configs.user.loggedIn) {
       loadFromServer()
         .then(handleServerResponse)
         .then(function (newState) {
@@ -220,7 +220,7 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
         console.log('date range from %s -> %s', _state['dateRangeOption'], action.data);
         _state['dateRangeOption'] = action.data;
         _state['selectedDay'] = null;
-        if(Config.user.authenticated) {
+        if(Configs.user.loggedIn) {
           loadFromServer()
             .then(handleServerResponse)
             .then(function(newState) {
