@@ -24,14 +24,14 @@
     "webpack-dev-server": "^1.7.0"
   },
   "dependencies": {
-    "chart.js": "git://github.com/huangp/Chart.js",
+    "chart.js": "git://github.com/huangp/Chart.js.git",
     "es6-promise": "~2.0.1",
     "events": "~1.0.2",
-    "fixed-data-table": "~0.4.1",
+    "fixed-data-table": "^0.4.6",
     "flux": "~2.0.1",
     "keymirror": "~0.1.1",
-    "lodash": "^3.2.0",
-    "moment": "^2.9.0",
+    "lodash": "^3.10.1",
+    "moment": "^2.10.6",
     "moment-range": "^1.0.6",
     "object-assign": "~2.0.0",
     "react": "^0.13.3",

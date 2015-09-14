@@ -126,11 +126,11 @@ function loadGlossaryByLocale () {
 }
 
 function canAddNewEntry () {
- return Configs.data.insertGlossary;
+ return Configs.data.permission.insertGlossary;
 }
 
 function canUpdateEntry() {
-  return Configs.data.updateGlossary;
+  return Configs.data.permission.updateGlossary;
 }
 
 function generateTerm(transLocaleId) {
