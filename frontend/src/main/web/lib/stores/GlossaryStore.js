@@ -13,8 +13,8 @@ import _ from 'lodash';
 var SIZE_PER_PAGE = 1000;
 
 var _state = {
-  canAddNewEntry: canAddNewEntry(),
-  canUpdateEntry: canUpdateEntry(),
+  canAddNewEntry: false,
+  canUpdateEntry: false,
   localeOptions: [],
   srcLocale: null,
   selectedTransLocale: null,
@@ -70,7 +70,6 @@ function processLocalesStatistic(serverResponse) {
       label: transLocale.locale.displayName + " - (" + transLocale.count + ")"
     });
   });
-  console.info('processLocalesStatistic done', _state);
   return _state;
 }
 
@@ -102,9 +101,6 @@ function generateSortOrderParam() {
 }
 
 function loadGlossaryByLocale () {
-  _state['loading'] = true;
-  GlossaryStore.emitChange();
-
   var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
 
@@ -118,7 +114,6 @@ function loadGlossaryByLocale () {
         .set("Pragma", "no-cache")
         .set("Expires", 0)
         .end((function (res) {
-          _state['loading'] = false;
           if (res.error) {
             console.error(url, res.status, res.error.toString());
             reject(Error(res.error.toString()));
@@ -131,14 +126,11 @@ function loadGlossaryByLocale () {
 }
 
 function canAddNewEntry () {
-  //rest api to get permission
- return true;
+ return Configs.data.insertGlossary;
 }
 
 function canUpdateEntry() {
-  //rest api to get permission
-  //console.info(Configs.data.permission);
-  return true;
+  return Configs.data.updateGlossary;
 }
 
 function generateTerm(transLocaleId) {
@@ -289,10 +281,13 @@ function processSave(serverResponse) {
   //show notification?
 }
 function initialise () {
+  //load permission here
+  _state['canAddNewEntry'] = canAddNewEntry();
+  _state['canUpdateEntry'] = canUpdateEntry();
+
   loadLocalesStats()
     .then(processLocalesStatistic)
     .then(function (newState) {
-      console.info('initialise 1st');
       GlossaryStore.emitChange();
     })
     .then(function() {

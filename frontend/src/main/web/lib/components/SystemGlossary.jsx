@@ -74,39 +74,35 @@ var SystemGlossary = React.createClass({
 
   render: function() {
     var contents = null, count = 0,
-      selectedTransLocale = this.state.selectedTransLocale,
-      loadingSection = null;
+      selectedTransLocale = this.state.selectedTransLocale;
 
-    if(this.state.loading === true) {
-      loadingSection = (<Loader size='3' />);
+    if(selectedTransLocale) {
+      contents = (
+        <GlossaryDataTable
+          glossaryData={this.state.glossary}
+          glossaryResId={this.state.glossaryResId}
+          totalCount={this.state.glossaryResId.length}
+          canAddNewEntry={this.state.canAddNewEntry}
+          canUpdateEntry={this.state.canUpdateEntry}
+          user={Configs.user}
+          sort={this.state.sort}
+          srcLocale={this.state.srcLocale}
+          selectedTransLocale={selectedTransLocale}/>
+      );
     } else {
-      if(selectedTransLocale) {
-        contents = (
-          <GlossaryDataTable
-            glossaryData={this.state.glossary}
-            glossaryResId={this.state.glossaryResId}
-            totalCount={this.state.glossaryResId.length}
-            canAddNewEntry={this.state.canAddNewEntry}
-            canUpdateEntry={this.state.canUpdateEntry}
-            user={Configs.user}
-            sort={this.state.sort}
-            srcLocale={this.state.srcLocale}
-            selectedTransLocale={selectedTransLocale}/>
-        );
-      } else {
-        contents = (
-          <GlossarySrcDataTable
-            glossaryData={this.state.glossary}
-            glossaryResId={this.state.glossaryResId}
-            totalCount={this.state.glossaryResId.length}
-            canAddNewEntry={this.state.canAddNewEntry}
-            canUpdateEntry={this.state.canUpdateEntry}
-            user={Configs.user}
-            sort={this.state.sort}
-            srcLocale={this.state.srcLocale}/>
-        );
-      }
+      contents = (
+        <GlossarySrcDataTable
+          glossaryData={this.state.glossary}
+          glossaryResId={this.state.glossaryResId}
+          totalCount={this.state.glossaryResId.length}
+          canAddNewEntry={this.state.canAddNewEntry}
+          canUpdateEntry={this.state.canUpdateEntry}
+          user={Configs.user}
+          sort={this.state.sort}
+          srcLocale={this.state.srcLocale}/>
+      );
     }
+
 
     if(this.state.srcLocale) {
       count = this.state.srcLocale.count;
@@ -161,7 +157,6 @@ var SystemGlossary = React.createClass({
                 </div>
               </div>
               <div>
-                {loadingSection}
                 {contents}
               </div>
             </div>);

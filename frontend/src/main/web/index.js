@@ -22,8 +22,6 @@ Configs.urlPostfix = _.isUndefined(dev) ? '' : '.json?';
 // see org.zanata.rest.editor.dto.User
 Configs.user = user;
 
-console.info(Configs);
-
 var routes = Views.getRoutes(view);
 
 Router.run(routes, Router.HashLocation, (RootContent) => {
