@@ -123,9 +123,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderSourceHeader: function (label) {
-    var key = "src_content",
-      asc = this._getSort(key);
-
+    var key = "src_content", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
@@ -134,8 +132,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderPosHeader: function (label) {
-    var key = "part_of_speech",
-      asc = this._getSort(key);
+    var key = "part_of_speech", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
@@ -144,8 +141,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderDescHeader: function (label) {
-    var key = "desc",
-      asc = this._getSort(key);
+    var key = "desc", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
@@ -154,8 +150,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderTransHeader: function (label) {
-    var key = "trans_count",
-      asc = this._getSort(key);
+    var key = "trans_count", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
@@ -310,7 +305,7 @@ var GlossarySrcDataTable = React.createClass({
 
   _getSourceColumn: function() {
     var srcLocaleName = "";
-    if(this.props.srcLocale) {
+    if(!_.isUndefined(this.props.srcLocale) && !_.isNull(this.props.srcLocale)) {
       srcLocaleName = this.props.srcLocale.locale.displayName;
     }
     return (<Column

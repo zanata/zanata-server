@@ -23,9 +23,11 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
+import org.zanata.rest.editor.dto.Permission;
 import org.zanata.rest.editor.dto.User;
 import org.zanata.rest.editor.service.UserService;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.GlossaryFileService;
@@ -68,6 +70,9 @@ public class GlossaryAction implements Serializable {
     @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
+    @In
+    private ZanataIdentity identity;
+
     @In(value = "editor.userService", create = true)
     private UserService userService;
 
@@ -99,8 +104,20 @@ public class GlossaryAction implements Serializable {
         return user;
     }
 
-    public String getUsername() {
-        return authenticatedAccount.getUsername();
+    public Permission getUserPermission() {
+        Permission permission = new Permission();
+        boolean canUpdate = false;
+        boolean canInsert = false;
+
+        if(authenticatedAccount != null) {
+            canUpdate = identity.hasPermission("", "glossary-update");
+            canInsert = identity.hasPermission("", "glossary-insert");
+        }
+
+        permission.put("updateGlossary", canUpdate);
+        permission.put("insertGlossary", canInsert);
+
+        return permission;
     }
 
     public List<HLocale> getAvailableLocales() {

@@ -1,8 +1,6 @@
 package org.zanata.rest.editor.service;
 
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -26,7 +24,6 @@ import com.google.common.collect.Collections2;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>

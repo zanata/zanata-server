@@ -60,9 +60,7 @@ function loadLocalesStats() {
 function processLocalesStatistic(serverResponse) {
   _state['locales'] = {};
   _state['localeOptions'] = [];
-
   _state['srcLocale'] = serverResponse['srcLocale'];
-
   resetCache(_state['srcLocale'].count);
 
   _.forEach(serverResponse['transLocale'], function(transLocale) {
@@ -72,6 +70,7 @@ function processLocalesStatistic(serverResponse) {
       label: transLocale.locale.displayName + " - (" + transLocale.count + ")"
     });
   });
+  console.info('processLocalesStatistic done', _state);
   return _state;
 }
 
@@ -79,6 +78,7 @@ function glossaryAPIUrl(srcLocaleId, transLocale) {
   var page = _state['page'], filter = _state['filter'];
 
   var url = Configs.baseUrl + "/glossary/src/" + srcLocaleId;
+
   if(!StringUtils.isEmptyOrNull(transLocale)) {
     url = url + "/trans/" + transLocale;
   }
@@ -98,9 +98,6 @@ function generateSortOrderParam() {
     params.push(param);
   });
 
-  if(_.size(params) > 0) {
-
-  }
   return _.size(params) > 0 ? "&sort=" + params.join() : '';
 }
 
@@ -111,8 +108,9 @@ function loadGlossaryByLocale () {
   var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
 
-  if(!_.isNull(srcLocale)) {
+  if(!_.isUndefined(srcLocale) && !_.isNull(srcLocale)) {
     var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
+
     return new Promise(function(resolve, reject) {
       Request.get(url)
         .set("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -139,6 +137,7 @@ function canAddNewEntry () {
 
 function canUpdateEntry() {
   //rest api to get permission
+  //console.info(Configs.data.permission);
   return true;
 }
 
@@ -293,12 +292,15 @@ function initialise () {
   loadLocalesStats()
     .then(processLocalesStatistic)
     .then(function (newState) {
+      console.info('initialise 1st');
       GlossaryStore.emitChange();
     })
-    .then(loadGlossaryByLocale())
-    .then(processGlossaryList)
-    .then(function (newState) {
-      GlossaryStore.emitChange();
+    .then(function() {
+      loadGlossaryByLocale()
+        .then(processGlossaryList)
+        .then(function (newState) {
+          GlossaryStore.emitChange();
+        });
     });
 }
 

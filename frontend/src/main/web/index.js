@@ -4,6 +4,7 @@ import RootContent from './lib/components/RootContent';
 import Views from './lib/constants/Views.js';
 import Configs from './lib/constants/Configs';
 import StringUtils from './lib/utils/StringUtils';
+import _ from 'lodash';
 import css from './index.css'
 
 var mountNode = document.getElementById('main-content'),
@@ -17,9 +18,11 @@ var mountNode = document.getElementById('main-content'),
 Configs.baseUrl = baseUrl;
 Configs.data = data;
 //append with .json extension in 'dev' environment
-Configs.urlPostfix = dev === null ? '' : '.json?';
+Configs.urlPostfix = _.isUndefined(dev) ? '' : '.json?';
 // see org.zanata.rest.editor.dto.User
 Configs.user = user;
+
+console.info(Configs);
 
 var routes = Views.getRoutes(view);
 

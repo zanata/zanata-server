@@ -116,34 +116,40 @@ var GlossaryDataTable = React.createClass({
     return (<span className='csec'>{label}</span>);
   },
 
-  _renderSourceHeader: function (label) {
-    var key = "src_content",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+  _getSort: function (key) {
+    if(_.isUndefined(this.props.sort[key])) {
+      return null;
+    } else if(this.props.sort[key] === true) {
+      return "ascending";
+    } else {
+      return "descending";
+    }
+  },
 
+  _renderSourceHeader: function (label) {
+    var key = "src_content", asc = this._getSort(key);
     return (<ColumnHeader value={this.props.srcLocale.locale.displayName}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
   _renderPosHeader: function (label) {
-    var key = "part_of_speech",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    var key = "part_of_speech", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 
   _renderDescHeader: function (label) {
-    var key = "desc",
-      asc = !_.isUndefined(this.props.sort[key]) ? this.props.sort[key] : true;
+    var key = "desc", asc = this._getSort(key);
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      ascending={asc}
+      sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
 

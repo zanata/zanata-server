@@ -12,7 +12,7 @@
   <div id="main-content"
     base-url="#{request.contextPath}/rest"
     user="#{glossaryAction.user.getJSON()}"
-    data="{view: 'glossary'}"/>
+    data='{"view": "glossary", "permission": #{glossaryAction.userPermission.getJSON()}}'/>
 
   <script type="text/javascript"
     src="#{request.contextPath}/frontend.bundle.min.js"></script>
