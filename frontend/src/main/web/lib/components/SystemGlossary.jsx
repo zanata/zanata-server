@@ -37,14 +37,14 @@ var SystemGlossary = React.createClass({
     Actions.changeTransLocale(localeId)
   },
 
-  _handleFilterKeyDown: function(event) {
+  _handleFilterKeyDown: function(input, event) {
     if(event.key == 'Enter') {
       Actions.updateFilter(this.state.filter);
     }
   },
 
-  _handleFilterValueChange: function(event) {
-    this.setState({filter: event.target.value});
+  _handleFilterValueChange: function(input, value) {
+    this.setState({filter: value});
   },
 
   _handleFile: function(e) {
@@ -139,16 +139,14 @@ var SystemGlossary = React.createClass({
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
                   <div className='w8'>
-                    <Input value={this.state.filter}
-                      hideLabel
-                      outline
-                      reset
-                      label='Search Glossary'
-                      placeholder="Search Glossary"
+
+                    <TextInput value={this.state.filter}
                       className="w100p pr1&1/2"
+                      placeholder='Search Glossary'
                       id="search"
-                      onKeyDown={this._handleFilterKeyDown}
-                      onChange={this._handleFilterValueChange} />
+                      onKeydownCallback={this._handleFilterKeyDown}
+                      onChangeCallback={this._handleFilterValueChange}/>
+
                   </div>
                 </div>
                 <div className='dfx aic'>

@@ -30,7 +30,9 @@ var ActionCell = React.createClass({
   },
 
   _onChange: function() {
-    this.setState({entry:GlossaryStore.getEntry(this.props.resId)});
+    if (this.isMounted()) {
+      this.setState({entry: GlossaryStore.getEntry(this.props.resId)});
+    }
   },
 
   _handleUpdate: function() {

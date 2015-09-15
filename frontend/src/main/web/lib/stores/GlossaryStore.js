@@ -10,7 +10,7 @@ import StringUtils from '../utils/StringUtils'
 import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
-var SIZE_PER_PAGE = 1000;
+var SIZE_PER_PAGE = 5000;
 
 var _state = {
   canAddNewEntry: false,
@@ -28,6 +28,7 @@ var _state = {
   sort: {
     src_content: true
   },
+  totalCount: 0,
   loading: false
 };
 
@@ -153,7 +154,14 @@ function processGlossaryList(serverResponse) {
   srcLocaleId = _state['srcLocale'].locale.localeId,
     page = _state['page'];
 
+  _state['totalCount'] = serverResponse.totalCount;
+
   var startIndex = ((_state['page'] -1) * SIZE_PER_PAGE);
+
+  for (var i = startIndex; i < _state['totalCount']; i++) {
+    _state['glossaryResId'].push(null);
+  }
+
   if(StringUtils.isEmptyOrNull(transLocaleId) && _state['canAddNewEntry']) {
     var newEntryKey = 'NEW_ENTRY';
     startIndex +=1;
@@ -274,12 +282,13 @@ function uploadFile(data) {
 }
 
 function processDelete(serverResponse) {
-  //show notification?
+  console.info('Glossary entry deleted', serverResponse);
 }
 
 function processSave(serverResponse) {
-  //show notification?
+  console.info('Glossary entry saved', serverResponse);
 }
+
 function initialise () {
   //load permission here
   _state['canAddNewEntry'] = canAddNewEntry();
@@ -297,16 +306,6 @@ function initialise () {
           GlossaryStore.emitChange();
         });
     });
-}
-
-function resetCache(totalCount) {
-  _state['page'] = 1;
-  _state['glossary'] = {};
-  _state['glossaryResId'] = [];
-
-  for (var i = 0; i < totalCount; i++) {
-    _state['glossaryResId'].push(null);
-  }
 }
 
 var GlossaryStore = assign({}, EventEmitter.prototype, {
@@ -344,7 +343,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     switch (action['actionType']) {
       case GlossaryActionTypes.TRANS_LOCALE_SELECTED:
         _state['selectedTransLocale'] = action.data;
-        resetCache(_state['srcLocale'].count);
+        resetCache();
         loadGlossaryByLocale()
           .then(processGlossaryList)
           .then(function (newState) {
@@ -371,12 +370,8 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.UPDATE_FILTER:
         if(_state['filter']  !== action.data) {
           _state['filter'] = action.data;
-          resetCache(_state['srcLocale'].count);
-          loadGlossaryByLocale()
-            .then(processGlossaryList)
-            .then(function (newState) {
-              GlossaryStore.emitChange();
-            });
+          resetCache();
+          initialise();
         }
         break;
       case GlossaryActionTypes.LOAD_GLOSSARY:
@@ -398,7 +393,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
          break;
       case GlossaryActionTypes.UPLOAD_FILE:
         uploadFile(action.data).then(function () {
-          resetCache(_state['srcLocale'].count);
+          resetCache();
           loadGlossaryByLocale()
             .then(processGlossaryList)
             .then(function (newState) {
@@ -415,5 +410,11 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     }
   })
 });
+
+function resetCache(totalCount) {
+  _state['page'] = 1;
+  _state['glossary'] = {};
+  _state['glossaryResId'] = [];
+}
 
 export default GlossaryStore;

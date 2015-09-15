@@ -9,9 +9,9 @@ var GlossaryHelper = {
    */
   generateGlossaryTermDTO: function (data) {
     var term = {};
-    term['content'] = data.content;
+    term['content'] = StringUtils.trim(data.content);
     term['locale'] = data.locale;
-    term['comments'] = data.comment;
+    term['comments'] = StringUtils.trim(data.comment);
     return term;
   },
 
@@ -24,8 +24,8 @@ var GlossaryHelper = {
     glossary['glossaryEntries'] = [];
 
     entry['resId'] = data.resId;
-    entry['pos'] = data.pos;
-    entry['description'] = data.description;
+    entry['pos'] = StringUtils.trim(data.pos);
+    entry['description'] = StringUtils.trim(data.description);
     entry['srcLang'] = data.srcTerm.locale;
     entry['sourceReference'] = data.srcTerm.reference;
     entry['glossaryTerms'] = [];

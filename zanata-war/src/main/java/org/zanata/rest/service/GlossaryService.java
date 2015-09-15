@@ -170,8 +170,11 @@ public class GlossaryService implements GlossaryResource {
         List<HGlossaryEntry> hGlosssaryEntries =
             glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage,
                 filter, convertToSortField(fields));
+        int totalCount =
+            glossaryDAO.getEntriesCount(srcLocale, filter);
 
         Glossary glossary = new Glossary();
+        glossary.setTotalCount(totalCount);
 
         transferEntriesLocaleResource(hGlosssaryEntries, glossary, transLocale);
 
@@ -193,8 +196,10 @@ public class GlossaryService implements GlossaryResource {
         List<HGlossaryEntry> hGlosssaryEntries =
                 glossaryDAO.getEntriesByLocale(srcLocaleId, offset,
                     sizePerPage, filter, convertToSortField(fields));
-
+        int totalCount =
+            glossaryDAO.getEntriesCount(srcLocaleId, filter);
         Glossary glossary = new Glossary();
+        glossary.setTotalCount(totalCount);
 
         //filter out all terms other than source term
         transferEntriesLocaleResource(hGlosssaryEntries, glossary, srcLocaleId);
