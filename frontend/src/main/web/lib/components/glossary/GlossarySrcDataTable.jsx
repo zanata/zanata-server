@@ -3,7 +3,7 @@ import {PureRenderMixin} from '../../../node_modules/react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
-import { Icon } from 'zanata-ui';
+import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
 import SourceActionCell from './SourceActionCell'
@@ -175,7 +175,7 @@ var GlossarySrcDataTable = React.createClass({
       var title = this._generateTitle(term)
 
       if (readOnly) {
-        return <span title={title} key={key}>{term.content}</span>
+        return (<span title={title} key={key}>{term.content}</span>)
       } else {
         return (<TextInput value={term.content}
           placeholder='enter a new term'
@@ -403,9 +403,9 @@ var GlossarySrcDataTable = React.createClass({
 
   _rowClassNameGetter: function (rowIndex) {
     if(rowIndex == this.state.focusedRow) {
-      return 'bgcsec20';
+      return 'bgcsec30a';
     } else if(rowIndex == this.state.hoveredRow) {
-      return 'bgcsec10';
+      return 'bgcsec20a';
     }
   },
 

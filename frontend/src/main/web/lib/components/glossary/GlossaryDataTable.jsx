@@ -334,8 +334,18 @@ var GlossaryDataTable = React.createClass({
 
   _rowClassNameGetter: function (rowIndex) {
     if(rowIndex == this.state.focusedRow) {
-      return 'bgcsec10';
+      return 'bgcsec30a';
+    } else if(rowIndex == this.state.hoveredRow) {
+      return 'bgcsec20a';
     }
+  },
+
+  _onRowMouseEnter: function (event, rowIndex) {
+    this.setState({hoveredRow: rowIndex});
+  },
+
+  _onRowMouseLeave: function (event, rowIndex) {
+    this.setState({hoveredRow: -1});
   },
 
   _onRowClick: function (event, rowIndex) {
@@ -361,6 +371,8 @@ var GlossaryDataTable = React.createClass({
       onRowClick={this._onRowClick}
       rowHeight={this.CELL_HEIGHT}
       rowGetter={this._rowGetter}
+      onRowMouseEnter={this._onRowMouseEnter}
+      onRowMouseLeave={this._onRowMouseLeave}
       rowClassNameGetter={this._rowClassNameGetter}
       rowsCount={this.props.totalCount}
       width={this.state.tbl_width}

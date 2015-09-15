@@ -8,11 +8,21 @@ var GlossaryHelper = {
    * @param data
    */
   generateGlossaryTermDTO: function (data) {
-    var term = {};
-    term['content'] = StringUtils.trim(data.content);
-    term['locale'] = data.locale;
-    term['comments'] = StringUtils.trim(data.comment);
-    return term;
+    var content = StringUtils.trim(data.content),
+      locale = data.locale,
+      comments = StringUtils.trim(data.comment);
+
+    if(StringUtils.isEmptyOrNull(content) &&
+        StringUtils.isEmptyOrNull(locale) &&
+        StringUtils.isEmptyOrNull(comments)) {
+      return null;
+    } else {
+      var term = {};
+      term['content'] = content;
+      term['locale'] = locale;
+      term['comments'] = comments;
+      return term;
+    }
   },
 
   /**
@@ -31,10 +41,14 @@ var GlossaryHelper = {
     entry['glossaryTerms'] = [];
 
     var srcTerm = this.generateGlossaryTermDTO(data.srcTerm);
-    entry['glossaryTerms'].push(srcTerm);
+    if(!_.isNull(srcTerm)) {
+      entry['glossaryTerms'].push(srcTerm);
+    }
 
     var transTerm = this.generateGlossaryTermDTO(data.transTerm);
-    entry['glossaryTerms'].push(transTerm);
+    if(!_.isNull(transTerm)) {
+      entry['glossaryTerms'].push(transTerm);
+    }
 
     glossary['glossaryEntries'].push(entry);
     return glossary;

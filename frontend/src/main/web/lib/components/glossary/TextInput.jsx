@@ -1,6 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import {Input} from 'zanata-ui';
+import {Input, Tooltip, OverlayTrigger} from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils'
 
 var TextInput = React.createClass({
@@ -65,27 +65,23 @@ var TextInput = React.createClass({
   },
 
   render: function() {
-    //return (<Input type="text" placeholder={this.props.placeholder}
-    //  label={this.props.field}
-    //  hideLabel
-    //  outline
-    //  reset
-    //  className="db w100p"
-    //  onFocus={this._handleOnFocus}
-    //  onKeyDown={this._handleKeyDown}
-    //  onBlur={this._handleOnBlur}
-    //  onChange={this._handleValueChange}
-    //  value={this.state.value}/>)
-
-
-    return (<input type="text" placeholder={this.props.placeholder}
+    var inputField = (<input type="text" placeholder={this.props.placeholder}
       label={this.props.field}
       className="db w100p"
       onFocus={this._handleOnFocus}
       onKeyDown={this._handleKeyDown}
       onBlur={this._handleOnBlur}
       onChange={this._handleValueChange}
-      value={this.state.value}/>)
+      value={this.state.value}/>);
+
+    if(!StringUtils.isEmptyOrNull(this.props.title)) {
+      var tooltip = <Tooltip>{this.props.title}</Tooltip>;
+      return (<OverlayTrigger placement='left' overlay={tooltip}>
+        {inputField}
+      </OverlayTrigger>);
+    } else {
+      return (<div>{inputField}</div>);
+    }
   }
 });
 

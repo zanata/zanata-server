@@ -210,17 +210,17 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response put(Glossary glossary) {
         identity.checkPermission("", "glossary-insert");
-
         // must be a create operation
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
-        response = Response.created(uri.getAbsolutePath());
+        List<HGlossaryEntry> entry =
+                glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
+        Glossary savedGlossary = new Glossary();
+        transferEntriesResource(entry, savedGlossary);
 
-        glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
-
-        return response.build();
+        return Response.ok(savedGlossary).build();
     }
 
     @Override
@@ -314,7 +314,7 @@ public class GlossaryService implements GlossaryResource {
             glossaryDAO.makeTransient(entry);
         }
         glossaryDAO.flush();
-        return Response.ok().build();
+        return Response.ok(resId).build();
     }
 
     @Override

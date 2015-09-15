@@ -71,19 +71,20 @@ public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
 
             Map<Long, String> entryLocaleMap = new HashMap<Long, String>();
 
-            String entryLocaleSql = "select entry.id, entry.pos, locale.localeId, term.content from " +
+            String entryLocaleSql = "select entry.id, entry.pos, entry.description, locale.localeId, term.content from " +
                 "HGlossaryEntry entry, HGlossaryTerm term, HLocale locale  " +
                 "where term.glossaryEntryId = entry.id and term.localeId = locale.id";
             ResultSet rs1 = stmt.executeQuery(entryLocaleSql);
             while (rs1.next()) {
                 long entryId = rs1.getLong(1);
                 String pos = rs1.getString(2);
-                String localeId = rs1.getString(3);
-                String content = rs1.getString(4);
+                String desc = rs1.getString(3);
+                String localeId = rs1.getString(4);
+                String content = rs1.getString(5);
 
                 String resId =
                         GlossaryFileServiceImpl.getResId(new LocaleId(localeId),
-                            content, pos);
+                            content, pos, desc);
                 entryLocaleMap.put(entryId, resId);
             }
 
