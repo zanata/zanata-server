@@ -78,6 +78,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                         + fileName);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ZanataServiceException("Unsupported Glossary file: "
                     + fileName);
         }
@@ -129,7 +130,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         glossaryDAO.clear();
     }
 
-    public HGlossaryEntry getOrCreateGlossaryEntry(GlossaryEntry from) {
+    private HGlossaryEntry getOrCreateGlossaryEntry(GlossaryEntry from) {
 
         LocaleId srcLocale = from.getSrcLang();
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
@@ -150,6 +151,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             HLocale srcHLocale = localeServiceImpl.getByLocaleId(srcLocale);
             hGlossaryEntry.setSrcLocale(srcHLocale);
             hGlossaryEntry.setResId(resId);
+            hGlossaryEntry.setSourceRef(from.getSourceReference());
         } else {
             // check if field in glossary entry has been updated and need for
             // new resId
@@ -218,9 +220,9 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     public static String getResId(LocaleId locale, String content, String pos,
             String description) {
-        // String hashBase = locale + SEPARATOR + content + SEPARATOR + pos +
-        // SEPARATOR + description;
-        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos;
+        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos +
+                SEPARATOR + description;
+//        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos;
         return HashUtil.generateHash(hashBase);
     }
 
