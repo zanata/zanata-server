@@ -6,6 +6,7 @@ var ColumnHeader = React.createClass({
   propTypes: {
     sort: React.PropTypes.oneOf(['ascending', 'descending', null]),
     value: React.PropTypes.string.isRequired,
+    allowSort: React.PropTypes.bool.isRequired,
     field: React.PropTypes.oneOf(['src_content', 'part_of_speech', 'desc', 'trans_count']),
     onClickCallback: React.PropTypes.func
   },
@@ -19,18 +20,20 @@ var ColumnHeader = React.createClass({
   },
 
   _handleOnClick: function (event) {
-    var asc = this.state.sort === "ascending" ? "descending" : "ascending";
-    this.setState({sort: asc});
+    if(this.props.allowSort === true) {
+      var asc = this.state.sort === "ascending" ? "descending" : "ascending";
+      this.setState({sort: asc});
 
-    if(this.props.onClickCallback) {
-      this.props.onClickCallback(this.props.field, asc === 'ascending');
+      if(this.props.onClickCallback) {
+        this.props.onClickCallback(this.props.field, asc === 'ascending');
+      }
     }
   },
 
   render: function() {
     var sortIcon = null;
 
-    if(this.state.sort !== null) {
+    if(this.state.sort !== null && (this.props.allowSort === true)) {
       var asc = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
       sortIcon = (<Icon name={asc}/>);
     }

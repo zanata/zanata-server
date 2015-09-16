@@ -127,6 +127,7 @@ var GlossarySrcDataTable = React.createClass({
     return (<ColumnHeader value={label}
       field={key}
       key={key}
+      allowSort={true}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
@@ -136,6 +137,7 @@ var GlossarySrcDataTable = React.createClass({
     return (<ColumnHeader value={label}
       field={key}
       key={key}
+      allowSort={true}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
@@ -145,6 +147,7 @@ var GlossarySrcDataTable = React.createClass({
     return (<ColumnHeader value={label}
       field={key}
       key={key}
+      allowSort={true}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
@@ -154,6 +157,7 @@ var GlossarySrcDataTable = React.createClass({
     return (<ColumnHeader value={label}
       field={key}
       key={key}
+      allowSort={true}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },

@@ -131,6 +131,7 @@ var GlossaryDataTable = React.createClass({
     return (<ColumnHeader value={this.props.srcLocale.locale.displayName}
       field={key}
       key={key}
+      allowSort={true}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
@@ -141,6 +142,7 @@ var GlossaryDataTable = React.createClass({
       field={key}
       key={key}
       sort={asc}
+      allowSort={true}
       onClickCallback={this._onHeaderClick}/>);
   },
 
@@ -150,6 +152,7 @@ var GlossaryDataTable = React.createClass({
       field={key}
       key={key}
       sort={asc}
+      allowSort={true}
       onClickCallback={this._onHeaderClick}/>);
   },
 
