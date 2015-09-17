@@ -78,8 +78,7 @@ var SourceActionCell = React.createClass({
         }
       } else {
         var deleteButton = (<button className='cdanger pv1/4 ph1/2 mr1/2' onClick={self._handleDelete}>
-          <Icon name="trash"/>
-          <span className='sronly'>Delete</span>
+          <Icon name="trash"/> <span>Delete</span>
         </button>);
         if(isSrcModified) {
           return (<div>

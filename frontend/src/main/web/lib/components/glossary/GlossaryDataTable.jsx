@@ -72,7 +72,7 @@ var GlossaryDataTable = React.createClass({
         displayName: React.PropTypes.string.isRequired,
         alias: React.PropTypes.string.isRequired
       }).isRequired,
-      count: React.PropTypes.number.isRequired
+      numberOfTerms: React.PropTypes.number.isRequired
     }).isRequired,
     selectedTransLocale: React.PropTypes.string.isRequired,
     totalCount: React.PropTypes.number.isRequired

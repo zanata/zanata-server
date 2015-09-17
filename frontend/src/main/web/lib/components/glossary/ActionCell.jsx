@@ -1,6 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import { Icon } from 'zanata-ui';
+import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import GlossaryStore from '../../stores/GlossaryStore';
@@ -51,8 +51,21 @@ var ActionCell = React.createClass({
     if (this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
-      var isTransModified = this.state.entry.modified.trans,
-        commentButton = (<button className='cpri mr1/2'><Icon name='comment'></Icon></button>);
+      var isTransModified = this.state.entry.modified.trans;
+
+      var tooltip = (<Tooltip title="Comment">
+        <textarea className="p1/4 w100p"/>
+        <div className="mt1/2">
+          <button className="cpri mr1/2">Cancel</button>
+          <button className="cwhite bgcpri ph1/2 bdrs">Update Comment</button>
+        </div>
+
+      </Tooltip>);
+      var commentButton = (
+      <OverlayTrigger placement='top' trigger='click' overlay={tooltip} rootClose>
+        <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
+      </OverlayTrigger>
+      );
 
       if(isTransModified) {
         return (

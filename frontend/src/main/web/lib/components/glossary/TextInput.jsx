@@ -76,7 +76,7 @@ var TextInput = React.createClass({
 
     if(!StringUtils.isEmptyOrNull(this.props.title)) {
       var tooltip = <Tooltip>{this.props.title}</Tooltip>;
-      return (<OverlayTrigger placement='left' overlay={tooltip}>
+      return (<OverlayTrigger placement='top' overlay={tooltip}>
         {inputField}
       </OverlayTrigger>);
     } else {
