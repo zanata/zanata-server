@@ -46,6 +46,7 @@
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
     <lucene.version>3.6.2</lucene.version>
     <org.mock-server.version>3.9.17</org.mock-server.version>
+    <required.java>1.8</required.java>
 
     <!--
     Not used yet.
@@ -916,6 +917,12 @@
       </dependency>
 
       <dependency>
+        <groupId>net.sourceforge.streamsupport</groupId>
+        <artifactId>streamsupport</artifactId>
+        <version>1.3</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-search-orm</artifactId>
         <version>${hibernate.search.version}</version>
@@ -1458,6 +1465,28 @@
                   unless:set="cargo.installation" />
               </target>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>net.orfjackal.retrolambda</groupId>
+        <artifactId>retrolambda-maven-plugin</artifactId>
+        <version>2.0.2</version>
+        <executions>
+          <execution>
+            <id>process-classes</id>
+            <phase>process-classes</phase>
+              <goals>
+              <goal>process-main</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>process-test-classes</id>
+            <phase>process-test-classes</phase>
+              <goals>
+              <goal>process-test</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
