@@ -9,6 +9,7 @@ import _ from 'lodash';
 var ActionCell = React.createClass({
   propTypes: {
     resId: React.PropTypes.string.isRequired,
+    info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     onCancel: React.PropTypes.func
   },
@@ -53,16 +54,21 @@ var ActionCell = React.createClass({
     } else {
       var isTransModified = this.state.entry.modified.trans;
 
-      var tooltip = (<Tooltip title="Comment">
+      var infoTooltip = <Tooltip>{this.props.info}</Tooltip>;
+      var info = (<OverlayTrigger placement='top' trigger='click' rootClose overlay={infoTooltip}>
+        <Icon name="info"/>
+      </OverlayTrigger>);
+
+      var commentTooltip = (<Tooltip title="Comment">
         <textarea className="p1/4 w100p"/>
         <div className="mt1/2">
           <button className="cpri mr1/2">Cancel</button>
           <button className="cwhite bgcpri ph1/2 bdrs">Update Comment</button>
         </div>
-
       </Tooltip>);
+
       var commentButton = (
-      <OverlayTrigger placement='top' trigger='click' overlay={tooltip} rootClose>
+      <OverlayTrigger placement='top' trigger='click' overlay={commentTooltip} rootClose>
         <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
       </OverlayTrigger>
       );
@@ -70,13 +76,13 @@ var ActionCell = React.createClass({
       if(isTransModified) {
         return (
           <div>
-            {commentButton}
+            {info} {commentButton}
             <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2'onClick={self._handleUpdate}>Update</button>
             <button className='cpri' onClick={self._handleCancel}>Cancel</button>
           </div>
         );
       } else {
-        return (<div>{commentButton}</div>);
+        return (<div>{info} {commentButton}</div>);
       }
     }
   }

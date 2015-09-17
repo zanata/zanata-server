@@ -1,6 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import { Icon } from 'zanata-ui';
+import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import GlossaryStore from '../../stores/GlossaryStore';
@@ -9,6 +9,7 @@ import _ from 'lodash';
 var SourceActionCell = React.createClass({
   propTypes: {
     resId: React.PropTypes.string.isRequired,
+    info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     srcLocaleId: React.PropTypes.string.isRequired,
     newEntryCell: React.PropTypes.bool,
@@ -67,9 +68,16 @@ var SourceActionCell = React.createClass({
       var cancelButton =
         (<button className='cpri' onClick={self._handleCancel}>Cancel</button>);
 
+      var tooltip = <Tooltip>{this.props.info}</Tooltip>;
+      var info = (<OverlayTrigger placement='top' trigger='click' rootClose overlay={tooltip}>
+        <Icon name="info"/>
+      </OverlayTrigger>);
+
+
       if (newEntryCell && canAddNewEntry) {
         if(isSrcModified) {
           return (<div>
+            {info}
             <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave}>Save</button>
             {cancelButton}
           </div>)
@@ -82,12 +90,13 @@ var SourceActionCell = React.createClass({
         </button>);
         if(isSrcModified) {
           return (<div>
+            {info}
             <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate}>Update</button>
             {cancelButton}
             {deleteButton}
             </div>)
         } else {
-          return (<div>{deleteButton}</div>)
+          return (<div>{info} {deleteButton}</div>)
         }
       }
     }

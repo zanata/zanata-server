@@ -4,8 +4,7 @@ import GlossaryStore from '../stores/GlossaryStore';
 import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
 import { Input, Icons, Icon, Select } from 'zanata-ui'
-import GlossaryDataTable from './glossary/GlossaryDataTable'
-import GlossarySrcDataTable from './glossary/GlossarySrcDataTable'
+import DataTable from './glossary/DataTable'
 import TextInput from './glossary/TextInput'
 import { Loader } from 'zanata-ui'
 import _ from 'lodash';
@@ -37,14 +36,10 @@ var SystemGlossary = React.createClass({
     Actions.changeTransLocale(localeId)
   },
 
-  _handleFilterKeyDown: function(input, event) {
+  _handleFilterKeyUp: function(input, event) {
     if(event.key == 'Enter') {
-      Actions.updateFilter(this.state.filter);
+      Actions.updateFilter(input.state.value);
     }
-  },
-
-  _handleFilterValueChange: function(input, value) {
-    this.setState({filter: value});
   },
 
   _handleFile: function(e) {
@@ -73,36 +68,19 @@ var SystemGlossary = React.createClass({
   },
 
   render: function() {
-    var contents = null, count = 0,
+    var count = 0,
       selectedTransLocale = this.state.selectedTransLocale;
 
-    if(selectedTransLocale) {
-      contents = (
-        <GlossaryDataTable
-          glossaryData={this.state.glossary}
-          glossaryResId={this.state.glossaryResId}
-          totalCount={this.state.glossaryResId.length}
-          canAddNewEntry={this.state.canAddNewEntry}
-          canUpdateEntry={this.state.canUpdateEntry}
-          user={Configs.user}
-          sort={this.state.sort}
-          srcLocale={this.state.srcLocale}
-          selectedTransLocale={selectedTransLocale}/>
-      );
-    } else {
-      contents = (
-        <GlossarySrcDataTable
-          glossaryData={this.state.glossary}
-          glossaryResId={this.state.glossaryResId}
-          totalCount={this.state.glossaryResId.length}
-          canAddNewEntry={this.state.canAddNewEntry}
-          canUpdateEntry={this.state.canUpdateEntry}
-          user={Configs.user}
-          sort={this.state.sort}
-          srcLocale={this.state.srcLocale}/>
-      );
-    }
-
+    var contents = (<DataTable
+      glossaryData={this.state.glossary}
+      glossaryResId={this.state.glossaryResId}
+      totalCount={this.state.glossaryResId.length}
+      canAddNewEntry={this.state.canAddNewEntry}
+      canUpdateEntry={this.state.canUpdateEntry}
+      user={Configs.user}
+      sort={this.state.sort}
+      srcLocale={this.state.srcLocale}
+      selectedTransLocale={selectedTransLocale}/>);
 
     if(this.state.srcLocale) {
       count = this.state.srcLocale.numberOfTerms;
@@ -139,14 +117,11 @@ var SystemGlossary = React.createClass({
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
                   <div className='w8'>
-
                     <TextInput value={this.state.filter}
                       className="w100p pr1&1/2"
                       placeholder='Search Glossary'
                       id="search"
-                      onKeydownCallback={this._handleFilterKeyDown}
-                      onChangeCallback={this._handleFilterValueChange}/>
-
+                      onKeydownCallback={this._handleFilterKeyUp}/>
                   </div>
                 </div>
                 <div className='dfx aic'>

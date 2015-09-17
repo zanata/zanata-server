@@ -1,17 +1,16 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import {Input, Tooltip, OverlayTrigger} from 'zanata-ui';
+import {Input} from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils'
 
 var TextInput = React.createClass({
   propTypes: {
     value: React.PropTypes.string,
     id: React.PropTypes.string.isRequired,
-    resId: React.PropTypes.string.isRequired,
-    field: React.PropTypes.string.isRequired,
+    resId: React.PropTypes.string,
+    field: React.PropTypes.string,
     placeholder: React.PropTypes.string,
     rowIndex: React.PropTypes.number,
-    title: React.PropTypes.string,
     onChangeCallback: React.PropTypes.func,
     onKeydownCallback: React.PropTypes.func,
     onFocusCallback: React.PropTypes.func,
@@ -34,7 +33,7 @@ var TextInput = React.createClass({
     this._setValue(event.target.value);
   },
 
-  _handleKeyDown: function (event) {
+  _handleKeyUp: function (event) {
     if(this.props.onKeydownCallback) {
       this.props.onKeydownCallback(this, event);
     }
@@ -65,23 +64,14 @@ var TextInput = React.createClass({
   },
 
   render: function() {
-    var inputField = (<input type="text" placeholder={this.props.placeholder}
+    return (<input type="text" placeholder={this.props.placeholder}
       label={this.props.field}
       className="db w100p"
       onFocus={this._handleOnFocus}
-      onKeyDown={this._handleKeyDown}
+      onKeyUp={this._handleKeyUp}
       onBlur={this._handleOnBlur}
       onChange={this._handleValueChange}
       value={this.state.value}/>);
-
-    if(!StringUtils.isEmptyOrNull(this.props.title)) {
-      var tooltip = <Tooltip>{this.props.title}</Tooltip>;
-      return (<OverlayTrigger placement='top' overlay={tooltip}>
-        {inputField}
-      </OverlayTrigger>);
-    } else {
-      return (<div>{inputField}</div>);
-    }
   }
 });
 

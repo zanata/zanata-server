@@ -7,7 +7,7 @@ var ColumnHeader = React.createClass({
     sort: React.PropTypes.oneOf(['ascending', 'descending', null]),
     value: React.PropTypes.string.isRequired,
     allowSort: React.PropTypes.bool.isRequired,
-    field: React.PropTypes.oneOf(['src_content', 'part_of_speech', 'desc', 'trans_count']),
+    field: React.PropTypes.oneOf(['src_content', 'trans_content', 'part_of_speech', 'desc', 'trans_count']),
     onClickCallback: React.PropTypes.func
   },
 
@@ -33,11 +33,15 @@ var ColumnHeader = React.createClass({
   render: function() {
     var sortIcon = null;
 
-    if(this.state.sort !== null && (this.props.allowSort === true)) {
-      var asc = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
-      sortIcon = (<Icon name={asc}/>);
+    if(this.props.allowSort === true) {
+      if(this.state.sort !== null) {
+        var asc = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
+        sortIcon = (<Icon name={asc}/>);
+      }
+      return (<button className='csec fwsb' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>);
+    } else {
+      return (<span className='csec'>{this.props.value}</span>)
     }
-    return (<button className='csec fwsb' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>);
   }
 
 });

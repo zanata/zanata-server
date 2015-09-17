@@ -1,63 +1,50 @@
 import React from 'react';
-import {PureRenderMixin} from '../../../node_modules/react/addons';
+import {PureRenderMixin} from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
-import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import TextInput from './TextInput';
 import LoadingCell from './LoadingCell'
+import ActionCell from './ActionCell'
 import SourceActionCell from './SourceActionCell'
 import ColumnHeader from './ColumnHeader'
 import _ from 'lodash';
 
-
-var GlossarySrcDataTable = React.createClass({
+var DataTable = React.createClass({
   ENTRY: {
     SRC: {
       col: 1,
-      field: 'srcTerm.content'
+      field: 'srcTerm.content',
+      sort_field: 'src_content'
     },
     TRANS: {
       col: 2,
-      field: 'transTerm.content'
+      field: 'transTerm.content',
+      sort_field: 'trans_content'
     },
     POS: {
       col: 3,
-      field: 'pos'
+      field: 'pos',
+      sort_field: 'part_of_speech'
     },
     DESC: {
       col: 4,
-      field: 'description'
+      field: 'description',
+      sort_field: 'desc'
+    },
+    TRANS_COUNT: {
+      col: 5,
+      field: 'trans_count',
+      sort_field: 'trans_count'
     }
   },
   CELL_HEIGHT: 48,
+
   propTypes: {
     glossaryData: React.PropTypes.object.isRequired,
     glossaryResId: React.PropTypes.arrayOf(
       React.PropTypes.arrayOf(React.PropTypes.string)
     ),
-    //glossaryData: React.PropTypes.arrayOf(
-    //  React.PropTypes.shape({
-    //      resId: React.PropTypes.string.isRequired,
-    //      pos: React.PropTypes.string,
-    //      description: React.PropTypes.string,
-    //      srcTerm: React.PropTypes.shape({
-    //        content: React.PropTypes.string.isRequired,
-    //        locale: React.PropTypes.string.isRequired,
-    //        reference: React.PropTypes.string,
-    //        comment: React.PropTypes.string,
-    //        lastModifiedDate: React.PropTypes.string,
-    //        lastModifiedBy: React.PropTypes.string
-    //      }).isRequired,
-    //      transTerm: React.PropTypes.shape({
-    //        content: React.PropTypes.string.isRequired,
-    //        locale: React.PropTypes.string.isRequired,
-    //        comment: React.PropTypes.string,
-    //        lastModifiedDate: React.PropTypes.string,
-    //        lastModifiedBy: React.PropTypes.string
-    //      }).isRequired
-    //    })
-    //).isRequired,
     canAddNewEntry: React.PropTypes.bool.isRequired,
     canUpdateEntry: React.PropTypes.bool.isRequired,
     user: React.PropTypes.shape({
@@ -65,7 +52,7 @@ var GlossarySrcDataTable = React.createClass({
       email: React.PropTypes.string,
       name: React.PropTypes.string,
       imageUrl: React.PropTypes.string,
-      languageTeams: React.PropTypes.string,
+      languageTeams: React.PropTypes.string
     }),
     srcLocale: React.PropTypes.shape({
       locale: React.PropTypes.shape({
@@ -75,23 +62,24 @@ var GlossarySrcDataTable = React.createClass({
       }).isRequired,
       numberOfTerms: React.PropTypes.number.isRequired
     }),
+    selectedTransLocale: React.PropTypes.string,
     totalCount: React.PropTypes.number.isRequired
   },
 
   mixins: [PureRenderMixin],
 
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       tbl_width: window.innerWidth - this.CELL_HEIGHT,
       tbl_height: window.innerHeight - 166,
-      row_height: 48,
-      header_height: 48,
+      row_height: this.CELL_HEIGHT,
+      header_height: this.CELL_HEIGHT,
       inputFields: {},
       timeout: null
-    };
+    }
   },
 
-  _generateTitle: function(term) {
+  _generateTermInfo: function(term) {
     var title = "";
     if(!_.isUndefined(term) && !_.isNull(term)) {
       if (!StringUtils.isEmptyOrNull(term.lastModifiedBy)
@@ -104,6 +92,9 @@ var GlossarySrcDataTable = React.createClass({
           title += " " + term.lastModifiedDate;
         }
       }
+    }
+    if(StringUtils.isEmptyOrNull(title)) {
+      title = "No information available";
     }
     return title;
   },
@@ -123,41 +114,35 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderSourceHeader: function (label) {
-    var key = "src_content", asc = this._getSort(key);
-    return (<ColumnHeader value={label}
-      field={key}
-      key={key}
-      allowSort={true}
-      sort={asc}
-      onClickCallback={this._onHeaderClick}/>);
-  },
-
-  _renderPosHeader: function (label) {
-    var key = "part_of_speech", asc = this._getSort(key);
-    return (<ColumnHeader value={label}
-      field={key}
-      key={key}
-      allowSort={true}
-      sort={asc}
-      onClickCallback={this._onHeaderClick}/>);
-  },
-
-  _renderDescHeader: function (label) {
-    var key = "desc", asc = this._getSort(key);
-    return (<ColumnHeader value={label}
-      field={key}
-      key={key}
-      allowSort={true}
-      sort={asc}
-      onClickCallback={this._onHeaderClick}/>);
+    var key = this.ENTRY.SRC.sort_field, asc = this._getSort(key);
+    return this._renderHeader(label, key, asc, true);
   },
 
   _renderTransHeader: function (label) {
-    var key = "trans_count", asc = this._getSort(key);
+    var key = this.ENTRY.TRANS.sort_field, asc = null;
+    return this._renderHeader(label, key, asc, false);
+  },
+
+  _renderPosHeader: function (label) {
+    var key = this.ENTRY.POS.sort_field, asc = this._getSort(key);
+    return this._renderHeader(label, key, asc, true);
+  },
+
+  _renderDescHeader: function (label) {
+    var key = this.ENTRY.DESC.sort_field, asc = this._getSort(key);
+    return this._renderHeader(label, key, asc, true);
+  },
+
+  _renderTransCountHeader: function (label) {
+    var key = this.ENTRY.TRANS_COUNT.sort_field, asc = this._getSort(key);
+    return this._renderHeader(label, key, asc, true);
+  },
+
+  _renderHeader: function (label, key, asc, allowSort) {
     return (<ColumnHeader value={label}
       field={key}
       key={key}
-      allowSort={true}
+      allowSort={allowSort}
       sort={asc}
       onClickCallback={this._onHeaderClick}/>);
   },
@@ -167,7 +152,7 @@ var GlossarySrcDataTable = React.createClass({
   },
 
   _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
-                              columnData, width) {
+                               columnData, width) {
     var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId)
 
     if (resId === null) {
@@ -175,15 +160,13 @@ var GlossarySrcDataTable = React.createClass({
     } else {
       var entry = this._getGlossaryEntry(resId)
       var term = entry.srcTerm
-      var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry)
-      var title = this._generateTitle(term)
+      var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry) || this._isTranslationSelected();
 
       if (readOnly) {
-        return (<span title={title} key={key}>{term.content}</span>)
+        return (<span key={key}>{term.content}</span>)
       } else {
         return (<TextInput value={term.content}
           placeholder='enter a new term'
-          title={title}
           id={key}
           rowIndex={rowIndex}
           resId={resId}
@@ -196,6 +179,33 @@ var GlossarySrcDataTable = React.createClass({
     }
   },
 
+  _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
+                             columnData, width) {
+    var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
+    if(resId === null) {
+      return (<LoadingCell key={key}/>);
+    } else {
+      var entry = this._getGlossaryEntry(resId),
+        term = entry.transTerm,
+        title = this._generateTermInfo(term),
+        readOnly = !this.props.canUpdateEntry;
+
+      if(readOnly) {
+        return <span key={key}>{term.content}</span>;
+      } else {
+        return (<TextInput value={term.content}
+          placeholder="enter a translation"
+          id={key}
+          resId={resId}
+          key={key}
+          field={this.ENTRY.TRANS.field}
+          onFocusCallback={this._onInputFocus}
+          onBlurCallback={this._onInputBlur}
+          onChangeCallback={this._onValueChange}/>);
+      }
+    }
+  },
+
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     var key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
@@ -203,14 +213,14 @@ var GlossarySrcDataTable = React.createClass({
       return (<LoadingCell key={key}/>);
     } else {
       var entry = this._getGlossaryEntry(resId),
-        readOnly = !this.props.canUpdateEntry;
+        readOnly = !this.props.canUpdateEntry || this._isTranslationSelected();
+
       if(readOnly) {
         return <span key={key}>{entry.pos}</span>;
       } else {
         return (<TextInput value={entry.pos}
           placeholder="enter part of speech"
           rowIndex={rowIndex}
-          title={entry.pos}
           id={key}
           resId={resId}
           key={key}
@@ -230,14 +240,14 @@ var GlossarySrcDataTable = React.createClass({
       return (<LoadingCell key={key}/>);
     } else {
       var entry = this._getGlossaryEntry(resId),
-        readOnly = !this.props.canUpdateEntry;
+        readOnly = !this.props.canUpdateEntry || this._isTranslationSelected();
+
       if (readOnly) {
         return <span key={key}>{entry.description}</span>;
       } else {
         return (<TextInput value={entry.description}
           placeholder="enter description"
           rowIndex={rowIndex}
-          title={entry.description}
           id={key}
           resId={resId}
           key={key}
@@ -249,7 +259,7 @@ var GlossarySrcDataTable = React.createClass({
     }
   },
 
-  _renderTransCell: function (resId, cellDataKey, rowData, rowIndex,
+  _renderTransCountCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
     var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
 
@@ -266,45 +276,43 @@ var GlossarySrcDataTable = React.createClass({
     }
   },
 
-  _onValueChange: function(inputField, value) {
-    Actions.updateEntryField(inputField.props.resId, inputField.props.field, value);
-    this.state.inputFields[inputField.props.id] = inputField;
-  },
-
-  /**
-   * restore glossary entry to original value
-   * @param resId
-   * @param rowIndex
-   */
-  _handleCancel: function (resId, rowIndex) {
-    var self = this;
-    _.forOwn(this.ENTRY, function(value, key) {
-      var key = self._generateKey(value.col, rowIndex, resId),
-        input = self.state.inputFields[key];
-      if(!_.isUndefined(input)) {
-        input.reset();
-      }
-    });
-    this.setState({focusedRow: -1});
-  },
-
-  _renderActions: function (resId, cellDataKey, rowData, rowIndex,
+  _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var isNewEntryCell = rowIndex === 0;
+    var self = this;
+
     if(resId === null) {
       return (<LoadingCell/>);
-    } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
+    } else if(!self.props.canUpdateEntry && !self.props.canAddNewEntry) {
       return (<div></div>);
+    }
+
+    var entry = this._getGlossaryEntry(resId);
+
+    if(self._isTranslationSelected()) {
+      var term = entry.transTerm,
+        info = this._generateTermInfo(term);
+
+      return (
+        <ActionCell info={info} resId={resId} rowIndex={rowIndex}onCancel={self._handleCancel}/>
+      );
     } else {
+      var isNewEntryCell = rowIndex === 0,
+        info = this._generateTermInfo(entry.srcTerm);
+
       return (
         <SourceActionCell resId={resId} rowIndex={rowIndex}
-          srcLocaleId={this.props.srcLocale.locale.localeId}
+          srcLocaleId={self.props.srcLocale.locale.localeId}
           newEntryCell={isNewEntryCell}
-          canUpdateEntry={this.props.canUpdateEntry}
-          canAddNewEntry={this.props.canAddNewEntry}
-          onCancel={this._handleCancel}/>
+          info={info}
+          canUpdateEntry={self.props.canUpdateEntry}
+          canAddNewEntry={self.props.canAddNewEntry}
+          onCancel={self._handleCancel}/>
       );
     }
+  },
+
+  _isTranslationSelected: function () {
+    return !StringUtils.isEmptyOrNull(this.props.selectedTransLocale);
   },
 
   _getSourceColumn: function() {
@@ -319,7 +327,17 @@ var GlossarySrcDataTable = React.createClass({
       flexGrow={1}
       cellRenderer={this._renderSourceCell}
       headerRenderer={this._renderSourceHeader}
-    />);
+      />);
+  },
+
+  _getTransColumn: function() {
+    return (<Column
+      label="Translations"
+      width={150}
+      dataKey={0}
+      cellRenderer={this._renderTransCell}
+      headerRenderer={this._renderTransHeader}
+      />);
   },
 
   _getPosColumn: function() {
@@ -329,7 +347,7 @@ var GlossarySrcDataTable = React.createClass({
       dataKey={0}
       cellRenderer={this._renderPosCell}
       headerRenderer={this._renderPosHeader}
-    />);
+      />);
   },
 
   _getDescColumn: function() {
@@ -340,18 +358,18 @@ var GlossarySrcDataTable = React.createClass({
       dataKey={0}
       cellRenderer={this._renderDescCell}
       headerRenderer={this._renderDescHeader}
-    />);
+      />);
   },
 
-  _getTransColumn: function() {
+  _getTransCountColumn: function() {
     return (<Column
       label="Translations"
       width={120}
       cellClassName="tac"
       dataKey={0}
-      cellRenderer={this._renderTransCell}
-      headerRenderer={this._renderTransHeader}
-    />);
+      cellRenderer={this._renderTransCountCell}
+      headerRenderer={this._renderTransCountHeader}
+      />);
   },
 
   _getActionColumn: function() {
@@ -361,28 +379,13 @@ var GlossarySrcDataTable = React.createClass({
       width={300}
       dataKey={0}
       isResizable={false}
-      cellRenderer={this._renderActions}
-    />)
+      cellRenderer={this._renderActionCell}
+      />)
   },
 
-  _getGlossaryEntry: function (resId) {
-    return this.props.glossaryData[resId];
-  },
-
-  _rowGetter: function(rowIndex) {
-    var self = this,
-      row = self.props.glossaryResId[rowIndex];
-    if(row === null) {
-      if(this.state.timeout !== null) {
-        clearTimeout(this.state.timeout);
-      }
-      this.state.timeout = setTimeout(function() {
-        Actions.loadGlossary(rowIndex);
-      }, 500);
-      return [null];
-    } else {
-      return row;
-    }
+  _onValueChange: function(inputField, value) {
+    Actions.updateEntryField(inputField.props.resId, inputField.props.field, value);
+    this.state.inputFields[inputField.props.id] = inputField;
   },
 
   _onRowMouseEnter: function (event, rowIndex) {
@@ -405,15 +408,59 @@ var GlossarySrcDataTable = React.createClass({
     this.setState({focusedRow: -1});
   },
 
-  _rowClassNameGetter: function (rowIndex) {
-    if(rowIndex == this.state.focusedRow) {
-      return 'bgcsec30a';
-    } else if(rowIndex == this.state.hoveredRow) {
-      return 'bgcsec20a';
+  /**
+   * restore glossary entry to original value
+   * @param resId
+   * @param rowIndex
+   */
+  _handleCancel: function (resId, rowIndex) {
+    var self = this;
+    _.forOwn(this.ENTRY, function(value, key) {
+      var key = self._generateKey(value.col, rowIndex, resId),
+        input = self.state.inputFields[key];
+      if(!_.isUndefined(input)) {
+        input.reset();
+      }
+    });
+    this.setState({focusedRow: -1});
+  },
+
+  _getGlossaryEntry: function (resId) {
+    return this.props.glossaryData[resId];
+  },
+
+  _rowGetter: function(rowIndex) {
+    var self = this,
+      row = self.props.glossaryResId[rowIndex];
+    if(row === null) {
+      if(this.state.timeout !== null) {
+        clearTimeout(this.state.timeout);
+      }
+      this.state.timeout = setTimeout(function() {
+        Actions.loadGlossary(rowIndex);
+      }, 500);
+      return [null];
+    } else {
+      return row;
     }
   },
 
   render: function() {
+    var column = [];
+    if(this._isTranslationSelected()) {
+      column.push(this._getSourceColumn());
+      column.push(this._getTransColumn());
+      column.push(this._getPosColumn());
+      column.push(this._getDescColumn());
+      column.push(this._getActionColumn());
+    } else {
+      column.push(this._getSourceColumn());
+      column.push(this._getPosColumn());
+      column.push(this._getDescColumn());
+      column.push(this._getTransCountColumn());
+      column.push(this._getActionColumn());
+    }
+
     var dataTable = (<Table
       onRowClick={this._onRowClick}
       onRowMouseEnter={this._onRowMouseEnter}
@@ -425,15 +472,11 @@ var GlossarySrcDataTable = React.createClass({
       width={this.state.tbl_width}
       height={this.state.tbl_height}
       headerHeight={this.CELL_HEIGHT}>
-      {this._getSourceColumn()}
-      {this._getPosColumn()}
-      {this._getDescColumn()}
-      {this._getTransColumn()}
-      {this._getActionColumn()}
+      {column}
     </Table>);
 
     return (<div>{dataTable}</div>);
   }
 });
 
-export default GlossarySrcDataTable;
+export default DataTable;
