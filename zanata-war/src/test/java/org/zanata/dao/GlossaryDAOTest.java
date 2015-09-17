@@ -59,7 +59,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     public void testGetTermByLocaleId() {
         log.debug("testGetTermByLocaleId");
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
-            LocaleId.EN_US, -1, -1, "", null);
+            LocaleId.EN_US, 0, 1, "", null);
         assertThat(entryList.size(), is(1));
     }
 
@@ -67,28 +67,27 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     public void testGetTermByLocaleId2() {
         log.debug("testGetTermByLocaleId");
         List<GlossarySortField> sortFields = Lists
-            .newArrayList(GlossarySortField.desc,
-                GlossarySortField.src_content,
-                GlossarySortField.part_of_speech,
-                GlossarySortField.trans_count);
+            .newArrayList(
+                GlossarySortField.getByField(GlossarySortField.DESCRIPTION),
+                GlossarySortField.getByField(GlossarySortField.SRC_CONTENT),
+                GlossarySortField.getByField(GlossarySortField.PART_OF_SPEECH),
+                GlossarySortField.getByField(GlossarySortField.TRANS_COUNT));
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
-            LocaleId.EN_US, -1, -1, "", sortFields);
+            LocaleId.EN_US, 0, 1, "", sortFields);
         assertThat(entryList.size(), is(1));
     }
 
     @Test
     public void testGetTermByLocaleId3() {
         log.debug("testGetTermByLocaleId");
-        GlossarySortField DESC = GlossarySortField.desc;
-        DESC.setAscending(false);
+        GlossarySortField DESC =
+                GlossarySortField.getByField("-"
+                        + GlossarySortField.DESCRIPTION);
 
         List<GlossarySortField> sortFields = Lists
-            .newArrayList(DESC,
-                GlossarySortField.src_content,
-                GlossarySortField.part_of_speech,
-                GlossarySortField.trans_count);
+            .newArrayList(DESC);
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
-            LocaleId.EN_US, -1, -1, "", sortFields);
+            LocaleId.EN_US, 0, 1, "", sortFields);
         assertThat(entryList.size(), is(1));
     }
 
@@ -115,8 +114,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     @Test
     public void testGetEntryBySrcContentLocale() {
         log.debug("testGetEntryBySrcContentLocale");
-        HGlossaryEntry entry =
-                dao.getEntryByResIdAndLocale("resId1", LocaleId.EN_US);
+        HGlossaryEntry entry = dao.getEntryByResId("resId1");
         Assert.assertNotNull(entry);
         assertThat(entry.getSrcLocale().getLocaleId(), is(LocaleId.EN_US));
     }

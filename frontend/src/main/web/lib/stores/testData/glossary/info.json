@@ -5,7 +5,7 @@
       "displayName": "English (United States)",
       "alias": ""
     },
-    "count": 474
+    "numberOfTerms": 474
   },
   "transLocale": [
     {
@@ -14,7 +14,7 @@
         "displayName": "Chinese (Simplified)",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -22,7 +22,7 @@
         "displayName": "Chinese (Traditional)",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -30,7 +30,7 @@
         "displayName": "English (United States)",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -38,7 +38,7 @@
         "displayName": "French",
         "alias": ""
       },
-      "count": 500
+      "numberOfTerms": 500
     },
     {
       "locale": {
@@ -46,7 +46,7 @@
         "displayName": "German",
         "alias": ""
       },
-      "count": 476
+      "numberOfTerms": 476
     },
     {
       "locale": {
@@ -54,7 +54,7 @@
         "displayName": "Italian",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -62,7 +62,7 @@
         "displayName": "Japanese",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -70,7 +70,7 @@
         "displayName": "Japanese (Japan)",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -78,7 +78,7 @@
         "displayName": "Korean",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -86,7 +86,7 @@
         "displayName": "Portuguese (Brazil)",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -94,7 +94,7 @@
         "displayName": "Russian",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     },
     {
       "locale": {
@@ -102,7 +102,7 @@
         "displayName": "Spanish",
         "alias": ""
       },
-      "count": 0
+      "numberOfTerms": 0
     }
   ]
 }

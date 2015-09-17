@@ -200,18 +200,11 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public HGlossaryEntry getEntryByResIdAndLocale(String resId,
-            LocaleId srcLocaleId) {
+    public HGlossaryEntry getEntryByResId(String resId) {
         Query query = getSession().createQuery(
-                "from HGlossaryEntry as e "
-                        + "WHERE e.srcLocale.localeId= :localeId "
-                        + "AND e.resId = :resId "
-                        + "AND e.id IN "
-                        + "(SELECT t.glossaryEntry.id FROM HGlossaryTerm as t "
-                        + "WHERE t.locale.localeId=e.srcLocale.localeId)");
-        query.setParameter("localeId", srcLocaleId);
+                "from HGlossaryEntry as e WHERE e.resId = :resId ");
         query.setParameter("resId", resId);
-        query.setComment("GlossaryDAO.getEntryBySourceTermResId");
+        query.setComment("GlossaryDAO.getEntryByResId");
         return (HGlossaryEntry) query.uniqueResult();
     }
 

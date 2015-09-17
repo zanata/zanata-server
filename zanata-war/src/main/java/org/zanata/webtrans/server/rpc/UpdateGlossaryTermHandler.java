@@ -42,9 +42,7 @@ public class UpdateGlossaryTermHandler
 
         String resId = selectedDetailEntry.getResId();
 
-        HGlossaryEntry entry =
-                glossaryDAO.getEntryByResIdAndLocale(resId,
-                    selectedDetailEntry.getSrcLocale());
+        HGlossaryEntry entry = glossaryDAO.getEntryByResId(resId);
 
         if (entry == null) {
             throw new ActionException(

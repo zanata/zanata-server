@@ -47,7 +47,7 @@ var SourceActionCell = React.createClass({
   },
 
   _handleDelete: function() {
-    Actions.deleteGlossary(this.props.resId, this.props.srcLocaleId);
+    Actions.deleteGlossary(this.props.resId);
   },
 
   _handleCancel: function() {

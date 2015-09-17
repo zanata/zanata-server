@@ -21,12 +21,11 @@ var Actions = {
       data: resId
     });
   },
-  deleteGlossary: function(resId, srcLocaleId) {
+  deleteGlossary: function(resId) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.DELETE_GLOSSARY,
       data: {
        resId: resId,
-       srcLocale: srcLocaleId
       }
     });
   },

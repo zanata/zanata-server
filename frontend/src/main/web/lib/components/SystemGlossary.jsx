@@ -105,7 +105,7 @@ var SystemGlossary = React.createClass({
 
 
     if(this.state.srcLocale) {
-      count = this.state.srcLocale.count;
+      count = this.state.srcLocale.numberOfTerms;
     }
 
     var uploadSection = "";

@@ -67,7 +67,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     @Override
     public List<Glossary> parseGlossaryFile(InputStream fileContents,
-            String fileName, LocaleId sourceLang, LocaleId transLang) {
+            String fileName, LocaleId sourceLang, LocaleId transLang)
+            throws ZanataServiceException {
         try {
             if (StringUtils.endsWithIgnoreCase(fileName, ".csv")) {
                 return parseCsvFile(fileContents);
@@ -78,7 +79,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                         + fileName);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ZanataServiceException("Unsupported Glossary file: "
                     + fileName);
         }
@@ -143,8 +143,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                             from.getDescription());
         }
 
-        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResIdAndLocale(
-            resId, srcLocale);
+        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResId(resId);
 
         if (hGlossaryEntry == null) {
             hGlossaryEntry = new HGlossaryEntry();

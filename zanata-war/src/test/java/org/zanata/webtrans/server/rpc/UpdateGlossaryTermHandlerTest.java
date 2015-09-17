@@ -69,9 +69,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         "new comment", "new pos", "new description");
 
-        when(glossaryDAO.getEntryByResIdAndLocale(
-                resId, selectedDetailEntry.getSrcLocale())).thenReturn(
-                hGlossaryEntry);
+        when(glossaryDAO.getEntryByResId(resId)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
         HGlossaryTerm targetTerm = new HGlossaryTerm("target");
@@ -111,9 +109,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                         selectedDetailEntry.getSource(),
                         selectedDetailEntry.getPos(),
                         selectedDetailEntry.getDescription());
-        when(glossaryDAO.getEntryByResIdAndLocale(
-            resId, selectedDetailEntry.getSrcLocale())).thenReturn(
-                hGlossaryEntry);
+        when(glossaryDAO.getEntryByResId(resId)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
         when(glossaryDAO.makePersistent(hGlossaryEntry)).thenReturn(
@@ -137,9 +133,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                         selectedDetailEntry.getSource(),
                         selectedDetailEntry.getPos(),
                         selectedDetailEntry.getDescription());
-        when(glossaryDAO.getEntryByResIdAndLocale(resId,
-                selectedDetailEntry.getSrcLocale())).thenReturn(
-                hGlossaryEntry);
+        when(glossaryDAO.getEntryByResId(resId)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                 .getTargetLocale())).thenReturn(targetHLocale);
         HGlossaryTerm targetTerm = new HGlossaryTerm("target");

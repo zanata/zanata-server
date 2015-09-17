@@ -35,7 +35,7 @@ var _state = {
 var CHANGE_EVENT = "change";
 
 function localesStatAPIUrl() {
-  return Configs.baseUrl + "/glossary/locales/list" + Configs.urlPostfix
+  return Configs.baseUrl + "/glossary/info" + Configs.urlPostfix
 }
 
 function loadLocalesStats() {
@@ -62,13 +62,13 @@ function processLocalesStatistic(serverResponse) {
   _state['locales'] = {};
   _state['localeOptions'] = [];
   _state['srcLocale'] = serverResponse['srcLocale'];
-  resetCache(_state['srcLocale'].count);
+  resetCache(_state['srcLocale'].numberOfTerms);
 
   _.forEach(serverResponse['transLocale'], function(transLocale) {
     _state['locales'][transLocale.locale.localeId] = transLocale;
     _state['localeOptions'].push({
       value: transLocale.locale.localeId,
-      label: transLocale.locale.displayName + " - (" + transLocale.count + ")"
+      label: transLocale.locale.displayName + " - (" + transLocale.numberOfTerms + ")"
     });
   });
   return _state;
@@ -224,7 +224,7 @@ function processGlossaryList(serverResponse) {
  * @param data
  */
 function deleteGlossary(data) {
-  var url = Configs.baseUrl + "/glossary/" + data.srcLocale + "/" + data.resId + Configs.urlPostfix;
+  var url = Configs.baseUrl + "/glossary/entries/" + data.resId + Configs.urlPostfix;
 
   return new Promise(function(resolve, reject) {
     Request.del(url)
@@ -263,12 +263,15 @@ function saveOrUpdateGlossary(data) {
 }
 
 function uploadFile(data) {
-  var url = Configs.baseUrl + "/glossary/src/" + data.srcLocale + "/trans/" + data.transLocale + "/upload",
+  var url = Configs.baseUrl + "/glossary/upload",
     uploadFile = data.uploadFile;
 
   return new Promise(function(resolve, reject) {
     Request.post(url)
       .attach('file', uploadFile.file, uploadFile.file.name)
+      .field('fileName', uploadFile.file.name)
+      .field('srcLocale', data.srcLocale)
+      .field('transLocale', data.transLocale)
       .set('Accept', 'application/json')
       .end((function (res) {
         if (res.error) {
@@ -359,7 +362,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
-        //glossary resId with srcLocale
+        //glossary resId
         deleteGlossary(action.data)
           .then(processDelete)
           .then(function () {
