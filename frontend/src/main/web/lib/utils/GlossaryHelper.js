@@ -2,6 +2,7 @@ import _ from 'lodash';
 import StringUtils from './StringUtils'
 
 var GlossaryHelper = {
+  NEW_ENTRY_KEY : 'NEW_ENTRY',
 
   /**
    * Generate org.zanata.rest.dto.GlossaryTerm object
@@ -13,8 +14,7 @@ var GlossaryHelper = {
       comments = StringUtils.trim(data.comment);
 
     if(StringUtils.isEmptyOrNull(content) &&
-        StringUtils.isEmptyOrNull(locale) &&
-        StringUtils.isEmptyOrNull(comments)) {
+        StringUtils.isEmptyOrNull(locale)) {
       return null;
     } else {
       var term = {};
@@ -54,18 +54,20 @@ var GlossaryHelper = {
     return glossary;
   },
 
-  /**
-   *
-   * @param localeList - Array org.zanata.rest.dto.GlossaryLocaleStats
-   * @param displayName locale display name. e.g English (United States)
-   */
-  getLocaleIdByDisplayName: function (localeList, displayName) {
-    var localeId = _(localeList)
-      .filter(function(locale) { return locale.locale.displayName === displayName; })
-      .pluck('locale.localeId')
-      .value();
+  generateTerm: function(transLocaleId){
+    return {
+      content: '',
+      locale: transLocaleId,
+      comment: '',
+      lastModifiedDate: '',
+      lastModifiedBy: ''
+    }
+  },
 
-    return localeId[0];
+  generateSrcTerm: function (localeId) {
+    var term = this.generateTerm(localeId);
+    term['reference'] = '';
+    return term;
   },
 
   getTermByLocale: function (terms, localeId) {
@@ -75,15 +77,36 @@ var GlossaryHelper = {
     return term[0];
   },
 
-  compare: function (entry1, entry2) {
-    var isSrcModified = (entry1.description !== entry2.description) ||
-      (entry1.pos !== entry2.pos) || (entry1.srcTerm.content !== entry2.srcTerm.content);
-    var isTransModified = entry1.transTerm.content !== entry2.transTerm.content;
+  getEntryStatus: function (entry, originalEntry) {
+    var isSrcModified = (entry.description !== originalEntry.description) ||
+      (entry.pos !== originalEntry.pos) || (entry.srcTerm.content !== originalEntry.srcTerm.content);
+    var isTransModified = entry.transTerm.content !== originalEntry.transTerm.content;
 
+    var isSrcValid = this.isSourceValid(entry);
+    var canUpdateTransComment = this.canUpdateTransComment(originalEntry);
     return {
-      source: isSrcModified,
-      trans: isTransModified
+      isSrcModified: isSrcModified,
+      isTransModified: isTransModified,
+      isSrcValid: isSrcValid, //source content is mandatory
+      canUpdateTransComment: canUpdateTransComment
     };
+  },
+
+  getDefaultEntryStatus: function () {
+    return {
+      isSrcModified: false,
+      isTransModified: false,
+      isSrcValid: false,
+      canUpdateTransComment: false
+    }
+  },
+
+  isSourceValid: function (entry) {
+    return !StringUtils.isEmptyOrNull(StringUtils.trim(entry.srcTerm.content));
+  },
+
+  canUpdateTransComment: function (entry) {
+    return !StringUtils.isEmptyOrNull(entry.transTerm.content);
   }
 
 };

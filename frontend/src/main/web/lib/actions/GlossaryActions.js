@@ -69,6 +69,15 @@ var Actions = {
             value: value
           }
     });
+  },
+  updateComment: function (resId, value) {
+    Dispatcher.handleViewAction({
+      actionType: GlossaryActionTypes.UPDATE_COMMENT,
+      data: {
+        resId: resId,
+        value: value
+      }
+    });
   }
 };
 

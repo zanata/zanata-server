@@ -28,8 +28,7 @@ var _state = {
   sort: {
     src_content: true
   },
-  totalCount: 0,
-  loading: false
+  totalCount: 0
 };
 
 var CHANGE_EVENT = "change";
@@ -104,7 +103,6 @@ function generateSortOrderParam() {
 function loadGlossaryByLocale () {
   var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
-
   if(!_.isUndefined(srcLocale) && !_.isNull(srcLocale)) {
     var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
 
@@ -134,24 +132,9 @@ function canUpdateEntry() {
   return Configs.data.permission.updateGlossary;
 }
 
-function generateTerm(transLocaleId) {
-  return {
-    content: '',
-    locale: transLocaleId,
-    comment: '',
-    lastModifiedDate: '',
-    lastModifiedBy: ''
-  }
-}
-function generateSrcTerm(localeId) {
-  var term = generateTerm(localeId);
-  term['reference'] = '';
-  return term;
-}
-
 function processGlossaryList(serverResponse) {
   var transLocaleId = _state['selectedTransLocale'],
-  srcLocaleId = _state['srcLocale'].locale.localeId,
+    srcLocaleId = _state['srcLocale'].locale.localeId,
     page = _state['page'];
 
   _state['totalCount'] = serverResponse.totalCount;
@@ -163,17 +146,14 @@ function processGlossaryList(serverResponse) {
   }
 
   if(StringUtils.isEmptyOrNull(transLocaleId) && _state['canAddNewEntry']) {
-    var newEntryKey = 'NEW_ENTRY';
+    var newEntryKey = GlossaryHelper.NEW_ENTRY_KEY;
     startIndex +=1;
     if(_.isUndefined(_state['glossary'][newEntryKey])) {
       _state['glossary'][newEntryKey] = {
         resId: '', pos: '', description: '',
-        srcTerm: generateSrcTerm(srcLocaleId),
-        transTerm: generateTerm(transLocaleId),
-        modified: {
-          source: false,
-          trans: false
-        }
+        srcTerm: GlossaryHelper.generateSrcTerm(srcLocaleId),
+        transTerm: GlossaryHelper.generateTerm(transLocaleId),
+        status: GlossaryHelper.getDefaultEntryStatus()
       };
       _state['glossaryResId'][0] = [newEntryKey];
     }
@@ -195,7 +175,7 @@ function processGlossaryList(serverResponse) {
     if(transTerm != null) {
       transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
     } else {
-      transTerm = generateTerm(transLocaleId);
+      transTerm = GlossaryHelper.generateTerm(transLocaleId);
     }
     _state['glossary'][entry.resId] = {
       resId: entry.resId,
@@ -204,11 +184,10 @@ function processGlossaryList(serverResponse) {
       termsCount: entry.termsCount,
       srcTerm: srcTerm,
       transTerm: transTerm,
-      modified: {
-        source: false,
-        trans: false
-      }
+      status: GlossaryHelper.getDefaultEntryStatus()
     };
+    _state['glossary'][entry.resId].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state['glossary'][entry.resId]);
+    _state['glossary'][entry.resId].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state['glossary'][entry.resId]);
     _state['glossaryResId'][startIndex] = [entry.resId];
     startIndex+=1;
   });
@@ -293,15 +272,13 @@ function processSave(serverResponse) {
 }
 
 function initialise () {
+
   //load permission here
   _state['canAddNewEntry'] = canAddNewEntry();
   _state['canUpdateEntry'] = canUpdateEntry();
 
   loadLocalesStats()
     .then(processLocalesStatistic)
-    .then(function (newState) {
-      GlossaryStore.emitChange();
-    })
     .then(function() {
       loadGlossaryByLocale()
         .then(processGlossaryList)
@@ -345,6 +322,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     var action = payload.action;
     switch (action['actionType']) {
       case GlossaryActionTypes.TRANS_LOCALE_SELECTED:
+        console.debug('select language', action.data);
         _state['selectedTransLocale'] = action.data;
         resetCache();
         loadGlossaryByLocale()
@@ -355,6 +333,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         break;
       case GlossaryActionTypes.INSERT_GLOSSARY:
       case GlossaryActionTypes.UPDATE_GLOSSARY:
+        console.debug('save/update glossary', _state['glossary'][action.data]);
         saveOrUpdateGlossary(_state['glossary'][action.data])
           .then(processSave)
           .then(function () {
@@ -362,7 +341,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
-        //glossary resId
+        console.debug('delete entry', action.data);
         deleteGlossary(action.data)
           .then(processDelete)
           .then(function () {
@@ -371,6 +350,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
       case GlossaryActionTypes.UPDATE_FILTER:
+        console.debug('Update filter', action.data);
         if(_state['filter']  !== action.data) {
           _state['filter'] = action.data;
           resetCache();
@@ -378,6 +358,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         }
         break;
       case GlossaryActionTypes.LOAD_GLOSSARY:
+        console.debug('load glossary', action.data);
         _state['page'] = Math.ceil(action.data/(SIZE_PER_PAGE - 1));
         _state['page'] = _state['page'] < 1 ? 1 : _state['page'];
         loadGlossaryByLocale()
@@ -387,6 +368,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
        case GlossaryActionTypes.UPDATE_SORT_ORDER:
+         console.debug('Update sort order', action.data);
          _state['sort'][action.data.field] = action.data.ascending;
          loadGlossaryByLocale()
            .then(processGlossaryList)
@@ -395,6 +377,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
            });
          break;
       case GlossaryActionTypes.UPLOAD_FILE:
+        console.debug('Upload file', action.data);
         uploadFile(action.data).then(function () {
           resetCache();
           loadGlossaryByLocale()
@@ -406,9 +389,18 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         break;
       case GlossaryActionTypes.UPDATE_ENTRY_FIELD:
         _.set(_state['glossary'][action.data.resId], action.data.field, action.data.value);
-        _state['glossary'][action.data.resId]['modified'] =
-          GlossaryHelper.compare(_state['glossary'][action.data.resId], _state['original_glossary'][action.data.resId]);
+        _state['glossary'][action.data.resId]['status'] =
+          GlossaryHelper.getEntryStatus(_state['glossary'][action.data.resId], _state['original_glossary'][action.data.resId]);
         GlossaryStore.emitChange();
+        break;
+      case GlossaryActionTypes.UPDATE_COMMENT:
+        console.debug('Update comment', action.data);
+        _.set(_state['glossary'][action.data.resId], 'transTerm.comment', action.data.value);
+        saveOrUpdateGlossary(_state['glossary'][action.data.resId])
+          .then(processSave)
+          .then(function () {
+            initialise();
+          });
         break;
     }
   })

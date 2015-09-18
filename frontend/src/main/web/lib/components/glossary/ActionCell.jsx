@@ -3,22 +3,27 @@ import {PureRenderMixin} from 'react/addons';
 import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
+import Comment from './Comment'
 import GlossaryStore from '../../stores/GlossaryStore';
 import _ from 'lodash';
+import StringUtils from '../../utils/StringUtils'
 
 var ActionCell = React.createClass({
   propTypes: {
     resId: React.PropTypes.string.isRequired,
     info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
+    canUpdateEntry: React.PropTypes.bool,
     onCancel: React.PropTypes.func
   },
 
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
+    var entry = GlossaryStore.getEntry(this.props.resId);
     return {
-      entry: GlossaryStore.getEntry(this.props.resId)
+      entry: entry,
+      comment: entry.transTerm.comment
     }
   },
 
@@ -46,44 +51,35 @@ var ActionCell = React.createClass({
     }
   },
 
+  _onUpdateComment: function (value) {
+    Actions.updateComment(this.props.resId, value);
+  },
+
   render: function () {
     var self = this;
 
     if (this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
-      var isTransModified = this.state.entry.modified.trans;
+      var isTransModified = this.state.entry.status.isTransModified;
+      var canUpdateComment = this.state.entry.status.canUpdateTransComment;
 
-      var infoTooltip = <Tooltip>{this.props.info}</Tooltip>;
+      var infoTooltip = <Tooltip id="info">{this.props.info}</Tooltip>;
       var info = (<OverlayTrigger placement='top' trigger='click' rootClose overlay={infoTooltip}>
         <Icon name="info"/>
       </OverlayTrigger>);
 
-      var commentTooltip = (<Tooltip title="Comment">
-        <textarea className="p1/4 w100p"/>
-        <div className="mt1/2">
-          <button className="cpri mr1/2">Cancel</button>
-          <button className="cwhite bgcpri ph1/2 bdrs">Update Comment</button>
-        </div>
-      </Tooltip>);
-
-      var commentButton = (
-      <OverlayTrigger placement='top' trigger='click' overlay={commentTooltip} rootClose>
-        <button className='cpri mr1/2'><Icon name='comment'></Icon></button>
-      </OverlayTrigger>
-      );
+      var updateButton = null, cancelButton = null,
+        comment = (<Comment readOnly={!self.props.canUpdateEntry || !canUpdateComment}
+        value={this.state.entry.transTerm.comment}
+        onUpdateCommentCallback={self._onUpdateComment}/>);
 
       if(isTransModified) {
-        return (
-          <div>
-            {info} {commentButton}
-            <button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2'onClick={self._handleUpdate}>Update</button>
-            <button className='cpri' onClick={self._handleCancel}>Cancel</button>
-          </div>
-        );
-      } else {
-        return (<div>{info} {commentButton}</div>);
+        updateButton = (<button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2'onClick={self._handleUpdate}>Update</button>);
+        cancelButton = (<button className='cpri' onClick={self._handleCancel}>Cancel</button>);
       }
+
+      return (<div>{info} {comment} {updateButton} {cancelButton}</div>);
     }
   }
 });

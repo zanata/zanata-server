@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 var StringUtils = {
   isEmptyOrNull: function (str) {
-    return _.isUndefined(str) || _.isNull(str) || !str || 0 === str.length;
+    return _.isUndefined(str) || _.isNull(str) || 0 === str.length;
   },
 
   isEqualIgnoreCase: function (str1, str2) {

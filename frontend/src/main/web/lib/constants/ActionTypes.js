@@ -15,7 +15,8 @@ var GlossaryActionTypes = keymirror({
   LOAD_GLOSSARY: null,
   UPDATE_SORT_ORDER: null,
   UPLOAD_FILE: null,
-  UPDATE_ENTRY_FIELD: null
+  UPDATE_ENTRY_FIELD: null,
+  UPDATE_COMMENT: null
 });
 
 exports.UserMatrixActionTypes = UserMatrixActionTypes;

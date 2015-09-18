@@ -34,7 +34,7 @@ var DataTable = React.createClass({
     },
     TRANS_COUNT: {
       col: 5,
-      field: 'trans_count',
+      field: 'termsCount',
       sort_field: 'trans_count'
     }
   },
@@ -151,27 +151,25 @@ var DataTable = React.createClass({
     Actions.updateSortOrder(field, ascending);
   },
 
-  _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
-                               columnData, width) {
-    var key = this._generateKey(this.ENTRY.SRC.col, rowIndex, resId)
+  _renderCell: function (resId, rowIndex, field, readOnly, placeholder) {
+    var key = this._generateKey(field.col, rowIndex, resId);
 
     if (resId === null) {
       return (<LoadingCell key={key}/>)
     } else {
-      var entry = this._getGlossaryEntry(resId)
-      var term = entry.srcTerm
-      var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry) || this._isTranslationSelected();
+      var entry = this._getGlossaryEntry(resId);
+      var value = _.get(entry, field.field);
 
       if (readOnly) {
-        return (<span key={key}>{term.content}</span>)
+        return (<span key={key}>{value}</span>)
       } else {
-        return (<TextInput value={term.content}
-          placeholder='enter a new term'
+        return (<TextInput value={value}
+          placeholder={placeholder}
           id={key}
           rowIndex={rowIndex}
           resId={resId}
           key={key}
-          field={this.ENTRY.SRC.field}
+          field={field.field}
           onFocusCallback={this._onInputFocus}
           onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>)
@@ -179,101 +177,38 @@ var DataTable = React.createClass({
     }
   },
 
+  _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
+                               columnData, width) {
+    var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry) || this._isTranslationSelected(),
+      placeholder = 'enter a new term';
+    return this._renderCell(resId, rowIndex, this.ENTRY.SRC, readOnly, placeholder);
+  },
+
   _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
-    var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
-    if(resId === null) {
-      return (<LoadingCell key={key}/>);
-    } else {
-      var entry = this._getGlossaryEntry(resId),
-        term = entry.transTerm,
-        title = this._generateTermInfo(term),
-        readOnly = !this.props.canUpdateEntry;
-
-      if(readOnly) {
-        return <span key={key}>{term.content}</span>;
-      } else {
-        return (<TextInput value={term.content}
-          placeholder="enter a translation"
-          id={key}
-          resId={resId}
-          key={key}
-          field={this.ENTRY.TRANS.field}
-          onFocusCallback={this._onInputFocus}
-          onBlurCallback={this._onInputBlur}
-          onChangeCallback={this._onValueChange}/>);
-      }
-    }
+    var readOnly = !this.props.canUpdateEntry,
+      placeholder = 'enter a translation';
+    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS, readOnly, placeholder);
   },
 
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var key = this._generateKey(this.ENTRY.POS.col, rowIndex, resId);
-    if(resId === null) {
-      return (<LoadingCell key={key}/>);
-    } else {
-      var entry = this._getGlossaryEntry(resId),
-        readOnly = !this.props.canUpdateEntry || this._isTranslationSelected();
-
-      if(readOnly) {
-        return <span key={key}>{entry.pos}</span>;
-      } else {
-        return (<TextInput value={entry.pos}
-          placeholder="enter part of speech"
-          rowIndex={rowIndex}
-          id={key}
-          resId={resId}
-          key={key}
-          field={this.ENTRY.POS.field}
-          onFocusCallback={this._onInputFocus}
-          onBlurCallback={this._onInputBlur}
-          onChangeCallback={this._onValueChange}/>);
-      }
-    }
+    var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
+      placeholder = 'enter part of speech';
+    return this._renderCell(resId, rowIndex, this.ENTRY.POS, readOnly, placeholder);
   },
 
   _renderDescCell: function (resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
-    var key = this._generateKey(this.ENTRY.DESC.col, rowIndex, resId);
-
-    if(resId === null) {
-      return (<LoadingCell key={key}/>);
-    } else {
-      var entry = this._getGlossaryEntry(resId),
-        readOnly = !this.props.canUpdateEntry || this._isTranslationSelected();
-
-      if (readOnly) {
-        return <span key={key}>{entry.description}</span>;
-      } else {
-        return (<TextInput value={entry.description}
-          placeholder="enter description"
-          rowIndex={rowIndex}
-          id={key}
-          resId={resId}
-          key={key}
-          field={this.ENTRY.DESC.field}
-          onFocusCallback={this._onInputFocus}
-          onBlurCallback={this._onInputBlur}
-          onChangeCallback={this._onValueChange}/>);
-      }
-    }
+    var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
+      placeholder = 'enter description';
+    return this._renderCell(resId, rowIndex, this.ENTRY.DESC, readOnly, placeholder);
   },
 
   _renderTransCountCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var key = this._generateKey(this.ENTRY.TRANS.col, rowIndex, resId);
-
-    if(resId === null) {
-      return (<LoadingCell key={key}/>);
-    } else {
-      var entry = this._getGlossaryEntry(resId),
-        count = entry.termsCount;
-
-      if (count === null) {
-        count = '';
-      }
-      return (<span key={key}>{count}</span>)
-    }
+    var readOnly = true, placeholder = '';
+    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS_COUNT, readOnly, placeholder);
   },
 
   _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,
@@ -289,16 +224,17 @@ var DataTable = React.createClass({
     var entry = this._getGlossaryEntry(resId);
 
     if(self._isTranslationSelected()) {
-      var term = entry.transTerm,
-        info = this._generateTermInfo(term);
-
+      var info = this._generateTermInfo(entry.transTerm);
       return (
-        <ActionCell info={info} resId={resId} rowIndex={rowIndex}onCancel={self._handleCancel}/>
+        <ActionCell info={info}
+          canUpdateEntry={self.props.canUpdateEntry}
+          resId={resId}
+          rowIndex={rowIndex}
+          onCancel={self._handleCancel}/>
       );
     } else {
       var isNewEntryCell = rowIndex === 0,
         info = this._generateTermInfo(entry.srcTerm);
-
       return (
         <SourceActionCell resId={resId} rowIndex={rowIndex}
           srcLocaleId={self.props.srcLocale.locale.localeId}
@@ -316,12 +252,13 @@ var DataTable = React.createClass({
   },
 
   _getSourceColumn: function() {
-    var srcLocaleName = "";
+    var self = this, srcLocaleName = "";
     if(!_.isUndefined(this.props.srcLocale) && !_.isNull(this.props.srcLocale)) {
       srcLocaleName = this.props.srcLocale.locale.displayName;
     }
     return (<Column
       label={srcLocaleName}
+      key={self.ENTRY.SRC.field}
       width={150}
       dataKey={0}
       flexGrow={1}
@@ -331,8 +268,10 @@ var DataTable = React.createClass({
   },
 
   _getTransColumn: function() {
+    var self = this;
     return (<Column
       label="Translations"
+      key={self.ENTRY.TRANS.field}
       width={150}
       dataKey={0}
       cellRenderer={this._renderTransCell}
@@ -341,8 +280,10 @@ var DataTable = React.createClass({
   },
 
   _getPosColumn: function() {
+    var self = this;
     return (<Column
       label="Part of Speech"
+      key={self.ENTRY.POS.field}
       width={150}
       dataKey={0}
       cellRenderer={this._renderPosCell}
@@ -351,8 +292,10 @@ var DataTable = React.createClass({
   },
 
   _getDescColumn: function() {
+    var self = this;
     return (<Column
       label="Description"
+      key={self.ENTRY.DESC.field}
       width={150}
       flexGrow={1}
       dataKey={0}
@@ -362,8 +305,10 @@ var DataTable = React.createClass({
   },
 
   _getTransCountColumn: function() {
+    var self = this;
     return (<Column
       label="Translations"
+      key={self.ENTRY.TRANS_COUNT.field}
       width={120}
       cellClassName="tac"
       dataKey={0}
@@ -375,6 +320,7 @@ var DataTable = React.createClass({
   _getActionColumn: function() {
     return (<Column
       label=""
+      key="Actions"
       cellClassName="ph1/4"
       width={300}
       dataKey={0}
@@ -406,6 +352,14 @@ var DataTable = React.createClass({
 
   _onInputBlur: function (input, rowIndex) {
     this.setState({focusedRow: -1});
+  },
+
+  _rowClassNameGetter: function (rowIndex) {
+    if(rowIndex == this.state.focusedRow) {
+      return 'bgcsec30a';
+    } else if(rowIndex == this.state.hoveredRow) {
+      return 'bgcsec20a';
+    }
   },
 
   /**
@@ -446,20 +400,17 @@ var DataTable = React.createClass({
   },
 
   render: function() {
-    var column = [];
+    var columns = [];
+    columns.push(this._getSourceColumn());
     if(this._isTranslationSelected()) {
-      column.push(this._getSourceColumn());
-      column.push(this._getTransColumn());
-      column.push(this._getPosColumn());
-      column.push(this._getDescColumn());
-      column.push(this._getActionColumn());
-    } else {
-      column.push(this._getSourceColumn());
-      column.push(this._getPosColumn());
-      column.push(this._getDescColumn());
-      column.push(this._getTransCountColumn());
-      column.push(this._getActionColumn());
+      columns.push(this._getTransColumn());
     }
+    columns.push(this._getPosColumn());
+    columns.push(this._getDescColumn());
+    if(!this._isTranslationSelected()) {
+      columns.push(this._getTransCountColumn());
+    }
+    columns.push(this._getActionColumn());
 
     var dataTable = (<Table
       onRowClick={this._onRowClick}
@@ -472,7 +423,7 @@ var DataTable = React.createClass({
       width={this.state.tbl_width}
       height={this.state.tbl_height}
       headerHeight={this.CELL_HEIGHT}>
-      {column}
+      {columns}
     </Table>);
 
     return (<div>{dataTable}</div>);
