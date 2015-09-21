@@ -1708,7 +1708,7 @@
     <dependency>
       <groupId>net.htmlparser.jericho</groupId>
       <artifactId>jericho-html</artifactId>
-      <version>3.3</version>
+      <version>3.4-dev</version>
     </dependency>
 
     <!-- Okapi Filters -->
@@ -1737,7 +1737,10 @@
       <groupId>net.sf.okapi.filters</groupId>
       <artifactId>okapi-filter-regex</artifactId>
     </dependency>
-
+      <dependency>
+        <groupId>net.sf.okapi.filters</groupId>
+        <artifactId>okapi-filter-ts</artifactId>
+      </dependency>
     <dependency>
       <groupId>net.sf.okapi</groupId>
       <artifactId>okapi-core</artifactId>
