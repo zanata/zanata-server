@@ -24,9 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
-import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.groups.CreateVersionGroupPage;
 import org.zanata.page.groups.VersionGroupPage;
 import org.zanata.page.groups.VersionGroupsPage;
@@ -56,7 +55,6 @@ public class VersionGroupTest extends ZanataTestCase {
     @Feature(summary = "The administrator can create a basic group",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 170109)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void createABasicGroup() throws Exception {
         String groupID = "basic-group";
         String groupName = "A Basic Group";

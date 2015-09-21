@@ -26,7 +26,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.dashboard.DashboardActivityTab;
@@ -71,7 +70,6 @@ public class DashboardTest extends ZanataTestCase {
     @Feature(summary = "The user can traverse Dashboard activity lists",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void dashboardBasicTests() throws Exception {
         assertThat(dashboardPresentAfterLogin())
                 .as("Dashboard is present").isTrue();

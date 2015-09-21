@@ -244,6 +244,7 @@ public class BasePage extends CorePage {
         log.info("Enter Project/Person search {}", searchText);
         WebElementUtil.searchAutocomplete(getDriver(), "projectAutocomplete",
                 searchText);
+        waitForPageSilence();
         return new BasePage(getDriver());
     }
 

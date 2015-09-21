@@ -26,7 +26,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.account.RegisterPage;
@@ -72,7 +71,6 @@ public class RegisterTest extends ZanataTestCase {
     @Feature(summary = "The user can register an account with Zanata",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86816)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void registerSuccessful() throws Exception {
         RegisterPage registerPage = homePage
                 .goToRegistration()

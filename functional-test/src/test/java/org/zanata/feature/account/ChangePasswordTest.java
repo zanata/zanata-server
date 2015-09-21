@@ -25,7 +25,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.dashboard.DashboardBasePage;
@@ -50,7 +49,6 @@ public class ChangePasswordTest extends ZanataTestCase {
     @Feature(summary = "The user can change their password",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86823)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     @Ignore("Flaky test")
     public void changePasswordSuccessful() throws Exception {
         DashboardBasePage dashboard = new LoginWorkFlow()

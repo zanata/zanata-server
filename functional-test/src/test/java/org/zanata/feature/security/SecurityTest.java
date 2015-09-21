@@ -27,7 +27,6 @@ import org.junit.experimental.categories.Category;
 import org.openqa.selenium.By;
 import org.subethamail.wiser.WiserMessage;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.account.ResetPasswordPage;
@@ -51,7 +50,6 @@ public class SecurityTest extends ZanataTestCase {
     @Feature(summary = "The user can log in",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86815)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void signInSuccessful() {
         assertThat(new LoginWorkFlow()
                 .signIn("admin", "admin")
@@ -64,7 +62,6 @@ public class SecurityTest extends ZanataTestCase {
             "password to log in",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 86815)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void signInFailure() {
         assertThat(new LoginWorkFlow()
                 .signInFailure("nosuchuser", "password")
