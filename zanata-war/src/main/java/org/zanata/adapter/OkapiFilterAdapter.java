@@ -172,6 +172,9 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         RawDocument rawDoc =
                 new RawDocument(documentContent, "UTF-8",
                         net.sf.okapi.common.LocaleId.fromString("en"));
+        if (rawDoc.getTargetLocale() == null) {
+            rawDoc.setTargetLocale(net.sf.okapi.common.LocaleId.ENGLISH);
+        }
         updateParams(filterParams);
         try {
             filter.open(rawDoc);
@@ -421,6 +424,9 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         RawDocument rawDoc =
                 new RawDocument(originalFile, "UTF-8",
                         net.sf.okapi.common.LocaleId.fromString("en"));
+        if (rawDoc.getTargetLocale() == null) {
+            rawDoc.setTargetLocale(localeId);
+        }
         updateParams(params);
         try {
             filter.open(rawDoc);
