@@ -222,8 +222,6 @@ public class GlossaryService implements GlossaryResource {
     public Response upload(@MultipartForm GlossaryFileUploadForm form) {
         identity.checkPermission("", "glossary-insert");
 
-        System.out.println(form.getFileStream() + ":" + form.getFileName() + ":" + form.getSrcLocale() + ":" + form.getTransLocale());
-
         final Response response;
         try {
             LocaleId srcLocaleId = new LocaleId(form.getSrcLocale());

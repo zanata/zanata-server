@@ -2,6 +2,8 @@ import React from 'react';
 import {PureRenderMixin} from 'react/addons';
 import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils'
+import _ from 'lodash';
+
 
 var Comment = React.createClass({
   propTypes: {
@@ -27,7 +29,8 @@ var Comment = React.createClass({
   },
 
   _onCancelComment: function () {
-    this.setState({value: this.props.value});
+    var value = _.isUndefined(this.props.value) ? '' : this.props.value;
+    this.setState({value: value});
   },
 
   _handleKeyUp: function (event) {
@@ -36,9 +39,15 @@ var Comment = React.createClass({
     }
   },
 
+  _hasValueChanged: function() {
+    var initialValue = _.isUndefined(this.props.value) ? '' : this.props.value;
+    var newValue = _.isUndefined(this.state.value) ? '' : this.state.value;
+    return initialValue !== newValue;
+  },
+
   render: function () {
     var self = this, tooltip = null, buttons = null;
-    var isValueChanged = this.props.value !== this.state.value;
+    var isValueChanged = this._hasValueChanged();
 
     if(isValueChanged) {
       buttons = (<div className="mt1/2">
@@ -57,7 +66,7 @@ var Comment = React.createClass({
       </Tooltip>);
     } else {
       var comment = StringUtils.isEmptyOrNull(self.state.value) ? (<i>No comment</i>) : (<span>{self.state.value}</span>);
-      tooltip = (<Tooltip>{comment}</Tooltip>);
+      tooltip = (<Tooltip id="comment">{comment}</Tooltip>);
     }
 
     return (

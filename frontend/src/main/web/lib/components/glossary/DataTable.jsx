@@ -100,7 +100,7 @@ var DataTable = React.createClass({
   },
 
   _generateKey: function (colIndex, rowIndex, resId) {
-    return colIndex + ":" + rowIndex + ":" + resId
+    return colIndex + ":" + rowIndex + ":" + resId + ":" + this.props.selectedTransLocale;
   },
 
   _getSort: function (key) {
@@ -153,7 +153,6 @@ var DataTable = React.createClass({
 
   _renderCell: function (resId, rowIndex, field, readOnly, placeholder) {
     var key = this._generateKey(field.col, rowIndex, resId);
-
     if (resId === null) {
       return (<LoadingCell key={key}/>)
     } else {
@@ -274,6 +273,7 @@ var DataTable = React.createClass({
       key={self.ENTRY.TRANS.field}
       width={150}
       dataKey={0}
+      flexGrow={1}
       cellRenderer={this._renderTransCell}
       headerRenderer={this._renderTransHeader}
       />);

@@ -61,13 +61,13 @@ function processLocalesStatistic(serverResponse) {
   _state['locales'] = {};
   _state['localeOptions'] = [];
   _state['srcLocale'] = serverResponse['srcLocale'];
-  resetCache(_state['srcLocale'].numberOfTerms);
+  resetCache();
 
   _.forEach(serverResponse['transLocale'], function(transLocale) {
     _state['locales'][transLocale.locale.localeId] = transLocale;
     _state['localeOptions'].push({
       value: transLocale.locale.localeId,
-      label: transLocale.locale.displayName + " - (" + transLocale.numberOfTerms + ")"
+      label: `${transLocale.locale.displayName} - (${transLocale.numberOfTerms})`
     });
   });
   return _state;
@@ -174,6 +174,9 @@ function processGlossaryList(serverResponse) {
 
     if(transTerm != null) {
       transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
+      if(_.isUndefined(transTerm['comment'])) {
+        transTerm['comment'] = ''
+      }
     } else {
       transTerm = GlossaryHelper.generateTerm(transLocaleId);
     }
@@ -264,11 +267,11 @@ function uploadFile(data) {
 }
 
 function processDelete(serverResponse) {
-  console.info('Glossary entry deleted', serverResponse);
+  console.info('Glossary entry deleted');
 }
 
 function processSave(serverResponse) {
-  console.info('Glossary entry saved', serverResponse);
+  console.info('Glossary entry saved');
 }
 
 function initialise () {
@@ -279,6 +282,9 @@ function initialise () {
 
   loadLocalesStats()
     .then(processLocalesStatistic)
+    .then(function() {
+      GlossaryStore.emitChange();
+    })
     .then(function() {
       loadGlossaryByLocale()
         .then(processGlossaryList)
@@ -352,8 +358,8 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.UPDATE_FILTER:
         console.debug('Update filter', action.data);
         if(_state['filter']  !== action.data) {
-          _state['filter'] = action.data;
           resetCache();
+          _state['filter'] = action.data;
           initialise();
         }
         break;
@@ -406,10 +412,14 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
   })
 });
 
-function resetCache(totalCount) {
+function resetCache() {
   _state['page'] = 1;
   _state['glossary'] = {};
   _state['glossaryResId'] = [];
+  _state['filter'] = '';
+  _state['sort'] = {
+    src_content: true
+  };
 }
 
 export default GlossaryStore;
