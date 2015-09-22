@@ -24,6 +24,8 @@ var _state = {
   glossaryResId: [],
   page:1,
   filter: '',
+  hoveredRow: null,
+  focusedRow: null,
   uploadFile: null,
   sort: {
     src_content: true
@@ -307,6 +309,14 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     return _state['glossary'][resId];
   },
 
+  getHoveredRow: function() {
+    return _state['hoveredRow'];
+  },
+
+  getFocusedRow: function() {
+    return _state['focusedRow'];
+  },
+
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -409,6 +419,24 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
             initialise();
           });
         break;
+      case GlossaryActionTypes.UPDATE_HOVERED_ROW:
+        _state['hoveredRow'] = action.data;
+        GlossaryStore.emitChange();
+        break;
+      case GlossaryActionTypes.UPDATE_FOCUSED_ROW:
+        var previousResId = _state['focusedRow'] ? _state['focusedRow'].resId : null;
+        var entry = _state['glossary'][previousResId];
+        if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
+          //console.info('need to save changes', action.data, entry);
+          saveOrUpdateGlossary(entry)
+              .then(processSave)
+              .then(function () {
+                initialise();
+              });
+        }
+        _state['focusedRow'] = action.data;
+        GlossaryStore.emitChange();
+        break;
     }
   })
 });
@@ -418,6 +446,8 @@ function resetCache() {
   _state['glossary'] = {};
   _state['glossaryResId'] = [];
   _state['filter'] = '';
+  _state['hoveredRow'] = null;
+  _state['focusedRow'] = null;
   _state['sort'] = {
     src_content: true
   };

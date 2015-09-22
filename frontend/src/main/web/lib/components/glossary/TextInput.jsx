@@ -1,5 +1,4 @@
 import React from 'react';
-import {PureRenderMixin} from 'react/addons';
 import {Input} from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils'
 
@@ -17,11 +16,12 @@ var TextInput = React.createClass({
     onBlurCallback: React.PropTypes.func
   },
 
-  mixins: [PureRenderMixin],
+  TIMEOUT: 150,
 
   getInitialState: function() {
     return {
-      value: this.props.value
+      value: this.props.value,
+      timeout: null
     };
   },
 
@@ -56,11 +56,18 @@ var TextInput = React.createClass({
   },
 
   _setValue: function (value) {
+    var self = this;
     value = StringUtils.trimLeadingSpace(value);
-    if(this.props.onChangeCallback) {
-      this.props.onChangeCallback(this, value);
-    }
     this.setState({value: value});
+    if(this.state.timeout !== null) {
+      clearTimeout(this.state.timeout);
+    }
+    this.state.timeout = setTimeout(function() {
+      if(self.props.onChangeCallback) {
+        self.props.onChangeCallback(self, value);
+      }
+    }, self.TIMEOUT);
+
   },
 
   render: function() {

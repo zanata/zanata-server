@@ -74,7 +74,7 @@ var GlossaryHelper = {
     var term =  _(terms)
       .filter(function(term) { return term.locale === localeId; })
       .value();
-    return term[0];
+    return _.size(term) <= 0 ? null : term[0];
   },
 
   getEntryStatus: function (entry, originalEntry) {
@@ -107,7 +107,7 @@ var GlossaryHelper = {
 
   canUpdateTransComment: function (entry) {
     return !StringUtils.isEmptyOrNull(entry.transTerm.content);
-  }
+  },
 
 };
 export default GlossaryHelper;

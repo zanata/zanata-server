@@ -1,6 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
+import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import Comment from './Comment'
@@ -65,18 +65,18 @@ var ActionCell = React.createClass({
       var canUpdateComment = this.state.entry.status.canUpdateTransComment;
 
       var infoTooltip = <Tooltip id="info">{this.props.info}</Tooltip>;
-      var info = (<OverlayTrigger placement='top' trigger='click' rootClose overlay={infoTooltip}>
-        <Icon name="info"/>
+      var info = (<OverlayTrigger placement='top' rootClose overlay={infoTooltip}>
+        <Icon className="cpri" name="info"/>
       </OverlayTrigger>);
 
       var updateButton = null, cancelButton = null,
-        comment = (<Comment readOnly={!self.props.canUpdateEntry || !canUpdateComment}
+        comment = (<Comment className="ml1/4" readOnly={!self.props.canUpdateEntry || !canUpdateComment}
         value={this.state.entry.transTerm.comment}
         onUpdateCommentCallback={self._onUpdateComment}/>);
 
       if(isTransModified) {
-        updateButton = (<button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2'onClick={self._handleUpdate}>Update</button>);
-        cancelButton = (<button className='cpri' onClick={self._handleCancel}>Cancel</button>);
+        updateButton = (<Button kind='primary' className='ml1/4' onClick={self._handleUpdate}>Update</Button>);
+        cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
       }
 
       return (<div>{info} {comment} {updateButton} {cancelButton}</div>);

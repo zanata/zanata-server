@@ -78,6 +78,24 @@ var Actions = {
         value: value
       }
     });
+  },
+  updateHoveredRow: function (resId, rowIndex) {
+      Dispatcher.handleViewAction({
+        actionType: GlossaryActionTypes.UPDATE_HOVERED_ROW,
+        data: {
+          rowIndex: rowIndex,
+          resId: resId
+        }
+      });
+  },
+  updateFocusedRow: function (resId, rowIndex) {
+        Dispatcher.handleViewAction({
+          actionType: GlossaryActionTypes.UPDATE_FOCUSED_ROW,
+          data: {
+            rowIndex: rowIndex,
+            resId: resId
+          }
+        });
   }
 };
 

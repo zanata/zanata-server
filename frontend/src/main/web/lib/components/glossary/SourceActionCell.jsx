@@ -1,6 +1,6 @@
 import React from 'react';
 import {PureRenderMixin} from 'react/addons';
-import { Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
+import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import GlossaryStore from '../../stores/GlossaryStore';
@@ -21,8 +21,24 @@ var SourceActionCell = React.createClass({
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
+    return this._getState();
+  },
+
+  _getState: function () {
+    var self = this, isHovered = false, isFocused = false,
+        hoveredRow = GlossaryStore.getHoveredRow(),
+        focusedRow = GlossaryStore.getFocusedRow();
+
+    if(hoveredRow) {
+      isHovered = hoveredRow.rowIndex === self.props.rowIndex;
+    }
+    if(focusedRow) {
+      isFocused = focusedRow.rowIndex === self.props.rowIndex;
+    }
     return {
-      entry: GlossaryStore.getEntry(this.props.resId)
+      entry: GlossaryStore.getEntry(self.props.resId),
+      isHovered: isHovered,
+      isFocused: isFocused
     }
   },
 
@@ -35,9 +51,7 @@ var SourceActionCell = React.createClass({
   },
 
   _onChange: function() {
-    if (this.isMounted()) {
-      this.setState({entry: GlossaryStore.getEntry(this.props.resId)});
-    }
+    this.setState(this._getState());
   },
 
   _handleSave: function() {
@@ -62,31 +76,31 @@ var SourceActionCell = React.createClass({
     var self = this,
       newEntryCell  = this.props.newEntryCell,
       canAddNewEntry = this.props.canAddNewEntry,
-      isSrcValid = this.state.entry.status.isSrcValid;
+      isSrcValid = self.state.entry.status.isSrcValid,
+      isRowFocused = self.state.isHovered || self.state.isFocused;
 
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
-      var isSrcModified= this.state.entry.status.isSrcModified;
+      var isSrcModified= self.state.entry.status.isSrcModified;
       var cancelButton = null, saveButton = null;
 
       var info = (<OverlayTrigger placement='top'
-        trigger='click' rootClose
-        overlay={<Tooltip id='src-info'>{this.props.info}</Tooltip>}>
-        <Icon name="info"/>
+        rootClose
+        overlay={<Tooltip id='src-info'>{self.props.info}</Tooltip>}>
+        <Icon className="cpri" name="info"/>
       </OverlayTrigger>);
 
       if(isSrcModified) {
-        cancelButton = (<button className='cpri' onClick={self._handleCancel}>Cancel</button>);
+        cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
         if(newEntryCell && canAddNewEntry && isSrcValid) {
-          saveButton = (<button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleSave}>Save</button>);
+          saveButton = (<Button kind='primary' className='ml1/4' onClick={self._handleSave}>Save</Button>);
         }
       }
 
       if (newEntryCell && canAddNewEntry) {
         if(isSrcModified) {
           return (<div>
-            {info}
             {saveButton}
             {cancelButton}
           </div>)
@@ -95,14 +109,15 @@ var SourceActionCell = React.createClass({
         }
       } else {
         var deleteButton = null, updateButton = null;
-        if(canAddNewEntry) {
-          deleteButton = (<button className='cdanger pv1/4 ph1/2 mr1/2' onClick={self._handleDelete}>
-            <Icon name="trash"/> <span>Delete</span>
-          </button>);
+        if(canAddNewEntry && isRowFocused) {
+          deleteButton = (
+            <Button kind="danger" className='ml1/4' onClick={self._handleDelete}>
+              <Icon name="trash"/> <span>Delete</span>
+            </Button>);
         }
 
         if(isSrcModified && this.props.canUpdateEntry && isSrcValid) {
-          updateButton = (<button className='cwhite bgcpri bdrs pv1/4 ph1/2 mr1/2' onClick={self._handleUpdate}>Update</button>);
+          updateButton = (<Button kind='primary' className="ml1/4" onClick={self._handleUpdate}>Update</Button>);
         }
 
         if(isSrcModified) {

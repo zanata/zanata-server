@@ -5,14 +5,10 @@ var StringUtils = {
     return _.isUndefined(str) || _.isNull(str) || 0 === str.length;
   },
 
-  isEqualIgnoreCase: function (str1, str2) {
-    if(this.isEmptyOrNull(str1) || this.isEmptyOrNull(str2)) {
-      return false;
-    }
-    return str1.toLowerCase() === str2.toLowerCase();
-  },
-
   trimLeadingSpace: function (str) {
+    if(this.isEmptyOrNull(str)) {
+      return str;
+    }
     while (str.substring(0,1) == ' ') {
       str = str.substring(1, str.length);
     }
@@ -20,11 +16,7 @@ var StringUtils = {
   },
 
   trim: function (str) {
-    if(_.isNull(str) || _.isUndefined(str)) {
-      return str;
-    } else {
-      return str.trim();
-    }
+    return this.isEmptyOrNull(str) ? str : str.trim();
   }
 };
 export default StringUtils;

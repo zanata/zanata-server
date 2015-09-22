@@ -3,7 +3,7 @@ import Configs from '../constants/Configs';
 import GlossaryStore from '../stores/GlossaryStore';
 import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
-import { Input, Icons, Icon, Select, Modal } from 'zanata-ui'
+import { Button, Input, Icons, Icon, Select, Modal } from 'zanata-ui'
 import DataTable from './glossary/DataTable'
 import TextInput from './glossary/TextInput'
 import { Loader } from 'zanata-ui'
@@ -101,6 +101,8 @@ var SystemGlossary = React.createClass({
     var contents = (<DataTable
       glossaryData={this.state.glossary}
       glossaryResId={this.state.glossaryResId}
+      focusedRow={this.state.focusedRow}
+      hoveredRow={this.state.hoveredRow}
       totalCount={this.state.glossaryResId.length}
       canAddNewEntry={this.state.canAddNewEntry}
       canUpdateEntry={this.state.canUpdateEntry}
@@ -119,8 +121,7 @@ var SystemGlossary = React.createClass({
 
       var transLanguageDropdown = null,
         fileExtension = this._getUploadFileExtension(),
-        footer = null;
-
+        disableUpload = true;
       if(this._isSupportedFile(fileExtension)) {
         if(fileExtension === 'po') {
           var localeOptions = [];
@@ -141,28 +142,18 @@ var SystemGlossary = React.createClass({
           />);
 
           if(!StringUtils.isEmptyOrNull(this.state.selectedUploadFileTransLocale)) {
-            footer = (
-              <Modal.Footer>
-                <button className='mr1 cpri' onClick={this._closeUploadModal}>Cancel</button>
-                <button className='bgcpri cwhite bdrs ph3/4 pv1/4' onClick={this._uploadFile}>Submit</button>
-              </Modal.Footer>
-            );
+            disableUpload = false;
           }
         } else {
-          footer = (
-            <Modal.Footer>
-              <button className='mr1 cpri' onClick={this._closeUploadModal}>Cancel</button>
-              <button className='bgcpri cwhite bdrs ph3/4 pv1/4' onClick={this._uploadFile}>Submit</button>
-            </Modal.Footer>
-          );
+          disableUpload = false;
         }
       }
 
       uploadSection = (
         <div>
-          <button className='cpri' onClick={this._openUploadModal}>
+          <Button onClick={this._openUploadModal}>
             <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
-          </button>
+          </Button>
           <Modal show={this.state.showModal} onHide={this._closeUploadModal}>
             <Modal.Header>
               <Modal.Title>Import Glossary</Modal.Title>
@@ -172,16 +163,16 @@ var SystemGlossary = React.createClass({
                 <input type="file" onChange={this._handleFile} ref="file" multiple={false} />
               </form>
               <p>
-                <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" target="_blank">
-                  <Icon name="info"/> For more information
-                </a>
+                CSV and PO files are supported. The source language should be in {this.state.srcLocale.locale.displayName}. For more details on how to prepare glossary files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" className="cpri" target="_blank">glossary import documentation</a>.
               </p>
-              <div className='mv1/4'>Source language: {this.state.srcLocale.locale.displayName}</div>
               <div>
                 {transLanguageDropdown}
               </div>
             </Modal.Body>
-            {footer}
+            <Modal.Footer>
+              <Button className='mr1' onClick={this._closeUploadModal}>Cancel</Button>
+              <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile}>Import</Button>
+            </Modal.Footer>
           </Modal>
       </div>)
     }

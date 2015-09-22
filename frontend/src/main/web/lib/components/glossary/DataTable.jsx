@@ -11,6 +11,8 @@ import ColumnHeader from './ColumnHeader'
 import _ from 'lodash';
 
 var DataTable = React.createClass({
+  TIMEOUT: 400,
+
   ENTRY: {
     SRC: {
       col: 1,
@@ -63,10 +65,16 @@ var DataTable = React.createClass({
       numberOfTerms: React.PropTypes.number.isRequired
     }),
     selectedTransLocale: React.PropTypes.string,
-    totalCount: React.PropTypes.number.isRequired
+    totalCount: React.PropTypes.number.isRequired,
+    focusedRow: React.PropTypes.shape({
+      resId: React.PropTypes.string,
+      rowIndex: React.PropTypes.number
+    }),
+    hoveredRow: React.PropTypes.shape({
+      resId: React.PropTypes.string,
+      rowIndex: React.PropTypes.number
+    })
   },
-
-  mixins: [PureRenderMixin],
 
   getInitialState: function () {
     return {
@@ -75,7 +83,7 @@ var DataTable = React.createClass({
       row_height: this.CELL_HEIGHT,
       header_height: this.CELL_HEIGHT,
       inputFields: {},
-      timeout: null
+      hoverTimeout: null
     }
   },
 
@@ -169,8 +177,6 @@ var DataTable = React.createClass({
           resId={resId}
           key={key}
           field={field.field}
-          onFocusCallback={this._onInputFocus}
-          onBlurCallback={this._onInputBlur}
           onChangeCallback={this._onValueChange}/>)
       }
     }
@@ -223,7 +229,8 @@ var DataTable = React.createClass({
     var entry = this._getGlossaryEntry(resId);
 
     if(self._isTranslationSelected()) {
-      var info = this._generateTermInfo(entry.transTerm);
+      var info = self._generateTermInfo(entry.transTerm);
+
       return (
         <ActionCell info={info}
           canUpdateEntry={self.props.canUpdateEntry}
@@ -233,7 +240,7 @@ var DataTable = React.createClass({
       );
     } else {
       var isNewEntryCell = rowIndex === 0,
-        info = this._generateTermInfo(entry.srcTerm);
+        info = self._generateTermInfo(entry.srcTerm);
       return (
         <SourceActionCell resId={resId} rowIndex={rowIndex}
           srcLocaleId={self.props.srcLocale.locale.localeId}
@@ -335,29 +342,40 @@ var DataTable = React.createClass({
   },
 
   _onRowMouseEnter: function (event, rowIndex) {
-    this.setState({hoveredRow: rowIndex});
+    var resId = this._rowGetter(rowIndex)[0];
+    if(this.props.hoveredRow) {
+      if(this.props.hoveredRow.rowIndex !== rowIndex) {
+        this._updateHoverRow(resId, rowIndex);
+      }
+    } else {
+      this._updateHoverRow(resId, rowIndex);
+    }
   },
 
-  _onRowMouseLeave: function (event, rowIndex) {
-    this.setState({hoveredRow: -1});
+  _updateHoverRow: function (resId, rowIndex) {
+    if (this.state.hoverTimeout !== null) {
+      clearTimeout(this.state.hoverTimeout);
+    }
+    this.state.hoverTimeout = setTimeout(function () {
+      Actions.updateHoveredRow(resId, rowIndex);
+    }, 90);
   },
 
   _onRowClick: function (event, rowIndex) {
-    this.setState({focusedRow: rowIndex});
-  },
-
-  _onInputFocus: function (input, rowIndex) {
-    this.setState({focusedRow: rowIndex});
-  },
-
-  _onInputBlur: function (input, rowIndex) {
-    this.setState({focusedRow: -1});
+    var resId = this._rowGetter(rowIndex)[0];
+    if(this.props.focusedRow) {
+      if(this.props.focusedRow.rowIndex !== rowIndex) {
+        Actions.updateFocusedRow(resId, rowIndex);
+      }
+    } else {
+      Actions.updateFocusedRow(resId, rowIndex);
+    }
   },
 
   _rowClassNameGetter: function (rowIndex) {
-    if(rowIndex == this.state.focusedRow) {
+    if(this.props.focusedRow && this.props.focusedRow.rowIndex === rowIndex) {
       return 'bgcsec30a';
-    } else if(rowIndex == this.state.hoveredRow) {
+    } else if(this.props.hoveredRow && this.props.hoveredRow.rowIndex === rowIndex) {
       return 'bgcsec20a';
     }
   },
@@ -376,7 +394,6 @@ var DataTable = React.createClass({
         input.reset();
       }
     });
-    this.setState({focusedRow: -1});
   },
 
   _getGlossaryEntry: function (resId) {
@@ -392,7 +409,7 @@ var DataTable = React.createClass({
       }
       this.state.timeout = setTimeout(function() {
         Actions.loadGlossary(rowIndex);
-      }, 500);
+      }, self.TIMEOUT);
       return [null];
     } else {
       return row;
@@ -400,29 +417,28 @@ var DataTable = React.createClass({
   },
 
   render: function() {
-    var columns = [];
-    columns.push(this._getSourceColumn());
+    var self = this, columns = [];
+    columns.push(self._getSourceColumn());
     if(this._isTranslationSelected()) {
-      columns.push(this._getTransColumn());
+      columns.push(self._getTransColumn());
     }
-    columns.push(this._getPosColumn());
-    columns.push(this._getDescColumn());
-    if(!this._isTranslationSelected()) {
-      columns.push(this._getTransCountColumn());
+    columns.push(self._getPosColumn());
+    columns.push(self._getDescColumn());
+    if(!self._isTranslationSelected()) {
+      columns.push(self._getTransCountColumn());
     }
-    columns.push(this._getActionColumn());
+    columns.push(self._getActionColumn());
 
     var dataTable = (<Table
-      onRowClick={this._onRowClick}
-      onRowMouseEnter={this._onRowMouseEnter}
-      onRowMouseLeave={this._onRowMouseLeave}
-      rowClassNameGetter={this._rowClassNameGetter}
-      rowHeight={this.CELL_HEIGHT}
-      rowGetter={this._rowGetter}
-      rowsCount={this.props.totalCount}
-      width={this.state.tbl_width}
-      height={this.state.tbl_height}
-      headerHeight={this.CELL_HEIGHT}>
+      onRowClick={self._onRowClick}
+      onRowMouseEnter={self._onRowMouseEnter}
+      rowClassNameGetter={self._rowClassNameGetter}
+      rowHeight={self.CELL_HEIGHT}
+      rowGetter={self._rowGetter}
+      rowsCount={self.props.totalCount}
+      width={self.state.tbl_width}
+      height={self.state.tbl_height}
+      headerHeight={self.CELL_HEIGHT}>
       {columns}
     </Table>);
 
