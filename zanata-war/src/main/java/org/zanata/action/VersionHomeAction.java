@@ -22,6 +22,7 @@
 package org.zanata.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.DigestInputStream;
@@ -43,6 +44,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 import org.zanata.exception.AuthorizationException;
 import org.jboss.seam.util.Hex;
 import org.zanata.async.handle.CopyVersionTaskHandle;
@@ -710,21 +713,24 @@ public class VersionHomeAction extends AbstractSortAction implements
                         .getProject(), hLocale);
     }
 
-    private DocumentType getDocumentType(Optional<String> docType) {
+    private Optional<DocumentType> getDocumentType(Optional<String> docType) {
         DocumentType type;
         if (!docType.isPresent()) {
             // if docType null, only 1 document type available for selected file extensions
-            type = translationFileServiceImpl
-                            .getDocumentTypes(sourceFileUpload.getFileName())
-                            .iterator().next();
+            Set<DocumentType> documentTypes = translationFileServiceImpl
+                    .getDocumentTypes(sourceFileUpload.getFileName());
+            if (documentTypes.isEmpty()) {
+                return Optional.absent();
+            }
+            type = documentTypes.iterator().next();
         } else {
             // if docType not null, adapter is selected by user from drop down
             type = DocumentType.getByName(docType.get());
         }
-        return type;
+        return Optional.of(type);
     }
 
-    public void uploadSourceFile() {
+    public String uploadSourceFile() {
         identity.checkPermission("import-template", getVersion());
 
         if (sourceFileUpload.getFileName().endsWith(".pot")) {
@@ -734,18 +740,23 @@ public class VersionHomeAction extends AbstractSortAction implements
             Optional<String> docType =
                 Optional.fromNullable(sourceFileUpload.documentType);
 
-            DocumentType documentType = getDocumentType(docType);
-
-            if (translationFileServiceImpl.hasAdapterFor(documentType)) {
-                uploadAdapterFile(documentType);
+            Optional<DocumentType> documentTypeOpt = getDocumentType(docType);
+            if (documentTypeOpt.isPresent()
+                    && translationFileServiceImpl.hasAdapterFor(documentTypeOpt
+                            .get())) {
+                uploadAdapterFile(documentTypeOpt.get());
+                resetPageData();
             } else {
+                String summary = "Unrecognized file extension for "
+                        +
+                        sourceFileUpload.getFileName();
+                // TODO this message is not displayed
                 conversationScopeMessages.setMessage(
-                        FacesMessage.SEVERITY_INFO,
-                        "Unrecognized file extension for "
-                                + sourceFileUpload.getFileName());
+                        FacesMessage.SEVERITY_INFO, summary);
+                throw new IllegalArgumentException(summary);
             }
         }
-        resetPageData();
+        return "success";
     }
 
     public boolean isPoDocument(String docId) {
@@ -981,7 +992,7 @@ public class VersionHomeAction extends AbstractSortAction implements
         return urlUtil.encodeString(docId);
     }
 
-    public void uploadTranslationFile(HLocale hLocale) {
+    public String uploadTranslationFile(HLocale hLocale) {
         identity.checkPermission("modify-translation", hLocale, getVersion()
                 .getProject());
         try {
@@ -1047,6 +1058,21 @@ public class VersionHomeAction extends AbstractSortAction implements
                     translationFileUpload.getFileName() + "-" + e.getMessage());
         }
         resetPageData();
+        return "success";
+    }
+
+    public void sourceFileUploaded(FileUploadEvent event) throws IOException {
+        UploadedFile uploadedFile = event.getUploadedFile();
+        sourceFileUpload.setFileName(uploadedFile.getName());
+        sourceFileUpload.setFileContents(uploadedFile.getInputStream());
+//        return "/iteration/view.xhtml?projectSlug=" + projectSlug +"&iterationSlug=" + versionSlug;
+
+    }
+
+    public void transFileUploaded(FileUploadEvent event) throws IOException {
+        UploadedFile uploadedFile = event.getUploadedFile();
+        translationFileUpload.setFileName(uploadedFile.getName());
+        translationFileUpload.setFileContents(uploadedFile.getInputStream());
     }
 
     private class DocumentFilter extends InMemoryListFilter<HDocument> {
