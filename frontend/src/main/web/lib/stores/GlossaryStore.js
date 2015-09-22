@@ -103,6 +103,7 @@ function generateSortOrderParam() {
 function loadGlossaryByLocale () {
   var srcLocale = _state['srcLocale'],
     selectedTransLocaleId = _state['selectedTransLocale'];
+
   if(!_.isUndefined(srcLocale) && !_.isNull(srcLocale)) {
     var url = glossaryAPIUrl(srcLocale.locale.localeId, selectedTransLocaleId);
 

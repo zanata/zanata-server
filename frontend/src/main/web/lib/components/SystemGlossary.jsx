@@ -14,7 +14,7 @@ var SystemGlossary = React.createClass({
   mixins: [PureRenderMixin],
 
   _init: function() {
-    return GlossaryStore.init(this.props.params, this.props.query);
+    return GlossaryStore.init();
   },
 
   getInitialState: function() {

@@ -6,6 +6,9 @@ jest.mock('../../utils/DateHelper');
 describe('UserMatrixStore', function() {
   var MockRequest;
   var baseUrl = 'http://localhost/base';
+  var user = {"username": "test-user", "email":"zanata@zanata.org", "name": "admin-name", "loggedIn": "true", "imageUrl":"//www.gravatar.com/avatar/dda6e90e3f2a615fb8b31205e8b4894b?d=mm&r=g&s=115", "languageTeams": "English, French, German, Yodish (Yoda English)"}
+  var data = {"permission":{"updateGlossary":true, "insertGlossary":true}, "dev": "true", "profileUser" : {"username": "test-user", "email":"zanata@zanata.org", "name":"admin-name","loggedIn":"true","imageUrl":"//www.gravatar.com/avatar/dda6e90e3f2a615fb8b31205e8b4894b?d=mm&r=g&s=115","languageTeams":"English, French, German, Yodish (Yoda English)"}}
+
   var responseBody = [
     {
       "savedDate": "2015-03-01",
@@ -20,6 +23,8 @@ describe('UserMatrixStore', function() {
 
   beforeEach(function() {
     require('../../constants/Configs').baseUrl = baseUrl;
+    require('../../constants/Configs').user = user;
+    require('../../constants/Configs').data = data;
     MockRequest = require('superagent');
     MockRequest.__setResponse({error: false, body: responseBody});
 
