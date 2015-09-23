@@ -121,6 +121,7 @@ var SystemGlossary = React.createClass({
       srcLocale={this.state.srcLocale}
       selectedTransLocale={selectedTransLocale}/>);
 
+
     if(!_.isUndefined(this.props.srcLocale) && !_.isNull(this.props.srcLocale)) {
       count = this.state.srcLocale.numberOfTerms;
     }

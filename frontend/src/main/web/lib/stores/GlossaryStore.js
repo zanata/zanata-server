@@ -10,7 +10,10 @@ import StringUtils from '../utils/StringUtils'
 import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
-var SIZE_PER_PAGE = 5000;
+var SIZE_PER_PAGE = 5000, CHANGE_EVENT = "change",
+    MAX_LISTENER = 50; //number of listener for GlossaryStore (default is 11)
+
+EventEmitter.prototype.setMaxListeners(MAX_LISTENER);
 
 var _state = {
   canAddNewEntry: false,
@@ -36,8 +39,6 @@ var _state = {
   },
   totalCount: 0
 };
-
-var CHANGE_EVENT = "change";
 
 function localesStatAPIUrl() {
   return Configs.baseUrl + "/glossary/info" + Configs.urlPostfix

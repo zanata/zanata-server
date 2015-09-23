@@ -23,17 +23,17 @@ var Comment = React.createClass({
   },
 
   _onCommentChange: function(event) {
-    //this.setState({value: event.target.value});
+    this.setState({value: event.target.value});
   },
 
   _onUpdateComment: function () {
     this.props.onUpdateCommentCallback(this.state.value);
-    //this.setState({showComment: false});
+    this.setState({showComment: false});
   },
 
   _onCancelComment: function () {
     var value = _.isUndefined(this.props.value) ? '' : this.props.value;
-    //this.setState({value: value, showComment: false});
+    this.setState({value: value, showComment: false});
   },
 
   _handleKeyUp: function (event) {
@@ -53,14 +53,14 @@ var Comment = React.createClass({
   },
 
   render: function () {
-    var self = this, tooltip = null, disableUpdate = !this._hasValueChanged();
+    var self = this, tooltip = null, disableUpdate = !self._hasValueChanged();
 
     if(this.props.readOnly !== true) {
       var tooltip = (<Tooltip id="comment" title="Comment">
         <textarea className="p1/4 w100p bd bdcsec30 bdrs1/4"
           onChange={self._onCommentChange}
           value={self.state.value}
-          onKeyUp={this._handleKeyUp}/>
+          onKeyUp={self._handleKeyUp}/>
         <div className="mt1/4">
           <Button className="mr1/2" onClick={self._onCancelComment}>Cancel</Button>
           <Button kind='primary' size={-1} disabled={disableUpdate} onClick={self._onUpdateComment}>Update Comment</Button>
@@ -72,7 +72,7 @@ var Comment = React.createClass({
     }
 
     var buttonClasses = cx(
-      this.props.className,
+        self.props.className,
       'mr1/2',
       {
         'cpri': !StringUtils.isEmptyOrNull(self.state.value),
@@ -81,7 +81,7 @@ var Comment = React.createClass({
     );
     return (
       <div className="dib">
-        <Overlay placement='top' target={props => React.findDOMNode(self)} rootClose show={self.state.showComment}>
+        <Overlay placement='top' target={props => React.findDOMNode(self)} onHide={self._onCancelComment} rootClose show={self.state.showComment}>
           {tooltip}
         </Overlay>
         <button className={buttonClasses} onClick={self._toggleComment}><Icon name='comment'></Icon></button>

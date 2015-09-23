@@ -20,10 +20,12 @@ var ActionCell = React.createClass({
   mixins: [PureRenderMixin],
 
   getInitialState: function() {
-    var entry = GlossaryStore.getEntry(this.props.resId);
+    return this._getState();
+  },
+
+  _getState: function() {
     return {
-      entry: entry,
-      comment: entry.transTerm.comment
+      entry: GlossaryStore.getEntry(this.props.resId)
     }
   },
 
@@ -37,7 +39,7 @@ var ActionCell = React.createClass({
 
   _onChange: function() {
     if (this.isMounted()) {
-      this.setState({entry: GlossaryStore.getEntry(this.props.resId)});
+      this.setState(this._getState());
     }
   },
 
@@ -58,20 +60,20 @@ var ActionCell = React.createClass({
   render: function () {
     var self = this;
 
-    if (this.props.resId === null || this.state.entry === null) {
+    if (self.props.resId === null || self.state.entry === null) {
       return (<LoadingCell/>);
     } else {
-      var isTransModified = this.state.entry.status.isTransModified;
-      var canUpdateComment = this.state.entry.status.canUpdateTransComment;
+      var isTransModified = self.state.entry.status.isTransModified;
+      var canUpdateComment = self.state.entry.status.canUpdateTransComment;
 
-      var infoTooltip = <Tooltip id="info">{this.props.info}</Tooltip>;
+      var infoTooltip = <Tooltip id="info">{self.props.info}</Tooltip>;
       var info = (<OverlayTrigger placement='top' rootClose overlay={infoTooltip}>
         <Icon className="cpri" name="info"/>
       </OverlayTrigger>);
 
       var updateButton = null, cancelButton = null,
         comment = (<Comment className="ml1/4" readOnly={!self.props.canUpdateEntry || !canUpdateComment}
-        value={this.state.entry.transTerm.comment}
+        value={self.state.entry.transTerm.comment}
         onUpdateCommentCallback={self._onUpdateComment}/>);
 
       if(isTransModified) {
@@ -79,7 +81,7 @@ var ActionCell = React.createClass({
         cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
       }
 
-      return (<div>{info} {comment} {updateButton} {cancelButton}</div>);
+      return (<div>{info} {comment} <div className='cdtargetib'>{updateButton} {cancelButton}</div></div>);
     }
   }
 });

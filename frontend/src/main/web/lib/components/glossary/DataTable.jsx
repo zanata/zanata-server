@@ -217,18 +217,14 @@ var DataTable = React.createClass({
   _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     var self = this;
-
     if(resId === null) {
       return (<LoadingCell/>);
     } else if(!self.props.canUpdateEntry && !self.props.canAddNewEntry) {
-      return (<div></div>);
+      return null;
     }
-
-    var entry = this._getGlossaryEntry(resId);
-
+    var entry = self._getGlossaryEntry(resId);
     if(self._isTranslationSelected()) {
       var info = self._generateTermInfo(entry.transTerm);
-
       return (
         <ActionCell info={info}
           canUpdateEntry={self.props.canUpdateEntry}
@@ -266,8 +262,8 @@ var DataTable = React.createClass({
       width={150}
       dataKey={0}
       flexGrow={1}
-      cellRenderer={this._renderSourceCell}
-      headerRenderer={this._renderSourceHeader}
+      cellRenderer={self._renderSourceCell}
+      headerRenderer={self._renderSourceHeader}
       />);
   },
 
@@ -279,8 +275,8 @@ var DataTable = React.createClass({
       width={150}
       dataKey={0}
       flexGrow={1}
-      cellRenderer={this._renderTransCell}
-      headerRenderer={this._renderTransHeader}
+      cellRenderer={self._renderTransCell}
+      headerRenderer={self._renderTransHeader}
       />);
   },
 
@@ -291,8 +287,8 @@ var DataTable = React.createClass({
       key={self.ENTRY.POS.field}
       width={150}
       dataKey={0}
-      cellRenderer={this._renderPosCell}
-      headerRenderer={this._renderPosHeader}
+      cellRenderer={self._renderPosCell}
+      headerRenderer={self._renderPosHeader}
       />);
   },
 
@@ -304,8 +300,8 @@ var DataTable = React.createClass({
       width={150}
       flexGrow={1}
       dataKey={0}
-      cellRenderer={this._renderDescCell}
-      headerRenderer={this._renderDescHeader}
+      cellRenderer={self._renderDescCell}
+      headerRenderer={self._renderDescHeader}
       />);
   },
 
@@ -317,12 +313,13 @@ var DataTable = React.createClass({
       width={120}
       cellClassName="tac"
       dataKey={0}
-      cellRenderer={this._renderTransCountCell}
-      headerRenderer={this._renderTransCountHeader}
+      cellRenderer={self._renderTransCountCell}
+      headerRenderer={self._renderTransCountHeader}
       />);
   },
 
   _getActionColumn: function() {
+    var self = this;
     return (<Column
       label=""
       key="Actions"
@@ -330,7 +327,7 @@ var DataTable = React.createClass({
       width={300}
       dataKey={0}
       isResizable={false}
-      cellRenderer={this._renderActionCell}
+      cellRenderer={self._renderActionCell}
       />)
   },
 
@@ -375,7 +372,7 @@ var DataTable = React.createClass({
    */
   _handleCancel: function (resId, rowIndex) {
     var self = this;
-    _.forOwn(this.ENTRY, function(value, key) {
+    _.forOwn(self.ENTRY, function(value, key) {
       var key = self._generateKey(value.col, rowIndex, resId),
         input = self.state.inputFields[key];
       if(!_.isUndefined(input)) {
@@ -393,7 +390,7 @@ var DataTable = React.createClass({
       row = self.props.glossaryResId[rowIndex];
     if(row === null) {
       if(this.state.timeout !== null) {
-        clearTimeout(this.state.timeout);
+        clearTimeout(self.state.timeout);
       }
       this.state.timeout = setTimeout(function() {
         Actions.loadGlossary(rowIndex);
@@ -407,7 +404,7 @@ var DataTable = React.createClass({
   render: function() {
     var self = this, columns = [];
     columns.push(self._getSourceColumn());
-    if(this._isTranslationSelected()) {
+    if(self._isTranslationSelected()) {
       columns.push(self._getTransColumn());
     }
     columns.push(self._getPosColumn());
@@ -417,7 +414,7 @@ var DataTable = React.createClass({
     }
     columns.push(self._getActionColumn());
 
-    var dataTable = (<Table
+    return (<Table
       onRowClick={self._onRowClick}
       onRowMouseEnter={self._onRowMouseEnter}
       rowClassNameGetter={self._rowClassNameGetter}
@@ -429,8 +426,6 @@ var DataTable = React.createClass({
       headerHeight={self.CELL_HEIGHT}>
       {columns}
     </Table>);
-
-    return (<div>{dataTable}</div>);
   }
 });
 

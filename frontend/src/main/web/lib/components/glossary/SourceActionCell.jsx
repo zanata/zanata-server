@@ -25,15 +25,8 @@ var SourceActionCell = React.createClass({
   },
 
   _getState: function () {
-    var self = this, isFocused = false,
-        focusedRow = GlossaryStore.getFocusedRow();
-
-    if(focusedRow) {
-      isFocused = focusedRow.rowIndex === self.props.rowIndex;
-    }
     return {
-      entry: GlossaryStore.getEntry(self.props.resId),
-      isFocused: isFocused
+      entry: GlossaryStore.getEntry(this.props.resId)
     }
   },
 
@@ -46,7 +39,9 @@ var SourceActionCell = React.createClass({
   },
 
   _onChange: function() {
-    this.setState(this._getState());
+    if (this.isMounted()) {
+      this.setState(this._getState());
+    }
   },
 
   _handleSave: function() {
@@ -72,7 +67,6 @@ var SourceActionCell = React.createClass({
       newEntryCell  = this.props.newEntryCell,
       canAddNewEntry = this.props.canAddNewEntry,
       isSrcValid = self.state.entry.status.isSrcValid;
-
 
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
@@ -105,15 +99,7 @@ var SourceActionCell = React.createClass({
       } else if(self.state.entry.status.isSaving === true) {
         return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
       } else {
-        var deleteButton = null,
-          updateButton = null,
-          buttonVisibleClass = '';
-
-        //if row focused or hovered
-        if(self.state.isFocused) {
-          buttonVisibleClass = 'is--active';
-        }
-
+        var deleteButton = null, updateButton = null;
         if(canAddNewEntry) {
           deleteButton = (
             <Button kind="danger" className='ml1/4' onClick={self._handleDelete}>
@@ -126,12 +112,13 @@ var SourceActionCell = React.createClass({
         }
 
         if(isSrcModified) {
-          return (<div>
-            <div className='cdtargetib'>{info}</div>
-            {updateButton}
-            {cancelButton}
-            {deleteButton}
-            </div>)
+          return (
+              <div>
+                <div className='cdtargetib'>{info}</div>
+                {updateButton}
+                {cancelButton}
+                {deleteButton}
+              </div>)
         } else {
           return (<div>{info}<div className='cdtargetib'>{deleteButton}</div></div>)
         }
