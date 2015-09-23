@@ -30,6 +30,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -341,12 +342,17 @@ public class AbstractPage {
     /**
      * Convenience function for clicking elements.  Removes obstructing
      * elements, scrolls the item into view and clicks it when it is ready.
-     * @param findby
+     * @param findby locator for element to be clicked
      */
     public void clickElement(By findby) {
         clickElement(readyElement(findby));
     }
 
+    /**
+     * Convenience function for clicking elements.  Removes obstructing
+     * elements, scrolls the item into view and clicks it when it is ready.
+     * @param element element to be clicked
+     */
     public void clickElement(final WebElement element) {
         removeNotifications();
         waitForNotificationsGone();
@@ -354,6 +360,73 @@ public class AbstractPage {
         waitForAMoment().withMessage("clickable: " + element.toString()).until(
                 ExpectedConditions.elementToBeClickable(element));
         element.click();
+    }
+
+    /**
+     * Convenience function for enter text (common case)
+     *
+     * @param element element to pass text to
+     * @param text text to be entered
+     */
+    public void enterText(final WebElement element, final String text) {
+        enterText(element, text, true, false, true);
+    }
+
+    /**
+     * Enter text into an element.
+     *
+     * Waits for notifications to be dismissed and element to be ready and visible before entering
+     * the text.
+     * If no checking is performed, the resulting screenshot may not be accurate.
+     * @param element element to pass text to
+     * @param text text to be entered
+     * @param clear clear the element's text before entering new text
+     * @param inject use sendKeys rather than the Actions chain (direct injection)
+     * @param check check the 'value' attribute for success, and accurate screenshot delay
+     */
+    public void enterText(final WebElement element, final String text, boolean clear,
+                          boolean inject, final boolean check) {
+        removeNotifications();
+        waitForNotificationsGone();
+        scrollIntoView(element);
+        triggerScreenshot("_pretext");
+        waitForAMoment().withMessage("editable: " + element.toString()).until(
+                ExpectedConditions.elementToBeClickable(element));
+        if (inject) {
+            if (clear) {
+                element.clear();
+            }
+            element.sendKeys(text);
+        } else {
+            Actions enterTextAction = new Actions(getDriver()).moveToElement(element);
+            enterTextAction = enterTextAction.click();
+            // Fields can 'blur' on click
+            waitForPageSilence();
+            if (clear) {
+                enterTextAction = enterTextAction.sendKeys(Keys.chord(Keys.CONTROL, "a")).sendKeys(Keys.DELETE);
+                // Fields can 'blur' on clear
+                waitForPageSilence();
+            }
+            enterTextAction.sendKeys(text).perform();
+        }
+        if (check) {
+            waitForAMoment().withMessage("Text equal to entered")
+                    .until(new Predicate<WebDriver>() {
+                        @Override
+                        public boolean apply(WebDriver input) {
+                            String text = element.getAttribute("value");
+                            if (!text.equals(text)) {
+                                log.info("Found: {}", text);
+                                triggerScreenshot("_textWaiting");
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+        } else {
+            log.info("Not checking text entered");
+        }
+        triggerScreenshot("_text");
     }
 
     private void waitForElementReady(final WebElement element) {
@@ -484,90 +557,8 @@ public class AbstractPage {
                 "return arguments[0].innerHTML;", webElement);
     }
 
-    // TODO: Deprecated functions, remove after 3.7
-
-    /**
-     * @deprecated Use the overload which includes a message
-     */
-    @Deprecated
-    protected <P extends AbstractPage> P refreshPageUntil(P currentPage,
-            Predicate<WebDriver> predicate) {
-        return refreshPageUntil(currentPage, predicate, null);
-    }
-
-    /**
-     * @deprecated Use the overload which includes a message
-     */
-    @Deprecated
-    protected <P extends AbstractPage, T> T refreshPageUntil(P currentPage,
-            Function<WebDriver, T> function) {
-        return refreshPageUntil(currentPage, function, null);
-    }
-
-    /**
-     * Wait for certain condition to happen.
-     *
-     * For example, wait for a translation updated event gets broadcast to editor.
-     *
-     * @param callable a callable that returns a result
-     * @param matcher a matcher that matches to expected result
-     * @param <T> result type
-     * @deprecated use waitForPageSilence() and then simply check the condition
-     */
-    @Deprecated
-    public <T> void
-    waitFor(final Callable<T> callable, final Matcher<T> matcher) {
-        waitForAMoment().withMessage(StringDescription.toString(matcher)).until(
-                new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver input) {
-                        try {
-                            T result = callable.call();
-                            if (!matcher.matches(result)) {
-                                matcher.describeMismatch(result,
-                                        new Description.NullDescription());
-                            }
-                            return matcher.matches(result);
-                        } catch (Exception e) {
-                            log.warn("exception", e);
-                            return false;
-                        }
-                    }
-                });
-    }
-
-    /**
-     * @deprecated use readyElement
-     */
-    @Deprecated
-    public WebElement waitForWebElement(final By elementBy) {
-        return readyElement(elementBy);
-    }
-
-    /**
-     * @deprecated use readyElement
-     */
-    @Deprecated
-    public WebElement waitForWebElement(final WebElement parentElement,
-            final By elementBy) {
-        return readyElement(parentElement, elementBy);
-    }
-
-
-    /**
-     * @deprecated use existingElement
-     */
-    public WebElement waitForElementExists(final By elementBy) {
-        return existingElement(elementBy);
-    }
-
-    /**
-     * @deprecated use existingElement
-     */
-    @Deprecated
-    public WebElement waitForElementExists(final WebElement parentElement,
-            final By elementBy) {
-        return existingElement(parentElement, elementBy);
+    public void triggerScreenshot(String tag) {
+        WebElementUtil.triggerScreenshot(tag);
     }
 
 }

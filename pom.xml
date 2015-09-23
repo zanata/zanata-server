@@ -63,7 +63,7 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
-    <zanata.assets.version>7.4-SNAPSHOT</zanata.assets.version>
+    <zanata.assets.version>8.0-SNAPSHOT</zanata.assets.version>
     <zanata.api.version>3.8.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
@@ -89,7 +89,7 @@
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
      -->
     <!-- 4.4.5.Final is not in Central -->
-    <hibernate.search.version>4.4.4.Final</hibernate.search.version>
+    <hibernate.search.version>4.4.6.Final</hibernate.search.version>
     <hibernate.entitymanager.version>${hibernate.version}</hibernate.entitymanager.version>
     <war_bundles_jsf_impl>false</war_bundles_jsf_impl>
     <hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
@@ -180,6 +180,13 @@
         <artifactId>deltaspike-jpa-module-impl</artifactId>
         <version>${deltaspike.version}</version>
         <scope>${cdi.runtime}</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -1687,7 +1694,7 @@
         <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
-        <wildfly.version>9.0.0.Final</wildfly.version>
+        <wildfly.version>9.0.1.Final</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>

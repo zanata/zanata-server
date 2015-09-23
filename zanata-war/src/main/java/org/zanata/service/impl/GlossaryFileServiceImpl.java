@@ -48,6 +48,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.util.HashUtil;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -56,6 +57,7 @@ import com.google.common.collect.Lists;
  */
 @Name("glossaryFileServiceImpl")
 @Scope(STATELESS)
+@Slf4j
 public class GlossaryFileServiceImpl implements GlossaryFileService {
     @In
     private GlossaryDAO glossaryDAO;
@@ -179,12 +181,16 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             HLocale termHLocale = localeServiceImpl.getByLocaleId(glossaryTerm
                 .getLocale());
 
-            // check if there's existing term
-            HGlossaryTerm hGlossaryTerm =
-                getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
+            if(termHLocale != null) {
+                // check if there's existing term
+                HGlossaryTerm hGlossaryTerm =
+                    getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
 
-            hGlossaryTerm.setComment(glossaryTerm.getComment());
-            to.getGlossaryTerms().put(termHLocale, hGlossaryTerm);
+                hGlossaryTerm.setComment(glossaryTerm.getComment());
+                to.getGlossaryTerms().put(termHLocale, hGlossaryTerm);
+            } else {
+                log.warn("Language {} is not enabled in Zanata. Term will be ignored.", glossaryTerm.getLocale());
+            }
         }
         glossaryDAO.makePersistent(to);
         return to;
@@ -221,7 +227,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             String description) {
         String hashBase = locale + SEPARATOR + content + SEPARATOR + pos +
                 SEPARATOR + description;
-//        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos;
         return HashUtil.generateHash(hashBase);
     }
 

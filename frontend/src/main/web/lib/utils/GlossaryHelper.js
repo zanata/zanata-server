@@ -88,7 +88,8 @@ var GlossaryHelper = {
       isSrcModified: isSrcModified,
       isTransModified: isTransModified,
       isSrcValid: isSrcValid, //source content is mandatory
-      canUpdateTransComment: canUpdateTransComment
+      canUpdateTransComment: canUpdateTransComment,
+      isSaving: entry.status.isSaving
     };
   },
 
@@ -97,7 +98,8 @@ var GlossaryHelper = {
       isSrcModified: false,
       isTransModified: false,
       isSrcValid: false,
-      canUpdateTransComment: false
+      canUpdateTransComment: false,
+      isSaving: false
     }
   },
 
@@ -107,7 +109,6 @@ var GlossaryHelper = {
 
   canUpdateTransComment: function (entry) {
     return !StringUtils.isEmptyOrNull(entry.transTerm.content);
-  },
-
+  }
 };
 export default GlossaryHelper;

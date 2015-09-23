@@ -24,9 +24,13 @@ var _state = {
   glossaryResId: [],
   page:1,
   filter: '',
-  hoveredRow: null,
   focusedRow: null,
-  uploadFile: null,
+  uploadFile: {
+    show: false,
+    status : -1,
+    file: null,
+    transLocale: null
+  },
   sort: {
     src_content: true
   },
@@ -48,14 +52,21 @@ function loadLocalesStats() {
       .set('Accept', 'application/json')
       .set("Pragma", "no-cache")
       .set("Expires", 0)
-      .end((function (res) {
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
+      .end(function (err, res) {
+        if(err != null) {
+          console.error(url, err);
         }
-      }));
+        if(res != null) {
+          if (res.error) {
+            console.error(url, res.status, res.error.toString());
+            reject(Error(res.error.toString()));
+          } else {
+            resolve(res['body']);
+          }
+        } else {
+          resolve(null);
+        }
+      })
   });
 }
 
@@ -115,14 +126,14 @@ function loadGlossaryByLocale () {
         .set('Accept', 'application/json')
         .set("Pragma", "no-cache")
         .set("Expires", 0)
-        .end((function (res) {
+        .end(function (res) {
           if (res.error) {
             console.error(url, res.status, res.error.toString());
             reject(Error(res.error.toString()));
           } else {
             resolve(res['body']);
           }
-        }));
+        });
     });
   }
 }
@@ -215,35 +226,50 @@ function deleteGlossary(data) {
     Request.del(url)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
-      .end((function (res) {
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
+      .end(function (err, res) {
+        if(err != null) {
+          console.error(url, err);
         }
-      }));
+        if(res != null) {
+          if (res.error) {
+            console.error(url, res.status, res.error.toString());
+            reject(Error(res.error.toString()));
+          } else {
+            resolve(res['body']);
+          }
+        } else {
+          resolve(null);
+        }
+      })
   });
 }
 
-function saveOrUpdateGlossary(data) {
+function saveOrUpdateGlossary(entry) {
   //create glossary object from data
+  entry.status.isSaving = true;
   var url = Configs.baseUrl + "/glossary/" + Configs.urlPostfix,
-    glossary = GlossaryHelper.generateGlossaryDTO(data);
+    glossary = GlossaryHelper.generateGlossaryDTO(entry);
 
   return new Promise(function(resolve, reject) {
     Request.post(url)
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .send(glossary)
-      .end((function (res) {
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
+      .end(function (err, res) {
+        if(err != null) {
+          console.error(url, err);
         }
-      }));
+        if(res != null) {
+          if (res.error) {
+            console.error(url, res.status, res.error.toString());
+            reject(Error(res.error.toString()));
+          } else {
+            resolve(res['body']);
+          }
+        } else {
+          resolve(null);
+        }
+      })
   });
 }
 
@@ -251,49 +277,60 @@ function uploadFile(data) {
   var url = Configs.baseUrl + "/glossary/upload",
     uploadFile = data.uploadFile;
 
+  _state['uploadFile']['status'] = 0;
+
   return new Promise(function(resolve, reject) {
     Request.post(url)
       .attach('file', uploadFile.file, uploadFile.file.name)
       .field('fileName', uploadFile.file.name)
       .field('srcLocale', data.srcLocale)
-      .field('transLocale', data.transLocale)
+      .field('transLocale', data.uploadFile.transLocale)
       .set('Accept', 'application/json')
-      .end((function (res) {
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
+      .end(function (err, res) {
+        _state['uploadFile']['status'] = -1;
+        _state['uploadFile'].show = false;
+        _state['uploadFile'].transLocale = null;
+        _state['uploadFile'].file = null;
+
+        if(err != null) {
+          console.error(url, err);
         }
-      }));
+        if(res != null) {
+          if (res.error) {
+            console.error(url, res.status, res.error.toString());
+            reject(Error(res.error.toString()));
+          } else {
+            resolve(res['body']);
+          }
+        } else {
+          resolve(null);
+        }
+      })
+      .on('progress', function(e) {
+        _state['uploadFile']['status'] = e.percent;
+      });
   });
 }
 
 function processDelete(serverResponse) {
-  console.info('Glossary entry deleted');
+  console.debug('Glossary entry deleted');
 }
 
 function processSave(serverResponse) {
-  console.info('Glossary entry saved');
+  console.debug('Glossary entry saved');
 }
 
-function initialise () {
-
+function initialise() {
   //load permission here
   _state['canAddNewEntry'] = canAddNewEntry();
   _state['canUpdateEntry'] = canUpdateEntry();
 
   loadLocalesStats()
     .then(processLocalesStatistic)
-    .then(function() {
+    .then(loadGlossaryByLocale)
+    .then(processGlossaryList)
+    .then(function (newState) {
       GlossaryStore.emitChange();
-    })
-    .then(function() {
-      loadGlossaryByLocale()
-        .then(processGlossaryList)
-        .then(function (newState) {
-          GlossaryStore.emitChange();
-        });
     });
 }
 
@@ -307,10 +344,6 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
 
   getEntry: function(resId) {
     return _state['glossary'][resId];
-  },
-
-  getHoveredRow: function() {
-    return _state['hoveredRow'];
   },
 
   getFocusedRow: function() {
@@ -353,23 +386,17 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         console.debug('save/update glossary', _state['glossary'][action.data]);
         saveOrUpdateGlossary(_state['glossary'][action.data])
           .then(processSave)
-          .then(function () {
-            initialise();
-          });
+          .then(initialise);
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
         console.debug('delete entry', action.data);
         deleteGlossary(action.data)
           .then(processDelete)
-          .then(function () {
-            resetCache();
-            initialise();
-          });
+          .then(initialise);
         break;
       case GlossaryActionTypes.UPDATE_FILTER:
         console.debug('Update filter', action.data);
         if(_state['filter']  !== action.data) {
-          resetCache();
           _state['filter'] = action.data;
           initialise();
         }
@@ -395,14 +422,13 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
          break;
       case GlossaryActionTypes.UPLOAD_FILE:
         console.debug('Upload file', action.data);
-        uploadFile(action.data).then(function () {
-          resetCache();
-          loadGlossaryByLocale()
-            .then(processGlossaryList)
-            .then(function (newState) {
-              GlossaryStore.emitChange();
-            })
-        });
+        uploadFile(action.data)
+          .then(resetCache)
+          .then(loadGlossaryByLocale)
+          .then(processGlossaryList)
+          .then(function (newState) {
+            GlossaryStore.emitChange();
+          });
         break;
       case GlossaryActionTypes.UPDATE_ENTRY_FIELD:
         _.set(_state['glossary'][action.data.resId], action.data.field, action.data.value);
@@ -415,24 +441,15 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         _.set(_state['glossary'][action.data.resId], 'transTerm.comment', action.data.value);
         saveOrUpdateGlossary(_state['glossary'][action.data.resId])
           .then(processSave)
-          .then(function () {
-            initialise();
-          });
-        break;
-      case GlossaryActionTypes.UPDATE_HOVERED_ROW:
-        _state['hoveredRow'] = action.data;
-        GlossaryStore.emitChange();
+          .then(initialise);
         break;
       case GlossaryActionTypes.UPDATE_FOCUSED_ROW:
         var previousResId = _state['focusedRow'] ? _state['focusedRow'].resId : null;
         var entry = _state['glossary'][previousResId];
         if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
-          //console.info('need to save changes', action.data, entry);
           saveOrUpdateGlossary(entry)
               .then(processSave)
-              .then(function () {
-                initialise();
-              });
+              .then(initialise);
         }
         _state['focusedRow'] = action.data;
         GlossaryStore.emitChange();
@@ -446,8 +463,6 @@ function resetCache() {
   _state['glossary'] = {};
   _state['glossaryResId'] = [];
   _state['filter'] = '';
-  _state['hoveredRow'] = null;
-  _state['focusedRow'] = null;
   _state['sort'] = {
     src_content: true
   };

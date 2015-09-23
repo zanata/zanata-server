@@ -17,7 +17,6 @@ var GlossaryActionTypes = keymirror({
   UPLOAD_FILE: null,
   UPDATE_ENTRY_FIELD: null,
   UPDATE_COMMENT: null,
-  UPDATE_HOVERED_ROW: null,
   UPDATE_FOCUSED_ROW: null
 });
 

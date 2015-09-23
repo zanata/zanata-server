@@ -69,10 +69,6 @@ var DataTable = React.createClass({
     focusedRow: React.PropTypes.shape({
       resId: React.PropTypes.string,
       rowIndex: React.PropTypes.number
-    }),
-    hoveredRow: React.PropTypes.shape({
-      resId: React.PropTypes.string,
-      rowIndex: React.PropTypes.number
     })
   },
 
@@ -83,7 +79,7 @@ var DataTable = React.createClass({
       row_height: this.CELL_HEIGHT,
       header_height: this.CELL_HEIGHT,
       inputFields: {},
-      hoverTimeout: null
+      hoveredRow: -1
     }
   },
 
@@ -342,23 +338,9 @@ var DataTable = React.createClass({
   },
 
   _onRowMouseEnter: function (event, rowIndex) {
-    var resId = this._rowGetter(rowIndex)[0];
-    if(this.props.hoveredRow) {
-      if(this.props.hoveredRow.rowIndex !== rowIndex) {
-        this._updateHoverRow(resId, rowIndex);
-      }
-    } else {
-      this._updateHoverRow(resId, rowIndex);
+    if (this.state.hoveredRow !== rowIndex) {
+      this.setState({hoveredRow: rowIndex});
     }
-  },
-
-  _updateHoverRow: function (resId, rowIndex) {
-    if (this.state.hoverTimeout !== null) {
-      clearTimeout(this.state.hoverTimeout);
-    }
-    this.state.hoverTimeout = setTimeout(function () {
-      Actions.updateHoveredRow(resId, rowIndex);
-    }, 90);
   },
 
   _onRowClick: function (event, rowIndex) {
@@ -375,7 +357,7 @@ var DataTable = React.createClass({
   _rowClassNameGetter: function (rowIndex) {
     if(this.props.focusedRow && this.props.focusedRow.rowIndex === rowIndex) {
       return 'bgcsec30a';
-    } else if(this.props.hoveredRow && this.props.hoveredRow.rowIndex === rowIndex) {
+    } else if(this.state.hoveredRow === rowIndex) {
       return 'bgcsec20a';
     }
   },

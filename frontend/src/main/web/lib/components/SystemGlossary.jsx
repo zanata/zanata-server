@@ -18,9 +18,7 @@ var SystemGlossary = React.createClass({
   },
 
   getInitialState: function() {
-    var state = this._init();
-    state['selectedUploadFileTransLocale'] = null;
-    return state;
+    return this._init();
   },
 
   componentDidMount: function() {
@@ -46,7 +44,9 @@ var SystemGlossary = React.createClass({
   },
 
   _handleUploadFileTransChange: function (localeId) {
-    this.setState({selectedUploadFileTransLocale : localeId});
+    var uploadFileState = this.state.uploadFile;
+    uploadFileState.transLocale = localeId;
+    this.setState({uploadFile : uploadFileState});
   },
 
   _handleFile: function(e) {
@@ -54,20 +54,20 @@ var SystemGlossary = React.createClass({
     var file = e.target.files[0];
 
     reader.onload = function(upload) {
-      self.setState({
-        uploadFile: {
-          uri: upload.target.result,
-          file:file
-        }
-      });
+      var uploadFileState = self.state.uploadFile;
+      uploadFileState.file = file;
+      self.setState({uploadFile: uploadFileState});
     };
     reader.readAsDataURL(file);
   },
 
   _uploadFile: function() {
+    var uploadFileState = this.state.uploadFile;
+    uploadFileState.status = 0;
+    this.setState({uploadFile: uploadFileState});
+
     Actions.uploadFile(this.state.uploadFile,
-      this.state.srcLocale.locale.localeId,
-      this.state.selectedUploadFileTransLocale);
+      this.state.srcLocale.locale.localeId);
   },
 
   _handleSubmit: function(e) {
@@ -75,16 +75,22 @@ var SystemGlossary = React.createClass({
   },
 
   _closeUploadModal : function () {
-    this.setState({ showModal: false, uploadFile: null });
+    var uploadFileState = this.state.uploadFile;
+    uploadFileState.transLocale = null;
+    uploadFileState.file = null;
+    uploadFileState.show = false;
+    this.setState({uploadFile: uploadFileState});
   },
 
   _openUploadModal : function() {
-    this.setState({ showModal: true })
+    var uploadFileState = this.state.uploadFile;
+    uploadFileState.show = true;
+    this.setState({uploadFile: uploadFileState});
   },
 
   _getUploadFileExtension: function () {
     var extension = '';
-    if(this.state.uploadFile) {
+    if(this.state.uploadFile.file) {
       extension = this.state.uploadFile.file.name.split(".").pop();
     }
     return extension;
@@ -136,12 +142,12 @@ var SystemGlossary = React.createClass({
             name='glossary-import-language-selection'
             className='w16'
             placeholder='Select a translation language…'
-            value={this.state.selectedUploadFileTransLocale}
+            value={this.state.uploadFile.transLocale}
             options={localeOptions}
             onChange={this._handleUploadFileTransChange}
           />);
 
-          if(!StringUtils.isEmptyOrNull(this.state.selectedUploadFileTransLocale)) {
+          if(!StringUtils.isEmptyOrNull(this.state.uploadFile.transLocale)) {
             disableUpload = false;
           }
         } else {
@@ -149,12 +155,14 @@ var SystemGlossary = React.createClass({
         }
       }
 
+      var isUploading = this.state.uploadFile.status !== -1;
+
       uploadSection = (
         <div>
           <Button onClick={this._openUploadModal}>
             <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
           </Button>
-          <Modal show={this.state.showModal} onHide={this._closeUploadModal}>
+          <Modal show={this.state.uploadFile.show} onHide={this._closeUploadModal}>
             <Modal.Header>
               <Modal.Title>Import Glossary</Modal.Title>
             </Modal.Header>
@@ -171,7 +179,7 @@ var SystemGlossary = React.createClass({
             </Modal.Body>
             <Modal.Footer>
               <Button className='mr1' onClick={this._closeUploadModal}>Cancel</Button>
-              <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile}>Import</Button>
+              <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile} loading={isUploading}>Import</Button>
             </Modal.Footer>
           </Modal>
       </div>)

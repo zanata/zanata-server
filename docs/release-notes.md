@@ -1,10 +1,8 @@
 ## 3.8
 <h5>Infrastructure Changes</h5>
 * In wildfly or EAP standalone.xml, change all occurrences of "org.jboss.seam.security.jaas.SeamLoginModule" to "org.zanata.security.jaas.InternalLoginModule"
-
-<h5>Infrastructure Changes</h5>
-
-Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly version 9.0.1.Final or later.
+* Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly version 9.x.
+* Zanata now requires a Java 1.8 virtual machine.
 
 
 <h5>Bug fixes</h5>
@@ -18,6 +16,8 @@ Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly versio
 * [1243251](https://bugzilla.redhat.com/show_bug.cgi?id=1243251) - Project search does not sort correctly by date over multiple pages
 * [1243682](https://bugzilla.redhat.com/show_bug.cgi?id=1243682) - When uploading POT file using web UI, source comments are being ignored
 * [1243688](https://bugzilla.redhat.com/show_bug.cgi?id=1243688) - Groups filter by archived not working
+* [ZNTA-615](https://zanata.atlassian.net/browse/ZNTA-615) - Fix glossary permission
+* [ZNTA-643](https://zanata.atlassian.net/browse/ZNTA-643) - Fix concurrent map modification issue in language page
 
 
 -----------------------
@@ -26,6 +26,22 @@ Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly versio
 * [1224912] (https://bugzilla.redhat.com/show_bug.cgi?id=1224912) - Filter "Last modified by translators other than <user>"
 * [1213630](https://bugzilla.redhat.com/show_bug.cgi?id=1213630) - Webhook header needs to include cryptographic signature in header for identification
 * [1214502](https://bugzilla.redhat.com/show_bug.cgi?id=1214502) -  RFE: Grant project creation permission to certain sets of users
+
+-----------------------
+
+## 3.7.2
+
+<h5>Improvements</h5>
+* [ZNTA-653](https://zanata.atlassian.net/browse/ZNTA-653) - Include MDC values in log emails
+* [ZNTA-665](https://zanata.atlassian.net/browse/ZNTA-665) - liquibase merge addColumn changes 
+  It helps to reduce the database migration time.
+
+<h5>Bug fixes</h5>
+* [ZNTA-594](https://zanata.atlassian.net/browse/ZNTA-594) - Project-wide search and replace only shows 15 results per document
+* [ZNTA-615](https://zanata.atlassian.net/browse/ZNTA-615) - Glossarist/-admin not getting glossary-update permission
+* [ZNTA-643](https://zanata.atlassian.net/browse/ZNTA-643) - javax.servlet.ServletException: java.util.ConcurrentModificationException , Caused by: javax.faces.el.EvaluationException: java.util.ConcurrentModificationException
+
+-----------------------
 
 ## 3.7.1
 
@@ -179,7 +195,7 @@ The Zanata installer's configuration now enables "connection debugging" to preve
 
 The editor prototype can be accessed via the **(Try the new alpha editor)** button at the top of the regular editor.  It showcases the look and feel, workflow and intended direction of Zanata.
 
-As it is a _prototype_, there are bound to be some bugs and sub-optimal behaviours - any suggestions or reports can be forwarded to our [bug tracker](https://bugzilla.redhat.com/enter_bug.cgi?product=Zanata).
+As it is a _prototype_, there are bound to be some bugs and sub-optimal behaviours - any suggestions or reports can be forwarded to our [bug tracker](https://zanata.atlassian.net/).
 
 * [1150373](https://bugzilla.redhat.com/show_bug.cgi?id=1150373) - Keyboard shortcuts
 * [1172437](https://bugzilla.redhat.com/show_bug.cgi?id=1172437) - Add plurals to the new editor

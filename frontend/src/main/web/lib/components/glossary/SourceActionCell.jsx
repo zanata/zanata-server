@@ -25,19 +25,14 @@ var SourceActionCell = React.createClass({
   },
 
   _getState: function () {
-    var self = this, isHovered = false, isFocused = false,
-        hoveredRow = GlossaryStore.getHoveredRow(),
+    var self = this, isFocused = false,
         focusedRow = GlossaryStore.getFocusedRow();
 
-    if(hoveredRow) {
-      isHovered = hoveredRow.rowIndex === self.props.rowIndex;
-    }
     if(focusedRow) {
       isFocused = focusedRow.rowIndex === self.props.rowIndex;
     }
     return {
       entry: GlossaryStore.getEntry(self.props.resId),
-      isHovered: isHovered,
       isFocused: isFocused
     }
   },
@@ -76,8 +71,8 @@ var SourceActionCell = React.createClass({
     var self = this,
       newEntryCell  = this.props.newEntryCell,
       canAddNewEntry = this.props.canAddNewEntry,
-      isSrcValid = self.state.entry.status.isSrcValid,
-      isRowFocused = self.state.isHovered || self.state.isFocused;
+      isSrcValid = self.state.entry.status.isSrcValid;
+
 
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
@@ -85,11 +80,12 @@ var SourceActionCell = React.createClass({
       var isSrcModified= self.state.entry.status.isSrcModified;
       var cancelButton = null, saveButton = null;
 
-      var info = (<OverlayTrigger placement='top'
-        rootClose
-        overlay={<Tooltip id='src-info'>{self.props.info}</Tooltip>}>
-        <Icon className="cpri" name="info"/>
-      </OverlayTrigger>);
+      var info = (
+        <OverlayTrigger placement='top'
+          rootClose
+          overlay={<Tooltip id='src-info'>{self.props.info}</Tooltip>}>
+          <Icon className="cpri" name="info"/>
+        </OverlayTrigger>);
 
       if(isSrcModified) {
         cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
@@ -97,7 +93,6 @@ var SourceActionCell = React.createClass({
           saveButton = (<Button kind='primary' className='ml1/4' onClick={self._handleSave}>Save</Button>);
         }
       }
-
       if (newEntryCell && canAddNewEntry) {
         if(isSrcModified) {
           return (<div>
@@ -107,9 +102,19 @@ var SourceActionCell = React.createClass({
         } else {
           return (<div></div>)
         }
+      } else if(self.state.entry.status.isSaving === true) {
+        return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
       } else {
-        var deleteButton = null, updateButton = null;
-        if(canAddNewEntry && isRowFocused) {
+        var deleteButton = null,
+          updateButton = null,
+          buttonVisibleClass = '';
+
+        //if row focused or hovered
+        if(self.state.isFocused) {
+          buttonVisibleClass = 'is--active';
+        }
+
+        if(canAddNewEntry && self.state.isFocused) {
           deleteButton = (
             <Button kind="danger" className='ml1/4' onClick={self._handleDelete}>
               <Icon name="trash"/> <span>Delete</span>

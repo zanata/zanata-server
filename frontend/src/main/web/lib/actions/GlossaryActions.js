@@ -44,13 +44,12 @@ var Actions = {
       }
     });
   },
-  uploadFile: function(uploadFile, srcLocale, transLocale) {
+  uploadFile: function(uploadFile, srcLocale) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPLOAD_FILE,
       data: {
         uploadFile:uploadFile,
         srcLocale: srcLocale,
-        transLocale:transLocale
       }
     });
   },
@@ -78,15 +77,6 @@ var Actions = {
         value: value
       }
     });
-  },
-  updateHoveredRow: function (resId, rowIndex) {
-      Dispatcher.handleViewAction({
-        actionType: GlossaryActionTypes.UPDATE_HOVERED_ROW,
-        data: {
-          rowIndex: rowIndex,
-          resId: resId
-        }
-      });
   },
   updateFocusedRow: function (resId, rowIndex) {
         Dispatcher.handleViewAction({

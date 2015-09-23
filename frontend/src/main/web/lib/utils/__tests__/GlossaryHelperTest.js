@@ -103,4 +103,9 @@ describe('GlossaryHelperTest', function() {
     var term = GlossaryHelper.generateSrcTerm(localeId);
     expect(term.locale).toEqual(localeId);
   });
+
+  it('test get entry status', function () {
+    var entry1, entry2;
+    GlossaryHelper.getEntryStatus(entry1, entry2);
+  })
 });
