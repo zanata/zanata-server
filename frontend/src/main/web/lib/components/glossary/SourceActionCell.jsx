@@ -82,7 +82,7 @@ var SourceActionCell = React.createClass({
         </OverlayTrigger>);
 
       if(isSrcModified) {
-        cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
+        cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
         if(newEntryCell && canAddNewEntry && isSrcValid) {
           saveButton = (<Button kind='primary' className='ml1/4' onClick={self._handleSave}>Save</Button>);
         }

@@ -105,7 +105,50 @@ describe('GlossaryHelperTest', function() {
   });
 
   it('test get entry status', function () {
-    var entry1, entry2;
-    GlossaryHelper.getEntryStatus(entry1, entry2);
-  })
+    var entry1 = generateEntry('en-US', 'de'),
+      entry2 = generateEntry('en-US', 'de');
+
+    var status = GlossaryHelper.getEntryStatus(entry1, entry2);
+    expectStatus(status, false, false, false, false, false);
+
+    //modify source
+    entry1.description = 'updated';
+    status = GlossaryHelper.getEntryStatus(entry1, entry2);
+    expectStatus(status, true, false, false, false, false);
+
+
+    //modify source, source is valid
+    entry1.srcTerm.content = 'updated';
+    status = GlossaryHelper.getEntryStatus(entry1, entry2);
+    expectStatus(status, true, false, true, false, false);
+
+    //modify source, source is valid, trans modified
+    entry1.transTerm.content = 'updated';
+    status = GlossaryHelper.getEntryStatus(entry1, entry2);
+    expectStatus(status, true, true, true, false, false);
+
+    //modify source, source is valid, trans modified, can update comment
+    entry2.transTerm.content = 'original content';
+    status = GlossaryHelper.getEntryStatus(entry1, entry2);
+    console.info(status);
+    expectStatus(status, true, true, true, true, false);
+  });
+
+  function expectStatus(status, isSrcModified, isTransModified, isSrcValid, canUpdateTransComment, isSaving) {
+    expect(status.isSrcModified).toEqual(isSrcModified);
+    expect(status.isTransModified).toEqual(isTransModified);
+    expect(status.isSrcValid).toEqual(isSrcValid);
+    expect(status.canUpdateTransComment).toEqual(canUpdateTransComment);
+    expect(status.isSaving).toEqual(isSaving);
+  }
+
+  function generateEntry(srcLocale, transLocale) {
+    return {
+      resId: '', pos: '', description: '',
+      srcTerm: GlossaryHelper.generateSrcTerm(srcLocale),
+      transTerm: GlossaryHelper.generateTerm(transLocale),
+      status: GlossaryHelper.getDefaultEntryStatus()
+    };
+  }
+
 });

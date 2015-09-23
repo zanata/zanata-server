@@ -164,7 +164,7 @@ var SystemGlossary = React.createClass({
 
       uploadSection = (
         <div>
-          <Button onClick={this._openUploadModal}>
+          <Button onClick={this._openUploadModal} link>
             <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
           </Button>
           <Modal show={this.state.uploadFile.show} onHide={this._closeUploadModal}>

@@ -78,7 +78,7 @@ var ActionCell = React.createClass({
 
       if(isTransModified) {
         updateButton = (<Button kind='primary' className='ml1/4' onClick={self._handleUpdate}>Update</Button>);
-        cancelButton = (<Button className='ml1/4' onClick={self._handleCancel}>Cancel</Button>);
+        cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
       }
 
       return (<div>{info} {comment} <div className='cdtargetib'>{updateButton} {cancelButton}</div></div>);

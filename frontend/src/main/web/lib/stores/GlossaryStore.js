@@ -54,7 +54,7 @@ function loadLocalesStats() {
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end(function (err, res) {
-        if(err != null) {
+        if(err != null && err.error === true) {
           console.error(url, err);
         }
         if(res != null) {
@@ -64,9 +64,8 @@ function loadLocalesStats() {
           } else {
             resolve(res['body']);
           }
-        } else {
-          resolve(null);
         }
+        resolve(null);
       })
   });
 }
@@ -128,13 +127,19 @@ function loadGlossaryByLocale () {
         .set('Accept', 'application/json')
         .set("Pragma", "no-cache")
         .set("Expires", 0)
-        .end(function (res) {
-          if (res.error) {
-            console.error(url, res.status, res.error.toString());
-            reject(Error(res.error.toString()));
-          } else {
-            resolve(res['body']);
+        .end(function (err, res) {
+          if(err != null && err.error === true) {
+            console.error(url, err);
           }
+          if(res != null) {
+            if (res.error) {
+              console.error(url, res.status, res.error.toString());
+              reject(Error(res.error.toString()));
+            } else {
+              resolve(res['body']);
+            }
+          }
+          resolve(null);
         });
     });
   }
@@ -229,7 +234,7 @@ function deleteGlossary(data) {
       .set('Content-Type', 'application/json')
       .set('Accept', 'application/json')
       .end(function (err, res) {
-        if(err != null) {
+        if(err != null && err.error === true) {
           console.error(url, err);
         }
         if(res != null) {
@@ -239,9 +244,8 @@ function deleteGlossary(data) {
           } else {
             resolve(res['body']);
           }
-        } else {
-          resolve(null);
         }
+        resolve(null);
       })
   });
 }
@@ -258,7 +262,7 @@ function saveOrUpdateGlossary(entry) {
       .set('Accept', 'application/json')
       .send(glossary)
       .end(function (err, res) {
-        if(err != null) {
+        if(err != null && err.error === true) {
           console.error(url, err);
         }
         if(res != null) {
@@ -268,9 +272,8 @@ function saveOrUpdateGlossary(entry) {
           } else {
             resolve(res['body']);
           }
-        } else {
-          resolve(null);
         }
+        resolve(null);
       })
   });
 }
@@ -294,7 +297,7 @@ function uploadFile(data) {
         _state['uploadFile'].transLocale = null;
         _state['uploadFile'].file = null;
 
-        if(err != null) {
+        if(err != null && err.error === true) {
           console.error(url, err);
         }
         if(res != null) {
@@ -304,9 +307,8 @@ function uploadFile(data) {
           } else {
             resolve(res['body']);
           }
-        } else {
-          resolve(null);
         }
+        resolve(null);
       })
       .on('progress', function(e) {
         _state['uploadFile']['status'] = e.percent;

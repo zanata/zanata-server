@@ -97,8 +97,8 @@ var GlossaryHelper = {
     return {
       isSrcModified: false,
       isTransModified: false,
-      isSrcValid: false,
-      canUpdateTransComment: false,
+      isSrcValid: true,
+      canUpdateTransComment: true,
       isSaving: false
     }
   },
