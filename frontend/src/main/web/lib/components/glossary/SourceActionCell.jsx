@@ -114,7 +114,7 @@ var SourceActionCell = React.createClass({
           buttonVisibleClass = 'is--active';
         }
 
-        if(canAddNewEntry && self.state.isFocused) {
+        if(canAddNewEntry) {
           deleteButton = (
             <Button kind="danger" className='ml1/4' onClick={self._handleDelete}>
               <Icon name="trash"/> <span>Delete</span>
@@ -127,13 +127,13 @@ var SourceActionCell = React.createClass({
 
         if(isSrcModified) {
           return (<div>
-            {info}
+            <div className='cdtargetib'>{info}</div>
             {updateButton}
             {cancelButton}
             {deleteButton}
             </div>)
         } else {
-          return (<div>{info} {deleteButton}</div>)
+          return (<div>{info}<div className='cdtargetib'>{deleteButton}</div></div>)
         }
       }
     }

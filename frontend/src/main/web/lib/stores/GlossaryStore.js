@@ -83,6 +83,7 @@ function processLocalesStatistic(serverResponse) {
       label: `${transLocale.locale.displayName} - (${transLocale.numberOfTerms})`
     });
   });
+
   return _state;
 }
 

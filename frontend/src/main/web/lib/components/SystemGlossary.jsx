@@ -5,7 +5,6 @@ import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
 import { Button, Input, Icons, Icon, Select, Modal } from 'zanata-ui'
 import DataTable from './glossary/DataTable'
-import TextInput from './glossary/TextInput'
 import { Loader } from 'zanata-ui'
 import _ from 'lodash';
 import StringUtils from '../utils/StringUtils'
@@ -37,10 +36,14 @@ var SystemGlossary = React.createClass({
     Actions.changeTransLocale(localeId)
   },
 
-  _handleFilterKeyUp: function(input, event) {
+  _handleFilterKeyDown: function(event) {
     if(event.key == 'Enter') {
-      Actions.updateFilter(input.state.value);
+      Actions.updateFilter(this.state.filter);
     }
+  },
+
+  _handleFilterChange: function(event) {
+    this.setState({filter: event.target.value});
   },
 
   _handleUploadFileTransChange: function (localeId) {
@@ -102,7 +105,8 @@ var SystemGlossary = React.createClass({
 
   render: function() {
     var count = 0,
-      selectedTransLocale = this.state.selectedTransLocale;
+      selectedTransLocale = this.state.selectedTransLocale,
+      uploadSection = null;
 
     var contents = (<DataTable
       glossaryData={this.state.glossary}
@@ -121,13 +125,13 @@ var SystemGlossary = React.createClass({
       count = this.state.srcLocale.numberOfTerms;
     }
 
-    var uploadSection = "";
-    if(this.state.canAddNewEntry
-      && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale)) {
+    var enableUpload = this.state.canAddNewEntry && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale);
 
+    if(enableUpload === true) {
       var transLanguageDropdown = null,
         fileExtension = this._getUploadFileExtension(),
         disableUpload = true;
+
       if(this._isSupportedFile(fileExtension)) {
         if(fileExtension === 'po') {
           var localeOptions = [];
@@ -197,19 +201,23 @@ var SystemGlossary = React.createClass({
                     className='w16'
                     value={this.state.selectedTransLocale}
                     options={this.state.localeOptions}
-                    onChange={this._handleTransChange}
-                  />
+                    onChange={this._handleTransChange}/>
                 </div>
                 {uploadSection}
               </div>
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
                   <div className='w8'>
-                    <TextInput value={this.state.filter}
+                    <Input value={this.state.filter}
+                      label='Search Glossary'
+                      hideLabel
                       className="w100p pr1&1/2"
+                      border='outline'
+                      reset
                       placeholder='Search Glossary'
                       id="search"
-                      onKeydownCallback={this._handleFilterKeyUp}/>
+                      onKeyDown={this._handleFilterKeyDown}
+                      onChange={this._handleFilterChange}/>
                   </div>
                 </div>
                 <div className='dfx aic'>

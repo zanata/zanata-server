@@ -48,8 +48,8 @@ var Actions = {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPLOAD_FILE,
       data: {
-        uploadFile:uploadFile,
-        srcLocale: srcLocale,
+        uploadFile: uploadFile,
+        srcLocale: srcLocale
       }
     });
   },

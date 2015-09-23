@@ -4,6 +4,7 @@ import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
 import TextInput from './TextInput';
+import { Input } from 'zanata-ui'
 import LoadingCell from './LoadingCell'
 import ActionCell from './ActionCell'
 import SourceActionCell from './SourceActionCell'
@@ -173,6 +174,7 @@ var DataTable = React.createClass({
           resId={resId}
           key={key}
           field={field.field}
+          onFocusCallback={this._handleInputFocus}
           onChangeCallback={this._onValueChange}/>)
       }
     }
@@ -337,6 +339,10 @@ var DataTable = React.createClass({
     this.state.inputFields[inputField.props.id] = inputField;
   },
 
+  _handleInputFocus: function (input, rowIndex) {
+    this._onRowClick(null, rowIndex);
+  },
+
   _onRowMouseEnter: function (event, rowIndex) {
     if (this.state.hoveredRow !== rowIndex) {
       this.setState({hoveredRow: rowIndex});
@@ -356,9 +362,9 @@ var DataTable = React.createClass({
 
   _rowClassNameGetter: function (rowIndex) {
     if(this.props.focusedRow && this.props.focusedRow.rowIndex === rowIndex) {
-      return 'bgcsec30a';
+      return 'bgcsec30a cdtrigger';
     } else if(this.state.hoveredRow === rowIndex) {
-      return 'bgcsec20a';
+      return 'bgcsec20a cdtrigger';
     }
   },
 
