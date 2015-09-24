@@ -72,19 +72,15 @@ var Comment = React.createClass({
     }
 
     var buttonClasses = cx(
-        self.props.className,
-      'mr1/2',
-      {
-        'cpri': !StringUtils.isEmptyOrNull(self.state.value),
-        'csec30' : StringUtils.isEmptyOrNull(self.state.value)
-      }
+      self.props.className,
+      'mr1/2'
     );
     return (
       <div className="dib">
         <Overlay placement='top' target={props => React.findDOMNode(self)} onHide={self._onCancelComment} rootClose show={self.state.showComment}>
           {tooltip}
         </Overlay>
-        <Button link className={buttonClasses} onClick={self._toggleComment}>
+        <Button link kind={StringUtils.isEmptyOrNull(self.state.value) ? 'muted' : 'primary'} className={buttonClasses} onClick={self._toggleComment}>
           <Icon name='comment'/>
         </Button>
       </div>

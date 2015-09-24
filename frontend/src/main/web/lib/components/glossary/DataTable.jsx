@@ -167,7 +167,7 @@ var DataTable = React.createClass({
       var value = _.get(entry, field.field);
 
       if (readOnly) {
-        return (<span key={key}>{value}</span>)
+        return (<span className="mh1/2" key={key}>{value}</span>)
       } else {
         return (<InputCell
           value={value}
@@ -329,14 +329,6 @@ var DataTable = React.createClass({
       cellRenderer={self._renderActionCell}
       />)
   },
-
-  //_onValueChange : function(resId, key, rowIndex, field, event) {
-  //  Actions.updateEntryField(resId, field, event.target.value);
-  //},
-
-  //_handleInputFocus: function (event, rowIndex) {
-  //  this._onRowClick(event, rowIndex);
-  //},
 
   _onRowMouseEnter: function (event, rowIndex) {
     if (this.state.hoveredRow !== rowIndex) {

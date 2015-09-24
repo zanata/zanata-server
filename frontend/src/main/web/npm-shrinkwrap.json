@@ -276,7 +276,7 @@
     "zanata-ui": {
       "version": "1.0.0",
       "from": "zanata/zanata-ui",
-      "resolved": "git://github.com/zanata/zanata-ui.git#e50a191b49cf10047fb4d4d28994286c47e391ae",
+      "resolved": "git://github.com/zanata/zanata-ui.git#da02b9b7e4b6f762668b624b1d32015c90e28282",
       "dependencies": {
         "babel-loader": {
           "version": "5.3.2",
@@ -797,19 +797,24 @@
                   "resolved": "https://registry.npmjs.org/regexpu/-/regexpu-1.2.0.tgz",
                   "dependencies": {
                     "recast": {
-                      "version": "0.10.32",
+                      "version": "0.10.33",
                       "from": "recast@>=0.10.6 <0.11.0",
-                      "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.32.tgz",
+                      "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.33.tgz",
                       "dependencies": {
                         "esprima-fb": {
                           "version": "15001.1001.0-dev-harmony-fb",
                           "from": "esprima-fb@>=15001.1001.0-dev-harmony-fb <15001.1002.0",
                           "resolved": "https://registry.npmjs.org/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz"
                         },
+                        "source-map": {
+                          "version": "0.5.1",
+                          "from": "source-map@>=0.5.0 <0.6.0",
+                          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.1.tgz"
+                        },
                         "ast-types": {
-                          "version": "0.8.11",
-                          "from": "ast-types@0.8.11",
-                          "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.11.tgz"
+                          "version": "0.8.12",
+                          "from": "ast-types@0.8.12",
+                          "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.12.tgz"
                         }
                       }
                     },
@@ -921,7 +926,7 @@
             },
             "loader-utils": {
               "version": "0.2.11",
-              "from": "loader-utils@>=0.2.9 <0.3.0",
+              "from": "loader-utils@>=0.0.0 <1.0.0",
               "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.11.tgz",
               "dependencies": {
                 "big.js": {
@@ -1570,7 +1575,7 @@
             },
             "loader-utils": {
               "version": "0.2.11",
-              "from": "loader-utils@>=0.2.9 <0.3.0",
+              "from": "loader-utils@>=0.0.0 <1.0.0",
               "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.11.tgz",
               "dependencies": {
                 "big.js": {
@@ -2113,19 +2118,24 @@
               "resolved": "https://registry.npmjs.org/regexpu/-/regexpu-1.2.0.tgz",
               "dependencies": {
                 "recast": {
-                  "version": "0.10.32",
+                  "version": "0.10.33",
                   "from": "recast@>=0.10.6 <0.11.0",
-                  "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.32.tgz",
+                  "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.33.tgz",
                   "dependencies": {
                     "esprima-fb": {
                       "version": "15001.1001.0-dev-harmony-fb",
                       "from": "esprima-fb@>=15001.1001.0-dev-harmony-fb <15001.1002.0",
                       "resolved": "https://registry.npmjs.org/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz"
                     },
+                    "source-map": {
+                      "version": "0.5.1",
+                      "from": "source-map@>=0.5.0 <0.6.0",
+                      "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.1.tgz"
+                    },
                     "ast-types": {
-                      "version": "0.8.11",
-                      "from": "ast-types@0.8.11",
-                      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.11.tgz"
+                      "version": "0.8.12",
+                      "from": "ast-types@0.8.12",
+                      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.12.tgz"
                     }
                   }
                 },
