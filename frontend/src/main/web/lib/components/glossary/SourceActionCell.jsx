@@ -14,8 +14,7 @@ var SourceActionCell = React.createClass({
     srcLocaleId: React.PropTypes.string.isRequired,
     newEntryCell: React.PropTypes.bool,
     canAddNewEntry: React.PropTypes.bool,
-    canUpdateEntry: React.PropTypes.bool,
-    onCancel: React.PropTypes.func
+    canUpdateEntry: React.PropTypes.bool
   },
 
   mixins: [PureRenderMixin],
@@ -57,9 +56,7 @@ var SourceActionCell = React.createClass({
   },
 
   _handleCancel: function() {
-    if(this.props.onCancel) {
-      this.props.onCancel(this.props.resId, this.props.rowIndex);
-    }
+    Actions.resetEntry(this.props.resId);
   },
 
   render: function() {

@@ -84,7 +84,9 @@ var Comment = React.createClass({
         <Overlay placement='top' target={props => React.findDOMNode(self)} onHide={self._onCancelComment} rootClose show={self.state.showComment}>
           {tooltip}
         </Overlay>
-        <button className={buttonClasses} onClick={self._toggleComment}><Icon name='comment'></Icon></button>
+        <Button link className={buttonClasses} onClick={self._toggleComment}>
+          <Icon name='comment'/>
+        </Button>
       </div>
     );
   }

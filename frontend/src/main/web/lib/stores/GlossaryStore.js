@@ -11,7 +11,7 @@ import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 
 var SIZE_PER_PAGE = 5000, CHANGE_EVENT = "change",
-    MAX_LISTENER = 50; //number of listener for GlossaryStore (default is 11)
+    MAX_LISTENER = 100; //number of listener for GlossaryStore (default is 11)
 
 EventEmitter.prototype.setMaxListeners(MAX_LISTENER);
 
@@ -456,6 +456,11 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
               .then(initialise);
         }
         _state['focusedRow'] = action.data;
+        GlossaryStore.emitChange();
+        break;
+      case GlossaryActionTypes.RESET_ENTRY:
+        console.debug('reset entry', action.data);
+        _state['glossary'][action.data] = _state['original_glossary'][action.data];
         GlossaryStore.emitChange();
         break;
     }

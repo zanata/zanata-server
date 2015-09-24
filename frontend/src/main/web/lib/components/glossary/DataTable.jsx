@@ -3,8 +3,7 @@ import {PureRenderMixin} from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
-import TextInput from './TextInput';
-import { Input } from 'zanata-ui'
+import InputCell from './InputCell';
 import LoadingCell from './LoadingCell'
 import ActionCell from './ActionCell'
 import SourceActionCell from './SourceActionCell'
@@ -79,7 +78,6 @@ var DataTable = React.createClass({
       tbl_height: window.innerHeight - 166,
       row_height: this.CELL_HEIGHT,
       header_height: this.CELL_HEIGHT,
-      inputFields: {},
       hoveredRow: -1
     }
   },
@@ -105,7 +103,11 @@ var DataTable = React.createClass({
   },
 
   _generateKey: function (colIndex, rowIndex, resId) {
-    return colIndex + ":" + rowIndex + ":" + resId + ":" + this.props.selectedTransLocale;
+    var key = colIndex + ":" + rowIndex + ":" + resId;
+    if(this.props.selectedTransLocale) {
+      key += ":" + this.props.selectedTransLocale;
+    }
+    return key;
   },
 
   _getSort: function (key) {
@@ -167,15 +169,13 @@ var DataTable = React.createClass({
       if (readOnly) {
         return (<span key={key}>{value}</span>)
       } else {
-        return (<TextInput value={value}
-          placeholder={placeholder}
-          id={key}
-          rowIndex={rowIndex}
+        return (<InputCell
           resId={resId}
           key={key}
+          placeholder={placeholder}
+          rowIndex={rowIndex}
           field={field.field}
-          onFocusCallback={this._handleInputFocus}
-          onChangeCallback={this._onValueChange}/>)
+          onFocusCallback={this._onRowClick}/>);
       }
     }
   },
@@ -229,8 +229,7 @@ var DataTable = React.createClass({
         <ActionCell info={info}
           canUpdateEntry={self.props.canUpdateEntry}
           resId={resId}
-          rowIndex={rowIndex}
-          onCancel={self._handleCancel}/>
+          rowIndex={rowIndex}/>
       );
     } else {
       var isNewEntryCell = rowIndex === 0,
@@ -241,8 +240,7 @@ var DataTable = React.createClass({
           newEntryCell={isNewEntryCell}
           info={info}
           canUpdateEntry={self.props.canUpdateEntry}
-          canAddNewEntry={self.props.canAddNewEntry}
-          onCancel={self._handleCancel}/>
+          canAddNewEntry={self.props.canAddNewEntry}/>
       );
     }
   },
@@ -331,14 +329,13 @@ var DataTable = React.createClass({
       />)
   },
 
-  _onValueChange: function(inputField, value) {
-    Actions.updateEntryField(inputField.props.resId, inputField.props.field, value);
-    this.state.inputFields[inputField.props.id] = inputField;
-  },
+  //_onValueChange : function(resId, key, rowIndex, field, event) {
+  //  Actions.updateEntryField(resId, field, event.target.value);
+  //},
 
-  _handleInputFocus: function (input, rowIndex) {
-    this._onRowClick(null, rowIndex);
-  },
+  //_handleInputFocus: function (event, rowIndex) {
+  //  this._onRowClick(event, rowIndex);
+  //},
 
   _onRowMouseEnter: function (event, rowIndex) {
     if (this.state.hoveredRow !== rowIndex) {
@@ -363,22 +360,6 @@ var DataTable = React.createClass({
     } else if(this.state.hoveredRow === rowIndex) {
       return 'bgcsec20a cdtrigger';
     }
-  },
-
-  /**
-   * restore glossary entry to original value
-   * @param resId
-   * @param rowIndex
-   */
-  _handleCancel: function (resId, rowIndex) {
-    var self = this;
-    _.forOwn(self.ENTRY, function(value, key) {
-      var key = self._generateKey(value.col, rowIndex, resId),
-        input = self.state.inputFields[key];
-      if(!_.isUndefined(input)) {
-        input.reset();
-      }
-    });
   },
 
   _getGlossaryEntry: function (resId) {

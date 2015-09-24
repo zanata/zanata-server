@@ -13,8 +13,7 @@ var ActionCell = React.createClass({
     resId: React.PropTypes.string.isRequired,
     info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
-    canUpdateEntry: React.PropTypes.bool,
-    onCancel: React.PropTypes.func
+    canUpdateEntry: React.PropTypes.bool
   },
 
   mixins: [PureRenderMixin],
@@ -48,9 +47,7 @@ var ActionCell = React.createClass({
   },
 
   _handleCancel: function() {
-    if(this.props.onCancel) {
-      this.props.onCancel(this.props.resId, this.props.rowIndex);
-    }
+    Actions.resetEntry(this.props.resId);
   },
 
   _onUpdateComment: function (value) {
