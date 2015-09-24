@@ -91,6 +91,10 @@ var SystemGlossary = React.createClass({
     this.setState({uploadFile: uploadFileState});
   },
 
+  _openNewGlossaryModal : function() {
+
+  },
+
   _getUploadFileExtension: function () {
     var extension = '';
     if(this.state.uploadFile.file) {
@@ -106,7 +110,7 @@ var SystemGlossary = React.createClass({
   render: function() {
     var count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
-      uploadSection = null;
+      uploadSection = null, newEntrySection = null;
 
     var contents = (<DataTable
       glossaryData={this.state.glossary}
@@ -126,9 +130,9 @@ var SystemGlossary = React.createClass({
       count = this.state.srcLocale.numberOfTerms;
     }
 
-    var enableUpload = this.state.canAddNewEntry && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale);
+    var enableUploadAndNewEntry = this.state.canAddNewEntry && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale);
 
-    if(enableUpload === true) {
+    if(enableUploadAndNewEntry === true) {
       var transLanguageDropdown = null,
         fileExtension = this._getUploadFileExtension(),
         disableUpload = true;
@@ -187,7 +191,14 @@ var SystemGlossary = React.createClass({
               <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile} loading={isUploading}>Import</Button>
             </Modal.Footer>
           </Modal>
-      </div>)
+        </div>);
+
+      newEntrySection = (
+        <div className='mh1/2'>
+          <Button onClick={this._openNewGlossaryModal} link>
+            <Icon name='plus' className='mr1/4' /><span>New Glossary</span>
+          </Button>
+        </div>);
     }
 
     return (<div>
@@ -205,6 +216,7 @@ var SystemGlossary = React.createClass({
                     onChange={this._handleTransChange}/>
                 </div>
                 {uploadSection}
+                {newEntrySection}
               </div>
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
