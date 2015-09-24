@@ -1,33 +1,39 @@
-var RequestMock = {};
+var RequestMock = {
+  data:  {},
 
-var _mockResponse = {};
-var _set = {};
-var _get;
+  createRequest: function(res) {
+    return {
+      _url: null,
+      _res: res,
+      _set: {},
 
-function get(getUrl) {
-  _get = getUrl;
-  return this;
-}
+      get: function(_url) {
+        this._url = _url;
+        return this;
+      },
+      set: function(name, value) {
+        this._set[name] = value;
+        return this;
+      },
+      end: function (func) {
+        func.call(this, null, this._res);
+      }
+    };
+  },
 
-function set(name, value) {
-  _set[name] = value;
-  return this;
-}
+  get: function(url) {
+    if(this.data[url]) {
+      return this.data[url].get(url);
+    } else {
+      console.warn('No request created for ', url, 'Returning empty request');
+      return this.createRequest(null);
+    }
+  },
 
-function end(func) {
-  func.call(this, _mockResponse);
-}
-
-RequestMock.get = get;
-RequestMock.set = set;
-RequestMock.end = end;
-
-RequestMock.__setResponse = function(res) {
-  _mockResponse = res;
-};
-
-RequestMock.getUrl = function() {
-  return _get;
+  __setResponse: function(url, res) {
+    var request = this.createRequest(res);
+    this.data[url] = request;
+  }
 };
 
 module.exports = RequestMock;

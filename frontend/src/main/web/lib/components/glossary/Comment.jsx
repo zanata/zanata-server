@@ -62,7 +62,7 @@ var Comment = React.createClass({
           value={self.state.value}
           onKeyUp={self._handleKeyUp}/>
         <div className="mt1/4">
-          <Button className="mr1/2" onClick={self._onCancelComment}>Cancel</Button>
+          <Button className="mr1/2" link onClick={self._onCancelComment}>Cancel</Button>
           <Button kind='primary' size={-1} disabled={disableUpdate} onClick={self._onUpdateComment}>Update Comment</Button>
         </div>
       </Tooltip>);

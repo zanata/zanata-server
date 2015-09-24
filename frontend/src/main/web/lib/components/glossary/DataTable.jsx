@@ -170,6 +170,7 @@ var DataTable = React.createClass({
         return (<span key={key}>{value}</span>)
       } else {
         return (<InputCell
+          value={value}
           resId={resId}
           key={key}
           placeholder={placeholder}

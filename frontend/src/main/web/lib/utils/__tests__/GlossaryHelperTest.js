@@ -130,7 +130,6 @@ describe('GlossaryHelperTest', function() {
     //modify source, source is valid, trans modified, can update comment
     entry2.transTerm.content = 'original content';
     status = GlossaryHelper.getEntryStatus(entry1, entry2);
-    console.info(status);
     expectStatus(status, true, true, true, true, false);
   });
 

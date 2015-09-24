@@ -42,14 +42,14 @@ function loadFromServer() {
       .set("Cache-Control", "no-cache, no-store, must-revalidate")
       .set("Pragma", "no-cache")
       .set("Expires", 0)
-      .end((function (res) {
+      .end(function (err, res) {
         if (res.error) {
           console.error(url, res.status, res.error.toString());
           reject(Error(res.error.toString()));
         } else {
           resolve(res['body']);
         }
-      }));
+      });
   });
 }
 
@@ -63,7 +63,6 @@ function handleServerResponse(serverResponse) {
   _state['matrixForAllDays'] = wordCountsForEachDay;
   _state['wordCountsForEachDayFilteredByContentState'] = mapTotalWordCountByContentState(wordCountsForEachDay, contentState);
   _state['wordCountsForSelectedDayFilteredByContentState'] = filterByContentStateAndDay(_state['matrix'], contentState, selectedDay);
-  //console.log('handle server response:' + _state);
   return _state;
 }
 

@@ -183,7 +183,7 @@ var SystemGlossary = React.createClass({
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button className='mr1' onClick={this._closeUploadModal}>Cancel</Button>
+              <Button className='mr1' link onClick={this._closeUploadModal}>Cancel</Button>
               <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile} loading={isUploading}>Import</Button>
             </Modal.Footer>
           </Modal>

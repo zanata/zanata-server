@@ -99,8 +99,8 @@ var SourceActionCell = React.createClass({
         var deleteButton = null, updateButton = null;
         if(canAddNewEntry) {
           deleteButton = (
-            <Button kind="danger" className='ml1/4' onClick={self._handleDelete}>
-              <Icon name="trash"/> <span>Delete</span>
+            <Button kind="danger" link className='ml1/4' onClick={self._handleDelete}>
+              <Icon name="trash" className='mr1/8'/><span>Delete</span>
             </Button>);
         }
 
@@ -110,7 +110,7 @@ var SourceActionCell = React.createClass({
 
         if(isSrcModified) {
           return (
-              <div>
+              <div className='difx aic'>
                 <div className='cdtargetib'>{info}</div>
                 {updateButton}
                 {cancelButton}

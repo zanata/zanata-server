@@ -83,7 +83,6 @@ function processLocalesStatistic(serverResponse) {
       label: `${transLocale.locale.displayName} - (${transLocale.numberOfTerms})`
     });
   });
-
   return _state;
 }
 
@@ -154,6 +153,9 @@ function canUpdateEntry() {
 }
 
 function processGlossaryList(serverResponse) {
+  if(serverResponse === null) {
+    return _state;
+  }
   var transLocaleId = _state['selectedTransLocale'],
     srcLocaleId = _state['srcLocale'].locale.localeId,
     page = _state['page'];

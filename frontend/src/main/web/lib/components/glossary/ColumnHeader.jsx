@@ -38,9 +38,9 @@ var ColumnHeader = React.createClass({
         var asc = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
         sortIcon = (<Icon name={asc}/>);
       }
-      return (<button className='csec fwsb' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>);
+      return (<button className='csec fwsb ph1/2' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>);
     } else {
-      return (<span className='csec'>{this.props.value}</span>)
+      return (<span className='csec ph1/2'>{this.props.value}</span>)
     }
   }
 

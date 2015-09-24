@@ -49,6 +49,7 @@ var InputCell = React.createClass({
   _onValueChange : function(event) {
     var self = this,
       value = event.target.value;
+    this.setState({value: value});
     if(this.state.timeout !== null) {
       clearTimeout(this.state.timeout);
     }
@@ -64,22 +65,29 @@ var InputCell = React.createClass({
   },
 
   //handle reset from the input
-  _handleReset: function () {
-    Actions.resetEntry(this.props.resId);
+  _onReset: function () {
+    this.setState({value: this.props.value});
+    Actions.updateEntryField(this.props.resId, this.props.field, this.props.value);
   },
 
   render: function() {
-    var outlineClass = this.state.isFocused === true ? 'outline' : 'none';
-    return (<Input
-      reset
-      border={outlineClass}
-      label={this.props.field}
-      hideLabel
-      value={this.state.value}
-      placeholder={this.props.placeholder}
-      onChange={this._onValueChange}
-      onFocus={this._onFocus}
-    />);
+    return (
+      <div>
+        <span className='cdtargetn mh1/2'>{this.state.value}</span>
+        <Input
+          className='cdtargetib'
+          margin='mh1/8'
+          border='outline'
+          label={this.props.field}
+          hideLabel
+          value={this.state.value}
+          placeholder={this.props.placeholder}
+          onChange={this._onValueChange}
+          onFocus={this._onFocus}
+          onReset={this._onReset}
+        />
+      </div>
+    );
   }
 });
 
