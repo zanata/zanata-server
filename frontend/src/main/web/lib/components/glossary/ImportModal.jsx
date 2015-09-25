@@ -103,7 +103,7 @@ var ImportModal = React.createClass({
 
         transLanguageDropdown = (<Select
           name='glossary-import-language-selection'
-          className='w16'
+          className='w16 mb1'
           placeholder='Select a translation language…'
           value={this.state.transLocale}
           options={localeOptions}
@@ -127,16 +127,14 @@ var ImportModal = React.createClass({
           <Modal.Header>
             <Modal.Title>Import Glossary</Modal.Title>
           </Modal.Header>
-          <Modal.Body className='tal'>
+          <Modal.Body className='tal' scrollable={false}>
             <form onSubmit={this._onSubmit} encType="multipart/form-data">
               <input type="file" onChange={this._onFileChange} ref="file" multiple={false} />
             </form>
+            {transLanguageDropdown}
             <p>
-              CSV and PO files are supported. The source language should be in {this.props.srcLocale.locale.displayName}. For more details on how to prepare glossary files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" className="cpri" target="_blank">glossary import documentation</a>.
+            CSV and PO files are supported. <strong>The source language should be in {this.props.srcLocale.locale.displayName}</strong>. For more details on how to prepare glossary files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" className="cpri" target="_blank">glossary import documentation</a>.
             </p>
-            <div>
-              {transLanguageDropdown}
-            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button className='mr1' disabled={isUploading} link onClick={this._closeModal}>Cancel</Button>

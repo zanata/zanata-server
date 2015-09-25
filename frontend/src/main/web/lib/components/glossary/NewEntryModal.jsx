@@ -87,39 +87,39 @@ var NewEntryModal = React.createClass({
     return (
       <div className={this.props.className}>
         <Button onClick={this._showModal} link>
-          <Icon name='plus' className='mr1/4'/><span>New Glossary</span>
+          <Icon name='plus' className='mr1/8'/><span>New Term</span>
         </Button>
         <Modal show={this.state.show} onHide={this._closeModal}>
           <Modal.Header>
-            <Modal.Title>New Glossary</Modal.Title>
+            <Modal.Title>New Term</Modal.Title>
           </Modal.Header>
           <Modal.Body className='tal'>
             <Input
-              margin='mv1/8'
+              margin='mb1/2'
               border='underline'
               label='Term'
               value={this.state.term}
-              placeholder='Enter a new term'
+              placeholder='The new term'
               onChange={this._onTermChange}
               onReset={this._onTermReset}
               />
 
             <Input
-              margin='mv1/8'
+              margin='mb1/2'
               border='underline'
               label='Part of speech'
               value={this.state.pos}
-              placeholder='Enter part of speech'
+              placeholder='Noun, Verb, etc'
               onChange={this._onPosChange}
               onReset={this._onPosReset}
               />
 
             <Input
-              margin='mv1/8'
+              margin='mb1/2'
               border='underline'
               label='Description'
               value={this.state.description}
-              placeholder='Enter description'
+              placeholder='The definition of this term'
               onChange={this._onDescChange}
               onReset={this._onDescReset}
               />
