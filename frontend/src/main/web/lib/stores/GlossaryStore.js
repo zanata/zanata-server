@@ -37,7 +37,15 @@ var _state = {
   sort: {
     src_content: true
   },
-  totalCount: 0
+  totalCount: 0,
+  newEntry: {
+    term: '',
+    pos: '',
+    description: '',
+    isSaving: false,
+    show: false,
+    isAllowSave: false
+  }
 };
 
 function localesStatAPIUrl() {
@@ -157,7 +165,6 @@ function processGlossaryList(serverResponse) {
     return _state;
   }
   var transLocaleId = _state['selectedTransLocale'],
-    srcLocaleId = _state['srcLocale'].locale.localeId,
     page = _state['page'];
 
   _state['totalCount'] = serverResponse.totalCount;
@@ -166,20 +173,6 @@ function processGlossaryList(serverResponse) {
 
   for (var i = startIndex; i < _state['totalCount']; i++) {
     _state['glossaryResId'].push(null);
-  }
-
-  if(StringUtils.isEmptyOrNull(transLocaleId) && _state['canAddNewEntry']) {
-    var newEntryKey = GlossaryHelper.NEW_ENTRY_KEY;
-    startIndex +=1;
-    if(_.isUndefined(_state['glossary'][newEntryKey])) {
-      _state['glossary'][newEntryKey] = {
-        resId: '', pos: '', description: '',
-        srcTerm: GlossaryHelper.generateSrcTerm(srcLocaleId),
-        transTerm: GlossaryHelper.generateTerm(transLocaleId),
-        status: GlossaryHelper.getDefaultEntryStatus()
-      };
-      _state['glossaryResId'][0] = [newEntryKey];
-    }
   }
 
   _.forOwn(serverResponse.glossaryEntries, function(entry) {
@@ -251,13 +244,24 @@ function deleteGlossary(data) {
       })
   });
 }
+function saveGlossary(data) {
+  var entry = {
+    resId: '', pos: data.pos, description: data.description,
+    srcTerm: GlossaryHelper.generateSrcTerm(data.srcLocaleId)
+  };
+  entry.srcTerm.content = data.term;
+  var glossary = GlossaryHelper.generateGlossaryDTO(entry);
+  return saveOrUpdateGlossary(glossary);
+}
 
-function saveOrUpdateGlossary(entry) {
-  //create glossary object from data
+function updateGlossary(entry) {
   entry.status.isSaving = true;
-  var url = Configs.baseUrl + "/glossary/" + Configs.urlPostfix,
-    glossary = GlossaryHelper.generateGlossaryDTO(entry);
+  var glossary = GlossaryHelper.generateGlossaryDTO(entry);
+  return saveOrUpdateGlossary(glossary);
+}
 
+function saveOrUpdateGlossary(glossary) {
+  var url = Configs.baseUrl + "/glossary/" + Configs.urlPostfix;
   return new Promise(function(resolve, reject) {
     Request.post(url)
       .set('Content-Type', 'application/json')
@@ -323,7 +327,18 @@ function processDelete(serverResponse) {
 }
 
 function processSave(serverResponse) {
+  _state['newEntry'].isSaving = false;
+  _state['newEntry'].show = false;
+  _state['newEntry'].isAllowSave = false;
+  _state['newEntry'].pos = '';
+  _state['newEntry'].term = '';
+  _state['newEntry'].description = '';
+
   console.debug('Glossary entry saved');
+}
+
+function processUpdate(serverResponse) {
+  console.debug('Glossary entry updated');
 }
 
 function initialise() {
@@ -354,6 +369,14 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
 
   getFocusedRow: function() {
     return _state['focusedRow'];
+  },
+
+  getNewEntryState: function() {
+    return _state['newEntry'];
+  },
+
+  getUploadFileState: function() {
+    return _state['uploadFile'];
   },
 
   emitChange: function() {
@@ -388,10 +411,19 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           });
         break;
       case GlossaryActionTypes.INSERT_GLOSSARY:
-      case GlossaryActionTypes.UPDATE_GLOSSARY:
-        console.debug('save/update glossary', _state['glossary'][action.data]);
-        saveOrUpdateGlossary(_state['glossary'][action.data])
+        console.debug('save glossary', action.data);
+        _state['newEntry'].isSaving = true;
+        _state['newEntry'].show = true;
+        GlossaryStore.emitChange();
+
+        saveGlossary(action.data)
           .then(processSave)
+          .then(initialise);
+        break;
+      case GlossaryActionTypes.UPDATE_GLOSSARY:
+        console.debug('update glossary', _state['glossary'][action.data]);
+        updateGlossary(_state['glossary'][action.data])
+          .then(processUpdate)
           .then(initialise);
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
@@ -473,7 +505,6 @@ function resetCache() {
   _state['page'] = 1;
   _state['glossary'] = {};
   _state['glossaryResId'] = [];
-  _state['filter'] = '';
   _state['sort'] = {
     src_content: true
   };

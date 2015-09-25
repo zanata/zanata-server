@@ -149,7 +149,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
 
     public Map<LocaleId, Integer> getTranslationLocales() {
         String queryString =
-                "select t.locale, count(*) from HGlossaryTerm t where t.locale <> t.glossaryEntry.srcLocale group by t.locale";
+                "select t.locale, count(*) from HGlossaryTerm t where t.locale.localeId <> t.glossaryEntry.srcLocale.localeId group by t.locale";
         Query query = getSession()
                 .createQuery(queryString)
                 .setComment("GlossaryDAO.getTranslationLocales");

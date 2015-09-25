@@ -9,10 +9,15 @@ var Actions = {
       data: selectedLocale
     });
   },
-  createGlossary: function(resId) {
+  saveGlossary: function(srcLocaleId, term, pos, description) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.INSERT_GLOSSARY,
-      data: resId
+      data: {
+        srcLocaleId: srcLocaleId,
+        term: term,
+        pos: pos,
+        description: description
+      }
     });
   },
   updateGlossary: function(resId) {

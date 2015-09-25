@@ -72,9 +72,7 @@ describe('GlossaryStoreTest', function() {
       expect(state.locales[zhHans.locale.localeId]).toEqual(zhHans);
       expect(state.locales[zhHant.locale.localeId]).toEqual(zhHant);
       expect(_.size(state.localeOptions)).toEqual(_.size(respLocaleStats.transLocale));
-      expect(_.size(state.glossary)).toEqual(_.size(respGlossaryEntries.glossaryEntries) + 1);
-
-      expect(state.glossary['NEW_ENTRY']).not.toBeNull();
+      expect(_.size(state.glossary)).toEqual(_.size(respGlossaryEntries.glossaryEntries));
 
       var resultEntry1 = state.glossary[entry1.resId];
       expect(resultEntry1.resId).toEqual(entry1.resId);
@@ -93,7 +91,7 @@ describe('GlossaryStoreTest', function() {
       expect(state.original_glossary).toEqual(state.glossary);
 
       expect(state.totalCount).toEqual(respGlossaryEntries.totalCount);
-      expect(_.size(state.glossaryResId)).toEqual(_.size(respGlossaryEntries.glossaryEntries) + 1);
+      expect(_.size(state.glossaryResId)).toEqual(_.size(respGlossaryEntries.glossaryEntries));
     });
 
     GlossaryStore.init();

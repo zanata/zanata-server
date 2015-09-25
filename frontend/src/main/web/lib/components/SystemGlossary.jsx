@@ -3,8 +3,10 @@ import Configs from '../constants/Configs';
 import GlossaryStore from '../stores/GlossaryStore';
 import { PureRenderMixin } from 'react/addons';
 import Actions from '../actions/GlossaryActions';
-import { Button, Input, Icons, Icon, Select, Modal } from 'zanata-ui'
+import { Button, Input, Icons, Icon, Select } from 'zanata-ui'
 import DataTable from './glossary/DataTable'
+import NewEntryModal from './glossary/NewEntryModal'
+import ImportModal from './glossary/ImportModal'
 import { Loader } from 'zanata-ui'
 import _ from 'lodash';
 import StringUtils from '../utils/StringUtils'
@@ -46,67 +48,6 @@ var SystemGlossary = React.createClass({
     this.setState({filter: event.target.value});
   },
 
-  _handleUploadFileTransChange: function (localeId) {
-    var uploadFileState = this.state.uploadFile;
-    uploadFileState.transLocale = localeId;
-    this.setState({uploadFile : uploadFileState});
-  },
-
-  _handleFile: function(e) {
-    var self = this, reader = new FileReader();
-    var file = e.target.files[0];
-
-    reader.onload = function(upload) {
-      var uploadFileState = self.state.uploadFile;
-      uploadFileState.file = file;
-      self.setState({uploadFile: uploadFileState});
-    };
-    reader.readAsDataURL(file);
-  },
-
-  _uploadFile: function() {
-    var uploadFileState = this.state.uploadFile;
-    uploadFileState.status = 0;
-    this.setState({uploadFile: uploadFileState});
-
-    Actions.uploadFile(this.state.uploadFile,
-      this.state.srcLocale.locale.localeId);
-  },
-
-  _handleSubmit: function(e) {
-    e.preventDefault();
-  },
-
-  _closeUploadModal : function () {
-    var uploadFileState = this.state.uploadFile;
-    uploadFileState.transLocale = null;
-    uploadFileState.file = null;
-    uploadFileState.show = false;
-    this.setState({uploadFile: uploadFileState});
-  },
-
-  _openUploadModal : function() {
-    var uploadFileState = this.state.uploadFile;
-    uploadFileState.show = true;
-    this.setState({uploadFile: uploadFileState});
-  },
-
-  _openNewGlossaryModal : function() {
-
-  },
-
-  _getUploadFileExtension: function () {
-    var extension = '';
-    if(this.state.uploadFile.file) {
-      extension = this.state.uploadFile.file.name.split(".").pop();
-    }
-    return extension;
-  },
-
-  _isSupportedFile: function (extension) {
-    return extension === 'po' || extension === 'csv';
-  },
-
   render: function() {
     var count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
@@ -130,75 +71,11 @@ var SystemGlossary = React.createClass({
       count = this.state.srcLocale.numberOfTerms;
     }
 
-    var enableUploadAndNewEntry = this.state.canAddNewEntry && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale);
+    var allowNewEntry = this.state.canAddNewEntry && !_.isUndefined(this.state.srcLocale) && !_.isNull(this.state.srcLocale);
 
-    if(enableUploadAndNewEntry === true) {
-      var transLanguageDropdown = null,
-        fileExtension = this._getUploadFileExtension(),
-        disableUpload = true;
-
-      if(this._isSupportedFile(fileExtension)) {
-        if(fileExtension === 'po') {
-          var localeOptions = [];
-          _.forEach(this.state['locales'], function(locale, localeId) {
-            localeOptions.push({
-              value: localeId,
-              label: locale.locale.displayName
-            });
-          });
-
-          transLanguageDropdown = (<Select
-            name='glossary-import-language-selection'
-            className='w16'
-            placeholder='Select a translation language…'
-            value={this.state.uploadFile.transLocale}
-            options={localeOptions}
-            onChange={this._handleUploadFileTransChange}
-          />);
-
-          if(!StringUtils.isEmptyOrNull(this.state.uploadFile.transLocale)) {
-            disableUpload = false;
-          }
-        } else {
-          disableUpload = false;
-        }
-      }
-
-      var isUploading = this.state.uploadFile.status !== -1;
-
-      uploadSection = (
-        <div>
-          <Button onClick={this._openUploadModal} link>
-            <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
-          </Button>
-          <Modal show={this.state.uploadFile.show} onHide={this._closeUploadModal}>
-            <Modal.Header>
-              <Modal.Title>Import Glossary</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className='tal'>
-              <form onSubmit={this._handleSubmit} encType="multipart/form-data">
-                <input type="file" onChange={this._handleFile} ref="file" multiple={false} />
-              </form>
-              <p>
-                CSV and PO files are supported. The source language should be in {this.state.srcLocale.locale.displayName}. For more details on how to prepare glossary files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" className="cpri" target="_blank">glossary import documentation</a>.
-              </p>
-              <div>
-                {transLanguageDropdown}
-              </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button className='mr1' link onClick={this._closeUploadModal}>Cancel</Button>
-              <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile} loading={isUploading}>Import</Button>
-            </Modal.Footer>
-          </Modal>
-        </div>);
-
-      newEntrySection = (
-        <div className='mh1/2'>
-          <Button onClick={this._openNewGlossaryModal} link>
-            <Icon name='plus' className='mr1/4' /><span>New Glossary</span>
-          </Button>
-        </div>);
+    if(allowNewEntry === true) {
+      uploadSection = (<ImportModal srcLocale={this.state.srcLocale} transLocales={this.state.locales}/>);
+      newEntrySection = (<NewEntryModal className='mh1/2' srcLocale={this.state.srcLocale}/>);
     }
 
     return (<div>

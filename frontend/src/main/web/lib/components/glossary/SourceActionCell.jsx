@@ -12,9 +12,8 @@ var SourceActionCell = React.createClass({
     info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     srcLocaleId: React.PropTypes.string.isRequired,
-    newEntryCell: React.PropTypes.bool,
-    canAddNewEntry: React.PropTypes.bool,
-    canUpdateEntry: React.PropTypes.bool
+    canUpdateEntry: React.PropTypes.bool,
+    canDeleteEntry: React.PropTypes.bool
   },
 
   mixins: [PureRenderMixin],
@@ -43,10 +42,6 @@ var SourceActionCell = React.createClass({
     }
   },
 
-  _handleSave: function() {
-    Actions.createGlossary(this.props.resId);
-  },
-
   _handleUpdate: function() {
     Actions.updateGlossary(this.props.resId);
   },
@@ -61,15 +56,13 @@ var SourceActionCell = React.createClass({
 
   render: function() {
     var self = this,
-      newEntryCell  = this.props.newEntryCell,
-      canAddNewEntry = this.props.canAddNewEntry,
       isSrcValid = self.state.entry.status.isSrcValid;
 
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
       var isSrcModified= self.state.entry.status.isSrcModified;
-      var cancelButton = null, saveButton = null;
+      var cancelButton = null;
 
       var info = (
         <OverlayTrigger placement='top'
@@ -80,24 +73,13 @@ var SourceActionCell = React.createClass({
 
       if(isSrcModified) {
         cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
-        if(newEntryCell && canAddNewEntry && isSrcValid) {
-          saveButton = (<Button kind='primary' className='ml1/4' onClick={self._handleSave}>Save</Button>);
-        }
       }
-      if (newEntryCell && canAddNewEntry) {
-        if(isSrcModified) {
-          return (<div>
-            {saveButton}
-            {cancelButton}
-          </div>)
-        } else {
-          return (<div></div>)
-        }
-      } else if(self.state.entry.status.isSaving === true) {
+
+      if(self.state.entry.status.isSaving === true) {
         return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
       } else {
         var deleteButton = null, updateButton = null;
-        if(canAddNewEntry) {
+        if(self.props.canDeleteEntry) {
           deleteButton = (
             <Button kind="danger" link className='ml1/4' onClick={self._handleDelete}>
               <Icon name="trash" className='mr1/8'/><span>Delete</span>

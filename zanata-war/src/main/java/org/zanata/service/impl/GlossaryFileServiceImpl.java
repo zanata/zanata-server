@@ -140,9 +140,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         String resId = from.getResId();
 
         if(StringUtils.isBlank(resId)) {
-            resId =
-                    getResId(srcLocale, srcTerm.getContent(), from.getPos(),
-                            from.getDescription());
+            resId = getResId(srcLocale, srcTerm.getContent(), from.getPos(),
+                        from.getDescription());
         }
 
         HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResId(resId);

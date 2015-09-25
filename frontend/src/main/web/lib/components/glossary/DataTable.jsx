@@ -183,15 +183,12 @@ var DataTable = React.createClass({
 
   _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
                                columnData, width) {
-    var readOnly = !(rowIndex === 0 && this.props.canAddNewEntry) || this._isTranslationSelected(),
-      placeholder = 'enter a new term';
-    return this._renderCell(resId, rowIndex, this.ENTRY.SRC, readOnly, placeholder);
+    return this._renderCell(resId, rowIndex, this.ENTRY.SRC, true, '');
   },
 
   _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
-    var readOnly = !this.props.canUpdateEntry,
-      placeholder = 'enter a translation';
+    var readOnly = !this.props.canUpdateEntry, placeholder = 'enter a translation';
     return this._renderCell(resId, rowIndex, this.ENTRY.TRANS, readOnly, placeholder);
   },
 
@@ -211,8 +208,7 @@ var DataTable = React.createClass({
 
   _renderTransCountCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    var readOnly = true, placeholder = '';
-    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS_COUNT, readOnly, placeholder);
+    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS_COUNT, true, '');
   },
 
   _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,
@@ -233,15 +229,13 @@ var DataTable = React.createClass({
           rowIndex={rowIndex}/>
       );
     } else {
-      var isNewEntryCell = rowIndex === 0,
-        info = self._generateTermInfo(entry.srcTerm);
+      var info = self._generateTermInfo(entry.srcTerm);
       return (
         <SourceActionCell resId={resId} rowIndex={rowIndex}
           srcLocaleId={self.props.srcLocale.locale.localeId}
-          newEntryCell={isNewEntryCell}
           info={info}
           canUpdateEntry={self.props.canUpdateEntry}
-          canAddNewEntry={self.props.canAddNewEntry}/>
+          canDeleteEntry={self.props.canAddNewEntry}/>
       );
     }
   },

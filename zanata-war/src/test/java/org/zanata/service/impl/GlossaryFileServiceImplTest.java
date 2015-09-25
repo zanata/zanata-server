@@ -106,7 +106,7 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         Glossary glossary = result.get(0);
 
         assertThat(glossary.getGlossaryEntries()).hasSize(1);
-        
+
         GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
         assertThat(entry.getSrcLang()).isEqualTo(srcLocaleId);
         assertThat(entry.getGlossaryTerms()).hasSize(2)

@@ -2,13 +2,14 @@ import _ from 'lodash';
 import StringUtils from './StringUtils'
 
 var GlossaryHelper = {
-  NEW_ENTRY_KEY : 'NEW_ENTRY',
-
   /**
    * Generate org.zanata.rest.dto.GlossaryTerm object
    * @param data
    */
   generateGlossaryTermDTO: function (data) {
+    if(_.isUndefined(data)) {
+      return null;
+    }
     var content = StringUtils.trim(data.content),
       locale = data.locale,
       comments = StringUtils.trim(data.comment);

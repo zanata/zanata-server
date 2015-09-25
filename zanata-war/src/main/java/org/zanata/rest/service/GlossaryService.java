@@ -69,7 +69,10 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
-        HLocale srcLocale = localeServiceImpl.getByLocaleId(LocaleId.EN_US);
+        //set en-US as source, should get this from server settings.
+        LocaleId srcLocaleId = LocaleId.EN_US;
+        HLocale srcLocale = localeServiceImpl.getByLocaleId(srcLocaleId);
+
         int entryCount =
                 glossaryDAO.getEntryCountBySourceLocales(LocaleId.EN_US);
 
@@ -84,13 +87,14 @@ public class GlossaryService implements GlossaryResource {
         List<GlossaryLocaleInfo> transLocale = Lists.newArrayList();
 
         for(HLocale locale: supportedLocales) {
-            LocaleDetails localeDetails = generateLocaleDetails(locale);
-            int count = transMap.containsKey(locale.getLocaleId()) ?
-                transMap.get(locale.getLocaleId()) : 0;
+            if(locale.getLocaleId() != srcLocaleId) {
+                LocaleDetails localeDetails = generateLocaleDetails(locale);
+                int count = transMap.containsKey(locale.getLocaleId()) ?
+                    transMap.get(locale.getLocaleId()) : 0;
 
-            transLocale.add(new GlossaryLocaleInfo(localeDetails, count));
+                transLocale.add(new GlossaryLocaleInfo(localeDetails, count));
+            }
         }
-
         GlossaryInfo glossaryInfo =
             new GlossaryInfo(srcGlossaryLocale, transLocale);
 
