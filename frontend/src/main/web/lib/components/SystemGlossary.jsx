@@ -75,7 +75,7 @@ var SystemGlossary = React.createClass({
 
     if(allowNewEntry === true) {
       uploadSection = (<ImportModal srcLocale={this.state.srcLocale} transLocales={this.state.locales}/>);
-      newEntrySection = (<NewEntryModal className='mh1/2' srcLocale={this.state.srcLocale}/>);
+      newEntrySection = (<NewEntryModal className='ml1/2' srcLocale={this.state.srcLocale}/>);
     }
 
     return (<div>
@@ -92,8 +92,10 @@ var SystemGlossary = React.createClass({
                     options={this.state.localeOptions}
                     onChange={this._handleTransChange}/>
                 </div>
-                {uploadSection}
-                {newEntrySection}
+                <div className='dfx aic'>
+                  {uploadSection}
+                  {newEntrySection}
+                </div>
               </div>
               <div className='dfx aic mb1'>
                 <div className='fxauto'>
