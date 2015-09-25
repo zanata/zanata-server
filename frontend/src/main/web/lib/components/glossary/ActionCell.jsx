@@ -5,8 +5,8 @@ import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
 import Comment from './Comment'
 import GlossaryStore from '../../stores/GlossaryStore';
-import _ from 'lodash';
 import StringUtils from '../../utils/StringUtils'
+import _ from 'lodash';
 
 var ActionCell = React.createClass({
   propTypes: {

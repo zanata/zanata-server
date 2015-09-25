@@ -30,7 +30,7 @@ var Actions = {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.DELETE_GLOSSARY,
       data: {
-       resId: resId,
+       resId: resId
       }
     });
   },

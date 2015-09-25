@@ -91,7 +91,7 @@ describe('GlossaryStoreTest', function() {
       expect(state.original_glossary).toEqual(state.glossary);
 
       expect(state.totalCount).toEqual(respGlossaryEntries.totalCount);
-      expect(_.size(state.glossaryResId)).toEqual(_.size(respGlossaryEntries.glossaryEntries));
+      expect(_.size(state.glossaryResId)).toEqual(respGlossaryEntries.totalCount);
     });
 
     GlossaryStore.init();
