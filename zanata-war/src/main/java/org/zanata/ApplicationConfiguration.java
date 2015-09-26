@@ -51,6 +51,8 @@ import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
 import org.zanata.config.JndiBackedConfig;
 import org.zanata.events.ConfigurationChanged;
+import org.zanata.events.LogoutEvent;
+import org.zanata.events.PostAuthenticateEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.log4j.ZanataHTMLLayout;
 import org.zanata.log4j.ZanataSMTPAppender;
@@ -75,6 +77,9 @@ public class ApplicationConfiguration implements Serializable {
 
     @Getter
     private static final int defaultMaxFilesPerUpload = 100;
+
+    @Getter
+    private static final int defaultAnonymousSessionTimeoutMinutes = 30;
 
     @In
     private DatabaseBackedConfig databaseBackedConfig;
@@ -407,5 +412,26 @@ public class ApplicationConfiguration implements Serializable {
     public String copyrightNotice() {
         return msgs.format("jsf.CopyrightNotice",
                 String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+    }
+
+    @Observer(PostAuthenticateEvent.EVENT_NAME)
+    public void setAuthenticatedSessionTimeout(
+            @Observes PostAuthenticateEvent payload) {
+        ServletContexts
+                .getInstance()
+                .getRequest()
+                .getSession()
+                .setMaxInactiveInterval(
+                        authenticatedSessionTimeoutMinutes * 60);
+    }
+
+    @Observer(LogoutEvent.EVENT_NAME)
+    public void setUnauthenticatedSessionTimeout(@Observes LogoutEvent payload) {
+        ServletContexts
+                .getInstance()
+                .getRequest()
+                .getSession()
+                .setMaxInactiveInterval(
+                        defaultAnonymousSessionTimeoutMinutes * 60);
     }
 }
