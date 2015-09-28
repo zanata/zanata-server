@@ -29,7 +29,7 @@ import lombok.Value;
 public class LogoutEvent {
     // TODO remove constant after switching to CDI
     // NB must be a constant string equal to class name
-    public static final String EVENT_NAME = "org.zanata.events.Logout";
+    public static final String EVENT_NAME = "org.zanata.events.LogoutEvent";
 
     String username;
 }
