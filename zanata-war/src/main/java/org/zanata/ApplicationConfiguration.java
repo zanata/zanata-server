@@ -423,12 +423,11 @@ public class ApplicationConfiguration implements Serializable {
                 .getInstance()
                 .getRequest();
         if (request != null) {
+            int timeoutInSecs = max(authenticatedSessionTimeoutMinutes * 60,
+                    defaultAnonymousSessionTimeoutMinutes * 60);
             request
-                    .getSession()
-                    .setMaxInactiveInterval(
-                            max(authenticatedSessionTimeoutMinutes * 60,
-                                    defaultAnonymousSessionTimeoutMinutes *
-                                    60));
+                .getSession()
+                .setMaxInactiveInterval(timeoutInSecs);
         }
     }
 
@@ -439,9 +438,9 @@ public class ApplicationConfiguration implements Serializable {
                 .getRequest();
         if (request != null) {
             request
-                    .getSession()
-                    .setMaxInactiveInterval(
-                            defaultAnonymousSessionTimeoutMinutes * 60);
+                .getSession()
+                .setMaxInactiveInterval(
+                        defaultAnonymousSessionTimeoutMinutes * 60);
         }
     }
 }
