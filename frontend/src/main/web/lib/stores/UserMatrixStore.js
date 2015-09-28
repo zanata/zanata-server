@@ -188,8 +188,7 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
 
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function() {
-    if (_state.matrixForAllDays.length == 0
-      && Configs.user.loggedIn) {
+    if (_state.matrixForAllDays.length == 0 && Configs.user.loggedIn) {
       loadFromServer()
         .then(handleServerResponse)
         .then(function (newState) {

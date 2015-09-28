@@ -26,7 +26,6 @@ describe('UserMatrixStore', function() {
     require('../../constants/Configs').user = user;
     require('../../constants/Configs').data = data;
     MockRequest = require('superagent');
-
     MockRequest.__setResponse('http://localhost/base/stats/user/test-user/2015-03-01..2015-03-07', {error: false, body: responseBody});
 
     require('../../utils/DateHelper')

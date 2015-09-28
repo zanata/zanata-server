@@ -39,6 +39,7 @@ var UserProfile = React.createClass({
         (<div className="g__item w--3-4 w--1-2-m">
           <div className="bg--pop-highest l--pad-v-1">
             <RecentContributions
+              loading={this.state.loading}
               dateRangeOption={this.state.dateRangeOption}
               matrixForAllDays={this.state.matrixForAllDays}
               wordCountsForSelectedDayFilteredByContentState={this.state.wordCountsForSelectedDayFilteredByContentState}

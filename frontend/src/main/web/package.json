@@ -51,7 +51,8 @@
     ],
     "scriptPreprocessor": "./preprocessor.js",
     "moduleFileExtensions": [
-      "js", "jsx"
+      "js",
+      "jsx"
     ]
   }
 }

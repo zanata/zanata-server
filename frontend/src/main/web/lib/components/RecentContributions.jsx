@@ -8,8 +8,31 @@ import Actions from '../actions/UserMatrixActions';
 var RecentContributions = React.createClass(
   {
     render: function() {
-      var dateRange = this.props.dateRange;
+      var dateRange = this.props.dateRange, chart = null, matrix = null;
 
+      if(this.props.loading) {
+        chart = (
+          <a href="#" className="loader--large is-active">
+          <span className="loader__spinner">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          </a>);
+      } else {
+        chart = (
+          <ContributionChart wordCountForEachDay={this.props.matrixForAllDays} dateRangeOption={this.props.dateRangeOption} />);
+
+        matrix =  (
+          <FilterableMatrixTable
+            wordCountForSelectedDay={this.props.wordCountsForSelectedDayFilteredByContentState}
+            wordCountForEachDay={this.props.wordCountsForEachDayFilteredByContentState}
+            fromDate={dateRange['fromDate']} toDate={dateRange['toDate']}
+            dateRangeOption={this.props.dateRangeOption}
+            selectedContentState={this.props.contentStateOption}
+            selectedDay={this.props.selectedDay}
+            />);
+      }
       return (
         <div className="l__wrapper">
           <div className="l--push-bottom-1">
@@ -19,16 +42,9 @@ var RecentContributions = React.createClass(
             <h2 className='delta txt--uppercase'>Recent Contributions</h2>
           </div>
           <div className="l--push-bottom-1">
-            <ContributionChart wordCountForEachDay={this.props.matrixForAllDays} dateRangeOption={this.props.dateRangeOption} />
+            {chart}
           </div>
-          <FilterableMatrixTable
-            wordCountForSelectedDay={this.props.wordCountsForSelectedDayFilteredByContentState}
-            wordCountForEachDay={this.props.wordCountsForEachDayFilteredByContentState}
-            fromDate={dateRange['fromDate']} toDate={dateRange['toDate']}
-            dateRangeOption={this.props.dateRangeOption}
-            selectedContentState={this.props.contentStateOption}
-            selectedDay={this.props.selectedDay}
-          />
+          {matrix}
         </div>
       )
     }
