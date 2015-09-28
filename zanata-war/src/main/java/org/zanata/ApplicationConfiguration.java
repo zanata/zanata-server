@@ -64,6 +64,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.zanata.security.OpenIdLoginModule;
 
+import static java.lang.Math.max;
+
 @Name("applicationConfiguration")
 @Scope(ScopeType.APPLICATION)
 @Startup
@@ -422,7 +424,8 @@ public class ApplicationConfiguration implements Serializable {
                 .getRequest()
                 .getSession()
                 .setMaxInactiveInterval(
-                        authenticatedSessionTimeoutMinutes * 60);
+                        max(authenticatedSessionTimeoutMinutes * 60,
+                                defaultAnonymousSessionTimeoutMinutes * 60));
     }
 
     @Observer(LogoutEvent.EVENT_NAME)
