@@ -66,7 +66,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.mail.MailSession;
-import org.jboss.seam.transaction.FacesTransactionEvents;
 import org.zanata.events.ServerStarted;
 import org.zanata.exception.ZanataInitializationException;
 import org.zanata.rest.dto.VersionInfo;
@@ -113,14 +112,8 @@ public class ZanataInit {
     @In
     private EntityManagerFactory entityManagerFactory;
 
-    @In
-    private FacesTransactionEvents facesTransactionEvents;
-
     @Observer("org.jboss.seam.postInitialization")
     public void initZanata() throws Exception {
-        // disable the automatic JSF message when a transaction fails
-        // TODO [CDI] Will not be needed after CDI migration
-        facesTransactionEvents.setTransactionFailedMessageEnabled(false);
         checkAppServerVersion();
         ServletContext servletContext =
                 ServletLifecycle.getCurrentServletContext();
