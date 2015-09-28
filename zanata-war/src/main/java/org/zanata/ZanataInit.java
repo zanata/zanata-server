@@ -119,6 +119,7 @@ public class ZanataInit {
     @Observer("org.jboss.seam.postInitialization")
     public void initZanata() throws Exception {
         // disable the automatic JSF message when a transaction fails
+        // TODO [CDI] Will not be needed after CDI migration
         facesTransactionEvents.setTransactionFailedMessageEnabled(false);
         checkAppServerVersion();
         ServletContext servletContext =

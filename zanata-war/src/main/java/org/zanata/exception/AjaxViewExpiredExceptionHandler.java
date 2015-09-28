@@ -87,7 +87,7 @@ public class AjaxViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
         exception = unwrap(exception);
 
         if (exception instanceof ViewExpiredException) {
-            Messages msg =
+            Messages msgs =
                     ServiceLocator.instance().getInstance(Messages.class);
             FacesMessages jsfMessages =
                     ServiceLocator.instance().getInstance(
@@ -95,7 +95,7 @@ public class AjaxViewExpiredExceptionHandler extends ExceptionHandlerWrapper {
             HttpServletRequest request =
                     (HttpServletRequest) facesContext.getExternalContext()
                             .getRequest();
-            jsfMessages.addGlobal("Your session has expired. Please reload the page.");
+            jsfMessages.addGlobal(msgs.get("jsf.ViewExpiredException.AjaxError"));
 
             // Set the necessary servlet request attributes which a bit
             // decent error page may expect.
