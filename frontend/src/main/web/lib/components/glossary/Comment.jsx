@@ -57,7 +57,7 @@ var Comment = React.createClass({
 
     if(this.props.readOnly !== true) {
       var tooltip = (<Tooltip id="comment" title="Comment">
-        <textarea className="p1/4 w100p bd bdcsec30 bdrs1/4"
+        <textarea className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
           onChange={self._onCommentChange}
           value={self.state.value}
           onKeyUp={self._handleKeyUp}/>
@@ -75,6 +75,7 @@ var Comment = React.createClass({
       self.props.className,
       'mr1/2'
     );
+
     return (
       <div className="dib">
         <Overlay placement='top' target={props => React.findDOMNode(self)} onHide={self._onCancelComment} rootClose show={self.state.showComment}>

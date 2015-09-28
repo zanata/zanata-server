@@ -8,6 +8,7 @@ import LoadingCell from './LoadingCell'
 import ActionCell from './ActionCell'
 import SourceActionCell from './SourceActionCell'
 import ColumnHeader from './ColumnHeader'
+import {Loader} from 'zanata-ui';
 import _ from 'lodash';
 
 var DataTable = React.createClass({
@@ -73,13 +74,41 @@ var DataTable = React.createClass({
   },
 
   getInitialState: function () {
+    var top = 246;
     return {
-      tbl_width: window.innerWidth - this.CELL_HEIGHT,
-      tbl_height: window.innerHeight - 166,
+      tbl_width: this._getWidth(),
+      tbl_height: this._getHeight(top),
       row_height: this.CELL_HEIGHT,
       header_height: this.CELL_HEIGHT,
       hoveredRow: -1
     }
+  },
+
+  _getHeight: function(fixedTop) {
+    var footer = window.document.getElementById("footer");
+    var footerHeight = footer ? footer.clientHeight : 0;
+    var top = _.isUndefined(fixedTop) ? React.findDOMNode(this).offsetTop: fixedTop;
+    var newHeight = window.innerHeight - footerHeight - top;
+
+    //minimum height 250px
+    newHeight = newHeight < 250 ? 250 : newHeight;
+    return newHeight;
+  },
+
+  _getWidth: function () {
+    return window.innerWidth - 48;
+  },
+
+  _handleResize: function(e) {
+    this.setState({tbl_height: this._getHeight(), tbl_width: this._getWidth()});
+  },
+
+  componentDidMount: function() {
+    window.addEventListener('resize', this._handleResize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this._handleResize);
   },
 
   _generateTermInfo: function(term) {
@@ -176,6 +205,7 @@ var DataTable = React.createClass({
           placeholder={placeholder}
           rowIndex={rowIndex}
           field={field.field}
+          onBlurCallback={this._onRowBlur}
           onFocusCallback={this._onRowClick}/>);
       }
     }
@@ -330,6 +360,13 @@ var DataTable = React.createClass({
     }
   },
 
+  _onRowMouseLeave: function (event, rowIndex) {
+    var unhoveredRow = -1;
+    if (this.state.hoveredRow !== unhoveredRow) {
+      this.setState({hoveredRow: unhoveredRow});
+    }
+  },
+
   _onRowClick: function (event, rowIndex) {
     var resId = this._rowGetter(rowIndex)[0];
     if(this.props.focusedRow) {
@@ -338,6 +375,15 @@ var DataTable = React.createClass({
       }
     } else {
       Actions.updateFocusedRow(resId, rowIndex);
+    }
+  },
+
+  _onRowBlur: function (event, rowIndex) {
+    if(this.props.focusedRow) {
+      var unfocusedRow = -1;
+      if(this.props.focusedRow.rowIndex !== unfocusedRow) {
+        Actions.updateFocusedRow(null, unfocusedRow);
+      }
     }
   },
 
@@ -371,20 +417,21 @@ var DataTable = React.createClass({
 
   render: function() {
     var self = this, columns = [];
+
     columns.push(self._getSourceColumn());
-    if(self._isTranslationSelected()) {
-      columns.push(self._getTransColumn());
-    }
     columns.push(self._getPosColumn());
     columns.push(self._getDescColumn());
     if(!self._isTranslationSelected()) {
       columns.push(self._getTransCountColumn());
+    } else {
+      columns.push(self._getTransColumn());
     }
     columns.push(self._getActionColumn());
 
     return (<Table
       onRowClick={self._onRowClick}
       onRowMouseEnter={self._onRowMouseEnter}
+      onRowMouseLeave={self._onRowMouseLeave}
       rowClassNameGetter={self._rowClassNameGetter}
       rowHeight={self.CELL_HEIGHT}
       rowGetter={self._rowGetter}

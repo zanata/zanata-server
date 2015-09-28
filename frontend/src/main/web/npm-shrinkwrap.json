@@ -43,9 +43,9 @@
           "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.1.0-alpha.7.tgz",
           "dependencies": {
             "core-js": {
-              "version": "1.1.4",
+              "version": "1.2.0",
               "from": "core-js@>=1.0.0 <2.0.0",
-              "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.1.4.tgz"
+              "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.0.tgz"
             },
             "promise": {
               "version": "7.0.4",
@@ -432,9 +432,9 @@
                   "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-1.1.1.tgz"
                 },
                 "core-js": {
-                  "version": "1.1.4",
+                  "version": "1.2.0",
                   "from": "core-js@>=1.0.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.1.4.tgz"
+                  "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -544,9 +544,9 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-2.0.10.tgz",
                   "dependencies": {
                     "brace-expansion": {
-                      "version": "1.1.0",
+                      "version": "1.1.1",
                       "from": "brace-expansion@>=1.0.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.0.tgz",
+                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.1.tgz",
                       "dependencies": {
                         "balanced-match": {
                           "version": "0.2.0",
@@ -697,9 +697,9 @@
                           "resolved": "https://registry.npmjs.org/install/-/install-0.1.8.tgz"
                         },
                         "iconv-lite": {
-                          "version": "0.4.11",
+                          "version": "0.4.12",
                           "from": "iconv-lite@>=0.4.5 <0.5.0",
-                          "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.11.tgz"
+                          "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.12.tgz"
                         }
                       }
                     },
@@ -931,7 +931,7 @@
             },
             "loader-utils": {
               "version": "0.2.11",
-              "from": "loader-utils@>=0.0.0 <1.0.0",
+              "from": "loader-utils@>=0.2.9 <0.3.0",
               "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.11.tgz",
               "dependencies": {
                 "big.js": {
@@ -981,9 +981,9 @@
           "resolved": "https://registry.npmjs.org/nets/-/nets-3.1.0.tgz",
           "dependencies": {
             "request": {
-              "version": "2.63.0",
+              "version": "2.64.0",
               "from": "request@>=2.53.0 <3.0.0",
-              "resolved": "https://registry.npmjs.org/request/-/request-2.63.0.tgz",
+              "resolved": "https://registry.npmjs.org/request/-/request-2.64.0.tgz",
               "dependencies": {
                 "bl": {
                   "version": "1.0.0",
@@ -1758,9 +1758,9 @@
               "resolved": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-1.1.1.tgz"
             },
             "core-js": {
-              "version": "1.1.4",
+              "version": "1.2.0",
               "from": "core-js@>=1.0.0 <2.0.0",
-              "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.1.4.tgz"
+              "resolved": "https://registry.npmjs.org/core-js/-/core-js-1.2.0.tgz"
             },
             "debug": {
               "version": "2.2.0",
@@ -1870,9 +1870,9 @@
               "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-2.0.10.tgz",
               "dependencies": {
                 "brace-expansion": {
-                  "version": "1.1.0",
+                  "version": "1.1.1",
                   "from": "brace-expansion@>=1.0.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.0.tgz",
+                  "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.1.tgz",
                   "dependencies": {
                     "balanced-match": {
                       "version": "0.2.0",
@@ -2023,9 +2023,9 @@
                       "resolved": "https://registry.npmjs.org/install/-/install-0.1.8.tgz"
                     },
                     "iconv-lite": {
-                      "version": "0.4.11",
+                      "version": "0.4.12",
                       "from": "iconv-lite@>=0.4.5 <0.5.0",
-                      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.11.tgz"
+                      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.12.tgz"
                     }
                   }
                 },

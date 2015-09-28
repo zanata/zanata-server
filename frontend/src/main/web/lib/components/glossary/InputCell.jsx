@@ -12,7 +12,8 @@ var InputCell = React.createClass({
     field: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     placeholder: React.PropTypes.string,
-    onFocusCallback: React.PropTypes.func
+    onFocusCallback: React.PropTypes.func,
+    onBlurCallback: React.PropTypes.func
   },
 
   TIMEOUT: 100,
@@ -64,6 +65,12 @@ var InputCell = React.createClass({
     }
   },
 
+  _onBlur: function(event) {
+    if(this.props.onBlurCallback) {
+      this.props.onBlurCallback(event, this.props.rowIndex);
+    }
+  },
+
   //handle reset from the input
   _onReset: function () {
     this.setState({value: this.props.value});
@@ -85,6 +92,7 @@ var InputCell = React.createClass({
           onChange={this._onValueChange}
           onFocus={this._onFocus}
           onReset={this._onReset}
+          onBlur={this._onBlur}
         />
       </div>
     );

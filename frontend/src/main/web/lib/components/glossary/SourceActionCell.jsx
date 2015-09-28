@@ -3,6 +3,7 @@ import {PureRenderMixin} from 'react/addons';
 import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
+import DeleteEntry from './DeleteEntry'
 import GlossaryStore from '../../stores/GlossaryStore';
 import _ from 'lodash';
 
@@ -46,10 +47,6 @@ var SourceActionCell = React.createClass({
     Actions.updateGlossary(this.props.resId);
   },
 
-  _handleDelete: function() {
-    Actions.deleteGlossary(this.props.resId);
-  },
-
   _handleCancel: function() {
     Actions.resetEntry(this.props.resId);
   },
@@ -80,10 +77,7 @@ var SourceActionCell = React.createClass({
       } else {
         var deleteButton = null, updateButton = null;
         if(self.props.canDeleteEntry) {
-          deleteButton = (
-            <Button kind="danger" link className='ml1/4' onClick={self._handleDelete}>
-              <Icon name="trash" className='mr1/8'/><span>Delete</span>
-            </Button>);
+          deleteButton = (<DeleteEntry className='ml1/4' resId={self.props.resId} entry={self.state.entry}/>)
         }
 
         if(isSrcModified && this.props.canUpdateEntry && isSrcValid) {

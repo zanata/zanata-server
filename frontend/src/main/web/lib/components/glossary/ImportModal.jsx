@@ -128,7 +128,7 @@ var ImportModal = React.createClass({
             <Modal.Title>Import Glossary</Modal.Title>
           </Modal.Header>
           <Modal.Body className='tal' scrollable={false}>
-            <form onSubmit={this._onSubmit} encType="multipart/form-data">
+            <form onSubmit={this._onSubmit} encType="multipart/form-data" className="mb1">
               <input type="file" onChange={this._onFileChange} ref="file" multiple={false} />
             </form>
             {transLanguageDropdown}

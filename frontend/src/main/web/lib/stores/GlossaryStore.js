@@ -200,7 +200,7 @@ function processGlossaryList(serverResponse) {
       resId: entry.resId,
       pos: _.isUndefined(entry.pos) ? '' : entry.pos,
       description: _.isUndefined(entry.description) ? '' : entry.description,
-      termsCount: entry.termsCount,
+      termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0 , //remove source term from count
       srcTerm: srcTerm,
       transTerm: transTerm,
       status: GlossaryHelper.getDefaultEntryStatus()
