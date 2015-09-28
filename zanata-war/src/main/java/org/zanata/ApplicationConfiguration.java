@@ -419,22 +419,29 @@ public class ApplicationConfiguration implements Serializable {
     @Observer(PostAuthenticateEvent.EVENT_NAME)
     public void setAuthenticatedSessionTimeout(
             @Observes PostAuthenticateEvent payload) {
-        ServletContexts
+        HttpServletRequest request = ServletContexts
                 .getInstance()
-                .getRequest()
-                .getSession()
-                .setMaxInactiveInterval(
-                        max(authenticatedSessionTimeoutMinutes * 60,
-                                defaultAnonymousSessionTimeoutMinutes * 60));
+                .getRequest();
+        if (request != null) {
+            request
+                    .getSession()
+                    .setMaxInactiveInterval(
+                            max(authenticatedSessionTimeoutMinutes * 60,
+                                    defaultAnonymousSessionTimeoutMinutes *
+                                    60));
+        }
     }
 
     @Observer(LogoutEvent.EVENT_NAME)
     public void setUnauthenticatedSessionTimeout(@Observes LogoutEvent payload) {
-        ServletContexts
+        HttpServletRequest request = ServletContexts
                 .getInstance()
-                .getRequest()
-                .getSession()
-                .setMaxInactiveInterval(
-                        defaultAnonymousSessionTimeoutMinutes * 60);
+                .getRequest();
+        if (request != null) {
+            request
+                    .getSession()
+                    .setMaxInactiveInterval(
+                            defaultAnonymousSessionTimeoutMinutes * 60);
+        }
     }
 }
