@@ -52,15 +52,11 @@ var SourceActionCell = React.createClass({
   },
 
   render: function() {
-    var self = this,
-      isSrcValid = self.state.entry.status.isSrcValid;
+    var self = this;
 
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
-      var isSrcModified= self.state.entry.status.isSrcModified;
-      var cancelButton = null;
-
       var info = (
         <OverlayTrigger placement='top'
           rootClose
@@ -68,23 +64,24 @@ var SourceActionCell = React.createClass({
           <Icon className="cpri" name="info"/>
         </OverlayTrigger>);
 
-      if(isSrcModified) {
-        cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
-      }
-
       if(self.state.entry.status.isSaving === true) {
         return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
       } else {
-        var deleteButton = null, updateButton = null;
+        var deleteButton = null;
+
         if(self.props.canDeleteEntry) {
           deleteButton = (<DeleteEntry className='ml1/4' resId={self.props.resId} entry={self.state.entry}/>)
         }
 
-        if(isSrcModified && this.props.canUpdateEntry && isSrcValid) {
-          updateButton = (<Button kind='primary' className="ml1/4" onClick={self._handleUpdate}>Update</Button>);
-        }
+        var isSrcModified= self.state.entry.status.isSrcModified,
+          isSrcValid = self.state.entry.status.isSrcValid;
 
         if(isSrcModified) {
+          var updateButton = null,
+            cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
+          if(this.props.canUpdateEntry && isSrcValid) {
+            updateButton = (<Button kind='primary' className="ml1/4" onClick={self._handleUpdate}>Update</Button>);
+          }
           return (
               <div className='difx aic'>
                 <div className='cdtargetib'>{info}</div>

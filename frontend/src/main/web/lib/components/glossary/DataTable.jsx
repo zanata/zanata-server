@@ -86,7 +86,7 @@ var DataTable = React.createClass({
 
   _getHeight: function(fixedTop) {
     var footer = window.document.getElementById("footer");
-    var footerHeight = footer ? footer.clientHeight : 0;
+    var footerHeight = footer ? footer.clientHeight : 100;
     var top = _.isUndefined(fixedTop) ? React.findDOMNode(this).offsetTop: fixedTop;
     var newHeight = window.innerHeight - footerHeight - top;
 
@@ -369,22 +369,13 @@ var DataTable = React.createClass({
 
   _onRowClick: function (event, rowIndex) {
     var resId = this._rowGetter(rowIndex)[0];
-    if(this.props.focusedRow) {
-      if(this.props.focusedRow.rowIndex !== rowIndex) {
-        Actions.updateFocusedRow(resId, rowIndex);
-      }
-    } else {
+    if(this.props.focusedRow.rowIndex !== rowIndex) {
       Actions.updateFocusedRow(resId, rowIndex);
     }
   },
 
   _onRowBlur: function (event, rowIndex) {
-    if(this.props.focusedRow) {
-      var unfocusedRow = -1;
-      if(this.props.focusedRow.rowIndex !== unfocusedRow) {
-        Actions.updateFocusedRow(null, unfocusedRow);
-      }
-    }
+    
   },
 
   _rowClassNameGetter: function (rowIndex) {

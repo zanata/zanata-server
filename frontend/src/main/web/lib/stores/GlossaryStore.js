@@ -27,7 +27,9 @@ var _state = {
   glossaryResId: [],
   page:1,
   filter: '',
-  focusedRow: null,
+  focusedRow: {
+    rowIndex: -1
+  },
   uploadFile: {
     show: false,
     status : -1,
@@ -326,7 +328,7 @@ function processDelete(serverResponse) {
   console.debug('Glossary entry deleted');
 }
 
-function processSave(serverResponse) {
+function processSaveOrUpdate(serverResponse) {
   _state['newEntry'].isSaving = false;
   _state['newEntry'].show = false;
   _state['newEntry'].isAllowSave = false;
@@ -417,7 +419,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         GlossaryStore.emitChange();
 
         saveGlossary(action.data)
-          .then(processSave)
+          .then(processSaveOrUpdate)
           .then(initialise);
         break;
       case GlossaryActionTypes.UPDATE_GLOSSARY:
@@ -477,24 +479,31 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
       case GlossaryActionTypes.UPDATE_COMMENT:
         console.debug('Update comment', action.data);
         _.set(_state['glossary'][action.data.resId], 'transTerm.comment', action.data.value);
-        saveOrUpdateGlossary(_state['glossary'][action.data.resId])
-          .then(processSave)
+        updateGlossary(_state['glossary'][action.data.resId])
+          .then(processSaveOrUpdate)
           .then(initialise);
         break;
       case GlossaryActionTypes.UPDATE_FOCUSED_ROW:
-        var previousResId = _state['focusedRow'] ? _state['focusedRow'].resId : null;
-        var entry = _state['glossary'][previousResId];
-        if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
-          saveOrUpdateGlossary(entry)
-              .then(processSave)
-              .then(initialise);
+        var previousResId = _state['focusedRow'].resId,
+          previousRowIndex = _state['focusedRow'].rowIndex;
+        //same index, ignore
+        if(previousRowIndex === action.data.rowIndex) {
+          return;
+        }
+        if(previousRowIndex !== -1 && previousResId !== null) {
+          var entry = _state['glossary'][previousResId];
+          if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
+            updateGlossary(entry)
+                .then(processSaveOrUpdate)
+                .then(initialise);
+          }
         }
         _state['focusedRow'] = action.data;
         GlossaryStore.emitChange();
         break;
       case GlossaryActionTypes.RESET_ENTRY:
         console.debug('reset entry', action.data);
-        _state['glossary'][action.data] = _state['original_glossary'][action.data];
+        _state['glossary'][action.data] = _.cloneDeep(_state['original_glossary'][action.data]);
         GlossaryStore.emitChange();
         break;
     }
