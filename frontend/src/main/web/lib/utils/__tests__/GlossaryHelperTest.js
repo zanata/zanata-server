@@ -149,5 +149,4 @@ describe('GlossaryHelperTest', function() {
       status: GlossaryHelper.getDefaultEntryStatus()
     };
   }
-
 });

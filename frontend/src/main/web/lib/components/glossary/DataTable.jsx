@@ -375,7 +375,7 @@ var DataTable = React.createClass({
   },
 
   _onRowBlur: function (event, rowIndex) {
-    
+
   },
 
   _rowClassNameGetter: function (rowIndex) {

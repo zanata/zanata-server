@@ -89,5 +89,4 @@ var Comment = React.createClass({
   }
 });
 
-
 export default Comment;
