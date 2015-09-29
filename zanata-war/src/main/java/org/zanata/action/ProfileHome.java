@@ -89,7 +89,7 @@ public class ProfileHome implements Serializable {
                 return;
             }
         }
-        user = userService.generateUser(account);
+        user = userService.transferToUser(account);
     }
 
     private HAccount useAuthenticatedAccount() {
@@ -107,7 +107,7 @@ public class ProfileHome implements Serializable {
         if(authenticatedAccount == null) {
             return authenticatedUser;
         }
-        return userService.generateUser(authenticatedAccount);
+        return userService.transferToUser(authenticatedAccount);
     }
 
     public String getUsername() {

@@ -67,5 +67,5 @@ public interface UserResource {
      *
      * @param username
      */
-    public User generateUser(HAccount account);
+    public User transferToUser(HAccount account);
 }

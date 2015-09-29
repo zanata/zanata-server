@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
@@ -48,6 +50,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.util.HashUtil;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -172,6 +175,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         to.setPos(from.getPos());
         to.setDescription(from.getDescription());
 
+        TreeSet<String> warningMessage = Sets.newTreeSet();
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {
             if(glossaryTerm.getLocale() == null || StringUtils.isBlank(
                 glossaryTerm.getContent())) {
@@ -184,13 +188,19 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 // check if there's existing term
                 HGlossaryTerm hGlossaryTerm =
                     getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
-
                 hGlossaryTerm.setComment(glossaryTerm.getComment());
                 to.getGlossaryTerms().put(termHLocale, hGlossaryTerm);
             } else {
-                log.warn("Language {} is not enabled in Zanata. Term will be ignored.", glossaryTerm.getLocale());
+                warningMessage.add(glossaryTerm.getLocale().toString());
             }
         }
+
+        if (!warningMessage.isEmpty()) {
+            log.warn(
+                    "Language {} is not enabled in Zanata. Term in the language will be ignored.",
+                    StringUtils.join(warningMessage, ","));
+        }
+
         glossaryDAO.makePersistent(to);
         return to;
     }
