@@ -9,7 +9,6 @@
 
   <ui:define name="page_title">#{msgs['jsf.Register']}</ui:define>
   <ui:define name="center_content">
-
     <div class="header__logo-only">
       <h:link outcome="/home.xhtml" id="home" tabindex="1">
         <img src="#{assets['img/logo/logo.svg']}" alt="Zanata"/>
@@ -68,12 +67,13 @@
 
                 <h:outputLabel
                   for="password">#{msgs['jsf.Password']}</h:outputLabel>
-                <zanata:decorate id="passwordField">
+                <zanata:decorate id="password" componentId="passwordField">
                   <div class="form__password js-form-password">
                     <h:inputSecret id="password"
                       styleClass="js-form-password-input form__input"
                       value="#{register.password}"
                       tabindex="5">
+                      <a4j:ajax event="blur" render="passwordField" execute="@this"/>
                     </h:inputSecret>
                     <a href="#"
                       class="form__toggle js-form-password-toggle">Show</a>
