@@ -1719,17 +1719,15 @@
         <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
-        <wildfly.version>9.0.1.Final</wildfly.version>
+        <wildfly.version>10.0.0.Beta2</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>
 
-        <!-- Versions of our compatibility modules for wildfly -->
-        <module.wildfly.version>8.1.0.Final</module.wildfly.version>
-        <mojarra.module.version>2.1.29-01</mojarra.module.version>
-        <mojarra.module.name>wildfly-${module.wildfly.version}-module-mojarra-${mojarra.module.version}.zip</mojarra.module.name>
-        <hibernate.module.version>4.2.19.Final</hibernate.module.version>
-        <hibernate.module.name>wildfly-${module.wildfly.version}-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
+        <mojarra.module.version>2.1.29-04</mojarra.module.version>
+        <mojarra.module.name>wildfly-module-mojarra-${mojarra.module.version}.zip</mojarra.module.name>
+        <hibernate.module.version>4.2.20.Final</hibernate.module.version>
+        <hibernate.module.name>wildfly-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
       </properties>
 
       <build>
