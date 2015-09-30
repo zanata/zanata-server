@@ -192,7 +192,7 @@
       </thread-pool>
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:bean-validation:1.0" />
-    <subsystem xmlns="urn:jboss:domain:datasources:3.0">
+    <subsystem xmlns="urn:jboss:domain:datasources:4.0">
       <datasources>
         <datasource jndi-name="java:jboss/datasources/zanataDatasource"
           pool-name="zanataDatasource" enabled="true"
@@ -225,7 +225,7 @@
         scan-interval="5000"
         runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}" />
     </subsystem>
-    <subsystem xmlns="urn:jboss:domain:ee:3.0">
+    <subsystem xmlns="urn:jboss:domain:ee:4.0">
       <spec-descriptor-property-replacement>false</spec-descriptor-property-replacement>
       <concurrent>
         <context-services>
@@ -239,16 +239,10 @@
             context-service="default" />
         </managed-thread-factories>
         <managed-executor-services>
-          <managed-executor-service name="default"
-            jndi-name="java:jboss/ee/concurrency/executor/default"
-            context-service="default" hung-task-threshold="60000"
-            core-threads="5" max-threads="25" keepalive-time="5000" />
+          <managed-executor-service name="default" jndi-name="java:jboss/ee/concurrency/executor/default" context-service="default" hung-task-threshold="60000" keepalive-time="5000"/>
         </managed-executor-services>
         <managed-scheduled-executor-services>
-          <managed-scheduled-executor-service name="default"
-            jndi-name="java:jboss/ee/concurrency/scheduler/default"
-            context-service="default" hung-task-threshold="60000"
-            core-threads="2" keepalive-time="3000" />
+          <managed-scheduled-executor-service name="default" jndi-name="java:jboss/ee/concurrency/scheduler/default" context-service="default" hung-task-threshold="60000" keepalive-time="3000"/>
         </managed-scheduled-executor-services>
       </concurrent>
       <default-bindings
@@ -259,10 +253,13 @@
         managed-scheduled-executor-service="java:jboss/ee/concurrency/scheduler/default"
         managed-thread-factory="java:jboss/ee/concurrency/factory/default" />
     </subsystem>
-    <subsystem xmlns="urn:jboss:domain:ejb3:3.1">
+    <subsystem xmlns="urn:jboss:domain:ejb3:4.0">
       <session-bean>
         <stateful default-access-timeout="5000" cache-ref="simple"
           passivation-disabled-cache-ref="simple" />
+        <stateless>
+          <bean-instance-pool-ref pool-name="slsb-strict-max-pool"/>
+        </stateless>
         <singleton default-access-timeout="5000" />
       </session-bean>
       <mdb>
@@ -272,12 +269,9 @@
       </mdb>
       <pools>
         <bean-instance-pools>
-          <strict-max-pool name="slsb-strict-max-pool" max-pool-size="20"
-            instance-acquisition-timeout="5"
-            instance-acquisition-timeout-unit="MINUTES" />
-          <strict-max-pool name="mdb-strict-max-pool" max-pool-size="20"
-            instance-acquisition-timeout="5"
-            instance-acquisition-timeout-unit="MINUTES" />
+          <!-- Automatically configure pools. Alternatively, max-pool-size can be set to a specific value -->
+          <strict-max-pool name="slsb-strict-max-pool" derive-size="from-worker-pools" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
+          <strict-max-pool name="mdb-strict-max-pool" derive-size="from-cpu-count" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
         </bean-instance-pools>
       </pools>
       <caches>
@@ -355,6 +349,11 @@
           <eviction max-entries="10000" strategy="LRU" />
           <expiration max-idle="100000" />
         </local-cache>
+        <local-cache name="immutable-entity">
+          <transaction mode="NON_XA"/>
+          <eviction strategy="LRU" max-entries="10000"/>
+          <expiration max-idle="100000"/>
+        </local-cache>
         <local-cache name="local-query">
           <eviction max-entries="10000" strategy="LRU" />
           <expiration max-idle="100000" />
@@ -422,12 +421,8 @@
           page-size-bytes="2097152" max-size-bytes="10485760"
           expiry-address="jms.queue.ExpiryQueue"
           dead-letter-address="jms.queue.DLQ" />
-        <http-connector name="http-connector" socket-binding="http">
-          <param name="http-upgrade-endpoint" value="http-acceptor" />
-        </http-connector>
-        <http-connector name="http-connector-throughput" socket-binding="http">
-          <param name="http-upgrade-endpoint"
-            value="http-acceptor-throughput" />
+        <http-connector name="http-connector" socket-binding="http" endpoint="http-acceptor"/>
+        <http-connector name="http-connector-throughput" socket-binding="http" endpoint="http-acceptor-throughput">
           <param name="batch-delay" value="50" />
         </http-connector>
         <in-vm-connector name="in-vm" server-id="0" />
