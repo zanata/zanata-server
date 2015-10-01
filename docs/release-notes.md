@@ -19,6 +19,7 @@
 * [ZNTA-615](https://zanata.atlassian.net/browse/ZNTA-615) - Fix glossary permission
 * [ZNTA-643](https://zanata.atlassian.net/browse/ZNTA-643) - Fix concurrent map modification issue in language page
 * [ZNTA-624](https://zanata.atlassian.net/browse/ZNTA-624) - Increase password length to 1024.
+* [ZNTA-9](https://zanata.atlassian.net/browse/ZNTA-9) - Account activation message not displaying
 * [ZNTA-696](https://zanata.atlassian.net/browse/ZNTA-696) - Fix user service for null authenticated user
 
 
