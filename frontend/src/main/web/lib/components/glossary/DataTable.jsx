@@ -86,7 +86,7 @@ var DataTable = React.createClass({
 
   _getHeight: function(fixedTop) {
     var footer = window.document.getElementById("footer");
-    var footerHeight = footer ? footer.clientHeight : 100;
+    var footerHeight = footer ? footer.clientHeight : 91;
     var top = _.isUndefined(fixedTop) ? React.findDOMNode(this).offsetTop: fixedTop;
     var newHeight = window.innerHeight - footerHeight - top;
 
@@ -410,13 +410,13 @@ var DataTable = React.createClass({
     var self = this, columns = [];
 
     columns.push(self._getSourceColumn());
-    columns.push(self._getPosColumn());
-    columns.push(self._getDescColumn());
     if(!self._isTranslationSelected()) {
       columns.push(self._getTransCountColumn());
     } else {
       columns.push(self._getTransColumn());
     }
+    columns.push(self._getPosColumn());
+    columns.push(self._getDescColumn());
     columns.push(self._getActionColumn());
 
     return (<Table

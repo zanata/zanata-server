@@ -53,7 +53,7 @@ var DeleteEntry = React.createClass({
       {info}
       <div className="mt1/4">
         <Button className="mr1/2" link onClick={this._closeDialog}>Cancel</Button>
-        <Button kind='primary' size={-1} loading={isDeleting} onClick={this._handleDelete}>Delete all</Button>
+        <Button kind='danger' size={-1} loading={isDeleting} onClick={this._handleDelete}>Delete all</Button>
       </div>
     </Tooltip>);
 
