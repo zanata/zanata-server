@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.event.ValueChangeEvent;
-import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
@@ -32,8 +31,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.security.annotations.CheckLoggedIn;
-import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -49,12 +46,13 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
-import org.zanata.rest.editor.dto.Locale;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
+import org.zanata.service.RequestService;
+import org.zanata.service.impl.RequestServiceImpl;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.Event;
 import org.zanata.ui.AbstractListFilter;
@@ -148,6 +146,16 @@ public class LanguageAction implements Serializable {
                             elem.getPerson().getName(), filter);
                 }
             };
+
+    //TODO: test create join
+    @In
+    private RequestService requestServiceImpl;
+    public void requestJoinTeam() {
+        requestServiceImpl
+            .createLanguageRequest(authenticatedAccount, authenticatedAccount,
+                locale);
+        System.out.println("created language request");
+    }
 
     public List<SelectablePerson> getSearchResults() {
         if (searchResults == null) {

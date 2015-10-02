@@ -111,6 +111,18 @@
                       </a>
                     </li>
 
+                    <li>
+                      <a4j:commandLink id="createRequest"
+                        action="#{languageAction.requestJoinTeam}"
+                        styleClass="i__item--right"
+                        value="Request to join (test)">
+                        <i class="i i--plus i__item__icon"></i>
+                        <s:conversationId name="id"
+                          value="#{languageAction.language}"/>
+                      </a4j:commandLink>
+                    </li>
+
+
                     <ui:fragment rendered="#{not languageAction.isUserInTeam()}">
                       <ui:fragment rendered="#{not identity.hasRole('admin')}">
                         <li>
