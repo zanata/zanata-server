@@ -1,6 +1,7 @@
 package org.zanata.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Access;
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @Getter
 @Entity
 @Access(AccessType.FIELD)
+@NoArgsConstructor
 public class LanguageRequest implements Serializable {
     @Id
     @GeneratedValue

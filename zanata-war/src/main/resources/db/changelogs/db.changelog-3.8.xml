@@ -121,9 +121,6 @@
       <column name="requesterId" type="bigint">
         <constraints nullable="false" />
       </column>
-      <column name="accountId" type="bigint">
-        <constraints nullable="false" />
-      </column>
       <column name="actorId" type="bigint">
         <constraints nullable="true" />
       </column>
@@ -133,13 +130,6 @@
       baseTableName = "Request"
       baseColumnNames = "requesterId"
       constraintName = "FK_REQUEST_REQUESTER_HACCOUNT"
-      referencedTableName = "HAccount"
-      referencedColumnNames = "id"/>
-
-    <addForeignKeyConstraint
-      baseTableName = "Request"
-      baseColumnNames = "accountId"
-      constraintName = "FK_REQUEST_ACCOUNT_HACCOUNT"
       referencedTableName = "HAccount"
       referencedColumnNames = "id"/>
 

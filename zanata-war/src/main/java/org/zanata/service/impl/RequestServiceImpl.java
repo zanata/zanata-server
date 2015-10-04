@@ -21,10 +21,12 @@
 
 package org.zanata.service.impl;
 
+import com.google.common.collect.Lists;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.common.LocaleId;
 import org.zanata.dao.LanguageRequestDAO;
 import org.zanata.dao.RequestDAO;
 import org.zanata.exception.RequestExistException;
@@ -34,9 +36,11 @@ import org.zanata.model.LanguageRequest;
 import org.zanata.model.Request;
 import org.zanata.model.type.RequestState;
 import org.zanata.model.type.RequestType;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.service.RequestService;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -54,19 +58,23 @@ public class RequestServiceImpl implements RequestService {
     @In
     private SequenceIdGenerator sequenceIdGenerator;
 
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
+    private HAccount authenticatedAccount;
+
+    @Override
     public LanguageRequest createLanguageRequest(HAccount requester,
-        HAccount account, HLocale locale) throws RequestExistException {
+        HLocale locale) throws RequestExistException {
         //search if there's any existing language request
         //of the same requester, account and locale
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequest(requester, account, locale);
+            languageRequestDAO.findRequestInLocale(requester, locale);
 
         if (languageRequest != null) {
             throw new RequestExistException(
                 RequestType.LOCALE + ", " + requester.getUsername() + ", " +
-                    account.getUsername() + ", " + locale.getDisplayName());
+                    ", " + locale.getDisplayName());
         }
-        Request request = new Request(RequestType.LOCALE, requester, account);
+        Request request = new Request(RequestType.LOCALE, requester);
         request.setEntityId(sequenceIdGenerator.getNextId());
         languageRequest = new LanguageRequest(request, locale);
         requestDAO.makePersistent(request);
@@ -74,6 +82,7 @@ public class RequestServiceImpl implements RequestService {
         return languageRequest;
     }
 
+    @Override
     public Request updateLanguageRequest(Long requestId, HAccount actor,
         RequestState state, String comment) throws EntityNotFoundException {
         LanguageRequest languageRequest =
@@ -94,6 +103,20 @@ public class RequestServiceImpl implements RequestService {
             return request;
         }
         throw new EntityNotFoundException();
+    }
+
+    @Override
+    public List<LanguageRequest> getMyOutstandingLanguageRequests(
+        LocaleId... localeIds) {
+        return languageRequestDAO.findRequesterOutstandingRequests(
+            authenticatedAccount, Lists.newArrayList(localeIds));
+    }
+
+    @Override
+    public List<LanguageRequest> getOutstandingLanguageRequests(
+        LocaleId... localeIds) {
+        return languageRequestDAO
+            .findOutstandingRequests(Lists.newArrayList(localeIds));
     }
 
     /**

@@ -23,6 +23,7 @@ package org.zanata.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -63,6 +64,7 @@ import java.util.Date;
     @TypeDef(name = "requestType", typeClass = RequestTypeType.class)
 
 })
+@NoArgsConstructor
 public class Request extends TimeEntityBase {
 
     @Type(type = "requestState")
@@ -84,22 +86,14 @@ public class Request extends TimeEntityBase {
     @NotNull
     private HAccount requester;
 
-    //account which create request on behalf of requester
-    @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
-    @NotNull
-    private HAccount account;
-
     //account who actioned on the request.
     @ManyToOne
     @JoinColumn(name = "actorId", nullable = true)
     private HAccount actor;
 
-    public Request(RequestType requestType, HAccount requester,
-        HAccount account) {
+    public Request(RequestType requestType, HAccount requester) {
         this.requestType = requestType;
         this.requester = requester;
-        this.account = account;
     }
 
     public void update(HAccount actor, RequestState state, String comment) {
@@ -125,8 +119,7 @@ public class Request extends TimeEntityBase {
     }
 
     public final Request clone() {
-        Request newRequest =
-            new Request(this.requestType, this.requester, this.account);
+        Request newRequest = new Request(this.requestType, this.requester);
         newRequest.state = this.state;
         newRequest.comment = this.comment;
         newRequest.actor = this.actor;

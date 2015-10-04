@@ -29,6 +29,9 @@
     <h:form styleClass="l--push-bottom-0">
       <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}"
         render="language-more-actions, members-size, members-form"/>
+
+      <a4j:jsFunction name="refreshRequestsForm"
+        render="language-more-actions, requests-size, requests-form"/>
     </h:form>
 
     <div class="g" id="language-page">
@@ -93,6 +96,19 @@
             </li>
 
             <ui:fragment rendered="#{identity.loggedIn}">
+              <li>
+                <a id="requests_tab" href="#{languageURL}/requests"
+                  class="js-url-mod" data-content="#requests">
+                  <i class="i i--comment"></i>
+              <span class="is-hidden--s i__text--right">
+                #{msgs['jsf.language.requests']}
+                <h:panelGroup styleClass="txt--neutral" id="requests-size">
+                  #{languageAction.requests.size}
+                </h:panelGroup>
+              </span>
+                </a>
+              </li>
+
               <li class="tab__end">
                 <h:form styleClass="l--push-bottom-0 dropdown dropdown--tab dropdown--small dropdown--right dropdown--inline js-dropdown"
                   id="language-more-actions">
@@ -115,13 +131,12 @@
                       <a4j:commandLink id="createRequest"
                         action="#{languageAction.requestJoinTeam}"
                         styleClass="i__item--right"
-                        value="Request to join (test)">
+                        value="Request to join (test)" oncomplete="">
                         <i class="i i--plus i__item__icon"></i>
                         <s:conversationId name="id"
                           value="#{languageAction.language}"/>
                       </a4j:commandLink>
                     </li>
-
 
                     <ui:fragment rendered="#{not languageAction.isUserInTeam()}">
                       <ui:fragment rendered="#{not identity.hasRole('admin')}">
@@ -184,6 +199,13 @@
             <li id="members">
               <ui:include src="/WEB-INF/layout/language/members-tab.xhtml"/>
             </li>
+
+            <ui:fragment rendered="#{identity.loggedIn}">
+              <li id="requests">
+                <ui:include src="/WEB-INF/layout/language/requests-tab.xhtml"/>
+              </li>
+            </ui:fragment>
+
 
             <ui:fragment rendered="#{identity.hasRole('admin')}">
               <li id="settings">

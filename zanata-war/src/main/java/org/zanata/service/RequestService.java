@@ -21,6 +21,7 @@
 
 package org.zanata.service;
 
+import org.zanata.common.LocaleId;
 import org.zanata.exception.RequestExistException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
@@ -29,6 +30,7 @@ import org.zanata.model.Request;
 import org.zanata.model.type.RequestState;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -39,12 +41,11 @@ public interface RequestService {
      * Create join language request
      *
      * @param requester
-     * @param account
      * @param locale
      * @throws RequestExistException
      */
     LanguageRequest createLanguageRequest(HAccount requester,
-        HAccount account, HLocale locale) throws RequestExistException;
+        HLocale locale) throws RequestExistException;
 
     /**
      * Update join language request
@@ -56,4 +57,17 @@ public interface RequestService {
      */
     Request updateLanguageRequest(Long requestId, HAccount actor,
         RequestState state, String comment) throws EntityNotFoundException;
+
+    /**
+     * Get all my outstanding requests on languages
+     */
+    List<LanguageRequest> getMyOutstandingLanguageRequests(
+        LocaleId... localeIds);
+
+    /**
+     *
+     * @param Get outstanding language requests on languages
+     */
+    List<LanguageRequest> getOutstandingLanguageRequests(
+        LocaleId... localeIds);
 }

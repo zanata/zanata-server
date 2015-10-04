@@ -91,9 +91,9 @@
                   <h3 class="list__title">
                     #{member.person.name}
                   </h3>
-              <span class="list__item__meta">
-                #{member.person.account.username}<h:panelGroup layout="span" rendered="#{identity.hasRole('admin')}"> [#{member.person.email}] </h:panelGroup>
-              </span>
+                  <span class="list__item__meta">
+                    #{member.person.account.username}<h:panelGroup layout="span" rendered="#{identity.hasRole('admin')}"> [#{member.person.email}] </h:panelGroup>
+                  </span>
                 </div>
                 <div class="list__item__actions">
                   <ul class="list--horizontal txt--meta">
@@ -151,7 +151,6 @@
                     </li>
                   </ul>
                 </div>
-                <div class="txt--align-right"></div>
               </div>
             </li>
           </ui:repeat>

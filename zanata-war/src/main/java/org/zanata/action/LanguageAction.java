@@ -25,12 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.event.ValueChangeEvent;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
+import org.zanata.model.LanguageRequest;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -150,11 +152,26 @@ public class LanguageAction implements Serializable {
     //TODO: test create join
     @In
     private RequestService requestServiceImpl;
+
     public void requestJoinTeam() {
         requestServiceImpl
-            .createLanguageRequest(authenticatedAccount, authenticatedAccount,
-                locale);
-        System.out.println("created language request");
+            .createLanguageRequest(authenticatedAccount, locale);
+        facesMessages.addGlobal(
+            msgs.format("jsf.language.request.sent", getLocale().getLocaleId()));
+    }
+
+    public List<LanguageRequest> getRequests() {
+        if(identity == null) {
+            return Lists.newArrayList();
+        }
+        if (identity != null &&
+            identity.hasPermission(locale, "manage-language-team")) {
+            return requestServiceImpl.getOutstandingLanguageRequests(
+                locale.getLocaleId());
+        } else {
+            return requestServiceImpl.getMyOutstandingLanguageRequests(
+                locale.getLocaleId());
+        }
     }
 
     public List<SelectablePerson> getSearchResults() {
