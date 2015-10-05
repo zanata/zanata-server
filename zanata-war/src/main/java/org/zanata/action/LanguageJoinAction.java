@@ -31,9 +31,8 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.exception.RequestExistException;
 import org.zanata.security.annotations.CheckLoggedIn;
-import org.zanata.security.annotations.CheckPermission;
-import org.zanata.security.annotations.CheckRole;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
@@ -46,6 +45,7 @@ import org.zanata.model.HLocaleMember;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
+import org.zanata.service.RequestService;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
@@ -97,6 +97,9 @@ public class LanguageJoinAction implements Serializable {
     @Setter
     private String message;
 
+    @In
+    private RequestService requestServiceImpl;
+
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
@@ -122,37 +125,57 @@ public class LanguageJoinAction implements Serializable {
     }
 
     @CheckLoggedIn
-    public void send() {
-        String fromName = authenticatedAccount.getPerson().getName();
-        String fromLoginName = authenticatedAccount.getUsername();
-        String replyEmail = authenticatedAccount.getPerson().getEmail();
-
-        EmailStrategy strategy =
-                new RequestToJoinLanguageEmailStrategy(
-                        fromLoginName, fromName, replyEmail,
-                        locale.getLocaleId().getId(),
-                        locale.retrieveNativeName(), message,
-                        isRequestAsTranslator(),
-                        isRequestAsReviewer(),
-                        isRequestAsCoordinator());
+    public boolean createRequest() {
         try {
-            facesMessages.addGlobal(emailServiceImpl
-                .sendToLanguageCoordinators(locale.getLocaleId(), strategy));
-        } catch (Exception e) {
-            String subject = strategy.getSubject(msgs);
+            requestServiceImpl
+                    .createLanguageRequest(authenticatedAccount, locale,
+                            isRequestAsTranslator(),
+                            isRequestAsReviewer(),
+                            isRequestAsCoordinator());
+            return true;
+        } catch (RequestExistException e) {
+            log.warn("Request already exist for {0} in language {1}.",
+                    authenticatedAccount.getUsername(), locale.getDisplayName());
+            return false;
+        }
+    }
 
-            StringBuilder sb =
-                new StringBuilder()
-                    .append("Failed to send email with subject '")
-                    .append(strategy.getSubject(msgs))
-                    .append("' , message '").append(message)
-                    .append("'");
-            log.error(
-                    "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
-                    fromName, fromLoginName, replyEmail, subject, message, e);
-            facesMessages.addGlobal(sb.toString());
-        } finally {
-            reset();
+    @CheckLoggedIn
+    public void send() {
+        if (createRequest()) {
+            String fromName = authenticatedAccount.getPerson().getName();
+            String fromLoginName = authenticatedAccount.getUsername();
+            String replyEmail = authenticatedAccount.getPerson().getEmail();
+
+            EmailStrategy strategy =
+                    new RequestToJoinLanguageEmailStrategy(
+                            fromLoginName, fromName, replyEmail,
+                            locale.getLocaleId().getId(),
+                            locale.retrieveNativeName(), message,
+                            isRequestAsTranslator(),
+                            isRequestAsReviewer(),
+                            isRequestAsCoordinator());
+            try {
+                facesMessages.addGlobal(emailServiceImpl
+                        .sendToLanguageCoordinators(locale.getLocaleId(),
+                                strategy));
+            } catch (Exception e) {
+                String subject = strategy.getSubject(msgs);
+
+                StringBuilder sb =
+                        new StringBuilder()
+                                .append("Failed to send email with subject '")
+                                .append(strategy.getSubject(msgs))
+                                .append("' , message '").append(message)
+                                .append("'");
+                log.error(
+                        "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
+                        fromName, fromLoginName, replyEmail, subject, message,
+                        e);
+                facesMessages.addGlobal(sb.toString());
+            } finally {
+                reset();
+            }
         }
     }
 

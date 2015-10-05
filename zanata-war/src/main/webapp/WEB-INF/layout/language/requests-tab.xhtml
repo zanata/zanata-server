@@ -18,9 +18,9 @@
     </div>
 
     <h:form id="requests-form" styleClass="l--push-bottom-1">
-      <ul class="list--no-bullets">
+      <ul class="list--stats">
         <ui:repeat value="#{languageAction.requests}" var="langRequest">
-          <li>
+          <li class="l--pad-all-quarter">
             <div class="list__item__content">
               <div class="list__item__info">
                 <h3 class="list__title">
@@ -29,6 +29,9 @@
                   <span class="list__item__meta">
                     #{langRequest.request.requester.username} <span>[#{langRequest.request.requester.person.email}]</span>
                   </span>
+              </div>
+              <div class="list__item__actions">
+                <button>Action here</button>
               </div>
             </div>
           </li>

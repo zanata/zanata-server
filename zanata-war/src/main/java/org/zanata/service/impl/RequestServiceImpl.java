@@ -33,6 +33,7 @@ import org.zanata.exception.RequestExistException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
+import org.zanata.model.LocaleRole;
 import org.zanata.model.Request;
 import org.zanata.model.type.RequestState;
 import org.zanata.model.type.RequestType;
@@ -41,6 +42,8 @@ import org.zanata.service.RequestService;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -63,11 +66,16 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public LanguageRequest createLanguageRequest(HAccount requester,
-        HLocale locale) throws RequestExistException {
+            HLocale locale, boolean isRequestAsTranslator,
+            boolean isRequestAsReviewer, boolean isRequestAsCoordinator)
+            throws RequestExistException {
         //search if there's any existing language request
         //of the same requester, account and locale
+
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequestInLocale(requester, locale);
+            languageRequestDAO
+                .findRequestInLocale(requester, locale, isRequestAsCoordinator,
+                    isRequestAsReviewer, isRequestAsTranslator);
 
         if (languageRequest != null) {
             throw new RequestExistException(
@@ -76,7 +84,10 @@ public class RequestServiceImpl implements RequestService {
         }
         Request request = new Request(RequestType.LOCALE, requester);
         request.setEntityId(sequenceIdGenerator.getNextId());
-        languageRequest = new LanguageRequest(request, locale);
+
+        languageRequest =
+            new LanguageRequest(request, locale, isRequestAsCoordinator,
+                isRequestAsReviewer, isRequestAsTranslator);
         requestDAO.makePersistent(request);
         languageRequestDAO.makePersistent(languageRequest);
         return languageRequest;

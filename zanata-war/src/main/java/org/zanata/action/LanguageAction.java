@@ -22,17 +22,25 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
+import org.zanata.exception.RequestExistException;
 import org.zanata.model.LanguageRequest;
+import org.zanata.model.LocaleRole;
+import org.zanata.rest.editor.dto.Locale;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -128,6 +136,13 @@ public class LanguageAction implements Serializable {
 
     private List<SelectablePerson> searchResults;
 
+    private Map<LocaleRole, Boolean> roles = new HashMap<LocaleRole, Boolean>();
+    {
+        roles.put(LocaleRole.Coordinator, false);
+        roles.put(LocaleRole.Reviewer, false);
+        roles.put(LocaleRole.Translator, false);
+    }
+
     @Getter
     private AbstractListFilter<HLocaleMember> membersFilter =
             new InMemoryListFilter<HLocaleMember>() {
@@ -149,16 +164,9 @@ public class LanguageAction implements Serializable {
                 }
             };
 
-    //TODO: test create join
+    //TODO: test create join, fills in roles map
     @In
     private RequestService requestServiceImpl;
-
-    public void requestJoinTeam() {
-        requestServiceImpl
-            .createLanguageRequest(authenticatedAccount, locale);
-        facesMessages.addGlobal(
-            msgs.format("jsf.language.request.sent", getLocale().getLocaleId()));
-    }
 
     public List<LanguageRequest> getRequests() {
         if(identity == null) {

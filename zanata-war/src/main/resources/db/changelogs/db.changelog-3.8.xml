@@ -168,6 +168,15 @@
       <column name="localeId" type="bigint">
         <constraints nullable="false" />
       </column>
+      <column name="coordinator" type="boolean" defaultValueBoolean="false">
+        <constraints nullable="false" />
+      </column>
+      <column name="reviewer" type="boolean" defaultValueBoolean="false">
+        <constraints nullable="false" />
+      </column>
+      <column name="translator" type="boolean" defaultValueBoolean="false">
+        <constraints nullable="false" />
+      </column>
     </createTable>
     <addForeignKeyConstraint
       baseTableName = "LanguageRequest"

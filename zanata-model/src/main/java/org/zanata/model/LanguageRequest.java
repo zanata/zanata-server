@@ -35,9 +35,19 @@ public class LanguageRequest implements Serializable {
     @JoinColumn(name = "localeId", nullable = false)
     private HLocale locale;
 
-    public LanguageRequest(Request request, HLocale locale) {
+    private Boolean coordinator;
+
+    private Boolean reviewer;
+
+    private Boolean translator;
+
+    public LanguageRequest(Request request, HLocale locale, boolean coordinator,
+        boolean reviewer, boolean translator) {
         this.request = request;
         this.locale = locale;
+        this.coordinator = coordinator;
+        this.reviewer = reviewer;
+        this.translator = translator;
     }
 
 }

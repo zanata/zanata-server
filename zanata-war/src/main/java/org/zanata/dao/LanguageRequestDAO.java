@@ -10,9 +10,11 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
+import org.zanata.model.LocaleRole;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -35,12 +37,16 @@ public class LanguageRequestDAO extends AbstractDAOImpl<LanguageRequest, Long> {
         return (LanguageRequest)q.uniqueResult();
     }
 
-    public LanguageRequest findRequestInLocale(HAccount requester, HLocale locale) {
+    public LanguageRequest findRequestInLocale(HAccount requester,
+        HLocale locale, boolean coordinator, boolean reviewer, boolean translator) {
         String query =
-            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId";
+            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId and req.coordinator = :coordinator and req.reviewer = :reviewer and req.translator = :translator";
         Query q = getSession().createQuery(query)
             .setParameter("requesterId", requester.getId())
             .setParameter("localeId", locale.getId())
+            .setBoolean("coordinator", coordinator)
+            .setBoolean("reviewer", reviewer)
+            .setBoolean("translator", translator)
             .setCacheable(true).setComment(
                 "requestDAO.findRequestInLocale");
         return (LanguageRequest) q.uniqueResult();

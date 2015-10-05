@@ -42,7 +42,7 @@
 
       <a4j:jsFunction name="sendJoinLanguageEmail" action="#{languageJoinAction.send}"
         execute="@form"
-        oncomplete="jQuery(getJoinLanguageForm()).find('#request-join-language-cancel-button').click()"/>
+        oncomplete="jQuery(getJoinLanguageForm()).find('#request-join-language-cancel-button').click();refreshRequestsForm()"/>
 
       <div class="modal__content l--pad-all-1">
         <div class="form__item" id="roles">
