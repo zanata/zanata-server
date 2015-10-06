@@ -286,8 +286,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                 && !selectedProjectType.equals("null")) {
             ProjectType projectType = ProjectType.valueOf(selectedProjectType);
             getInstance().setDefaultProjectType(projectType);
-        } else {
-            getInstance().setDefaultProjectType(null);
         }
     }
 
@@ -734,8 +732,6 @@ public class ProjectHome extends SlugHome<HProject> implements
                 && !selectedProjectType.equals("null")) {
             ProjectType projectType = ProjectType.valueOf(selectedProjectType);
             getInstance().setDefaultProjectType(projectType);
-        } else {
-            getInstance().setDefaultProjectType(null);
         }
     }
 
@@ -767,7 +763,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
         if (!slug.equals(getInstance().getSlug())) {
             slug = getInstance().getSlug();
-            return "projectSlugUpdated";
+            return "project-slug-updated";
         }
         return result;
     }
