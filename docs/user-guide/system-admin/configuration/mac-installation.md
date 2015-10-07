@@ -1,8 +1,9 @@
 ## What you need
 
 - Make sure JDK is installed, [download it here](www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-- JBoss Enterprise Application Platform 6.4 (EAP). This is the recommended container for Zanata, and it can be [downloaded here](http://www.jboss.org/jbossas/downloads/). [Installation instructions](http://www.jboss.org/products/eap/get-started/#!project=eap).
-- Wildfly is much easier though (recommended version is 8.1.x) which can be [downloaded here](http://wildfly.org/downloads/). You can also install with `brew install wildfly-as`.
+- Supported JBoss or Wildfly server.
+  - JBoss Enterprise Application Platform 6.4 (EAP). This is the recommended container for Zanata, and it can be downloaded from [jboss.org downloads](http://www.jboss.org/jbossas/downloads/). [Installation instructions](http://www.jboss.org/products/eap/get-started/#!project=eap).
+  - Wildfly is much easier to install on Mac. Recommended version is 8.1.x, which can be downloaded from [wildfly.org downloads](http://wildfly.org/downloads/). You can also install with `brew install wildfly-as`.
 - A suitable MySQL database. This is NOT included in the Zanata archive. You can [download MySQL here](http://dev.mysql.com/downloads/mysql/). You can also install with `brew install mysql`.
 - An email (SMTP) server to perform certain notifications. Mac OSX 10.10 can use [postfix](http://www.developerfiles.com/how-to-send-smtp-mails-with-postfix-mac-os-x-10-8/).
 - JDK version 7 or later (7 is recommended for EAP as it is not yet certified to run against Java 8). [OpenJDK](http://openjdk.java.net/install/) is recommended, but you can also download [Oracle's JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
@@ -19,7 +20,7 @@
 
 1. Run `git clone https://github.com/zanata/zanata-server.git`
 2. Run `mvn clean package -Dchromefirefox -DskipTests -Dfunctional-test -Pwildfly8`
-3. Get some coffee. Lots of coffee. Approximately 60 mins of coffee.
+3. Wait for the build and test to complete. This takes about 60 mins on our machine. You may want to go grab some coffee.
 4. Run `brew install gradle`
 5. Run `cd zanata-overlay && gradle`
 6. `unzip target/zanata-*-wildfly*.zip -d $JBOSS_HOME`
@@ -38,15 +39,7 @@
 
 ## After pulling new changes to zanata-server
 
-## Running zanata-spa on server
+## Running zanata-spa(New javascript module of translation editor) on server
 
 1. `unzip $JBOSS_HOME/standalone/deployments/zanata.war -d zanatawar && rm zanata.war && mv zanatawar zanata.war` Turn zanata.war into a directory
 2. `npm run build && cp -r <spa-directory>/build/* $JBOSS_HOME/standalone/deployments/zanata.war/app`
-
-
-
-
-
-
-
-

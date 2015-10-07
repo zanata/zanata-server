@@ -2,8 +2,7 @@ import Dispatcher from '../dispatchers/UserMatrixDispatcher';
 import assign from 'object-assign';
 import {Promise} from 'es6-promise';
 import {EventEmitter} from 'events';
-import {ContentStates} from '../constants/Options';
-import {DateRanges} from '../constants/Options';
+import {ContentStates, DateRanges} from '../constants/Options';
 import {UserMatrixActionTypes} from '../constants/ActionTypes';
 import Configs from '../constants/Configs';
 import utilsDate from '../utils/DateHelper';
@@ -25,10 +24,6 @@ var _state = {
   }
 };
 
-function statsAPIUrl() {
-  return Configs.baseUrl + "/stats/user/" + Configs.data.profileUser.username + Configs.urlPostfix + "/";
-}
-
 function loadFromServer() {
   _state.loading = true;
   UserMatrixStore.emitChange();
@@ -47,6 +42,9 @@ function loadFromServer() {
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end(function (err, res) {
+        if(err != null && err.error) {
+          console.error(url, err);
+        }
         if (res.error) {
           console.error(url, res.status, res.error.toString());
           reject(Error(res.error.toString()));
@@ -56,6 +54,10 @@ function loadFromServer() {
         _state.loading = false;
       });
   });
+}
+
+function statsAPIUrl() {
+  return Configs.baseUrl + "/stats/user/" + Configs.data.profileUser.username + Configs.urlPostfix + "/";
 }
 
 function handleServerResponse(serverResponse) {
@@ -188,7 +190,7 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
 
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function() {
-    if (_state.matrixForAllDays.length == 0 && Configs.user.loggedIn) {
+    if (_state.matrixForAllDays.length === 0 && Configs.user.loggedIn) {
       loadFromServer()
         .then(handleServerResponse)
         .then(function (newState) {
@@ -230,7 +232,7 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
               UserMatrixStore.emitChange();
             })
             .catch(function(err) {
-              console.error('something bad happen:' + err.stack);
+              console.error('failed trying to load user statistic from server' + err.stack);
             });
         }
         break;

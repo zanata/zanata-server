@@ -35,27 +35,28 @@ var UserProfile = React.createClass({
       username;
 
     if(authenticated) {
-      recentContribution =
-        (<div className="g__item w--3-4 w--1-2-m">
-          <div className="bg--pop-highest l--pad-v-1">
-            <RecentContributions
-              loading={this.state.loading}
-              dateRangeOption={this.state.dateRangeOption}
-              matrixForAllDays={this.state.matrixForAllDays}
-              wordCountsForSelectedDayFilteredByContentState={this.state.wordCountsForSelectedDayFilteredByContentState}
-              wordCountsForEachDayFilteredByContentState={this.state.wordCountsForEachDayFilteredByContentState}
-              contentStateOption={this.state.contentStateOption}
-              selectedDay={this.state.selectedDay}
-              dateRange={this.state.dateRange}/>
+      recentContribution = (
+          <div className="g__item w--3-4 w--1-2-m">
+            <div className="bg--pop-highest l--pad-v-1">
+              <RecentContributions
+                loading={this.state.loading}
+                dateRangeOption={this.state.dateRangeOption}
+                matrixForAllDays={this.state.matrixForAllDays}
+                wordCountsForSelectedDayFilteredByContentState={this.state.wordCountsForSelectedDayFilteredByContentState}
+                wordCountsForEachDayFilteredByContentState={this.state.wordCountsForEachDayFilteredByContentState}
+                contentStateOption={this.state.contentStateOption}
+                selectedDay={this.state.selectedDay}
+                dateRange={this.state.dateRange}/>
+            </div>
           </div>
-        </div>);
+      );
     }
 
     if(user !== null) {
-      username =  user.username ? user.username : '';
-      imageUrl = user.imageUrl ? user.imageUrl : '';
-      name = user.name ? user.name : '';
-      languageTeams = user.languageTeams ? user.languageTeams : '';
+      username =  user.username;
+      imageUrl = user.imageUrl;
+      name = user.name;
+      languageTeams = user.languageTeams;
     }
 
     return (<div className="g">

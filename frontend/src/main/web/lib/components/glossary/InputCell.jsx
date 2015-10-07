@@ -26,7 +26,7 @@ var InputCell = React.createClass({
     var entry = GlossaryStore.getEntry(this.props.resId),
       value = _.get(entry, this.props.field),
       focusedRow = GlossaryStore.getFocusedRow(),
-      isFocused = focusedRow ? (focusedRow.rowIndex === this.props.rowIndex) : false;
+      isFocused = focusedRow && (focusedRow.rowIndex === this.props.rowIndex);
 
     return {
       value: value,
@@ -44,7 +44,9 @@ var InputCell = React.createClass({
   },
 
   _onChange: function() {
-    this.setState(this._getState());
+    if (this.isMounted()) {
+      this.setState(this._getState());
+    }
   },
 
   _onValueChange : function(event) {
@@ -56,7 +58,7 @@ var InputCell = React.createClass({
     }
     this.state.timeout = setTimeout(function() {
       Actions.updateEntryField(self.props.resId, self.props.field, value);
-    }, self.TIMEOUT);
+    }, this.TIMEOUT);
   },
 
   _onFocus: function(event) {

@@ -8,7 +8,9 @@ import Actions from '../actions/UserMatrixActions';
 var RecentContributions = React.createClass(
   {
     render: function() {
-      var dateRange = this.props.dateRange, chart = null, matrix = null;
+      var dateRange = this.props.dateRange,
+        chart = null,
+        matrix = null;
 
       if(this.props.loading) {
         chart = (
@@ -37,7 +39,7 @@ var RecentContributions = React.createClass(
         <div className="l__wrapper">
           <div className="l--push-bottom-1">
             <div className="l--float-right txt--uppercase">
-              <DropDown options={DateRanges} selectedOption={this.props.dateRangeOption} onClick={Actions.changeDateRange}/>
+              <DropDown options={DateRanges} selectedOption={this.props.dateRangeOption} onSelectionChange={Actions.changeDateRange}/>
             </div>
             <h2 className='delta txt--uppercase'>Recent Contributions</h2>
           </div>

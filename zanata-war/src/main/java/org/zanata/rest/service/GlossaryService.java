@@ -147,7 +147,7 @@ public class GlossaryService implements GlossaryResource {
     public Response getEntriesForLocale(@PathParam("srcLocale") LocaleId srcLocale,
         @PathParam("transLocale") LocaleId transLocale,
         @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("5000") @QueryParam("sizePerPage") int sizePerPage,
+        @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
         @QueryParam("filter") String filter,
         @QueryParam("sort") String fields) {
 
@@ -156,7 +156,10 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
+        sizePerPage = sizePerPage > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : sizePerPage;
+        page = Math.max(page, 1);
         int offset = (page - 1) * sizePerPage;
+
         List<HGlossaryEntry> hGlosssaryEntries =
             glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage,
                 filter, convertToSortField(fields));
@@ -174,13 +177,16 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response getAllEntries(LocaleId srcLocaleId,
         @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("5000") @QueryParam("sizePerPage") int sizePerPage,
+        @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
         @QueryParam("filter") String filter,
         @QueryParam("sort") String fields) {
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
+
+        sizePerPage = sizePerPage > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : sizePerPage;
+        page = Math.max(page, 1);
         int offset = (page - 1) * sizePerPage;
 
         List<HGlossaryEntry> hGlosssaryEntries =

@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 
 var DropDown = React.createClass({
   mixins: [PureRenderMixin],
@@ -23,7 +22,7 @@ var DropDown = React.createClass({
   render: function() {
     var options = this.props.options,
       selected = this.props.selectedOption,
-      onClickFn = this.props.onClick,
+      onSelectionChange = this.props.onSelectionChange,
       self = this,
       dropDownClass = 'Dropdown--simple',
       optionList;
@@ -34,13 +33,20 @@ var DropDown = React.createClass({
       var buttonClassName = 'button--link txt--nowrap';
       buttonClassName += option === selected ? ' is-active' : '';
       return <li key={option} className='Dropdown-item'>
-        <button className={buttonClassName} onClick={self.handleOptionClick.bind(self, option, onClickFn)}>{option}</button>
+        <button
+          className={buttonClassName}
+          onClick={self.handleOptionClick.bind(self, option, onSelectionChange)}>{option}
+        </button>
       </li>
     });
 
     return (
       <div className={dropDownClass}>
-      <button className="button--link" onClick={this.handleButtonClick}><span className='Dropdown-toggleIcon'><i className='i i--arrow-down'></i></span> {selected}</button>
+        <button className="button--link" onClick={this.handleButtonClick}>
+          <span className='Dropdown-toggleIcon'>
+            <i className='i i--arrow-down'></i>
+          </span> {selected}
+        </button>
         <ul className="Dropdown-content">
           {optionList}
         </ul>

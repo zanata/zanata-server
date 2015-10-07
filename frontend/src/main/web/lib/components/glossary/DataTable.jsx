@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import {Table, Column} from 'fixed-data-table';
 import StringUtils from '../../utils/StringUtils'
@@ -13,6 +12,10 @@ import _ from 'lodash';
 
 var DataTable = React.createClass({
   TIMEOUT: 400,
+
+  NO_ROW: -1,
+
+  resIdIndex: 0,
 
   ENTRY: {
     SRC: {
@@ -74,7 +77,7 @@ var DataTable = React.createClass({
   },
 
   getInitialState: function () {
-    var top = 246;
+    var top = 246; //top height for banner if can't get height from dom
     return {
       tbl_width: this._getWidth(),
       tbl_height: this._getHeight(top),
@@ -84,6 +87,10 @@ var DataTable = React.createClass({
     }
   },
 
+  /**
+   *
+   * @param fixedTop - top height for banner if can't get height from dom
+   */
   _getHeight: function(fixedTop) {
     var footer = window.document.getElementById("footer");
     var footerHeight = footer ? footer.clientHeight : 91;
@@ -91,8 +98,7 @@ var DataTable = React.createClass({
     var newHeight = window.innerHeight - footerHeight - top;
 
     //minimum height 250px
-    newHeight = newHeight < 250 ? 250 : newHeight;
-    return newHeight;
+    return Math.max(newHeight, 250);
   },
 
   _getWidth: function () {
@@ -116,13 +122,15 @@ var DataTable = React.createClass({
     if(!_.isUndefined(term) && !_.isNull(term)) {
       if (!StringUtils.isEmptyOrNull(term.lastModifiedBy)
         || !StringUtils.isEmptyOrNull(term.lastModifiedDate)) {
-        title = "Last updated ";
+        const parts = ['Last updated'];
         if (!StringUtils.isEmptyOrNull(term.lastModifiedBy)) {
-          title += "by: " + term.lastModifiedBy;
+          parts.push('by: ');
+          parts.push(term.lastModifiedBy);
         }
         if (!StringUtils.isEmptyOrNull(term.lastModifiedDate)) {
-          title += " " + term.lastModifiedDate;
+          parts.push(term.lastModifiedDate);
         }
+        title = parts.join(' ');
       }
     }
     if(StringUtils.isEmptyOrNull(title)) {
@@ -142,7 +150,7 @@ var DataTable = React.createClass({
   _getSort: function (key) {
     if(_.isUndefined(this.props.sort[key])) {
       return null;
-    } else if(this.props.sort[key] === true) {
+    } else if(this.props.sort[key]) {
       return "ascending";
     } else {
       return "descending";
@@ -150,37 +158,45 @@ var DataTable = React.createClass({
   },
 
   _renderSourceHeader: function (label) {
-    var key = this.ENTRY.SRC.sort_field, asc = this._getSort(key);
+    var key = this.ENTRY.SRC.sort_field,
+      asc = this._getSort(key);
     return this._renderHeader(label, key, asc, true);
   },
 
   _renderTransHeader: function (label) {
-    var key = this.ENTRY.TRANS.sort_field, asc = null;
+    var key = this.ENTRY.TRANS.sort_field,
+      asc = null;
     return this._renderHeader(label, key, asc, false);
   },
 
   _renderPosHeader: function (label) {
-    var key = this.ENTRY.POS.sort_field, asc = this._getSort(key);
+    var key = this.ENTRY.POS.sort_field,
+      asc = this._getSort(key);
     return this._renderHeader(label, key, asc, true);
   },
 
   _renderDescHeader: function (label) {
-    var key = this.ENTRY.DESC.sort_field, asc = this._getSort(key);
+    var key = this.ENTRY.DESC.sort_field,
+      asc = this._getSort(key);
     return this._renderHeader(label, key, asc, true);
   },
 
   _renderTransCountHeader: function (label) {
-    var key = this.ENTRY.TRANS_COUNT.sort_field, asc = this._getSort(key);
+    var key = this.ENTRY.TRANS_COUNT.sort_field,
+      asc = this._getSort(key);
     return this._renderHeader(label, key, asc, true);
   },
 
   _renderHeader: function (label, key, asc, allowSort) {
-    return (<ColumnHeader value={label}
-      field={key}
-      key={key}
-      allowSort={allowSort}
-      sort={asc}
-      onClickCallback={this._onHeaderClick}/>);
+    return (
+      <ColumnHeader
+        value={label}
+        field={key}
+        key={key}
+        allowSort={allowSort}
+        sort={asc}
+        onClickCallback={this._onHeaderClick}/>
+    );
   },
 
   _onHeaderClick: function (field, ascending) {
@@ -205,7 +221,6 @@ var DataTable = React.createClass({
           placeholder={placeholder}
           rowIndex={rowIndex}
           field={field.field}
-          onBlurCallback={this._onRowBlur}
           onFocusCallback={this._onRowClick}/>);
       }
     }
@@ -243,29 +258,28 @@ var DataTable = React.createClass({
 
   _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    var self = this;
     if(resId === null) {
       return (<LoadingCell/>);
-    } else if(!self.props.canUpdateEntry && !self.props.canAddNewEntry) {
-      return null;
+    } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
+      return;
     }
-    var entry = self._getGlossaryEntry(resId);
-    if(self._isTranslationSelected()) {
-      var info = self._generateTermInfo(entry.transTerm);
+    var entry = this._getGlossaryEntry(resId);
+    if(this._isTranslationSelected()) {
+      var info = this._generateTermInfo(entry.transTerm);
       return (
         <ActionCell info={info}
-          canUpdateEntry={self.props.canUpdateEntry}
+          canUpdateEntry={this.props.canUpdateEntry}
           resId={resId}
           rowIndex={rowIndex}/>
       );
     } else {
-      var info = self._generateTermInfo(entry.srcTerm);
+      var info = this._generateTermInfo(entry.srcTerm);
       return (
         <SourceActionCell resId={resId} rowIndex={rowIndex}
-          srcLocaleId={self.props.srcLocale.locale.localeId}
+          srcLocaleId={this.props.srcLocale.locale.localeId}
           info={info}
-          canUpdateEntry={self.props.canUpdateEntry}
-          canDeleteEntry={self.props.canAddNewEntry}/>
+          canUpdateEntry={this.props.canUpdateEntry}
+          canDeleteEntry={this.props.canAddNewEntry}/>
       );
     }
   },
@@ -275,83 +289,84 @@ var DataTable = React.createClass({
   },
 
   _getSourceColumn: function() {
-    var self = this, srcLocaleName = "";
+    var srcLocaleName = "";
     if(!_.isUndefined(this.props.srcLocale) && !_.isNull(this.props.srcLocale)) {
       srcLocaleName = this.props.srcLocale.locale.displayName;
     }
-    return (<Column
-      label={srcLocaleName}
-      key={self.ENTRY.SRC.field}
-      width={150}
-      dataKey={0}
-      flexGrow={1}
-      cellRenderer={self._renderSourceCell}
-      headerRenderer={self._renderSourceHeader}
-      />);
+    return (
+      <Column
+        label={srcLocaleName}
+        key={this.ENTRY.SRC.field}
+        width={150}
+        dataKey={0}
+        flexGrow={1}
+        cellRenderer={this._renderSourceCell}
+        headerRenderer={this._renderSourceHeader}/>
+    );
   },
 
   _getTransColumn: function() {
-    var self = this;
-    return (<Column
-      label="Translations"
-      key={self.ENTRY.TRANS.field}
-      width={150}
-      dataKey={0}
-      flexGrow={1}
-      cellRenderer={self._renderTransCell}
-      headerRenderer={self._renderTransHeader}
-      />);
+    return (
+      <Column
+        label="Translations"
+        key={this.ENTRY.TRANS.field}
+        width={150}
+        dataKey={0}
+        flexGrow={1}
+        cellRenderer={this._renderTransCell}
+        headerRenderer={this._renderTransHeader}/>
+    );
   },
 
   _getPosColumn: function() {
-    var self = this;
-    return (<Column
-      label="Part of Speech"
-      key={self.ENTRY.POS.field}
-      width={150}
-      dataKey={0}
-      cellRenderer={self._renderPosCell}
-      headerRenderer={self._renderPosHeader}
-      />);
+    return (
+      <Column
+        label="Part of Speech"
+        key={this.ENTRY.POS.field}
+        width={150}
+        dataKey={0}
+        cellRenderer={this._renderPosCell}
+        headerRenderer={this._renderPosHeader}/>
+    );
   },
 
   _getDescColumn: function() {
-    var self = this;
-    return (<Column
-      label="Description"
-      key={self.ENTRY.DESC.field}
-      width={150}
-      flexGrow={1}
-      dataKey={0}
-      cellRenderer={self._renderDescCell}
-      headerRenderer={self._renderDescHeader}
-      />);
+    return (
+      <Column
+        label="Description"
+        key={this.ENTRY.DESC.field}
+        width={150}
+        flexGrow={1}
+        dataKey={0}
+        cellRenderer={this._renderDescCell}
+        headerRenderer={this._renderDescHeader}/>
+    );
   },
 
   _getTransCountColumn: function() {
-    var self = this;
-    return (<Column
-      label="Translations"
-      key={self.ENTRY.TRANS_COUNT.field}
-      width={120}
-      cellClassName="tac"
-      dataKey={0}
-      cellRenderer={self._renderTransCountCell}
-      headerRenderer={self._renderTransCountHeader}
-      />);
+    return (
+      <Column
+        label="Translations"
+        key={this.ENTRY.TRANS_COUNT.field}
+        width={120}
+        cellClassName="tac"
+        dataKey={0}
+        cellRenderer={this._renderTransCountCell}
+        headerRenderer={this._renderTransCountHeader}/>
+    );
   },
 
   _getActionColumn: function() {
-    var self = this;
-    return (<Column
-      label=""
-      key="Actions"
-      cellClassName="ph1/4"
-      width={300}
-      dataKey={0}
-      isResizable={false}
-      cellRenderer={self._renderActionCell}
-      />)
+    return (
+      <Column
+        label=""
+        key="Actions"
+        cellClassName="ph1/4"
+        width={300}
+        dataKey={0}
+        isResizable={false}
+        cellRenderer={this._renderActionCell}/>
+    )
   },
 
   _onRowMouseEnter: function (event, rowIndex) {
@@ -360,22 +375,17 @@ var DataTable = React.createClass({
     }
   },
 
-  _onRowMouseLeave: function (event, rowIndex) {
-    var unhoveredRow = -1;
-    if (this.state.hoveredRow !== unhoveredRow) {
-      this.setState({hoveredRow: unhoveredRow});
+  _onRowMouseLeave: function () {
+    if (this.state.hoveredRow !== this.NO_ROW) {
+      this.setState({hoveredRow: this.NO_ROW});
     }
   },
 
   _onRowClick: function (event, rowIndex) {
-    var resId = this._rowGetter(rowIndex)[0];
+    var resId = this._rowGetter(rowIndex)[this.resIdIndex];
     if(this.props.focusedRow.rowIndex !== rowIndex) {
       Actions.updateFocusedRow(resId, rowIndex);
     }
-  },
-
-  _onRowBlur: function (event, rowIndex) {
-
   },
 
   _rowClassNameGetter: function (rowIndex) {
@@ -390,10 +400,16 @@ var DataTable = React.createClass({
     return this.props.glossaryData[resId];
   },
 
+  /**
+   * returns resId in list for glossary entry.
+   * Used for fixed-data-table when loading each row. See {@link _getGlossaryEntry}
+   * @param rowIndex
+   * @returns [resId] - resId in list
+   */
   _rowGetter: function(rowIndex) {
     var self = this,
-      row = self.props.glossaryResId[rowIndex];
-    if(row === null) {
+      row = this.props.glossaryResId[rowIndex];
+    if(_.isUndefined(row) || row === null) {
       if(this.state.timeout !== null) {
         clearTimeout(self.state.timeout);
       }
@@ -407,31 +423,33 @@ var DataTable = React.createClass({
   },
 
   render: function() {
-    var self = this, columns = [];
+    var columns = [];
 
-    columns.push(self._getSourceColumn());
-    if(!self._isTranslationSelected()) {
-      columns.push(self._getTransCountColumn());
+    columns.push(this._getSourceColumn());
+    if(this._isTranslationSelected()) {
+      columns.push(this._getTransColumn());
     } else {
-      columns.push(self._getTransColumn());
+      columns.push(this._getTransCountColumn());
     }
-    columns.push(self._getPosColumn());
-    columns.push(self._getDescColumn());
-    columns.push(self._getActionColumn());
+    columns.push(this._getPosColumn());
+    columns.push(this._getDescColumn());
+    columns.push(this._getActionColumn());
 
-    return (<Table
-      onRowClick={self._onRowClick}
-      onRowMouseEnter={self._onRowMouseEnter}
-      onRowMouseLeave={self._onRowMouseLeave}
-      rowClassNameGetter={self._rowClassNameGetter}
-      rowHeight={self.CELL_HEIGHT}
-      rowGetter={self._rowGetter}
-      rowsCount={self.props.totalCount}
-      width={self.state.tbl_width}
-      height={self.state.tbl_height}
-      headerHeight={self.CELL_HEIGHT}>
-      {columns}
-    </Table>);
+    return (
+      <Table
+        onRowClick={this._onRowClick}
+        onRowMouseEnter={this._onRowMouseEnter}
+        onRowMouseLeave={this._onRowMouseLeave}
+        rowClassNameGetter={this._rowClassNameGetter}
+        rowHeight={this.CELL_HEIGHT}
+        rowGetter={this._rowGetter}
+        rowsCount={this.props.totalCount}
+        width={this.state.tbl_width}
+        height={this.state.tbl_height}
+        headerHeight={this.CELL_HEIGHT}>
+        {columns}
+      </Table>
+    );
   }
 });
 

@@ -1,5 +1,5 @@
 {
-  "totalCount": 474,
+  "totalCount": 473,
   "glossaryEntries": [
     {
       "resId": "d1f667e3c439e2994719d13b40f870c4",
@@ -9599,27 +9599,6 @@
           "locale": "de",
           "lastModifiedDate": 1439435998000,
           "lastModifiedBy": ""
-        }
-      ],
-      "termsCount": 2
-    },
-    {
-      "resId": "8e64d3aa5c3e77bbd68535db1a6f9dd0",
-      "description": "desc",
-      "srcLang": "en-US",
-      "sourceReference": "bgroh@172.16.5.77",
-      "glossaryTerms": [
-        {
-          "content": "process",
-          "locale": "en-US",
-          "lastModifiedDate": 1441060773000,
-          "lastModifiedBy": ""
-        },
-        {
-          "content": "Prozes2",
-          "locale": "de",
-          "lastModifiedDate": 1441060947000,
-          "lastModifiedBy": "Administrator"
         }
       ],
       "termsCount": 2

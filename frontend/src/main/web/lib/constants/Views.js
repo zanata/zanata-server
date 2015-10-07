@@ -5,70 +5,61 @@ import RootContent from '../components/RootContent';
 import UserProfile from '../components/UserProfile';
 import SystemGlossary from '../components/SystemGlossary';
 
-var Views = {
-  USER_PROFILE: 0,
-  GLOSSARY: 1,
+var views = {
+  USER_PROFILE: 'USER_PROFILE',
+  GLOSSARY: "GLOSSARY",
 
   getView: function(value) {
-    if(StringUtils.isEmptyOrNull(value)) {
-      return null;
-    }
-
-    switch (value.toLowerCase()) {
+    switch (value) {
       case 'profile':
-      case 'user_profile':
-      case 'userProfile':
         return this.USER_PROFILE; break;
-      case 'glossary': return this.GLOSSARY; break;
-      default: return null; break;
+      case 'glossary':
+        return this.GLOSSARY; break;
+      default:
+        console.debug('Invalid view (might be dev environment view)', value);
+        return null; break;
     }
   },
 
-  getRoutes: function(view) {
+  getRoutes: function(view, isDev) {
     var Route = Router.Route,
       DefaultRoute = Router.DefaultRoute,
       NotFoundRoute = Router.NotFoundRoute;
 
-    if(StringUtils.isEmptyOrNull(view)) {
-      //request from index.html (dev)
-      return (
-        <Route handler={RootContent}>
-          <Route path="glossary" handler={SystemGlossary}/>
-          <Route path="profile" handler={UserProfile}/>
-          <DefaultRoute handler={UserProfile}/>
-          <NotFoundRoute handler={RootContent} />
-        </Route>
-      );
-    } else {
-      //request from jsf (prod)
-      switch (view) {
-        case Views.USER_PROFILE:
-          return (
-            <Route handler={RootContent}>
-              <DefaultRoute handler={UserProfile}/>
-              <NotFoundRoute handler={RootContent} />
-            </Route>
-          );
-          break;
-        case Views.GLOSSARY:
-          return (
-            <Route handler={RootContent}>
-              <DefaultRoute handler={SystemGlossary}/>
-              <NotFoundRoute handler={RootContent} />
-            </Route>
-          );
-          break;
-        default :
-          return (
-            <Route handler={RootContent}>
-              <DefaultRoute handler={RootContent}/>
-              <NotFoundRoute handler={RootContent} />
-            </Route>
-          );
-          break;
-      }
+    /**
+     * if is development environment, return options to select view,
+     * view ignored.
+     */
+    if(isDev) {
+      var routes = [];
+      routes.push(<Route path="glossary" key="glossaryView" handler={SystemGlossary}/>);
+      routes.push(<Route path="profile" key="profileView" handler={UserProfile}/>);
+      return this.routeWith(<DefaultRoute handler={UserProfile}/>, routes);
     }
+    switch (view) {
+      case views.USER_PROFILE:
+        return this.routeWith(<DefaultRoute handler={UserProfile}/>);
+        break;
+      case views.GLOSSARY:
+        return this.routeWith(<DefaultRoute handler={SystemGlossary}/>);
+        break;
+      default :
+        return this.routeWith(<DefaultRoute handler={RootContent}/>);
+        break;
+    }
+  },
+
+  routeWith: function (defaultRoute, routes) {
+    var Route = Router.Route,
+      DefaultRoute = Router.DefaultRoute,
+      NotFoundRoute = Router.NotFoundRoute;
+    return (
+      <Route handler={RootContent}>
+        {routes}
+        {defaultRoute}
+        <NotFoundRoute handler={RootContent} />
+      </Route>
+    )
   }
 };
-
-export default Views;
+export default views;

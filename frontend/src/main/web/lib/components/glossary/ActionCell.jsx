@@ -72,21 +72,41 @@ var ActionCell = React.createClass({
 
       var updateButton = null, cancelButton = null,
         comment = (
-          <Comment className="ml1/4" readOnly={!self.props.canUpdateEntry || !canUpdateComment || isSaving}
+          <Comment
+            className="ml1/4"
+            readOnly={!self.props.canUpdateEntry || !canUpdateComment || isSaving}
             value={self.state.entry.transTerm.comment}
-            onUpdateCommentCallback={self._onUpdateComment}
-          />);
+            onUpdateCommentCallback={self._onUpdateComment}/>
+        );
 
       if(isSaving) {
-        return (<div>{info} {comment} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
+        return (
+          <div>{info} {comment}
+            <Button kind='primary' className="ml1/4" loading>Update</Button>
+          </div>
+        );
       }
 
       if(isTransModified) {
-        updateButton = (<Button kind='primary' className='ml1/4' onClick={self._handleUpdate}>Update</Button>);
-        cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
+        updateButton = (
+          <Button kind='primary' className='ml1/4' onClick={self._handleUpdate}>
+            Update
+          </Button>
+        );
+        cancelButton = (
+          <Button className='ml1/4' link onClick={self._handleCancel}>
+            Cancel
+          </Button>
+        );
       }
 
-      return (<div>{info} {comment} <div className='cdtargetib'>{updateButton} {cancelButton}</div></div>);
+      return (
+        <div>
+          {info} {comment}
+          <div className='cdtargetib'>
+            {updateButton} {cancelButton}
+          </div>
+        </div>);
     }
   }
 });
