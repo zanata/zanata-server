@@ -125,8 +125,19 @@ var NewEntryModal = React.createClass({
               />
           </Modal.Body>
           <Modal.Footer>
-            <Button className='mr1' link disabled={this.state.isSaving} onClick={this._closeModal}>Cancel</Button>
-            <Button kind='primary' disabled={!this.state.isAllowSave || this.state.isSaving} onClick={this._save} loading={this.state.isSaving}>Save</Button>
+            <Button
+              className='mr1'
+              link disabled={this.state.isSaving}
+              onClick={this._closeModal}>
+              Cancel
+            </Button>
+            <Button
+              kind='primary'
+              disabled={!this.state.isAllowSave || this.state.isSaving}
+              onClick={this._save}
+              loading={this.state.isSaving}>
+              Save
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>);

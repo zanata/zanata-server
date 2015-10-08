@@ -203,24 +203,23 @@ var DataTable = React.createClass({
     Actions.updateSortOrder(field, ascending);
   },
 
-  _renderCell: function (resId, rowIndex, field, readOnly, placeholder) {
-    var key = this._generateKey(field.col, rowIndex, resId);
-    if (resId === null) {
+  _renderCell: function (cellData) {
+    var key = this._generateKey(cellData.field.col, cellData.rowIndex, cellData.resId);
+    if (cellData.resId === null) {
       return (<LoadingCell key={key}/>)
     } else {
-      var entry = this._getGlossaryEntry(resId);
-      var value = _.get(entry, field.field);
-
-      if (readOnly) {
+      var entry = this._getGlossaryEntry(cellData.resId);
+      var value = _.get(entry, cellData.field.field);
+      if (cellData.readOnly) {
         return (<span className="mh1/2" key={key}>{value}</span>)
       } else {
         return (<InputCell
           value={value}
-          resId={resId}
+          resId={cellData.resId}
           key={key}
-          placeholder={placeholder}
-          rowIndex={rowIndex}
-          field={field.field}
+          placeholder={cellData.placeholder}
+          rowIndex={cellData.rowIndex}
+          field={cellData.field.field}
           onFocusCallback={this._onRowClick}/>);
       }
     }
@@ -228,32 +227,63 @@ var DataTable = React.createClass({
 
   _renderSourceCell: function (resId, cellDataKey, rowData, rowIndex,
                                columnData, width) {
-    return this._renderCell(resId, rowIndex, this.ENTRY.SRC, true, '');
+    return this._renderCell({
+      resId: resId,
+      rowIndex: rowIndex,
+      field: this.ENTRY.SRC,
+      readOnly: true,
+      placeholder: ''
+    });
   },
 
   _renderTransCell: function(resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
-    var readOnly = !this.props.canUpdateEntry, placeholder = 'enter a translation';
-    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS, readOnly, placeholder);
+    var readOnly = !this.props.canUpdateEntry,
+      placeholder = 'enter a translation';
+    return this._renderCell({
+      resId: resId,
+      rowIndex: rowIndex,
+      field: this.ENTRY.TRANS,
+      readOnly: readOnly,
+      placeholder: placeholder
+    });
   },
 
   _renderPosCell: function (resId, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
       placeholder = 'enter part of speech';
-    return this._renderCell(resId, rowIndex, this.ENTRY.POS, readOnly, placeholder);
+    return this._renderCell({
+      resId: resId,
+      rowIndex: rowIndex,
+      field: this.ENTRY.POS,
+      readOnly: readOnly,
+      placeholder: placeholder
+    });
   },
 
   _renderDescCell: function (resId, cellDataKey, rowData, rowIndex,
                              columnData, width) {
     var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
       placeholder = 'enter description';
-    return this._renderCell(resId, rowIndex, this.ENTRY.DESC, readOnly, placeholder);
+    return this._renderCell({
+      resId: resId,
+      rowIndex: rowIndex,
+      field: this.ENTRY.DESC,
+      readOnly: readOnly,
+      placeholder: placeholder
+    });
   },
 
   _renderTransCountCell: function (resId, cellDataKey, rowData, rowIndex,
                               columnData, width) {
-    return this._renderCell(resId, rowIndex, this.ENTRY.TRANS_COUNT, true, '');
+    return this._renderCell({
+      resId: resId,
+      rowIndex: rowIndex,
+      field: this.ENTRY.TRANS_COUNT,
+      readOnly: true,
+      placeholder: ''
+    });
   },
 
   _renderActionCell: function (resId, cellDataKey, rowData, rowIndex,

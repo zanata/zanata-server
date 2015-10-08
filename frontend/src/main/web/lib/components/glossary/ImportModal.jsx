@@ -55,11 +55,11 @@ var ImportModal = React.createClass({
   },
 
   _onFileChange: function(e) {
-    var self = this, file = e.target.files[0],
+    var file = e.target.files[0],
       reader = new FileReader();
 
-    reader.onload = function(upload) {
-      self.setState({file: file});
+    reader.onload = (upload) => {
+      this.setState({file: file});
     };
     reader.readAsDataURL(file);
   },
@@ -81,7 +81,7 @@ var ImportModal = React.createClass({
     return extension === 'po' || extension === 'csv';
   },
 
-  _onTransChange: function (localeId) {
+  _onTransLocaleChange: function (localeId) {
     this.setState({transLocale : localeId});
   },
 
@@ -107,7 +107,7 @@ var ImportModal = React.createClass({
           placeholder='Select a translation language…'
           value={this.state.transLocale}
           options={localeOptions}
-          onChange={this._onTransChange}
+          onChange={this._onTransLocaleChange}
           />);
 
         if(!StringUtils.isEmptyOrNull(this.state.transLocale)) {
@@ -133,7 +133,10 @@ var ImportModal = React.createClass({
             </form>
             {transLanguageDropdown}
             <p>
-            CSV and PO files are supported. <strong>The source language should be in {this.props.srcLocale.locale.displayName}</strong>. For more details on how to prepare glossary files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/" className="cpri" target="_blank">glossary import documentation</a>.
+              CSV and PO files are supported. <strong>The source language should be in {this.props.srcLocale.locale.displayName}</strong>.
+              For more details on how to prepare glossary files, see our
+              <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
+                className="cpri" target="_blank">glossary import documentation</a>.
             </p>
           </Modal.Body>
           <Modal.Footer>

@@ -39,7 +39,9 @@
 
 ## After pulling new changes to zanata-server
 
-## Running zanata-spa(New javascript module of translation editor) on server
+## Running zanata-spa
+
+zanata-spa is the javascript module for the new translation editor, that will replace the older editor in the near future.
 
 1. `unzip $JBOSS_HOME/standalone/deployments/zanata.war -d zanatawar && rm zanata.war && mv zanatawar zanata.war` Turn zanata.war into a directory
 2. `npm run build && cp -r <spa-directory>/build/* $JBOSS_HOME/standalone/deployments/zanata.war/app`

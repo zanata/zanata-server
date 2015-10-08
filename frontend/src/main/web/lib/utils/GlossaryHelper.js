@@ -4,6 +4,8 @@ import StringUtils from './StringUtils'
 var GlossaryHelper = {
   /**
    * Generate org.zanata.rest.dto.GlossaryTerm object
+   * returns null if data is undefined or content and locale is empty
+   *
    * @param data
    */
   generateGlossaryTermDTO: function (data) {
@@ -42,12 +44,12 @@ var GlossaryHelper = {
     entry['glossaryTerms'] = [];
 
     var srcTerm = this.generateGlossaryTermDTO(data.srcTerm);
-    if(!_.isNull(srcTerm)) {
+    if(!_.isNull(srcTerm) || !_.isUndefined(srcTerm)) {
       entry['glossaryTerms'].push(srcTerm);
     }
 
     var transTerm = this.generateGlossaryTermDTO(data.transTerm);
-    if(!_.isNull(transTerm)) {
+    if(!_.isNull(transTerm) || !_.isUndefined(v)) {
       entry['glossaryTerms'].push(transTerm);
     }
 
@@ -55,7 +57,7 @@ var GlossaryHelper = {
     return glossary;
   },
 
-  generateTerm: function(transLocaleId){
+  generateEmptyTerm: function(transLocaleId){
     return {
       content: '',
       locale: transLocaleId,
@@ -66,15 +68,13 @@ var GlossaryHelper = {
   },
 
   generateSrcTerm: function (localeId) {
-    var term = this.generateTerm(localeId);
+    var term = this.generateEmptyTerm(localeId);
     term['reference'] = '';
     return term;
   },
 
   getTermByLocale: function (terms, localeId) {
-    var term =  _(terms)
-      .filter(function(term) { return term.locale === localeId; })
-      .value();
+    var term = _.filter(terms, 'locale', localeId);
     return _.size(term) <= 0 ? null : term[0];
   },
 

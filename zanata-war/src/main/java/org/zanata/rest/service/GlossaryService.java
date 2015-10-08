@@ -169,7 +169,8 @@ public class GlossaryService implements GlossaryResource {
         Glossary glossary = new Glossary();
         glossary.setTotalCount(totalCount);
 
-        transferEntriesLocaleResource(hGlosssaryEntries, glossary, transLocale);
+        HLocale locale = localeServiceImpl.getByLocaleId(transLocale);
+        transferEntriesLocaleResource(hGlosssaryEntries, glossary, locale);
 
         return Response.ok(glossary).build();
     }
@@ -198,7 +199,8 @@ public class GlossaryService implements GlossaryResource {
         glossary.setTotalCount(totalCount);
 
         //filter out all terms other than source term
-        transferEntriesLocaleResource(hGlosssaryEntries, glossary, srcLocaleId);
+        HLocale locale = localeServiceImpl.getByLocaleId(srcLocaleId);
+        transferEntriesLocaleResource(hGlosssaryEntries, glossary, locale);
 
         return Response.ok(glossary).build();
     }
@@ -316,23 +318,33 @@ public class GlossaryService implements GlossaryResource {
 
     public static void transferEntriesLocaleResource(
             List<HGlossaryEntry> hGlossaryEntries, Glossary glossary,
-            LocaleId locale) {
+            HLocale locale) {
         for (HGlossaryEntry hGlossaryEntry : hGlossaryEntries) {
             GlossaryEntry glossaryEntry = generateGlossaryEntry(hGlossaryEntry);
-            LocaleId srcLocale = hGlossaryEntry.getSrcLocale().getLocaleId();
 
-            for (HGlossaryTerm hGlossaryTerm : hGlossaryEntry
-                    .getGlossaryTerms().values()) {
-                LocaleId termLocale = hGlossaryTerm.getLocale().getLocaleId();
-                if (termLocale.equals(locale) || termLocale.equals(srcLocale)) {
-                    GlossaryTerm glossaryTerm =
-                            generateGlossaryTerm(hGlossaryTerm);
+            GlossaryTerm srcTerm =
+                getGlossaryTerm(hGlossaryEntry, hGlossaryEntry.getSrcLocale());
+            if (srcTerm != null) {
+                glossaryEntry.getGlossaryTerms().add(srcTerm);
+            }
 
-                    glossaryEntry.getGlossaryTerms().add(glossaryTerm);
-                }
+            GlossaryTerm transTerm = getGlossaryTerm(hGlossaryEntry, locale);
+            if (transTerm != null) {
+                glossaryEntry.getGlossaryTerms().add(transTerm);
             }
             glossary.getGlossaryEntries().add(glossaryEntry);
         }
+    }
+
+    private static GlossaryTerm getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
+        HLocale locale) {
+        if (!hGlossaryEntry.getGlossaryTerms().containsKey(locale)) {
+            return null;
+        }
+        HGlossaryTerm hGlossaryTerm =
+            hGlossaryEntry.getGlossaryTerms().get(locale);
+        GlossaryTerm glossaryTerm = generateGlossaryTerm(hGlossaryTerm);
+        return glossaryTerm;
     }
 
     public static GlossaryEntry generateGlossaryEntry(

@@ -65,9 +65,9 @@ var DateHelper = {
     return moment(dateStr).isAfter(moment());
   },
 
-  getDate: function(miliseconds) {
-    if(!StringUtils.isEmptyOrNull(miliseconds)) {
-      return new Date(miliseconds);
+  getDate: function(milliseconds) {
+    if(!StringUtils.isEmptyOrNull(milliseconds)) {
+      return new Date(milliseconds);
     } else {
       return null;
     }

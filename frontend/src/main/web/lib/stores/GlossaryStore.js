@@ -114,7 +114,7 @@ function processGlossaryList(serverResponse) {
         transTerm.comment = ''
       }
     } else {
-      transTerm = GlossaryHelper.generateTerm(transLocaleId);
+      transTerm = GlossaryHelper.generateEmptyTerm(transLocaleId);
     }
     _state.glossary[entry.resId] = {
       resId: entry.resId,

@@ -53,35 +53,50 @@ var Comment = React.createClass({
   },
 
   render: function () {
-    var self = this, tooltip = null, disableUpdate = !self._hasValueChanged();
+    var tooltip = null,
+      disableUpdate = !this._hasValueChanged();
 
     if(this.props.readOnly !== true) {
       var tooltip = (<Tooltip id="comment" title="Comment">
         <textarea className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
-          onChange={self._onCommentChange}
-          value={self.state.value}
-          onKeyUp={self._handleKeyUp}/>
+          onChange={this._onCommentChange}
+          value={this.state.value}
+          onKeyUp={this._handleKeyUp}/>
         <div className="mt1/4">
-          <Button className="mr1/2" link onClick={self._onCancelComment}>Cancel</Button>
-          <Button kind='primary' size={-1} disabled={disableUpdate} onClick={self._onUpdateComment}>Update Comment</Button>
+          <Button className="mr1/2" link
+            onClick={this._onCancelComment}>
+            Cancel
+          </Button>
+          <Button kind='primary'
+            size={-1}
+            disabled={disableUpdate}
+            onClick={this._onUpdateComment}>
+            Update Comment
+          </Button>
         </div>
       </Tooltip>);
     } else {
-      var comment = StringUtils.isEmptyOrNull(self.state.value) ? (<i>No comment</i>) : (<span>{self.state.value}</span>);
+      var comment = StringUtils.isEmptyOrNull(this.state.value) ? (<i>No comment</i>) : (<span>{this.state.value}</span>);
       tooltip = (<Tooltip id="comment">{comment}</Tooltip>);
     }
 
     var buttonClasses = cx(
-      self.props.className,
+      this.props.className,
       'mr1/2'
     );
 
     return (
       <div className="dib">
-        <Overlay placement='top' target={props => React.findDOMNode(self)} onHide={self._onCancelComment} rootClose show={self.state.showComment}>
+        <Overlay placement='top'
+          target={() => React.findDOMNode(this)}
+          onHide={this._onCancelComment}
+          rootClose show={this.state.showComment}>
           {tooltip}
         </Overlay>
-        <Button link kind={StringUtils.isEmptyOrNull(self.state.value) ? 'muted' : 'primary'} className={buttonClasses} onClick={self._toggleComment}>
+        <Button link
+          kind={StringUtils.isEmptyOrNull(this.state.value) ? 'muted' : 'primary'}
+          className={buttonClasses}
+          onClick={this._toggleComment}>
           <Icon name='comment'/>
         </Button>
       </div>

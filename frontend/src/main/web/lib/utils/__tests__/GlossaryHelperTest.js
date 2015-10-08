@@ -94,7 +94,7 @@ describe('GlossaryHelperTest', function() {
 
   it('test generate empty term', function() {
     var localeId = 'de';
-    var term = GlossaryHelper.generateTerm(localeId);
+    var term = GlossaryHelper.generateEmptyTerm(localeId);
     expect(term.locale).toEqual(localeId);
   });
 
@@ -145,7 +145,7 @@ describe('GlossaryHelperTest', function() {
     return {
       resId: '', pos: '', description: '',
       srcTerm: GlossaryHelper.generateSrcTerm(srcLocale),
-      transTerm: GlossaryHelper.generateTerm(transLocale),
+      transTerm: GlossaryHelper.generateEmptyTerm(transLocale),
       status: GlossaryHelper.getDefaultEntryStatus()
     };
   }

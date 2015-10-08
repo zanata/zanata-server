@@ -3,7 +3,7 @@ import {PureRenderMixin} from 'react/addons';
 import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
-import DeleteEntry from './DeleteEntry'
+import DeleteEntryModal from './DeleteEntryModal'
 import GlossaryStore from '../../stores/GlossaryStore';
 import _ from 'lodash';
 
@@ -52,35 +52,33 @@ var SourceActionCell = React.createClass({
   },
 
   render: function() {
-    var self = this;
-
     if(this.props.resId === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
       var info = (
         <OverlayTrigger placement='top'
           rootClose
-          overlay={<Tooltip id='src-info'>{self.props.info}</Tooltip>}>
+          overlay={<Tooltip id='src-info'>{this.props.info}</Tooltip>}>
           <Icon className="cpri" name="info"/>
         </OverlayTrigger>);
 
-      if(self.state.entry.status.isSaving === true) {
+      if(this.state.entry.status.isSaving) {
         return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
       } else {
         var deleteButton = null;
 
-        if(self.props.canDeleteEntry) {
-          deleteButton = (<DeleteEntry className='ml1/4' resId={self.props.resId} entry={self.state.entry}/>)
+        if(this.props.canDeleteEntry) {
+          deleteButton = <DeleteEntryModal className='ml1/4' resId={this.props.resId} entry={this.state.entry}/>;
         }
 
-        var isSrcModified= self.state.entry.status.isSrcModified,
-          isSrcValid = self.state.entry.status.isSrcValid;
+        var isSrcModified= this.state.entry.status.isSrcModified,
+          isSrcValid = this.state.entry.status.isSrcValid;
 
         if(isSrcModified) {
           var updateButton = null,
-            cancelButton = (<Button className='ml1/4' link onClick={self._handleCancel}>Cancel</Button>);
+            cancelButton = <Button className='ml1/4' link onClick={this._handleCancel}>Cancel</Button>;
           if(this.props.canUpdateEntry && isSrcValid) {
-            updateButton = (<Button kind='primary' className="ml1/4" onClick={self._handleUpdate}>Update</Button>);
+            updateButton = <Button kind='primary' className="ml1/4" onClick={this._handleUpdate}>Update</Button>;
           }
           return (
               <div className='difx aic'>

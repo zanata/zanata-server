@@ -20,12 +20,12 @@ var ColumnHeader = React.createClass({
   },
 
   _handleOnClick: function (event) {
-    if(this.props.allowSort === true) {
-      var asc = this.state.sort === "ascending" ? "descending" : "ascending";
-      this.setState({sort: asc});
+    if(this.props.allowSort) {
+      var sortDirection = this.state.sort === "ascending" ? "descending" : "ascending";
+      this.setState({sort: sortDirection});
 
       if(this.props.onClickCallback) {
-        this.props.onClickCallback(this.props.field, asc === 'ascending');
+        this.props.onClickCallback(this.props.field, sortDirection === 'ascending');
       }
     }
   },
@@ -33,14 +33,14 @@ var ColumnHeader = React.createClass({
   render: function() {
     var sortIcon = null;
 
-    if(this.props.allowSort === true) {
+    if(this.props.allowSort) {
       if(this.state.sort !== null) {
-        var asc = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
-        sortIcon = (<Icon name={asc}/>);
+        var iconName = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
+        sortIcon = (<Icon name={iconName}/>);
       }
-      return (<button className='csec fwsb ph1/2' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>);
+      return <button className='csec fwsb ph1/2' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>;
     } else {
-      return (<span className='csec ph1/2'>{this.props.value}</span>)
+      return <span className='csec ph1/2'>{this.props.value}</span>;
     }
   }
 
