@@ -231,10 +231,23 @@ public class UserEndToEndTest extends ZanataTestCase {
         DashboardBasePage dashboardBasePage = new LoginWorkFlow()
                 .signIn(fields.get("username"), fields.get("password"));
         dashboardBasePage.waitForNotificationsGone();
-        dashboardBasePage.enterSearch("about")
+        EditorPage editorPage = dashboardBasePage.enterSearch("about")
                 .clickProjectSearchEntry("about fedora")
                 .gotoVersion("master")
                 .translate("fr", "About_Fedora");
+
+        assertThat(editorPage.getMessageSourceAtRowIndex(0))
+                .isEqualTo("This is a test file")
+                .as("Document is correct");
+
+        editorPage = editorPage.translateTargetAtRowIndex(0, "Ceci est un fichier de test")
+                .saveTranslationAtRow(0);
+
+        // Close and reopen the editor to test save
+        editorPage.reload();
+
+        assertThat(editorPage.getBasicTranslationTargetAtRowIndex(0))
+                .isEqualTo("Ceci est un fichier de test");
 
     }
 }

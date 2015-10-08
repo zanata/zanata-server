@@ -64,6 +64,8 @@ public class EditorPage extends BasePage {
     // buttons id format
     private static final String APPROVE_BUTTON_ID_FMT =
             "gwt-debug-target-%d-save-approve";
+    private static final String TRANSLATE_BUTTON_ID_FMT =
+            "gwt-debug-target-%d-save-translated";
     private static final String FUZZY_BUTTON_ID_FMT =
             "gwt-debug-target-%d-save-fuzzy";
 
@@ -291,6 +293,15 @@ public class EditorPage extends BasePage {
         log.info("Click Approve on row {}", rowIndex);
         readyElement(By
                 .id(String.format(APPROVE_BUTTON_ID_FMT, rowIndex)))
+                .click();
+        slightPause();
+        return new EditorPage(getDriver());
+    }
+
+    public EditorPage saveTranslationAtRow(int rowIndex) {
+        log.info("Click Approve on row {}", rowIndex);
+        readyElement(By
+                .id(String.format(TRANSLATE_BUTTON_ID_FMT, rowIndex)))
                 .click();
         slightPause();
         return new EditorPage(getDriver());
