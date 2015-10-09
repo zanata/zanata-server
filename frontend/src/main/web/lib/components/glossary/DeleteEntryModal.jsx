@@ -38,10 +38,12 @@ var DeleteEntryModal = React.createClass({
       info = null;
 
     if(this.props.entry.termsCount > 0) {
+      let translationPlural = this.props.entry.termsCount > 1
+        ? 'translations' : 'translation'
       info =
         <p>
-          Are you sure you want to delete this term and
-          <strong>{this.props.entry.termsCount}</strong> translations?
+          Are you sure you want to delete this term and&nbsp;
+          <strong>{this.props.entry.termsCount}</strong> {translationPlural}?
         </p>
     } else {
       info = <p>Are you sure you want to delete this term?</p>
