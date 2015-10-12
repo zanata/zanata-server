@@ -291,7 +291,7 @@ var DataTable = React.createClass({
     if(resId === null) {
       return (<LoadingCell/>);
     } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
-      return;
+      return null;
     }
     var entry = this._getGlossaryEntry(resId);
     if(this._isTranslationSelected()) {

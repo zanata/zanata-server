@@ -59,33 +59,35 @@ var UserProfile = React.createClass({
       languageTeams = user.languageTeams;
     }
 
-    return (<div className="g">
-      <div id="profile-overview" className="g__item w--1-4 w--1-2-m">
-        <div className="media l--push-bottom-half">
-          <div className="media__item--right bx--round">
-            <img src={imageUrl} alt={username}/>
-          </div>
-          <div className="media__body">
-            <h1 id="profile-displayname"
-              className="l--push-all-0">{name}</h1>
-            <ul className="list--no-bullets txt--meta">
-              <li id="profile-username">
-                <i className="i i--user list__icon"
-                  title="Username"></i>
-                {username}
-              </li>
-              <li id="profile-languages">
-                <i className="i i--language list__icon"
-                  title="Spoken languages"></i>
-                {languageTeams}
-              </li>
-            </ul>
+    return (
+      <div className="g">
+        <div id="profile-overview" className="g__item w--1-4 w--1-2-m">
+          <div className="media l--push-bottom-half">
+            <div className="media__item--right bx--round">
+              <img src={imageUrl} alt={username}/>
+            </div>
+            <div className="media__body">
+              <h1 id="profile-displayname"
+                className="l--push-all-0">{name}</h1>
+              <ul className="list--no-bullets txt--meta">
+                <li id="profile-username">
+                  <i className="i i--user list__icon"
+                    title="Username"></i>
+                  {username}
+                </li>
+                <li id="profile-languages">
+                  <i className="i i--language list__icon"
+                    title="Spoken languages"></i>
+                  {languageTeams}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
+        <!-- user contribution matrix -->
+        {recentContribution}
       </div>
-      <!-- user contribution matrix -->
-      {recentContribution}
-    </div>);
+    );
   }
 });
 

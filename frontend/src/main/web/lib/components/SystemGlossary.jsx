@@ -40,7 +40,7 @@ var SystemGlossary = React.createClass({
   },
 
   _handleFilterKeyDown: function(event) {
-    if(event.key == 'Enter') {
+    if(event.key === 'Enter') {
       Actions.updateFilter(this.state.filter);
     }
   },

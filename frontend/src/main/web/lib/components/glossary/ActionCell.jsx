@@ -70,7 +70,8 @@ var ActionCell = React.createClass({
           <Icon className="cpri" name="info"/>
         </OverlayTrigger>);
 
-      var updateButton = null, cancelButton = null,
+      var updateButton = null,
+        cancelButton = null,
         comment = (
           <Comment
             className="ml1/4"
@@ -81,7 +82,8 @@ var ActionCell = React.createClass({
 
       if(isSaving) {
         return (
-          <div>{info} {comment}
+          <div>
+            {info} {comment}
             <Button kind='primary' className="ml1/4" loading>Update</Button>
           </div>
         );

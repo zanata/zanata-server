@@ -37,7 +37,7 @@ var Comment = React.createClass({
   },
 
   _handleKeyUp: function (event) {
-    if(event.key == 'Escape') {
+    if(event.key === 'Escape') {
       this._onCancelComment();
     }
   },
@@ -57,24 +57,26 @@ var Comment = React.createClass({
       disableUpdate = !this._hasValueChanged();
 
     if(this.props.readOnly !== true) {
-      var tooltip = (<Tooltip id="comment" title="Comment">
-        <textarea className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
-          onChange={this._onCommentChange}
-          value={this.state.value}
-          onKeyUp={this._handleKeyUp}/>
-        <div className="mt1/4">
-          <Button className="mr1/2" link
-            onClick={this._onCancelComment}>
-            Cancel
-          </Button>
-          <Button kind='primary'
-            size={-1}
-            disabled={disableUpdate}
-            onClick={this._onUpdateComment}>
-            Update Comment
-          </Button>
-        </div>
-      </Tooltip>);
+      var tooltip = (
+        <Tooltip id="comment" title="Comment">
+          <textarea className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
+            onChange={this._onCommentChange}
+            value={this.state.value}
+            onKeyUp={this._handleKeyUp}/>
+          <div className="mt1/4">
+            <Button className="mr1/2" link
+              onClick={this._onCancelComment}>
+              Cancel
+            </Button>
+            <Button kind='primary'
+              size={-1}
+              disabled={disableUpdate}
+              onClick={this._onUpdateComment}>
+              Update Comment
+            </Button>
+          </div>
+        </Tooltip>
+      );
     } else {
       var comment = StringUtils.isEmptyOrNull(this.state.value) ? (<i>No comment</i>) : (<span>{this.state.value}</span>);
       tooltip = (<Tooltip id="comment">{comment}</Tooltip>);
