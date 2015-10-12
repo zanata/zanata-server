@@ -53,6 +53,15 @@ public interface RequestService {
             boolean isRequestAsCoordinator) throws RequestExistException;
 
     /**
+     * Check if request already exist in the locale by this user
+     * @param requester
+     * @param locale
+     */
+    boolean isRequestExist(HAccount requester, HLocale locale);
+
+    void cancelRequest(HAccount requester, HLocale locale);
+
+    /**
      * Update join language request
      * @param requestId
      * @param actor

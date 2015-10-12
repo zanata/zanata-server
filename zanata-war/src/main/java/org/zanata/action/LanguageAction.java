@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -122,6 +123,9 @@ public class LanguageAction implements Serializable {
     private ResourceUtils resourceUtils;
 
     @In
+    private RequestService requestServiceImpl;
+
+    @In
     private Redirect redirect;
 
     @Getter
@@ -164,10 +168,6 @@ public class LanguageAction implements Serializable {
                 }
             };
 
-    //TODO: test create join, fills in roles map
-    @In
-    private RequestService requestServiceImpl;
-
     public List<LanguageRequest> getRequests() {
         if(identity == null) {
             return Lists.newArrayList();
@@ -197,10 +197,10 @@ public class LanguageAction implements Serializable {
     public boolean isUserInTeam() {
         if(authenticatedAccount != null) {
             return languageTeamServiceImpl
-                .getLanguageMemberships(authenticatedAccount.getUsername()).contains(getLocale());
+                .getLanguageMemberships(authenticatedAccount.getUsername()).contains(
+                    getLocale());
         }
         return false;
-
     }
 
     public void addSelected() {

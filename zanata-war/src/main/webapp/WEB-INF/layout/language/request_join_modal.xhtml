@@ -40,7 +40,7 @@
         <a4j:param name="val2" assignTo="#{checked}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="sendJoinLanguageEmail" action="#{languageJoinAction.send}"
+      <a4j:jsFunction name="sendJoinLanguageEmail" action="#{languageJoinAction.createRequest}"
         execute="@form"
         oncomplete="jQuery(getJoinLanguageForm()).find('#request-join-language-cancel-button').click();refreshRequestsForm()"/>
 

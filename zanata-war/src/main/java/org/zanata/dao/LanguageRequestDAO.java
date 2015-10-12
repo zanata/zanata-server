@@ -38,15 +38,12 @@ public class LanguageRequestDAO extends AbstractDAOImpl<LanguageRequest, Long> {
     }
 
     public LanguageRequest findRequestInLocale(HAccount requester,
-        HLocale locale, boolean coordinator, boolean reviewer, boolean translator) {
+        HLocale locale) {
         String query =
-            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId and req.coordinator = :coordinator and req.reviewer = :reviewer and req.translator = :translator";
+            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId";
         Query q = getSession().createQuery(query)
             .setParameter("requesterId", requester.getId())
             .setParameter("localeId", locale.getId())
-            .setBoolean("coordinator", coordinator)
-            .setBoolean("reviewer", reviewer)
-            .setBoolean("translator", translator)
             .setCacheable(true).setComment(
                 "requestDAO.findRequestInLocale");
         return (LanguageRequest) q.uniqueResult();

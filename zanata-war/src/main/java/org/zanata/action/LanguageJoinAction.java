@@ -21,7 +21,10 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,8 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.Transactional;
+import org.zanata.events.JoinedLanguageTeam;
 import org.zanata.exception.RequestExistException;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -42,11 +47,14 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
+import org.zanata.security.annotations.CheckRole;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
 import org.zanata.ui.faces.FacesMessages;
+
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -125,59 +133,131 @@ public class LanguageJoinAction implements Serializable {
     }
 
     @CheckLoggedIn
-    public boolean createRequest() {
+    public void createRequest() {
         try {
             requestServiceImpl
                     .createLanguageRequest(authenticatedAccount, locale,
-                            isRequestAsTranslator(),
-                            isRequestAsReviewer(),
-                            isRequestAsCoordinator());
-            return true;
+                        isRequestAsTranslator(),
+                        isRequestAsReviewer(),
+                        isRequestAsCoordinator());
+            sendEmail(isRequestAsCoordinator(), isRequestAsReviewer(),
+                isRequestAsTranslator());
         } catch (RequestExistException e) {
             log.warn("Request already exist for {0} in language {1}.",
                     authenticatedAccount.getUsername(), locale.getDisplayName());
-            return false;
         }
     }
 
     @CheckLoggedIn
-    public void send() {
-        if (createRequest()) {
-            String fromName = authenticatedAccount.getPerson().getName();
-            String fromLoginName = authenticatedAccount.getUsername();
-            String replyEmail = authenticatedAccount.getPerson().getEmail();
-
-            EmailStrategy strategy =
-                    new RequestToJoinLanguageEmailStrategy(
-                            fromLoginName, fromName, replyEmail,
-                            locale.getLocaleId().getId(),
-                            locale.retrieveNativeName(), message,
-                            isRequestAsTranslator(),
-                            isRequestAsReviewer(),
-                            isRequestAsCoordinator());
-            try {
-                facesMessages.addGlobal(emailServiceImpl
-                        .sendToLanguageCoordinators(locale.getLocaleId(),
-                                strategy));
-            } catch (Exception e) {
-                String subject = strategy.getSubject(msgs);
-
-                StringBuilder sb =
-                        new StringBuilder()
-                                .append("Failed to send email with subject '")
-                                .append(strategy.getSubject(msgs))
-                                .append("' , message '").append(message)
-                                .append("'");
-                log.error(
-                        "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
-                        fromName, fromLoginName, replyEmail, subject, message,
-                        e);
-                facesMessages.addGlobal(sb.toString());
-            } finally {
-                reset();
-            }
+    public void requestAsTranslator() {
+        try {
+            requestServiceImpl
+                .createLanguageRequest(authenticatedAccount, locale, true,
+                    false, false);
+            sendEmail(false, false, true);
+        } catch (RequestExistException e) {
+            log.warn("Request already exist for {0} in language {1}.",
+                authenticatedAccount.getUsername(), locale.getDisplayName());
         }
     }
+
+    @CheckLoggedIn
+    public void requestAsReviewer() {
+        try {
+            requestServiceImpl
+                .createLanguageRequest(authenticatedAccount, locale, false,
+                    true, false);
+            sendEmail(false, true, false);
+        } catch (RequestExistException e) {
+            log.warn("Request already exist for {0} in language {1}.",
+                authenticatedAccount.getUsername(), locale.getDisplayName());
+        }
+    }
+
+    @CheckLoggedIn
+    public void requestAsCoordinator() {
+        try {
+            requestServiceImpl
+                .createLanguageRequest(authenticatedAccount, locale, false,
+                    false, true);
+            sendEmail(false, false, true);
+        } catch (RequestExistException e) {
+            log.warn("Request already exist for {0} in language {1}.",
+                authenticatedAccount.getUsername(), locale.getDisplayName());
+        }
+    }
+
+    @CheckLoggedIn
+    public void sendEmail(boolean isRequestAsCoordinator,
+        boolean isRequestAsReviewer, boolean isRequestAsTranslator) {
+        String fromName = authenticatedAccount.getPerson().getName();
+        String fromLoginName = authenticatedAccount.getUsername();
+        String replyEmail = authenticatedAccount.getPerson().getEmail();
+
+        EmailStrategy strategy =
+            new RequestToJoinLanguageEmailStrategy(
+                fromLoginName, fromName, replyEmail,
+                locale.getLocaleId().getId(),
+                locale.retrieveNativeName(), message,
+                isRequestAsTranslator,
+                isRequestAsReviewer,
+                isRequestAsCoordinator);
+        try {
+            facesMessages.addGlobal(emailServiceImpl
+                .sendToLanguageCoordinators(locale.getLocaleId(), strategy));
+        } catch (Exception e) {
+            String subject = strategy.getSubject(msgs);
+
+            StringBuilder sb =
+                new StringBuilder()
+                    .append("Failed to send email with subject '")
+                    .append(strategy.getSubject(msgs))
+                    .append("' , message '").append(message)
+                    .append("'");
+            log.error(
+                "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
+                fromName, fromLoginName, replyEmail, subject, message,
+                e);
+            facesMessages.addGlobal(sb.toString());
+        } finally {
+            reset();
+        }
+    }
+
+    public boolean isUserAlreadyRequest() {
+        return requestServiceImpl.isRequestExist(authenticatedAccount, locale);
+    }
+
+    public void cancelRequest() {
+        requestServiceImpl.cancelRequest(authenticatedAccount, locale);
+        facesMessages.addGlobal(msgs.format("jsf.language.request.cancelled",
+            authenticatedAccount.getUsername()));
+    }
+
+    public String getMyRoles() {
+        if(authenticatedAccount == null) {
+            return "";
+        }
+        HLocaleMember localeMember = getLocaleMember();
+        if(localeMember == null) {
+            return "";
+        }
+
+        List<String> roles = Lists.newArrayList();
+        if(localeMember.isTranslator()) {
+            roles.add("Translator");
+        }
+
+        if(localeMember.isReviewer()) {
+            roles.add("Reviewer");
+        }
+
+        if(localeMember.isCoordinator()) {
+            roles.add("Coordinator");
+        }
+        return msgs.format("jsf.language.myRoles", Joiner.on(",").join(roles));
+    }
+
 
     public HLocale getLocale() {
         /*

@@ -36,7 +36,7 @@
 
     <h:form styleClass="l--push-bottom-0">
       <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}"
-        render="language-more-actions, members-size, members-form"/>
+        render="language-more-actions, members-size, members-form, member-info"/>
 
       <a4j:jsFunction name="refreshRequestsForm"
         render="language-more-actions, requests-size, requests-form"/>
@@ -67,23 +67,109 @@
               #{msgs['jsf.Variant']}<span class="l--push-left-quarter label">#{languageAction.locale.asULocale().variant}</span>
             </h:panelGroup>
           </div>
-          <h:panelGroup layout="block"  rendered="#{not languageAction.locale.active or not languageAction.locale.enabledByDefault}">
-            <h:panelGroup layout="span" styleClass="label" rendered="#{not languageAction.locale.active}">
-              <!-- TODO h:panelGroup do not support title attribute. But do we really need a title here? -->
-              <span title="#{msgs['jsf.Disabled']}">
-                #{msgs['jsf.Disabled']}
-              </span>
-            </h:panelGroup>
-            <h:panelGroup layout="span" styleClass="label" rendered="#{not languageAction.locale.enabledByDefault}"
-              title="#{msgs['jsf.language.disableByDefault']}">
-              <!-- TODO h:panelGroup do not support title attribute. But do we really need a title here? -->
-              <span title="#{msgs['jsf.language.disableByDefault']}">
-                #{msgs['jsf.language.disableByDefault']}
-              </span>
-            </h:panelGroup>
-          </h:panelGroup>
-
+          <ui:fragment rendered="#{not languageAction.locale.active or not languageAction.locale.enabledByDefault}">
+            <div>
+              <ui:fragment rendered="#{not languageAction.locale.active}">
+                <span class="label">#{msgs['jsf.Disabled']}</span>
+              </ui:fragment>
+              <ui:fragment rendered="#{not languageAction.locale.enabledByDefault}">
+                <span class="label">#{msgs['jsf.language.disableByDefault']}</span>
+              </ui:fragment>
+            </div>
+          </ui:fragment>
         </h:panelGroup>
+
+        <ui:fragment rendered="#{identity.loggedIn}">
+          <h:form class="l--push-botton-half" id="member-info">
+            <ui:fragment rendered="#{not languageAction.isUserInTeam()}">
+              <ui:fragment rendered="#{not identity.hasRole('admin')}">
+                <ui:fragment rendered="#{languageJoinAction.isUserAlreadyRequest()}">
+                  <a4j:commandButton action="#{languageJoinAction.cancelRequest()}"
+                    value="#{msgs['jsf.language.cancelRequest']}" oncomplete="refreshMembersForm()"/>
+                </ui:fragment>
+                <ui:fragment rendered="#{not languageJoinAction.isUserAlreadyRequest()}">
+                  <a4j:commandButton action="#{languageJoinAction.requestAsTranslator()}"
+                    value="#{msgs['jsf.RequestToJoinLanguageTeam']}" oncomplete="refreshMembersForm()"/>
+
+                  <div class="dropdown dropdown--header dropdown--small dropdown--right js-dropdown">
+                    <a class="dropdown__toggle js-dropdown__toggle" href="#" title="More Actions"><i class="i i--ellipsis" ></i></a>
+                    <ul class="dropdown__content js-dropdown__content" role="content" aria-labelledby="dropdownContent">
+                      <li>
+                        <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsTranslator()}"
+                          value="Request as translator" oncomplete="refreshMembersForm()">
+                          <i class="i i--add i__item__icon"></i>
+                        </a4j:commandLink>
+                      </li>
+                      <li>
+                        <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsReviewer()}"
+                          value="Request as reviewer" oncomplete="refreshMembersForm()">
+                          <i class="i i--add i__item__icon"></i>
+                        </a4j:commandLink>
+                      </li>
+                      <li>
+                        <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsCoordinator()}"
+                          value="Request as coordinator" oncomplete="refreshMembersForm()">
+                          <i class="i i--add i__item__icon"></i>
+                        </a4j:commandLink>
+                      </li>
+                    </ul>
+                  </div>
+                </ui:fragment>
+                <div>
+                  <a href="#"
+                    data-toggle="modal"
+                    data-target="#joinLanguageDialog">
+                    #{msgs['jsf.RequestToJoinLanguageTeam']} - to be remove
+                    <i class="i i--plus i__item__icon"></i>
+                  </a>
+                </div>
+              </ui:fragment>
+              <ui:fragment rendered="#{identity.hasRole('admin')}">
+                <a4j:commandLink styleClass="button"
+                  action="#{languageAction.joinLanguageTeam}"
+                  oncomplete="refreshMembersForm()"
+                  value="#{msgs['jsf.JoinLanguageTeam']}">
+                  <i class="i i--plus i__item__icon"></i>
+                  <s:conversationId name="id"
+                    value="#{languageAction.language}"/>
+                </a4j:commandLink>
+              </ui:fragment>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{languageAction.isUserInTeam()}">
+              <p class="txt--meta">#{languageJoinAction.getMyRoles()}</p>
+              <a4j:commandLink id="leaveTeam"
+                styleClass="txt--danger button "
+                action="#{languageAction.leaveLanguageTeam}"
+                oncomplete="refreshMembersForm()"
+                value="#{msgs['jsf.LeaveLanguageTeam']}">
+                <i class="i i--remove i__item__icon"></i>
+                <s:conversationId name="id"
+                  value="#{languageAction.language}"/>
+              </a4j:commandLink>
+
+              <ui:fragment rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
+                <div class="dropdown dropdown--header dropdown--small dropdown--right js-dropdown">
+                  <a class="dropdown__toggle js-dropdown__toggle" href="#" title="More Actions"><i class="i i--ellipsis" ></i></a>
+                  <ul class="dropdown__content js-dropdown__content" role="content" aria-labelledby="dropdownContent">
+                    <li>
+                      <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsTranslator()}"
+                        value="Request as translator" oncomplete="refreshMembersForm()">
+                        <i class="i i--add i__item__icon"></i>
+                      </a4j:commandLink>
+                    </li>
+                    <li>
+                      <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsReviewer()}"
+                        value="Request as reviewer" oncomplete="refreshMembersForm()">
+                        <i class="i i--add i__item__icon"></i>
+                      </a4j:commandLink>
+                    </li>
+                  </ul>
+                </div>
+              </ui:fragment>
+            </ui:fragment>
+          </h:form>
+        </ui:fragment>
       </div>
 
       <div class="g__item w--1-m w--5-8-l w--2-3">
@@ -103,17 +189,17 @@
               </a>
             </li>
 
-            <ui:fragment rendered="#{identity.loggedIn}">
+            <ui:fragment rendered="#{identity.loggedIn && identity.hasPermission(languageAction.locale, 'manage-language-team')}">
               <li>
                 <a id="requests_tab" href="#{languageURL}/requests"
                   class="js-url-mod" data-content="#requests">
                   <i class="i i--comment"></i>
-              <span class="is-hidden--s i__text--right">
-                #{msgs['jsf.language.requests']}
-                <h:panelGroup styleClass="txt--neutral" id="requests-size">
-                  #{languageAction.requests.size}
-                </h:panelGroup>
-              </span>
+                  <span class="is-hidden--s i__text--right">
+                    #{msgs['jsf.language.requests']}
+                    <h:panelGroup styleClass="txt--neutral" id="requests-size">
+                      #{languageAction.requests.size}
+                    </h:panelGroup>
+                  </span>
                 </a>
               </li>
 
@@ -134,55 +220,6 @@
                         <i class="i i--plus i__item__icon"></i>
                       </a>
                     </li>
-
-                    <li>
-                      <a href="#" class="i__item--right"
-                        data-toggle="modal"
-                        data-target="#joinLanguageDialog">
-                        #{msgs['jsf.RequestToJoinLanguageTeam']} test
-                        <i class="i i--plus i__item__icon"></i>
-                      </a>
-                    </li>
-
-                    <ui:fragment rendered="#{not languageAction.isUserInTeam()}">
-                      <ui:fragment rendered="#{not identity.hasRole('admin')}">
-                        <li>
-                          <a href="#" class="i__item--right"
-                            data-toggle="modal"
-                            data-target="#joinLanguageDialog">
-                            #{msgs['jsf.RequestToJoinLanguageTeam']}
-                            <i class="i i--plus i__item__icon"></i>
-                          </a>
-                        </li>
-                      </ui:fragment>
-                      <ui:fragment rendered="#{identity.hasRole('admin')}">
-                        <li>
-                          <a4j:commandLink id="joinTeam"
-                            action="#{languageAction.joinLanguageTeam}"
-                            styleClass="i__item--right"
-                            oncomplete="refreshMembersForm()"
-                            value=" #{msgs['jsf.JoinLanguageTeam']}">
-                            <i class="i i--plus i__item__icon"></i>
-                            <s:conversationId name="id"
-                              value="#{languageAction.language}"/>
-                          </a4j:commandLink>
-                        </li>
-                      </ui:fragment>
-                    </ui:fragment>
-
-                    <ui:fragment rendered="#{languageAction.isUserInTeam()}">
-                      <li>
-                        <a4j:commandLink id="leaveTeam"
-                          styleClass="txt--danger i__item--right"
-                          action="#{languageAction.leaveLanguageTeam}"
-                          oncomplete="refreshMembersForm()"
-                          value="#{msgs['jsf.LeaveLanguageTeam']}">
-                          <i class="i i--remove i__item__icon"></i>
-                          <s:conversationId name="id"
-                            value="#{languageAction.language}"/>
-                        </a4j:commandLink>
-                      </li>
-                    </ui:fragment>
                   </ul>
                 </h:form>
               </li>
@@ -206,7 +243,7 @@
               <ui:include src="/WEB-INF/layout/language/members-tab.xhtml"/>
             </li>
 
-            <ui:fragment rendered="#{identity.loggedIn}">
+            <ui:fragment rendered="#{identity.loggedIn && identity.hasPermission(languageAction.locale, 'manage-language-team')}">
               <li id="requests">
                 <ui:include src="/WEB-INF/layout/language/requests-tab.xhtml"/>
               </li>
