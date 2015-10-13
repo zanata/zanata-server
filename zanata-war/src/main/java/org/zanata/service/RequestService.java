@@ -63,7 +63,7 @@ public interface RequestService {
 
     /**
      * Update join language request
-     * @param requestId
+     * @param requestId - Language request Id
      * @param actor
      * @param state
      * @param comment
@@ -72,11 +72,9 @@ public interface RequestService {
     Request updateLanguageRequest(Long requestId, HAccount actor,
         RequestState state, String comment) throws EntityNotFoundException;
 
-    /**
-     * Get all my outstanding requests on languages
-     */
-    List<LanguageRequest> getMyOutstandingLanguageRequests(
-        LocaleId... localeIds);
+    LanguageRequest getLanguageRequest(Long id);
+
+    LanguageRequest getMyPendingLanguageRequests(LocaleId localeId);
 
     /**
      *

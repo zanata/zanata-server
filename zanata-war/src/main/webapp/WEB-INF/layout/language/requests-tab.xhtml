@@ -18,41 +18,71 @@
     </div>
 
     <h:form id="requests-form" styleClass="l--push-bottom-1">
-      <ul class="list--stats">
-        <ui:repeat value="#{languageAction.requests}" var="langRequest">
-          <li class="l--pad-all-quarter">
-            <div class="list__item__content">
-              <div class="list__item__info">
-                <h3 class="list__title">
-                  #{langRequest.request.requester.person.name}
-                </h3>
-                  <span class="list__item__meta">
-                    #{langRequest.request.requester.username} <span>[#{langRequest.request.requester.person.email}]</span>
-                  </span>
-              </div>
-              <div class="list__item__actions">
-                <input name="#{langRequest.id}"
-                  id="#{langRequest.id}-accept"
-                  type="radio"
-                  class="form__item__input js-example__setter"
-                  data-example=""/>
-                <label for="#{langRequest.id}-accept"
-                  class="button button--success">
-                  Accept
-                </label>
+      <script type="text/javascript">
+        function disableAction(id) {
+          jQuery('#' + id + '.-accept').attr('disabled', true);
+          jQuery('#' + id + '.-decline').attr('disabled', true);
+        }
+      </script>
 
-                <input name="#{validationAction.id.name()}"
-                  id="#{langRequest.id}-decline"
-                  type="radio"
-                  class="form__item__input js-example__setter"
-                  data-example=""/>
-                <label for="#{langRequest.id}-decline"
-                  class="button button--danger">Decline</label>
+      <a4j:jsFunction name="acceptRequest"
+        action="#{languageJoinAction.acceptRequest(langRequestId)}"
+        oncomplete="refreshRequestsSize();disableAction(#{langRequestId})">
+        <a4j:param name="val1" assignTo="#{langRequestId}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="declineRequest"
+        action="#{languageJoinAction.declineRequest(langRequestId)}"
+        oncomplete="refreshRequestsSize();disableAction(#{langRequestId})">
+        <a4j:param name="val1" assignTo="#{langRequestId}"/>
+      </a4j:jsFunction>
+
+      <ui:fragment rendered="#{languageAction.requests.isEmpty()}">
+        <p class="txt--meta">#{msgs['jsf.language.request.empty']}</p>
+      </ui:fragment>
+
+      <ui:fragment rendered="#{not languageAction.requests.isEmpty()}">
+        <ul class="list--stats">
+          <ui:repeat value="#{languageAction.requests}" var="langRequest">
+            <li class="l--pad-all-quarter">
+              <div class="list__item__content">
+                <div class="list__item__info">
+                  <h3 class="list__title">
+                    #{langRequest.request.requester.person.name}
+                  </h3>
+                <span class="list__item__meta">
+                  #{langRequest.request.requester.username} <span>[#{langRequest.request.requester.person.email}]</span>
+                  <span class="bx--block l--push-top-quarter">
+                    #{msgs.format('jsf.language.request.role', languageJoinAction.getRequestedRole(langRequest))}
+                  </span>
+                </span>
+                </div>
+                <div class="list__item__actions button--group">
+                  <input name="#{langRequest.id}"
+                    id="#{langRequest.id}-accept"
+                    type="radio"
+                    onchange="acceptRequest(#{langRequest.id})"
+                    class="form__item__input js-example__setter"
+                    data-example=""/>
+                  <label for="#{langRequest.id}-accept"
+                    class="button button--success">
+                    Accept
+                  </label>
+
+                  <input name="#{langRequest.id}"
+                    id="#{langRequest.id}-decline"
+                    type="radio"
+                    onchange="declineRequest(#{langRequest.id})"
+                    class="form__item__input js-example__setter"
+                    data-example=""/>
+                  <label for="#{langRequest.id}-decline"
+                    class="button button--danger">Decline</label>
+                </div>
               </div>
-            </div>
-          </li>
-        </ui:repeat>
-      </ul>
+            </li>
+          </ui:repeat>
+        </ul>
+      </ui:fragment>
     </h:form>
   </div>
 </ui:composition>

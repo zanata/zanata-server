@@ -34,9 +34,10 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Transactional;
-import org.zanata.events.JoinedLanguageTeam;
 import org.zanata.exception.RequestExistException;
+import org.zanata.model.LanguageRequest;
+import org.zanata.model.type.RequestState;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
@@ -49,6 +50,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.EmailService;
+import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
 import org.zanata.ui.faces.FacesMessages;
@@ -105,6 +107,12 @@ public class LanguageJoinAction implements Serializable {
     @In
     private RequestService requestServiceImpl;
 
+    @In
+    private ZanataIdentity identity;
+
+    @In
+    private LanguageTeamService languageTeamServiceImpl;
+
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
@@ -126,6 +134,46 @@ public class LanguageJoinAction implements Serializable {
         requestAsTranslator = false;
         requestAsReviewer = false;
         requestAsCoordinator = false;
+    }
+
+    public String getMyRequestedRole() {
+        LanguageRequest request =
+                requestServiceImpl.getMyPendingLanguageRequests(
+                        getLocale().getLocaleId());
+        return getRequestedRole(request);
+    }
+
+    public String getRequestedRole(LanguageRequest request) {
+        return Joiner.on(", ")
+            .skipNulls()
+            .join(request.getCoordinator() ? "Coordinator" : null,
+                request.getReviewer() ? "Reviewer" : null,
+                request.getTranslator() ? "Translator" : null);
+    }
+
+    public void acceptRequest(Long languageRequestId) {
+        identity.checkPermission(getLocale(), "manage-language-team");
+        LanguageRequest request =
+                requestServiceImpl.getLanguageRequest(languageRequestId);
+
+        languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
+                language, request.getRequest().getRequester().getId(),
+                request.getTranslator(), request.getReviewer(),
+                request.getCoordinator());
+
+        requestServiceImpl.updateLanguageRequest(languageRequestId,
+                authenticatedAccount,
+                RequestState.ACCEPTED, "");
+
+        facesMessages.addGlobal("Request updated");
+    }
+
+    public void declineRequest(Long languageRequestId) {
+        identity.checkPermission(locale, "manage-language-team");
+        requestServiceImpl.updateLanguageRequest(languageRequestId,
+            authenticatedAccount,
+            RequestState.REJECTED, "reject");
+        facesMessages.addGlobal("Request updated");
     }
 
     @CheckLoggedIn

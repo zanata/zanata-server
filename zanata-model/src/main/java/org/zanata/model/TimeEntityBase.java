@@ -32,6 +32,7 @@ public class TimeEntityBase implements Serializable {
 
     //TODO: need util to generate same id for edited request (immutable data)
     @Column(nullable = false)
+    @GeneratedValue(strategy=GenerationType.TABLE)
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "entity_seq")
 //    @SequenceGenerator(
 //        name="entity_seq",

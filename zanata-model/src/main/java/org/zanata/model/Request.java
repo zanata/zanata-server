@@ -45,6 +45,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
@@ -105,12 +106,14 @@ public class Request extends TimeEntityBase {
     public static class EntityListener {
         @PreUpdate
         private void preUpdate(Request request) {
-            request.setValidTo(getNow()); //request invalid after changes
+            //request invalid after changes
+            request.setValidTo(getNow());
         }
 
         @PrePersist
         private void prePersist(Request request) {
-            request.setValidFrom(getNow()); //request valid from now
+            //request valid from now
+            request.setValidFrom(getNow());
         }
 
         private Date getNow() {

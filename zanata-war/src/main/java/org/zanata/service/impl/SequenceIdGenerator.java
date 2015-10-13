@@ -37,11 +37,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SequenceIdGenerator {
 
     private final AtomicLong atomicLong = new AtomicLong();
-
-    @Create
-    public void onCreate() {
-        //need to lookup at database for largest/last sequence id
-    }
+//
+//    @Create
+//    public void onCreate() {
+//        "SELECT max(entityId) FROM Request";
+//        //need to lookup at database for largest/last sequence id
+//    }
 
     public Long getNextId() {
         return atomicLong.incrementAndGet();

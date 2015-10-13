@@ -25,23 +25,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.faces.event.ValueChangeEvent;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.zanata.exception.RequestExistException;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.LocaleRole;
-import org.zanata.rest.editor.dto.Locale;
 import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -63,7 +58,6 @@ import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
-import org.zanata.service.impl.RequestServiceImpl;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.Event;
 import org.zanata.ui.AbstractListFilter;
@@ -176,10 +170,8 @@ public class LanguageAction implements Serializable {
             identity.hasPermission(locale, "manage-language-team")) {
             return requestServiceImpl.getOutstandingLanguageRequests(
                 locale.getLocaleId());
-        } else {
-            return requestServiceImpl.getMyOutstandingLanguageRequests(
-                locale.getLocaleId());
         }
+        return Lists.newArrayList();
     }
 
     public List<SelectablePerson> getSearchResults() {

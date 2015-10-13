@@ -73,7 +73,8 @@ public class RequestServiceImpl implements RequestService {
         //of the same requester, account and locale
 
         LanguageRequest languageRequest =
-            languageRequestDAO.findPendingRequestInLocale(requester, locale);
+            languageRequestDAO.findRequesterOutstandingRequests(requester,
+                locale.getLocaleId());
 
         if (languageRequest != null) {
             throw new RequestExistException(
@@ -81,7 +82,7 @@ public class RequestServiceImpl implements RequestService {
                     ", " + locale.getDisplayName());
         }
         Request request = new Request(RequestType.LOCALE, requester);
-        request.setEntityId(sequenceIdGenerator.getNextId());
+//        request.setEntityId(sequenceIdGenerator.getNextId());
 
         languageRequest =
             new LanguageRequest(request, locale, isRequestAsCoordinator,
@@ -94,14 +95,16 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public boolean isRequestExist(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
-            languageRequestDAO.findPendingRequestInLocale(requester, locale);
+                languageRequestDAO.findRequesterOutstandingRequests(requester,
+                        locale.getLocaleId());
         return languageRequest != null;
     }
 
     @Override
     public void cancelRequest(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
-            languageRequestDAO.findPendingRequestInLocale(requester, locale);
+            languageRequestDAO.findRequesterOutstandingRequests(requester,
+                locale.getLocaleId());
         String comment =
             "Request cancelled by requester {" + requester.getUsername() + "}";
         if(languageRequest != null) {
@@ -113,9 +116,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Request updateLanguageRequest(Long requestId, HAccount actor,
         RequestState state, String comment) throws EntityNotFoundException {
-        LanguageRequest languageRequest =
-            languageRequestDAO.getByRequestId(requestId);
-        if (languageRequest != null) {
+        LanguageRequest languageRequest = languageRequestDAO.findById(requestId);
+        if (languageRequest != null
+                && languageRequest.getRequest().getValidTo() == null) {
             Request request = languageRequest.getRequest();
             boolean persistLanguageRequest = false;
             if (isRequestProcessed(request)) {
@@ -125,7 +128,7 @@ public class RequestServiceImpl implements RequestService {
             }
             request.update(actor, state, comment);
             requestDAO.makePersistent(request);
-            if(persistLanguageRequest) {
+            if (persistLanguageRequest) {
                 languageRequestDAO.makePersistent(languageRequest);
             }
             return request;
@@ -134,10 +137,14 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<LanguageRequest> getMyOutstandingLanguageRequests(
-        LocaleId... localeIds) {
+    public LanguageRequest getLanguageRequest(Long id) {
+        return languageRequestDAO.findById(id);
+    }
+
+    @Override
+    public LanguageRequest getMyPendingLanguageRequests(LocaleId localeId) {
         return languageRequestDAO.findRequesterOutstandingRequests(
-            authenticatedAccount, Lists.newArrayList(localeIds));
+            authenticatedAccount, localeId);
     }
 
     @Override

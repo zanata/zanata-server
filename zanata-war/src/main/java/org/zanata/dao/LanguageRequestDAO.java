@@ -29,40 +29,16 @@ public class LanguageRequestDAO extends AbstractDAOImpl<LanguageRequest, Long> {
         super(LanguageRequest.class);
     }
 
-    public LanguageRequest getByRequestId(Long requestId) {
-        String query = "from LanguageRequest req where req.request.id = :requestId";
-        Query q = getSession().createQuery(query)
-            .setParameter("requestId", requestId)
-            .setCacheable(true).setComment(
-                "requestDAO.getByRequestId");
-        return (LanguageRequest)q.uniqueResult();
-    }
-
-    public LanguageRequest findPendingRequestInLocale(HAccount requester,
-        HLocale locale) {
+    public LanguageRequest findRequesterOutstandingRequests(HAccount requester,
+        LocaleId localeId) {
         String query =
-            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId and req.request.state is null";
+            "from LanguageRequest req where req.locale.localeId = :localeId and req.request.requester.id = :requesterId and req.request.validTo is null";
         Query q = getSession().createQuery(query)
             .setParameter("requesterId", requester.getId())
-            .setParameter("localeId", locale.getId())
+            .setParameter("localeId", localeId)
             .setCacheable(true).setComment(
                 "requestDAO.findRequestInLocale");
         return (LanguageRequest) q.uniqueResult();
-    }
-
-    public List<LanguageRequest> findRequesterOutstandingRequests(
-        @Nullable HAccount requester, List<LocaleId> localeIds) {
-        if(requester == null) {
-            return Lists.newArrayList();
-        }
-        String query =
-            "from LanguageRequest req where req.request.requester.id = :requesterId and req.request.validTo is null and req.locale.localeId in (:localeIds)";
-        Query q = getSession().createQuery(query)
-            .setParameter("requesterId", requester.getId())
-            .setParameterList("localeIds", localeIds)
-            .setCacheable(true).setComment(
-                "requestDAO.findRequesterOutstandingRequests");
-        return q.list();
     }
 
     public List<LanguageRequest> findOutstandingRequests(
