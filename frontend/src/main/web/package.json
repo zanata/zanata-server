@@ -7,6 +7,7 @@
     "test": "jest",
     "js": "webpack",
     "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js --bail --display-error-details",
+    "build-debug": "NODE_ENV=development webpack --config webpack.prod.config.debug.js --bail --display-error-details",
     "start": "node server.js"
   },
   "license": "LGPL",
@@ -39,7 +40,7 @@
     "react-chartjs": "^0.4.0",
     "react-router": "^0.13.3",
     "superagent": "^0.21.0",
-    "zanata-ui": "^1.0.3"
+    "zanata-ui": "^1.0.5"
   },
   "jest": {
     "unmockedModulePathPatterns": [
