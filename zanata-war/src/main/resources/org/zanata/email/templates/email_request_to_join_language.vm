@@ -29,16 +29,6 @@
   #end
 </p>
 
-#if ($htmlMessage)
-  <p>$msgs.format("jsf.email.UserMessageIntro", $fromName)</p>
-  <hr/>
-  $htmlMessage
-  <hr/>
-#end
-
-<p>$msgs.format("jsf.email.joinrequest.AddUserInstructions",
-    $fromName, $localeId, $msgs.get("jsf.AddTeamMember"))</p>
-
 <p>$msgs.format("jsf.email.coordinator.ResponseInstructions",
     $localeId, $fromName, $replyEmail)</p>
 

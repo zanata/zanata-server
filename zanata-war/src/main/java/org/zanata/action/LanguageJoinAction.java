@@ -47,14 +47,11 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
-import org.zanata.security.annotations.CheckRole;
 import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
 import org.zanata.ui.faces.FacesMessages;
-
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -129,14 +126,13 @@ public class LanguageJoinAction implements Serializable {
         requestAsTranslator = false;
         requestAsReviewer = false;
         requestAsCoordinator = false;
-        message = "";
     }
 
     @CheckLoggedIn
     public void createRequest() {
         try {
             requestServiceImpl
-                    .createLanguageRequest(authenticatedAccount, locale,
+                    .createLanguageRequest(authenticatedAccount, getLocale(),
                         isRequestAsTranslator(),
                         isRequestAsReviewer(),
                         isRequestAsCoordinator());
@@ -144,7 +140,7 @@ public class LanguageJoinAction implements Serializable {
                 isRequestAsTranslator());
         } catch (RequestExistException e) {
             log.warn("Request already exist for {0} in language {1}.",
-                    authenticatedAccount.getUsername(), locale.getDisplayName());
+                    authenticatedAccount.getUsername(), getLocale().getDisplayName());
         }
     }
 
@@ -152,7 +148,7 @@ public class LanguageJoinAction implements Serializable {
     public void requestAsTranslator() {
         try {
             requestServiceImpl
-                .createLanguageRequest(authenticatedAccount, locale, true,
+                .createLanguageRequest(authenticatedAccount, getLocale(), true,
                     false, false);
             sendEmail(false, false, true);
         } catch (RequestExistException e) {
@@ -165,12 +161,12 @@ public class LanguageJoinAction implements Serializable {
     public void requestAsReviewer() {
         try {
             requestServiceImpl
-                .createLanguageRequest(authenticatedAccount, locale, false,
+                .createLanguageRequest(authenticatedAccount, getLocale(), false,
                     true, false);
             sendEmail(false, true, false);
         } catch (RequestExistException e) {
             log.warn("Request already exist for {0} in language {1}.",
-                authenticatedAccount.getUsername(), locale.getDisplayName());
+                authenticatedAccount.getUsername(), getLocale().getDisplayName());
         }
     }
 
@@ -178,12 +174,12 @@ public class LanguageJoinAction implements Serializable {
     public void requestAsCoordinator() {
         try {
             requestServiceImpl
-                .createLanguageRequest(authenticatedAccount, locale, false,
+                .createLanguageRequest(authenticatedAccount, getLocale(), false,
                     false, true);
             sendEmail(false, false, true);
         } catch (RequestExistException e) {
             log.warn("Request already exist for {0} in language {1}.",
-                authenticatedAccount.getUsername(), locale.getDisplayName());
+                authenticatedAccount.getUsername(), getLocale().getDisplayName());
         }
     }
 
@@ -197,8 +193,8 @@ public class LanguageJoinAction implements Serializable {
         EmailStrategy strategy =
             new RequestToJoinLanguageEmailStrategy(
                 fromLoginName, fromName, replyEmail,
-                locale.getLocaleId().getId(),
-                locale.retrieveNativeName(), message,
+                getLocale().getLocaleId().getId(),
+                getLocale().retrieveNativeName(),
                 isRequestAsTranslator,
                 isRequestAsReviewer,
                 isRequestAsCoordinator);
@@ -212,12 +208,10 @@ public class LanguageJoinAction implements Serializable {
                 new StringBuilder()
                     .append("Failed to send email with subject '")
                     .append(strategy.getSubject(msgs))
-                    .append("' , message '").append(message)
                     .append("'");
             log.error(
-                "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
-                fromName, fromLoginName, replyEmail, subject, message,
-                e);
+                "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}'. {}",
+                fromName, fromLoginName, replyEmail, subject, e);
             facesMessages.addGlobal(sb.toString());
         } finally {
             reset();
@@ -225,7 +219,7 @@ public class LanguageJoinAction implements Serializable {
     }
 
     public boolean isUserAlreadyRequest() {
-        return requestServiceImpl.isRequestExist(authenticatedAccount, locale);
+        return requestServiceImpl.isRequestExist(authenticatedAccount, getLocale());
     }
 
     public void cancelRequest() {

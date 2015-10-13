@@ -11,6 +11,7 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.LocaleRole;
+import org.zanata.model.type.RequestState;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,10 +38,10 @@ public class LanguageRequestDAO extends AbstractDAOImpl<LanguageRequest, Long> {
         return (LanguageRequest)q.uniqueResult();
     }
 
-    public LanguageRequest findRequestInLocale(HAccount requester,
+    public LanguageRequest findPendingRequestInLocale(HAccount requester,
         HLocale locale) {
         String query =
-            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId";
+            "from LanguageRequest req where req.locale.id = :localeId and req.request.requester.id = :requesterId and req.request.state is null";
         Query q = getSession().createQuery(query)
             .setParameter("requesterId", requester.getId())
             .setParameter("localeId", locale.getId())

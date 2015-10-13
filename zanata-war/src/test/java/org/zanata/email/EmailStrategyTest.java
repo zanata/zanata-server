@@ -276,7 +276,7 @@ public class EmailStrategyTest {
         EmailStrategy strategy =
                 new RequestToJoinLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
-                        localeId, localeNativeName, htmlMessage,
+                        localeId, localeNativeName,
                         true, true, true);
 
         builder.buildMessage(message, strategy, toAddresses,

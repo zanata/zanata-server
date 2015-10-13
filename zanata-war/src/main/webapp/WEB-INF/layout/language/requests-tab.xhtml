@@ -31,7 +31,23 @@
                   </span>
               </div>
               <div class="list__item__actions">
-                <button>Action here</button>
+                <input name="#{langRequest.id}"
+                  id="#{langRequest.id}-accept"
+                  type="radio"
+                  class="form__item__input js-example__setter"
+                  data-example=""/>
+                <label for="#{langRequest.id}-accept"
+                  class="button button--success">
+                  Accept
+                </label>
+
+                <input name="#{validationAction.id.name()}"
+                  id="#{langRequest.id}-decline"
+                  type="radio"
+                  class="form__item__input js-example__setter"
+                  data-example=""/>
+                <label for="#{langRequest.id}-decline"
+                  class="button button--danger">Decline</label>
               </div>
             </div>
           </li>

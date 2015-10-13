@@ -73,7 +73,7 @@ public class RequestServiceImpl implements RequestService {
         //of the same requester, account and locale
 
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequestInLocale(requester, locale);
+            languageRequestDAO.findPendingRequestInLocale(requester, locale);
 
         if (languageRequest != null) {
             throw new RequestExistException(
@@ -94,14 +94,14 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public boolean isRequestExist(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequestInLocale(requester, locale);
+            languageRequestDAO.findPendingRequestInLocale(requester, locale);
         return languageRequest != null;
     }
 
     @Override
     public void cancelRequest(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequestInLocale(requester, locale);
+            languageRequestDAO.findPendingRequestInLocale(requester, locale);
         String comment =
             "Request cancelled by requester {" + requester.getUsername() + "}";
         if(languageRequest != null) {
