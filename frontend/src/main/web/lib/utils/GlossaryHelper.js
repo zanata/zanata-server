@@ -8,23 +8,22 @@ var GlossaryHelper = {
    *
    * @param data
    */
-  generateGlossaryTermDTO: function (data) {
+  generateGlossaryTermDTO: function (data, trimContent) {
     if(_.isUndefined(data)) {
       return null;
     }
-    var content = StringUtils.trim(data.content),
+    var content = trimContent ? StringUtils.trim(data.content) : data.content,
       locale = data.locale,
       comments = StringUtils.trim(data.comment);
 
-    if(StringUtils.isEmptyOrNull(content) &&
-        StringUtils.isEmptyOrNull(locale)) {
+    if(StringUtils.isEmptyOrNull(content) && StringUtils.isEmptyOrNull(locale)) {
       return null;
     } else {
-      var term = {};
-      term['content'] = content;
-      term['locale'] = locale;
-      term['comments'] = comments;
-      return term;
+      return  {
+        content: content,
+        locale: locale,
+        comments: comments
+      };
     }
   },
 
@@ -43,13 +42,13 @@ var GlossaryHelper = {
     entry['sourceReference'] = data.srcTerm.reference;
     entry['glossaryTerms'] = [];
 
-    var srcTerm = this.generateGlossaryTermDTO(data.srcTerm);
-    if(!_.isNull(srcTerm) || !_.isUndefined(srcTerm)) {
+    var srcTerm = this.generateGlossaryTermDTO(data.srcTerm, false);
+    if(!_.isNull(srcTerm) && !_.isUndefined(srcTerm)) {
       entry['glossaryTerms'].push(srcTerm);
     }
 
-    var transTerm = this.generateGlossaryTermDTO(data.transTerm);
-    if(!_.isNull(transTerm) || !_.isUndefined(v)) {
+    var transTerm = this.generateGlossaryTermDTO(data.transTerm, true);
+    if(!_.isNull(transTerm) && !_.isUndefined(transTerm)) {
       entry['glossaryTerms'].push(transTerm);
     }
 

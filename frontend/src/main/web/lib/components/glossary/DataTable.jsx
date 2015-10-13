@@ -7,7 +7,6 @@ import LoadingCell from './LoadingCell'
 import ActionCell from './ActionCell'
 import SourceActionCell from './SourceActionCell'
 import ColumnHeader from './ColumnHeader'
-import {Loader} from 'zanata-ui';
 import _ from 'lodash';
 
 var DataTable = React.createClass({
@@ -178,7 +177,7 @@ var DataTable = React.createClass({
   _renderDescHeader: function (label) {
     var key = this.ENTRY.DESC.sort_field,
       asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, true);
+    return this._renderHeader(label, key, asc, false);
   },
 
   _renderTransCountHeader: function (label) {

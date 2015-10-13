@@ -68,7 +68,6 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
         log.debug("testGetTermByLocaleId");
         List<GlossarySortField> sortFields = Lists
             .newArrayList(
-                GlossarySortField.getByField(GlossarySortField.DESCRIPTION),
                 GlossarySortField.getByField(GlossarySortField.SRC_CONTENT),
                 GlossarySortField.getByField(GlossarySortField.PART_OF_SPEECH),
                 GlossarySortField.getByField(GlossarySortField.TRANS_COUNT));
@@ -80,12 +79,12 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     @Test
     public void testGetTermByLocaleId3() {
         log.debug("testGetTermByLocaleId");
-        GlossarySortField DESC =
+        GlossarySortField POS =
                 GlossarySortField.getByField("-"
-                        + GlossarySortField.DESCRIPTION);
+                        + GlossarySortField.PART_OF_SPEECH);
 
         List<GlossarySortField> sortFields = Lists
-            .newArrayList(DESC);
+            .newArrayList(POS);
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
             LocaleId.EN_US, 0, 1, "", sortFields);
         assertThat(entryList.size(), is(1));

@@ -177,8 +177,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
         TreeSet<String> warningMessage = Sets.newTreeSet();
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {
-            if(glossaryTerm.getLocale() == null || StringUtils.isBlank(
-                glossaryTerm.getContent())) {
+            if (glossaryTerm == null || glossaryTerm.getLocale() == null
+                    || StringUtils.isBlank(glossaryTerm.getContent())) {
                 continue;
             }
             HLocale termHLocale = localeServiceImpl.getByLocaleId(glossaryTerm

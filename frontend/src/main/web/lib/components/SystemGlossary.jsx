@@ -36,6 +36,7 @@ var SystemGlossary = React.createClass({
   },
 
   _onTranslationLocaleChange: function(localeId) {
+    this.setState({loadingEntries: true});
     Actions.changeTransLocale(localeId)
   },
 
@@ -47,6 +48,14 @@ var SystemGlossary = React.createClass({
 
   _handleFilterChange: function(event) {
     this.setState({filter: event.target.value});
+    if(this.state.filterTimeout !== null) {
+      clearTimeout(this.state.filterTimeout);
+    }
+    if(!StringUtils.isEmptyOrNull(event.target.value)) {
+      this.state.filterTimeout = setTimeout(() => {
+        Actions.updateFilter(this.state.filter);
+      }, 500);
+    }
   },
 
   render: function() {
@@ -79,6 +88,11 @@ var SystemGlossary = React.createClass({
       uploadSection = (<ImportModal srcLocale={this.state.srcLocale} transLocales={this.state.locales}/>);
       newEntrySection = (<NewEntryModal className='ml1/2' srcLocale={this.state.srcLocale}/>);
     }
+    var loader = null;
+
+    if(this.state.loadingEntries) {
+      loader = (<Loader size={3}/>);
+    }
 
     return (
       <div>
@@ -94,6 +108,7 @@ var SystemGlossary = React.createClass({
               value={this.state.selectedTransLocale}
               options={this.state.localeOptions}
               onChange={this._onTranslationLocaleChange}/>
+            {loader}
           </div>
           <div className='dfx aic'>
             {uploadSection}

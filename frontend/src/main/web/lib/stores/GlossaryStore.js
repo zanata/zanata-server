@@ -47,7 +47,8 @@ var _state = {
     isSaving: false,
     show: false,
     isAllowSave: false
-  }
+  },
+  loadingEntries: true
 };
 
 function processLocalesStatistic(serverResponse) {
@@ -71,6 +72,7 @@ function processLocalesStatistic(serverResponse) {
 }
 
 function loadGlossaryByLocale() {
+  _state.loadingEntries = true;
   return GlossaryAPIStore.loadGlossaryByLocale(_state.srcLocale,
     _state.selectedTransLocale, _state.filter, _state.sort, _state.page,
     PAGE_SIZE);
@@ -131,6 +133,7 @@ function processGlossaryList(serverResponse) {
     startIndex+=1;
   });
   _state.original_glossary = _.cloneDeep(_state.glossary);
+  _state.loadingEntries = false;
   return _state;
 }
 
