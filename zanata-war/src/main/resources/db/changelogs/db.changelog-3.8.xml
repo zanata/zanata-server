@@ -100,13 +100,13 @@
       <column name="id" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="entityId" type="bigint">
+      <column name="entityId" type="char(36)">
         <constraints nullable="false" />
       </column>
-      <column name="validFrom" type="DATETIME">
+      <column name="validFrom" type="datetime">
         <constraints nullable="false" />
       </column>
-      <column name="validTo" type="DATETIME">
+      <column name="validTo" type="datetime">
         <constraints nullable="true" />
       </column>
       <column name="state" type="char(1)">
@@ -141,18 +141,18 @@
       referencedColumnNames = "id"/>
 
     <createIndex tableName="Request" indexName="Idx_entityId_validTo" unique="true">
-      <column name="entityId" type="bigint"/>
-      <column name="validTo" type="DATETIME"/>
+      <column name="entityId" type="char(36)"/>
+      <column name="validTo" type="datetime"/>
     </createIndex>
 
     <createIndex tableName="Request" indexName="Idx_entityId_validFrom">
-      <column name="entityId" type="bigint"/>
-      <column name="validFrom" type="DATETIME"/>
+      <column name="entityId" type="char(36)"/>
+      <column name="validFrom" type="datetime"/>
     </createIndex>
 
     <createIndex tableName="Request" indexName="Idx_requesterId_validTo">
-      <column name="requesterId" type="bigint"/>
-      <column name="validTo" type="DATETIME"/>
+      <column name="requesterId" />
+      <column name="validTo" type="datetime"/>
     </createIndex>
   </changeSet>
 

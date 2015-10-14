@@ -28,9 +28,6 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
-import org.zanata.common.LocaleId;
-import org.zanata.model.type.EntityStatusType;
-import org.zanata.model.type.LocaleIdType;
 import org.zanata.model.type.RequestState;
 import org.zanata.model.type.RequestStateType;
 import org.zanata.model.type.RequestType;
@@ -41,13 +38,9 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -92,41 +85,37 @@ public class Request extends TimeEntityBase {
     @JoinColumn(name = "actorId", nullable = true)
     private HAccount actor;
 
-    public Request(RequestType requestType, HAccount requester) {
+    public Request(RequestType requestType, HAccount requester,
+        String entityId) {
         this.requestType = requestType;
         this.requester = requester;
+        this.entityId = entityId;
     }
 
-    public void update(HAccount actor, RequestState state, String comment) {
-        this.actor = actor;
-        this.state = state;
-        this.comment = comment;
+    /**
+     * Return new request with updated state.
+     * Expire this request (set validTo)
+     *
+     * @param actor
+     * @param state
+     * @param comment
+     */
+    public Request update(HAccount actor, RequestState state, String comment) {
+        Request newRequest =
+            new Request(this.requestType, this.requester, this.entityId);
+        newRequest.state = state;
+        newRequest.comment = comment;
+        newRequest.actor = actor;
+
+        this.validTo = new Date();
+
+        return newRequest;
     }
 
     public static class EntityListener {
-        @PreUpdate
-        private void preUpdate(Request request) {
-            //request invalid after changes
-            request.setValidTo(getNow());
-        }
-
         @PrePersist
         private void prePersist(Request request) {
-            //request valid from now
-            request.setValidFrom(getNow());
+            request.validFrom = new Date();
         }
-
-        private Date getNow() {
-            return new Date();
-        }
-    }
-
-    public final Request clone() {
-        Request newRequest = new Request(this.requestType, this.requester);
-        newRequest.state = this.state;
-        newRequest.comment = this.comment;
-        newRequest.actor = this.actor;
-        newRequest.entityId = this.entityId;
-        return newRequest;
     }
 }

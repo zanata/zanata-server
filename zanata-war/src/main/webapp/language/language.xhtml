@@ -98,7 +98,11 @@
             </ui:fragment>
 
             <ui:fragment rendered="#{languageAction.isUserInTeam()}">
-              <p class="txt--meta">#{languageJoinAction.getMyRoles()}</p>
+              <p class="txt--meta">
+                <h:outputText escape="false"
+                  value="#{languageJoinAction.getMyRoles()}">
+                </h:outputText>
+              </p>
               <a4j:commandLink id="leaveTeam"
                 styleClass="txt--danger button "
                 action="#{languageAction.leaveLanguageTeam}"
@@ -111,7 +115,11 @@
             </ui:fragment>
 
             <ui:fragment rendered="#{languageJoinAction.isUserAlreadyRequest()}">
-              <p class="txt--meta">#{msgs.format('jsf.language.requestedRole', languageJoinAction.getMyRequestedRole())}</p>
+              <p class="txt--meta">
+                <h:outputText escape="false"
+                  value="#{msgs.format('jsf.language.requestedRole', languageJoinAction.getMyRequestedRole())}">
+                </h:outputText>
+              </p>
               <a4j:commandButton action="#{languageJoinAction.cancelRequest()}"
                 value="#{msgs['jsf.language.cancelMyRequest']}" oncomplete="refreshMembersForm()"/>
             </ui:fragment>
@@ -238,11 +246,5 @@
         </div>
       </div>
     </div>
-    <ui:fragment rendered="#{identity.loggedIn}">
-      <ui:include src="/WEB-INF/layout/language/contact_coordinator_modal.xhtml"/>
-      <ui:fragment rendered="#{not languageAction.isUserInTeam()}">
-        <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
-      </ui:fragment>
-    </ui:fragment>
   </ui:define>
 </ui:composition>

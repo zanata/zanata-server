@@ -48,9 +48,9 @@ public interface RequestService {
      * @throws RequestExistException
      */
     LanguageRequest createLanguageRequest(HAccount requester,
-            HLocale locale, boolean isRequestAsTranslator,
+            HLocale locale, boolean isRequestAsCoordinator,
             boolean isRequestAsReviewer,
-            boolean isRequestAsCoordinator) throws RequestExistException;
+            boolean isRequestAsTranslator) throws RequestExistException;
 
     /**
      * Check if request already exist in the locale by this user
@@ -58,8 +58,6 @@ public interface RequestService {
      * @param locale
      */
     boolean isRequestExist(HAccount requester, HLocale locale);
-
-    void cancelRequest(HAccount requester, HLocale locale);
 
     /**
      * Update join language request
@@ -69,12 +67,22 @@ public interface RequestService {
      * @param comment
      * @throws EntityNotFoundException
      */
-    Request updateLanguageRequest(Long requestId, HAccount actor,
+    void updateLanguageRequest(Long requestId, HAccount actor,
         RequestState state, String comment) throws EntityNotFoundException;
 
+    /**
+     * Get language request by id
+     * @param id
+     */
     LanguageRequest getLanguageRequest(Long id);
 
-    LanguageRequest getMyPendingLanguageRequests(LocaleId localeId);
+    /**
+     * Get pending language request for user
+     * 
+     * @param localeId
+     */
+    LanguageRequest getPendingLanguageRequests(HAccount account,
+        LocaleId localeId);
 
     /**
      *
