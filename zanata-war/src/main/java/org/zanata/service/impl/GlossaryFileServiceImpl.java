@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
-import org.zanata.util.HashUtil;
+import org.zanata.util.GlossaryUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -140,31 +139,24 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         LocaleId srcLocale = from.getSrcLang();
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
 
-        String resId = from.getResId();
+        String contentHash = from.getContentHash();
 
-        if(StringUtils.isBlank(resId)) {
-            resId = getResId(srcLocale, srcTerm.getContent(), from.getPos(),
-                        from.getDescription());
+        if (StringUtils.isBlank(contentHash)) {
+            contentHash =
+                    GlossaryUtil.generateHash(srcLocale, srcTerm.getContent(),
+                            from.getPos(),
+                            from.getDescription());
         }
 
-        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByResId(resId);
+        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByContentHash(
+            contentHash);
 
         if (hGlossaryEntry == null) {
             hGlossaryEntry = new HGlossaryEntry();
             HLocale srcHLocale = localeServiceImpl.getByLocaleId(srcLocale);
             hGlossaryEntry.setSrcLocale(srcHLocale);
-            hGlossaryEntry.setResId(resId);
             hGlossaryEntry.setSourceRef(from.getSourceReference());
-        } else {
-            // check if field in glossary entry has been updated and need for
-            // new resId
-            String newResId =
-                    getResId(srcLocale, srcTerm.getContent(), from.getPos(),
-                            from.getDescription());
-            if(resId != newResId) {
-                hGlossaryEntry.setResId(newResId);
-            }
-        }
+        } 
         return hGlossaryEntry;
     }
 
@@ -228,15 +220,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
         }
         return null;
-    }
-
-    private final static String SEPARATOR = "\u0000";
-
-    public static String getResId(LocaleId locale, String content, String pos,
-            String description) {
-        String hashBase = locale + SEPARATOR + content + SEPARATOR + pos +
-                SEPARATOR + description;
-        return HashUtil.generateHash(hashBase);
     }
 
 }

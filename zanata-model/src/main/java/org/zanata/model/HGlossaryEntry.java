@@ -25,10 +25,13 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 
 import lombok.EqualsAndHashCode;
@@ -42,7 +45,9 @@ import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.zanata.common.LocaleId;
 import org.zanata.hibernate.search.LocaleIdBridge;
+import org.zanata.util.GlossaryUtil;
 
 /**
  *
@@ -50,6 +55,7 @@ import org.zanata.hibernate.search.LocaleIdBridge;
  *
  **/
 @Entity
+@EntityListeners({ HGlossaryEntry.EntityListener.class })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Indexed
 @Setter
@@ -62,7 +68,7 @@ public class HGlossaryEntry extends ModelEntityBase {
     private Map<HLocale, HGlossaryTerm> glossaryTerms;
     private String sourceRef;
 
-    private String resId;
+    private String contentHash;
     private String pos;
     private String description;
 
@@ -92,8 +98,8 @@ public class HGlossaryEntry extends ModelEntityBase {
     }
 
     @NotNull
-    public String getResId() {
-        return resId;
+    public String getContentHash() {
+        return contentHash;
     }
 
     public String getPos() {
@@ -102,5 +108,30 @@ public class HGlossaryEntry extends ModelEntityBase {
 
     public String getDescription() {
         return description;
+    }
+
+    public static class EntityListener {
+
+        @PreUpdate
+        private void preUpdate(HGlossaryEntry entry) {
+            entry.setContentHash(getHash(entry));
+        }
+
+        @PrePersist
+        private void prePersist(HGlossaryEntry entry) {
+            entry.setContentHash(getHash(entry));
+        }
+
+        private String getHash(HGlossaryEntry entry) {
+            HLocale srcLocale = entry.srcLocale;
+            String sourceContent = "";
+            if (entry.getGlossaryTerms().containsKey(srcLocale)) {
+                sourceContent =
+                        entry.getGlossaryTerms().get(srcLocale).getContent();
+            }
+            return GlossaryUtil.generateHash(srcLocale.getLocaleId(),
+                    sourceContent,
+                    entry.getPos(), entry.getDescription());
+        }
     }
 }

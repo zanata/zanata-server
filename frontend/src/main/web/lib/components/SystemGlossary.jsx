@@ -67,7 +67,7 @@ var SystemGlossary = React.createClass({
 
     var contents = (<DataTable
       glossaryData={this.state.glossary}
-      glossaryResId={this.state.glossaryResId}
+      glossaryHash={this.state.glossaryHash}
       focusedRow={this.state.focusedRow}
       hoveredRow={this.state.hoveredRow}
       totalCount={this.state.totalCount}

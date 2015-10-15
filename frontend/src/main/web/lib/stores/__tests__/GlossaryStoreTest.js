@@ -36,7 +36,7 @@ describe('GlossaryStoreTest', function() {
       "transLocale" : [zhHans, zhHant]
     };
     var entry1 = {
-        "resId": 'd1f667e3c439e2994719d13b40f870c4', "pos": "noun", "description": "desc",
+        "contentHash": 'd1f667e3c439e2994719d13b40f870c4', "pos": "noun", "description": "desc",
         "srcLang": "en-US", "sourceReference": "bgroh@172.16.5.77",
         "glossaryTerms": [
           {"content": "process", "locale": "en-US", "lastModifiedDate": 1439435990000, "lastModifiedBy": ""}
@@ -44,7 +44,7 @@ describe('GlossaryStoreTest', function() {
         "termsCount": 2
       },
       entry2 = {
-        "resId": '153e8cab667f1d318894546d2ada9696', "pos": "noun", "description": "desc",
+        "contentHash": '153e8cab667f1d318894546d2ada9696', "pos": "noun", "description": "desc",
         "srcLang": "en-US", "sourceReference": "hpeters@10.64.1.231",
         "glossaryTerms": [
           {"content": "implementation", "locale": "en-US", "lastModifiedDate": 1439435990000, "lastModifiedBy": ""}
@@ -74,15 +74,15 @@ describe('GlossaryStoreTest', function() {
       expect(_.size(state.localeOptions)).toEqual(_.size(respLocaleStats.transLocale));
       expect(_.size(state.glossary)).toEqual(_.size(respGlossaryEntries.glossaryEntries));
 
-      var resultEntry1 = state.glossary[entry1.resId];
-      expect(resultEntry1.resId).toEqual(entry1.resId);
+      var resultEntry1 = state.glossary[entry1.contentHash];
+      expect(resultEntry1.contentHash).toEqual(entry1.contentHash);
       expect(resultEntry1.pos).toEqual(entry1.pos);
       expect(resultEntry1.description).toEqual(entry1.description);
       expect(resultEntry1.srcTerm.locale).toEqual(entry1.srcLang);
       expect(resultEntry1.srcTerm.reference).toEqual(entry1.sourceReference);
 
-      var resultEntry2 = state.glossary[entry2.resId];
-      expect(resultEntry2.resId).toEqual(entry2.resId);
+      var resultEntry2 = state.glossary[entry2.contentHash];
+      expect(resultEntry2.contentHash).toEqual(entry2.contentHash);
       expect(resultEntry2.pos).toEqual(entry2.pos);
       expect(resultEntry2.description).toEqual(entry2.description);
       expect(resultEntry2.srcTerm.locale).toEqual(entry2.srcLang);
@@ -91,7 +91,7 @@ describe('GlossaryStoreTest', function() {
       expect(state.original_glossary).toEqual(state.glossary);
 
       expect(state.totalCount).toEqual(respGlossaryEntries.totalCount);
-      expect(_.size(state.glossaryResId)).toEqual(respGlossaryEntries.totalCount);
+      expect(_.size(state.glossaryHash)).toEqual(respGlossaryEntries.totalCount);
     });
 
     GlossaryStore.init();

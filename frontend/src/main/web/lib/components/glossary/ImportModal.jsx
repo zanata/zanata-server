@@ -101,14 +101,18 @@ var ImportModal = React.createClass({
           });
         });
 
-        transLanguageDropdown = (<Select
-          name='glossary-import-language-selection'
-          className='w16 mb1'
-          placeholder='Select a translation language…'
-          value={this.state.transLocale}
-          options={localeOptions}
-          onChange={this._onTransLocaleChange}
+        if(isUploading) {
+          transLanguageDropdown = (<span className='csec fz2'>{this.state.transLocale.label}</span>);
+        } else {
+          transLanguageDropdown = (<Select
+            name='glossary-import-language-selection'
+            className='w16 mb1'
+            placeholder='Select a translation language…'
+            value={this.state.transLocale}
+            options={localeOptions}
+            onChange={this._onTransLocaleChange}
           />);
+        }
 
         if(!StringUtils.isEmptyOrNull(this.state.transLocale)) {
           disableUpload = false;
@@ -129,7 +133,7 @@ var ImportModal = React.createClass({
           </Modal.Header>
           <Modal.Body className='tal' scrollable={false}>
             <form onSubmit={this._onSubmit} encType="multipart/form-data" className="mb1">
-              <input type="file" onChange={this._onFileChange} ref="file" multiple={false} />
+              <input type="file" onChange={this._onFileChange} ref="file" multiple={false} disabled={isUploading} />
             </form>
             {transLanguageDropdown}
             <p>

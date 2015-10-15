@@ -24,7 +24,7 @@ var _state = {
   locales: null,
   glossary: {},
   original_glossary: {},
-  glossaryResId: [],
+  glossaryHash: [],
   page:1,
   filter: '',
   focusedRow: {
@@ -58,7 +58,7 @@ function processLocalesStatistic(serverResponse) {
   resetCache();
 
   for (var i = 0; i < _state.srcLocale.numberOfTerms; i++) {
-    _state.glossaryResId[i] = null;
+    _state.glossaryHash[i] = null;
   }
 
   _.forEach(serverResponse['transLocale'], function(transLocale) {
@@ -118,8 +118,8 @@ function processGlossaryList(serverResponse) {
     } else {
       transTerm = GlossaryHelper.generateEmptyTerm(transLocaleId);
     }
-    _state.glossary[entry.resId] = {
-      resId: entry.resId,
+    _state.glossary[entry.contentHash] = {
+      contentHash: entry.contentHash,
       pos: _.isUndefined(entry.pos) ? '' : entry.pos,
       description: _.isUndefined(entry.description) ? '' : entry.description,
       termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0 , //remove source term from count
@@ -127,9 +127,9 @@ function processGlossaryList(serverResponse) {
       transTerm: transTerm,
       status: GlossaryHelper.getDefaultEntryStatus()
     };
-    _state.glossary[entry.resId].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.resId]);
-    _state.glossary[entry.resId].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.resId]);
-    _state.glossaryResId[startIndex] = [entry.resId];
+    _state.glossary[entry.contentHash].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.contentHash]);
+    _state.glossary[entry.contentHash].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.contentHash]);
+    _state.glossaryHash[startIndex] = [entry.contentHash];
     startIndex+=1;
   });
   _state.original_glossary = _.cloneDeep(_state.glossary);
@@ -139,7 +139,7 @@ function processGlossaryList(serverResponse) {
 
 function saveGlossary(data) {
   var entry = {
-    resId: '', pos: data.pos, description: data.description,
+    contentHash: '', pos: data.pos, description: data.description,
     srcTerm: GlossaryHelper.generateSrcTerm(data.srcLocaleId)
   };
   entry.srcTerm.content = data.term;
@@ -200,7 +200,7 @@ function resetCache() {
   _.assign(_state, {
     page: 1,
     glossary: {},
-    glossaryResId: [],
+    glossaryHash: [],
     sort:{
       src_content: true
     }
@@ -215,8 +215,8 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     return _state;
   }.bind(this),
 
-  getEntry: function(resId) {
-    return _state.glossary[resId];
+  getEntry: function(contentHash) {
+    return _state.glossary[contentHash];
   },
 
   getFocusedRow: function() {
@@ -315,27 +315,27 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
           .then(() => GlossaryStore.emitChange());
         break;
       case GlossaryActionTypes.UPDATE_ENTRY_FIELD:
-        _.set(_state.glossary[action.data.resId], action.data.field, action.data.value);
-        _state.glossary[action.data.resId]['status'] =
-          GlossaryHelper.getEntryStatus(_state.glossary[action.data.resId], _state.original_glossary[action.data.resId]);
+        _.set(_state.glossary[action.data.contentHash], action.data.field, action.data.value);
+        _state.glossary[action.data.contentHash]['status'] =
+          GlossaryHelper.getEntryStatus(_state.glossary[action.data.contentHash], _state.original_glossary[action.data.contentHash]);
         GlossaryStore.emitChange();
         break;
       case GlossaryActionTypes.UPDATE_COMMENT:
         console.debug('Update comment', action.data);
-        _.set(_state.glossary[action.data.resId], 'transTerm.comment', action.data.value);
-        updateGlossary(_state.glossary[action.data.resId])
+        _.set(_state.glossary[action.data.contentHash], 'transTerm.comment', action.data.value);
+        updateGlossary(_state.glossary[action.data.contentHash])
           .then(processSaveOrUpdate)
           .then(refreshGlossaryEntries);
         break;
       case GlossaryActionTypes.UPDATE_FOCUSED_ROW:
-        var previousResId = _state.focusedRow.resId,
+        var previousContentHash = _state.focusedRow.contentHash,
           previousRowIndex = _state.focusedRow.rowIndex;
         //same index, ignore
         if(previousRowIndex === action.data.rowIndex) {
           return;
         }
-        if(previousRowIndex !== -1 && previousResId !== null) {
-          var entry = _state.glossary[previousResId];
+        if(previousRowIndex !== -1 && previousContentHash !== null) {
+          var entry = _state.glossary[previousContentHash];
           if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
             updateGlossary(entry)
                 .then(processSaveOrUpdate)

@@ -80,13 +80,13 @@ describe('GlossaryHelperTest', function() {
   it('test generate glossary dto', function() {
     var srcTerm = {content: 'src_content', locale: 'en-US', comment: 'comment', reference: 'ref'},
       transTerm = {content: 'trans_content', locale: 'en-US', comment: 'comment'};
-    var data = {resId: 'resId', pos: 'noun', description: 'description', srcTerm: srcTerm, transTerm: transTerm};
+    var data = {contentHash: 'resId', pos: 'noun', description: 'description', srcTerm: srcTerm, transTerm: transTerm};
 
     var glossary = GlossaryHelper.generateGlossaryDTO(data);
     expect(_.size(glossary.glossaryEntries)).toEqual(1);
 
     var entry = glossary.glossaryEntries[0];
-    expect(entry.resId).toEqual(data.resId);
+    expect(entry.contentHash).toEqual(data.contentHash);
     expect(entry.pos).toEqual(data.pos);
     expect(entry.description).toEqual(data.description);
     expect(_.size(entry.glossaryTerms)).toEqual(2);
@@ -143,7 +143,7 @@ describe('GlossaryHelperTest', function() {
 
   function generateEntry(srcLocale, transLocale) {
     return {
-      resId: '', pos: '', description: '',
+      contentHash: '', pos: '', description: '',
       srcTerm: GlossaryHelper.generateSrcTerm(srcLocale),
       transTerm: GlossaryHelper.generateEmptyTerm(transLocale),
       status: GlossaryHelper.getDefaultEntryStatus()

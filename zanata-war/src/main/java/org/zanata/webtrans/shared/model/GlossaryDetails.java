@@ -1,14 +1,13 @@
 package org.zanata.webtrans.shared.model;
 
 import java.util.Date;
-import java.util.List;
 
 import org.zanata.common.LocaleId;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GlossaryDetails implements IsSerializable {
-    private String resId;
+    private String contentHash;
     private String description;
     private String pos;
     private String targetComment;
@@ -25,11 +24,11 @@ public class GlossaryDetails implements IsSerializable {
         this(null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public GlossaryDetails(String resId, String source, String target,
+    public GlossaryDetails(String contentHash, String source, String target,
             String description, String pos, String targetComment,
             String sourceRef, LocaleId srcLocale, LocaleId targetLocale,
             Integer targetVersionNum, Date lastModifiedDate) {
-        this.resId = resId;
+        this.contentHash = contentHash;
         this.source = source;
         this.target = target;
         this.description = description;
@@ -42,8 +41,8 @@ public class GlossaryDetails implements IsSerializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public String getResId() {
-        return resId;
+    public String getContentHash() {
+        return contentHash;
     }
 
     public String getDescription() {

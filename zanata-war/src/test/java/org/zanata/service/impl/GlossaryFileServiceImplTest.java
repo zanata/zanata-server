@@ -116,7 +116,7 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     public void saveOrUpdateGlossaryTest() {
-        String resId = "resId";
+        String contentHash = "resId";
         String srcRef = "srcRef";
         String pos = "pos";
         String desc = "desc";
@@ -127,7 +127,7 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         LocaleId srcLocaleId = LocaleId.EN_US;
 
         GlossaryEntry entry = new GlossaryEntry();
-        entry.setResId(resId);
+        entry.setContentHash(contentHash);
         entry.setSourceReference(srcRef);
         entry.setPos(pos);
         entry.setDescription(desc);

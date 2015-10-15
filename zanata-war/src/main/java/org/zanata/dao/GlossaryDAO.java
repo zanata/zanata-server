@@ -200,11 +200,11 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public HGlossaryEntry getEntryByResId(String resId) {
+    public HGlossaryEntry getEntryByContentHash(String resId) {
         Query query = getSession().createQuery(
                 "from HGlossaryEntry as e WHERE e.resId = :resId ");
         query.setParameter("resId", resId);
-        query.setComment("GlossaryDAO.getEntryByResId");
+        query.setComment("GlossaryDAO.getEntryByContentHash");
         return (HGlossaryEntry) query.uniqueResult();
     }
 

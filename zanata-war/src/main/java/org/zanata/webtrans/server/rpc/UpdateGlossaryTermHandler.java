@@ -40,13 +40,13 @@ public class UpdateGlossaryTermHandler
 
         GlossaryDetails selectedDetailEntry = action.getSelectedDetailEntry();
 
-        String resId = selectedDetailEntry.getResId();
+        String contentHash = selectedDetailEntry.getContentHash();
 
-        HGlossaryEntry entry = glossaryDAO.getEntryByResId(resId);
+        HGlossaryEntry entry = glossaryDAO.getEntryByContentHash(contentHash);
 
         if (entry == null) {
             throw new ActionException(
-                "Cannot find glossary entry with resId " + resId);
+                "Cannot find glossary entry with contentHash " + contentHash);
         }
 
         HLocale targetLocale =
@@ -81,7 +81,7 @@ public class UpdateGlossaryTermHandler
                             entryResult.getSrcLocale());
 
             GlossaryDetails details =
-                    new GlossaryDetails(entryResult.getResId(),
+                    new GlossaryDetails(entryResult.getContentHash(),
                             srcTerm.getContent(),
                             targetTerm.getContent(),
                             entryResult.getDescription(),

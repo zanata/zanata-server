@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 var SourceActionCell = React.createClass({
   propTypes: {
-    resId: React.PropTypes.string.isRequired,
+    contentHash: React.PropTypes.string.isRequired,
     info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     srcLocaleId: React.PropTypes.string.isRequired,
@@ -25,7 +25,7 @@ var SourceActionCell = React.createClass({
 
   _getState: function () {
     return {
-      entry: GlossaryStore.getEntry(this.props.resId)
+      entry: GlossaryStore.getEntry(this.props.contentHash)
     }
   },
 
@@ -44,15 +44,15 @@ var SourceActionCell = React.createClass({
   },
 
   _handleUpdate: function() {
-    Actions.updateGlossary(this.props.resId);
+    Actions.updateGlossary(this.props.contentHash);
   },
 
   _handleCancel: function() {
-    Actions.resetEntry(this.props.resId);
+    Actions.resetEntry(this.props.contentHash);
   },
 
   render: function() {
-    if(this.props.resId === null || this.state.entry === null) {
+    if(this.props.contentHash === null || this.state.entry === null) {
       return (<LoadingCell/>);
     } else {
       var info = (
@@ -68,7 +68,7 @@ var SourceActionCell = React.createClass({
         var deleteButton = null;
 
         if(this.props.canDeleteEntry) {
-          deleteButton = <DeleteEntryModal className='ml1/4' resId={this.props.resId} entry={this.state.entry}/>;
+          deleteButton = <DeleteEntryModal className='ml1/4' contentHash={this.props.contentHash} entry={this.state.entry}/>;
         }
 
         var isSrcModified= this.state.entry.status.isSrcModified,

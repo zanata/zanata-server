@@ -24,6 +24,8 @@ package org.zanata.liquibase.custom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,16 +39,16 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import org.zanata.service.impl.GlossaryFileServiceImpl;
+import org.zanata.util.GlossaryUtil;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
+public class GenerateHashForGlossaryEntry implements CustomTaskChange {
 
     @Override
     public String getConfirmationMessage() {
-        return "GenerateResIdForGlossaryEntry generated resId column in HGlossaryEntry table";
+        return "GenerateHashForGlossaryEntry generated contentHash column in HGlossaryEntry table";
     }
 
     @Override
@@ -62,6 +64,18 @@ public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
         return new ValidationErrors();
     }
 
+    private final static String DATE_FORMAT = "dd/MM/yy HH:mm:ss:SS";
+    private final static SimpleDateFormat formatter = new SimpleDateFormat(
+            DATE_FORMAT);
+
+    /**
+     * Generate unique description by appending timestamp.
+     */
+    private String generateConflictMessage() {
+        return " (Zanata: This description has been updated during data migration to prevent conflict: "
+                + formatter.format(new Date()) + ")";
+    }
+
     @Override
     public void execute(Database database) throws CustomChangeException {
         final JdbcConnection conn = (JdbcConnection) database.getConnection();
@@ -70,6 +84,7 @@ public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
                         ResultSet.CONCUR_UPDATABLE)) {
 
             Map<Long, String> entryLocaleMap = new HashMap<Long, String>();
+            Map<Long, String> entryDescriptionMap = new HashMap<Long, String>();
 
             String entryLocaleSql = "select entry.id, entry.pos, entry.description, locale.localeId, term.content from " +
                 "HGlossaryEntry entry, HGlossaryTerm term, HLocale locale  " +
@@ -82,20 +97,33 @@ public class GenerateResIdForGlossaryEntry implements CustomTaskChange {
                 String localeId = rs1.getString(4);
                 String content = rs1.getString(5);
 
-                String resId =
-                        GlossaryFileServiceImpl.getResId(new LocaleId(localeId),
-                            content, pos, desc);
-                entryLocaleMap.put(entryId, resId);
+                String hash = GlossaryUtil.generateHash(new LocaleId(localeId),
+                    content, pos, desc);
+
+                /**
+                 * Conflict on source content, pos, description
+                 * Update description to unique message string with timestamp.
+                 */
+                if(entryLocaleMap.containsValue(hash)) {
+                    desc = desc + generateConflictMessage();
+                    hash = GlossaryUtil.generateHash(new LocaleId(localeId),
+                        content, pos, desc);
+                    entryDescriptionMap.put(entryId, desc);
+                }
+                entryLocaleMap.put(entryId, hash);
             }
 
             String entrySql =
-                "select entry.id, entry.resId from HGlossaryEntry entry";
+                "select entry.id, entry.contentHash, entry.description from HGlossaryEntry entry";
             ResultSet rs2 = stmt.executeQuery(entrySql);
 
             while (rs2.next()) {
                 long id = rs2.getLong(1);
-                String resId = entryLocaleMap.get(id);
-                rs2.updateString(2, resId);
+                String hash = entryLocaleMap.get(id);
+                rs2.updateString(2, hash);
+                if (entryDescriptionMap.containsKey(id)) {
+                    rs2.updateString(3, entryDescriptionMap.get(id));
+                }
                 rs2.updateRow();
             }
         } catch (SQLException e) {

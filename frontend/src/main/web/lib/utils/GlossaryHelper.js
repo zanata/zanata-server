@@ -35,7 +35,7 @@ var GlossaryHelper = {
     var glossary = {}, entry = {};
     glossary['glossaryEntries'] = [];
 
-    entry['resId'] = data.resId;
+    entry['contentHash'] = data.contentHash;
     entry['pos'] = StringUtils.trim(data.pos);
     entry['description'] = StringUtils.trim(data.description);
     entry['srcLang'] = data.srcTerm.locale;
