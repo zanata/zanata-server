@@ -55,16 +55,14 @@ var ActionCell = React.createClass({
   },
 
   render: function () {
-    var self = this;
-
-    if (self.props.contentHash === null || self.state.entry === null) {
-      return (<LoadingCell/>);
+    if (this.props.contentHash === null || this.state.entry === null) {
+      return <LoadingCell/>;
     } else {
-      var isTransModified = self.state.entry.status.isTransModified;
-      var canUpdateComment = self.state.entry.status.canUpdateTransComment;
-      var isSaving = self.state.entry.status.isSaving;
+      var isTransModified = this.state.entry.status.isTransModified;
+      var canUpdateComment = this.state.entry.status.canUpdateTransComment;
+      var isSaving = this.state.entry.status.isSaving;
 
-      var infoTooltip = <Tooltip id="info">{self.props.info}</Tooltip>;
+      var infoTooltip = <Tooltip id="info">{this.props.info}</Tooltip>;
       var info = (
         <OverlayTrigger placement='top' rootClose overlay={infoTooltip}>
           <Icon className="cpri" name="info"/>
@@ -75,9 +73,9 @@ var ActionCell = React.createClass({
         comment = (
           <Comment
             className="ml1/4"
-            readOnly={!self.props.canUpdateEntry || !canUpdateComment || isSaving}
-            value={self.state.entry.transTerm.comment}
-            onUpdateCommentCallback={self._onUpdateComment}/>
+            readOnly={!this.props.canUpdateEntry || !canUpdateComment || isSaving}
+            value={this.state.entry.transTerm.comment}
+            onUpdateCommentCallback={this._onUpdateComment}/>
         );
 
       if(isSaving) {
@@ -91,12 +89,12 @@ var ActionCell = React.createClass({
 
       if(isTransModified) {
         updateButton = (
-          <Button kind='primary' className='ml1/4' onClick={self._handleUpdate}>
+          <Button kind='primary' className='ml1/4' onClick={this._handleUpdate}>
             Update
           </Button>
         );
         cancelButton = (
-          <Button className='ml1/4' link onClick={self._handleCancel}>
+          <Button className='ml1/4' link onClick={this._handleCancel}>
             Cancel
           </Button>
         );

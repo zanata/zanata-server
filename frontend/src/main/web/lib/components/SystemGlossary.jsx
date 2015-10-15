@@ -15,6 +15,8 @@ import StringUtils from '../utils/StringUtils'
 var SystemGlossary = React.createClass({
   mixins: [PureRenderMixin],
 
+  filterTimeout: null,
+
   _init: function() {
     return GlossaryStore.init();
   },
@@ -48,11 +50,12 @@ var SystemGlossary = React.createClass({
 
   _handleFilterChange: function(event) {
     this.setState({filter: event.target.value});
-    if(this.state.filterTimeout !== null) {
-      clearTimeout(this.state.filterTimeout);
+
+    if(this.filterTimeout !== null) {
+      clearTimeout(this.filterTimeout);
     }
     if(!StringUtils.isEmptyOrNull(event.target.value)) {
-      this.state.filterTimeout = setTimeout(() => {
+      this.filterTimeout = setTimeout(() => {
         Actions.updateFilter(this.state.filter);
       }, 500);
     }

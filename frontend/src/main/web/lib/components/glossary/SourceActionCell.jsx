@@ -53,7 +53,7 @@ var SourceActionCell = React.createClass({
 
   render: function() {
     if(this.props.contentHash === null || this.state.entry === null) {
-      return (<LoadingCell/>);
+      return <LoadingCell/>;
     } else {
       var info = (
         <OverlayTrigger placement='top'
@@ -64,7 +64,7 @@ var SourceActionCell = React.createClass({
       );
 
       if(this.state.entry.status.isSaving) {
-        return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);
+        return <div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>;
       } else {
         var deleteButton = null;
 
@@ -89,7 +89,7 @@ var SourceActionCell = React.createClass({
                 {deleteButton}
               </div>)
         } else {
-          return (<div>{info}<div className='cdtargetib'>{deleteButton}</div></div>)
+          return <div>{info}<div className='cdtargetib'>{deleteButton}</div></div>;
         }
       }
     }

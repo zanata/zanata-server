@@ -16,6 +16,8 @@ var DataTable = React.createClass({
 
   CONTENT_HASH_INDEX: 0,
 
+  loadTimeout: null,
+
   ENTRY: {
     SRC: {
       col: 1,
@@ -87,13 +89,15 @@ var DataTable = React.createClass({
   },
 
   /**
+   * if top is undefined, table height will be calculated based on DOM height.
    *
-   * @param fixedTop - gets the height from the DOM if this is not specified
+   * @param top - Number value of top height
    */
-  _getHeight: function(fixedTop) {
+  _getHeight: function(top) {
     var footer = window.document.getElementById("footer");
     var footerHeight = footer ? footer.clientHeight : 91;
-    var top = _.isUndefined(fixedTop) ? React.findDOMNode(this).offsetTop: fixedTop;
+
+    top = _.isUndefined(top) ? React.findDOMNode(this).offsetTop: top;
     var newHeight = window.innerHeight - footerHeight - top;
 
     //minimum height 250px
@@ -205,21 +209,23 @@ var DataTable = React.createClass({
   _renderCell: function ({ contentHash, rowIndex, field, readOnly, placeholder }) {
     var key = this._generateKey(field.col, rowIndex, contentHash);
     if (contentHash === null) {
-      return (<LoadingCell key={key}/>)
+      return <LoadingCell key={key}/>;
     } else {
       var entry = this._getGlossaryEntry(contentHash);
       var value = _.get(entry, field.field);
       if (readOnly) {
-        return (<span className="mh1/2" key={key}>{value}</span>)
+        return <span className="mh1/2" key={key}>{value}</span>;
       } else {
-        return (<InputCell
-          value={value}
-          contentHash={contentHash}
-          key={key}
-          placeholder={placeholder}
-          rowIndex={rowIndex}
-          field={field.field}
-          onFocusCallback={this._onRowClick}/>);
+        return (
+          <InputCell
+            value={value}
+            contentHash={contentHash}
+            key={key}
+            placeholder={placeholder}
+            rowIndex={rowIndex}
+            field={field.field}
+            onFocusCallback={this._onRowClick}/>
+        );
       }
     }
   },
@@ -288,7 +294,7 @@ var DataTable = React.createClass({
   _renderActionCell: function (contentHash, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     if(contentHash === null) {
-      return (<LoadingCell/>);
+      return <LoadingCell/>;
     } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
       return null;
     }
@@ -438,14 +444,12 @@ var DataTable = React.createClass({
   _rowGetter: function(rowIndex) {
     var row = this.props.glossaryHash[rowIndex];
     if(_.isUndefined(row) || row === null) {
-      if(this.state.timeout !== null) {
-        clearTimeout(this.state.timeout);
+      if(this.loadTimeout !== null) {
+        clearTimeout(this.loadTimeout);
       }
-
-      this.state.timeout = setTimeout(() => {
+      this.loadTimeout = setTimeout(() => {
         Actions.loadGlossary(rowIndex);
       }, this.TIMEOUT);
-
       return [null];
     } else {
       return row;

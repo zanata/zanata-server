@@ -300,7 +300,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         break;
       case GlossaryActionTypes.UPDATE_FILTER:
         console.debug('Update filter', action.data);
-        if(_state.filter  !== action.data) {
+        if(_state.filter !== action.data) {
           _state.filter = action.data;
           refreshGlossaryEntries();
         }

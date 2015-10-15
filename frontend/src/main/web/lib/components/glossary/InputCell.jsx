@@ -16,7 +16,9 @@ var InputCell = React.createClass({
     onBlurCallback: React.PropTypes.func
   },
 
-  TIMEOUT: 100,
+  TIMEOUT: 150,
+
+  updateTimeout: null,
 
   getInitialState: function() {
     return this._getState();
@@ -30,8 +32,7 @@ var InputCell = React.createClass({
 
     return {
       value: value,
-      isFocused : isFocused,
-      timeout: null
+      isFocused : isFocused
     }
   },
 
@@ -50,13 +51,13 @@ var InputCell = React.createClass({
   },
 
   _onValueChange : function(event) {
-    var self = this,
-      value = event.target.value;
+    var value = event.target.value;
     this.setState({value: value});
-    if(this.state.timeout !== null) {
-      clearTimeout(this.state.timeout);
+    if(this.updateTimeout !== null) {
+      clearTimeout(this.updateTimeout);
     }
-    this.state.timeout = setTimeout(() => {
+    this.updateTimeout = setTimeout(() => {
+      console.info('update');
       Actions.updateEntryField(this.props.contentHash, this.props.field, value);
     }, this.TIMEOUT);
   },
