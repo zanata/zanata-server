@@ -21,5 +21,4 @@ var GlossaryActionTypes = keymirror({
   RESET_ENTRY: null
 });
 
-exports.UserMatrixActionTypes = UserMatrixActionTypes;
-exports.GlossaryActionTypes = GlossaryActionTypes;
+export { UserMatrixActionTypes, GlossaryActionTypes }

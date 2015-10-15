@@ -35,24 +35,24 @@ var GlossaryHelper = {
     var glossary = {}, entry = {};
     glossary['glossaryEntries'] = [];
 
-    entry['contentHash'] = data.contentHash;
-    entry['pos'] = StringUtils.trim(data.pos);
-    entry['description'] = StringUtils.trim(data.description);
-    entry['srcLang'] = data.srcTerm.locale;
-    entry['sourceReference'] = data.srcTerm.reference;
-    entry['glossaryTerms'] = [];
+    entry.contentHash = data.contentHash;
+    entry.pos = StringUtils.trim(data.pos);
+    entry.description = StringUtils.trim(data.description);
+    entry.srcLang = data.srcTerm.locale;
+    entry.sourceReference = data.srcTerm.reference;
+    entry.glossaryTerms = [];
 
     var srcTerm = this.generateGlossaryTermDTO(data.srcTerm, false);
     if(!_.isNull(srcTerm) && !_.isUndefined(srcTerm)) {
-      entry['glossaryTerms'].push(srcTerm);
+      entry.glossaryTerms.push(srcTerm);
     }
 
     var transTerm = this.generateGlossaryTermDTO(data.transTerm, true);
     if(!_.isNull(transTerm) && !_.isUndefined(transTerm)) {
-      entry['glossaryTerms'].push(transTerm);
+      entry.glossaryTerms.push(transTerm);
     }
 
-    glossary['glossaryEntries'].push(entry);
+    glossary.glossaryEntries.push(entry);
     return glossary;
   },
 
@@ -74,7 +74,7 @@ var GlossaryHelper = {
 
   getTermByLocale: function (terms, localeId) {
     var term = _.filter(terms, 'locale', localeId);
-    return _.size(term) <= 0 ? null : term[0];
+    return term.length ? term[0] : null;
   },
 
   getEntryStatus: function (entry, originalEntry) {

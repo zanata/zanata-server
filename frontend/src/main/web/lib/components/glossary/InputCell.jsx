@@ -56,8 +56,8 @@ var InputCell = React.createClass({
     if(this.state.timeout !== null) {
       clearTimeout(this.state.timeout);
     }
-    this.state.timeout = setTimeout(function() {
-      Actions.updateEntryField(self.props.contentHash, self.props.field, value);
+    this.state.timeout = setTimeout(() => {
+      Actions.updateEntryField(this.props.contentHash, this.props.field, value);
     }, this.TIMEOUT);
   },
 

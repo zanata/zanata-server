@@ -17,7 +17,7 @@ var DayMatrix = React.createClass({
 
   handleDayClick: function(event) {
     var dayChosen = this.props.date;
-    if (this.props.selectedDay == dayChosen) {
+    if (this.props.selectedDay === dayChosen) {
       // click the same day again will cancel selection
       Actions.clearSelectedDay();
     } else {

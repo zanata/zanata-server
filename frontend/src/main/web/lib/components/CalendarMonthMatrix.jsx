@@ -53,7 +53,7 @@ var CalendarMonthMatrix = React.createClass({
       days = [], result = [],
       dayColumns, firstDay, heading;
 
-    if (matrixData.length == 0) {
+    if (matrixData.length === 0) {
       return <table><tr><td>Loading</td></tr></table>
     }
 

@@ -62,7 +62,7 @@ var ActionCell = React.createClass({
     } else {
       var isTransModified = self.state.entry.status.isTransModified;
       var canUpdateComment = self.state.entry.status.canUpdateTransComment;
-      var isSaving = self.state.entry.status.isSaving === true;
+      var isSaving = self.state.entry.status.isSaving;
 
       var infoTooltip = <Tooltip id="info">{self.props.info}</Tooltip>;
       var info = (

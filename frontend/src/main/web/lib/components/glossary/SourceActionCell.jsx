@@ -60,7 +60,8 @@ var SourceActionCell = React.createClass({
           rootClose
           overlay={<Tooltip id='src-info'>{this.props.info}</Tooltip>}>
           <Icon className="cpri" name="info"/>
-        </OverlayTrigger>);
+        </OverlayTrigger>
+      );
 
       if(this.state.entry.status.isSaving) {
         return (<div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>);

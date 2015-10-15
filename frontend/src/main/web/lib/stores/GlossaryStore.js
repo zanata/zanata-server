@@ -11,7 +11,7 @@ import GlossaryAPIStore from './GlossaryAPIStore'
 
 var PAGE_SIZE = 20,
   CHANGE_EVENT = "change",
-  MAX_LISTENERS = 100; //number of listener for GlossaryStore (default is 11)
+  MAX_LISTENERS = 100; //overriding number of listener for GlossaryStore. (default is 11)
 
 EventEmitter.prototype.setMaxListeners(MAX_LISTENERS);
 
@@ -110,7 +110,7 @@ function processGlossaryList(serverResponse) {
     var transTerm =
       GlossaryHelper.getTermByLocale(entry.glossaryTerms, transLocaleId);
 
-    if(transTerm != null) {
+    if(transTerm) {
       transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
       if(_.isUndefined(transTerm.comment)) {
         transTerm.comment = ''
@@ -130,7 +130,7 @@ function processGlossaryList(serverResponse) {
     _state.glossary[entry.contentHash].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.contentHash]);
     _state.glossary[entry.contentHash].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.contentHash]);
     _state.glossaryHash[startIndex] = [entry.contentHash];
-    startIndex+=1;
+    startIndex++;
   });
   _state.original_glossary = _.cloneDeep(_state.glossary);
   _state.loadingEntries = false;
@@ -157,6 +157,10 @@ function onUploadFile(percentCompleted) {
   _state.uploadFile.status = percentCompleted;
 }
 
+/**
+ * Need notification feature to output message
+ * @param serverResponse
+ */
 function processUploadFile() {
   _state.uploadFile.status = -1;
   _state.uploadFile.show = false;
@@ -164,10 +168,18 @@ function processUploadFile() {
   _state.uploadFile.file = null;
 }
 
+/**
+ * Need notification feature to output message
+ * @param serverResponse
+ */
 function processDelete(serverResponse) {
   console.debug('Glossary entry deleted');
 }
 
+/**
+ * Need notification feature to output message
+ * @param serverResponse
+ */
 function processSaveOrUpdate(serverResponse) {
   _.assign(_state.newEntry, {
     isSaving: false,
@@ -180,6 +192,10 @@ function processSaveOrUpdate(serverResponse) {
   console.debug('Glossary entry saved');
 }
 
+/**
+ * Need notification feature to output message
+ * @param serverResponse
+ */
 function processUpdate(serverResponse) {
   console.debug('Glossary entry updated');
 }

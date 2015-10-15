@@ -58,7 +58,7 @@ var ImportModal = React.createClass({
     var file = e.target.files[0],
       reader = new FileReader();
 
-    reader.onload = (upload) => {
+    reader.onload = () => {
       this.setState({file: file});
     };
     reader.readAsDataURL(file);

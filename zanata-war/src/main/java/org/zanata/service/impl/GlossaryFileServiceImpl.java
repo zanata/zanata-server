@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -38,12 +39,14 @@ import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.exception.ZanataServiceException;
+import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
 import org.zanata.util.GlossaryUtil;
@@ -66,6 +69,9 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     @In
     private LocaleService localeServiceImpl;
+
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER, scope = ScopeType.SESSION)
+    private HAccount authenticatedAccount;
 
     private final static int BATCH_SIZE = 50;
 
@@ -181,6 +187,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 HGlossaryTerm hGlossaryTerm =
                     getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
                 hGlossaryTerm.setComment(glossaryTerm.getComment());
+                hGlossaryTerm.setLastModifiedBy(authenticatedAccount
+                        .getPerson());
                 to.getGlossaryTerms().put(termHLocale, hGlossaryTerm);
             } else {
                 warningMessage.add(glossaryTerm.getLocale().toString());
@@ -192,7 +200,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                     "Language {} is not enabled in Zanata. Term in the language will be ignored.",
                     StringUtils.join(warningMessage, ","));
         }
-
         glossaryDAO.makePersistent(to);
         return to;
     }

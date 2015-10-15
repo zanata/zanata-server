@@ -316,7 +316,7 @@ public class GlossaryService implements GlossaryResource {
         }
     }
 
-    public static void transferEntriesLocaleResource(
+    public void transferEntriesLocaleResource(
             List<HGlossaryEntry> hGlossaryEntries, Glossary glossary,
             HLocale locale) {
         for (HGlossaryEntry hGlossaryEntry : hGlossaryEntries) {
@@ -336,7 +336,7 @@ public class GlossaryService implements GlossaryResource {
         }
     }
 
-    private static GlossaryTerm getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
+    public GlossaryTerm getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
         HLocale locale) {
         if (!hGlossaryEntry.getGlossaryTerms().containsKey(locale)) {
             return null;
@@ -347,8 +347,7 @@ public class GlossaryService implements GlossaryResource {
         return glossaryTerm;
     }
 
-    public static GlossaryEntry generateGlossaryEntry(
-            HGlossaryEntry hGlossaryEntry) {
+    public GlossaryEntry generateGlossaryEntry(HGlossaryEntry hGlossaryEntry) {
         GlossaryEntry glossaryEntry = new GlossaryEntry(hGlossaryEntry.getContentHash());
         glossaryEntry.setSrcLang(hGlossaryEntry.getSrcLocale().getLocaleId());
         glossaryEntry.setSourceReference(hGlossaryEntry.getSourceRef());
@@ -358,16 +357,13 @@ public class GlossaryService implements GlossaryResource {
         return glossaryEntry;
     }
 
-    public static GlossaryTerm generateGlossaryTerm(HGlossaryTerm hGlossaryTerm) {
+    public GlossaryTerm generateGlossaryTerm(HGlossaryTerm hGlossaryTerm) {
         GlossaryTerm glossaryTerm = new GlossaryTerm();
         glossaryTerm.setContent(hGlossaryTerm.getContent());
         glossaryTerm.setLocale(hGlossaryTerm.getLocale().getLocaleId());
 
-        String name = "";
-        if(hGlossaryTerm.getLastModifiedBy() != null) {
-            name = hGlossaryTerm.getLastModifiedBy().getName();
-        }
-        glossaryTerm.setLastModifiedBy(name);
+        String username = glossaryDAO.getUsername(hGlossaryTerm.getId());
+        glossaryTerm.setLastModifiedBy(username);
         glossaryTerm.setLastModifiedDate(hGlossaryTerm.getLastChanged());
         glossaryTerm.setComment(hGlossaryTerm.getComment());
 

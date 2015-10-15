@@ -121,7 +121,7 @@
   <changeSet id="4" author="aeng@redhat.com">
     <comment>Add unique constrains on HGlossaryEntry</comment>
     <addUniqueConstraint constraintName="UK_glossaryEntry"
-      tableName="HGlossaryEntry" columnNames="contentHash,pos,description" />
+      tableName="HGlossaryEntry" columnNames="contentHash" />
   </changeSet>
 
   <changeSet id="5" author="aeng@redhat.com">

@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, { PureRenderMixin } from 'react/addons';
 import Actions from '../../actions/GlossaryActions';
 import { Button, Icon, Tooltip, Overlay } from 'zanata-ui';
 
@@ -39,12 +38,13 @@ var DeleteEntryModal = React.createClass({
 
     if(this.props.entry.termsCount > 0) {
       let translationPlural = this.props.entry.termsCount > 1
-        ? 'translations' : 'translation'
-      info =
+        ? 'translations' : 'translation';
+      info = (
         <p>
           Are you sure you want to delete this term and&nbsp;
           <strong>{this.props.entry.termsCount}</strong> {translationPlural} ?
         </p>
+      );
     } else {
       info = <p>Are you sure you want to delete this term ?</p>
     }

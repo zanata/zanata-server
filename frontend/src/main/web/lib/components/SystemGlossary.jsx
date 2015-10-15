@@ -10,7 +10,7 @@ import _ from 'lodash';
 import StringUtils from '../utils/StringUtils'
 
 /**
- * System glossary root component.
+ * Main view for glossary page
  */
 var SystemGlossary = React.createClass({
   mixins: [PureRenderMixin],
@@ -59,8 +59,8 @@ var SystemGlossary = React.createClass({
   },
 
   render: function() {
-    var srcLocale = this.state.srcLocale,
-      count = 0,
+    const srcLocale = this.state.srcLocale;
+    var count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
       uploadSection = null,
       newEntrySection = null;

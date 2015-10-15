@@ -36,7 +36,7 @@ var ColumnHeader = React.createClass({
     if(this.props.allowSort) {
       if(this.state.sort !== null) {
         var iconName = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
-        sortIcon = (<Icon name={iconName}/>);
+        sortIcon = <Icon name={iconName}/>;
       }
       return <button className='csec fwsb ph1/2' onClick={this._handleOnClick}>{this.props.value} {sortIcon}</button>;
     } else {

@@ -14,7 +14,7 @@ var DataTable = React.createClass({
 
   NO_ROW: -1,
 
-  contentHashIndex: 0,
+  CONTENT_HASH_INDEX: 0,
 
   ENTRY: {
     SRC: {
@@ -88,7 +88,7 @@ var DataTable = React.createClass({
 
   /**
    *
-   * @param fixedTop - top height for banner if can't get height from dom
+   * @param fixedTop - gets the height from the DOM if this is not specified
    */
   _getHeight: function(fixedTop) {
     var footer = window.document.getElementById("footer");
@@ -202,23 +202,23 @@ var DataTable = React.createClass({
     Actions.updateSortOrder(field, ascending);
   },
 
-  _renderCell: function (cellData) {
-    var key = this._generateKey(cellData.field.col, cellData.rowIndex, cellData.contentHash);
-    if (cellData.contentHash === null) {
+  _renderCell: function ({ contentHash, rowIndex, field, readOnly, placeholder }) {
+    var key = this._generateKey(field.col, rowIndex, contentHash);
+    if (contentHash === null) {
       return (<LoadingCell key={key}/>)
     } else {
-      var entry = this._getGlossaryEntry(cellData.contentHash);
-      var value = _.get(entry, cellData.field.field);
-      if (cellData.readOnly) {
+      var entry = this._getGlossaryEntry(contentHash);
+      var value = _.get(entry, field.field);
+      if (readOnly) {
         return (<span className="mh1/2" key={key}>{value}</span>)
       } else {
         return (<InputCell
           value={value}
-          contentHash={cellData.contentHash}
+          contentHash={contentHash}
           key={key}
-          placeholder={cellData.placeholder}
-          rowIndex={cellData.rowIndex}
-          field={cellData.field.field}
+          placeholder={placeholder}
+          rowIndex={rowIndex}
+          field={field.field}
           onFocusCallback={this._onRowClick}/>);
       }
     }
@@ -411,7 +411,7 @@ var DataTable = React.createClass({
   },
 
   _onRowClick: function (event, rowIndex) {
-    var contentHash = this._rowGetter(rowIndex)[this.contentHashIndex];
+    var contentHash = this._rowGetter(rowIndex)[this.CONTENT_HASH_INDEX];
     if(this.props.focusedRow.rowIndex !== rowIndex) {
       Actions.updateFocusedRow(contentHash, rowIndex);
     }
@@ -436,15 +436,16 @@ var DataTable = React.createClass({
    * @returns [contentHash] - contentHash in list
    */
   _rowGetter: function(rowIndex) {
-    var self = this,
-      row = this.props.glossaryHash[rowIndex];
+    var row = this.props.glossaryHash[rowIndex];
     if(_.isUndefined(row) || row === null) {
       if(this.state.timeout !== null) {
-        clearTimeout(self.state.timeout);
+        clearTimeout(this.state.timeout);
       }
-      this.state.timeout = setTimeout(function() {
+
+      this.state.timeout = setTimeout(() => {
         Actions.loadGlossary(rowIndex);
-      }, self.TIMEOUT);
+      }, this.TIMEOUT);
+
       return [null];
     } else {
       return row;

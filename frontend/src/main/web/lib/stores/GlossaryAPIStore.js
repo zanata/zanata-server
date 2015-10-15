@@ -14,7 +14,7 @@ var GlossaryAPIStore = ({
         .set("Pragma", "no-cache")
         .set("Expires", 0)
         .end(function (err, res) {
-          if (err != null && err.error) {
+          if (err && err.error) {
             console.error(url, err);
           }
           if (res != null) {
@@ -42,7 +42,7 @@ var GlossaryAPIStore = ({
           .set("Pragma", "no-cache")
           .set("Expires", 0)
           .end(function (err, res) {
-            if (err != null && err.error) {
+            if (err && err.error) {
               console.error(url, err);
             }
             if (res != null) {
@@ -91,7 +91,7 @@ var GlossaryAPIStore = ({
         .set('Accept', 'application/json')
         .send(glossary)
         .end(function (err, res) {
-          if(err != null && err.error) {
+          if(err && err.error) {
             console.error(url, err);
           }
           if(res != null) {
@@ -120,7 +120,7 @@ var GlossaryAPIStore = ({
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .end(function (err, res) {
-          if(err != null && err.error) {
+          if(err && err.error) {
             console.error(url, err);
           }
           if(res != null) {
@@ -148,7 +148,7 @@ var GlossaryAPIStore = ({
         .field('transLocale', data.uploadFile.transLocale)
         .set('Accept', 'application/json')
         .end(function (err, res) {
-          if(err != null && err.error) {
+          if(err && err.error) {
             console.error(url, err);
           }
           if(res != null) {

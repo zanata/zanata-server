@@ -47,6 +47,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.model.HPerson;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 /**
@@ -200,10 +201,10 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public HGlossaryEntry getEntryByContentHash(String resId) {
+    public HGlossaryEntry getEntryByContentHash(String contentHash) {
         Query query = getSession().createQuery(
-                "from HGlossaryEntry as e WHERE e.resId = :resId ");
-        query.setParameter("resId", resId);
+                "from HGlossaryEntry as e WHERE e.contentHash = :contentHash ");
+        query.setParameter("contentHash", contentHash);
         query.setComment("GlossaryDAO.getEntryByContentHash");
         return (HGlossaryEntry) query.uniqueResult();
     }
@@ -219,6 +220,20 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         query.setParameterList("idList", idList);
         query.setCacheable(false).setComment("GlossaryDAO.getByIdList");
         return query.list();
+    }
+    
+    public String getUsername(Long termId) {
+        Query query =
+                getSession()
+                        .createQuery(
+                            "Select term.lastModifiedBy FROM HGlossaryTerm term WHERE term.id =:termId");
+        query.setLong("termId", termId).setCacheable(true)
+                .setComment("GlossaryDAO.getUsername");
+        HPerson person = (HPerson)query.uniqueResult();
+        if(person != null) {
+            return person.getAccount().getUsername();
+        }
+        return "";
     }
 
     public List<Object[]> getSearchResult(String searchText,
