@@ -6,6 +6,7 @@ import { Button, Input, Icons, Icon, Loader, Select } from 'zanata-ui'
 import DataTable from './glossary/DataTable'
 import NewEntryModal from './glossary/NewEntryModal'
 import ImportModal from './glossary/ImportModal'
+import MessageModal from './MessageModal'
 import _ from 'lodash';
 import StringUtils from '../utils/StringUtils'
 
@@ -30,6 +31,9 @@ var SystemGlossary = React.createClass({
   },
 
   componentWillUnmount: function() {
+    if(this.filterTimeout !== null) {
+      clearTimeout(this.filterTimeout);
+    }
     GlossaryStore.removeChangeListener(this._onChange);
   },
 
@@ -66,7 +70,12 @@ var SystemGlossary = React.createClass({
     var count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
       uploadSection = null,
-      newEntrySection = null;
+      newEntrySection = null,
+      messageModal = null;
+
+    if(this.state.notification) {
+      messageModal = <MessageModal value={this.state.notification}/>;
+    }
 
     var contents = (<DataTable
       glossaryData={this.state.glossary}
@@ -114,6 +123,7 @@ var SystemGlossary = React.createClass({
             {loader}
           </div>
           <div className='dfx aic'>
+            {messageModal}
             {uploadSection}
             {newEntrySection}
           </div>

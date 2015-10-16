@@ -28,12 +28,11 @@ var GlossaryHelper = {
   },
 
   /**
-   * Generate org.zanata.rest.dto.Glossary object
+   * Generate org.zanata.rest.dto.GlossaryEntry object
    * @param data
    */
-  generateGlossaryDTO: function (data) {
-    var glossary = {}, entry = {};
-    glossary['glossaryEntries'] = [];
+  generateGlossaryEntryDTO: function (data) {
+    var entry = {};
 
     entry.contentHash = data.contentHash;
     entry.pos = StringUtils.trim(data.pos);
@@ -51,9 +50,7 @@ var GlossaryHelper = {
     if(!_.isNull(transTerm) && !_.isUndefined(transTerm)) {
       entry.glossaryTerms.push(transTerm);
     }
-
-    glossary.glossaryEntries.push(entry);
-    return glossary;
+    return entry;
   },
 
   generateEmptyTerm: function(transLocaleId){

@@ -27,6 +27,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.rest.dto.Glossary;
+import org.zanata.rest.dto.GlossaryEntry;
 
 /**
  *
@@ -34,7 +35,19 @@ import org.zanata.rest.dto.Glossary;
  *
  */
 public interface GlossaryFileService {
+    /**
+     * Save or update all entries in {@link org.zanata.rest.dto.Glossary}
+     *
+     * @param glossary
+     */
     List<HGlossaryEntry> saveOrUpdateGlossary(Glossary glossary);
+
+    /**
+     * Save or update glossary entry. See {@link org.zanata.rest.dto.GlossaryEntry}
+     *
+     * @param glossaryEntry
+     */
+    HGlossaryEntry saveOrUpdateGlossary(GlossaryEntry glossaryEntry);
 
     List<Glossary> parseGlossaryFile(InputStream fileContents, String fileName,
             LocaleId sourceLang, LocaleId transLang) throws

@@ -206,13 +206,28 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
+    @Deprecated
     public Response put(Glossary glossary) {
         return insertOrUpdate(glossary);
     }
 
     @Override
+    @Deprecated
     public Response post(Glossary glossary) {
         return insertOrUpdate(glossary);
+    }
+
+    @Override
+    public Response post(GlossaryEntry glossaryEntry) {
+        identity.checkPermission("", "glossary-insert");
+        ResponseBuilder response = request.evaluatePreconditions();
+        if (response != null) {
+            return response.build();
+        }
+        HGlossaryEntry hGlossaryEntry =
+            glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntry);
+        GlossaryEntry savedEntry = generateGlossaryEntry(hGlossaryEntry);
+        return Response.ok(savedEntry).build();
     }
 
     private Response insertOrUpdate(Glossary glossary) {
@@ -222,10 +237,10 @@ public class GlossaryService implements GlossaryResource {
         if (response != null) {
             return response.build();
         }
-        List<HGlossaryEntry> entry =
+        List<HGlossaryEntry> entries =
             glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
         Glossary savedGlossary = new Glossary();
-        transferEntriesResource(entry, savedGlossary);
+        transferEntriesResource(entries, savedGlossary);
 
         return Response.ok(savedGlossary).build();
     }
@@ -277,11 +292,12 @@ public class GlossaryService implements GlossaryResource {
         }
 
         HGlossaryEntry entry = glossaryDAO.getEntryByContentHash(hash);
+        GlossaryEntry deletedEntry = generateGlossaryEntry(entry);
 
         if(entry != null) {
             glossaryDAO.makeTransient(entry);
             glossaryDAO.flush();
-            return Response.ok(hash).build();
+            return Response.ok(deletedEntry).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND)
                 .entity("Glossary " + hash + "entry not found").build();

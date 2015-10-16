@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, { PureRenderMixin } from 'react/addons';
 import {Icon, Button, Input, Modal} from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import StringUtils from '../../utils/StringUtils'

@@ -99,7 +99,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
         for (int i = 0; i < glossary.getGlossaryEntries().size(); i++) {
-            HGlossaryEntry entry = transferGlossaryEntryAndSave(
+            HGlossaryEntry entry = saveOrUpdateGlossary(
                 glossary.getGlossaryEntries().get(i));
             entries.add(entry);
             counter++;
@@ -111,6 +111,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
         }
         return entries;
+    }
+
+    @Override
+    public HGlossaryEntry saveOrUpdateGlossary(GlossaryEntry glossaryEntry) {
+        return transferGlossaryEntryAndSave(glossaryEntry);
     }
 
     private List<Glossary> parseCsvFile(InputStream fileContents)

@@ -97,6 +97,11 @@ var Actions = {
         actionType: GlossaryActionTypes.RESET_ENTRY,
         data: contentHash
       });
+  },
+  clearMessage: function() {
+    Dispatcher.handleViewAction({
+      actionType: GlossaryActionTypes.CLEAR_MESSAGE
+    });
   }
 };
 

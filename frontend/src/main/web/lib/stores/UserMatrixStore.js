@@ -42,15 +42,7 @@ function loadFromServer() {
       .set("Pragma", "no-cache")
       .set("Expires", 0)
       .end(function (err, res) {
-        if(err != null && err.error) {
-          console.error(url, err);
-        }
-        if (res.error) {
-          console.error(url, res.status, res.error.toString());
-          reject(Error(res.error.toString()));
-        } else {
-          resolve(res['body']);
-        }
+        err ? reject(err) : resolve(res.body);
         _state.loading = false;
       });
   });

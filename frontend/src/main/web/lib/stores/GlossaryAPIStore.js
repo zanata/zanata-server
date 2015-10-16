@@ -14,18 +14,7 @@ var GlossaryAPIStore = ({
         .set("Pragma", "no-cache")
         .set("Expires", 0)
         .end(function (err, res) {
-          if (err && err.error) {
-            console.error(url, err);
-          }
-          if (res != null) {
-            if (res.error) {
-              console.error(url, res.status, res.error.toString());
-              reject(Error(res.error.toString()));
-            } else {
-              resolve(res['body']);
-            }
-          }
-          resolve(null);
+          err ? reject(err) : resolve(res);
         })
     });
   },
@@ -42,18 +31,7 @@ var GlossaryAPIStore = ({
           .set("Pragma", "no-cache")
           .set("Expires", 0)
           .end(function (err, res) {
-            if (err && err.error) {
-              console.error(url, err);
-            }
-            if (res != null) {
-              if (res.error) {
-                console.error(url, res.status, res.error.toString());
-                reject(Error(res.error.toString()));
-              } else {
-                resolve(res['body']);
-              }
-            }
-            resolve(null);
+            err ? reject(err) : resolve(res);
           });
       });
     }
@@ -83,26 +61,15 @@ var GlossaryAPIStore = ({
     return params.length ? '&sort=' + params.join() : '';
   },
 
-  saveOrUpdateGlossary: function(glossary) {
-    var url = Configs.baseUrl + "/glossary/" + Configs.urlPostfix;
+  saveOrUpdateGlossary: function(entry) {
+    var url = Configs.baseUrl + "/glossary/entries" + Configs.urlPostfix;
     return new Promise(function(resolve, reject) {
       Request.post(url)
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
-        .send(glossary)
+        .send(entry)
         .end(function (err, res) {
-          if(err && err.error) {
-            console.error(url, err);
-          }
-          if(res != null) {
-            if (res.error) {
-              console.error(url, res.status, res.error.toString());
-              reject(Error(res.error.toString()));
-            } else {
-              resolve(res['body']);
-            }
-          }
-          resolve(null);
+          err ? reject(err) : resolve(res);
         })
     });
   },
@@ -120,18 +87,7 @@ var GlossaryAPIStore = ({
         .set('Content-Type', 'application/json')
         .set('Accept', 'application/json')
         .end(function (err, res) {
-          if(err && err.error) {
-            console.error(url, err);
-          }
-          if(res != null) {
-            if (res.error) {
-              console.error(url, res.status, res.error.toString());
-              reject(Error(res.error.toString()));
-            } else {
-              resolve(res['body']);
-            }
-          }
-          resolve(null);
+          err ? reject(err) : resolve(res);
         })
     });
   },
@@ -148,18 +104,7 @@ var GlossaryAPIStore = ({
         .field('transLocale', data.uploadFile.transLocale)
         .set('Accept', 'application/json')
         .end(function (err, res) {
-          if(err && err.error) {
-            console.error(url, err);
-          }
-          if(res != null) {
-            if (res.error) {
-              console.error(url, res.status, res.error.toString());
-              reject(Error(res.error.toString()));
-            } else {
-              resolve(res['body']);
-            }
-          }
-          resolve(null);
+          err ? reject(err) : resolve(res);
         })
         .on('progress', function(e) {
           onProgressCallback(e.percent);
