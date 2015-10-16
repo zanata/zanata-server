@@ -21,7 +21,6 @@
 package org.zanata.adapter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -40,14 +39,14 @@ import net.sf.okapi.common.resource.RawDocument;
 import net.sf.okapi.common.resource.StartSubDocument;
 import net.sf.okapi.common.resource.TextUnit;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.adapter.TranslatableSeparator.SplitString;
-import org.zanata.common.ContentState;
-import org.zanata.common.ContentType;
-import org.zanata.common.HasContents;
-import org.zanata.common.LocaleId;
+import org.zanata.common.*;
 import org.zanata.exception.FileFormatAdapterException;
+import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
@@ -58,6 +57,8 @@ import org.zanata.util.HashUtil;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+
+import javax.annotation.Nonnull;
 
 /**
  * An adapter that uses a provided {@link IFilter} implementation to parse
@@ -103,7 +104,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         subDocNameAndTextUnitId
     };
 
-    private final IFilter filter;
+    protected final IFilter filter;
     private final IdSource idSource;
     private boolean requireFileOutput;
     private boolean separateNonTranslatable;
@@ -190,11 +191,17 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
                     if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
                         String content = getTranslatableText(tu);
                         if (!content.isEmpty()) {
-                            TextFlow tf =
-                                    new TextFlow(getIdFor(tu, content,
-                                            subDocName), sourceLocale);
-                            tf.setPlural(false);
-                            tf.setContents(content);
+                            TextFlow tf = new TextFlow(getIdFor(tu, content,
+                                    subDocName), sourceLocale);
+                            // Numerus is the Qt TS plural indicator
+                            if(tu.hasProperty("numerus") &&
+                                    tu.getProperty("numerus").getValue().equals("yes")) {
+                                tf.setPlural(true);
+                                tf.setContents(content, content);
+                            } else {
+                                tf.setPlural(false);
+                                tf.setContents(content);
+                            }
                             if (shouldAdd(tf.getId(), tf, addedResources)) {
                                 addedResources.put(tf.getId(), tf);
                                 resources.add(tf);
@@ -417,7 +424,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
 
     }
 
-    private void generateTranslatedFile(URI originalFile,
+    protected void generateTranslatedFile(URI originalFile,
             Map<String, TextFlowTarget> translations,
             net.sf.okapi.common.LocaleId localeId, IFilterWriter writer,
             Optional<String> params) {
@@ -446,10 +453,8 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
                             TextFlowTarget tft =
                                     translations.get(getIdFor(tu,
                                             translatable, subDocName));
-
                             if (tft != null) {
                                 String translated = tft.getContents().get(0);
-
                                 translated =
                                         getFullTranslationText(tu, translated);
                                 tu.setTargetContent(localeId, GenericContent
