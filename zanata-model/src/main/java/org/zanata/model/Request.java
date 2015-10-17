@@ -116,6 +116,11 @@ public class Request extends TimeEntityBase {
         @PrePersist
         private void prePersist(Request request) {
             request.validFrom = new Date();
+            //make sure validFrom is not after validTo(set from service)
+            if (request.validTo != null
+                    && (request.validFrom.after(request.validTo))) {
+                request.validFrom = request.validTo;
+            }
         }
     }
 }

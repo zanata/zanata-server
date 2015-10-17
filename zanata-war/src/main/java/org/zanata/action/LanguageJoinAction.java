@@ -156,7 +156,7 @@ public class LanguageJoinAction implements Serializable {
     public void requestAsCoordinator() {
         processRequest(false, false, true);
     }
-    
+
     private void processRequest(boolean isRequestAsTranslator,
             boolean isRequestAsReviewer,
             boolean isRequestAsCoordinator) {
@@ -206,7 +206,8 @@ public class LanguageJoinAction implements Serializable {
     }
 
     public boolean isUserAlreadyRequest() {
-        return requestServiceImpl.isRequestExist(authenticatedAccount, getLocale());
+        return requestServiceImpl.isLanguageRequestExist(authenticatedAccount,
+            getLocale());
     }
 
     public void cancelRequest() {
@@ -219,7 +220,7 @@ public class LanguageJoinAction implements Serializable {
                         + authenticatedAccount.getUsername() + "}";
         requestServiceImpl.updateLanguageRequest(languageRequest.getId(),
                 authenticatedAccount, RequestState.CANCELLED, comment);
-        
+
         facesMessages.addGlobal(msgs.format("jsf.language.request.cancelled",
             authenticatedAccount.getUsername()));
     }

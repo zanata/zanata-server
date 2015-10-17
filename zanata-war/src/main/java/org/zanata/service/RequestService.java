@@ -57,7 +57,7 @@ public interface RequestService {
      * @param requester
      * @param locale
      */
-    boolean isRequestExist(HAccount requester, HLocale locale);
+    boolean isLanguageRequestExist(HAccount requester, HLocale locale);
 
     /**
      * Update join language request
@@ -78,7 +78,7 @@ public interface RequestService {
 
     /**
      * Get pending language request for user
-     * 
+     *
      * @param localeId
      */
     LanguageRequest getPendingLanguageRequests(HAccount account,
@@ -88,6 +88,18 @@ public interface RequestService {
      *
      * @param Get outstanding language requests on languages
      */
-    List<LanguageRequest> getOutstandingLanguageRequests(
+    List<LanguageRequest> getPendingLanguageRequests(
         LocaleId... localeIds);
+
+    /**
+     * Return pending request by entityId
+     * @param entityId
+     */
+    Request getPendingRequestByEntityId(String entityId);
+
+    /**
+     * Return request including history by entityId
+     * @param entityId
+     */
+    List<Request> getRequestByEntityId(String entityId);
 }

@@ -41,7 +41,6 @@ import org.zanata.service.RequestService;
 import org.zanata.util.Event;
 
 import javax.persistence.EntityNotFoundException;
-import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -72,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
         //of the same requester, account and locale
 
         LanguageRequest languageRequest =
-            languageRequestDAO.findRequesterOutstandingRequests(requester,
+            languageRequestDAO.findRequesterPendingRequests(requester,
                 locale.getLocaleId());
 
         if (languageRequest != null) {
@@ -92,10 +91,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean isRequestExist(HAccount requester, HLocale locale) {
+    public boolean isLanguageRequestExist(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
-                languageRequestDAO.findRequesterOutstandingRequests(requester,
-                        locale.getLocaleId());
+                languageRequestDAO.findRequesterPendingRequests(requester,
+                    locale.getLocaleId());
         return languageRequest != null;
     }
 
@@ -142,15 +141,25 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public LanguageRequest getPendingLanguageRequests(HAccount account,
         LocaleId localeId) {
-        return languageRequestDAO.findRequesterOutstandingRequests(
-                account, localeId);
+        return languageRequestDAO.findRequesterPendingRequests(
+            account, localeId);
     }
 
     @Override
-    public List<LanguageRequest> getOutstandingLanguageRequests(
+    public List<LanguageRequest> getPendingLanguageRequests(
         LocaleId... localeIds) {
         return languageRequestDAO
-            .findOutstandingRequests(Lists.newArrayList(localeIds));
+            .findPendingRequests(Lists.newArrayList(localeIds));
+    }
+
+    @Override
+    public Request getPendingRequestByEntityId(String entityId) {
+        return requestDAO.getPendingRequestByEntityId(entityId);
+    }
+
+    @Override
+    public List<Request> getRequestByEntityId(String entityId) {
+        return requestDAO.getByEntityId(entityId);
     }
 
     /**

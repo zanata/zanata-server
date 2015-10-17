@@ -168,7 +168,7 @@ public class LanguageAction implements Serializable {
         }
         if (identity != null &&
             identity.hasPermission(locale, "manage-language-team")) {
-            return requestServiceImpl.getOutstandingLanguageRequests(
+            return requestServiceImpl.getPendingLanguageRequests(
                 locale.getLocaleId());
         }
         return Lists.newArrayList();

@@ -293,8 +293,6 @@ public class EmailStrategyTest {
                 "jsf.email.joinrequest.UserRequestingToJoin",
                 fromName, fromLoginName, localeId, localeNativeName));
         assertThat(html).contains(
-                htmlMessage);
-        assertThat(html).contains(
                 serverPath + "/language/view/" + localeId);
     }
 

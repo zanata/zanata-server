@@ -1,10 +1,15 @@
 package org.zanata.dao;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.model.LanguageRequest;
 import org.zanata.model.Request;
+
+import java.util.List;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -18,7 +23,31 @@ public class RequestDAO extends AbstractDAOImpl<Request, Long> {
         super(Request.class);
     }
 
+    public RequestDAO(Session session) {
+        super(Request.class, session);
+    }
+
     public Request getById(Long requestId) {
         return findById(requestId);
+    }
+
+    public List<Request> getByEntityId(String entityId) {
+        String query =
+            "from Request req where req.entityId= :entityId order by req.validFrom";
+        Query q = getSession().createQuery(query)
+            .setParameter("entityId", entityId)
+            .setCacheable(true).setComment(
+                "requestDAO.getByEntityId");
+        return q.list();
+    }
+
+    public Request getPendingRequestByEntityId(String entityId) {
+        String query =
+            "from Request req where req.entityId= :entityId and req.validTo is null";
+        Query q = getSession().createQuery(query)
+            .setParameter("entityId", entityId)
+            .setCacheable(true).setComment(
+                "requestDAO.getPendingRequestByEntityId");
+        return (Request) q.uniqueResult();
     }
 }

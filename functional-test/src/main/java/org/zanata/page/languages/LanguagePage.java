@@ -45,9 +45,9 @@ import com.google.common.collect.Sets;
 public class LanguagePage extends BasePage {
 
     private By contactCoordinatorsButton =
-            By.linkText("Contact Coordinators");
+        By.id("contact-coordinator");
     private By saveButton = By.id("save-button");
-    private By moreActions = By.className("dropdown__toggle");
+    private By moreActions = By.id("more-action");
     private By enableByDefault = By.id("enable-by-default");
     private By membersTab = By.id("members_tab");
     private By settingsTab = By.id("settings_tab");
