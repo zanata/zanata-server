@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import {Icon, Button, Input, Modal, Select} from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import StringUtils from '../../utils/StringUtils'
@@ -86,7 +85,7 @@ var ImportModal = React.createClass({
   },
 
   render: function () {
-    var transLanguageDropdown = null,
+    var transLanguageDropdown,
       fileExtension = this._getUploadFileExtension(),
       disableUpload = true,
       isUploading = this.state.status !== -1;

@@ -1,10 +1,10 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import { Icon } from 'zanata-ui';
+import _ from 'lodash';
 
 var ColumnHeader = React.createClass({
   propTypes: {
-    sort: React.PropTypes.oneOf(['ascending', 'descending', null]),
+    sort: React.PropTypes.oneOf(['ascending', 'descending', undefined]),
     value: React.PropTypes.string.isRequired,
     allowSort: React.PropTypes.bool.isRequired,
     field: React.PropTypes.oneOf(['src_content', 'trans_content', 'part_of_speech', 'desc', 'trans_count']),
@@ -31,10 +31,10 @@ var ColumnHeader = React.createClass({
   },
 
   render: function() {
-    var sortIcon = null;
+    var sortIcon;
 
     if(this.props.allowSort) {
-      if(this.state.sort !== null) {
+      if(!_.isUndefined(this.state.sort)) {
         var iconName = this.state.sort === 'descending' ? 'chevron-up' : 'chevron-down';
         sortIcon = <Icon name={iconName}/>;
       }

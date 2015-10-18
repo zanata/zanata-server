@@ -17,7 +17,7 @@ var views = {
         return this.GLOSSARY; break;
       default:
         console.debug('Invalid view (might be dev environment view)', value);
-        return null; break;
+        return; break;
     }
   },
 

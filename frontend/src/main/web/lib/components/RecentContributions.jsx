@@ -9,8 +9,8 @@ var RecentContributions = React.createClass(
   {
     render: function() {
       var dateRange = this.props.dateRange,
-        chart = null,
-        matrix = null;
+        chart,
+        matrix;
 
       if(this.props.loading) {
         chart = (
@@ -29,7 +29,7 @@ var RecentContributions = React.createClass(
           <FilterableMatrixTable
             wordCountForSelectedDay={this.props.wordCountsForSelectedDayFilteredByContentState}
             wordCountForEachDay={this.props.wordCountsForEachDayFilteredByContentState}
-            fromDate={dateRange['fromDate']} toDate={dateRange['toDate']}
+            fromDate={dateRange.fromDate} toDate={dateRange.toDate}
             dateRangeOption={this.props.dateRangeOption}
             selectedContentState={this.props.contentStateOption}
             selectedDay={this.props.selectedDay}

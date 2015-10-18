@@ -105,7 +105,7 @@ public class HGlossaryTerm extends ModelEntityBase {
         return locale;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "last_modified_by_id", nullable = true)
     public HPerson getLastModifiedBy() {
         return lastModifiedBy;

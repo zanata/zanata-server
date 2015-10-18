@@ -78,7 +78,8 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         StringBuilder queryString = new StringBuilder();
         queryString.append("select count(term.glossaryEntry) from HGlossaryTerm as term ")
             .append("where term.glossaryEntry.srcLocale.localeId =:srcLocale ")
-            .append("and term.locale.localeId = term.glossaryEntry.srcLocale.localeId");
+            .append(
+                "and term.locale.localeId = term.glossaryEntry.srcLocale.localeId");
 
         if(!StringUtils.isBlank(filter)) {
             queryString.append(" and lower(term.content) like lower(:filter)");
@@ -222,18 +223,14 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
     
-    public String getUsername(Long termId) {
+    public String getLastModifiedName(Long termId) {
         Query query =
                 getSession()
                         .createQuery(
-                            "Select term.lastModifiedBy FROM HGlossaryTerm term WHERE term.id =:termId");
+                            "Select term.lastModifiedBy.name FROM HGlossaryTerm term WHERE term.id =:termId");
         query.setLong("termId", termId).setCacheable(true)
-                .setComment("GlossaryDAO.getUsername");
-        HPerson person = (HPerson)query.uniqueResult();
-        if(person != null) {
-            return person.getAccount().getUsername();
-        }
-        return "";
+                .setComment("GlossaryDAO.getLastModifiedName");
+        return (String)query.uniqueResult();
     }
 
     public List<Object[]> getSearchResult(String searchText,

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import StringUtils from './StringUtils'
+import DateHelpers from './DateHelper'
 
 var GlossaryHelper = {
   /**
@@ -10,14 +11,14 @@ var GlossaryHelper = {
    */
   generateGlossaryTermDTO: function (data, trimContent) {
     if(_.isUndefined(data)) {
-      return null;
+      return;
     }
     var content = trimContent ? StringUtils.trim(data.content) : data.content,
       locale = data.locale,
       comments = StringUtils.trim(data.comment);
 
     if(StringUtils.isEmptyOrNull(content) && StringUtils.isEmptyOrNull(locale)) {
-      return null;
+      return;
     } else {
       return  {
         content: content,
@@ -42,12 +43,12 @@ var GlossaryHelper = {
     entry.glossaryTerms = [];
 
     var srcTerm = this.generateGlossaryTermDTO(data.srcTerm, false);
-    if(!_.isNull(srcTerm) && !_.isUndefined(srcTerm)) {
+    if(!_.isUndefined(srcTerm)) {
       entry.glossaryTerms.push(srcTerm);
     }
 
     var transTerm = this.generateGlossaryTermDTO(data.transTerm, true);
-    if(!_.isNull(transTerm) && !_.isUndefined(transTerm)) {
+    if(!_.isUndefined(transTerm)) {
       entry.glossaryTerms.push(transTerm);
     }
     return entry;
@@ -72,6 +73,37 @@ var GlossaryHelper = {
   getTermByLocale: function (terms, localeId) {
     var term = _.filter(terms, 'locale', localeId);
     return term.length ? term[0] : null;
+  },
+
+  generateEntry: function (entry, transLocaleId) {
+    var srcTerm =
+      this.getTermByLocale(entry.glossaryTerms, entry.srcLang);
+
+    srcTerm.reference = entry.sourceReference;
+    if(!StringUtils.isEmptyOrNull(srcTerm.lastModifiedDate)) {
+      srcTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(srcTerm.lastModifiedDate));
+    }
+    var transTerm =
+      this.getTermByLocale(entry.glossaryTerms, transLocaleId);
+
+    if(transTerm) {
+      transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
+      if(_.isUndefined(transTerm.comment)) {
+        transTerm.comment = ''
+      }
+    } else {
+      transTerm = this.generateEmptyTerm(transLocaleId);
+    }
+
+    return {
+      contentHash: entry.contentHash,
+      pos: _.isUndefined(entry.pos) ? '' : entry.pos,
+      description: _.isUndefined(entry.description) ? '' : entry.description,
+      termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0 , //remove source term from count
+      srcTerm: srcTerm,
+      transTerm: transTerm,
+      status: this.getDefaultEntryStatus()
+    };
   },
 
   getEntryStatus: function (entry, originalEntry) {

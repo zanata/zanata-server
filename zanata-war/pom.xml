@@ -1334,6 +1334,7 @@
               <autoProvides>false</autoProvides>
               <autoRequires>false</autoRequires>
               <requires>
+                <require>java &gt;= 1:${required.java}</require>
                 <require>jbossas-standalone &gt;= ${jboss.as.standalone.version}</require>
               </requires>
             </configuration>
@@ -1374,6 +1375,26 @@
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.jodah</groupId>
+      <artifactId>concurrentunit</artifactId>
+      <version>0.4.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jglue.cdi-unit</groupId>
+      <artifactId>cdi-unit</artifactId>
+      <version>3.1.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.weld.se</groupId>
+          <artifactId>weld-se-core</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

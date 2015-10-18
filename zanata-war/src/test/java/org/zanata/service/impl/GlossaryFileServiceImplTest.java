@@ -39,6 +39,8 @@ import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.seam.SeamAutowire;
 
+import com.google.common.collect.Lists;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -96,18 +98,18 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         LocaleId srcLocaleId = LocaleId.EN_US;
         LocaleId transLocaleId = LocaleId.DE;
 
-        List<Glossary> result =
+        List<List<GlossaryEntry>> result =
                 glossaryFileService.parseGlossaryFile(stubInputStream,
                         fileName, srcLocaleId,
                         transLocaleId);
 
         assertThat(result).hasSize(1);
 
-        Glossary glossary = result.get(0);
+        List<GlossaryEntry> entries = result.get(0);
 
-        assertThat(glossary.getGlossaryEntries()).hasSize(1);
+        assertThat(entries).hasSize(1);
 
-        GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
+        GlossaryEntry entry = entries.get(0);
         assertThat(entry.getSrcLang()).isEqualTo(srcLocaleId);
         assertThat(entry.getGlossaryTerms()).hasSize(2)
                 .extracting("locale")
@@ -149,11 +151,8 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         entry.getGlossaryTerms().add(term1);
         entry.getGlossaryTerms().add(term2);
 
-        Glossary glossary = new Glossary();
-        glossary.getGlossaryEntries().add(entry);
-
         List<HGlossaryEntry> hEntries =
-                glossaryFileService.saveOrUpdateGlossary(glossary);
+                glossaryFileService.saveOrUpdateGlossary(Lists.newArrayList(entry));
 
         assertThat(hEntries.size()).isEqualTo(1);
 

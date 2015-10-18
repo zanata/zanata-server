@@ -9,7 +9,7 @@ import DateHelpers from '../utils/DateHelper'
 import _ from 'lodash';
 import GlossaryAPIStore from './GlossaryAPIStore'
 
-var PAGE_SIZE = 20,
+var PAGE_SIZE = 1000,
   CHANGE_EVENT = "change",
   MAX_LISTENERS = 100, //overriding number of listener for GlossaryStore. (default is 11)
   SEVERITY = {
@@ -71,7 +71,7 @@ function processLocalesStatistic(res) {
       _state.glossaryHash[i] = null;
     }
 
-    _.forEach(body['transLocale'], function(transLocale) {
+    _.forEach(body.transLocale, function(transLocale) {
       _state.locales[transLocale.locale.localeId] = transLocale;
       _state.localeOptions.push({
         value: transLocale.locale.localeId,
@@ -109,36 +109,8 @@ function processGlossaryList(res) {
 
     var startIndex = ((page -1) * PAGE_SIZE);
 
-    _.forOwn(body.glossaryEntries, function(entry) {
-      var srcTerm =
-        GlossaryHelper.getTermByLocale(entry.glossaryTerms, entry.srcLang);
-
-      srcTerm.reference = entry.sourceReference;
-
-      if(!StringUtils.isEmptyOrNull(srcTerm.lastModifiedDate)) {
-        srcTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(srcTerm.lastModifiedDate));
-      }
-
-      var transTerm =
-        GlossaryHelper.getTermByLocale(entry.glossaryTerms, transLocaleId);
-
-      if(transTerm) {
-        transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
-        if(_.isUndefined(transTerm.comment)) {
-          transTerm.comment = ''
-        }
-      } else {
-        transTerm = GlossaryHelper.generateEmptyTerm(transLocaleId);
-      }
-      _state.glossary[entry.contentHash] = {
-        contentHash: entry.contentHash,
-        pos: _.isUndefined(entry.pos) ? '' : entry.pos,
-        description: _.isUndefined(entry.description) ? '' : entry.description,
-        termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0 , //remove source term from count
-        srcTerm: srcTerm,
-        transTerm: transTerm,
-        status: GlossaryHelper.getDefaultEntryStatus()
-      };
+    _.forOwn(body.results, function(entry) {
+      _state.glossary[entry.contentHash] = GlossaryHelper.generateEntry(entry);
       _state.glossary[entry.contentHash].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.contentHash]);
       _state.glossary[entry.contentHash].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.contentHash]);
       _state.glossaryHash[startIndex] = [entry.contentHash];
@@ -157,13 +129,13 @@ function saveGlossary(data) {
   };
   entry.srcTerm.content = data.term;
   var glossaryEntry = GlossaryHelper.generateGlossaryEntryDTO(entry);
-  return GlossaryAPIStore.saveOrUpdateGlossary(glossaryEntry);
+  return GlossaryAPIStore.saveOrUpdateGlossary([glossaryEntry]);
 }
 
 function updateGlossary(entry) {
   entry.status.isSaving = true;
   var glossaryEntry = GlossaryHelper.generateGlossaryEntryDTO(entry);
-  return GlossaryAPIStore.saveOrUpdateGlossary(glossaryEntry);
+  return GlossaryAPIStore.saveOrUpdateGlossary([glossaryEntry]);
 }
 
 function onUploadFile(percentCompleted) {
@@ -191,7 +163,7 @@ function processDelete(res) {
   }
 }
 
-function processSaveOrUpdate(res) {
+function processSave(res) {
   _.assign(_state.newEntry, {
     isSaving: false,
     show: false,
@@ -203,12 +175,20 @@ function processSaveOrUpdate(res) {
   if(res.error) {
     setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
   } else {
+    setInfoMessage('Glossary created successfully.', '');
+  }
+}
+
+function processUpdate(res, resId) {
+  _state.glossary[resId].status = GlossaryHelper.getDefaultEntryStatus();
+  if(res.error) {
+    setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
+  } else {
     setInfoMessage('Changes saved successfully.', '');
   }
 }
 
 /**
- * Need notification feature to output message
  * display error message
  * @param res - server response
  */
@@ -230,13 +210,7 @@ function setErrorMessage(msg, res) {
  * @param msg - message to display
  */
 function setInfoMessage(subject, msg) {
-  console.info(subject);
-  _state.notification = {
-    SEVERITY: SEVERITY.INFO,
-    SUBJECT: subject,
-    MESSAGE: msg,
-    DETAILS: ''
-  };
+  console.info(subject, msg);
 }
 
 function refreshGlossaryEntries() {
@@ -304,109 +278,159 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
 
+  _onTranslationLocaleChanged: function (data) {
+    console.debug('select language', data);
+    _state.selectedTransLocale = data;
+    resetCache();
+    loadGlossaryByLocale()
+      .then(processGlossaryList)
+      .then(() => GlossaryStore.emitChange());
+  },
+
+  _onSaveGlossary: function(data) {
+    console.debug('save glossary', data);
+    _state.newEntry.isSaving = true;
+    _state.newEntry.show = true;
+    GlossaryStore.emitChange();
+
+    saveGlossary(data)
+      .then(processSave)
+      .then(refreshGlossaryEntries);
+  },
+
+  _onUpdateGlossary: function(data) {
+    console.debug('update glossary', _state.glossary[data]);
+    updateGlossary(_state.glossary[data])
+      .then(function(res) {
+        processUpdate(res, data);
+      })
+      .then(refreshGlossaryEntries);
+  },
+
+  _onDeleteGlossary: function(data) {
+    console.debug('delete entry', data);
+    GlossaryAPIStore.deleteGlossary(data)
+      .then(processDelete)
+      .then(refreshGlossaryEntries);
+  },
+
+  _onUpdateFilter: function(data) {
+    console.debug('Update filter', data);
+    if(_state.filter !== data) {
+      _state.filter = data;
+      refreshGlossaryEntries();
+    }
+  },
+
+  _onLoadGlossary: function(data) {
+    console.debug('load glossary', data);
+    var pageSize = data % PAGE_SIZE === 0 ? PAGE_SIZE - 1 : PAGE_SIZE;
+    _state.page = Math.ceil(data/pageSize);
+    _state.page = Math.max(_state.page, 1);
+    loadGlossaryByLocale()
+      .then(processGlossaryList)
+      .then(() => GlossaryStore.emitChange());
+  },
+
+  _onUpdateSortOrder: function(data) {
+    console.debug('Update sort order', data);
+    _state.sort[data.field] = data.ascending;
+    loadGlossaryByLocale()
+      .then(processGlossaryList)
+      .then(() => GlossaryStore.emitChange());
+  },
+
+  _onUploadFile: function(data) {
+    console.debug('Upload file', data);
+    GlossaryAPIStore.uploadFile(data, onUploadFile)
+      .then(processUploadFile)
+      .then(resetCache)
+      .then(loadGlossaryByLocale)
+      .then(processGlossaryList)
+      .then(() => GlossaryStore.emitChange());
+  },
+
+  _onUpdateEntryField: function(data) {
+    _.set(_state.glossary[data.contentHash], data.field, data.value);
+    _state.glossary[data.contentHash]['status'] =
+      GlossaryHelper.getEntryStatus(_state.glossary[data.contentHash], _state.original_glossary[data.contentHash]);
+    GlossaryStore.emitChange();
+  },
+
+  _onUpdateComment: function(data) {
+    console.debug('Update comment', data);
+    _.set(_state.glossary[data.contentHash], 'transTerm.comment', data.value);
+    updateGlossary(_state.glossary[data.contentHash])
+      .then(processUpdate)
+      .then(refreshGlossaryEntries);
+  },
+
+  _onUpdateFocusRow: function(data) {
+    var previousContentHash = _state.focusedRow.contentHash,
+      previousRowIndex = _state.focusedRow.rowIndex;
+    //same index, ignore
+    if(previousRowIndex === data.rowIndex) {
+      return;
+    }
+    if(previousRowIndex !== -1 && previousContentHash !== null) {
+      var entry = _state.glossary[previousContentHash];
+      if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
+        updateGlossary(entry)
+          .then(processUpdate)
+          .then(refreshGlossaryEntries);
+      }
+    }
+    _state.focusedRow = data;
+    GlossaryStore.emitChange();
+  },
+
+  _onResetEntry: function(data) {
+    console.debug('reset entry', data);
+    _state.glossary[data] = _.cloneDeep(_state.original_glossary[data]);
+    GlossaryStore.emitChange();
+  },
+
   dispatchToken: Dispatcher.register(function(payload) {
     const action = payload.action;
-    switch (action['actionType']) {
+    switch (action.actionType) {
       case GlossaryActionTypes.TRANS_LOCALE_SELECTED:
-        console.debug('select language', action.data);
-        _state.selectedTransLocale = action.data;
-        resetCache();
-        loadGlossaryByLocale()
-          .then(processGlossaryList)
-          .then(() => GlossaryStore.emitChange());
+        GlossaryStore._onTranslationLocaleChanged(action.data);
         break;
       case GlossaryActionTypes.INSERT_GLOSSARY:
-        console.debug('save glossary', action.data);
-        _state.newEntry.isSaving = true;
-        _state.newEntry.show = true;
-        GlossaryStore.emitChange();
-
-        saveGlossary(action.data)
-          .then(processSaveOrUpdate)
-          .then(refreshGlossaryEntries);
+        GlossaryStore._onSaveGlossary(action.data);
         break;
       case GlossaryActionTypes.UPDATE_GLOSSARY:
-        console.debug('update glossary', _state['glossary'][action.data]);
-        updateGlossary(_state.glossary[action.data])
-          .then(processSaveOrUpdate)
-          .then(refreshGlossaryEntries);
+        GlossaryStore._onUpdateGlossary(action.data);
         break;
       case GlossaryActionTypes.DELETE_GLOSSARY:
-        console.debug('delete entry', action.data);
-        GlossaryAPIStore.deleteGlossary(action.data)
-          .then(processDelete)
-          .then(refreshGlossaryEntries);
+        GlossaryStore._onDeleteGlossary(action.data);
         break;
       case GlossaryActionTypes.UPDATE_FILTER:
-        console.debug('Update filter', action.data);
-        if(_state.filter !== action.data) {
-          _state.filter = action.data;
-          refreshGlossaryEntries();
-        }
+        GlossaryStore._onUpdateFilter(action.data);
         break;
       case GlossaryActionTypes.LOAD_GLOSSARY:
-        console.debug('load glossary', action.data);
-        var pageSize = action.data % PAGE_SIZE === 0 ? PAGE_SIZE - 1 : PAGE_SIZE;
-        _state.page = Math.ceil(action.data/pageSize);
-        _state.page = Math.max(_state.page, 1);
-        loadGlossaryByLocale()
-          .then(processGlossaryList)
-          .then(() => GlossaryStore.emitChange());
+        GlossaryStore._onLoadGlossary(action.data);
         break;
        case GlossaryActionTypes.UPDATE_SORT_ORDER:
-         console.debug('Update sort order', action.data);
-         _state.sort[action.data.field] = action.data.ascending;
-         loadGlossaryByLocale()
-           .then(processGlossaryList)
-           .then(() => GlossaryStore.emitChange());
+         GlossaryStore._onUpdateSortOrder(action.data);
          break;
       case GlossaryActionTypes.UPLOAD_FILE:
-        console.debug('Upload file', action.data);
-        GlossaryAPIStore.uploadFile(action.data, onUploadFile)
-          .then(processUploadFile)
-          .then(resetCache)
-          .then(loadGlossaryByLocale)
-          .then(processGlossaryList)
-          .then(() => GlossaryStore.emitChange());
+        GlossaryStore._onUploadFile(action.data);
         break;
       case GlossaryActionTypes.UPDATE_ENTRY_FIELD:
-        _.set(_state.glossary[action.data.contentHash], action.data.field, action.data.value);
-        _state.glossary[action.data.contentHash]['status'] =
-          GlossaryHelper.getEntryStatus(_state.glossary[action.data.contentHash], _state.original_glossary[action.data.contentHash]);
-        GlossaryStore.emitChange();
+        GlossaryStore._onUpdateEntryField(action.data);
         break;
       case GlossaryActionTypes.UPDATE_COMMENT:
-        console.debug('Update comment', action.data);
-        _.set(_state.glossary[action.data.contentHash], 'transTerm.comment', action.data.value);
-        updateGlossary(_state.glossary[action.data.contentHash])
-          .then(processSaveOrUpdate)
-          .then(refreshGlossaryEntries);
+        GlossaryStore._onUpdateComment(action.data);
         break;
       case GlossaryActionTypes.UPDATE_FOCUSED_ROW:
-        var previousContentHash = _state.focusedRow.contentHash,
-          previousRowIndex = _state.focusedRow.rowIndex;
-        //same index, ignore
-        if(previousRowIndex === action.data.rowIndex) {
-          return;
-        }
-        if(previousRowIndex !== -1 && previousContentHash !== null) {
-          var entry = _state.glossary[previousContentHash];
-          if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
-            updateGlossary(entry)
-                .then(processSaveOrUpdate)
-                .then(refreshGlossaryEntries);
-          }
-        }
-        _state.focusedRow = action.data;
-        GlossaryStore.emitChange();
+        GlossaryStore._onUpdateFocusRow(action.data);
         break;
       case GlossaryActionTypes.RESET_ENTRY:
-        console.debug('reset entry', action.data);
-        _state.glossary[action.data] = _.cloneDeep(_state.original_glossary[action.data]);
-        GlossaryStore.emitChange();
+        GlossaryStore._onResetEntry(action.data);
         break;
       case GlossaryActionTypes.CLEAR_MESSAGE:
-        _state.notification = null;
+        _state.notification = {};
         GlossaryStore.emitChange();
         break;
     }

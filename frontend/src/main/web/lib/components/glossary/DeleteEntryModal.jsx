@@ -9,6 +9,8 @@ var DeleteEntryModal = React.createClass({
     entry: React.PropTypes.object
   },
 
+  deleteTimeout: null,
+
   getInitialState: function() {
     return {
       show: false,
@@ -16,9 +18,20 @@ var DeleteEntryModal = React.createClass({
     }
   },
 
+  componentWillUnmount: function() {
+    if(this.deleteTimeout !== null) {
+      clearTimeout(this.deleteTimeout);
+    }
+  },
+
   _handleDelete: function() {
     this.setState({deleting: true});
-    setTimeout(() => {
+
+    if(this.deleteTimeout !== null) {
+      clearTimeout(this.deleteTimeout);
+    }
+
+    this.deleteTimeout = setTimeout(() => {
       Actions.deleteGlossary(this.props.contentHash);
       this._closeDialog()
     }, 100);

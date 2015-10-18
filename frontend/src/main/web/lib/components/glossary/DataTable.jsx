@@ -89,9 +89,7 @@ var DataTable = React.createClass({
   },
 
   /**
-   * if top is undefined, table height will be calculated based on DOM height.
-   *
-   * @param top - Number value of top height
+   * @param  top : number - the position of the top of the DataTable. If not supplied, the top position will be calculated based on DOM height.
    */
   _getHeight: function(top) {
     var footer = window.document.getElementById("footer");
@@ -117,6 +115,10 @@ var DataTable = React.createClass({
   },
 
   componentWillUnmount: function() {
+    if(this.loadTimeout !== null) {
+      clearTimeout(this.loadTimeout);
+    }
+
     window.removeEventListener('resize', this._handleResize);
   },
 
@@ -152,7 +154,7 @@ var DataTable = React.createClass({
 
   _getSort: function (key) {
     if(_.isUndefined(this.props.sort[key])) {
-      return null;
+      return;
     } else if(this.props.sort[key]) {
       return "ascending";
     } else {
@@ -167,8 +169,7 @@ var DataTable = React.createClass({
   },
 
   _renderTransHeader: function (label) {
-    var key = this.ENTRY.TRANS.sort_field,
-      asc = null;
+    var key = this.ENTRY.TRANS.sort_field, asc;
     return this._renderHeader(label, key, asc, false);
   },
 
@@ -296,7 +297,7 @@ var DataTable = React.createClass({
     if(contentHash === null) {
       return <LoadingCell/>;
     } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
-      return null;
+      return;
     }
     var entry = this._getGlossaryEntry(contentHash);
     if(this._isTranslationSelected()) {

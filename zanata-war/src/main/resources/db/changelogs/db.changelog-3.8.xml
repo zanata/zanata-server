@@ -95,7 +95,7 @@
   </changeSet>
 
   <changeSet id="2" author="aeng@redhat.com">
-    <comment>Add resId, pos and description to HGlossaryEntry</comment>
+    <comment>Add contentHash, pos and description to HGlossaryEntry</comment>
     <addColumn tableName="HGlossaryEntry">
       <column name="contentHash" type="varchar(255)">
         <constraints nullable="false" />

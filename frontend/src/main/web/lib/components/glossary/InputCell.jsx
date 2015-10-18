@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import {Input} from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils';
 import Actions from '../../actions/GlossaryActions';
@@ -41,6 +40,10 @@ var InputCell = React.createClass({
   },
 
   componentWillUnmount: function() {
+    if(this.updateTimeout !== null) {
+      clearTimeout(this.updateTimeout);
+    }
+
     GlossaryStore.removeChangeListener(this._onChange);
   },
 

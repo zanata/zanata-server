@@ -43,7 +43,6 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -76,7 +75,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     private final static int BATCH_SIZE = 50;
 
     @Override
-    public List<Glossary> parseGlossaryFile(InputStream fileContents,
+    public List<List<GlossaryEntry>> parseGlossaryFile(InputStream fileContents,
             String fileName, LocaleId sourceLang, LocaleId transLang)
             throws ZanataServiceException {
         try {
@@ -95,17 +94,16 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     @Override
-    public List<HGlossaryEntry> saveOrUpdateGlossary(Glossary glossary) {
+    public List<HGlossaryEntry> saveOrUpdateGlossary(List<GlossaryEntry> glossaryEntries) {
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
-        for (int i = 0; i < glossary.getGlossaryEntries().size(); i++) {
-            HGlossaryEntry entry = saveOrUpdateGlossary(
-                glossary.getGlossaryEntries().get(i));
+        for (int i = 0; i < glossaryEntries.size(); i++) {
+            HGlossaryEntry entry = transferGlossaryEntryAndSave(
+                    glossaryEntries.get(i));
             entries.add(entry);
             counter++;
 
-            if (counter == BATCH_SIZE
-                    || i == glossary.getGlossaryEntries().size() - 1) {
+            if (counter == BATCH_SIZE || i == glossaryEntries.size() - 1) {
                 executeCommit();
                 counter = 0;
             }
@@ -113,19 +111,14 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         return entries;
     }
 
-    @Override
-    public HGlossaryEntry saveOrUpdateGlossary(GlossaryEntry glossaryEntry) {
-        return transferGlossaryEntryAndSave(glossaryEntry);
-    }
-
-    private List<Glossary> parseCsvFile(InputStream fileContents)
+    private List<List<GlossaryEntry>> parseCsvFile(InputStream fileContents)
         throws IOException {
         GlossaryCSVReader csvReader =
                 new GlossaryCSVReader(BATCH_SIZE);
         return csvReader.extractGlossary(new InputStreamReader(fileContents));
     }
 
-    private List<Glossary> parsePoFile(InputStream fileContents,
+    private List<List<GlossaryEntry>> parsePoFile(InputStream fileContents,
             LocaleId sourceLang, LocaleId transLang) throws IOException {
         if (sourceLang == null || transLang == null) {
             throw new ZanataServiceException(

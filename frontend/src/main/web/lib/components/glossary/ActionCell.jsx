@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
@@ -24,7 +23,8 @@ var ActionCell = React.createClass({
 
   _getState: function() {
     return {
-      entry: GlossaryStore.getEntry(this.props.contentHash)
+      entry: GlossaryStore.getEntry(this.props.contentHash),
+      saving: false
     }
   },
 
@@ -43,6 +43,7 @@ var ActionCell = React.createClass({
   },
 
   _handleUpdate: function() {
+    this.setState({saving: true});
     Actions.updateGlossary(this.props.contentHash);
   },
 
@@ -60,7 +61,7 @@ var ActionCell = React.createClass({
     } else {
       var isTransModified = this.state.entry.status.isTransModified;
       var canUpdateComment = this.state.entry.status.canUpdateTransComment;
-      var isSaving = this.state.entry.status.isSaving;
+      var isSaving = this.state.entry.status.isSaving || this.state.saving;
 
       var infoTooltip = <Tooltip id="info">{this.props.info}</Tooltip>;
       var info = (
@@ -68,8 +69,8 @@ var ActionCell = React.createClass({
           <Icon className="cpri" name="info"/>
         </OverlayTrigger>);
 
-      var updateButton = null,
-        cancelButton = null,
+      var updateButton,
+        cancelButton,
         comment = (
           <Comment
             className="ml1/4"

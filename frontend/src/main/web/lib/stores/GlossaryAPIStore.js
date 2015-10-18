@@ -38,13 +38,13 @@ var GlossaryAPIStore = ({
   },
 
   glossaryAPIUrl: function (srcLocaleId, transLocale, filter, sort, page, pageSize) {
-    var url = Configs.baseUrl + "/glossary/src/" + srcLocaleId;
+    var url = Configs.baseUrl + "/glossary/entries" + Configs.urlPostfix + "?srcLocale=" + srcLocaleId;
 
     if (!StringUtils.isEmptyOrNull(transLocale)) {
-      url = url + "/trans/" + transLocale;
+      url = url + "&transLocale=" + transLocale;
     }
     url =
-      url + Configs.urlPostfix + "?page=" + page + "&sizePerPage=" + pageSize;
+      url + "&page=" + page + "&sizePerPage=" + pageSize;
 
     if (!StringUtils.isEmptyOrNull(filter)) {
       url = url + "&filter=" + filter;
@@ -93,7 +93,7 @@ var GlossaryAPIStore = ({
   },
 
   uploadFile: function(data, onProgressCallback) {
-    var url = Configs.baseUrl + "/glossary/upload",
+    var url = Configs.baseUrl + "/glossary",
       uploadFile = data.uploadFile;
 
     return new Promise(function(resolve, reject) {

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
@@ -32,12 +31,12 @@ import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.GlossaryFileUploadForm;
-import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryInfo;
 import org.zanata.rest.dto.GlossaryLocaleInfo;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.rest.dto.LocaleDetails;
+import org.zanata.rest.dto.ResultList;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
@@ -86,15 +85,15 @@ public class GlossaryService implements GlossaryResource {
 
         List<GlossaryLocaleInfo> transLocale = Lists.newArrayList();
 
-        for(HLocale locale: supportedLocales) {
-            if(locale.getLocaleId() != srcLocaleId) {
+        supportedLocales.stream()
+            .filter(locale -> locale.getLocaleId() != srcLocaleId)
+            .forEach(locale -> {
                 LocaleDetails localeDetails = generateLocaleDetails(locale);
                 int count = transMap.containsKey(locale.getLocaleId()) ?
                     transMap.get(locale.getLocaleId()) : 0;
 
                 transLocale.add(new GlossaryLocaleInfo(localeDetails, count));
-            }
-        }
+            });
         GlossaryInfo glossaryInfo =
             new GlossaryInfo(srcGlossaryLocale, transLocale);
 
@@ -104,22 +103,6 @@ public class GlossaryService implements GlossaryResource {
     private LocaleDetails generateLocaleDetails(HLocale locale) {
         return new LocaleDetails(locale.getLocaleId(),
             locale.retrieveDisplayName(), "");
-    }
-
-    @Override
-    @Deprecated
-    public Response getEntries() {
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-
-        List<HGlossaryEntry> hGlosssaryEntries = glossaryDAO.getEntries();
-
-        Glossary glossary = new Glossary();
-        transferEntriesResource(hGlosssaryEntries, glossary);
-
-        return Response.ok(glossary).build();
     }
 
     private List<GlossarySortField> convertToSortField(
@@ -144,107 +127,64 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response getEntriesForLocale(@PathParam("srcLocale") LocaleId srcLocale,
-        @PathParam("transLocale") LocaleId transLocale,
-        @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
-        @QueryParam("filter") String filter,
-        @QueryParam("sort") String fields) {
+    public Response getEntries(
+            @DefaultValue("en-US") @QueryParam("srcLocale") LocaleId srcLocale,
+            @QueryParam("transLocale") LocaleId transLocale,
+            @DefaultValue("1") @QueryParam("page") int page,
+            @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
+            @QueryParam("filter") String filter,
+            @QueryParam("sort") String fields) {
 
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
 
-        sizePerPage = sizePerPage > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : sizePerPage;
-        page = Math.max(page, 1);
+        if(sizePerPage > MAX_PAGE_SIZE || sizePerPage < 1 || page < 1) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         int offset = (page - 1) * sizePerPage;
 
-        List<HGlossaryEntry> hGlosssaryEntries =
+        List<HGlossaryEntry> hGlossaryEntries =
             glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage,
                 filter, convertToSortField(fields));
         int totalCount =
             glossaryDAO.getEntriesCount(srcLocale, filter);
 
-        Glossary glossary = new Glossary();
-        glossary.setTotalCount(totalCount);
+        ResultList<GlossaryEntry> resultList = new ResultList<GlossaryEntry>();
+        resultList.setTotalCount(totalCount);
 
-        HLocale locale = localeServiceImpl.getByLocaleId(transLocale);
-        transferEntriesLocaleResource(hGlosssaryEntries, glossary, locale);
-
-        return Response.ok(glossary).build();
-    }
-
-    @Override
-    public Response getAllEntries(LocaleId srcLocaleId,
-        @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
-        @QueryParam("filter") String filter,
-        @QueryParam("sort") String fields) {
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
+        if(transLocale != null) {
+            //filter out all terms other than source term and term in transLocale
+            HLocale locale = localeServiceImpl.getByLocaleId(transLocale);
+            transferEntriesLocaleResource(hGlossaryEntries, resultList, locale);
+        } else {
+            //filter out all terms other than source term
+            HLocale locale = localeServiceImpl.getByLocaleId(srcLocale);
+            transferEntriesLocaleResource(hGlossaryEntries, resultList, locale);
         }
-
-        sizePerPage = sizePerPage > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : sizePerPage;
-        page = Math.max(page, 1);
-        int offset = (page - 1) * sizePerPage;
-
-        List<HGlossaryEntry> hGlosssaryEntries =
-                glossaryDAO.getEntriesByLocale(srcLocaleId, offset,
-                    sizePerPage, filter, convertToSortField(fields));
-        int totalCount =
-            glossaryDAO.getEntriesCount(srcLocaleId, filter);
-        Glossary glossary = new Glossary();
-        glossary.setTotalCount(totalCount);
-
-        //filter out all terms other than source term
-        HLocale locale = localeServiceImpl.getByLocaleId(srcLocaleId);
-        transferEntriesLocaleResource(hGlosssaryEntries, glossary, locale);
-
-        return Response.ok(glossary).build();
+        return Response.ok(resultList).build();
     }
 
     @Override
-    @Deprecated
-    public Response put(Glossary glossary) {
-        return insertOrUpdate(glossary);
-    }
-
-    @Override
-    @Deprecated
-    public Response post(Glossary glossary) {
-        return insertOrUpdate(glossary);
-    }
-
-    @Override
-    public Response post(GlossaryEntry glossaryEntry) {
+    public Response post(List<GlossaryEntry> glossaryEntries) {
         identity.checkPermission("", "glossary-insert");
         ResponseBuilder response = request.evaluatePreconditions();
         if (response != null) {
             return response.build();
         }
-        HGlossaryEntry hGlossaryEntry =
-            glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntry);
-        GlossaryEntry savedEntry = generateGlossaryEntry(hGlossaryEntry);
-        return Response.ok(savedEntry).build();
+
+        List<GlossaryEntry> results = saveGlossaryEntries(glossaryEntries);
+
+        Type genericType = new GenericType<List<GlossaryEntry>>() {
+        }.getGenericType();
+        Object entity =
+            new GenericEntity<List<GlossaryEntry>>(results, genericType);
+
+        return Response.ok(entity).build();
     }
-
-    private Response insertOrUpdate(Glossary glossary) {
-        identity.checkPermission("", "glossary-insert");
-        // must be a create operation
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-        List<HGlossaryEntry> entries =
-            glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
-        Glossary savedGlossary = new Glossary();
-        transferEntriesResource(entries, savedGlossary);
-
-        return Response.ok(savedGlossary).build();
-    }
-
+    
     @Override
     public Response upload(@MultipartForm GlossaryFileUploadForm form) {
         identity.checkPermission("", "glossary-insert");
@@ -254,19 +194,21 @@ public class GlossaryService implements GlossaryResource {
             LocaleId srcLocaleId = new LocaleId(form.getSrcLocale());
             LocaleId transLocaleId = new LocaleId(form.getTransLocale());
 
-            List<Glossary> glossaries =
+            List<List<GlossaryEntry>> glossaryEntries =
                     glossaryFileServiceImpl
                             .parseGlossaryFile(form.getFileStream(),
                                     form.getFileName(), srcLocaleId,
                                     transLocaleId);
-            for (Glossary glossary : glossaries) {
-                glossaryFileServiceImpl.saveOrUpdateGlossary(glossary);
+
+            List<GlossaryEntry> results = Lists.newArrayList();
+            for (List<GlossaryEntry> entries : glossaryEntries) {
+                results.addAll(saveGlossaryEntries(entries));
             }
 
-            Type genericType = new GenericType<List<Glossary>>() {
+            Type genericType = new GenericType<List<GlossaryEntry>>() {
             }.getGenericType();
             Object entity =
-                    new GenericEntity<List<Glossary>>(glossaries,
+                    new GenericEntity<List<GlossaryEntry>>(results,
                             genericType);
             response =
                     Response.ok()
@@ -280,6 +222,18 @@ public class GlossaryService implements GlossaryResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e).build();
         }
+    }
+
+    private List<GlossaryEntry> saveGlossaryEntries(
+        List<GlossaryEntry> glossaryEntries) {
+
+        List<HGlossaryEntry> entries =
+            glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntries);
+
+        List<GlossaryEntry> results = Lists.newArrayList();
+        transferEntriesResource(entries, results);
+
+        return results;
     }
 
     @Override
@@ -304,7 +258,6 @@ public class GlossaryService implements GlossaryResource {
         }
     }
 
-    @Deprecated
     @Override
     public Response deleteAllEntries() {
         identity.checkPermission("", "glossary-delete");
@@ -319,7 +272,7 @@ public class GlossaryService implements GlossaryResource {
     }
 
     public void transferEntriesResource(List<HGlossaryEntry> hGlossaryEntries,
-            Glossary glossary) {
+            List<GlossaryEntry> glossaryEntries) {
         for (HGlossaryEntry hGlossaryEntry : hGlossaryEntries) {
             GlossaryEntry glossaryEntry = generateGlossaryEntry(hGlossaryEntry);
 
@@ -328,12 +281,12 @@ public class GlossaryService implements GlossaryResource {
                 GlossaryTerm glossaryTerm = generateGlossaryTerm(term);
                 glossaryEntry.getGlossaryTerms().add(glossaryTerm);
             }
-            glossary.getGlossaryEntries().add(glossaryEntry);
+            glossaryEntries.add(glossaryEntry);
         }
     }
 
     public void transferEntriesLocaleResource(
-            List<HGlossaryEntry> hGlossaryEntries, Glossary glossary,
+            List<HGlossaryEntry> hGlossaryEntries, ResultList<GlossaryEntry> resultList,
             HLocale locale) {
         for (HGlossaryEntry hGlossaryEntry : hGlossaryEntries) {
             GlossaryEntry glossaryEntry = generateGlossaryEntry(hGlossaryEntry);
@@ -348,7 +301,7 @@ public class GlossaryService implements GlossaryResource {
             if (transTerm != null) {
                 glossaryEntry.getGlossaryTerms().add(transTerm);
             }
-            glossary.getGlossaryEntries().add(glossaryEntry);
+            resultList.getResults().add(glossaryEntry);
         }
     }
 
@@ -377,8 +330,10 @@ public class GlossaryService implements GlossaryResource {
         GlossaryTerm glossaryTerm = new GlossaryTerm();
         glossaryTerm.setContent(hGlossaryTerm.getContent());
         glossaryTerm.setLocale(hGlossaryTerm.getLocale().getLocaleId());
-
-        String username = glossaryDAO.getUsername(hGlossaryTerm.getId());
+        String username = "";
+        if(hGlossaryTerm.getLastModifiedBy() != null) {
+            username = hGlossaryTerm.getLastModifiedBy().getName();
+        }
         glossaryTerm.setLastModifiedBy(username);
         glossaryTerm.setLastModifiedDate(hGlossaryTerm.getLastChanged());
         glossaryTerm.setComment(hGlossaryTerm.getComment());

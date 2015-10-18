@@ -4,6 +4,9 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   template="/WEB-INF/template/template.xhtml">
 
+  <f:metadata>
+    <f:viewParam name="username" value="#{profileHome.username}" />
+  </f:metadata>
 
   <ui:define
     name="page_title">#{msgs['jsf.Profile']}:#{msgs['jsf.Profile.User']}:#{profileHome.username}</ui:define>

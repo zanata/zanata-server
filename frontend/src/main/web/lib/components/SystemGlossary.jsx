@@ -69,9 +69,9 @@ var SystemGlossary = React.createClass({
     const srcLocale = this.state.srcLocale;
     var count = 0,
       selectedTransLocale = this.state.selectedTransLocale,
-      uploadSection = null,
-      newEntrySection = null,
-      messageModal = null;
+      uploadSection,
+      newEntrySection,
+      messageModal;
 
     if(this.state.notification) {
       messageModal = <MessageModal value={this.state.notification}/>;
@@ -100,7 +100,7 @@ var SystemGlossary = React.createClass({
       uploadSection = (<ImportModal srcLocale={this.state.srcLocale} transLocales={this.state.locales}/>);
       newEntrySection = (<NewEntryModal className='ml1/2' srcLocale={this.state.srcLocale}/>);
     }
-    var loader = null;
+    var loader;
 
     if(this.state.loadingEntries) {
       loader = (<Loader size={3}/>);

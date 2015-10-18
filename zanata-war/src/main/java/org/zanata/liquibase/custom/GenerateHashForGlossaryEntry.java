@@ -71,9 +71,9 @@ public class GenerateHashForGlossaryEntry implements CustomTaskChange {
     /**
      * Generate unique description by appending timestamp.
      */
-    private String generateConflictMessage() {
+    private String generateConflictMessage(Long id) {
         return " (Zanata: This description has been updated during data migration to prevent conflict: "
-                + formatter.format(new Date()) + ")";
+                + formatter.format(new Date()) + id + ")";
     }
 
     @Override
@@ -105,7 +105,7 @@ public class GenerateHashForGlossaryEntry implements CustomTaskChange {
                  * Update description to unique message string with timestamp.
                  */
                 if(entryLocaleMap.containsValue(hash)) {
-                    desc = desc + generateConflictMessage();
+                    desc = desc + generateConflictMessage(entryId);
                     hash = GlossaryUtil.generateHash(new LocaleId(localeId),
                         content, pos, desc);
                     entryDescriptionMap.put(entryId, desc);

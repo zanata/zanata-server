@@ -68,17 +68,15 @@ var DateHelper = {
   getDate: function(milliseconds) {
     if(!StringUtils.isEmptyOrNull(milliseconds)) {
       return new Date(milliseconds);
-    } else {
-      return null;
     }
+    return;
   },
 
   shortDate: function(date) {
-    if(date != null) {
+    if(date) {
       return moment(date).format('MMM Do, YYYY');
-    } else {
-      return null;
     }
+    return;
   }
 };
 

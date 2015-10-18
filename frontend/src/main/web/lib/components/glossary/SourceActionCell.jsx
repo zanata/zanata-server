@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
@@ -25,7 +24,8 @@ var SourceActionCell = React.createClass({
 
   _getState: function () {
     return {
-      entry: GlossaryStore.getEntry(this.props.contentHash)
+      entry: GlossaryStore.getEntry(this.props.contentHash),
+      saving: false
     }
   },
 
@@ -44,6 +44,7 @@ var SourceActionCell = React.createClass({
   },
 
   _handleUpdate: function() {
+    this.setState({saving: true});
     Actions.updateGlossary(this.props.contentHash);
   },
 
@@ -63,10 +64,10 @@ var SourceActionCell = React.createClass({
         </OverlayTrigger>
       );
 
-      if(this.state.entry.status.isSaving) {
+      if(this.state.entry.status.isSaving || this.state.saving) {
         return <div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>;
       } else {
-        var deleteButton = null;
+        var deleteButton;
 
         if(this.props.canDeleteEntry) {
           deleteButton = <DeleteEntryModal className='ml1/4' contentHash={this.props.contentHash} entry={this.state.entry}/>;
@@ -76,7 +77,7 @@ var SourceActionCell = React.createClass({
           isSrcValid = this.state.entry.status.isSrcValid;
 
         if(isSrcModified) {
-          var updateButton = null,
+          var updateButton,
             cancelButton = <Button className='ml1/4' link onClick={this._handleCancel}>Cancel</Button>;
           if(this.props.canUpdateEntry && isSrcValid) {
             updateButton = <Button kind='primary' className="ml1/4" onClick={this._handleUpdate}>Update</Button>;

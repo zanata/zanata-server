@@ -18,7 +18,8 @@ var GlossaryActionTypes = keymirror({
   UPDATE_ENTRY_FIELD: null,
   UPDATE_COMMENT: null,
   UPDATE_FOCUSED_ROW: null,
-  RESET_ENTRY: null
+  RESET_ENTRY: null,
+  CLEAR_MESSAGE: null
 });
 
 export { UserMatrixActionTypes, GlossaryActionTypes }

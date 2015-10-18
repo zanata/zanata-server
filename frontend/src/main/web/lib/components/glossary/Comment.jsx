@@ -1,5 +1,4 @@
-import React from 'react';
-import {PureRenderMixin} from 'react/addons';
+import React, {PureRenderMixin} from 'react/addons';
 import { Button, Icon, Tooltip, OverlayTrigger, Overlay } from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils'
 import _ from 'lodash';
@@ -18,7 +17,8 @@ var Comment = React.createClass({
 
   getInitialState: function() {
     return {
-      value: this.props.value
+      value: this.props.value,
+      saving: false
     }
   },
 
@@ -27,6 +27,7 @@ var Comment = React.createClass({
   },
 
   _onUpdateComment: function () {
+    this.setState({saving: true});
     this.props.onUpdateCommentCallback(this.state.value);
     this.setState({showComment: false});
   },
@@ -53,8 +54,25 @@ var Comment = React.createClass({
   },
 
   render: function () {
-    var tooltip = null,
+    var tooltip,
+      saveButton,
       disableUpdate = !this._hasValueChanged();
+
+    if(this.state.saving) {
+      saveButton = (
+        <Button kind='primary' size={-1} disabled={disableUpdate}
+          onClick={this._onUpdateComment} loading>
+          Update Comment
+        </Button>
+      );
+    } else {
+      saveButton = (
+        <Button kind='primary' size={-1} disabled={disableUpdate}
+          onClick={this._onUpdateComment}>
+          Update Comment
+        </Button>
+      );
+    }
 
     if(this.props.readOnly !== true) {
       var tooltip = (
@@ -68,12 +86,7 @@ var Comment = React.createClass({
               onClick={this._onCancelComment}>
               Cancel
             </Button>
-            <Button kind='primary'
-              size={-1}
-              disabled={disableUpdate}
-              onClick={this._onUpdateComment}>
-              Update Comment
-            </Button>
+            {saveButton}
           </div>
         </Tooltip>
       );
