@@ -46,13 +46,14 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
+ * Entity for general request in Zanata.
+ *
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
  */
 @Access(AccessType.FIELD)
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @Entity
-@EntityListeners({ Request.EntityListener.class })
 @TypeDefs({
     @TypeDef(name = "requestState", typeClass = RequestStateType.class),
     @TypeDef(name = "requestType", typeClass = RequestTypeType.class)
@@ -63,7 +64,7 @@ public class Request extends TimeEntityBase {
 
     @Type(type = "requestState")
     @Column(nullable = true)
-    private RequestState state;
+    private RequestState state = RequestState.NEW;
 
     @Type(type = "requestType")
     @Column(nullable = false)
@@ -86,10 +87,11 @@ public class Request extends TimeEntityBase {
     private HAccount actor;
 
     public Request(RequestType requestType, HAccount requester,
-        String entityId) {
+        String entityId, Date validFrom) {
         this.requestType = requestType;
         this.requester = requester;
         this.entityId = entityId;
+        this.validFrom = validFrom;
     }
 
     /**
@@ -99,28 +101,17 @@ public class Request extends TimeEntityBase {
      * @param actor
      * @param state
      * @param comment
+     * @param date - set to validTo of this request, and validFrom of new request
      */
-    public Request update(HAccount actor, RequestState state, String comment) {
+    public Request update(HAccount actor, RequestState state, String comment,
+            Date date) {
+        this.validTo = date;
+
         Request newRequest =
-            new Request(this.requestType, this.requester, this.entityId);
+                new Request(this.requestType, this.requester, this.entityId, date);
         newRequest.state = state;
         newRequest.comment = comment;
         newRequest.actor = actor;
-
-        this.validTo = new Date();
-
         return newRequest;
-    }
-
-    public static class EntityListener {
-        @PrePersist
-        private void prePersist(Request request) {
-            request.validFrom = new Date();
-            //make sure validFrom is not after validTo(set from service)
-            if (request.validTo != null
-                    && (request.validFrom.after(request.validTo))) {
-                request.validFrom = request.validTo;
-            }
-        }
     }
 }

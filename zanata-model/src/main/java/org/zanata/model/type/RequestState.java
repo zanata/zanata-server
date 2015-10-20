@@ -31,6 +31,7 @@ import lombok.Getter;
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
  */
 public enum RequestState {
+    NEW('N'),
     ACCEPTED('A'),
     REJECTED('R'),
     CANCELLED('C');
@@ -44,6 +45,8 @@ public enum RequestState {
 
     public static RequestState valueOf(char initial) {
         switch (initial) {
+            case 'N':
+                return RequestState.NEW;
             case 'A':
                 return RequestState.ACCEPTED;
             case 'R':

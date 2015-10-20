@@ -57,7 +57,7 @@ public class RequestTypeType extends AbstractSingleColumnStandardBasicType<Reque
     public RequestType stringToObject(String xml) throws Exception {
         if (xml.length() < 1) {
             throw new MappingException(
-                "multiple or zero characters found parsing string");
+                "multiple or zero characters found parsing string '" + xml + "'");
         }
         return RequestType.getValueOf(xml);
     }

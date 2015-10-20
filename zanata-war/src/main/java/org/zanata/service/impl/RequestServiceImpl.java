@@ -30,7 +30,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.LanguageRequestDAO;
 import org.zanata.dao.RequestDAO;
 import org.zanata.events.RequestUpdatedEvent;
-import org.zanata.exception.RequestExistException;
+import org.zanata.exception.RequestExistsException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
@@ -44,7 +44,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -66,7 +65,7 @@ public class RequestServiceImpl implements RequestService {
     public LanguageRequest createLanguageRequest(HAccount requester,
             HLocale locale, boolean isRequestAsCoordinator,
             boolean isRequestAsReviewer, boolean isRequestAsTranslator)
-            throws RequestExistException {
+            throws RequestExistsException {
         //search if there's any existing language request
         //of the same requester, account and locale
 
@@ -75,23 +74,32 @@ public class RequestServiceImpl implements RequestService {
                 locale.getLocaleId());
 
         if (languageRequest != null) {
-            throw new RequestExistException(
+            throw new RequestExistsException(
                 RequestType.LOCALE + ", " + requester.getUsername() + ", " +
                     ", " + locale.getDisplayName());
         }
-        String entityId = UUID.randomUUID().toString();
-        Request request = new Request(RequestType.LOCALE, requester, entityId);
+        String entityId = requestDAO.generateEntityId();
 
-        languageRequest =
-            new LanguageRequest(request, locale, isRequestAsCoordinator,
-                isRequestAsReviewer, isRequestAsTranslator);
+        Date now = new Date();
+        Request request =
+                new Request(RequestType.LOCALE, requester, entityId, now);
+
+        LanguageRequestBuilder requestBuilder =
+                new LanguageRequestBuilder().setRequest(request)
+                        .setLocale(locale)
+                        .setCoordinator(isRequestAsCoordinator)
+                        .setReviewer(isRequestAsReviewer)
+                        .setTranslator(isRequestAsTranslator);
+
+        languageRequest = requestBuilder.build();
+
         requestDAO.makePersistent(request);
         languageRequestDAO.makePersistent(languageRequest);
         return languageRequest;
     }
 
     @Override
-    public boolean isLanguageRequestExist(HAccount requester, HLocale locale) {
+    public boolean doesLanguageRequestExist(HAccount requester, HLocale locale) {
         LanguageRequest languageRequest =
                 languageRequestDAO.findRequesterPendingRequests(requester,
                     locale.getLocaleId());
@@ -103,15 +111,15 @@ public class RequestServiceImpl implements RequestService {
         RequestState state, String comment) throws EntityNotFoundException {
         LanguageRequest languageRequest = languageRequestDAO.findById(requestId);
         if (languageRequest != null) {
-            Request request = languageRequest.getRequest();
+            Request oldRequest = languageRequest.getRequest();
 
-            Request newRequest = request.update(actor, state, comment);
-            requestDAO.makePersistent(request);
+            Date now = new Date();
+            Request newRequest = oldRequest.update(actor, state, comment, now);
+            requestDAO.makePersistent(oldRequest);
 
             //Need to add 1 second to request validTo date to avoid unique index constraint
-            newRequest.setValidTo(addOneSecond(request.getValidTo()));
             languageRequest.setRequest(newRequest);
-            requestDAO.makePersistent(request);
+            requestDAO.makePersistent(oldRequest);
             requestDAO.makePersistent(newRequest);
             languageRequestDAO.makePersistent(languageRequest);
             requestUpdatedEvent.fire(new RequestUpdatedEvent(
@@ -122,20 +130,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    /**
-     * Add 1 second to the given Date
-     * @param date
-     */
-    private Date addOneSecond(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.SECOND, 1);
-        return cal.getTime();
-    }
-
     @Override
-    public LanguageRequest getLanguageRequest(Long id) {
-        return languageRequestDAO.findById(id);
+    public LanguageRequest getLanguageRequest(long languageRequestId) {
+        return languageRequestDAO.findById(languageRequestId);
     }
 
     @Override
@@ -154,12 +151,12 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Request getPendingRequestByEntityId(String entityId) {
-        return requestDAO.getPendingRequestByEntityId(entityId);
+        return requestDAO.getEntityById(entityId);
     }
 
     @Override
-    public List<Request> getRequestByEntityId(String entityId) {
-        return requestDAO.getByEntityId(entityId);
+    public List<Request> getRequestHistoryByEntityId(String entityId) {
+        return requestDAO.getHistoryByEntityId(entityId);
     }
 
     /**
@@ -168,5 +165,50 @@ public class RequestServiceImpl implements RequestService {
      */
     private boolean isRequestProcessed(Request request) {
         return request.getValidTo() != null;
+    }
+
+    /**
+     * Builder for languageRequest
+     */
+    public class LanguageRequestBuilder {
+
+        private Request request;
+        private HLocale locale;
+        private boolean coordinator;
+        private boolean reviewer;
+        private boolean translator;
+
+        public LanguageRequestBuilder(){
+        };
+
+        public LanguageRequestBuilder setRequest(Request request) {
+            this.request = request;
+            return this;
+        }
+
+        public LanguageRequestBuilder setLocale(HLocale locale) {
+            this.locale = locale;
+            return this;
+        }
+
+        public LanguageRequestBuilder setCoordinator(boolean coordinator) {
+            this.coordinator = coordinator;
+            return this;
+        }
+
+        public LanguageRequestBuilder setReviewer(boolean reviewer) {
+            this.reviewer = reviewer;
+            return this;
+        }
+
+        public LanguageRequestBuilder setTranslator(boolean translator) {
+            this.translator = translator;
+            return this;
+        }
+
+        public LanguageRequest build() {
+            return new LanguageRequest(request, locale, coordinator, reviewer,
+                translator);
+        };
     }
 }

@@ -16,6 +16,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * Superclass which holds time based entity. The idea is to have a record with
+ * history in same database table with same entityId. Record can be traced with
+ * history by using validFrom and validTo to determine the order.
+ *
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
  */
 @MappedSuperclass

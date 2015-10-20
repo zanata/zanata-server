@@ -34,7 +34,7 @@ import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.zanata.exception.RequestExistException;
+import org.zanata.exception.RequestExistsException;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.type.RequestState;
 import org.zanata.security.ZanataIdentity;
@@ -115,9 +115,9 @@ public class LanguageJoinAction implements Serializable {
     public String getRequestedRole(LanguageRequest request) {
         return Joiner.on(", ")
             .skipNulls()
-            .join(request.getCoordinator() ? "Coordinator" : null,
-                request.getReviewer() ? "Reviewer" : null,
-                request.getTranslator() ? "Translator" : null);
+            .join(request.isCoordinator() ? msgs.get("jsf.Coordinator") : null,
+                request.isReviewer() ? msgs.get("jsf.Reviewer") : null,
+                request.isTranslator() ? msgs.get("jsf.Translator") : null);
     }
 
     public void acceptRequest(Long languageRequestId) {
@@ -126,9 +126,9 @@ public class LanguageJoinAction implements Serializable {
                 requestServiceImpl.getLanguageRequest(languageRequestId);
 
         languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
-                language, request.getRequest().getRequester().getId(),
-                request.getTranslator(), request.getReviewer(),
-                request.getCoordinator());
+            language, request.getRequest().getRequester().getId(),
+                request.isTranslator(), request.isReviewer(),
+                request.isCoordinator());
 
         requestServiceImpl.updateLanguageRequest(languageRequestId,
                 authenticatedAccount, RequestState.ACCEPTED, "");
@@ -167,10 +167,12 @@ public class LanguageJoinAction implements Serializable {
                             isRequestAsReviewer, isRequestAsTranslator);
             sendRequestEmail(isRequestAsCoordinator, isRequestAsReviewer,
                 isRequestAsTranslator);
-        } catch (RequestExistException e) {
-            log.warn("Request already exist for {0} in language {1}.",
-                    authenticatedAccount.getUsername(), getLocale()
-                            .getDisplayName());
+        } catch (RequestExistsException e) {
+            String message =
+                    msgs.format("jsf.language.request.exists",
+                            authenticatedAccount.getUsername(), getLocale()
+                                    .getDisplayName());
+            facesMessages.addGlobal(message);
         }
     }
 
@@ -206,7 +208,7 @@ public class LanguageJoinAction implements Serializable {
     }
 
     public boolean isUserAlreadyRequest() {
-        return requestServiceImpl.isLanguageRequestExist(authenticatedAccount,
+        return requestServiceImpl.doesLanguageRequestExist(authenticatedAccount,
             getLocale());
     }
 
@@ -236,15 +238,15 @@ public class LanguageJoinAction implements Serializable {
 
         List<String> roles = Lists.newArrayList();
         if(localeMember.isTranslator()) {
-            roles.add("Translator");
+            roles.add(msgs.get("jsf.Translator"));
         }
 
         if(localeMember.isReviewer()) {
-            roles.add("Reviewer");
+            roles.add(msgs.get("jsf.Reviewer"));
         }
 
         if(localeMember.isCoordinator()) {
-            roles.add("Coordinator");
+            roles.add(msgs.get("jsf.Coordinator"));
         }
         return msgs.format("jsf.language.myRoles", Joiner.on(",").join(roles));
     }

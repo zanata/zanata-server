@@ -97,15 +97,15 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
         assertThat(result).isNotEmpty().hasSize(1);
 
         LanguageRequest request = result.get(0);
-        assertThat(request.getCoordinator()).isEqualTo(reqAsCoordinator);
-        assertThat(request.getReviewer()).isEqualTo(reqAsReviewer);
-        assertThat(request.getTranslator()).isEqualTo(reqAsTranslator);
+        assertThat(request.isCoordinator()).isEqualTo(reqAsCoordinator);
+        assertThat(request.isReviewer()).isEqualTo(reqAsReviewer);
+        assertThat(request.isTranslator()).isEqualTo(reqAsTranslator);
         assertThat(request.getLocale().getLocaleId())
             .isEqualTo(locale.getLocaleId());
         assertThat(request.getRequest().getRequester()).isEqualTo(requester);
         assertThat(request.getRequest().getState()).isEqualTo(null);
 
-        assertThat(service.isLanguageRequestExist(requester, locale)).isTrue();
+        assertThat(service.doesLanguageRequestExist(requester, locale)).isTrue();
     }
 
     /**
@@ -138,7 +138,7 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
             service.getPendingLanguageRequests(requester, locale.getLocaleId()))
             .isNull();
 
-        List<Request> requests = service.getRequestByEntityId(entityId);
+        List<Request> requests = service.getRequestHistoryByEntityId(entityId);
         assertThat(requests).hasSize(2);
 
         for(Request request: requests) {

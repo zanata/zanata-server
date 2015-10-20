@@ -39,17 +39,17 @@ public class RequestUpdatedEvent {
     /**
      * Id for {@link org.zanata.model.Request}
      */
-    Long id;
+    long id;
 
     /**
      * Id for request subclass. e.g {@link org.zanata.model.LanguageRequest}
      */
-    Long requestId;
+    long requestId;
 
     /**
      * Id for actor for this request. HAccount id
      */
-    Long actorId;
+    long actorId;
 
     /**
      * State to update

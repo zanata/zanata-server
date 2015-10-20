@@ -135,6 +135,7 @@ public class LanguageAction implements Serializable {
     private List<SelectablePerson> searchResults;
 
     private Map<LocaleRole, Boolean> roles = new HashMap<LocaleRole, Boolean>();
+
     {
         roles.put(LocaleRole.Coordinator, false);
         roles.put(LocaleRole.Reviewer, false);

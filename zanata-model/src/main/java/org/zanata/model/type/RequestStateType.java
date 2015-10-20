@@ -54,12 +54,14 @@ public class RequestStateType extends AbstractSingleColumnStandardBasicType<Requ
     public RequestState stringToObject(String xml) throws Exception {
         if (xml.length() != 1) {
             throw new MappingException(
-                    "multiple or zero characters found parsing string");
+                    "multiple or zero characters found parsing string '" + xml
+                            + "'");
         }
         return RequestState.valueOf(xml.charAt(0));
     }
 
     public RequestState fromStringValue(String xml) {
+        assert xml.length() > 0;
         return RequestState.valueOf(xml.charAt(0));
     }
 

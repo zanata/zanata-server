@@ -9,6 +9,7 @@ import org.jboss.seam.annotations.Scope;
 import org.zanata.common.LocaleId;
 import org.zanata.model.HAccount;
 import org.zanata.model.LanguageRequest;
+import org.zanata.model.type.RequestState;
 
 import java.util.List;
 
@@ -30,22 +31,31 @@ public class LanguageRequestDAO extends AbstractDAOImpl<LanguageRequest, Long> {
 
     public LanguageRequest findRequesterPendingRequests(HAccount requester,
         LocaleId localeId) {
-        String query =
-            "from LanguageRequest req where req.locale.localeId = :localeId and req.request.requester.id = :requesterId and req.request.validTo is null";
-        Query q = getSession().createQuery(query)
-            .setParameter("requesterId", requester.getId())
-            .setParameter("localeId", localeId)
+        StringBuilder query = new StringBuilder();
+        query.append("from LanguageRequest req ")
+            .append("where req.locale.localeId = :localeId ")
+            .append("and req.request.requester.id = :requesterId ")
+            .append("and req.request.state =:state");
+
+        Query q = getSession().createQuery(query.toString())
+                .setParameter("requesterId", requester.getId())
+                .setParameter("localeId", localeId)
+                .setParameter("state", RequestState.NEW)
             .setCacheable(true).setComment(
-                "requestDAO.findRequestInLocale");
+                        "requestDAO.findRequesterPendingRequests");
         return (LanguageRequest) q.uniqueResult();
     }
 
     public List<LanguageRequest> findPendingRequests(
         List<LocaleId> localeIds) {
-        String query =
-            "from LanguageRequest req where req.request.validTo is null and req.locale.localeId in (:localeIds)";
-        Query q = getSession().createQuery(query)
+        StringBuilder query = new StringBuilder();
+        query.append("from LanguageRequest req ")
+            .append("where req.request.state =:state ")
+            .append("and req.locale.localeId in (:localeIds)");
+
+        Query q = getSession().createQuery(query.toString())
             .setParameterList("localeIds", localeIds)
+            .setParameter("state", RequestState.NEW)
             .setCacheable(true).setComment(
                 "requestDAO.findPendingRequests");
         return q.list();

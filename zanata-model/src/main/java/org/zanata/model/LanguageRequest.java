@@ -15,6 +15,9 @@ import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 /**
+ * Entity for request to join language team.
+ * See also {@link org.zanata.model.Request}
+ *
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
  */
 @Getter
@@ -35,11 +38,20 @@ public class LanguageRequest implements Serializable {
     @JoinColumn(name = "localeId", nullable = false)
     private HLocale locale;
 
-    private Boolean coordinator;
+    /**
+     * Request as coordinator in team
+     */
+    private boolean coordinator;
 
-    private Boolean reviewer;
+    /**
+     * Request as reviewer in team
+     */
+    private boolean reviewer;
 
-    private Boolean translator;
+    /**
+     * Request as translator in team
+     */
+    private boolean translator;
 
     public LanguageRequest(Request request, HLocale locale, boolean coordinator,
         boolean reviewer, boolean translator) {
@@ -49,5 +61,4 @@ public class LanguageRequest implements Serializable {
         this.reviewer = reviewer;
         this.translator = translator;
     }
-
 }

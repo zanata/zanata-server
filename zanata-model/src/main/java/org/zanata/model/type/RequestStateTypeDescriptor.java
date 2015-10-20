@@ -45,7 +45,8 @@ public class RequestStateTypeDescriptor
             return RequestState.valueOf(string.charAt(0));
         }
         throw new IllegalArgumentException(
-            "String to look up a ProjectRole must be exactly 1 character. " +
-            "Received \"" + string + "\"");
+                "String to look up a RequestState must be exactly 1 character. "
+                        +
+                        "Received \"" + string + "\"");
     }
 }

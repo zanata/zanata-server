@@ -22,18 +22,15 @@
 package org.zanata.service;
 
 import org.zanata.common.LocaleId;
-import org.zanata.exception.RequestExistException;
+import org.zanata.exception.RequestExistsException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
-import org.zanata.model.LocaleRole;
 import org.zanata.model.Request;
 import org.zanata.model.type.RequestState;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -45,19 +42,19 @@ public interface RequestService {
      *
      * @param requester
      * @param locale
-     * @throws RequestExistException
+     * @throws org.zanata.exception.RequestExistsException
      */
     LanguageRequest createLanguageRequest(HAccount requester,
             HLocale locale, boolean isRequestAsCoordinator,
             boolean isRequestAsReviewer,
-            boolean isRequestAsTranslator) throws RequestExistException;
+            boolean isRequestAsTranslator) throws RequestExistsException;
 
     /**
      * Check if request already exist in the locale by this user
      * @param requester
      * @param locale
      */
-    boolean isLanguageRequestExist(HAccount requester, HLocale locale);
+    boolean doesLanguageRequestExist(HAccount requester, HLocale locale);
 
     /**
      * Update join language request
@@ -72,9 +69,9 @@ public interface RequestService {
 
     /**
      * Get language request by id
-     * @param id
+     * @param languageRequestId
      */
-    LanguageRequest getLanguageRequest(Long id);
+    LanguageRequest getLanguageRequest(long languageRequestId);
 
     /**
      * Get pending language request for user
@@ -101,5 +98,5 @@ public interface RequestService {
      * Return request including history by entityId
      * @param entityId
      */
-    List<Request> getRequestByEntityId(String entityId);
+    List<Request> getRequestHistoryByEntityId(String entityId);
 }

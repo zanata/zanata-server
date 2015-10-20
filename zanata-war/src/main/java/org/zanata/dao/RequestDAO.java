@@ -10,6 +10,7 @@ import org.zanata.model.LanguageRequest;
 import org.zanata.model.Request;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -31,23 +32,27 @@ public class RequestDAO extends AbstractDAOImpl<Request, Long> {
         return findById(requestId);
     }
 
-    public List<Request> getByEntityId(String entityId) {
+    public List<Request> getHistoryByEntityId(String entityId) {
         String query =
             "from Request req where req.entityId= :entityId order by req.validFrom";
         Query q = getSession().createQuery(query)
             .setParameter("entityId", entityId)
             .setCacheable(true).setComment(
-                "requestDAO.getByEntityId");
+                "requestDAO.getHistoryByEntityId");
         return q.list();
     }
 
-    public Request getPendingRequestByEntityId(String entityId) {
+    public Request getEntityById(String entityId) {
         String query =
             "from Request req where req.entityId= :entityId and req.validTo is null";
         Query q = getSession().createQuery(query)
             .setParameter("entityId", entityId)
             .setCacheable(true).setComment(
-                "requestDAO.getPendingRequestByEntityId");
+                "requestDAO.getEntityById");
         return (Request) q.uniqueResult();
+    }
+
+    public String generateEntityId() {
+        return UUID.randomUUID().toString();
     }
 }
