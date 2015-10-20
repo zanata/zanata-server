@@ -82,6 +82,18 @@ public class LanguageJoinAction implements Serializable {
     @In
     private Messages msgs;
 
+    @Getter
+    @Setter
+    private boolean requestAsTranslator;
+
+    @Getter
+    @Setter
+    private boolean requestAsReviewer;
+
+    @Getter
+    @Setter
+    private boolean requestAsCoordinator;
+
     @Setter
     @Getter
     private String language;
@@ -104,11 +116,24 @@ public class LanguageJoinAction implements Serializable {
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
+    public boolean hasSelectedRole() {
+        return requestAsTranslator || requestAsReviewer || requestAsCoordinator;
+    }
+
+    public void bindRole(String role, boolean checked) {
+        if (role.equals("translator")) {
+            requestAsTranslator = checked;
+        } else if (role.equals("reviewer")) {
+            requestAsReviewer = checked;
+        } else if (role.equals("coordinator")) {
+            requestAsCoordinator = checked;
+        }
+    }
+
     public String getMyRequestedRole() {
         LanguageRequest request =
-                requestServiceImpl.getPendingLanguageRequests(
-                        authenticatedAccount,
-                        getLocale().getLocaleId());
+            requestServiceImpl.getPendingLanguageRequests(authenticatedAccount,
+                getLocale().getLocaleId());
         return getRequestedRole(request);
     }
 
@@ -142,31 +167,21 @@ public class LanguageJoinAction implements Serializable {
         facesMessages.addGlobal(msgs.get("jsf.language.request.updated"));
     }
 
-    @CheckLoggedIn
-    public void requestAsTranslator() {
-        processRequest(true, false, false);
+    private void reset() {
+        requestAsTranslator = isTranslator();
+        requestAsReviewer = isReviewer();
+        requestAsCoordinator = isCoordinator();
+        message = "";
     }
 
-    @CheckLoggedIn
-    public void requestAsReviewer() {
-        processRequest(false, true, false);
-    }
-
-    @CheckLoggedIn
-    public void requestAsCoordinator() {
-        processRequest(false, false, true);
-    }
-
-    private void processRequest(boolean isRequestAsTranslator,
-            boolean isRequestAsReviewer,
-            boolean isRequestAsCoordinator) {
+    public void processRequest() {
         try {
             requestServiceImpl
                     .createLanguageRequest(authenticatedAccount, getLocale(),
-                            isRequestAsCoordinator,
-                            isRequestAsReviewer, isRequestAsTranslator);
-            sendRequestEmail(isRequestAsCoordinator, isRequestAsReviewer,
-                isRequestAsTranslator);
+                        requestAsCoordinator,
+                        requestAsReviewer, requestAsTranslator);
+            sendRequestEmail(requestAsCoordinator, requestAsReviewer,
+                requestAsTranslator);
         } catch (RequestExistsException e) {
             String message =
                     msgs.format("jsf.language.request.exists",
@@ -176,34 +191,38 @@ public class LanguageJoinAction implements Serializable {
         }
     }
 
-    private void sendRequestEmail(boolean isRequestAsCoordinator,
-        boolean isRequestAsReviewer, boolean isRequestAsTranslator) {
+    private void sendRequestEmail(boolean requestAsCoordinator,
+            boolean requestAsReviewer, boolean requestAsTranslator) {
         String fromName = authenticatedAccount.getPerson().getName();
         String fromLoginName = authenticatedAccount.getUsername();
         String replyEmail = authenticatedAccount.getPerson().getEmail();
 
         EmailStrategy strategy =
-            new RequestToJoinLanguageEmailStrategy(
-                fromLoginName, fromName, replyEmail,
-                getLocale().getLocaleId().getId(),
-                getLocale().retrieveNativeName(),
-                isRequestAsTranslator,
-                isRequestAsReviewer,
-                isRequestAsCoordinator);
+                new RequestToJoinLanguageEmailStrategy(
+                        fromLoginName, fromName, replyEmail,
+                        locale.getLocaleId().getId(),
+                        locale.retrieveNativeName(), message,
+                        isRequestAsTranslator(),
+                        isRequestAsReviewer(),
+                        isRequestAsCoordinator());
         try {
             facesMessages.addGlobal(emailServiceImpl
                 .sendToLanguageCoordinators(locale.getLocaleId(), strategy));
         } catch (Exception e) {
             String subject = strategy.getSubject(msgs);
+
             StringBuilder sb =
                 new StringBuilder()
                     .append("Failed to send email with subject '")
                     .append(strategy.getSubject(msgs))
+                    .append("' , message '").append(message)
                     .append("'");
             log.error(
-                "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}'. {}",
-                fromName, fromLoginName, replyEmail, subject, e);
+                    "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
+                    fromName, fromLoginName, replyEmail, subject, message, e);
             facesMessages.addGlobal(sb.toString());
+        } finally {
+            reset();
         }
     }
 

@@ -24,6 +24,7 @@ import com.google.common.base.Optional;
 import com.googlecode.totallylazy.collections.PersistentMap;
 import lombok.RequiredArgsConstructor;
 import org.zanata.i18n.Messages;
+import org.zanata.util.HtmlUtil;
 
 import javax.mail.internet.InternetAddress;
 
@@ -40,6 +41,7 @@ public class RequestToJoinLanguageEmailStrategy
     private final String replyEmail;
     private final String localeId;
     private final String localeNativeName;
+    private final String htmlMessage;
     private final boolean requestAsTranslator;
     private final boolean requestAsReviewer;
     private final boolean requestAsCoordinator;
@@ -66,12 +68,14 @@ public class RequestToJoinLanguageEmailStrategy
             InternetAddress[] toAddresses) {
         PersistentMap<String, Object> context = super.makeContext(
                 genericContext, toAddresses);
+        String safeHTML = HtmlUtil.SANITIZER.sanitize(htmlMessage);
         return context
                 .insert("fromLoginName", fromLoginName)
                 .insert("fromName", fromName)
                 .insert("replyEmail", replyEmail)
                 .insert("localeId", localeId)
                 .insert("localeNativeName", localeNativeName)
+                .insert("htmlMessage", safeHTML)
                 .insert("requestAsTranslator", requestAsTranslator)
                 .insert("requestAsReviewer", requestAsReviewer)
                 .insert("requestAsCoordinator", requestAsCoordinator);

@@ -124,36 +124,12 @@
                 value="#{msgs['jsf.language.cancelMyRequest']}" oncomplete="refreshMembersForm()"/>
             </ui:fragment>
             <ui:fragment rendered="#{not languageJoinAction.isUserAlreadyRequest() and not identity.hasRole('admin')}">
-              <a4j:commandButton action="#{languageJoinAction.requestAsTranslator()}"
-                value="#{msgs['jsf.RequestToJoinLanguageTeam']}" oncomplete="refreshMembersForm()"
-                rendered="#{not languageJoinAction.isTranslator()}"/>
-
-              <ui:param name="isCoordinator" value="#{languageJoinAction.isCoordinator()}"/>
-              <ui:param name="isReviewer" value="#{languageJoinAction.isReviewer()}"/>
-
-              <ui:fragment rendered="#{not isReviewer or not isCoordinator}">
-                <div class="dropdown dropdown--header dropdown--small dropdown--right js-dropdown">
-                  <a class="dropdown__toggle js-dropdown__toggle" href="#" title="More Actions"><i class="i i--ellipsis" ></i></a>
-                  <ul class="dropdown__content js-dropdown__content" role="content" aria-labelledby="dropdownContent">
-                    <ui:fragment rendered="#{not isReviewer}">
-                      <li>
-                        <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsReviewer()}"
-                          value="Request as reviewer" oncomplete="refreshMembersForm()">
-                          <i class="i i--add i__item__icon"></i>
-                        </a4j:commandLink>
-                      </li>
-                    </ui:fragment>
-                    <ui:fragment rendered="#{not isCoordinator}">
-                      <li>
-                        <a4j:commandLink styleClass="i__item--right" action="#{languageJoinAction.requestAsCoordinator()}"
-                          value="Request as coordinator" oncomplete="refreshMembersForm()">
-                          <i class="i i--add i__item__icon"></i>
-                        </a4j:commandLink>
-                      </li>
-                    </ui:fragment>
-                  </ul>
-                </div>
-              </ui:fragment>
+              <a href="#" class="button" data-toggle="modal"
+                data-target="#joinLanguageDialog">
+                #{msgs['jsf.RequestToJoinLanguageTeam']}
+                <i class="i i--plus i__item__icon"></i>
+              </a>
+              <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
             </ui:fragment>
           </h:form>
         </ui:fragment>

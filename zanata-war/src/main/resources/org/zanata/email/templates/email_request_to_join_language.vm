@@ -29,6 +29,13 @@
   #end
 </p>
 
+#if ($htmlMessage)
+  <hr/>
+  $htmlMessage
+  <hr/>
+#end
+
+
 <p>$msgs.format("jsf.email.coordinator.ResponseInstructions",
     $localeId, $fromName, $replyEmail)</p>
 

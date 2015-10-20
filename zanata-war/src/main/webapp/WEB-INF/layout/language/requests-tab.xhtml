@@ -51,12 +51,12 @@
                   <h3 class="list__title">
                     #{langRequest.request.requester.person.name}
                   </h3>
-                <span class="list__item__meta">
-                  #{langRequest.request.requester.username} <span>[#{langRequest.request.requester.person.email}]</span>
-                  <span class="bx--block l--push-top-quarter">
-                    #{msgs.format('jsf.language.request.role', languageJoinAction.getRequestedRole(langRequest))}
+                  <span class="list__item__meta">
+                    #{langRequest.request.requester.username} <span>[#{langRequest.request.requester.person.email}]</span>
+                    <span class="bx--block l--push-top-quarter">
+                      #{msgs.format('jsf.language.request.role', languageJoinAction.getRequestedRole(langRequest))}
+                    </span>
                   </span>
-                </span>
                 </div>
                 <div class="list__item__actions button--group">
                   <input name="#{langRequest.id}"

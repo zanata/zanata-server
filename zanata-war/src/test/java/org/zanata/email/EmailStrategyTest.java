@@ -276,7 +276,7 @@ public class EmailStrategyTest {
         EmailStrategy strategy =
                 new RequestToJoinLanguageEmailStrategy(
                         fromLoginName, fromName, replyEmail,
-                        localeId, localeNativeName,
+                        localeId, localeNativeName, htmlMessage,
                         true, true, true);
 
         builder.buildMessage(message, strategy, toAddresses,
@@ -292,6 +292,7 @@ public class EmailStrategyTest {
         assertThat(html).contains(msgs.format(
                 "jsf.email.joinrequest.UserRequestingToJoin",
                 fromName, fromLoginName, localeId, localeNativeName));
+        assertThat(html).contains(htmlMessage);
         assertThat(html).contains(
                 serverPath + "/language/view/" + localeId);
     }
