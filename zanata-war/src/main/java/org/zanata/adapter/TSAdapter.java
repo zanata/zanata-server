@@ -32,9 +32,15 @@ import net.sf.okapi.common.resource.RawDocument;
 import net.sf.okapi.common.resource.StartSubDocument;
 import net.sf.okapi.common.resource.TextUnit;
 import net.sf.okapi.filters.ts.TsFilter;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+import org.zanata.common.DocumentType;
+import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
+import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 
+import javax.annotation.Nonnull;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +61,18 @@ public class TSAdapter extends OkapiFilterAdapter {
 
     private static TsFilter prepareFilter() {
         return new TsFilter();
+    }
+
+    @Override
+    public String generateTranslationFilename(@Nonnull HDocument document, @Nonnull String locale) {
+        String srcExt = FilenameUtils.getExtension(document.getName());
+        DocumentType documentType = document.getRawDocument().getType();
+        String transExt = documentType.getExtensions().get(srcExt);
+        if (StringUtils.isEmpty(transExt)) {
+            return document.getName() + "_" + locale + "." + transExt;
+        }
+        return FilenameUtils.removeExtension(document
+                .getName()) + "_" + locale + "." + transExt;
     }
 
     @Override

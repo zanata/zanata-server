@@ -39,14 +39,11 @@ import net.sf.okapi.common.resource.RawDocument;
 import net.sf.okapi.common.resource.StartSubDocument;
 import net.sf.okapi.common.resource.TextUnit;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.adapter.TranslatableSeparator.SplitString;
 import org.zanata.common.*;
 import org.zanata.exception.FileFormatAdapterException;
-import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
@@ -57,8 +54,6 @@ import org.zanata.util.HashUtil;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-
-import javax.annotation.Nonnull;
 
 /**
  * An adapter that uses a provided {@link IFilter} implementation to parse
