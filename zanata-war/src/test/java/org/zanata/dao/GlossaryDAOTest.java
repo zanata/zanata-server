@@ -113,8 +113,25 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
     @Test
     public void testGetEntryBySrcContentLocale() {
         log.debug("testGetEntryBySrcContentLocale");
-        HGlossaryEntry entry = dao.getEntryByContentHash("resId1");
+        HGlossaryEntry entry = dao.getEntryByContentHash("hash");
         Assert.assertNotNull(entry);
         assertThat(entry.getSrcLocale().getLocaleId(), is(LocaleId.EN_US));
+    }
+
+    @Test
+    public void testGetEntriesByLocale() {
+        List<GlossarySortField> sortFields = Lists.newArrayList();
+        GlossarySortField content =
+            GlossarySortField.getByField(GlossarySortField.SRC_CONTENT);
+        GlossarySortField pos =
+                GlossarySortField.getByField("-"
+                        + GlossarySortField.PART_OF_SPEECH);
+
+        sortFields.add(content);
+        sortFields.add(pos);
+
+        List<HGlossaryEntry> result =
+                dao.getEntriesByLocale(LocaleId.EN_US, 0, 100, "", sortFields);
+        assertThat(result.get(0).getPos(), is("pos 2"));
     }
 }

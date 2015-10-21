@@ -34,12 +34,14 @@ import org.zanata.rest.GlossaryFileUploadForm;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryInfo;
 import org.zanata.rest.dto.GlossaryLocaleInfo;
+import org.zanata.rest.dto.GlossaryResults;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.rest.dto.ResultList;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
+import org.zanata.service.impl.GlossaryFileServiceImpl;
 
 @Name("glossaryService")
 @Path(GlossaryResource.SERVICE_PATH)
@@ -175,14 +177,10 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
-        List<GlossaryEntry> results = saveGlossaryEntries(glossaryEntries);
+        GlossaryResults<GlossaryEntry> results =
+                saveGlossaryEntries(glossaryEntries);
 
-        Type genericType = new GenericType<List<GlossaryEntry>>() {
-        }.getGenericType();
-        Object entity =
-            new GenericEntity<List<GlossaryEntry>>(results, genericType);
-
-        return Response.ok(entity).build();
+        return Response.ok(results).build();
     }
     
     @Override
@@ -200,22 +198,22 @@ public class GlossaryService implements GlossaryResource {
                                     form.getFileName(), srcLocaleId,
                                     transLocaleId);
 
-            List<GlossaryEntry> results = Lists.newArrayList();
+            GlossaryResults<GlossaryEntry> overallResult = new GlossaryResults<>();
             for (List<GlossaryEntry> entries : glossaryEntries) {
-                results.addAll(saveGlossaryEntries(entries));
+                GlossaryResults<GlossaryEntry> result =
+                        saveGlossaryEntries(entries);
+                overallResult.getGlossaryEntries().addAll(
+                        result.getGlossaryEntries());
+                overallResult.getWarnings().addAll(result.getWarnings());
             }
 
-            Type genericType = new GenericType<List<GlossaryEntry>>() {
-            }.getGenericType();
-            Object entity =
-                    new GenericEntity<List<GlossaryEntry>>(results,
-                            genericType);
             response =
                     Response.ok()
                             .header("Content-Disposition",
                                     "attachment; filename=\""
                                             + form.getFileName() + "\"")
-                            .type(MediaType.TEXT_PLAIN).entity(entity).build();
+                            .type(MediaType.TEXT_PLAIN).entity(overallResult)
+                            .build();
             return response;
         } catch (ZanataServiceException e) {
             log.error(e.toString(), e);
@@ -224,16 +222,17 @@ public class GlossaryService implements GlossaryResource {
         }
     }
 
-    private List<GlossaryEntry> saveGlossaryEntries(
+    private GlossaryResults<GlossaryEntry> saveGlossaryEntries(
         List<GlossaryEntry> glossaryEntries) {
 
-        List<HGlossaryEntry> entries =
-            glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntries);
+        GlossaryResults<HGlossaryEntry> results =
+                glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntries);
 
-        List<GlossaryEntry> results = Lists.newArrayList();
-        transferEntriesResource(entries, results);
+        List<GlossaryEntry> glossaryEntriesDTO = Lists.newArrayList();
+        transferEntriesResource(results.getGlossaryEntries(), glossaryEntriesDTO);
 
-        return results;
+        return new GlossaryResults<GlossaryEntry>(
+                glossaryEntriesDTO, results.getWarnings());
     }
 
     @Override

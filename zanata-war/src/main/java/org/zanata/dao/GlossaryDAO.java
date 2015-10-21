@@ -109,15 +109,13 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         }
 
         if(sortFields!= null && !sortFields.isEmpty()) {
-            queryString.append(" order by ");
+            queryString.append(" ORDER BY ");
             List<String> sortQuery = Lists.newArrayList();
             for(GlossarySortField sortField: sortFields) {
-                String order = sortField.isAscending() ?
-                    " asc" : " desc";
-                sortQuery.add(
-                    sortField.getEntityField() + order);
+                String order = sortField.isAscending() ? " ASC" : " DESC";
+                sortQuery.add(sortField.getEntityField() + order);
             }
-            queryString.append(Joiner.on(",").join(sortQuery));
+            queryString.append(Joiner.on(", ").join(sortQuery));
         }
 
         Query query = getSession().createQuery(queryString.toString())

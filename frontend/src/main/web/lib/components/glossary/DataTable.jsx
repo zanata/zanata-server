@@ -152,53 +152,38 @@ var DataTable = React.createClass({
     return key;
   },
 
-  _getSort: function (key) {
-    if(_.isUndefined(this.props.sort[key])) {
-      return;
-    } else if(this.props.sort[key]) {
-      return "ascending";
-    } else {
-      return "descending";
-    }
-  },
-
   _renderSourceHeader: function (label) {
-    var key = this.ENTRY.SRC.sort_field,
-      asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, true);
+    var key = this.ENTRY.SRC.sort_field;
+    return this._renderHeader(label, key, true);
   },
 
   _renderTransHeader: function (label) {
-    var key = this.ENTRY.TRANS.sort_field, asc;
-    return this._renderHeader(label, key, asc, false);
+    var key = this.ENTRY.TRANS.sort_field;
+    return this._renderHeader(label, key, false);
   },
 
   _renderPosHeader: function (label) {
-    var key = this.ENTRY.POS.sort_field,
-      asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, true);
+    var key = this.ENTRY.POS.sort_field;
+    return this._renderHeader(label, key, true);
   },
 
   _renderDescHeader: function (label) {
-    var key = this.ENTRY.DESC.sort_field,
-      asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, true);
+    var key = this.ENTRY.DESC.sort_field;
+    return this._renderHeader(label, key, true);
   },
 
   _renderTransCountHeader: function (label) {
-    var key = this.ENTRY.TRANS_COUNT.sort_field,
-      asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, false);
+    var key = this.ENTRY.TRANS_COUNT.sort_field;
+    return this._renderHeader(label, key, true);
   },
 
-  _renderHeader: function (label, key, asc, allowSort) {
+  _renderHeader: function (label, key, allowSort) {
     return (
       <ColumnHeader
         value={label}
         field={key}
         key={key}
         allowSort={allowSort}
-        sort={asc}
         onClickCallback={this._onHeaderClick}/>
     );
   },

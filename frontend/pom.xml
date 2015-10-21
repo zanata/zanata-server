@@ -11,8 +11,8 @@
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <node.version>v0.12.2</node.version>
-    <npm.version>2.7.6</npm.version>
+    <node.version>v0.12.7</node.version>
+    <npm.version>2.14.7</npm.version>
     <web.target>${project.build.directory}/web</web.target>
     <bundle.dest>${project.build.outputDirectory}/META-INF/resources</bundle.dest>
     <node.install.directory>${download.dir}/zanata-frontend/node-${node.version}-npm-${npm.version}</node.install.directory>

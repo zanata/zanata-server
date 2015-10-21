@@ -38,13 +38,13 @@ import org.zanata.adapter.glossary.GlossaryCSVReader;
 import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
-import org.zanata.exception.DuplicateGlossaryEntryException;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.GlossaryEntry;
+import org.zanata.rest.dto.GlossaryResults;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.service.GlossaryFileService;
@@ -95,14 +95,18 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     @Override
-    public List<HGlossaryEntry> saveOrUpdateGlossary(
-            List<GlossaryEntry> glossaryEntries)
-            throws DuplicateGlossaryEntryException {
+    public GlossaryResults<HGlossaryEntry> saveOrUpdateGlossary(
+            List<GlossaryEntry> glossaryEntries) {
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
+        List<String> warnings = Lists.newArrayList();
         for (int i = 0; i < glossaryEntries.size(); i++) {
             GlossaryEntry entry = glossaryEntries.get(i);
-            checkForDuplicateEntry(entry);
+            String message = checkForDuplicateEntry(entry);
+            if(message != null) {
+                warnings.add(message);
+                continue;
+            }
             HGlossaryEntry hGlossaryEntry = transferGlossaryEntryAndSave(
                     glossaryEntries.get(i));
             entries.add(hGlossaryEntry);
@@ -113,7 +117,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 counter = 0;
             }
         }
-        return entries;
+        return new GlossaryResults<HGlossaryEntry>(entries, warnings);
     }
 
     private List<List<GlossaryEntry>> parseCsvFile(InputStream fileContents)
@@ -166,10 +170,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
      * content, pos, and description
      * 
      * @param from
-     * @throws DuplicateGlossaryEntryException
      */
-    private void checkForDuplicateEntry(GlossaryEntry from)
-            throws DuplicateGlossaryEntryException {
+    private String checkForDuplicateEntry(GlossaryEntry from) {
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
         LocaleId srcLocale = from.getSrcLang();
 
@@ -181,13 +183,16 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 glossaryDAO.getEntryByContentHash(contentHash);
 
         if(sameHashEntry == null) {
-            return;
+            return null;
         }
         // Different entry with same source content, pos and description
-        if (sameHashEntry.getId() != from.getId()) {
-            throw new DuplicateGlossaryEntryException(srcLocale,
-                    srcTerm.getContent(), from.getPos(), from.getDescription());
+        if (!sameHashEntry.getId().equals(from.getId())) {
+            return "Duplicate glossary entry in source locale '" + srcLocale
+                + "' ,source content '" + srcTerm.getContent() + "' ,pos '"
+                + from.getPos() + "' ,description '"
+                + from.getDescription() + "'";
         }
+        return null;
     }
 
     private HGlossaryEntry transferGlossaryEntryAndSave(GlossaryEntry from) {

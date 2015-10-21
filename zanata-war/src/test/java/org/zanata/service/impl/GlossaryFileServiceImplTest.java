@@ -36,6 +36,7 @@ import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
+import org.zanata.rest.dto.GlossaryResults;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.seam.SeamAutowire;
 
@@ -149,9 +150,9 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         entry.getGlossaryTerms().add(term1);
         entry.getGlossaryTerms().add(term2);
 
-        List<HGlossaryEntry> hEntries =
+        GlossaryResults<HGlossaryEntry> results =
                 glossaryFileService.saveOrUpdateGlossary(Lists.newArrayList(entry));
-
+        List<HGlossaryEntry> hEntries = results.getGlossaryEntries();
         assertThat(hEntries.size()).isEqualTo(1);
 
         HGlossaryEntry hEntry = hEntries.get(0);

@@ -84,7 +84,6 @@ var SystemGlossary = React.createClass({
       canAddNewEntry={this.state.canAddNewEntry}
       canUpdateEntry={this.state.canUpdateEntry}
       user={Configs.user}
-      sort={this.state.sort}
       srcLocale={srcLocale}
       selectedTransLocale={selectedTransLocale}/>);
 

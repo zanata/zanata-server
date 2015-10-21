@@ -24,10 +24,10 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.zanata.common.LocaleId;
-import org.zanata.exception.DuplicateGlossaryEntryException;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.rest.dto.GlossaryEntry;
+import org.zanata.rest.dto.GlossaryResults;
 
 /**
  *
@@ -40,10 +40,11 @@ public interface GlossaryFileService {
      *
      * @param glossaryEntries
      */
-    List<HGlossaryEntry> saveOrUpdateGlossary(List<GlossaryEntry> glossaryEntries) throws
-        DuplicateGlossaryEntryException;
+    GlossaryResults<HGlossaryEntry> saveOrUpdateGlossary(
+            List<GlossaryEntry> glossaryEntries);
 
-    List<List<GlossaryEntry>> parseGlossaryFile(InputStream fileContents, String fileName,
+    List<List<GlossaryEntry>> parseGlossaryFile(InputStream fileContents,
+            String fileName,
             LocaleId sourceLang, LocaleId transLang) throws
-        ZanataServiceException;
+            ZanataServiceException;
 }

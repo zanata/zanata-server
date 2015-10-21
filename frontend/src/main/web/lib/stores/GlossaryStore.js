@@ -174,18 +174,25 @@ function processSave(res) {
   });
   if(res.error) {
     setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
-  } else {
-    setInfoMessage('Glossary created successfully.', '');
+    return;
+  } else if(!_.isEmpty(res.body.warnings)) {
+    setWarningMessage('Warning during update', res.body.warnings);
+    return;
   }
+  setInfoMessage('Glossary created successfully.', '');
 }
 
 function processUpdate(res, resId) {
   _state.glossary[resId].status = GlossaryHelper.getDefaultEntryStatus();
   if(res.error) {
     setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
-  } else {
-    setInfoMessage('Changes saved successfully.', '');
+    return;
+  } else if(!_.isEmpty(res.body.warnings)) {
+    setWarningMessage('Warning during update', res.body.warnings);
+    return;
   }
+  setInfoMessage('Changes saved successfully.', '');
+
 }
 
 /**
@@ -211,6 +218,16 @@ function setErrorMessage(msg, res) {
  */
 function setInfoMessage(subject, msg) {
   console.info(subject, msg);
+}
+
+function setWarningMessage(msg, details) {
+  console.warn(msg, details);
+  _state.notification = {
+    SEVERITY: SEVERITY.WARN,
+    SUBJECT: 'Warning',
+    MESSAGE: msg,
+    DETAILS: details
+  };
 }
 
 function refreshGlossaryEntries() {
@@ -246,6 +263,10 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
 
   getEntry: function(id) {
     return _state.glossary[id];
+  },
+
+  getSort: function(field) {
+    return _state.sort[field];
   },
 
   getFocusedRow: function() {
@@ -334,6 +355,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
 
   _onUpdateSortOrder: function(data) {
     console.debug('Update sort order', data);
+    _state.sort = {};
     _state.sort[data.field] = data.ascending;
     loadGlossaryByLocale()
       .then(processGlossaryList)
