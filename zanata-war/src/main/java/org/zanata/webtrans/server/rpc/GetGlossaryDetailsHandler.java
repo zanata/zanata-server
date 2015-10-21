@@ -69,7 +69,7 @@ public class GetGlossaryDetailsHandler
             HGlossaryEntry entry = srcTerm.getGlossaryEntry();
             HGlossaryTerm hGlossaryTerm = entry.getGlossaryTerms().get(hLocale);
 
-            items.add(new GlossaryDetails(entry.getContentHash(),
+            items.add(new GlossaryDetails(entry.getId(),
                     srcTerm.getContent(), hGlossaryTerm.getContent(),
                     entry.getDescription(), entry.getPos(),
                     hGlossaryTerm.getComment(), entry.getSourceRef(),

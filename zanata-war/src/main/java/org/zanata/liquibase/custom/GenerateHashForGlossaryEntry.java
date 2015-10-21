@@ -42,6 +42,8 @@ import liquibase.resource.ResourceAccessor;
 import org.zanata.util.GlossaryUtil;
 
 /**
+ * Generate content hash for glossary entry
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class GenerateHashForGlossaryEntry implements CustomTaskChange {

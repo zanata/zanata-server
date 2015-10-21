@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 var ActionCell = React.createClass({
   propTypes: {
-    contentHash: React.PropTypes.string.isRequired,
+    id: React.PropTypes.number.isRequired,
     info: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     canUpdateEntry: React.PropTypes.bool
@@ -23,7 +23,7 @@ var ActionCell = React.createClass({
 
   _getState: function() {
     return {
-      entry: GlossaryStore.getEntry(this.props.contentHash),
+      entry: GlossaryStore.getEntry(this.props.id),
       saving: false
     }
   },
@@ -44,19 +44,19 @@ var ActionCell = React.createClass({
 
   _handleUpdate: function() {
     this.setState({saving: true});
-    Actions.updateGlossary(this.props.contentHash);
+    Actions.updateGlossary(this.props.id);
   },
 
   _handleCancel: function() {
-    Actions.resetEntry(this.props.contentHash);
+    Actions.resetEntry(this.props.id);
   },
 
   _onUpdateComment: function (value) {
-    Actions.updateComment(this.props.contentHash, value);
+    Actions.updateComment(this.props.id, value);
   },
 
   render: function () {
-    if (this.props.contentHash === null || this.state.entry === null) {
+    if (this.props.id === null || this.state.entry === null) {
       return <LoadingCell/>;
     } else {
       var isTransModified = this.state.entry.status.isTransModified;

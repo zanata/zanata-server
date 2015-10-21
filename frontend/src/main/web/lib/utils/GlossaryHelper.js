@@ -17,7 +17,7 @@ var GlossaryHelper = {
       locale = data.locale,
       comments = StringUtils.trim(data.comment);
 
-    if(StringUtils.isEmptyOrNull(content) && StringUtils.isEmptyOrNull(locale)) {
+    if(StringUtils.isEmptyOrNull(locale)) {
       return;
     } else {
       return  {
@@ -35,7 +35,7 @@ var GlossaryHelper = {
   generateGlossaryEntryDTO: function (data) {
     var entry = {};
 
-    entry.contentHash = data.contentHash;
+    entry.id = data.id;
     entry.pos = StringUtils.trim(data.pos);
     entry.description = StringUtils.trim(data.description);
     entry.srcLang = data.srcTerm.locale;
@@ -96,7 +96,7 @@ var GlossaryHelper = {
     }
 
     return {
-      contentHash: entry.contentHash,
+      id: entry.id,
       pos: _.isUndefined(entry.pos) ? '' : entry.pos,
       description: _.isUndefined(entry.description) ? '' : entry.description,
       termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0 , //remove source term from count

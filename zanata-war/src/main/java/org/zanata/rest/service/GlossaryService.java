@@ -237,7 +237,7 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response deleteEntry(String hash) {
+    public Response deleteEntry(Long id) {
         identity.checkPermission("", "glossary-delete");
 
         ResponseBuilder response = request.evaluatePreconditions();
@@ -245,7 +245,7 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
-        HGlossaryEntry entry = glossaryDAO.getEntryByContentHash(hash);
+        HGlossaryEntry entry = glossaryDAO.findById(id);
         GlossaryEntry deletedEntry = generateGlossaryEntry(entry);
 
         if(entry != null) {
@@ -254,7 +254,7 @@ public class GlossaryService implements GlossaryResource {
             return Response.ok(deletedEntry).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND)
-                .entity("Glossary " + hash + "entry not found").build();
+                .entity("Glossary " + id + "entry not found").build();
         }
     }
 
@@ -317,7 +317,7 @@ public class GlossaryService implements GlossaryResource {
     }
 
     public GlossaryEntry generateGlossaryEntry(HGlossaryEntry hGlossaryEntry) {
-        GlossaryEntry glossaryEntry = new GlossaryEntry(hGlossaryEntry.getContentHash());
+        GlossaryEntry glossaryEntry = new GlossaryEntry(hGlossaryEntry.getId());
         glossaryEntry.setSrcLang(hGlossaryEntry.getSrcLocale().getLocaleId());
         glossaryEntry.setSourceReference(hGlossaryEntry.getSourceRef());
         glossaryEntry.setPos(hGlossaryEntry.getPos());

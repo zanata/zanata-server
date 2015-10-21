@@ -7,7 +7,7 @@ import org.zanata.common.LocaleId;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GlossaryDetails implements IsSerializable {
-    private String contentHash;
+    private Long id;
     private String description;
     private String pos;
     private String targetComment;
@@ -24,11 +24,11 @@ public class GlossaryDetails implements IsSerializable {
         this(null, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public GlossaryDetails(String contentHash, String source, String target,
+    public GlossaryDetails(Long id, String source, String target,
             String description, String pos, String targetComment,
             String sourceRef, LocaleId srcLocale, LocaleId targetLocale,
             Integer targetVersionNum, Date lastModifiedDate) {
-        this.contentHash = contentHash;
+        this.id = id;
         this.source = source;
         this.target = target;
         this.description = description;
@@ -41,8 +41,8 @@ public class GlossaryDetails implements IsSerializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public String getContentHash() {
-        return contentHash;
+    public Long getId() {
+        return id;
     }
 
     public String getDescription() {

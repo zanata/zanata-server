@@ -58,11 +58,9 @@ var SystemGlossary = React.createClass({
     if(this.filterTimeout !== null) {
       clearTimeout(this.filterTimeout);
     }
-    if(!StringUtils.isEmptyOrNull(event.target.value)) {
-      this.filterTimeout = setTimeout(() => {
-        Actions.updateFilter(this.state.filter);
-      }, 500);
-    }
+    this.filterTimeout = setTimeout(() => {
+      Actions.updateFilter(this.state.filter);
+    }, 500);
   },
 
   render: function() {
@@ -79,7 +77,7 @@ var SystemGlossary = React.createClass({
 
     var contents = (<DataTable
       glossaryData={this.state.glossary}
-      glossaryHash={this.state.glossaryHash}
+      glossaryIds={this.state.glossaryIds}
       focusedRow={this.state.focusedRow}
       hoveredRow={this.state.hoveredRow}
       totalCount={this.state.totalCount}

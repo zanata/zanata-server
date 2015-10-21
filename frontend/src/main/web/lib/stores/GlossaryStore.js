@@ -30,7 +30,7 @@ var _state = {
   locales: null,
   glossary: {},
   original_glossary: {},
-  glossaryHash: [],
+  glossaryIds: [],
   page:1,
   filter: '',
   focusedRow: {
@@ -68,7 +68,7 @@ function processLocalesStatistic(res) {
     resetCache();
 
     for (var i = 0; i < _state.srcLocale.numberOfTerms; i++) {
-      _state.glossaryHash[i] = null;
+      _state.glossaryIds[i] = null;
     }
 
     _.forEach(body.transLocale, function(transLocale) {
@@ -110,10 +110,10 @@ function processGlossaryList(res) {
     var startIndex = ((page -1) * PAGE_SIZE);
 
     _.forOwn(body.results, function(entry) {
-      _state.glossary[entry.contentHash] = GlossaryHelper.generateEntry(entry);
-      _state.glossary[entry.contentHash].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.contentHash]);
-      _state.glossary[entry.contentHash].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.contentHash]);
-      _state.glossaryHash[startIndex] = [entry.contentHash];
+      _state.glossary[entry.id] = GlossaryHelper.generateEntry(entry, transLocaleId);
+      _state.glossary[entry.id].status['isSrcValid'] = GlossaryHelper.isSourceValid( _state.glossary[entry.id]);
+      _state.glossary[entry.id].status['canUpdateTransComment'] = GlossaryHelper.canUpdateTransComment( _state.glossary[entry.id]);
+      _state.glossaryIds[startIndex] = [entry.id];
       startIndex++;
     });
     _state.original_glossary = _.cloneDeep(_state.glossary);
@@ -124,7 +124,7 @@ function processGlossaryList(res) {
 
 function saveGlossary(data) {
   var entry = {
-    contentHash: '', pos: data.pos, description: data.description,
+    id: '', pos: data.pos, description: data.description,
     srcTerm: GlossaryHelper.generateSrcTerm(data.srcLocaleId)
   };
   entry.srcTerm.content = data.term;
@@ -229,7 +229,7 @@ function resetCache() {
   _.assign(_state, {
     page: 1,
     glossary: {},
-    glossaryHash: [],
+    glossaryIds: [],
     sort:{
       src_content: true
     }
@@ -244,8 +244,8 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     return _state;
   }.bind(this),
 
-  getEntry: function(contentHash) {
-    return _state.glossary[contentHash];
+  getEntry: function(id) {
+    return _state.glossary[id];
   },
 
   getFocusedRow: function() {
@@ -351,33 +351,34 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
   },
 
   _onUpdateEntryField: function(data) {
-    _.set(_state.glossary[data.contentHash], data.field, data.value);
-    _state.glossary[data.contentHash]['status'] =
-      GlossaryHelper.getEntryStatus(_state.glossary[data.contentHash], _state.original_glossary[data.contentHash]);
+    _.set(_state.glossary[data.id], data.field, data.value);
+    _state.glossary[data.id]['status'] =
+      GlossaryHelper.getEntryStatus(_state.glossary[data.id], _state.original_glossary[data.id]);
     GlossaryStore.emitChange();
   },
 
   _onUpdateComment: function(data) {
     console.debug('Update comment', data);
-    _.set(_state.glossary[data.contentHash], 'transTerm.comment', data.value);
-    updateGlossary(_state.glossary[data.contentHash])
+    _.set(_state.glossary[data.id], 'transTerm.comment', data.value);
+    updateGlossary(_state.glossary[data.id])
       .then(processUpdate)
       .then(refreshGlossaryEntries);
   },
 
   _onUpdateFocusRow: function(data) {
-    var previousContentHash = _state.focusedRow.contentHash,
+    var previousId = _state.focusedRow.id,
       previousRowIndex = _state.focusedRow.rowIndex;
     //same index, ignore
     if(previousRowIndex === data.rowIndex) {
       return;
     }
-    if(previousRowIndex !== -1 && previousContentHash !== null) {
-      var entry = _state.glossary[previousContentHash];
+
+    if(previousRowIndex !== -1 && previousId !== null) {
+      var entry = _state.glossary[previousId];
       if(entry && (entry.status.isSrcModified || entry.status.isTransModified)) {
-        updateGlossary(entry)
-          .then(processUpdate)
-          .then(refreshGlossaryEntries);
+        entry.status.isSaving = true;
+        GlossaryStore.emitChange();
+        GlossaryStore._onUpdateGlossary(previousId);
       }
     }
     _state.focusedRow = data;
@@ -430,7 +431,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
         GlossaryStore._onResetEntry(action.data);
         break;
       case GlossaryActionTypes.CLEAR_MESSAGE:
-        _state.notification = {};
+        _state.notification = null;
         GlossaryStore.emitChange();
         break;
     }

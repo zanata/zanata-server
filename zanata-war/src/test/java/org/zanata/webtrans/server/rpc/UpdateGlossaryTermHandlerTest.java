@@ -59,9 +59,9 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
 
     @Test
     public void testExecute() throws Exception {
-        String resId = "resId";
+        Long id = 1L;
         GlossaryDetails selectedDetailEntry =
-            new GlossaryDetails(resId, "source", "target", "desc", "pos",
+            new GlossaryDetails(id, "source", "target", "desc", "pos",
                 "target comment", "sourceRef", srcLocale.getLocaleId(),
                 targetHLocale.getLocaleId(), 0, new Date());
 
@@ -69,7 +69,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         "new comment", "new pos", "new description");
 
-        when(glossaryDAO.getEntryByContentHash(resId)).thenReturn(hGlossaryEntry);
+        when(glossaryDAO.findById(id)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
         HGlossaryTerm targetTerm = new HGlossaryTerm("target");
@@ -97,7 +97,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
     @Test(expected = ActionException.class)
     public void testExecuteWhenTargetTermNotFound() throws Exception {
         GlossaryDetails selectedDetailEntry =
-            new GlossaryDetails("", "source", "target", "desc", "pos",
+            new GlossaryDetails(null, "source", "target", "desc", "pos",
                 "target comment", "sourceRef", srcLocale.getLocaleId(),
                 targetHLocale.getLocaleId(), 0, new Date());
         UpdateGlossaryTermAction action =
@@ -121,7 +121,7 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
     @Test(expected = ActionException.class)
     public void testExecuteWhenTargetTermVersionNotMatch() throws Exception {
         GlossaryDetails selectedDetailEntry =
-            new GlossaryDetails("", "source", "target", "desc", "pos",
+            new GlossaryDetails(null, "source", "target", "desc", "pos",
                 "target comment", "sourceRef", srcLocale.getLocaleId(),
                 targetHLocale.getLocaleId(), 0, new Date());
         UpdateGlossaryTermAction action =

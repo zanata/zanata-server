@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 var InputCell = React.createClass({
   propTypes: {
-    contentHash: React.PropTypes.string.isRequired,
+    id: React.PropTypes.number.isRequired,
     field: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     placeholder: React.PropTypes.string,
@@ -24,7 +24,7 @@ var InputCell = React.createClass({
   },
 
   _getState: function() {
-    var entry = GlossaryStore.getEntry(this.props.contentHash),
+    var entry = GlossaryStore.getEntry(this.props.id),
       value = _.get(entry, this.props.field),
       focusedRow = GlossaryStore.getFocusedRow(),
       isFocused = focusedRow && (focusedRow.rowIndex === this.props.rowIndex);
@@ -60,7 +60,7 @@ var InputCell = React.createClass({
       clearTimeout(this.updateTimeout);
     }
     this.updateTimeout = setTimeout(() => {
-      Actions.updateEntryField(this.props.contentHash, this.props.field, value);
+      Actions.updateEntryField(this.props.id, this.props.field, value);
     }, this.TIMEOUT);
   },
 
@@ -79,7 +79,7 @@ var InputCell = React.createClass({
   //handle reset from the input
   _onReset: function () {
     this.setState({value: this.props.value});
-    Actions.updateEntryField(this.props.contentHash, this.props.field, this.props.value);
+    Actions.updateEntryField(this.props.id, this.props.field, this.props.value);
   },
 
   render: function() {

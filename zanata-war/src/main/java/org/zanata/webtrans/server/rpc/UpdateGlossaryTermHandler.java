@@ -8,11 +8,15 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.dao.GlossaryDAO;
+import org.zanata.exception.DuplicateGlossaryEntryException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
+import org.zanata.util.GlossaryUtil;
 import org.zanata.webtrans.server.ActionHandlerFor;
 import org.zanata.webtrans.shared.model.GlossaryDetails;
 import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
@@ -32,7 +36,7 @@ public class UpdateGlossaryTermHandler
 
     @In
     private LocaleService localeServiceImpl;
-
+    
     @Override
     public UpdateGlossaryTermResult execute(UpdateGlossaryTermAction action,
             ExecutionContext context) throws ActionException {
@@ -40,13 +44,13 @@ public class UpdateGlossaryTermHandler
 
         GlossaryDetails selectedDetailEntry = action.getSelectedDetailEntry();
 
-        String contentHash = selectedDetailEntry.getContentHash();
+        Long id = selectedDetailEntry.getId();
 
-        HGlossaryEntry entry = glossaryDAO.getEntryByContentHash(contentHash);
+        HGlossaryEntry entry = glossaryDAO.findById(id);
 
         if (entry == null) {
             throw new ActionException(
-                "Cannot find glossary entry with contentHash " + contentHash);
+                "Cannot find glossary entry with id " + id);
         }
 
         HLocale targetLocale =
@@ -73,16 +77,34 @@ public class UpdateGlossaryTermHandler
             entry.setPos(action.getNewPos());
             entry.setDescription(action.getNewDescription());
 
+            HGlossaryTerm srcTerm =
+                    entry.getGlossaryTerms().get(entry.getSrcLocale());
+
+            String contentHash =
+                    GlossaryUtil.generateHash(entry.getSrcLocale()
+                            .getLocaleId(), srcTerm.getContent(),
+                            entry.getPos(), entry.getDescription());
+
+            HGlossaryEntry sameHashEntry =
+                glossaryDAO.getEntryByContentHash(contentHash);
+
+            if (sameHashEntry.getId() != entry.getId()) {
+                throw new DuplicateGlossaryEntryException(entry.getSrcLocale()
+                        .getLocaleId(),
+                        srcTerm.getContent(), entry.getPos(),
+                        entry.getDescription());
+            }
+
             HGlossaryEntry entryResult = glossaryDAO.makePersistent(entry);
             glossaryDAO.flush();
 
-            HGlossaryTerm srcTerm =
+            srcTerm =
                     entryResult.getGlossaryTerms().get(
                             entryResult.getSrcLocale());
 
             GlossaryDetails details =
-                    new GlossaryDetails(entryResult.getContentHash(),
-                            srcTerm.getContent(),
+                    new GlossaryDetails(entryResult.getId(),
+                        srcTerm.getContent(),
                             targetTerm.getContent(),
                             entryResult.getDescription(),
                             entryResult.getPos(),

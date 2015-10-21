@@ -49,8 +49,8 @@ var DataTable = React.createClass({
 
   propTypes: {
     glossaryData: React.PropTypes.object.isRequired,
-    glossaryHash: React.PropTypes.arrayOf(
-      React.PropTypes.arrayOf(React.PropTypes.string)
+    glossaryIds: React.PropTypes.arrayOf(
+      React.PropTypes.arrayOf(React.PropTypes.number)
     ),
     canAddNewEntry: React.PropTypes.bool.isRequired,
     canUpdateEntry: React.PropTypes.bool.isRequired,
@@ -72,7 +72,7 @@ var DataTable = React.createClass({
     selectedTransLocale: React.PropTypes.string,
     totalCount: React.PropTypes.number.isRequired,
     focusedRow: React.PropTypes.shape({
-      contentHash: React.PropTypes.string,
+      id: React.PropTypes.number,
       rowIndex: React.PropTypes.number
     })
   },
@@ -144,8 +144,8 @@ var DataTable = React.createClass({
     return title;
   },
 
-  _generateKey: function (colIndex, rowIndex, contentHash) {
-    var key = colIndex + ":" + rowIndex + ":" + contentHash;
+  _generateKey: function (colIndex, rowIndex, id) {
+    var key = colIndex + ":" + rowIndex + ":" + id;
     if(this.props.selectedTransLocale) {
       key += ":" + this.props.selectedTransLocale;
     }
@@ -182,13 +182,13 @@ var DataTable = React.createClass({
   _renderDescHeader: function (label) {
     var key = this.ENTRY.DESC.sort_field,
       asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, false);
+    return this._renderHeader(label, key, asc, true);
   },
 
   _renderTransCountHeader: function (label) {
     var key = this.ENTRY.TRANS_COUNT.sort_field,
       asc = this._getSort(key);
-    return this._renderHeader(label, key, asc, true);
+    return this._renderHeader(label, key, asc, false);
   },
 
   _renderHeader: function (label, key, asc, allowSort) {
@@ -207,12 +207,12 @@ var DataTable = React.createClass({
     Actions.updateSortOrder(field, ascending);
   },
 
-  _renderCell: function ({ contentHash, rowIndex, field, readOnly, placeholder }) {
-    var key = this._generateKey(field.col, rowIndex, contentHash);
-    if (contentHash === null) {
+  _renderCell: function ({ id, rowIndex, field, readOnly, placeholder }) {
+    var key = this._generateKey(field.col, rowIndex, id);
+    if (id === null) {
       return <LoadingCell key={key}/>;
     } else {
-      var entry = this._getGlossaryEntry(contentHash);
+      var entry = this._getGlossaryEntry(id);
       var value = _.get(entry, field.field);
       if (readOnly) {
         return <span className="mh1/2" key={key}>{value}</span>;
@@ -220,7 +220,7 @@ var DataTable = React.createClass({
         return (
           <InputCell
             value={value}
-            contentHash={contentHash}
+            id={id}
             key={key}
             placeholder={placeholder}
             rowIndex={rowIndex}
@@ -231,10 +231,10 @@ var DataTable = React.createClass({
     }
   },
 
-  _renderSourceCell: function (contentHash, cellDataKey, rowData, rowIndex,
+  _renderSourceCell: function (id, cellDataKey, rowData, rowIndex,
                                columnData, width) {
     return this._renderCell({
-      contentHash: contentHash,
+      id: id,
       rowIndex: rowIndex,
       field: this.ENTRY.SRC,
       readOnly: true,
@@ -242,12 +242,12 @@ var DataTable = React.createClass({
     });
   },
 
-  _renderTransCell: function(contentHash, cellDataKey, rowData, rowIndex,
+  _renderTransCell: function(id, cellDataKey, rowData, rowIndex,
                              columnData, width) {
     var readOnly = !this.props.canUpdateEntry,
       placeholder = 'enter a translation';
     return this._renderCell({
-      contentHash: contentHash,
+      id: id,
       rowIndex: rowIndex,
       field: this.ENTRY.TRANS,
       readOnly: readOnly,
@@ -255,12 +255,12 @@ var DataTable = React.createClass({
     });
   },
 
-  _renderPosCell: function (contentHash, cellDataKey, rowData, rowIndex,
+  _renderPosCell: function (id, cellDataKey, rowData, rowIndex,
                             columnData, width) {
     var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
       placeholder = 'enter part of speech';
     return this._renderCell({
-      contentHash: contentHash,
+      id: id,
       rowIndex: rowIndex,
       field: this.ENTRY.POS,
       readOnly: readOnly,
@@ -268,12 +268,12 @@ var DataTable = React.createClass({
     });
   },
 
-  _renderDescCell: function (contentHash, cellDataKey, rowData, rowIndex,
+  _renderDescCell: function (id, cellDataKey, rowData, rowIndex,
                              columnData, width) {
     var readOnly = !this.props.canUpdateEntry || this._isTranslationSelected(),
       placeholder = 'enter description';
     return this._renderCell({
-      contentHash: contentHash,
+      id: id,
       rowIndex: rowIndex,
       field: this.ENTRY.DESC,
       readOnly: readOnly,
@@ -281,10 +281,10 @@ var DataTable = React.createClass({
     });
   },
 
-  _renderTransCountCell: function (contentHash, cellDataKey, rowData, rowIndex,
+  _renderTransCountCell: function (id, cellDataKey, rowData, rowIndex,
                               columnData, width) {
     return this._renderCell({
-      contentHash: contentHash,
+      id: id,
       rowIndex: rowIndex,
       field: this.ENTRY.TRANS_COUNT,
       readOnly: true,
@@ -292,26 +292,26 @@ var DataTable = React.createClass({
     });
   },
 
-  _renderActionCell: function (contentHash, cellDataKey, rowData, rowIndex,
+  _renderActionCell: function (id, cellDataKey, rowData, rowIndex,
                             columnData, width) {
-    if(contentHash === null) {
+    if(id === null) {
       return <LoadingCell/>;
     } else if(!this.props.canUpdateEntry && !this.props.canAddNewEntry) {
       return;
     }
-    var entry = this._getGlossaryEntry(contentHash);
+    var entry = this._getGlossaryEntry(id);
     if(this._isTranslationSelected()) {
       var info = this._generateTermInfo(entry.transTerm);
       return (
         <ActionCell info={info}
           canUpdateEntry={this.props.canUpdateEntry}
-          contentHash={contentHash}
+          id={id}
           rowIndex={rowIndex}/>
       );
     } else {
       var info = this._generateTermInfo(entry.srcTerm);
       return (
-        <SourceActionCell contentHash={contentHash} rowIndex={rowIndex}
+        <SourceActionCell id={id} rowIndex={rowIndex}
           srcLocaleId={this.props.srcLocale.locale.localeId}
           info={info}
           canUpdateEntry={this.props.canUpdateEntry}
@@ -418,9 +418,9 @@ var DataTable = React.createClass({
   },
 
   _onRowClick: function (event, rowIndex) {
-    var contentHash = this._rowGetter(rowIndex)[this.CONTENT_HASH_INDEX];
+    var id = this._rowGetter(rowIndex)[this.CONTENT_HASH_INDEX];
     if(this.props.focusedRow.rowIndex !== rowIndex) {
-      Actions.updateFocusedRow(contentHash, rowIndex);
+      Actions.updateFocusedRow(id, rowIndex);
     }
   },
 
@@ -432,18 +432,18 @@ var DataTable = React.createClass({
     }
   },
 
-  _getGlossaryEntry: function (contentHash) {
-    return this.props.glossaryData[contentHash];
+  _getGlossaryEntry: function (id) {
+    return this.props.glossaryData[id];
   },
 
   /**
-   * returns contentHash in list for glossary entry.
+   * returns id in list for glossary entry.
    * Used for fixed-data-table when loading each row. See {@link _getGlossaryEntry}
    * @param rowIndex
-   * @returns [contentHash] - contentHash in list
+   * @returns [id] - id in list
    */
   _rowGetter: function(rowIndex) {
-    var row = this.props.glossaryHash[rowIndex];
+    var row = this.props.glossaryIds[rowIndex];
     if(_.isUndefined(row) || row === null) {
       if(this.loadTimeout !== null) {
         clearTimeout(this.loadTimeout);

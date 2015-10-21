@@ -38,6 +38,7 @@ import org.zanata.adapter.glossary.GlossaryCSVReader;
 import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
+import org.zanata.exception.DuplicateGlossaryEntryException;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
@@ -94,13 +95,17 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     @Override
-    public List<HGlossaryEntry> saveOrUpdateGlossary(List<GlossaryEntry> glossaryEntries) {
+    public List<HGlossaryEntry> saveOrUpdateGlossary(
+            List<GlossaryEntry> glossaryEntries)
+            throws DuplicateGlossaryEntryException {
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
         for (int i = 0; i < glossaryEntries.size(); i++) {
-            HGlossaryEntry entry = transferGlossaryEntryAndSave(
+            GlossaryEntry entry = glossaryEntries.get(i);
+            checkForDuplicateEntry(entry);
+            HGlossaryEntry hGlossaryEntry = transferGlossaryEntryAndSave(
                     glossaryEntries.get(i));
-            entries.add(entry);
+            entries.add(hGlossaryEntry);
             counter++;
 
             if (counter == BATCH_SIZE || i == glossaryEntries.size() - 1) {
@@ -139,29 +144,50 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     private HGlossaryEntry getOrCreateGlossaryEntry(GlossaryEntry from) {
-
         LocaleId srcLocale = from.getSrcLang();
-        GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
+        Long id = from.getId();
 
-        String contentHash = from.getContentHash();
-
-        if (StringUtils.isBlank(contentHash)) {
-            contentHash =
-                    GlossaryUtil.generateHash(srcLocale, srcTerm.getContent(),
-                            from.getPos(),
-                            from.getDescription());
+        HGlossaryEntry hGlossaryEntry = null;
+        if(id != null) {
+            hGlossaryEntry = glossaryDAO.findById(id);
         }
-
-        HGlossaryEntry hGlossaryEntry = glossaryDAO.getEntryByContentHash(
-            contentHash);
 
         if (hGlossaryEntry == null) {
             hGlossaryEntry = new HGlossaryEntry();
             HLocale srcHLocale = localeServiceImpl.getByLocaleId(srcLocale);
             hGlossaryEntry.setSrcLocale(srcHLocale);
             hGlossaryEntry.setSourceRef(from.getSourceReference());
-        } 
+        }
         return hGlossaryEntry;
+    }
+
+    /**
+     * Check if request save/update entry have duplication with same source
+     * content, pos, and description
+     * 
+     * @param from
+     * @throws DuplicateGlossaryEntryException
+     */
+    private void checkForDuplicateEntry(GlossaryEntry from)
+            throws DuplicateGlossaryEntryException {
+        GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
+        LocaleId srcLocale = from.getSrcLang();
+
+        String contentHash =
+            GlossaryUtil.generateHash(srcLocale, srcTerm.getContent(),
+                from.getPos(), from.getDescription());
+
+        HGlossaryEntry sameHashEntry =
+                glossaryDAO.getEntryByContentHash(contentHash);
+
+        if(sameHashEntry == null) {
+            return;
+        }
+        // Different entry with same source content, pos and description
+        if (sameHashEntry.getId() != from.getId()) {
+            throw new DuplicateGlossaryEntryException(srcLocale,
+                    srcTerm.getContent(), from.getPos(), from.getDescription());
+        }
     }
 
     private HGlossaryEntry transferGlossaryEntryAndSave(GlossaryEntry from) {

@@ -80,7 +80,7 @@ var GlossaryAPIStore = ({
  * }
    */
   deleteGlossary: function(data) {
-    var url = Configs.baseUrl + "/glossary/entries/" + data.contentHash + Configs.urlPostfix;
+    var url = Configs.baseUrl + "/glossary/entries/" + data.id + Configs.urlPostfix;
 
     return new Promise(function(resolve, reject) {
       Request.del(url)

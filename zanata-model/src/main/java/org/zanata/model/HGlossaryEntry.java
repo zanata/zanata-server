@@ -45,7 +45,6 @@ import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
-import org.zanata.common.LocaleId;
 import org.zanata.hibernate.search.LocaleIdBridge;
 import org.zanata.util.GlossaryUtil;
 

@@ -20,17 +20,17 @@ var Actions = {
       }
     });
   },
-  updateGlossary: function(contentHash) {
+  updateGlossary: function(id) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPDATE_GLOSSARY,
-      data: contentHash
+      data: id
     });
   },
-  deleteGlossary: function(contentHash) {
+  deleteGlossary: function(id) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.DELETE_GLOSSARY,
       data: {
-       contentHash: contentHash
+       id: id
       }
     });
   },
@@ -64,38 +64,38 @@ var Actions = {
         data: index
     });
   },
-  updateEntryField: function (contentHash, field, value) {
+  updateEntryField: function (id, field, value) {
     Dispatcher.handleViewAction({
           actionType: GlossaryActionTypes.UPDATE_ENTRY_FIELD,
           data: {
-            contentHash: contentHash,
+            id: id,
             field: field,
             value: value
           }
     });
   },
-  updateComment: function (contentHash, value) {
+  updateComment: function (id, value) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPDATE_COMMENT,
       data: {
-        contentHash: contentHash,
+        id: id,
         value: value
       }
     });
   },
-  updateFocusedRow: function (contentHash, rowIndex) {
+  updateFocusedRow: function (id, rowIndex) {
     Dispatcher.handleViewAction({
       actionType: GlossaryActionTypes.UPDATE_FOCUSED_ROW,
       data: {
         rowIndex: rowIndex,
-        contentHash: contentHash
+        id: id
       }
     });
   },
-  resetEntry: function(contentHash) {
+  resetEntry: function(id) {
     Dispatcher.handleViewAction({
         actionType: GlossaryActionTypes.RESET_ENTRY,
-        data: contentHash
+        data: id
       });
   },
   clearMessage: function() {

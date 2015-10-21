@@ -70,7 +70,7 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
             .newArrayList(
                 GlossarySortField.getByField(GlossarySortField.SRC_CONTENT),
                 GlossarySortField.getByField(GlossarySortField.PART_OF_SPEECH),
-                GlossarySortField.getByField(GlossarySortField.TRANS_COUNT));
+                GlossarySortField.getByField(GlossarySortField.DESCRIPTION));
         List<HGlossaryEntry> entryList = dao.getEntriesByLocale(
             LocaleId.EN_US, 0, 1, "", sortFields);
         assertThat(entryList.size(), is(1));

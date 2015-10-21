@@ -47,7 +47,6 @@ import org.zanata.common.LocaleId;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.model.HPerson;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
 /**

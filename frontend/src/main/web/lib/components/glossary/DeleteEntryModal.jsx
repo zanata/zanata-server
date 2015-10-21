@@ -4,7 +4,7 @@ import { Button, Icon, Tooltip, Overlay } from 'zanata-ui';
 
 var DeleteEntryModal = React.createClass({
   propTypes: {
-    contentHash: React.PropTypes.string.isRequired,
+    id: React.PropTypes.number.isRequired,
     className: React.PropTypes.string,
     entry: React.PropTypes.object
   },
@@ -32,7 +32,7 @@ var DeleteEntryModal = React.createClass({
     }
 
     this.deleteTimeout = setTimeout(() => {
-      Actions.deleteGlossary(this.props.contentHash);
+      Actions.deleteGlossary(this.props.id);
       this._closeDialog()
     }, 100);
   },

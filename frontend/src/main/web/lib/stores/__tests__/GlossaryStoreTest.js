@@ -36,7 +36,7 @@ describe('GlossaryStoreTest', function() {
       "transLocale" : [zhHans, zhHant]
     };
     var entry1 = {
-        "contentHash": 'd1f667e3c439e2994719d13b40f870c4', "pos": "noun", "description": "desc",
+        "id": '1', "pos": "noun", "description": "desc",
         "srcLang": "en-US", "sourceReference": "bgroh@172.16.5.77",
         "glossaryTerms": [
           {"content": "process", "locale": "en-US", "lastModifiedDate": 1439435990000, "lastModifiedBy": ""}
@@ -44,7 +44,7 @@ describe('GlossaryStoreTest', function() {
         "termsCount": 2
       },
       entry2 = {
-        "contentHash": '153e8cab667f1d318894546d2ada9696', "pos": "noun", "description": "desc",
+        "id": '2', "pos": "noun", "description": "desc",
         "srcLang": "en-US", "sourceReference": "hpeters@10.64.1.231",
         "glossaryTerms": [
           {"content": "implementation", "locale": "en-US", "lastModifiedDate": 1439435990000, "lastModifiedBy": ""}
@@ -74,15 +74,15 @@ describe('GlossaryStoreTest', function() {
       expect(_.size(state.localeOptions)).toEqual(_.size(respLocaleStats.transLocale));
       expect(_.size(state.glossary)).toEqual(_.size(respGlossaryEntries.glossaryEntries));
 
-      var resultEntry1 = state.glossary[entry1.contentHash];
-      expect(resultEntry1.contentHash).toEqual(entry1.contentHash);
+      var resultEntry1 = state.glossary[entry1.id];
+      expect(resultEntry1.id).toEqual(entry1.id);
       expect(resultEntry1.pos).toEqual(entry1.pos);
       expect(resultEntry1.description).toEqual(entry1.description);
       expect(resultEntry1.srcTerm.locale).toEqual(entry1.srcLang);
       expect(resultEntry1.srcTerm.reference).toEqual(entry1.sourceReference);
 
-      var resultEntry2 = state.glossary[entry2.contentHash];
-      expect(resultEntry2.contentHash).toEqual(entry2.contentHash);
+      var resultEntry2 = state.glossary[entry2.id];
+      expect(resultEntry2.id).toEqual(entry2.id);
       expect(resultEntry2.pos).toEqual(entry2.pos);
       expect(resultEntry2.description).toEqual(entry2.description);
       expect(resultEntry2.srcTerm.locale).toEqual(entry2.srcLang);

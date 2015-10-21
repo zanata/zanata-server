@@ -31,7 +31,7 @@ public class DummyGetGlossaryDetailsCommand implements Command {
             String description = "Description " + i;
             String targetComment = "Target comment " + i;
             GlossaryDetails details =
-                    new GlossaryDetails("resId", "source content:" + (i + 1),
+                    new GlossaryDetails(1L, "source content:" + (i + 1),
                             "target content:" + (i + 1), description, "pos",
                             targetComment, "Dummy source ref " + (i + 1),
                             new LocaleId("en-us"), action.getWorkspaceId()
