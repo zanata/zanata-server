@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest",
     "js": "webpack",
-    "build": "NODE_ENV=production webpack -p --config webpack.prod.config.js --bail --display-error-details",
-    "build-debug": "NODE_ENV=development webpack --config webpack.prod.config.debug.js --bail --display-error-details",
+    "build": "webpack -p --config webpack.prod.config.js --bail --display-error-details",
     "start": "node server.js"
   },
   "license": "LGPL",
