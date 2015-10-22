@@ -110,9 +110,6 @@
       <logger category="com.arjuna">
         <level name="WARN"/>
       </logger>
-      <logger category="org.apache.tomcat.util.modeler">
-        <level name="WARN"/>
-      </logger>
       <!-- JDBC connection allocation/release will be logged to server.log -->
       <logger category="org.hibernate.engine.jdbc.internal.LogicalConnectionImpl">
         <level name="DEBUG"/>
@@ -404,7 +401,7 @@
       <endpoint/>
       <http-connector name="http-remoting-connector" connector-ref="default" security-realm="ApplicationRealm"/>
     </subsystem>
-    <subsystem xmlns="urn:jboss:domain:resource-adapters:3.0"/>
+    <subsystem xmlns="urn:jboss:domain:resource-adapters:4.0"/>
     <subsystem xmlns="urn:jboss:domain:request-controller:1.0"/>
     <subsystem xmlns="urn:jboss:domain:sar:1.0"/>
     <subsystem xmlns="urn:jboss:domain:security-manager:1.0">
