@@ -14,7 +14,7 @@ var PAGE_SIZE = 1000,
   MAX_LISTENERS = 100, //overriding number of listener for GlossaryStore. (default is 11)
   SEVERITY = {
     INFO : 'info',
-    WARN : 'warning',
+    WARN : 'warn',
     ERROR: 'error'
   };
 
@@ -59,7 +59,10 @@ var _state = {
 
 function processLocalesStatistic(res) {
   if(res.error) {
-    setErrorMessage(res);
+    setNotification(SEVERITY.ERROR,
+      'We are sorry',
+      'Error during processing glossary info from server.',
+      res, true);
   } else {
     var body = res.body;
     _state.locales = {};
@@ -99,7 +102,10 @@ function canUpdateEntry() {
 
 function processGlossaryList(res) {
   if(res.error) {
-    setErrorMessage(res);
+    setNotification(SEVERITY.ERROR,
+      'We are sorry',
+      'Error during processing glossary response from server.',
+      res, true);
   } else {
     var transLocaleId = _state.selectedTransLocale,
       page = _state.page,
@@ -149,20 +155,32 @@ function processUploadFile(res) {
   _state.uploadFile.file = null;
 
   if(res.error) {
-    setErrorMessage('We were unable to import your file. Please contact our admin to resolve this issue.', res);
-  } else if(!_.isEmpty(res.body.warnings)) {
-    setWarningMessage(_.size(res.body.warnings) + ' skipped.', '');
-    return;
+    setNotification(SEVERITY.ERROR,
+      'We are sorry',
+      'We were unable to import your file. Please refresh this page and try again.',
+      res, true);
   } else {
-    setInfoMessage('File imported successfully.', '');
+    var savedCount = _.size(res.body.glossaryEntries),
+      skippedCount = _.size(res.body.warnings),
+      message = savedCount + ' term imported';
+
+    if(skippedCount > 0) {
+      message += ' ,' + skippedCount + ' term skipped.'
+    } else {
+      message += '.';
+    }
+    setNotification(SEVERITY.INFO, 'File imported successfully', message, '', false);
   }
 }
 
 function processDelete(res) {
   if(res.error) {
-    setErrorMessage('We were unable to delete this glossary entry. Please contact our admin to resolve this issue.', res);
+    setNotification(SEVERITY.ERROR,
+      'We are sorry',
+      'We were unable to delete this glossary term. Please refresh this page and try again.',
+      res, true);
   } else {
-    setInfoMessage('Glossary term deleted.', '');
+    setNotification(SEVERITY.INFO, 'Glossary term deleted', '', '', false);
   }
 }
 
@@ -176,61 +194,58 @@ function processSave(res) {
     description: ''
   });
   if(res.error) {
-    setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
+    setNotification(SEVERITY.ERROR, 'We are sorry', 'We were unable to create glossary term. Please refresh this page and try again.', res, true);
     return;
   } else if(!_.isEmpty(res.body.warnings)) {
-    setWarningMessage('Warning during update', res.body.warnings);
+    setNotification(SEVERITY.WARN, 'Warning', 'Warning during save', res.body.warnings, true);
     return;
   }
-  setInfoMessage('Glossary term added.', '');
+  setNotification(SEVERITY.INFO, 'Glossary term created', '', '', false);
 }
 
 function processUpdate(res, id) {
   _state.glossary[id].status = GlossaryHelper.getDefaultEntryStatus();
   if(res.error) {
-    setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
+    setNotification(SEVERITY.ERROR, 'We are sorry', 'We were unable to update your changes. Please refresh this page and try again.', res, true);
     return;
   } else if(!_.isEmpty(res.body.warnings)) {
-    setWarningMessage('Warning during update', res.body.warnings);
+    setNotification(SEVERITY.WARN, 'Warning', 'Warning during update', res.body.warnings, true);
     return;
   }
-  setInfoMessage('Glossary term updated.', '');
-
+  setNotification(SEVERITY.INFO, 'Glossary term updated', '', '', false);
 }
 
 /**
- * display error message
- * @param res - server response
- */
-function setErrorMessage(msg, res) {
-  var details = res.status + ':' + res.error.toString();
-  console.error(details);
-  _state.notification = {
-    SEVERITY: SEVERITY.ERROR,
-    SUBJECT: 'We are sorry',
-    MESSAGE: msg,
-    DETAILS: details
-  };
-}
-
-/**
- * Need notification feature to output message
+ * Set notification message.
+ * Display model if showModel=true, otherwise, only display in console.
  *
- * display info message
- * @param msg - message to display
+ * @param severity
+ * @param subject
+ * @param msg
+ * @param details
+ * @param showModel
  */
-function setInfoMessage(subject, msg) {
-  console.info(subject, msg);
-}
-
-function setWarningMessage(msg, details) {
-  console.warn(msg, details);
-  _state.notification = {
-    SEVERITY: SEVERITY.WARN,
-    SUBJECT: 'Warning',
-    MESSAGE: msg,
-    DETAILS: details
-  };
+function setNotification(severity, subject, msg, details, showModel) {
+  switch(severity) {
+    case SEVERITY.WARN:
+      console.warn(subject, msg, details);
+      break;
+    case SEVERITY.ERROR:
+      console.error(subject, msg, details);
+      break;
+    case SEVERITY.INFO:
+    default:
+      console.info(subject, msg, details);
+      break;
+  }
+  if(showModel) {
+    _state.notification = {
+      SEVERITY: severity,
+      SUBJECT: subject,
+      MESSAGE: msg,
+      DETAILS: details
+    };
+  }
 }
 
 function refreshGlossaryEntries() {

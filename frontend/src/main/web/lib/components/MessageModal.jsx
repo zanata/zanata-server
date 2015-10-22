@@ -24,12 +24,21 @@ var MessageModal = React.createClass({
       case 'error':
         return 'cdanger';
       default:
-        return 'cpri';
+        return 'chighlight';
     }
   },
 
   render: function () {
     const severityClass = this._getSeverityClass(this.props.value.SEVERITY);
+    var detailsSection;
+
+    if(!StringUtils.isEmptyOrNull(this.props.value.DETAILS)) {
+      detailsSection = (
+        <div className='bdrs1/4 bxsh1 p1/2 fzn1'>
+          {this.props.value.DETAILS}
+        </div>
+      );
+    }
 
     return (
       <Modal show={true} onHide={this._closeModal}>
@@ -37,13 +46,11 @@ var MessageModal = React.createClass({
           <Modal.Title>Notification</Modal.Title>
         </Modal.Header>
         <Modal.Body className='tal'>
-          <div className='fz2 csec'>{this.props.value.SUBJECT}</div>
-          <div className={severityClass + ' mv1/2'}>
+          <div className={severityClass + ' fz2'}>{this.props.value.SUBJECT}</div>
+          <div className='mv1/2'>
             {this.props.value.MESSAGE}
           </div>
-          <div className='cneutral'>
-            {this.props.value.DETAILS}
-          </div>
+          {detailsSection}
         </Modal.Body>
         <Modal.Footer>
           <Button
