@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import javax.annotation.Nonnull;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
