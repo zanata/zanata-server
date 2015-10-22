@@ -99,7 +99,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         subDocNameAndTextUnitId
     };
 
-    protected final IFilter filter;
+    private final IFilter filter;
     private final IdSource idSource;
     private boolean requireFileOutput;
     private boolean separateNonTranslatable;
@@ -148,6 +148,10 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         log = LoggerFactory.getLogger(OkapiFilterAdapter.class);
     }
 
+    protected IFilter getFilter() {
+        return filter;
+    }
+
     @Override
     public Resource parseDocumentFile(URI documentContent,
             LocaleId sourceLocale, Optional<String> filterParams)
@@ -186,17 +190,8 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
                     if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
                         String content = getTranslatableText(tu);
                         if (!content.isEmpty()) {
-                            TextFlow tf = new TextFlow(getIdFor(tu, content,
-                                    subDocName), sourceLocale);
-                            // Numerus is the Qt TS plural indicator
-                            if(tu.hasProperty("numerus") &&
-                                    tu.getProperty("numerus").getValue().equals("yes")) {
-                                tf.setPlural(true);
-                                tf.setContents(content, content);
-                            } else {
-                                tf.setPlural(false);
-                                tf.setContents(content);
-                            }
+                            TextFlow tf = processTextFlow(tu, content,
+                                    subDocName, sourceLocale);
                             if (shouldAdd(tf.getId(), tf, addedResources)) {
                                 addedResources.put(tf.getId(), tf);
                                 resources.add(tf);
@@ -211,6 +206,14 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
             filter.close();
         }
         return document;
+    }
+
+    protected TextFlow processTextFlow(TextUnit tu, String content, String subDocName, LocaleId sourceLocale) {
+        TextFlow tf = new TextFlow(getIdFor(tu, content,
+                subDocName), sourceLocale);
+        tf.setPlural(false);
+        tf.setContents(content);
+        return tf;
     }
 
     private String getTranslatableText(TextUnit tu) {
