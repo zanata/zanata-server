@@ -149,9 +149,12 @@ function processUploadFile(res) {
   _state.uploadFile.file = null;
 
   if(res.error) {
-    setErrorMessage('We were unable to process your file. Please contact our admin to resolve this issue.', res);
+    setErrorMessage('We were unable to import your file. Please contact our admin to resolve this issue.', res);
+  } else if(!_.isEmpty(res.body.warnings)) {
+    setWarningMessage(_.size(res.body.warnings) + ' skipped.', '');
+    return;
   } else {
-    setInfoMessage('File uploaded successfully.', '');
+    setInfoMessage('File imported successfully.', '');
   }
 }
 
@@ -159,7 +162,7 @@ function processDelete(res) {
   if(res.error) {
     setErrorMessage('We were unable to delete this glossary entry. Please contact our admin to resolve this issue.', res);
   } else {
-    setInfoMessage('Entry deleted successfully.', '');
+    setInfoMessage('Glossary term deleted.', '');
   }
 }
 
@@ -179,11 +182,11 @@ function processSave(res) {
     setWarningMessage('Warning during update', res.body.warnings);
     return;
   }
-  setInfoMessage('Glossary created successfully.', '');
+  setInfoMessage('Glossary term added.', '');
 }
 
-function processUpdate(res, resId) {
-  _state.glossary[resId].status = GlossaryHelper.getDefaultEntryStatus();
+function processUpdate(res, id) {
+  _state.glossary[id].status = GlossaryHelper.getDefaultEntryStatus();
   if(res.error) {
     setErrorMessage('We were unable to save your changes. Please refresh this page and try again.', res);
     return;
@@ -191,7 +194,7 @@ function processUpdate(res, resId) {
     setWarningMessage('Warning during update', res.body.warnings);
     return;
   }
-  setInfoMessage('Changes saved successfully.', '');
+  setInfoMessage('Glossary term updated.', '');
 
 }
 
@@ -383,7 +386,9 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     console.debug('Update comment', data);
     _.set(_state.glossary[data.id], 'transTerm.comment', data.value);
     updateGlossary(_state.glossary[data.id])
-      .then(processUpdate)
+      .then(function(res) {
+        processUpdate(res, data.id);
+      })
       .then(refreshGlossaryEntries);
   },
 
