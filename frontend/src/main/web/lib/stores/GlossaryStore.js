@@ -160,16 +160,13 @@ function processUploadFile(res) {
       'We were unable to import your file. Please refresh this page and try again.',
       res, true);
   } else {
-    var savedCount = _.size(res.body.glossaryEntries),
-      skippedCount = _.size(res.body.warnings),
-      message = savedCount + ' term imported';
-
-    if(skippedCount > 0) {
-      message += ' ,' + skippedCount + ' term skipped.'
-    } else {
-      message += '.';
+    var message;
+    if(res.body) {
+      var savedCount = _.size(res.body.glossaryEntries);
+      message = savedCount + ' terms imported.';
     }
-    setNotification(SEVERITY.INFO, 'File imported successfully', message, '', false);
+
+    setNotification(SEVERITY.INFO, 'File imported successfully', message, '', true);
   }
 }
 
@@ -384,9 +381,7 @@ var GlossaryStore = assign({}, EventEmitter.prototype, {
     console.debug('Upload file', data);
     GlossaryAPIStore.uploadFile(data, onUploadFile)
       .then(processUploadFile)
-      .then(resetCache)
-      .then(loadGlossaryByLocale)
-      .then(processGlossaryList)
+      .then(refreshGlossaryEntries)
       .then(() => GlossaryStore.emitChange());
   },
 

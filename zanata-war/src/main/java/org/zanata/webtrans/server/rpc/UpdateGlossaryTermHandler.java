@@ -36,7 +36,7 @@ public class UpdateGlossaryTermHandler
 
     @In
     private LocaleService localeServiceImpl;
-    
+
     @Override
     public UpdateGlossaryTermResult execute(UpdateGlossaryTermAction action,
             ExecutionContext context) throws ActionException {

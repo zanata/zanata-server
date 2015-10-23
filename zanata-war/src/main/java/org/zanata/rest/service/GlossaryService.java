@@ -80,7 +80,8 @@ public class GlossaryService implements GlossaryResource {
         GlossaryLocaleInfo srcGlossaryLocale =
                 new GlossaryLocaleInfo(generateLocaleDetails(srcLocale), entryCount);
 
-        Map<LocaleId, Integer> transMap = glossaryDAO.getTranslationLocales();
+        Map<LocaleId, Integer> transMap =
+                glossaryDAO.getTranslationLocales(srcLocaleId);
 
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
@@ -88,7 +89,7 @@ public class GlossaryService implements GlossaryResource {
         List<GlossaryLocaleInfo> transLocale = Lists.newArrayList();
 
         supportedLocales.stream()
-            .filter(locale -> locale.getLocaleId() != srcLocaleId)
+            .filter(locale -> !locale.getLocaleId().equals(srcLocaleId))
             .forEach(locale -> {
                 LocaleDetails localeDetails = generateLocaleDetails(locale);
                 int count = transMap.containsKey(locale.getLocaleId()) ?
@@ -182,7 +183,7 @@ public class GlossaryService implements GlossaryResource {
 
         return Response.ok(results).build();
     }
-    
+
     @Override
     public Response upload(@MultipartForm GlossaryFileUploadForm form) {
         identity.checkPermission("", "glossary-insert");
@@ -212,7 +213,7 @@ public class GlossaryService implements GlossaryResource {
                             .header("Content-Disposition",
                                     "attachment; filename=\""
                                             + form.getFileName() + "\"")
-                            .type(MediaType.TEXT_PLAIN).entity(overallResult)
+                            .entity(overallResult)
                             .build();
             return response;
         } catch (ZanataServiceException e) {

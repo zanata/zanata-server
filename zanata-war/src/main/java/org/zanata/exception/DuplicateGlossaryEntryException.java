@@ -26,7 +26,7 @@ import org.zanata.common.LocaleId;
 /**
  * Exception for when HGlossaryEntry have duplication with same source content,
  * pos and description.
- * 
+ *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class DuplicateGlossaryEntryException extends RuntimeException {

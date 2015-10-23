@@ -146,12 +146,16 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return totalCount.intValue();
     }
 
-    public Map<LocaleId, Integer> getTranslationLocales() {
-        String queryString =
-                "select t.locale, count(*) from HGlossaryTerm t where t.locale.localeId <> t.glossaryEntry.srcLocale.localeId group by t.locale";
+    public Map<LocaleId, Integer> getTranslationLocales(LocaleId srcLocale) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("select t.locale, count(*) from HGlossaryTerm t ")
+            .append("where t.locale.localeId <> t.glossaryEntry.srcLocale.localeId ")
+            .append("and t.glossaryEntry.srcLocale.localeId =:srcLocale ")
+            .append("group by t.locale");
         Query query = getSession()
-                .createQuery(queryString)
-                .setComment("GlossaryDAO.getTranslationLocales");
+                .createQuery(queryBuilder.toString())
+            .setParameter("srcLocale", srcLocale)
+            .setComment("GlossaryDAO.getTranslationLocales");
 
         @SuppressWarnings("unchecked")
         List<Object[]> list = query.list();
@@ -219,7 +223,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         query.setCacheable(false).setComment("GlossaryDAO.getByIdList");
         return query.list();
     }
-    
+
     public String getLastModifiedName(Long termId) {
         Query query =
                 getSession()
@@ -227,7 +231,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
                             "Select term.lastModifiedBy.name FROM HGlossaryTerm term WHERE term.id =:termId");
         query.setLong("termId", termId).setCacheable(true)
                 .setComment("GlossaryDAO.getLastModifiedName");
-        return (String)query.uniqueResult();
+        return (String) query.uniqueResult();
     }
 
     public List<Object[]> getSearchResult(String searchText,
