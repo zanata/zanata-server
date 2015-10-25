@@ -13,11 +13,10 @@
     }
 
     function cancelJoinLanguage() {
-      console.info('cancel join');
       jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
-      jQuery(getJoinLanguageForm()).find('#request-join-language-send-button').removeClass('is-active');
+      getJoinLanguageForm().find('#request-join-language-send-button').removeClass('is-active');
       //reset all checkboxes
-      jQuery(getJoinLanguageForm()).find('#roles').
+      getJoinLanguageForm().find('#roles').
         find('input.js-form__checkbox__input').prop('checked', false).change();
     }
   </script>
@@ -34,7 +33,7 @@
       </button>
     </header>
 
-    <h:form id="joinLanguageForm" styleClass="l--push-bottom-0">
+    <h:panelGroup layout="block" id="joinLanguageForm" styleClass="l--push-bottom-0">
       <a4j:jsFunction name="bindRole" action="#{languageJoinAction.bindRole(key, checked)}"
         limitRender="true" render="request-join-buttons">
         <a4j:param name="val1" assignTo="#{key}"/>
@@ -95,6 +94,6 @@
           </button>
         </h:panelGroup>
       </footer>
-    </h:form>
+    </h:panelGroup>
   </div>
 </div>
