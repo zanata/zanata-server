@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
 */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-class DateRange {
+public class DateRange {
     private static final int MAX_STATS_DAYS = 365;
     @Getter
     private final DateTime fromDate;
@@ -29,11 +29,11 @@ class DateRange {
     @Getter
     private final DateTimeZone timeZone;
 
-    static DateRange from(String dateRangeParam) {
+    public static DateRange from(String dateRangeParam) {
         return from(dateRangeParam, null);
     }
 
-    static DateRange from(String dateRangeParam, String fromTimezoneId) {
+    public static DateRange from(String dateRangeParam, String fromTimezoneId) {
         String[] dateRange = dateRangeParam.split("\\.\\.");
         if (dateRange.length != 2) {
             throw new InvalidDateParamException(dateRangeParam);

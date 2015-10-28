@@ -46,6 +46,7 @@ import org.zanata.model.HIterationGroup;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.StatusCount;
+import org.zanata.rest.service.DateRange;
 import org.zanata.ui.model.statistic.MessageStatistic;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.HashUtil;
@@ -519,6 +520,34 @@ public class ProjectIterationDAO extends
         }
         q.setCacheable(false).setComment(
                 "ProjectIterationDAO.searchByProjectIdExcludeObsolete");
+        return q.list();
+    }
+
+    public List<String> getContributorsId(String projectSlug, String versionSlug,
+        DateRange dataRange) {
+            String query =
+//                "select account.username from HAccount account where account.id in " +
+//                    "(select tft.translator.account.id from HTextFlowTarget tft " +
+//                    "where tft.textFlow.document.projectIteration.slug = :versionSlug " +
+//                    "and tft.textFlow.document.projectIteration.project.slug =:projectSlug and tft.lastChanged between :fromDate and :toDate) " +
+//                    "or account.id in (select tft.reviewer.account.id from HTextFlowTarget tft " +
+//                    "where tft.textFlow.document.projectIteration.slug = :versionSlug " +
+//                    "and tft.textFlow.document.projectIteration.project.slug =:projectSlug and tft.lastChanged between :fromDate and :toDate) union " +
+                    "select account.username from HAccount account where account.id in " +
+                        "(select tfth.textFlowTarget.translator.account.id from HTextFlowTargetHistory tfth " +
+                        "where tfth.textFlowTarget.textFlow.document.projectIteration.slug = :versionSlug " +
+                        "and tfth.textFlowTarget.textFlow.document.projectIteration.project.slug =:projectSlug and tfth.lastChanged between :fromDate and :toDate) " +
+                        "or account.id in (select tfth.textFlowTarget.reviewer.account.id from HTextFlowTargetHistory tfth " +
+                        "where tfth.textFlowTarget.textFlow.document.projectIteration.slug = :versionSlug " +
+                        "and tfth.textFlowTarget.textFlow.document.projectIteration.project.slug =:projectSlug and tfth.lastChanged between :fromDate and :toDate) ";
+
+        Query q = getSession().createQuery(query);
+        q.setParameter("versionSlug", versionSlug);
+        q.setParameter("projectSlug", projectSlug);
+        q.setTimestamp("fromDate", dataRange.getFromDate().toDate());
+        q.setTimestamp("toDate", dataRange.getToDate().toDate());
+        q.setCacheable(true).setComment(
+            "ProjectIterationDAO.getContributorsId");
         return q.list();
     }
 }

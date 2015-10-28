@@ -48,6 +48,23 @@ public interface ProjectVersionResource {
             @PathParam("versionSlug") String versionSlug);
 
     /**
+     * Get list of contributor's username (translator/review) for the given
+     * project version in date range.
+     *
+     * @param projectSlug
+     * @param versionSlug
+     * @param dateRangeParam
+     */
+    @GET
+    @Produces({ MediaTypes.APPLICATION_ZANATA_PROJECT_VERSION_JSON,
+            MediaType.APPLICATION_JSON })
+    @Path(VERSION_SLUG_TEMPLATE + "/contributors/{dateRange}")
+    public Response getContributors(
+            @PathParam("projectSlug") String projectSlug,
+            @PathParam("versionSlug") String versionSlug,
+            @PathParam("dateRange") String dateRangeParam);
+
+    /**
      * Retrieves a full list of locales enabled in project version.
      *
      * @param projectSlug
@@ -93,6 +110,7 @@ public interface ProjectVersionResource {
     @Path(VERSION_SLUG_TEMPLATE + "/docs")
     public Response getDocuments(@PathParam("projectSlug") String projectSlug,
             @PathParam("versionSlug") String versionSlug);
+    
 
     /**
      * Retrieves a list translation unit with status in a document.

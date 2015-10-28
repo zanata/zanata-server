@@ -35,6 +35,7 @@ import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.editor.dto.Locale;
 import org.zanata.rest.editor.dto.TransUnitStatus;
 import org.zanata.rest.editor.service.resource.ProjectVersionResource;
+import org.zanata.rest.service.DateRange;
 import org.zanata.rest.service.ETagUtils;
 import org.zanata.rest.service.ProjectIterationService;
 import org.zanata.rest.service.ResourceUtils;
@@ -100,6 +101,20 @@ public class ProjectVersionService implements ProjectVersionResource {
         ProjectIterationService.transfer(hProjectIteration, it);
 
         return Response.ok(it).tag(etag).build();
+    }
+
+    @Override
+    public Response getContributors(String projectSlug, String versionSlug,
+        String dateRangeParam) {
+
+        DateRange dateRange = DateRange.from(dateRangeParam);
+        List<String> contributorIds = projectIterationDAO.getContributorsId(
+                projectSlug, versionSlug, dateRange);
+
+        Type genericType = new GenericType<List<String>>() {
+        }.getGenericType();
+        Object entity = new GenericEntity<>(contributorIds, genericType);
+        return Response.ok(entity).build();
     }
 
     @Override
