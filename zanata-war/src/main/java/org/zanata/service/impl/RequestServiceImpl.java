@@ -45,6 +45,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -117,7 +120,6 @@ public class RequestServiceImpl implements RequestService {
             Request newRequest = oldRequest.update(actor, state, comment, now);
             requestDAO.makePersistent(oldRequest);
 
-            //Need to add 1 second to request validTo date to avoid unique index constraint
             languageRequest.setRequest(newRequest);
             requestDAO.makePersistent(oldRequest);
             requestDAO.makePersistent(newRequest);
@@ -170,6 +172,7 @@ public class RequestServiceImpl implements RequestService {
     /**
      * Builder for languageRequest
      */
+    @NoArgsConstructor
     public class LanguageRequestBuilder {
 
         private Request request;
@@ -177,9 +180,6 @@ public class RequestServiceImpl implements RequestService {
         private boolean coordinator;
         private boolean reviewer;
         private boolean translator;
-
-        public LanguageRequestBuilder(){
-        };
 
         public LanguageRequestBuilder setRequest(Request request) {
             this.request = request;
