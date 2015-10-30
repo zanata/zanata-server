@@ -92,23 +92,18 @@ public class TSAdapter extends OkapiFilterAdapter {
 
         List<String> encounteredIds = new ArrayList<>();
         IFilter filter = getFilter();
-        Event newLine = new Event();
-        newLine.setEventType(EventType.CUSTOM);
-
         try {
             filter.open(rawDoc);
             String subDocName = "";
             while (filter.hasNext()) {
                 Event event = filter.next();
                 if (event.getEventType() == EventType.START_SUBDOCUMENT) {
-                    log.info("Doing a start-sub");
                     StartSubDocument startSubDoc =
                             (StartSubDocument) event.getResource();
                     subDocName = stripPath(startSubDoc.getName());
                     writer.handleEvent(event);
 
                 } else if (event.getEventType() == EventType.TEXT_UNIT) {
-                    log.info("Doing a tu");
                     TextUnit tu = (TextUnit) event.getResource();
                     if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
                         String translatable = GenericContent.fromFragmentToLetterCoded(
@@ -122,9 +117,8 @@ public class TSAdapter extends OkapiFilterAdapter {
                                     for (String translated : tft.getContents()) {
                                         tu.setTargetContent(localeId, GenericContent
                                                 .fromLetterCodedToFragment(translated,
-                                                        tu.getSource().getFirstContent().clone(), true, true));
+                                                        tu.getSource().getFirstContent(), true, true));
                                         writer.handleEvent(event);
-                                        writer.handleEvent(newLine);
                                     }
                                 }
                             }
@@ -132,7 +126,6 @@ public class TSAdapter extends OkapiFilterAdapter {
                     }
 
                 } else {
-                    log.info("Doing a {}", event.getEventType().toString());
                     writer.handleEvent(event);
                 }
             }
@@ -150,7 +143,7 @@ public class TSAdapter extends OkapiFilterAdapter {
         TextFlow tf = new TextFlow(getIdFor(tu, content,
                 subDocName), sourceLocale);
         if(tu.hasProperty("numerus") &&
-                tu.getProperty("numerus").getValue().equals("yes")) {
+                tu.getProperty("numerus").getValue().equalsIgnoreCase("yes")) {
             tf.setPlural(true);
             // Qt TS uses a single message for singular and plural form
             tf.setContents(content, content);
