@@ -28,9 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.okapi.common.Event;
-import net.sf.okapi.common.EventType;
-import net.sf.okapi.common.IParameters;
+import net.sf.okapi.common.*;
 import net.sf.okapi.common.exceptions.OkapiIOException;
 import net.sf.okapi.common.filters.IFilter;
 import net.sf.okapi.common.filterwriter.GenericContent;
@@ -43,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.adapter.TranslatableSeparator.SplitString;
 import org.zanata.common.*;
+import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
@@ -173,7 +172,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
                 new RawDocument(documentContent, "UTF-8",
                         net.sf.okapi.common.LocaleId.fromString("en"));
         if (rawDoc.getTargetLocale() == null) {
-            rawDoc.setTargetLocale(net.sf.okapi.common.LocaleId.ENGLISH);
+            rawDoc.setTargetLocale(net.sf.okapi.common.LocaleId.EMPTY);
         }
         updateParams(filterParams);
         try {
