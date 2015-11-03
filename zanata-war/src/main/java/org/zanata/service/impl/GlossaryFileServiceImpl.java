@@ -25,7 +25,9 @@ import static org.jboss.seam.ScopeType.STATELESS;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +55,9 @@ import org.zanata.util.GlossaryUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -95,8 +100,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     @Override
-    public GlossaryResults<HGlossaryEntry> saveOrUpdateGlossary(
+    public GlossaryProcessed saveOrUpdateGlossary(
             List<GlossaryEntry> glossaryEntries) {
+        Map<HGlossaryEntry, List<String>> results =
+                new HashMap<HGlossaryEntry, List<String>>();
+
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
         List<String> warnings = Lists.newArrayList();
@@ -118,7 +126,15 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 counter = 0;
             }
         }
-        return new GlossaryResults<HGlossaryEntry>(entries, warnings);
+        return new GlossaryProcessed(entries, warnings);
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public class GlossaryProcessed {
+        private List<HGlossaryEntry> glossaryEntries;
+        private List<String> warnings;
     }
 
     private List<List<GlossaryEntry>> parseCsvFile(LocaleId sourceLang,

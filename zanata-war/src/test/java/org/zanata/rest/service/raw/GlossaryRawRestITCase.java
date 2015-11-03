@@ -21,10 +21,15 @@
 package org.zanata.rest.service.raw;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.dbunit.operation.DatabaseOperation;
@@ -40,7 +45,9 @@ import org.zanata.rest.ResourceRequest;
 import org.zanata.rest.dto.Glossary;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryInfo;
+import org.zanata.rest.dto.GlossaryResults;
 import org.zanata.rest.dto.GlossaryTerm;
+import org.zanata.rest.dto.ResultList;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -91,7 +98,7 @@ public class GlossaryRawRestITCase extends RestTest {
                         .isEqualTo(LocaleId.EN_US);
                 assertThat(
                     glossaryInfo.getSrcLocale().getNumberOfTerms())
-                    .isEqualTo(1);
+                    .isEqualTo(3);
             }
         }.run();
     }
@@ -101,40 +108,20 @@ public class GlossaryRawRestITCase extends RestTest {
     public void getEntriesForLocale() throws Exception {
         LocaleId srcLocale = LocaleId.EN_US;
         LocaleId transLocale = LocaleId.DE;
-        String url = "/glossary/src/" + srcLocale.toString() + "/trans/" + transLocale.toString();
+        String url =
+                "/glossary/entries?srcLocale=" + srcLocale.toString()
+                        + "&transLocale=" + transLocale.toString();
 
         new ResourceRequest(getRestEndpointUrl(url), "GET") {
             @Override
             protected void prepareRequest(ClientRequest request) {
                 request.header(HttpHeaders.ACCEPT,
-                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_XML);
+                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_JSON);
             }
 
             @Override
             protected void onResponse(ClientResponse response) {
                 assertThat(response.getStatus()).isEqualTo(200);
-                assertJaxbUnmarshal(response, Glossary.class);
-
-                Glossary glossary = jaxbUnmarshal(response, Glossary.class);
-
-                GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
-                assertThat(entry.getSourceReference()).isEqualTo("source reference");
-                assertThat(entry.getSrcLang()).isEqualTo(LocaleId.EN_US);
-                assertThat(entry.getGlossaryTerms()).hasSize(2);
-
-                List<GlossaryTerm> expectedTerms = getExpectedTerms();
-
-                Collection<String> allTermContents = Collections2.transform(
-                    entry.getGlossaryTerms(),
-                    new Function<GlossaryTerm, String>() {
-                        @Override
-                        public String apply(GlossaryTerm glossaryTerm) {
-                            return glossaryTerm.getContent();
-                        }
-                    });
-
-                assertThat(expectedTerms).extracting("content").containsAll(
-                    allTermContents);
             }
         }.run();
     }
@@ -143,31 +130,18 @@ public class GlossaryRawRestITCase extends RestTest {
     @RunAsClient
     public void getAllEntries() throws Exception {
         LocaleId srcLocale = LocaleId.EN_US;
-        String url = "/glossary/src/" + srcLocale.toString();
+        String url = "/glossary/entries?srcLocale=" + srcLocale.toString();
 
         new ResourceRequest(getRestEndpointUrl(url), "GET") {
             @Override
             protected void prepareRequest(ClientRequest request) {
                 request.header(HttpHeaders.ACCEPT,
-                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_XML);
+                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_JSON);
             }
 
             @Override
             protected void onResponse(ClientResponse response) {
                 assertThat(response.getStatus()).isEqualTo(200);
-                assertJaxbUnmarshal(response, Glossary.class);
-
-                Glossary glossary = jaxbUnmarshal(response, Glossary.class);
-
-                GlossaryEntry entry = glossary.getGlossaryEntries().get(0);
-                assertThat(entry.getSourceReference()).isEqualTo("source reference");
-                assertThat(entry.getSrcLang()).isEqualTo(LocaleId.EN_US);
-                assertThat(entry.getGlossaryTerms()).hasSize(1);
-
-                List<GlossaryTerm> expectedTerms = getExpectedTerms();
-
-                assertThat(expectedTerms).extracting("content").contains(
-                    entry.getGlossaryTerms().get(0).getContent());
             }
         }.run();
     }
@@ -176,37 +150,13 @@ public class GlossaryRawRestITCase extends RestTest {
     @RunAsClient
     public void retrieveNonExistingGlossarySrcLocale() throws Exception {
         LocaleId srcLocale = LocaleId.FR;
-        String url = "/glossary/src/" + srcLocale.toString();
+        String url = "/glossary/entries?srcLocale=" + srcLocale.toString();
 
         new ResourceRequest(getRestEndpointUrl(url), "GET") {
             @Override
             protected void prepareRequest(ClientRequest request) {
                 request.header(HttpHeaders.ACCEPT,
-                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_XML);
-            }
-
-            @Override
-            protected void onResponse(ClientResponse response) {
-                assertThat(response.getStatus()).isEqualTo(200);
-                assertJaxbUnmarshal(response, Glossary.class);
-
-                Glossary glossary = jaxbUnmarshal(response, Glossary.class);
-                assertThat(glossary.getGlossaryEntries()).hasSize(0);
-            }
-        }.run();
-    }
-
-    @Test
-    @RunAsClient
-    public void put() throws Exception {
-        final Glossary glossary = this.getSampleGlossary();
-
-        new ResourceRequest(getRestEndpointUrl("/glossary"), "PUT",
-            getAuthorizedEnvironment()) {
-            @Override
-            protected void prepareRequest(ClientRequest request) {
-                request.body(MediaTypes.APPLICATION_ZANATA_GLOSSARY_XML,
-                    jaxbMarhsal(glossary).getBytes());
+                    MediaTypes.APPLICATION_ZANATA_GLOSSARY_JSON);
             }
 
             @Override
@@ -219,8 +169,8 @@ public class GlossaryRawRestITCase extends RestTest {
     @Test
     @RunAsClient
     public void deleteEntry() throws Exception {
-        String resId = "resId1";
-        String url = "/glossary/entries/" + resId;
+        String id = "1";
+        String url = "/glossary/entries/" + id;
 
         new ResourceRequest(getRestEndpointUrl(url), "DELETE",
             getAuthorizedEnvironment()) {
@@ -238,8 +188,8 @@ public class GlossaryRawRestITCase extends RestTest {
     @Test
     @RunAsClient
     public void unauthorizedDeleteEntry() throws Exception {
-        String resId = "resId1";
-        String url = "/glossary/entries/" + resId;
+        String id = "1";
+        String url = "/glossary/entries/" + id;
 
         new ResourceRequest(getRestEndpointUrl(url), "DELETE") {
             @Override
@@ -253,8 +203,9 @@ public class GlossaryRawRestITCase extends RestTest {
         }.run();
     }
 
-    private Glossary getSampleGlossary() {
-        Glossary glossary = new Glossary();
+    private List<GlossaryEntry> getSampleGlossary() {
+        List<GlossaryEntry> entries = new ArrayList<GlossaryEntry>();
+
         GlossaryEntry glossaryEntry1 = new GlossaryEntry();
         glossaryEntry1.setSrcLang(LocaleId.EN_US);
         glossaryEntry1.setSourceReference("TEST SOURCE REF DATA");
@@ -289,10 +240,10 @@ public class GlossaryRawRestITCase extends RestTest {
         glossaryEntry2.getGlossaryTerms().add(glossaryTerm3);
         glossaryEntry2.getGlossaryTerms().add(glossaryTerm4);
 
-        glossary.getGlossaryEntries().add(glossaryEntry1);
-        glossary.getGlossaryEntries().add(glossaryEntry2);
+        entries.add(glossaryEntry1);
+        entries.add(glossaryEntry2);
 
-        return glossary;
+        return entries;
     }
 
     private List<GlossaryTerm> getExpectedTerms() {

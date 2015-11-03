@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
@@ -73,7 +74,8 @@ public class HGlossaryEntry extends ModelEntityBase {
 
     private HLocale srcLocale;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "glossaryEntry", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "glossaryEntry",
+            orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKey(name = "locale")
     public Map<HLocale, HGlossaryTerm> getGlossaryTerms() {
         if (glossaryTerms == null) {

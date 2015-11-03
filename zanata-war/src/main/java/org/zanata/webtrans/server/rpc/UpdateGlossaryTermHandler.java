@@ -88,7 +88,7 @@ public class UpdateGlossaryTermHandler
             HGlossaryEntry sameHashEntry =
                 glossaryDAO.getEntryByContentHash(contentHash);
 
-            if (sameHashEntry.getId() != entry.getId()) {
+            if (sameHashEntry != null && (sameHashEntry.getId() != entry.getId())) {
                 throw new DuplicateGlossaryEntryException(entry.getSrcLocale()
                         .getLocaleId(),
                         srcTerm.getContent(), entry.getPos(),

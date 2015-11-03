@@ -28,6 +28,7 @@ import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryResults;
+import org.zanata.service.impl.GlossaryFileServiceImpl;
 
 /**
  *
@@ -40,7 +41,7 @@ public interface GlossaryFileService {
      *
      * @param glossaryEntries
      */
-    GlossaryResults<HGlossaryEntry> saveOrUpdateGlossary(
+    GlossaryFileServiceImpl.GlossaryProcessed saveOrUpdateGlossary(
             List<GlossaryEntry> glossaryEntries);
 
     List<List<GlossaryEntry>> parseGlossaryFile(InputStream fileContents,

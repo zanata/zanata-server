@@ -150,7 +150,7 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         entry.getGlossaryTerms().add(term1);
         entry.getGlossaryTerms().add(term2);
 
-        GlossaryResults<HGlossaryEntry> results =
+        GlossaryFileServiceImpl.GlossaryProcessed results =
                 glossaryFileService.saveOrUpdateGlossary(Lists.newArrayList(entry));
         List<HGlossaryEntry> hEntries = results.getGlossaryEntries();
         assertThat(hEntries.size()).isEqualTo(1);

@@ -53,10 +53,10 @@ public class UserService implements UserResource {
 
     @Override
     public Response getMyInfo() {
-        User user = transferToUser(authenticatedAccount);
-        if (user == null) {
+        if(authenticatedAccount == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        User user = transferToUser(authenticatedAccount);
         return Response.ok(user).build();
     }
 
@@ -75,6 +75,9 @@ public class UserService implements UserResource {
             return null;
         }
         HAccount account = accountDAO.getByUsername(username);
+        if(account == null) {
+            return null;
+        }
         return transferToUser(account);
     }
 

@@ -132,6 +132,6 @@ public class GlossaryDAOTest extends ZanataDbunitJpaTest {
 
         List<HGlossaryEntry> result =
                 dao.getEntriesByLocale(LocaleId.EN_US, 0, 100, "", sortFields);
-        assertThat(result.get(0).getPos(), is("pos 2"));
+        assertThat(result.get(0).getPos(), is("pos 1"));
     }
 }

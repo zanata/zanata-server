@@ -1,6 +1,5 @@
 package org.zanata.rest.service;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +7,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -19,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import org.jboss.resteasy.util.GenericType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
@@ -178,8 +174,7 @@ public class GlossaryService implements GlossaryResource {
             return response.build();
         }
 
-        GlossaryResults<GlossaryEntry> results =
-                saveGlossaryEntries(glossaryEntries);
+        GlossaryResults results = saveGlossaryEntries(glossaryEntries);
 
         return Response.ok(results).build();
     }
@@ -199,10 +194,9 @@ public class GlossaryService implements GlossaryResource {
                                     form.getFileName(), srcLocaleId,
                                     transLocaleId);
 
-            GlossaryResults<GlossaryEntry> overallResult = new GlossaryResults<>();
+            GlossaryResults overallResult = new GlossaryResults();
             for (List<GlossaryEntry> entries : glossaryEntries) {
-                GlossaryResults<GlossaryEntry> result =
-                        saveGlossaryEntries(entries);
+                GlossaryResults result = saveGlossaryEntries(entries);
                 overallResult.getGlossaryEntries().addAll(
                         result.getGlossaryEntries());
                 overallResult.getWarnings().addAll(result.getWarnings());
@@ -223,16 +217,16 @@ public class GlossaryService implements GlossaryResource {
         }
     }
 
-    private GlossaryResults<GlossaryEntry> saveGlossaryEntries(
+    private GlossaryResults saveGlossaryEntries(
         List<GlossaryEntry> glossaryEntries) {
 
-        GlossaryResults<HGlossaryEntry> results =
+        GlossaryFileServiceImpl.GlossaryProcessed results =
                 glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntries);
 
         List<GlossaryEntry> glossaryEntriesDTO = Lists.newArrayList();
         transferEntriesResource(results.getGlossaryEntries(), glossaryEntriesDTO);
 
-        return new GlossaryResults<GlossaryEntry>(
+        return new GlossaryResults(
                 glossaryEntriesDTO, results.getWarnings());
     }
 

@@ -299,10 +299,6 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     }
 
     public int deleteAllEntries() {
-        Query query = getSession().createQuery("Delete HTermComment");
-        query.setComment("GlossaryDAO.deleteAllEntries-comments");
-        query.executeUpdate();
-
         Query query2 = getSession().createQuery("Delete HGlossaryTerm");
         query2.setComment("GlossaryDAO.deleteAllEntries-terms");
         int rowCount = query2.executeUpdate();
@@ -315,14 +311,6 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     }
 
     public int deleteAllEntries(LocaleId targetLocale) {
-        Query query =
-                getSession()
-                        .createQuery(
-                                "Delete HTermComment c WHERE c.glossaryTerm.id IN (SELECT t.id FROM HGlossaryTerm t WHERE t.locale.localeId= :locale)");
-        query.setParameter("locale", targetLocale);
-        query.setComment("GlossaryDAO.deleteLocaleEntries-comments");
-        query.executeUpdate();
-
         Query query2 =
                 getSession()
                         .createQuery(
