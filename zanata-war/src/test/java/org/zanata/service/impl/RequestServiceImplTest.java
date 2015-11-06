@@ -103,7 +103,7 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
         assertThat(request.getLocale().getLocaleId())
             .isEqualTo(locale.getLocaleId());
         assertThat(request.getRequest().getRequester()).isEqualTo(requester);
-        assertThat(request.getRequest().getState()).isEqualTo(null);
+        assertThat(request.getRequest().getState()).isEqualTo(RequestState.NEW);
 
         assertThat(service.doesLanguageRequestExist(requester, locale)).isTrue();
     }
@@ -151,7 +151,6 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
                         .before(requests.get(1).getValidFrom())).isTrue();
 
         assertThat(requests).extracting("state")
-            .contains(null, RequestState.ACCEPTED);
-        assertThat(requests).extracting("validTo").doesNotContainNull();
+            .contains(RequestState.NEW, RequestState.ACCEPTED);
     }
 }
