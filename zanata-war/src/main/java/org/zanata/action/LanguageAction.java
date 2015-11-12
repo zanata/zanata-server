@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.event.ValueChangeEvent;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang.StringUtils;
@@ -289,6 +290,25 @@ public class LanguageAction implements Serializable {
 
     public List<HLocaleMember> getLocaleMembers() {
         return localeMemberDAO.findAllByLocale(new LocaleId(language));
+    }
+
+    public String getMemberRoles(HLocaleMember member) {
+        if(member == null) {
+            return "";
+        }
+        List<String> roles = Lists.newArrayList();
+        if(member.isCoordinator()) {
+            roles.add(msgs.get("jsf.Coordinator"));
+        }
+
+        if(member.isTranslator()) {
+            roles.add(msgs.get("jsf.Translator"));
+        }
+
+        if(member.isReviewer()) {
+            roles.add(msgs.get("jsf.Reviewer"));
+        }
+        return Joiner.on(", ").join(roles);
     }
 
     @Transactional

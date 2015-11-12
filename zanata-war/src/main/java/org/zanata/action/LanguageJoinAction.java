@@ -29,12 +29,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.exception.RequestExistsException;
+import org.zanata.model.HPerson;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.type.RequestState;
 import org.zanata.security.ZanataIdentity;
@@ -82,17 +84,17 @@ public class LanguageJoinAction implements Serializable {
     @In
     private Messages msgs;
 
-    @Getter
-    @Setter
-    private boolean requestAsTranslator;
-
-    @Getter
-    @Setter
-    private boolean requestAsReviewer;
-
-    @Getter
-    @Setter
-    private boolean requestAsCoordinator;
+//    @Getter
+//    @Setter
+//    private boolean requestAsTranslator = true;
+//
+//    @Getter
+//    @Setter
+//    private boolean requestAsReviewer;
+//
+//    @Getter
+//    @Setter
+//    private boolean requestAsCoordinator;
 
     @Setter
     @Getter
@@ -115,20 +117,6 @@ public class LanguageJoinAction implements Serializable {
 
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
-
-    public boolean hasSelectedRole() {
-        return requestAsTranslator || requestAsReviewer || requestAsCoordinator;
-    }
-
-    public void bindRole(String role, boolean checked) {
-        if (role.equals("translator")) {
-            requestAsTranslator = checked;
-        } else if (role.equals("reviewer")) {
-            requestAsReviewer = checked;
-        } else if (role.equals("coordinator")) {
-            requestAsCoordinator = checked;
-        }
-    }
 
     public String getMyRequestedRole() {
         LanguageRequest request =
@@ -168,20 +156,15 @@ public class LanguageJoinAction implements Serializable {
     }
 
     private void reset() {
-        requestAsTranslator = isTranslator();
-        requestAsReviewer = isReviewer();
-        requestAsCoordinator = isCoordinator();
         message = "";
     }
 
-    public void processRequest() {
+    public void processRequest(boolean translator, boolean reviewer, boolean coordinator) {
         try {
             requestServiceImpl
                     .createLanguageRequest(authenticatedAccount, getLocale(),
-                        requestAsCoordinator,
-                        requestAsReviewer, requestAsTranslator);
-            sendRequestEmail(requestAsCoordinator, requestAsReviewer,
-                requestAsTranslator);
+                        coordinator, reviewer, translator);
+            sendRequestEmail(coordinator, reviewer, translator);
         } catch (RequestExistsException e) {
             String message =
                     msgs.format("jsf.language.request.exists",
@@ -202,9 +185,9 @@ public class LanguageJoinAction implements Serializable {
                         fromLoginName, fromName, replyEmail,
                         locale.getLocaleId().getId(),
                         locale.retrieveNativeName(), message,
-                        isRequestAsTranslator(),
-                        isRequestAsReviewer(),
-                        isRequestAsCoordinator());
+                        requestAsTranslator,
+                        requestAsReviewer,
+                        requestAsCoordinator);
         try {
             facesMessages.addGlobal(emailServiceImpl
                 .sendToLanguageCoordinators(locale.getLocaleId(), strategy));
@@ -255,21 +238,22 @@ public class LanguageJoinAction implements Serializable {
             return "";
         }
 
+        if(localeMember.isCoordinator()) {
+            return msgs.format("jsf.language.myRole",
+                    StringUtils.lowerCase(msgs.get("jsf.Coordinator")));
+        }
+
         List<String> roles = Lists.newArrayList();
         if(localeMember.isTranslator()) {
-            roles.add(msgs.get("jsf.Translator"));
+            roles.add(StringUtils.lowerCase(msgs.get("jsf.Translator")));
         }
 
         if(localeMember.isReviewer()) {
-            roles.add(msgs.get("jsf.Reviewer"));
+            roles.add(StringUtils.lowerCase(msgs.get("jsf.Reviewer")));
         }
 
-        if(localeMember.isCoordinator()) {
-            roles.add(msgs.get("jsf.Coordinator"));
-        }
-        return msgs.format("jsf.language.myRoles", Joiner.on(",").join(roles));
+        return msgs.format("jsf.language.myRoles", Joiner.on(" and ").join(roles));
     }
-
 
     public HLocale getLocale() {
         /*
@@ -284,6 +268,34 @@ public class LanguageJoinAction implements Serializable {
             locale.getMembers();
         }
         return locale;
+    }
+
+    public boolean isTranslator(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isTranslator();
+    }
+
+    public boolean isReviewer(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isReviewer();
+    }
+
+    public boolean isCoordinator(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isCoordinator();
+    }
+
+    private HLocaleMember getLocaleMember(final Long personId) {
+        for (HLocaleMember lm : getLocaleMembers()) {
+            if (lm.getPerson().getId().equals(personId)) {
+                return lm;
+            }
+        }
+        return null;
+    }
+
+    private List<HLocaleMember> getLocaleMembers() {
+        return localeMemberDAO.findAllByLocale(new LocaleId(language));
     }
 
     public boolean isTranslator() {

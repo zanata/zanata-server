@@ -97,58 +97,34 @@
                 </div>
                 <div class="list__item__actions">
                   <ul class="list--horizontal txt--meta">
-                    <li>
-                      #{msgs['jsf.Translator']}
-                      <h:selectBooleanCheckbox value="#{member.translator}"
-                        rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <a4j:ajax event="change" execute="@this"
-                          listener="#{languageAction.saveTeamTranslator(member)}"/>
-                      </h:selectBooleanCheckbox>
-                      <ui:fragment
-                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <ui:fragment rendered="#{member.translator}">
-                          <i class="i i--checkmark"></i>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{not member.translator}">
-                          <i class="i i--cancel"></i>
-                        </ui:fragment>
-                      </ui:fragment>
-                    </li>
-                    <li>
-                      #{msgs['jsf.Reviewer']}
-                      <h:selectBooleanCheckbox value="#{member.reviewer}"
-                        rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <a4j:ajax event="change" execute="@this"
-                          listener="#{languageAction.saveTeamReviewer(member)}"/>
-                      </h:selectBooleanCheckbox>
-                      <ui:fragment
-                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <ui:fragment rendered="#{member.reviewer}">
-                          <i class="i i--checkmark"></i>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{not member.reviewer}">
-                          <i class="i i--cancel"></i>
-                        </ui:fragment>
-                      </ui:fragment>
-                    </li>
-
-                    <li>
-                      #{msgs['jsf.Coordinator']}
-                      <h:selectBooleanCheckbox value="#{member.coordinator}"
-                        rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <a4j:ajax event="change" execute="@this"
-                          listener="#{languageAction.saveTeamCoordinator(member)}"/>
-                      </h:selectBooleanCheckbox>
-                      <ui:fragment
-                        rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                        <ui:fragment rendered="#{member.coordinator}">
-                          <i class="i i--checkmark"></i>
-                        </ui:fragment>
-                        <ui:fragment rendered="#{not member.coordinator}">
-                          <i class="i i--cancel"></i>
-                        </ui:fragment>
-                      </ui:fragment>
-                    </li>
+                    <ui:fragment rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
+                      <li>
+                        #{msgs['jsf.Translator']}
+                        <h:selectBooleanCheckbox value="#{member.translator}">
+                          <a4j:ajax event="change" execute="@this"
+                            listener="#{languageAction.saveTeamTranslator(member)}"/>
+                        </h:selectBooleanCheckbox>
+                      </li>
+                      <li>
+                        #{msgs['jsf.Reviewer']}
+                        <h:selectBooleanCheckbox value="#{member.reviewer}">
+                          <a4j:ajax event="change" execute="@this"
+                            listener="#{languageAction.saveTeamReviewer(member)}"/>
+                        </h:selectBooleanCheckbox>
+                      </li>
+                      <li>
+                        #{msgs['jsf.Coordinator']}
+                        <h:selectBooleanCheckbox value="#{member.coordinator}">
+                          <a4j:ajax event="change" execute="@this"
+                            listener="#{languageAction.saveTeamCoordinator(member)}"/>
+                        </h:selectBooleanCheckbox>
+                      </li>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
+                      <li>
+                        #{languageAction.getMemberRoles(member)}
+                      </li>
+                    </ui:fragment>
                   </ul>
                 </div>
               </div>
