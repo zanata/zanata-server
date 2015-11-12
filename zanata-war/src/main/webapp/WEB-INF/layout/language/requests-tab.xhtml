@@ -17,24 +17,33 @@
       </ui:fragment>
     </div>
 
-    <h:form id="requests-form" styleClass="l--push-bottom-1">
+    <h:form id="requests-form" styleClass="l--push-bottom-0">
       <script type="text/javascript">
-        function disableAction(id) {
-          jQuery('#' + id + '.-accept').attr('disabled', true);
-          jQuery('#' + id + '.-decline').attr('disabled', true);
+        function disableAction(id, accept) {
+          jQuery('#' + id + '-accept').attr('disabled', true);
+          jQuery('#' + id + '-accept-label').addClass('is-disabled');
+          jQuery('#' + id + '-decline').attr('disabled', true);
+          jQuery('#' + id + '-decline-label').addClass('is-disabled');
+
+          if(accept) {
+            jQuery('#' + id + '-decline').addClass('is-hidden');
+            jQuery('#' + id + '-decline-label').addClass('is-hidden');
+          } else {
+            jQuery('#' + id + '-accept').addClass('is-hidden');
+            jQuery('#' + id + '-accept-label').addClass('is-hidden');
+          }
         }
       </script>
 
       <a4j:jsFunction name="acceptRequest"
         action="#{languageJoinAction.acceptRequest(langRequestId)}"
-        oncomplete="refreshRequestsSize();disableAction(#{langRequestId})">
+        oncomplete="refreshRequestsSize();disableAction(#{langRequestId}, true)">
         <a4j:param name="val1" assignTo="#{langRequestId}"/>
       </a4j:jsFunction>
 
       <a4j:jsFunction name="declineRequest"
         action="#{languageJoinAction.declineRequest(langRequestId, comment)}"
-        oncomplete="refreshRequestsSize();disableAction(#{langRequestId})">
-        <a4j:param name="val1" assignTo="#{langRequestId}"/>
+        oncomplete="refreshRequestsSize();disableAction(#{langRequestId}, false)">
         <a4j:param name="val2" assignTo="#{comment}"/>
       </a4j:jsFunction>
 
@@ -58,7 +67,7 @@
                     </span>
                   </span>
                 </div>
-                <div class="list__item__actions button--group">
+                <div class="list__item__actions button--group" id="#{langRequest.id}-actions">
                   <input name="#{langRequest.id}"
                     id="#{langRequest.id}-accept"
                     type="radio"
@@ -66,8 +75,9 @@
                     class="form__item__input js-example__setter"
                     data-example=""/>
                   <label for="#{langRequest.id}-accept"
+                    id="#{langRequest.id}-accept-label"
                     class="button button--success">
-                    Accept
+                    #{msgs['jsf.language.request.accept']}
                   </label>
 
                   <input name="#{langRequest.id}"
@@ -76,8 +86,8 @@
                     onchange="declineRequest(#{langRequest.id}, 'reject')"
                     class="form__item__input js-example__setter"
                     data-example=""/>
-                  <label for="#{langRequest.id}-decline"
-                    class="button button--danger">Decline</label>
+                  <label for="#{langRequest.id}-decline" id="#{langRequest.id}-decline-label"
+                    class="button button--danger">#{msgs['jsf.language.request.decline']}</label>
                 </div>
               </div>
             </li>

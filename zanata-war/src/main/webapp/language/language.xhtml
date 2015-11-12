@@ -38,10 +38,10 @@
       <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}"
         render="language-more-actions, members-size, members-form, member-info"/>
 
-      <a4j:jsFunction name="refreshRequestsForm"
+      <a4j:jsFunction name="refreshRequestsForm" oncomplete="zanata.form.appendCheckboxes('#roles')"
         render="language-more-actions, requests-size, requests-form"/>
 
-      <a4j:jsFunction name="refreshRequestsSize"
+      <a4j:jsFunction name="refreshRequestsSize" oncomplete="zanata.form.appendCheckboxes('#roles')"
         render="members-size, members-form, requests-size, member-info"/>
     </h:form>
 
