@@ -52,8 +52,11 @@ public interface ProjectVersionResource {
      * project version in date range.
      *
      * @param projectSlug
+     *            project identifier
      * @param versionSlug
-     * @param dateRangeParam
+     *            version identifier
+     * @param dateRange
+     *            date range from..to (yyyy-mm-dd..yyyy-mm-dd)
      */
     @GET
     @Produces({ MediaTypes.APPLICATION_ZANATA_PROJECT_VERSION_JSON,
@@ -110,7 +113,6 @@ public interface ProjectVersionResource {
     @Path(VERSION_SLUG_TEMPLATE + "/docs")
     public Response getDocuments(@PathParam("projectSlug") String projectSlug,
             @PathParam("versionSlug") String versionSlug);
-    
 
     /**
      * Retrieves a list translation unit with status in a document.

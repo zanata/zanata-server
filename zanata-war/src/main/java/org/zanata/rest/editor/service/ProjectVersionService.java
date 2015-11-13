@@ -108,12 +108,12 @@ public class ProjectVersionService implements ProjectVersionResource {
         String dateRangeParam) {
 
         DateRange dateRange = DateRange.from(dateRangeParam);
-        List<String> contributorIds = projectIterationDAO.getContributorsId(
-                projectSlug, versionSlug, dateRange);
+        List<String> usernameList = projectIterationDAO.getContributors(
+            projectSlug, versionSlug, dateRange);
 
         Type genericType = new GenericType<List<String>>() {
         }.getGenericType();
-        Object entity = new GenericEntity<>(contributorIds, genericType);
+        Object entity = new GenericEntity<>(usernameList, genericType);
         return Response.ok(entity).build();
     }
 

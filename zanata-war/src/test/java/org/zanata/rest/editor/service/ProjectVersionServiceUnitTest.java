@@ -43,7 +43,7 @@ import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ProjectVersionServiceTest {
+public class ProjectVersionServiceUnitTest {
     private ProjectVersionService service;
     @Mock
     private Request request;
