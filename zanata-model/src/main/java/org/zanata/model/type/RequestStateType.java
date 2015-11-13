@@ -57,12 +57,12 @@ public class RequestStateType extends AbstractSingleColumnStandardBasicType<Requ
                     "multiple or zero characters found parsing string '" + xml
                             + "'");
         }
-        return RequestState.valueOf(xml.charAt(0));
+        return RequestState.getEnum(xml);
     }
 
     public RequestState fromStringValue(String xml) {
         assert xml.length() > 0;
-        return RequestState.valueOf(xml.charAt(0));
+        return RequestState.getEnum(xml);
     }
 
 }

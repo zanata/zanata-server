@@ -42,7 +42,7 @@ public class RequestStateTypeDescriptor
     @Override
     RequestState valueOf(String string) {
         if (string.length() == 1) {
-            return RequestState.valueOf(string.charAt(0));
+            return RequestState.valueOf(string);
         }
         throw new IllegalArgumentException(
                 "String to look up a RequestState must be exactly 1 character. "

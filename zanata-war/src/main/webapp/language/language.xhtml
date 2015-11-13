@@ -36,14 +36,8 @@
     </script>
 
     <h:form styleClass="l--push-bottom-0">
-      <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}"
+      <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}" limitRender="true"
         render="language-more-actions, members-size, members-form, member-info"/>
-
-      <a4j:jsFunction name="refreshRequestsForm"
-        render="language-more-actions, requests-size, requests-form"/>
-
-      <a4j:jsFunction name="refreshRequestsSize" action="#{languageAction.reset}"
-        render="members-size, members-form, requests-size, member-info"/>
     </h:form>
 
     <div class="g" id="language-page">

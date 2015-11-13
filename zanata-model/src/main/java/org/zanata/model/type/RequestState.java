@@ -43,7 +43,8 @@ public enum RequestState {
         this.initial = initial;
     }
 
-    public static RequestState valueOf(char initial) {
+    public static RequestState getEnum(String string) {
+        char initial = string.charAt(0);
         switch (initial) {
             case 'N':
                 return RequestState.NEW;

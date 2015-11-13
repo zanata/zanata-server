@@ -2,7 +2,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   xmlns:rich="http://richfaces.org/rich">
   <div class="panel">
@@ -19,36 +18,53 @@
 
     <h:form id="requests-form" styleClass="l--push-bottom-0">
       <script type="text/javascript">
-        function toggleActions(id, accept) {
-          jQuery('#' + id + '-accept').attr('disabled', true);
-          jQuery('#' + id + '-accept-label').addClass('is-disabled');
-          jQuery('#' + id + '-decline').attr('disabled', true);
-          jQuery('#' + id + '-decline-label').addClass('is-disabled');
-
+        function toggleActions(id, accept, acceptAsTranslator, acceptAsReviewer, acceptAsCoordinator) {
           if(accept) {
-            jQuery('#' + id + '-decline').addClass('is-hidden');
-            jQuery('#' + id + '-decline-label').addClass('is-hidden');
-
             jQuery('#' + id + '-actions').addClass('is-hidden');
-            jQuery('#' + id + '-actions-roles').removeClass('is-hidden')
+            jQuery('#' + id + '-actions-roles').removeClass('is-hidden');
+            //populate checkboxes according to request accepted
+            if(acceptAsTranslator) {
+              jQuery('#' + id + '-actions-roles').find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            }
+            if(acceptAsReviewer) {
+              jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            }
+            if(acceptAsCoordinator) {
+              jQuery('#' + id + '-actions-roles').find('[id$=coordinator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            }
           } else {
             jQuery('#' + id + '-accept').addClass('is-hidden');
-            jQuery('#' + id + '-accept-label').addClass('is-hidden');
+            jQuery('#' + id + '-decline').attr('disabled', true);
           }
         }
       </script>
 
       <a4j:jsFunction name="acceptRequest"
+        oncomplete="toggleActions(#{langRequestId}, true, #{translator}, #{reviewer}, #{coordinator});refreshMembersForm()"
         action="#{languageJoinAction.acceptRequest(langRequestId)}"
-        oncomplete="refreshRequestsSize();toggleActions(#{langRequestId}, true)">
+        render="requests-size">
         <a4j:param name="val1" assignTo="#{langRequestId}"/>
+        <a4j:param name="val2" assignTo="#{translator}"/>
+        <a4j:param name="val3" assignTo="#{reviewer}"/>
+        <a4j:param name="val4" assignTo="#{coordinator}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="declineRequest"
-        action="#{languageJoinAction.declineRequest(langRequestId, comment)}"
-        oncomplete="refreshRequestsSize();toggleActions(#{langRequestId}, false)">
-        <a4j:param name="val1" assignTo="#{langRequestId}"/>
-        <a4j:param name="val2" assignTo="#{comment}"/>
+      <a4j:jsFunction name="bindAsTranslator" action="#{languageAction.setPersonAsTranslator(personId, asTranslator)}"
+        oncomplete="refreshMembersForm()">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asTranslator}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="bindAsReviewer" action="#{languageAction.setPersonAsReviewer(personId, asReviewer)}"
+        oncomplete="refreshMembersForm()">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asReviewer}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="bindAsCoordinator" action="#{languageAction.setPersonAsCoordinator(personId, asCoordinator)}"
+        oncomplete="refreshMembersForm()">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asCoordinator}"/>
       </a4j:jsFunction>
 
       <ui:fragment rendered="#{languageAction.requests.isEmpty()}">
@@ -57,6 +73,8 @@
 
       <ui:fragment rendered="#{not languageAction.requests.isEmpty()}">
         <ul class="list--stats">
+          <ui:include src="decline_request_modal.xhtml"/>
+
           <ui:repeat value="#{languageAction.requests}" var="langRequest">
             <li class="l--pad-all-quarter">
               <div class="list__item__content">
@@ -71,55 +89,40 @@
                     </span>
                   </span>
                 </div>
-                <div class="list__item__actions button--group">
-                  <div id="#{langRequest.id}-actions">
-                    <input name="#{langRequest.id}"
-                      id="#{langRequest.id}-accept"
-                      type="radio"
-                      onchange="acceptRequest(#{langRequest.id})"
-                      class="form__item__input js-example__setter"
-                      data-example=""/>
-                    <label for="#{langRequest.id}-accept"
-                      id="#{langRequest.id}-accept-label"
-                      class="button button--success">
-                      #{msgs['jsf.language.request.accept']}
-                    </label>
 
-                    <input name="#{langRequest.id}"
-                      id="#{langRequest.id}-decline"
-                      type="radio"
-                      onchange="declineRequest(#{langRequest.id}, 'reject')"
-                      class="form__item__input js-example__setter"
-                      data-example=""/>
-                    <label for="#{langRequest.id}-decline" id="#{langRequest.id}-decline-label"
-                      class="button button--danger">#{msgs['jsf.language.request.decline']}</label>
+                <div class="list__item__actions">
+                  <div id="#{langRequest.id}-actions">
+                    <button id="#{langRequest.id}-accept" class="button button--success"
+                      onclick="acceptRequest(#{langRequest.id}, #{langRequest.isTranslator()}, #{langRequest.isReviewer()}, #{langRequest.isCoordinator()});return false;">
+                      #{msgs['jsf.language.request.accept']}
+                    </button>
+
+                    <button name="#{langRequest.id}" id="#{langRequest.id}-decline"
+                      class="button button--danger"
+                      data-toggle="modal" data-target="#declineRequestDialog"
+                      onclick="jQuery('#requestId').val(#{langRequest.id});return false;">
+                      #{msgs['jsf.language.request.decline']}
+                    </button>
                   </div>
+
                   <div id="#{langRequest.id}-actions-roles" class="is-hidden">
-                    <ui:fragment rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
-                      <ul class="list--horizontal txt--meta">
-                          <li>
-                            #{msgs['jsf.Translator']}
-                            <h:selectBooleanCheckbox value="#{languageJoinAction.isTranslator(langRequest.request.requester.person)}" id="translator">
-                              <a4j:ajax event="change" execute="@this"
-                                listener="#{languageAction.saveTeamTranslator(member)}"/>
-                            </h:selectBooleanCheckbox>
-                          </li>
-                          <li>
-                            #{msgs['jsf.Reviewer']}
-                            <h:selectBooleanCheckbox value="#{languageJoinAction.isReviewer(langRequest.request.requester.person)}" id="reviewer">
-                              <a4j:ajax event="change" execute="@this"
-                                listener="#{languageAction.saveTeamReviewer(member)}"/>
-                            </h:selectBooleanCheckbox>
-                          </li>
-                          <li>
-                            #{msgs['jsf.Coordinator']}
-                            <h:selectBooleanCheckbox value="#{languageJoinAction.isCoordinator(langRequest.request.requester.person)}" id="coordinator">
-                              <a4j:ajax event="change" execute="@this"
-                                listener="#{languageAction.saveTeamCoordinator(member)}"/>
-                            </h:selectBooleanCheckbox>
-                          </li>
-                      </ul>
-                    </ui:fragment>
+                    <ul class="list--horizontal txt--meta">
+                      <li>
+                        <zanata:checkbox label="#{msgs['jsf.Translator']}" id="translator"
+                          checked="#{languageAction.isTranslator(langRequest.request.requester.person)}" onValueChanged="bindAsTranslator"
+                          value="#{langRequest.request.requester.person.id}"/>
+                      </li>
+                      <li>
+                        <zanata:checkbox label="#{msgs['jsf.Reviewer']}" id="reviewer"
+                          checked="#{languageAction.isReviewer(langRequest.request.requester.person)}" onValueChanged="bindAsReviewer"
+                          value="#{langRequest.request.requester.person.id}"/>
+                      </li>
+                      <li>
+                        <zanata:checkbox label="#{msgs['jsf.Coordinator']}" id="coordinator"
+                          checked="#{languageAction.isCoordinator(langRequest.request.requester.person)}" onValueChanged="bindAsCoordinator"
+                          value="#{langRequest.request.requester.person.id}"/>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>

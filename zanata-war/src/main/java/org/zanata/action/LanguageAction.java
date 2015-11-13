@@ -228,7 +228,7 @@ public class LanguageAction implements Serializable {
             return true;
         }
         facesMessages.addToControl(componentId,
-                msgs.format("jsf.language.plurals.invalid", pluralForms));
+            msgs.format("jsf.language.plurals.invalid", pluralForms));
         return false;
     }
 
@@ -246,7 +246,7 @@ public class LanguageAction implements Serializable {
         hLocale.setNativeName(hLocale.getNativeName().trim());
         localeDAO.makePersistent(getLocale());
         facesMessages.addGlobal(msgs.format("jsf.language.updated", getLocale()
-                .getLocaleId()));
+            .getLocaleId()));
     }
 
     public HLocale getLocale() {
@@ -349,16 +349,19 @@ public class LanguageAction implements Serializable {
         languageTeamServiceImpl.leaveLanguageTeam(this.language,
                 authenticatedAccount.getPerson().getId());
         resetLocale();
-        leaveLanguageTeamEvent.fire(new LeftLanguageTeam(authenticatedAccount.getUsername(), new LocaleId(language)));
+        leaveLanguageTeamEvent.fire(
+            new LeftLanguageTeam(authenticatedAccount.getUsername(),
+                new LocaleId(language)));
         log.info("{} left language team {}", authenticatedAccount.getUsername(),
                 this.language);
         facesMessages.addGlobal(msgs.format("jsf.LeftTeam",
-                getLocale().retrieveNativeName()));
+            getLocale().retrieveNativeName()));
     }
 
     public void saveTeamCoordinator(HLocaleMember member) {
         identity.checkPermission(locale, "manage-language-team");
-        savePermission(member, msgs.get("jsf.Coordinator"), member.isCoordinator());
+        savePermission(member, msgs.get("jsf.Coordinator"),
+            member.isCoordinator());
         HPerson doneByPerson = authenticatedAccount.getPerson();
         LanguageTeamPermissionChangedEvent changedEvent =
                 new LanguageTeamPermissionChangedEvent(
@@ -382,7 +385,8 @@ public class LanguageAction implements Serializable {
 
     public void saveTeamTranslator(HLocaleMember member) {
         identity.checkPermission(locale, "manage-language-team");
-        savePermission(member, msgs.get("jsf.Translator"), member.isTranslator());
+        savePermission(member, msgs.get("jsf.Translator"),
+            member.isTranslator());
         HPerson doneByPerson = authenticatedAccount.getPerson();
         LanguageTeamPermissionChangedEvent changedEvent =
                 new LanguageTeamPermissionChangedEvent(
@@ -390,6 +394,45 @@ public class LanguageAction implements Serializable {
                         doneByPerson)
                         .changedTranslatorPermission(member);
         languageTeamPermissionChangedEvent.fire(changedEvent);
+    }
+
+    public void setPersonAsTranslator(Long personId, boolean isPermissionGranted) {
+        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
+            new LocaleId(language));
+        if (member == null) {
+            HPerson person = personDAO.findById(personId);
+            member = new HLocaleMember(person, getLocale(), true, false, false);
+            saveTeamTranslator(member);
+        } else if (member.isTranslator() != isPermissionGranted) {
+            member.setTranslator(isPermissionGranted);
+            saveTeamTranslator(member);
+        }
+    }
+
+    public void setPersonAsReviewer(Long personId, boolean isPermissionGranted) {
+        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
+            new LocaleId(language));
+        if (member == null) {
+            HPerson person = personDAO.findById(personId);
+            member = new HLocaleMember(person, getLocale(), false, true, false);
+            saveTeamReviewer(member);
+        } else if (member.isReviewer() != isPermissionGranted) {
+            member.setReviewer(isPermissionGranted);
+            saveTeamReviewer(member);
+        }
+    }
+
+    public void setPersonAsCoordinator(Long personId, boolean isPermissionGranted) {
+        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
+            new LocaleId(language));
+        if (member == null) {
+            HPerson person = personDAO.findById(personId);
+            member = new HLocaleMember(person, getLocale(), false, false, true);
+            saveTeamCoordinator(member);
+        } else if (member.isCoordinator() != isPermissionGranted) {
+            member.setCoordinator(isPermissionGranted);
+            saveTeamCoordinator(member);
+        }
     }
 
     private void savePermission(HLocaleMember member, String permissionDesc,
@@ -405,16 +448,16 @@ public class LanguageAction implements Serializable {
                     person.getAccount().getUsername(), permissionDesc));
         } else {
             facesMessages.addGlobal(
-                    msgs.format("jsf.RemovedAPermission",
-                            person.getAccount().getUsername(), permissionDesc));
+                msgs.format("jsf.RemovedAPermission",
+                    person.getAccount().getUsername(), permissionDesc));
         }
     }
 
     private void addTeamMember(final Long personId, boolean isTranslator,
         boolean isReviewer, boolean isCoordinator) {
         this.languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
-                this.language, personId, isTranslator, isReviewer,
-                isCoordinator);
+            this.language, personId, isTranslator, isReviewer,
+            isCoordinator);
     }
 
     public void removeMembership(HLocaleMember member) {
@@ -422,6 +465,21 @@ public class LanguageAction implements Serializable {
         this.languageTeamServiceImpl.leaveLanguageTeam(this.language, member
                 .getPerson().getId());
         resetLocale();
+    }
+
+    public boolean isTranslator(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isTranslator();
+    }
+
+    public boolean isReviewer(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isReviewer();
+    }
+
+    public boolean isCoordinator(HPerson person) {
+        HLocaleMember member = getLocaleMember(person.getId());
+        return member == null ? false : member.isCoordinator();
     }
 
     private HLocaleMember getLocaleMember(final Long personId) {

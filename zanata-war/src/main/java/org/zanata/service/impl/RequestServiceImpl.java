@@ -41,12 +41,8 @@ import org.zanata.service.RequestService;
 import org.zanata.util.Event;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author Alex Eng <a href="aeng@redhat.com">aeng@redhat.com</a>
@@ -88,11 +84,11 @@ public class RequestServiceImpl implements RequestService {
                 new Request(RequestType.LOCALE, requester, entityId, now);
 
         LanguageRequestBuilder requestBuilder =
-                new LanguageRequestBuilder().setRequest(request)
-                        .setLocale(locale)
-                        .setCoordinator(isRequestAsCoordinator)
-                        .setReviewer(isRequestAsReviewer)
-                        .setTranslator(isRequestAsTranslator);
+            new LanguageRequestBuilder().setRequest(request)
+                .setLocale(locale)
+                .setCoordinator(isRequestAsCoordinator)
+                .setReviewer(isRequestAsReviewer)
+                .setTranslator(isRequestAsTranslator);
 
         languageRequest = requestBuilder.build();
 
@@ -171,8 +167,8 @@ public class RequestServiceImpl implements RequestService {
 
     /**
      * Builder for languageRequest
+     * TODO: use @Builder in LanguageRequest but issue with @NoArgsConstructor and @AllArgsConstructor
      */
-    @NoArgsConstructor
     public class LanguageRequestBuilder {
 
         private Request request;

@@ -36,11 +36,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.exception.RequestExistsException;
-import org.zanata.model.HPerson;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.type.RequestState;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
@@ -84,18 +82,6 @@ public class LanguageJoinAction implements Serializable {
     @In
     private Messages msgs;
 
-//    @Getter
-//    @Setter
-//    private boolean requestAsTranslator = true;
-//
-//    @Getter
-//    @Setter
-//    private boolean requestAsReviewer;
-//
-//    @Getter
-//    @Setter
-//    private boolean requestAsCoordinator;
-
     @Setter
     @Getter
     private String language;
@@ -105,6 +91,10 @@ public class LanguageJoinAction implements Serializable {
     @Getter
     @Setter
     private String message;
+
+    @Setter
+    @Getter
+    private String declineMessage;
 
     @In
     private RequestService requestServiceImpl;
@@ -140,18 +130,18 @@ public class LanguageJoinAction implements Serializable {
 
         languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
             language, request.getRequest().getRequester().getId(),
-                request.isTranslator(), request.isReviewer(),
-                request.isCoordinator());
+            request.isTranslator(), request.isReviewer(),
+            request.isCoordinator());
 
         requestServiceImpl.updateLanguageRequest(languageRequestId,
                 authenticatedAccount, RequestState.ACCEPTED, "");
         facesMessages.addGlobal(msgs.get("jsf.language.request.updated"));
     }
 
-    public void declineRequest(Long languageRequestId, String comment) {
+    public void declineRequest(Long languageRequestId) {
         identity.checkPermission(locale, "manage-language-team");
         requestServiceImpl.updateLanguageRequest(languageRequestId,
-            authenticatedAccount, RequestState.REJECTED, comment);
+            authenticatedAccount, RequestState.REJECTED, declineMessage);
         facesMessages.addGlobal(msgs.get("jsf.language.request.updated"));
     }
 
@@ -219,6 +209,11 @@ public class LanguageJoinAction implements Serializable {
                 requestServiceImpl.getPendingLanguageRequests(
                         authenticatedAccount,
                         getLocale().getLocaleId());
+        if(languageRequest == null) {
+            facesMessages.addGlobal(msgs.get("jsf.language.request.processed"));
+            return;
+        }
+
         String comment =
                 "Request cancelled by requester {"
                         + authenticatedAccount.getUsername() + "}";
@@ -252,6 +247,9 @@ public class LanguageJoinAction implements Serializable {
             roles.add(StringUtils.lowerCase(msgs.get("jsf.Reviewer")));
         }
 
+        if(roles.size() == 1) {
+            return msgs.format("jsf.language.myRole", Joiner.on(" and ").join(roles));
+        }
         return msgs.format("jsf.language.myRoles", Joiner.on(" and ").join(roles));
     }
 
@@ -268,34 +266,6 @@ public class LanguageJoinAction implements Serializable {
             locale.getMembers();
         }
         return locale;
-    }
-
-    public boolean isTranslator(HPerson person) {
-        HLocaleMember member = getLocaleMember(person.getId());
-        return member == null ? false : member.isTranslator();
-    }
-
-    public boolean isReviewer(HPerson person) {
-        HLocaleMember member = getLocaleMember(person.getId());
-        return member == null ? false : member.isReviewer();
-    }
-
-    public boolean isCoordinator(HPerson person) {
-        HLocaleMember member = getLocaleMember(person.getId());
-        return member == null ? false : member.isCoordinator();
-    }
-
-    private HLocaleMember getLocaleMember(final Long personId) {
-        for (HLocaleMember lm : getLocaleMembers()) {
-            if (lm.getPerson().getId().equals(personId)) {
-                return lm;
-            }
-        }
-        return null;
-    }
-
-    private List<HLocaleMember> getLocaleMembers() {
-        return localeMemberDAO.findAllByLocale(new LocaleId(language));
     }
 
     public boolean isTranslator() {
