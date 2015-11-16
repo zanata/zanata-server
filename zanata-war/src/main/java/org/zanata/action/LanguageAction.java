@@ -296,11 +296,12 @@ public class LanguageAction implements Serializable {
         if(member == null) {
             return "";
         }
-        List<String> roles = Lists.newArrayList();
+
         if(member.isCoordinator()) {
-            roles.add(msgs.get("jsf.Coordinator"));
+            return msgs.get("jsf.Coordinator");
         }
 
+        List<String> roles = Lists.newArrayList();
         if(member.isTranslator()) {
             roles.add(msgs.get("jsf.Translator"));
         }
@@ -463,7 +464,7 @@ public class LanguageAction implements Serializable {
     public void removeMembership(HLocaleMember member) {
         identity.checkPermission(locale, "manage-language-team");
         this.languageTeamServiceImpl.leaveLanguageTeam(this.language, member
-                .getPerson().getId());
+            .getPerson().getId());
         resetLocale();
     }
 
