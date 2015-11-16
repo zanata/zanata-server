@@ -1,9 +1,10 @@
-package org.zanata.rest.editor.service;
+package org.zanata.rest.service;
 
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.rest.service.ProjectVersionService;
 import org.zanata.seam.SeamAutowire;
 
 import javax.ws.rs.core.Response;
