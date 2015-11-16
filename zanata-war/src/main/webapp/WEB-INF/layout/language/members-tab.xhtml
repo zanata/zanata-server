@@ -122,7 +122,7 @@
                     </ui:fragment>
                     <ui:fragment rendered="#{not identity.hasPermission(languageAction.locale, 'manage-language-team')}">
                       <li>
-                        #{languageAction.getMemberRoles(member)}
+                        #{languageAction.getLocalisedMemberRoles(member)}
                       </li>
                     </ui:fragment>
                   </ul>

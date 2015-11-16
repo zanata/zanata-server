@@ -22,6 +22,7 @@
 package org.zanata.model.type;
 
 import lombok.Getter;
+import org.hibernate.MappingException;
 
 /**
  * Request state with single char
@@ -44,6 +45,11 @@ public enum RequestState {
     }
 
     public static RequestState getEnum(String string) {
+        if (string.length() > 1) {
+            throw new IllegalArgumentException(
+                "Invalid characters found parsing string '" + string
+                    + "'");
+        }
         char initial = string.charAt(0);
         switch (initial) {
             case 'N':

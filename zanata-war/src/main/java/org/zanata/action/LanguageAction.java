@@ -292,7 +292,7 @@ public class LanguageAction implements Serializable {
         return localeMemberDAO.findAllByLocale(new LocaleId(language));
     }
 
-    public String getMemberRoles(HLocaleMember member) {
+    public String getLocalisedMemberRoles(HLocaleMember member) {
         if(member == null) {
             return "";
         }

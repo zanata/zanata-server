@@ -108,14 +108,21 @@ public class LanguageJoinAction implements Serializable {
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
 
+    /**
+     * Return my (authenticatedAccount) requested localised roles
+     */
     public String getMyRequestedRole() {
         LanguageRequest request =
             requestServiceImpl.getPendingLanguageRequests(authenticatedAccount,
                 getLocale().getLocaleId());
-        return getRequestedRole(request);
+        return getLocalisedRequestedRoles(request);
     }
 
-    public String getRequestedRole(LanguageRequest request) {
+    /**
+     * Return localised roles requested
+     *
+     */
+    public String getLocalisedRequestedRoles(LanguageRequest request) {
         return Joiner.on(", ")
             .skipNulls()
             .join(request.isCoordinator() ? msgs.get("jsf.Coordinator") : null,
@@ -224,7 +231,7 @@ public class LanguageJoinAction implements Serializable {
             authenticatedAccount.getUsername()));
     }
 
-    public String getMyRoles() {
+    public String getMyLocalisedRoles() {
         if(authenticatedAccount == null) {
             return "";
         }
@@ -234,7 +241,7 @@ public class LanguageJoinAction implements Serializable {
         }
 
         if(localeMember.isCoordinator()) {
-            return msgs.format("jsf.language.myRole",
+            return msgs.format("jsf.language.myRoles",
                     StringUtils.lowerCase(msgs.get("jsf.Coordinator")));
         }
 
@@ -245,10 +252,6 @@ public class LanguageJoinAction implements Serializable {
 
         if(localeMember.isReviewer()) {
             roles.add(StringUtils.lowerCase(msgs.get("jsf.Reviewer")));
-        }
-
-        if(roles.size() == 1) {
-            return msgs.format("jsf.language.myRole", Joiner.on(" and ").join(roles));
         }
         return msgs.format("jsf.language.myRoles", Joiner.on(" and ").join(roles));
     }
