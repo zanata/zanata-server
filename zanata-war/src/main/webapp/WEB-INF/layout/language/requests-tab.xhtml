@@ -23,19 +23,56 @@
             jQuery('#' + id + '-actions').addClass('is-hidden');
             jQuery('#' + id + '-actions-roles').removeClass('is-hidden');
             //populate checkboxes according to request accepted
-            if(acceptAsTranslator) {
-              jQuery('#' + id + '-actions-roles').find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            if(acceptAsCoordinator) {
+              toggleCoordinator(id, acceptAsCoordinator, true);
             }
             if(acceptAsReviewer) {
               jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
             }
-            if(acceptAsCoordinator) {
-              jQuery('#' + id + '-actions-roles').find('[id$=coordinator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            if(acceptAsTranslator) {
+              jQuery('#' + id + '-actions-roles').find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
             }
           } else {
             jQuery('#' + id + '-accept').addClass('is-hidden');
             jQuery('#' + id + '-decline').attr('disabled', true);
           }
+        }
+
+        function toggleCoordinator(id, checked, selfUpdate) {
+          if(selfUpdate) {
+            jQuery('#' + id + '-actions-roles').find('[id$=coordinator]').find('.js-form__checkbox__input').attr('checked', checked).trigger('change');
+          }
+          if(checked) {
+            //if coordinator is checked, check reviewer and translator, disable them
+            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').addClass('is-disabled');
+            jQuery('#' + id + '-actions-roles').find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
+            jQuery('#' + id + '-actions-roles').find('[id$=translator]').addClass('is-disabled');
+          } else {
+            //if coordinator is unchecked, enable reviewer and translator checkbox
+            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').removeClass('is-disabled');
+            jQuery('#' + id + '-actions-roles').find('[id$=translator]').removeClass('is-disabled');
+          }
+        }
+
+        function bindAsCoordinator(key, checked) {
+          var res = key.split("-");
+          var requestId = res[0];
+          var personId = res[1];
+          toggleCoordinator(requestId, checked, false);
+          setAsCoordinator(personId, checked);
+        }
+
+        function bindAsReviewer(key, checked) {
+          var res = key.split("-");
+          var personId = res[1];
+          setAsReviewer(personId, checked);
+        }
+
+        function bindAsTranslator(key, checked) {
+          var res = key.split("-");
+          var personId = res[1];
+          setAsTranslator(personId, checked);
         }
       </script>
 
@@ -49,19 +86,19 @@
         <a4j:param name="val4" assignTo="#{coordinator}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="bindAsTranslator" action="#{languageAction.setPersonAsTranslator(personId, asTranslator)}"
+      <a4j:jsFunction name="setAsTranslator" action="#{languageAction.setPersonAsTranslator(personId, asTranslator)}"
         oncomplete="refreshMembersForm()">
         <a4j:param name="val1" assignTo="#{personId}"/>
         <a4j:param name="val2" assignTo="#{asTranslator}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="bindAsReviewer" action="#{languageAction.setPersonAsReviewer(personId, asReviewer)}"
+      <a4j:jsFunction name="setAsReviewer" action="#{languageAction.setPersonAsReviewer(personId, asReviewer)}"
         oncomplete="refreshMembersForm()">
         <a4j:param name="val1" assignTo="#{personId}"/>
         <a4j:param name="val2" assignTo="#{asReviewer}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="bindAsCoordinator" action="#{languageAction.setPersonAsCoordinator(personId, asCoordinator)}"
+      <a4j:jsFunction name="setAsCoordinator" action="#{languageAction.setPersonAsCoordinator(personId, asCoordinator)}"
         oncomplete="refreshMembersForm()">
         <a4j:param name="val1" assignTo="#{personId}"/>
         <a4j:param name="val2" assignTo="#{asCoordinator}"/>
@@ -107,20 +144,22 @@
 
                   <div id="#{langRequest.id}-actions-roles" class="is-hidden">
                     <ul class="list--horizontal txt--meta">
+                      <ui:param name="isCoordinator" value="#{languageAction.isCoordinator(langRequest.request.requester.person)}"/>
+
                       <li>
-                        <zanata:checkbox label="#{msgs['jsf.Translator']}" id="translator"
+                        <zanata:checkbox label="#{msgs['jsf.Translator']}" id="translator" styleClass="#{isCoordinator ? 'is-disabled' : ''}"
                           checked="#{languageAction.isTranslator(langRequest.request.requester.person)}" onValueChanged="bindAsTranslator"
-                          value="#{langRequest.request.requester.person.id}"/>
+                          value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                       <li>
-                        <zanata:checkbox label="#{msgs['jsf.Reviewer']}" id="reviewer"
+                        <zanata:checkbox label="#{msgs['jsf.Reviewer']}" id="reviewer" styleClass="#{isCoordinator ? 'is-disabled' : ''}"
                           checked="#{languageAction.isReviewer(langRequest.request.requester.person)}" onValueChanged="bindAsReviewer"
-                          value="#{langRequest.request.requester.person.id}"/>
+                          value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                       <li>
                         <zanata:checkbox label="#{msgs['jsf.Coordinator']}" id="coordinator"
-                          checked="#{languageAction.isCoordinator(langRequest.request.requester.person)}" onValueChanged="bindAsCoordinator"
-                          value="#{langRequest.request.requester.person.id}"/>
+                          checked="#{isCoordinator}" onValueChanged="bindAsCoordinator"
+                          value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                     </ul>
                   </div>

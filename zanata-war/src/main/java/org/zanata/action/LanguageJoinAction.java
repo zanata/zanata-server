@@ -23,6 +23,8 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.constraints.Size;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -30,6 +32,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -90,6 +93,7 @@ public class LanguageJoinAction implements Serializable {
 
     @Getter
     @Setter
+    @Size(max = 1000)
     private String message;
 
     @Setter

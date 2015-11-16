@@ -42,11 +42,10 @@ public class RequestStateTypeDescriptor
     @Override
     RequestState valueOf(String string) {
         if (string.length() == 1) {
-            return RequestState.valueOf(string);
+            return RequestState.getEnum(string);
         }
         throw new IllegalArgumentException(
                 "String to look up a RequestState must be exactly 1 character. "
-                        +
-                        "Received \"" + string + "\"");
+                        + "Received \"" + string + "\"");
     }
 }
