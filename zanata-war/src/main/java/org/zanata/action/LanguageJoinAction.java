@@ -32,7 +32,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.Length;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -111,16 +110,6 @@ public class LanguageJoinAction implements Serializable {
 
     @In(value = ZanataJpaIdentityStore.AUTHENTICATED_USER, required = false)
     private HAccount authenticatedAccount;
-
-    /**
-     * Return my (authenticatedAccount) requested localised roles
-     */
-    public String getMyRequestedRole() {
-        LanguageRequest request =
-            requestServiceImpl.getPendingLanguageRequests(authenticatedAccount,
-                getLocale().getLocaleId());
-        return getLocalisedRequestedRoles(request);
-    }
 
     /**
      * Return localised roles requested
