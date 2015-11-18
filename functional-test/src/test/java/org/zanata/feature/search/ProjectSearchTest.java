@@ -21,20 +21,18 @@
 
 package org.zanata.feature.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.BasePage;
 import org.zanata.page.projects.ProjectBasePage;
-import org.zanata.page.projects.ProjectsPage;
-import org.zanata.util.SampleProjectRule;
+import org.zanata.page.search.SearchPage;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Damian Jansen <a
@@ -42,9 +40,6 @@ import org.zanata.workflow.LoginWorkFlow;
  */
 @Category(DetailedTest.class)
 public class ProjectSearchTest extends ZanataTestCase {
-
-    @Rule
-    public SampleProjectRule sampleProjectRule = new SampleProjectRule();
 
     @Feature(summary = "The user can search for a project",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
@@ -72,13 +67,13 @@ public class ProjectSearchTest extends ZanataTestCase {
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void unsuccessfulProjectSearch() throws Exception {
-        ProjectsPage projectsPage = new BasicWorkFlow()
+        SearchPage searchPage = new BasicWorkFlow()
                 .goToHome()
                 .enterSearch("arodef")
                 .expectSearchListContains("Search Zanata for 'arodef'")
                 .submitSearch();
 
-        assertThat(projectsPage.getProjectNamesOnCurrentPage().isEmpty())
+        assertThat(searchPage.getProjectNamesOnSearchPage().isEmpty())
                 .isTrue()
                 .as("No projects are displayed");
     }

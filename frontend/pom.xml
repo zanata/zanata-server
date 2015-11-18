@@ -4,25 +4,21 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>server</artifactId>
-    <version>3.7.4-SNAPSHOT</version>
+    <version>3.8.0-SNAPSHOT</version>
   </parent>
   <artifactId>frontend</artifactId>
   <name>frontend</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <node.version>v0.12.2</node.version>
-    <npm.version>2.7.6</npm.version>
+    <node.version>v0.12.7</node.version>
+    <npm.version>2.14.7</npm.version>
     <web.target>${project.build.directory}/web</web.target>
-    <bundle.output>${project.build.directory}/build</bundle.output>
-    <bundle.dest>${bundle.output}/META-INF/resources</bundle.dest>
+    <bundle.dest>${project.build.outputDirectory}/META-INF/resources</bundle.dest>
     <node.install.directory>${download.dir}/zanata-frontend/node-${node.version}-npm-${npm.version}</node.install.directory>
     <npm.cli.script>${node.install.directory}/node/npm/bin/npm-cli.js</npm.cli.script>
     <!-- in seconds. 10 is the default value -->
     <npm.cache.min>10</npm.cache.min>
-
-    <!-- ==== list of modules to build by npm and node ==== -->
-    <module.user-profile-page>user-profile-page</module.user-profile-page>
   </properties>
 
 
@@ -76,13 +72,13 @@
 
         <executions>
           <execution>
-            <id>execute npm install for: ${module.user-profile-page}</id>
+            <id>execute npm install for: ${project.artifactId}</id>
             <phase>process-resources</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <workingDirectory>${web.target}/${module.user-profile-page}</workingDirectory>
+              <workingDirectory>${web.target}</workingDirectory>
               <arguments>
                 <argument>${npm.cli.script}</argument>
                 <argument>install</argument>
@@ -92,18 +88,18 @@
             </configuration>
           </execution>
           <execution>
-            <id>execute npm run build for: ${module.user-profile-page}</id>
+            <id>execute npm run build for: ${project.artifactId}</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <workingDirectory>${web.target}/${module.user-profile-page}</workingDirectory>
+              <workingDirectory>${web.target}</workingDirectory>
               <arguments>
                 <argument>${npm.cli.script}</argument>
                 <argument>run</argument>
                 <argument>build</argument>
-                <argument>bundleDest=${bundle.dest}</argument>
+                <argument>--env.bundleDest=${bundle.dest}</argument>
               </arguments>
             </configuration>
           </execution>
@@ -118,13 +114,6 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <classesDirectory>${bundle.output}</classesDirectory>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 

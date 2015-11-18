@@ -29,7 +29,7 @@ See [glossary roles and permission](/user-guide/glossary/glossary-roles-permissi
 
 1. Login into Zanata
 1. Click `Glossary` menu.
-1. Click on `More Actions` on top right corner of the table, follow by `Upload glossary` from the list.
+1. Click on `Import Glossary` on top right corner of the page.
 <figure>
 ![More action in glossary page](/images/glossary-upload.png)
 <figcaption>More actions in glossary table</figcaption>
@@ -49,7 +49,7 @@ See [glossary roles and permission](/user-guide/glossary/glossary-roles-permissi
 
 ### Upload via Zanata client
 
-The following instructions assume that you have installed and configured the Zanata Client. Instructions for installation and configuration are available at [Zanata Client Installation](http://zanata-client.readthedocs.org/en/latest/installation/).
+The following instructions assume that you have installed and configured the Zanata Client. Instructions for installation and configuration are available at [Zanata Client Installation](http://docs.zanata.org/projects/zanata-client/en/latest/#installation).
 
 Command
 

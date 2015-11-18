@@ -33,7 +33,7 @@ import org.zanata.page.utility.HomePage;
 @Slf4j
 public class ResetPasswordPage extends BasePage {
 
-    private By usernameEmailField = By.id("passwordResetRequestForm:usernameEmailField:usernameEmail");
+    private By usernameEmailField = By.id("passwordResetRequestForm:usernameEmail:input:usernameEmail");
     private By submitButton = By.id("passwordResetRequestForm:submitRequest");
 
     public ResetPasswordPage(WebDriver driver) {
@@ -42,7 +42,7 @@ public class ResetPasswordPage extends BasePage {
 
     public ResetPasswordPage enterUserNameEmail(String usernameEmail) {
         log.info("Enter username or email {}", usernameEmail);
-        readyElement(usernameEmailField).sendKeys(usernameEmail);
+        enterText(readyElement(usernameEmailField), usernameEmail);
         return new ResetPasswordPage(getDriver());
     }
 

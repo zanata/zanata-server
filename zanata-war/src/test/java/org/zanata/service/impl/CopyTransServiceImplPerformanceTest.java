@@ -34,7 +34,7 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.search.impl.FullTextSessionImpl;
 import org.hibernate.search.jpa.Search;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -42,7 +42,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
 import org.zanata.PerformanceProfiling;
 import org.zanata.SlowTest;
 import org.zanata.common.ContentState;
@@ -187,7 +186,7 @@ public class CopyTransServiceImplPerformanceTest extends ZanataTest {
                 .use("entityManager", Search.getFullTextEntityManager(getEm()))
                 .use("entityManagerFactory", getEmf())
                 .use("session", new FullTextSessionImpl(getSession()))
-                .use(JpaIdentityStore.AUTHENTICATED_USER,
+                .use(ZanataJpaIdentityStore.AUTHENTICATED_USER,
                         seam.autowire(AccountDAO.class).getByUsername("demo"))
                 .useImpl(LocaleServiceImpl.class)
                 .useImpl(TranslationMemoryServiceImpl.class)
@@ -311,8 +310,8 @@ public class CopyTransServiceImplPerformanceTest extends ZanataTest {
                         FixedValueMaker.EMPTY_STRING_MAKER);
     }
 
+    @Ignore("slow test")
     @Test
-    @Ignore
     @SlowTest
     @PerformanceProfiling
     public void testCopyTransForDocument() throws Exception {

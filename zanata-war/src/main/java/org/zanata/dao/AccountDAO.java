@@ -26,9 +26,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.security.management.PasswordHash;
-import org.jboss.seam.util.Hex;
 import org.zanata.model.HAccount;
+import org.zanata.util.PasswordUtil;
 
 @Name("accountDAO")
 @AutoCreate
@@ -92,7 +91,7 @@ public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
             md5.reset();
             byte[] digest = md5.digest(salted);
 
-            return new String(Hex.encodeHex(digest));
+            return new String(PasswordUtil.encodeHex(digest));
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -108,8 +107,8 @@ public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
         String saltPhrase = username;
         @SuppressWarnings("deprecation")
         String passwordHash =
-                PasswordHash.instance().generateSaltedHash(password,
-                        saltPhrase, PasswordHash.ALGORITHM_MD5);
+                PasswordUtil.generateSaltedHash(password,
+                        saltPhrase);
         account.setPasswordHash(passwordHash);
         account.setEnabled(enabled);
         makePersistent(account);
@@ -138,7 +137,9 @@ public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
                 getSession().createQuery(
                         "from HAccount as a where lower(a.username) like lower(:username)");
         query.setParameter("username", userName);
-        query.setMaxResults(maxResults);
+        if(maxResults > 0) {
+            query.setMaxResults(maxResults);
+        }
         query.setFirstResult(firstResult);
         query.setComment("AccountDAO.searchQuery/username");
         return query.list();

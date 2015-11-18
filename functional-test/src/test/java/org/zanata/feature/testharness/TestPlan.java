@@ -24,29 +24,33 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.zanata.feature.account.*;
 import org.zanata.feature.administration.*;
-import org.zanata.feature.clientserver.*;
-import org.zanata.feature.concurrentedit.*;
+import org.zanata.feature.clientserver.GettextPluralSupportTest;
+import org.zanata.feature.clientserver.ProjectMaintainerTest;
+import org.zanata.feature.clientserver.PropertiesRoundTripTest;
+import org.zanata.feature.concurrentedit.ConcurrentAccessTest;
+import org.zanata.feature.concurrentedit.ConcurrentEditTest;
 import org.zanata.feature.dashboard.DashboardTest;
-import org.zanata.feature.document.FileTypeUploadTest;
-import org.zanata.feature.document.HTMLDocumentTypeTest;
-import org.zanata.feature.document.MultiFileUploadTest;
-import org.zanata.feature.document.SubtitleDocumentTypeTest;
-import org.zanata.feature.document.UploadTest;
+import org.zanata.feature.document.*;
 import org.zanata.feature.editor.*;
 import org.zanata.feature.glossary.GlossaryAdminTest;
-import org.zanata.feature.glossary.GlossaryDeleteTest;
 import org.zanata.feature.glossary.GlossaryPushTest;
 import org.zanata.feature.glossary.InvalidGlossaryPushTest;
-import org.zanata.feature.googleopenid.GoogleOpenIDTest;
 import org.zanata.feature.language.AddLanguageTest;
 import org.zanata.feature.language.ContactLanguageTeamTest;
 import org.zanata.feature.language.JoinLanguageTeamTest;
-import org.zanata.feature.misc.*;
+import org.zanata.feature.misc.ContactAdminTest;
+import org.zanata.feature.misc.FlakyTest;
+import org.zanata.feature.misc.ObsoleteTextTest;
+import org.zanata.feature.misc.RateLimitRestAndUITest;
 import org.zanata.feature.project.*;
-import org.zanata.feature.projectversion.*;
+import org.zanata.feature.projectversion.CreateProjectVersionTest;
+import org.zanata.feature.projectversion.EditVersionLanguagesTest;
+import org.zanata.feature.projectversion.EditVersionValidationsTest;
+import org.zanata.feature.projectversion.VersionFilteringTest;
 import org.zanata.feature.search.ProjectSearchTest;
 import org.zanata.feature.security.SecurityTest;
-import org.zanata.feature.versionGroup.*;
+import org.zanata.feature.versionGroup.VersionGroupTest;
+import org.zanata.feature.versionGroup.VersionGroupUrlTest;
 
 /**
  * The Zanata feature test list and suite interface.<br/>
@@ -80,7 +84,8 @@ import org.zanata.feature.versionGroup.*;
          * translation memory sets
          */
         AutoRoleAssignmentTest.class,
-        ServerSettingsTest.class,
+        // TODO: ZNTA-668
+        // ServerSettingsTest.class,
         EditHomePageTest.class,
         EditTranslationMemoryTest.class,
         ManageSearchTest.class,
@@ -133,15 +138,8 @@ import org.zanata.feature.versionGroup.*;
          * Glossary management features
          */
         GlossaryAdminTest.class,
-        GlossaryDeleteTest.class,
         GlossaryPushTest.class,
         InvalidGlossaryPushTest.class,
-
-        /*
-         * Google OpenID
-         * Registration and log in with Google OpenID
-         */
-        GoogleOpenIDTest.class,
 
         /*
          * Language

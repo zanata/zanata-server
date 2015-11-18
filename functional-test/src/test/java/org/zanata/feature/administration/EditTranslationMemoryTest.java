@@ -20,23 +20,21 @@
  */
 package org.zanata.feature.administration;
 
-import java.io.File;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.openqa.selenium.Alert;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.administration.TranslationMemoryEditPage;
 import org.zanata.page.administration.TranslationMemoryPage;
-import org.zanata.util.AddUsersRule;
 import org.zanata.util.TestFileGenerator;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 import org.zanata.workflow.TranslationMemoryWorkFlow;
+
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,13 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(DetailedTest.class)
 public class EditTranslationMemoryTest extends ZanataTestCase {
 
-    @ClassRule
-    public static AddUsersRule addUsersRule = new AddUsersRule();
-
     private TestFileGenerator testFileGenerator = new TestFileGenerator();
 
-    @BeforeClass
-    public static void beforeClass() {
+    @Before
+    public void before() {
         new BasicWorkFlow().goToHome().deleteCookiesAndRefresh();
         assertThat(new LoginWorkFlow().signIn("admin", "admin").loggedInAs())
                 .isEqualTo("admin")
@@ -141,6 +136,9 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
                 .as("The Translation Memory has one entry");
     }
 
+    /**
+     * Updated to test import button is disabled if not file is selected.
+     */
     @Feature(summary = "The system rejects empty TMX data files",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -148,20 +146,11 @@ public class EditTranslationMemoryTest extends ZanataTestCase {
         String rejectTMId = "rejectemptytmtest";
 
         TranslationMemoryPage tmMemoryPage = new TranslationMemoryWorkFlow()
-                .createTranslationMemory(rejectTMId)
-                .clickOptions(rejectTMId)
-                .clickImport(rejectTMId);
-        Alert uploadError = tmMemoryPage.expectFailedUpload();
+            .createTranslationMemory(rejectTMId)
+            .clickOptions(rejectTMId)
+            .clickImport(rejectTMId);
 
-        assertThat(uploadError.getText()
-                .startsWith(TranslationMemoryPage.UPLOAD_ERROR)).isTrue()
-                .as("Error is displayed");
-
-        tmMemoryPage = tmMemoryPage.dismissError();
-
-        assertThat(tmMemoryPage.getNumberOfEntries(rejectTMId))
-                .isEqualTo("0")
-                .as("No change is recorded");
+        assertThat(tmMemoryPage.isImportButtonEnabled()).isEqualTo(false);
     }
 
     @Feature(summary = "The administrator can delete a translation memory entry",

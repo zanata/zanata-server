@@ -32,10 +32,13 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Begin;
+import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.jboss.seam.annotations.Scope;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
@@ -45,6 +48,7 @@ import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProjectIteration;
 import org.zanata.seam.scope.ConversationScopeMessages;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.VersionGroupService;
 import org.zanata.service.impl.VersionGroupServiceImpl;
@@ -66,8 +70,8 @@ import lombok.Setter;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-
 @Name("versionGroupHome")
+@Scope(ScopeType.CONVERSATION)
 public class VersionGroupHome extends SlugHome<HIterationGroup> {
     private static final long serialVersionUID = 1L;
 
@@ -75,7 +79,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
     @Setter
     private String slug;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In("jsfMessages")
@@ -89,6 +93,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
 
     @In
     private ConversationScopeMessages conversationScopeMessages;
+
+    @In
+    private ZanataIdentity identity;
 
     @Getter
     private GroupMaintainerAutocomplete maintainerAutocomplete =
@@ -141,8 +148,8 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
     }
 
     @Override
-    @Restrict("#{s:hasPermission(versionGroupHome.instance, 'update')}")
     public String persist() {
+        identity.checkPermission(instance, "update");
         if (!validateSlug(getInstance().getSlug(), "slug"))
             return null;
 
@@ -153,8 +160,8 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
     }
 
     @Override
-    @Restrict("#{s:hasPermission(versionGroupHome.instance, 'update')}")
     public String update() {
+        identity.checkPermission(instance, "update");
         return super.update();
     }
 
@@ -176,8 +183,8 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         getInstance().setStatus(EntityStatus.valueOf(initial));
     }
 
-    @Restrict("#{s:hasPermission(versionGroupHome.instance, 'update')}")
     public void removeLanguage(HLocale locale) {
+        identity.checkPermission(instance, "update");
         getInstance().getActiveLocales().remove(locale);
         update();
         conversationScopeMessages.setMessage(
@@ -186,8 +193,8 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                         locale.retrieveDisplayName()));
     }
 
-    @Restrict("#{s:hasPermission(versionGroupHome.instance, 'update')}")
     public void removeVersion(HProjectIteration version) {
+        identity.checkPermission(instance, "update");
         getInstance().getProjectIterations().remove(version);
         update();
         conversationScopeMessages.setMessage(
@@ -196,8 +203,8 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                         version.getProject().getSlug()));
     }
 
-    @Restrict("#{s:hasPermission(versionGroupHome.instance, 'update')}")
     public void removeMaintainer(HPerson maintainer) {
+        identity.checkPermission(instance, "update");
         if (getInstance().getMaintainers().size() <= 1) {
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.get("jsf.group.NeedAtLeastOneMaintainer"));
@@ -231,7 +238,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         List<HProjectIteration> list =
                 Lists.newArrayList(getInstance().getProjectIterations());
 
-        Collections.sort(list, ComparatorUtil.PROJECT_NAME_COMPARATOR);
+        Collections.sort(list, ComparatorUtil.VERSION_PROJECT_NAME_COMPARATOR);
 
         return list;
     }
@@ -259,6 +266,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         return slug;
     }
 
+    @Begin(join = true)
     public void validateSuppliedId() {
         getInstance(); // this will raise an EntityNotFound exception
         // when id is invalid and conversation will not
@@ -283,7 +291,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
 
             HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().getMaintainers().add(maintainer);
-            update(conversationScopeMessages);
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.MaintainerAddedToGroup",
@@ -299,6 +307,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         private VersionGroupService versionGroupServiceImpl = ServiceLocator
                 .instance().getInstance(VersionGroupServiceImpl.class);
 
+        private ZanataIdentity identity = ServiceLocator.instance()
+                .getInstance(ZanataIdentity.class);
+
         @Override
         public List<HProjectIteration> suggest() {
             List<HProjectIteration> versionList =
@@ -311,7 +322,7 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                                 @Override
                                 public boolean apply(
                                         @Nullable HProjectIteration input) {
-                                    return !input.getGroups().contains(
+                                    return input != null && !input.getGroups().contains(
                                             getInstance());
                                 }
                             });
@@ -325,10 +336,12 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
                 return;
             }
 
+            identity.checkPermission(instance, "update");
             HProjectIteration version =
                     projectIterationDAO.findById(new Long(getSelectedItem()));
             getInstance().getProjectIterations().add(version);
-            update(conversationScopeMessages);
+
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
 
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
@@ -337,7 +350,14 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
         }
     }
 
+    private static VersionGroupHome getVersionGroupHome() {
+        return ServiceLocator.instance()
+                        .getInstance("versionGroupHome", VersionGroupHome.class);
+    }
+
     private class GroupLocaleAutocomplete extends LocaleAutocomplete {
+        private ZanataIdentity identity = ServiceLocator.instance()
+                .getInstance(ZanataIdentity.class);
 
         @Override
         protected Set<HLocale> getLocales() {
@@ -373,12 +393,15 @@ public class VersionGroupHome extends SlugHome<HIterationGroup> {
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
+            identity.checkPermission(instance, "update");
+
             HLocale locale = localeServiceImpl.getByLocaleId(getSelectedItem());
 
             getInstance().getActiveLocales().add(locale);
 
-            update(conversationScopeMessages);
+            getVersionGroupHome().update(conversationScopeMessages);
             reset();
+            maintainerFilter.reset();
             conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.LanguageAddedToGroup",
                             locale.retrieveDisplayName()));

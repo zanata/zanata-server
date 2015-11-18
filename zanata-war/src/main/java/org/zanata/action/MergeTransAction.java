@@ -15,9 +15,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectDAO;
@@ -26,7 +24,9 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.CopyAction;
+import org.zanata.ui.faces.FacesMessages;
 
 /**
  * Handles user interaction from merge_trans_modal.xhtml.
@@ -79,8 +79,14 @@ public class MergeTransAction extends CopyAction implements Serializable {
     @In
     private Messages msgs;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
+
+    @In
+    private FacesMessages jsfMessages;
+
+    @In
+    private ZanataIdentity identity;
 
     private HProjectIteration targetVersion;
 
@@ -160,11 +166,17 @@ public class MergeTransAction extends CopyAction implements Serializable {
      * Only display user maintained project to merge translation from in this
      * UI. TODO: implement filterable drop down and allow users to select any
      * available project.
-     *
      */
     public List<HProject> getProjects() {
-        return projectDAO.getProjectsForMaintainer(
-                authenticatedAccount.getPerson(), null, 0, Integer.MAX_VALUE);
+        boolean canMergeFromAllProjects =
+                identity.hasPermission(getTargetVersion()
+                    .getProject(), "merge-trans");
+        if (canMergeFromAllProjects) {
+            return projectDAO
+                    .getOffsetListOrderByName(0, Integer.MAX_VALUE, false,
+                        true, true);
+        }
+        return Lists.newArrayList();
     }
 
     public void startMergeTranslations() {
@@ -172,18 +184,18 @@ public class MergeTransAction extends CopyAction implements Serializable {
                 || StringUtils.isEmpty(sourceVersionSlug)
                 || StringUtils.isEmpty(targetProjectSlug)
                 || StringUtils.isEmpty(targetVersionSlug)) {
-            FacesMessages.instance().add(StatusMessage.Severity.ERROR,
-                msgs.get("jsf.iteration.mergeTrans.noSourceAndTarget"));
+            jsfMessages.addGlobal(FacesMessage.SEVERITY_ERROR,
+                    msgs.get("jsf.iteration.mergeTrans.noSourceAndTarget"));
             return;
         }
         if (isCopyActionsRunning()) {
-            FacesMessages.instance().add(StatusMessage.Severity.WARN,
-                msgs.get("jsf.iteration.mergeTrans.hasCopyActionRunning"));
+            jsfMessages.addGlobal(FacesMessage.SEVERITY_WARN,
+                    msgs.get("jsf.iteration.mergeTrans.hasCopyActionRunning"));
             return;
         }
         mergeTranslationsManager.start(sourceProjectSlug,
-            sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-            !keepExistingTranslation);
+                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
+                !keepExistingTranslation);
     }
 
     // Check if copy-trans, copy version or merge-trans is running for the
@@ -214,7 +226,7 @@ public class MergeTransAction extends CopyAction implements Serializable {
 
     @Override
     public void onComplete() {
-        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+        jsfMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.iteration.mergeTrans.completed.message",
                         sourceProjectSlug, sourceVersionSlug,
                         targetProjectSlug, targetVersionSlug));
@@ -223,7 +235,7 @@ public class MergeTransAction extends CopyAction implements Serializable {
     public void cancel() {
         mergeTranslationsManager.cancel(targetProjectSlug,
             targetVersionSlug);
-        FacesMessages.instance().add(
+        jsfMessages.addGlobal(
                 FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.iteration.mergeTrans.cancel.message",
                         sourceProjectSlug, sourceVersionSlug,

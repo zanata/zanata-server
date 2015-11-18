@@ -39,9 +39,12 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.criterion.NaturalIdentifier;
 import org.hibernate.criterion.Restrictions;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Begin;
+import org.jboss.seam.annotations.End;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.security.Restrict;
+import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesManager;
 import org.zanata.common.DocumentType;
 import org.zanata.common.EntityStatus;
@@ -56,6 +59,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.seam.scope.ConversationScopeMessages;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
@@ -79,6 +83,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 @Name("versionHome")
+@Scope(ScopeType.CONVERSATION)
 @Slf4j
 public class VersionHome extends SlugHome<HProjectIteration> implements
     HasLanguageSettings {
@@ -137,6 +142,9 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @In
     private UrlUtil urlUtil;
 
+    @In
+    private ZanataIdentity identity;
+
     private Map<ValidationId, ValidationAction> availableValidations = Maps
             .newHashMap();
 
@@ -180,9 +188,11 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
+    @Begin(join = true)
     public void init(boolean isNewInstance) {
         this.isNewInstance = isNewInstance;
         if (isNewInstance) {
+            identity.checkPermission(getProject(), "insert");
             ProjectType projectType = getProject().getDefaultProjectType();
             if (projectType != null) {
                 selectedProjectType = projectType.name();
@@ -265,8 +275,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateRequireTranslationReview(String key, boolean checked) {
+        identity.checkPermission(instance, "update");
         getInstance().setRequireTranslationReview(checked);
         update();
         if (checked) {
@@ -367,8 +377,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     }
 
     public void copyVersion() {
-        getInstance().setStatus(EntityStatus.READONLY);
         getInstance().setSlug(inputSlugValue);
+        getInstance().setStatus(EntityStatus.READONLY);
 
         // create basic version here
         HProject project = getProject();
@@ -462,8 +472,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
      * @return the String "updated"
      */
     @Override
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public String update() {
+        identity.checkPermission(instance, "update");
         if (!getInputSlugValue().equals(slug) && !validateSlug(getInputSlugValue(), "slug")) {
             return null;
         }
@@ -499,8 +509,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         // Disable the default message from Seam
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateStatus(char initial) {
+        identity.checkPermission(instance, "update");
         String message = msgs.format("jsf.iteration.status.updated",
                 EntityStatus.valueOf(initial));
         getInstance().setStatus(EntityStatus.valueOf(initial));
@@ -572,8 +582,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return Arrays.asList(ValidationAction.State.values());
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateValidationOption(String name, String state) {
+        identity.checkPermission(instance, "update");
         ValidationId validationId = ValidationId.valueOf(name);
 
         for (Map.Entry<ValidationId, ValidationAction> entry : getValidations()
@@ -623,8 +633,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return getInstance().isOverrideLocales();
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void setOverrideLocales(boolean overrideLocales) {
+        identity.checkPermission(instance, "update");
         getInstance().setOverrideLocales(overrideLocales);
     }
 
@@ -632,8 +642,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return LocaleServiceImpl.getLocaleAliasesByIteration(getInstance());
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeAllLocaleAliases() {
+        identity.checkPermission(instance, "update");
         List<LocaleId> removed = new ArrayList<>();
         List<LocaleId> aliasedLocales =
             new ArrayList<>(getLocaleAliases().keySet());
@@ -695,8 +705,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         disabledLocales = null;
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void removeSelectedLocaleAliases() {
+        identity.checkPermission(instance, "update");
         List<LocaleId> removed = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
@@ -722,7 +732,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                     msgs.get("jsf.LocaleAlias.NoAliasesToRemove"));
         } else if (removed.size() == 1) {
             facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
-                msgs.format("jsf.LocaleAlias.AliasRemoved", removed.get(0)));
+                    msgs.format("jsf.LocaleAlias.AliasRemoved", removed.get(0)));
         } else {
             facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.LocaleAlias.AliasesRemoved",
@@ -753,8 +763,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     private Map<LocaleId, String> enteredLocaleAliases = Maps.newHashMap();
 
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void updateToEnteredLocaleAlias(LocaleId localeId) {
+        identity.checkPermission(instance, "update");
         String enteredAlias = enteredLocaleAliases.get(localeId);
         setLocaleAlias(localeId, enteredAlias);
     }
@@ -768,7 +778,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
                         msgs.format("jsf.LocaleAlias.AliasRemoved", localeId));
             } else {
                 facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
-                    msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
+                        msgs.format("jsf.LocaleAlias.NoAliasToRemove", localeId));
             }
         } else {
             facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
@@ -804,8 +814,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return hadAlias;
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void useDefaultLocales() {
+        identity.checkPermission(instance, "update");
         setOverrideLocales(false);
         refreshDisabledLocales();
     }
@@ -845,9 +855,10 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return selectedEnabledLocales;
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableSelectedLocales() {
+        identity.checkPermission(instance, "update");
         List<LocaleId> toRemove = Lists.newArrayList();
+
         for (Map.Entry<LocaleId, Boolean> entry :
             getSelectedEnabledLocales().entrySet()) {
             if (entry.getValue()) {
@@ -881,8 +892,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         return disableLocaleSilently(locale);
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void disableLocale(HLocale locale) {
+        identity.checkPermission(instance, "update");
         boolean wasEnabled = disableLocaleSilently(locale);
         if (wasEnabled) {
             facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
@@ -944,8 +955,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @Setter
     private Map<LocaleId, Boolean> selectedDisabledLocales = Maps.newHashMap();
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableSelectedLocales() {
+        identity.checkPermission(instance, "update");
         List<LocaleId> enabled = new ArrayList<>();
         for (Map.Entry<LocaleId, Boolean> entry : selectedDisabledLocales
                 .entrySet()) {
@@ -971,8 +982,8 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         }
     }
 
-    @Restrict("#{s:hasPermission(versionHome.instance, 'update')}")
     public void enableLocale(HLocale locale) {
+        identity.checkPermission(instance, "update");
         boolean wasDisabled = enableLocaleSilently(locale);
 
         if (wasDisabled) {

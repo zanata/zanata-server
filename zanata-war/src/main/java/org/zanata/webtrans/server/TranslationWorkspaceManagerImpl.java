@@ -1,11 +1,14 @@
 package org.zanata.webtrans.server;
 
+import static org.zanata.transaction.TransactionUtil.runInTransaction;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.event.Observes;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +18,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.util.Work;
 import org.jboss.seam.web.ServletContexts;
 import org.zanata.async.Async;
 import org.zanata.async.ContainsAsyncMethods;
@@ -23,7 +25,7 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.events.Logout;
+import org.zanata.events.LogoutEvent;
 import org.zanata.events.ProjectIterationUpdate;
 import org.zanata.events.ProjectUpdate;
 import org.zanata.events.ServerStarted;
@@ -105,6 +107,10 @@ public class TranslationWorkspaceManagerImpl implements
                 ProjectIterationDAO.class);
     }
 
+    EntityManager getEntityManager() {
+        return ServiceLocator.instance().getEntityManager();
+    }
+
     // TODO Requesting component by name for testability. This should be fixed
     // in subsequent versions of AutoWire
     LocaleService getLocaleService() {
@@ -124,8 +130,8 @@ public class TranslationWorkspaceManagerImpl implements
         log.info("starting...");
     }
 
-    @Observer(Logout.EVENT_NAME)
-    public void exitWorkspace(@Observes Logout payload) {
+    @Observer(LogoutEvent.EVENT_NAME)
+    public void exitWorkspace(@Observes LogoutEvent payload) {
         exitWorkspace(payload.getUsername());
     }
 
@@ -184,14 +190,8 @@ public class TranslationWorkspaceManagerImpl implements
     @Async
     public void projectUpdate(@Observes final ProjectUpdate payload) {
         try {
-            new Work<Void>() {
-
-                @Override
-                protected Void work() throws Exception {
-                    projectUpdate(payload.getProject(), payload.getOldSlug());
-                    return null;
-                }
-            }.workInTransaction();
+            runInTransaction(() -> projectUpdate(payload.getProject(),
+                    payload.getOldSlug()));
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
@@ -199,6 +199,8 @@ public class TranslationWorkspaceManagerImpl implements
     }
 
     void projectUpdate(HProject project, String oldProjectSlug) {
+        // need to reload the entity since it's in separate thread/transaction
+        project = getEntityManager().find(HProject.class, project.getId());
         String projectSlug = project.getSlug();
         log.info("Project newSlug={}, oldSlug={} updated, status={}",
                 projectSlug, oldProjectSlug, project.getStatus());

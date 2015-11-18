@@ -36,7 +36,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.TransactionPropagationType;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.security.Restrict;
+import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.security.annotations.CheckPermission;
+import org.zanata.security.annotations.CheckRole;
 import org.zanata.async.Async;
 import org.zanata.async.AsyncTaskHandle;
 import org.zanata.async.AsyncTaskResult;
@@ -54,6 +56,8 @@ import org.zanata.model.HTextFlow;
 import org.zanata.model.ITextFlow;
 import org.zanata.model.tm.TransMemory;
 import org.zanata.model.tm.TransMemoryUnit;
+import org.zanata.security.ZanataIdentity;
+import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.LocaleService;
 import org.zanata.service.LockManagerService;
 import org.zanata.tmx.TMXParser;
@@ -67,6 +71,7 @@ import com.google.common.base.Optional;
 @Slf4j
 @ContainsAsyncMethods
 @ParametersAreNonnullByDefault
+@ZanataSecured
 // TODO options to export obsolete docs and textflows to TMX?
 public class TranslationMemoryResourceService implements
         TranslationMemoryResource {
@@ -85,9 +90,11 @@ public class TranslationMemoryResourceService implements
     private TransMemoryDAO transMemoryDAO;
     @In
     private TMXParser tmxParser;
+    @In
+    private ZanataIdentity identity;
 
     @Override
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public Response getAllTranslationMemory(@Nullable LocaleId locale) {
         log.debug("exporting TMX for all projects, locale {}", locale);
         if (locale != null) {
@@ -100,9 +107,9 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasPermission('', 'download-tmx')}")
     public Response getProjectTranslationMemory(@Nonnull String projectSlug,
             @Nullable LocaleId locale) {
+        identity.checkPermission("", "download-tmx");
         log.debug("exporting TMX for project {}, locale {}", projectSlug,
                 locale);
         HProject hProject =
@@ -119,10 +126,10 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasPermission('', 'download-tmx')}")
     public Response getProjectIterationTranslationMemory(
             @Nonnull String projectSlug, @Nonnull String iterationSlug,
             @Nullable LocaleId locale) {
+        identity.checkPermission("", "download-tmx");
         log.debug("exporting TMX for project {}, iteration {}, locale {}",
                 projectSlug, iterationSlug, locale);
         HProjectIteration hProjectIteration =
@@ -142,7 +149,7 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public Response getTranslationMemory(@Nonnull String slug) {
         log.debug("exporting TMX for translation memory {}", slug);
         TransMemory tm = getTM(transMemoryDAO.getBySlug(slug), slug);
@@ -153,7 +160,7 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public Response updateTranslationMemory(String slug, InputStream input)
             throws Exception {
         Lock tmLock = lockTM(slug);
@@ -174,7 +181,7 @@ public class TranslationMemoryResourceService implements
         return tm.get();
     }
 
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public Object deleteTranslationMemory(String slug)
             throws EntityMissingException {
         Lock tmLock = lockTM(slug);
@@ -192,7 +199,7 @@ public class TranslationMemoryResourceService implements
     }
 
     @Override
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public Object deleteTranslationUnits(String slug) {
         return deleteTranslationUnitsUnguarded(slug);
     }

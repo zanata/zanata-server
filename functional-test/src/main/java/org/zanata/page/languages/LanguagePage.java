@@ -139,7 +139,7 @@ public class LanguagePage extends BasePage {
     public LanguagePage clickAddTeamMember() {
         log.info("Click Add Team Member");
         clickElement(addTeamMemberButton);
-        return this;
+        return new LanguagePage(getDriver());
     }
 
     /*
@@ -157,7 +157,7 @@ public class LanguagePage extends BasePage {
 
     private LanguagePage enterUsername(String username) {
         log.info("Enter username search {}", username);
-        readyElement(addUserSearchInput).sendKeys(username);
+        enterText(readyElement(addUserSearchInput), username);
         return new LanguagePage(getDriver());
     }
 

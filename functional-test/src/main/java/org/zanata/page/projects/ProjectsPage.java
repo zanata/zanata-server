@@ -28,6 +28,7 @@ import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
 import org.zanata.util.WebElementUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class ProjectsPage extends BasePage {
 
     private By createProjectButton = By.id("createProjectLink");
     private By mainContentDiv = By.id("main_body_content");
-    private By projectTable = By.id("main_content:form:projectList");
+    private By projectTable = By.id("form:projectList");
     private By activeCheckBox = By.xpath("//*[@data-original-title='Filter active projects']");
     private By readOnlyCheckBox = By.xpath("//*[@data-original-title='Filter read-only projects']");
 

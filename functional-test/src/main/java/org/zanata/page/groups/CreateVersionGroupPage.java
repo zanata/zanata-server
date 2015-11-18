@@ -41,9 +41,9 @@ public class CreateVersionGroupPage extends BasePage {
             "must start and end with letter or number, and contain only " +
             "letters, numbers, periods, underscores and hyphens.";
 
-    private By groupIdField = By.id("group-form:slugField:slug");
-    public By groupNameField = By.id("group-form:nameField:name");
-    private By groupDescriptionField = By.id("group-form:descriptionField:description");
+    private By groupIdField = By.id("group-form:slug:input:slug");
+    public By groupNameField = By.id("group-form:name:input:name");
+    private By groupDescriptionField = By.id("group-form:description:input:description");
     private By saveButton = By.id("group-form:group-create-new");
     private By createNewButton = By.id("group-form:group-create-new");
 
@@ -53,7 +53,7 @@ public class CreateVersionGroupPage extends BasePage {
 
     public CreateVersionGroupPage inputGroupId(String groupId) {
         log.info("Enter Group ID {}", groupId);
-        readyElement(groupIdField).sendKeys(groupId);
+        enterText(readyElement(groupIdField), groupId);
         return new CreateVersionGroupPage(getDriver());
     }
 
@@ -64,14 +64,14 @@ public class CreateVersionGroupPage extends BasePage {
 
     public CreateVersionGroupPage inputGroupName(String groupName) {
         log.info("Enter Group name {}", groupName);
-        readyElement(groupNameField).sendKeys(groupName);
+        enterText(readyElement(groupNameField), groupName);
         return new CreateVersionGroupPage(getDriver());
     }
 
     public CreateVersionGroupPage inputGroupDescription(String desc) {
         log.info("Enter Group description {}", desc);
-        readyElement(groupDescriptionField).sendKeys(desc);
-        return this;
+        enterText(readyElement(groupDescriptionField), desc);
+        return new CreateVersionGroupPage(getDriver());
     }
 
     public VersionGroupsPage saveGroup() {

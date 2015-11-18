@@ -25,20 +25,18 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.zanata.page.account.ProfilePage;
 import org.zanata.page.account.RegisterPage;
 import org.zanata.page.account.SignInPage;
 import org.zanata.page.administration.AdministrationPage;
 import org.zanata.page.dashboard.DashboardBasePage;
-import org.zanata.page.glossary.GlossaryPage;
 import org.zanata.page.groups.VersionGroupsPage;
 import org.zanata.page.languages.LanguagesPage;
 import org.zanata.page.projects.ProjectVersionsPage;
 import org.zanata.page.projects.ProjectsPage;
+import org.zanata.page.search.SearchPage;
 import org.zanata.page.utility.ContactAdminFormPage;
 import org.zanata.page.utility.HomePage;
 import org.zanata.util.WebElementUtil;
@@ -50,8 +48,6 @@ import com.google.common.collect.Iterables;
 
 import lombok.extern.slf4j.Slf4j;
 import org.zanata.workflow.BasicWorkFlow;
-
-import javax.annotation.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -116,13 +112,6 @@ public class BasePage extends CorePage {
         log.info("Click Languages");
         clickNavMenuItem(existingElement(languagesLink));
         return new LanguagesPage(getDriver());
-    }
-
-    public GlossaryPage goToGlossary() {
-        log.info("Click Glossary");
-        // Dynamically find the link, as it is not present for every user
-        clickNavMenuItem(existingElement(glossaryLink));
-        return new GlossaryPage(getDriver());
     }
 
     public AdministrationPage goToAdministration() {
@@ -246,10 +235,10 @@ public class BasePage extends CorePage {
         return new BasePage(getDriver());
     }
 
-    public ProjectsPage submitSearch() {
-        log.info("Press Enter on Project search");
+    public SearchPage submitSearch() {
+        log.info("Press Enter on Zanata search");
         existingElement(searchInput).sendKeys(Keys.ENTER);
-        return new ProjectsPage(getDriver());
+        return new SearchPage(getDriver());
     }
 
     public BasePage expectSearchListContains(final String expected) {

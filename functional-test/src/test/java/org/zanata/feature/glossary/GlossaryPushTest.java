@@ -23,14 +23,11 @@ package org.zanata.feature.glossary;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.junit.rules.TestRule;
-import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
+import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.webtrans.EditorPage;
-import org.zanata.util.SampleProjectRule;
 import org.zanata.workflow.ClientWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 
@@ -49,19 +46,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Category(DetailedTest.class)
 public class GlossaryPushTest extends ZanataTestCase {
 
-    @Rule
-    public TestRule sampleProjectRule = new SampleProjectRule();
-
     private ClientWorkFlow clientWorkFlow;
     private File projectRootPath;
     private String userConfigPath;
     private String basicUserConfigPath;
 
-    private String pushCommand = "mvn --batch-mode zanata:glossary-push " +
+    private String pushCommand = "mvn -U --batch-mode zanata:glossary-push " +
             "-Dglossary.lang=fr -Dzanata.glossaryFile=compendium_fr.po " +
             "-Dzanata.userConfig=";
 
-    private String pushCSVCommand = "mvn --batch-mode zanata:glossary-push " +
+    private String pushCSVCommand = "mvn -U --batch-mode zanata:glossary-push " +
             "-Dzanata.glossaryFile=compendium_invalid.csv -Dglossary.lang=hi " +
             "-Dzanata.userConfig=";
 

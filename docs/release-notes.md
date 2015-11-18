@@ -1,3 +1,42 @@
+## 3.8
+<h5>Infrastructure Changes</h5>
+* In wildfly or EAP standalone.xml, change all occurrences of "org.jboss.seam.security.jaas.SeamLoginModule" to "org.zanata.security.jaas.InternalLoginModule"
+* Zanata now requires JBoss EAP 6.4.2.GA or later (recommended), or WildFly version 9.x.
+* Zanata now requires a Java 1.8 virtual machine.
+
+
+<h5>Bug fixes</h5>
+* [1233524](https://bugzilla.redhat.com/show_bug.cgi?id=1233524) - Update project search page to include user
+* [1235070](https://bugzilla.redhat.com/show_bug.cgi?id=1235070) - Copied translations (using copy trans) should not be taken into account as contributions in the stats
+* [1004620](https://bugzilla.redhat.com/show_bug.cgi?id=1004620) - Import TM box should disable the Import button when no file specified
+* [1002386](https://bugzilla.redhat.com/show_bug.cgi?id=1002386) - Capitalised proper nouns in project type description
+* [1242679](https://bugzilla.redhat.com/show_bug.cgi?id=1242679) - Version entry does not update after copy version is completed
+* [1243672](https://bugzilla.redhat.com/show_bug.cgi?id=1243672) - Source refs does not shows up in editor
+* [1062476](https://bugzilla.redhat.com/show_bug.cgi?id=1062476) - User can attempt to upload an unspecified glossary file
+* [1243251](https://bugzilla.redhat.com/show_bug.cgi?id=1243251) - Project search does not sort correctly by date over multiple pages
+* [1243682](https://bugzilla.redhat.com/show_bug.cgi?id=1243682) - When uploading POT file using web UI, source comments are being ignored
+* [1243688](https://bugzilla.redhat.com/show_bug.cgi?id=1243688) - Groups filter by archived not working
+* [ZNTA-615](https://zanata.atlassian.net/browse/ZNTA-615) - Fix glossary permission
+* [ZNTA-643](https://zanata.atlassian.net/browse/ZNTA-643) - Fix concurrent map modification issue in language page
+* [ZNTA-624](https://zanata.atlassian.net/browse/ZNTA-624) - Increase password length to 1024.
+* [ZNTA-9](https://zanata.atlassian.net/browse/ZNTA-9) - Account activation message not displaying
+* [ZNTA-696](https://zanata.atlassian.net/browse/ZNTA-696) - Fix user service for null authenticated user
+* [ZNTA-634](https://zanata.atlassian.net/browse/ZNTA-634) - Users being logged out after a short period of inactivity
+* [ZNTA-719](https://zanata.atlassian.net/browse/ZNTA-719) - Translation merge targets the wrong source version
+* [ZNTA-718](https://zanata.atlassian.net/browse/ZNTA-718) - Allow admin and project maintainer to merge translation from all active projects.
+* [ZNTA-639](https://zanata.atlassian.net/browse/ZNTA-639) - Expired sessions causing ViewExpiredExceptions
+* [ZNTA-720](https://zanata.atlassian.net/browse/ZNTA-720) - Redirect to login page after account activation
+
+
+-----------------------
+
+<h5>New Features</h5>
+* [1224912] (https://bugzilla.redhat.com/show_bug.cgi?id=1224912) - Filter "Last modified by translators other than <user>"
+* [1213630](https://bugzilla.redhat.com/show_bug.cgi?id=1213630) - Webhook header needs to include cryptographic signature in header for identification
+* [1214502](https://bugzilla.redhat.com/show_bug.cgi?id=1214502) -  RFE: Grant project creation permission to certain sets of users
+* [ZNTA-108](https://zanata.atlassian.net/browse/ZNTA-108) - Improved glossary management: add, edit and delete individual glossary entries
+
+-----------------------
 ## 3.7.3
 
 <h5>Bug fixes</h5>
@@ -9,7 +48,7 @@
 
 <h5>Improvements</h5>
 * [ZNTA-653](https://zanata.atlassian.net/browse/ZNTA-653) - Include MDC values in log emails
-* [ZNTA-665](https://zanata.atlassian.net/browse/ZNTA-665) - liquibase merge addColumn changes 
+* [ZNTA-665](https://zanata.atlassian.net/browse/ZNTA-665) - liquibase merge addColumn changes
   It helps to reduce the database migration time.
 
 <h5>Bug fixes</h5>
@@ -40,11 +79,11 @@
             <property name="jboss.as.management.blocking.timeout" value="7200"/>
             ...
         </system-properties>
-      
-        
+
+
 * The Zanata administrator will also need to reindex HProject table via the Administration menu. See [Manage search](user-guide/admin/manage-search) for more information.
-    
-    
+
+
 <h5>Infrastructure Changes</h5>
 
 * Zanata now uses Infinispan as its cache provider, and the cache needs to be configured in Jboss' `standalone.xml` file. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
@@ -89,7 +128,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1229940](https://bugzilla.redhat.com/show_bug.cgi?id=1229940) - When deleting a version or project remove links and replace icon from the activity feed
 * [1230424](https://bugzilla.redhat.com/show_bug.cgi?id=1230424) - Update message "Archived" to "Deleted" in activity table
 * [1231054](https://bugzilla.redhat.com/show_bug.cgi?id=1231054) - Exception when clicking "more activity" when there is no valid "editor url"
-* [1234687](https://bugzilla.redhat.com/show_bug.cgi?id=1234687) - [REGRESSION] can not upload pot file from web UI 
+* [1234687](https://bugzilla.redhat.com/show_bug.cgi?id=1234687) - [REGRESSION] can not upload pot file from web UI
 * [1235495](https://bugzilla.redhat.com/show_bug.cgi?id=1235495) - [REGRESSION] can not upload po file from web UI
 
 -----------------------
@@ -98,7 +137,7 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1133989](https://bugzilla.redhat.com/show_bug.cgi?id=1133989) - Copy translations from existing version.
 * [1186972](https://bugzilla.redhat.com/show_bug.cgi?id=1186972) - Server-side file conversion and REST service.
     * File project type now supports XLIFF, PROPERTIES, PROPERTIES_UTF8, and GETTEXT
-* [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs 
+* [1204982](https://bugzilla.redhat.com/show_bug.cgi?id=1204982) - Documentation update for zanata.org/help + readthedocs
 * [1209670](https://bugzilla.redhat.com/show_bug.cgi?id=1209670) - Improve review statistics - approved vs translated
 * [1211134](https://bugzilla.redhat.com/show_bug.cgi?id=1211134) - Review should be enabled in editor by default
 * [1198433](https://bugzilla.redhat.com/show_bug.cgi?id=1198433) - Replace Seam Text with CommonMark Markdown
@@ -108,7 +147,9 @@ Example usage in html file: `<link rel="shortcut icon" href="#{assets['img/logo/
 * [1211849](https://bugzilla.redhat.com/show_bug.cgi?id=1211849) - Project maintainer can change project/version slug
 * [1082840](https://bugzilla.redhat.com/show_bug.cgi?id=1082840) - Project maintainer can delete a project or project version
 * [1209669](https://bugzilla.redhat.com/show_bug.cgi?id=1209669) - New REST endpoint for editor suggestions.
-*
+
+-----------------------
+
 
 ## 3.6.3
 
@@ -920,4 +961,3 @@ Zanata now requires JMS to be configured in standalone.xml in order to queue up 
 
 ## flies-1.0
 * initial release
-

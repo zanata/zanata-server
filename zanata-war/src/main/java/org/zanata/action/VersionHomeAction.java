@@ -22,6 +22,7 @@
 package org.zanata.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.DigestInputStream;
@@ -42,8 +43,9 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.faces.FacesMessages;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
+import org.zanata.exception.AuthorizationException;
 import org.jboss.seam.util.Hex;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.DocumentType;
@@ -67,6 +69,7 @@ import org.zanata.model.HRawDocument;
 import org.zanata.model.type.TranslationSourceType;
 import org.zanata.rest.StringSet;
 import org.zanata.rest.dto.extensions.ExtensionType;
+import org.zanata.rest.dto.extensions.comment.SimpleComment;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.rest.service.VirusScanner;
@@ -82,6 +85,7 @@ import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.faces.FacesMessages;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
 import org.zanata.util.FileUtil;
@@ -341,8 +345,9 @@ public class VersionHomeAction extends AbstractSortAction implements
 
         @Override
         public void onComplete() {
-            FacesMessages.instance().add(FacesMessage.SEVERITY_INFO,
-                getMessages().format("jsf.copyVersion.Completed", versionSlug));
+            getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
+                    getMessages()
+                            .format("jsf.copyVersion.Completed", versionSlug));
         }
 
         public int getProcessedDocuments() {
@@ -368,6 +373,10 @@ public class VersionHomeAction extends AbstractSortAction implements
         private CopyVersionManager getCopyVersionManager() {
             return ServiceLocator.instance().getInstance(
                     CopyVersionManager.class);
+        }
+
+        private FacesMessages getFacesMessages() {
+            return ServiceLocator.instance().getInstance(FacesMessages.class);
         }
 
         protected CopyVersionTaskHandle getHandle() {
@@ -623,8 +632,8 @@ public class VersionHomeAction extends AbstractSortAction implements
                 || getVersion().getStatus() == EntityStatus.ACTIVE;
     }
 
-    @Restrict("#{versionHomeAction.documentRemovalAllowed}")
     public void deleteDocument(Long docId) {
+        checkDocumentRemovalAllowed();
         HDocument doc = documentDAO.getById(docId);
         documentServiceImpl.makeObsolete(doc);
         resetPageData();
@@ -642,6 +651,12 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public String getFormattedDate(HDocument hdoc) {
         return DateUtil.formatShortDate(hdoc.getLastChanged());
+    }
+
+    public void checkDocumentRemovalAllowed() {
+        if (!isDocumentRemovalAllowed()) {
+            throw new AuthorizationException("Current user is not allowed to delete document");
+        }
     }
 
     public boolean isDocumentRemovalAllowed() {
@@ -703,18 +718,21 @@ public class VersionHomeAction extends AbstractSortAction implements
                         .getProject(), hLocale);
     }
 
-    private DocumentType getDocumentType(Optional<String> docType) {
+    private Optional<DocumentType> getDocumentType(Optional<String> docType) {
         DocumentType type;
         if (!docType.isPresent()) {
             // if docType null, only 1 document type available for selected file extensions
-            type = translationFileServiceImpl
-                            .getDocumentTypes(sourceFileUpload.getFileName())
-                            .iterator().next();
+            Set<DocumentType> documentTypes = translationFileServiceImpl
+                    .getDocumentTypes(sourceFileUpload.getFileName());
+            if (documentTypes.isEmpty()) {
+                return Optional.absent();
+            }
+            type = documentTypes.iterator().next();
         } else {
             // if docType not null, adapter is selected by user from drop down
             type = DocumentType.getByName(docType.get());
         }
-        return type;
+        return Optional.of(type);
     }
 
     public void uploadSourceFile() {
@@ -727,18 +745,22 @@ public class VersionHomeAction extends AbstractSortAction implements
             Optional<String> docType =
                 Optional.fromNullable(sourceFileUpload.documentType);
 
-            DocumentType documentType = getDocumentType(docType);
-
-            if (translationFileServiceImpl.hasAdapterFor(documentType)) {
-                uploadAdapterFile(documentType);
+            Optional<DocumentType> documentTypeOpt = getDocumentType(docType);
+            if (documentTypeOpt.isPresent()
+                    && translationFileServiceImpl.hasAdapterFor(documentTypeOpt
+                            .get())) {
+                uploadAdapterFile(documentTypeOpt.get());
+                resetPageData();
             } else {
+                String summary = "Unrecognized file extension for "
+                        +
+                        sourceFileUpload.getFileName();
+                // TODO this message is not displayed
                 conversationScopeMessages.setMessage(
-                        FacesMessage.SEVERITY_INFO,
-                        "Unrecognized file extension for "
-                                + sourceFileUpload.getFileName());
+                        FacesMessage.SEVERITY_INFO, summary);
+                throw new IllegalArgumentException(summary);
             }
         }
-        resetPageData();
     }
 
     public boolean isPoDocument(String docId) {
@@ -755,8 +777,8 @@ public class VersionHomeAction extends AbstractSortAction implements
     public String translationExtensionOf(String docPath, String docName) {
         return "."
             + translationFileServiceImpl.getTranslationFileExtension(
-            projectSlug,
-            versionSlug, docPath, docName);
+                projectSlug,
+                versionSlug, docPath, docName);
     }
 
     public boolean hasOriginal(String docPath, String docName) {
@@ -805,8 +827,11 @@ public class VersionHomeAction extends AbstractSortAction implements
             doc.setLang(new LocaleId(sourceFileUpload.getSourceLang()));
 
             // TODO Copy Trans values
+            StringSet extensions = new StringSet(ExtensionType.GetText.toString());
+            extensions.add(SimpleComment.ID);
+
             documentServiceImpl.saveDocument(projectSlug, versionSlug, doc,
-                    new StringSet(ExtensionType.GetText.toString()), false);
+                extensions, false);
 
             showUploadSuccessMessage();
         } catch (ZanataServiceException e) {
@@ -953,7 +978,7 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public List<DocumentType> getDocumentTypes(String fileName) {
         return Lists.newArrayList(
-            translationFileServiceImpl.getDocumentTypes(fileName));
+                translationFileServiceImpl.getDocumentTypes(fileName));
     }
 
     public void setDefaultTranslationDocType(String fileName) {
@@ -1037,6 +1062,28 @@ public class VersionHomeAction extends AbstractSortAction implements
                     translationFileUpload.getFileName() + "-" + e.getMessage());
         }
         resetPageData();
+    }
+
+    public void sourceFileUploaded(FileUploadEvent event) throws IOException {
+        UploadedFile uploadedFile = event.getUploadedFile();
+        sourceFileUpload.setFileName(uploadedFile.getName());
+        sourceFileUpload.setFileContents(uploadedFile.getInputStream());
+//        return "/iteration/view.xhtml?projectSlug=" + projectSlug +"&iterationSlug=" + versionSlug;
+
+    }
+
+    public void clearSourceFileUpload() {
+        sourceFileUpload = new SourceFileUploadHelper();
+    }
+
+    public void transFileUploaded(FileUploadEvent event) throws IOException {
+        UploadedFile uploadedFile = event.getUploadedFile();
+        translationFileUpload.setFileName(uploadedFile.getName());
+        translationFileUpload.setFileContents(uploadedFile.getInputStream());
+    }
+
+    public void clearTransFileUpload() {
+        translationFileUpload = new TranslationFileUploadHelper();
     }
 
     private class DocumentFilter extends InMemoryListFilter<HDocument> {

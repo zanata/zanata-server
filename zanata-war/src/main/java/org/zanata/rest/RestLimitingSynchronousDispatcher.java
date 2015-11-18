@@ -31,8 +31,7 @@ import org.jboss.resteasy.spi.HttpRequest;
 import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.UnhandledException;
-import org.jboss.seam.resteasy.SeamResteasyProviderFactory;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.jboss.seam.web.ServletContexts;
 import org.zanata.dao.AccountDAO;
 import org.zanata.limits.RateLimitingProcessor;
@@ -42,6 +41,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import lombok.extern.slf4j.Slf4j;
 
+import org.zanata.seam.resteasy.SeamResteasyProviderFactory;
 import org.zanata.security.SecurityFunctions;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
@@ -100,7 +100,7 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
             }
 
             if(!SecurityFunctions.canAccessRestPath(authenticatedUser,
-                request.getHttpMethod(), request.getPreprocessedPath())) {
+                request.getHttpMethod(), request.getUri().getMatchingPath())) {
 
                 /**
                  * Not using response.sendError because the app server will generate
@@ -168,7 +168,7 @@ class RestLimitingSynchronousDispatcher extends SynchronousDispatcher {
     @VisibleForTesting
     protected HAccount getAuthenticatedUser() {
         return ServiceLocator.instance().getInstance(
-                JpaIdentityStore.AUTHENTICATED_USER, HAccount.class);
+                ZanataJpaIdentityStore.AUTHENTICATED_USER, HAccount.class);
     }
 
     protected HAccount getUser(@Nonnull String apiKey) {

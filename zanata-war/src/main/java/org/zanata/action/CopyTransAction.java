@@ -21,6 +21,7 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import javax.annotation.Nonnull;
 import javax.faces.application.FacesMessage;
 
 import org.jboss.seam.ScopeType;
@@ -29,15 +30,14 @@ import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.security.Restrict;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HProjectIteration;
+import org.zanata.rest.NoSuchEntityException;
 import org.zanata.seam.scope.ConversationScopeMessages;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.service.impl.CopyTransOptionFactory;
 import org.zanata.ui.CopyAction;
 import org.zanata.util.DateUtil;
@@ -71,6 +71,12 @@ public class CopyTransAction extends CopyAction implements Serializable {
 
     @In
     private CopyTransOptionsModel copyTransOptionsModel;
+
+    @In
+    private ZanataIdentity identity;
+
+    @In
+    private org.zanata.ui.faces.FacesMessages jsfMessages;
 
     @Getter
     @Setter
@@ -108,7 +114,7 @@ public class CopyTransAction extends CopyAction implements Serializable {
 
     @Override
     public void onComplete() {
-        FacesMessages.instance().add(StatusMessage.Severity.INFO,
+        jsfMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.iteration.CopyTrans.Completed",
                         getProjectSlug(), getIterationSlug()));
     }
@@ -124,17 +130,22 @@ public class CopyTransAction extends CopyAction implements Serializable {
                 .getCopyTransProcessHandle(getProjectIteration());
     }
 
-    public HProjectIteration getProjectIteration() {
+    @Nonnull
+    private HProjectIteration getProjectIteration() {
+        // TODO share code with ProjectVersionService.retrieveAndCheckIteration?
         if (projectIteration == null) {
             projectIteration =
                     projectIterationDAO.getBySlug(projectSlug, iterationSlug);
+            if (projectIteration == null) {
+                throw new NoSuchEntityException("Project version '" + projectSlug
+                        + ":" + iterationSlug + "' not found.");
+            }
         }
         return projectIteration;
     }
 
-    @Restrict("#{s:hasPermission(copyTransAction.projectIteration, 'copy-trans')}")
-    public
-            void startCopyTrans() {
+    public void startCopyTrans() {
+        identity.checkPermission(getProjectIteration(), "copy-trans");
         if (isInProgress()) {
             return;
         } else if (getProjectIteration().getDocuments().size() <= 0) {

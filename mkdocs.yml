@@ -25,6 +25,7 @@ pages:
 - Projects:
   - Project view: 'user-guide/projects/project-view.md'
   - Creating a project: 'user-guide/projects/create-project.md'
+  - Project team: 'user-guide/projects/project-team.md'
   - Project settings: 'user-guide/projects/project-settings.md'
   - Project types: 'user-guide/projects/project-types.md'
   - Validations: 'user-guide/projects/validations.md'
@@ -78,6 +79,7 @@ pages:
 - Glossary:
   - Roles and Permissions: 'user-guide/glossary/glossary-roles-permissions.md'
   - Upload glossaries: 'user-guide/glossary/upload-glossaries.md'
+  - Add a term: 'user-guide/glossary/insert-term.md'
   - Edit glossaries: 'user-guide/glossary/edit-glossaries.md'
   - Delete glossaries: 'user-guide/glossary/delete-glossaries.md'
 # API

@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>server</artifactId>
-  <version>3.7.4-SNAPSHOT</version>
+  <version>3.8.0-SNAPSHOT</version>
   <name>Zanata server modules</name>
   <packaging>pom</packaging>
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>24</version>
+    <version>25</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -32,11 +32,40 @@
     <!-- Applies to surefire and failsafe (if enabled) -->
     <failIfNoTests>true</failIfNoTests>
 
+    <deltaspike.version>1.4.1</deltaspike.version>
+    <cdi.runtime>provided</cdi.runtime>
+    <cdi.compile>provided</cdi.compile>
+    <picketlink.version>2.5.4.SP4</picketlink.version>
+    <infinispan.version>6.0.2.Final</infinispan.version>
+    <weld.version>1.1.29.Final</weld.version>
+    <weld.se.version>${weld.version}</weld.se.version>
+    <groovy.version>2.4.5</groovy.version>
     <guava.version>18.0</guava.version>
     <gwt.version>2.6.1</gwt.version>
     <icu4j.version>50.1.1</icu4j.version>
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
     <lucene.version>3.6.2</lucene.version>
+    <org.mock-server.version>3.9.17</org.mock-server.version>
+
+    <!--
+    Version of java compiler used for building. (Specified as major.minor,
+    as used by javac -source and -target).
+    -->
+    <required.java>1.8</required.java>
+    <!--
+      Version of Java used for runtime (major.minor) and for bytecode
+      generation. Should correspond with animal.sniffer.signature.
+    -->
+    <!-- NB: When changing this, be sure to update the rpm's spec file to match -->
+    <required.jvm>1.8</required.jvm>
+    <!--
+      Version of Java used for API compatibility checking. Should
+      correspond with required.jvm.
+    -->
+    <animal.sniffer.signature>java18</animal.sniffer.signature>
+
+    <!-- Not currently working for Java 1.8: https://github.com/mojohaus/animal-sniffer/issues/1 -->
+    <animal.sniffer.skip>true</animal.sniffer.skip>
 
     <!--
     Not used yet.
@@ -54,12 +83,12 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
-    <zanata.assets.version>7.3</zanata.assets.version>
-    <zanata.api.version>3.7.3</zanata.api.version>
+    <zanata.assets.version>8.0.5</zanata.assets.version>
+    <zanata.api.version>3.9.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
-    <zanata.client.version>3.7.4</zanata.client.version>
-    <zanata.common.version>3.7.3</zanata.common.version>
+    <zanata.client.version>3.8.0</zanata.client.version>
+    <zanata.common.version>3.8.0</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
 
@@ -80,7 +109,7 @@
      http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
      -->
     <!-- 4.4.5.Final is not in Central -->
-    <hibernate.search.version>4.4.4.Final</hibernate.search.version>
+    <hibernate.search.version>4.4.6.Final</hibernate.search.version>
     <hibernate.entitymanager.version>${hibernate.version}</hibernate.entitymanager.version>
     <war_bundles_jsf_impl>false</war_bundles_jsf_impl>
     <hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
@@ -96,7 +125,7 @@
     <jdbc.version>5.1.26</jdbc.version>
 
     <resteasy.scope>compile</resteasy.scope>
-    <resteasy.version>2.3.7.Final</resteasy.version>
+    <resteasy.version>3.0.11.Final</resteasy.version>
 
     <cargo.extract.dir>${project.build.directory}/cargo/installs</cargo.extract.dir>
     <!-- This URL must be set by a profile (wildfly), settings.xml or mvn command line -->
@@ -108,6 +137,77 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <!-- See https://issues.jboss.org/browse/WFK2-674
+ For some warnings in the console. It happens when deltaspike-jsf
+ doesn't run against jsf 2.1 (eap) -->
+      <dependency>
+        <groupId>org.apache.deltaspike.core</groupId>
+        <artifactId>deltaspike-core-api</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.core</groupId>
+        <artifactId>deltaspike-core-impl</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-servlet-module-api</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-servlet-module-impl</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-jsf-module-api</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-jsf-module-impl</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-security-module-api</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-security-module-impl</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-jpa-module-api</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.deltaspike.modules</groupId>
+        <artifactId>deltaspike-jpa-module-impl</artifactId>
+        <version>${deltaspike.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
 
       <dependency>
         <groupId>org.jboss.shrinkwrap</groupId>
@@ -134,6 +234,44 @@
       </dependency>
 
       <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-api</artifactId>
+        <version>${picketlink.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-impl</artifactId>
+        <version>${picketlink.version}</version>
+        <scope>${cdi.runtime}</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.picketlink</groupId>
+        <artifactId>picketlink-idm-api</artifactId>
+        <version>${picketlink.version}</version>
+        <scope>${cdi.compile}</scope>
+      </dependency>
+      <!--<dependency>-->
+      <!--<groupId>org.picketlink</groupId>-->
+      <!--<artifactId>picketlink-deltaspike</artifactId>-->
+      <!--<version>${picketlink.version}</version>-->
+      <!--<scope>${cdi.compile}</scope>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+      <!--<groupId>org.picketlink</groupId>-->
+      <!--<artifactId>picketlink-social</artifactId>-->
+      <!--<version>${picketlink.version}</version>-->
+      <!--<scope>${cdi.compile}</scope>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+      <!--<groupId>org.picketlink</groupId>-->
+      <!--<artifactId>picketlink-web</artifactId>-->
+      <!--<version>2.0.3.Final</version>-->
+      <!--<scope>provided</scope>-->
+      <!--</dependency>-->
+
+      <dependency>
         <groupId>org.richfaces</groupId>
         <artifactId>richfaces</artifactId>
         <version>${richfaces.version}</version>
@@ -143,6 +281,13 @@
             <artifactId>jboss-el-api_3.0_spec</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -184,6 +329,12 @@
         <artifactId>jsf-impl</artifactId>
         <version>2.1.28</version>
         <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.xml.fastinfoset</groupId>
+        <artifactId>FastInfoset</artifactId>
+        <version>1.2.12</version>
       </dependency>
 
       <dependency>
@@ -247,6 +398,12 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -378,6 +535,36 @@
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.jglue.cdi-unit</groupId>
+        <artifactId>cdi-unit</artifactId>
+        <version>3.1.2</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <version>${weld.se.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
       <!-- Liquibase Dependencies -->
       <!-- If the Liquibase version is being updated, please refer to
       any changelog files that run 'on change' and make sure that they still run
@@ -437,6 +624,11 @@
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
           </exclusion>
+          <!-- Need to exclude jersey from api, getHeader method is not available in jersey jaxrs -->
+          <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -493,6 +685,12 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-adapter-xliff</artifactId>
         <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jsr173_api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- zanata client -->
@@ -1033,7 +1231,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.2</version>
+        <version>2.8.1</version>
       </dependency>
       <dependency>
         <groupId>org.fedorahosted.tennera</groupId>
@@ -1243,14 +1441,11 @@
 
                 <!-- use org.jboss.spec.javax.annotation:jboss-annotations-api_1.1_spec -->
                 <exclude>org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec</exclude>
+
+                <!-- use jdk and javax.xml.stream:stax-api -->
+                <exclude>javax.xml.bind:jsr173_api</exclude>
               </excludes>
             </bannedDependencies>
-            <enforceBytecodeVersion>
-              <ignoredScopes>
-                <!-- Newer bytecode is allowed for system:jdk-tools and similar -->
-                <ignoredScope>system</ignoredScope>
-              </ignoredScopes>
-            </enforceBytecodeVersion>
             <requireNoRepositories>
               <allowedRepositories combine.children="append">
                 <allowedRepository>jboss-public-repository-group</allowedRepository>
@@ -1282,8 +1477,10 @@
                 <echo message="cargo.installation=${cargo.installation}" />
                 <echo message="appserver.home=${appserver.home}" />
                 <echo message="DISPLAY=${env.DISPLAY}" />
-                <echo message="WARNING: 'appserver' property must be set unless skipping integration tests" unless:set="appserver" />
-                <echo message="WARNING: 'cargo.installation' property is null. You might need to set the env var EAP6_URL" unless:set="cargo.installation" />
+                <echo message="WARNING: 'appserver' property must be set unless skipping integration tests"
+                  unless:set="appserver" />
+                <echo message="WARNING: 'cargo.installation' property is null.  You might need to set the env var EAP6_URL"
+                  unless:set="cargo.installation" />
               </target>
             </configuration>
           </execution>
@@ -1347,7 +1544,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>cobertura-maven-plugin</artifactId>
-          <version>2.6</version>
+          <version>2.7</version>
           <configuration>
             <formats>
               <format>xml</format>
@@ -1483,7 +1680,7 @@
               <dependency>
                 <groupId>sun.jdk</groupId>
                 <artifactId>tools</artifactId>
-                <version>1.6</version>
+                <version>${required.jvm}</version>
                 <scope>system</scope>
                 <systemPath>${java.home}/../lib/tools.jar</systemPath>
               </dependency>
@@ -1522,10 +1719,10 @@
         <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
-        <wildfly.version>9.0.0.CR2</wildfly.version>
+        <wildfly.version>9.0.1.Final</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
-        <cargo.installation>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</cargo.installation>
+        <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>
 
         <!-- Versions of our compatibility modules for wildfly -->
         <module.wildfly.version>8.1.0.Final</module.wildfly.version>
@@ -1571,7 +1768,7 @@
           <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.1</version>
+            <version>1.0-SP4</version>
             <exclusions>
               <exclusion>
                 <groupId>javax.annotation</groupId>

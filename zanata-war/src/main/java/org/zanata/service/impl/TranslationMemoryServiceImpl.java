@@ -21,9 +21,13 @@
 
 package org.zanata.service.impl;
 
-import java.util.*;
+import static com.google.common.collect.Collections2.filter;
+
+import javax.enterprise.inject.Alternative;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
@@ -49,7 +53,9 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.hibernate.search.IndexFieldLabels;
 import org.zanata.hibernate.search.TextContainerAnalyzerDiscriminator;
+import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
+import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
@@ -68,20 +74,28 @@ import org.zanata.webtrans.shared.model.TransMemoryDetails;
 import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
 import org.zanata.webtrans.shared.rpc.HasSearchType;
+
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-import static com.google.common.collect.Collections2.filter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
+@Alternative
 @Name("translationMemoryServiceImpl")
 @Scope(ScopeType.STATELESS)
 @Slf4j
@@ -89,6 +103,27 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
     private static final int SEARCH_MAX_RESULTS = SysProperties.getInt(
             SysProperties.TM_MAX_RESULTS, 20);
+
+    private static final float BOOST_CONTENT = SysProperties.getFloat(
+            SysProperties.TM_BOOST_CONTENT, 10.0f);
+
+    private static final float BOOST_TFTID = SysProperties.getFloat(
+            SysProperties.TM_BOOST_TFTID, 10.0f);
+
+    private static final float BOOST_PROJECT = SysProperties.getFloat(
+            SysProperties.TM_BOOST_PROJECT, 2.0f);
+
+    private static final float BOOST_DOCID = SysProperties.getFloat(
+            SysProperties.TM_BOOST_DOCID, 1.5f);
+
+    private static final float BOOST_RESID = SysProperties.getFloat(
+            SysProperties.TM_BOOST_RESID, 1.5f);
+
+    private static final float BOOST_ITERATION = SysProperties.getFloat(
+            SysProperties.TM_BOOST_ITERATION, 1.0f);
+
+//    private static final float BOOST_PROJITERSLUG = SysProperties.getFloat(
+//            SysProperties.TM_BOOST_PROJITERSLUG, 1.5f);
 
     @In
     private FullTextEntityManager entityManager;
@@ -157,7 +192,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         Collection<Object[]> matches =
                 findMatchingTranslation(targetLocaleId, sourceLocaleId, query,
-                        0, HTextFlowTarget.class);
+                        0, Optional.<Long>absent(), HTextFlowTarget.class);
 
         if (matches.isEmpty()) {
             return Optional.<HTextFlowTarget> absent();
@@ -207,10 +242,14 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
     public List<TransMemoryResultItem> searchTransMemory(
             LocaleId targetLocaleId, LocaleId sourceLocaleId,
             TransMemoryQuery transMemoryQuery) {
-
+        // NB: If we want to, we could pass the TFT id from the editor
+        // via GWT-RPC(TransMemoryQuery), allowing Lucene to rank results
+        // by metadata too.
+        Optional<Long> textFlowTargetId = Optional.absent();
         Collection<Object[]> matches =
                 findMatchingTranslation(targetLocaleId, sourceLocaleId,
                         transMemoryQuery, SEARCH_MAX_RESULTS,
+                        textFlowTargetId,
                         HTextFlowTarget.class, TransMemoryUnit.class);
 
         Map<TMKey, TransMemoryResultItem> matchesMap =
@@ -228,8 +267,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
     @Override
     public List<Suggestion> searchTransMemoryWithDetails(
             LocaleId targetLocaleId, LocaleId sourceLocaleId,
-            TransMemoryQuery transMemoryQuery) {
-        return new QueryMatchProcessor(transMemoryQuery, sourceLocaleId, targetLocaleId)
+            TransMemoryQuery transMemoryQuery, Optional<Long> textFlowTargetId) {
+        return new QueryMatchProcessor(transMemoryQuery, sourceLocaleId, targetLocaleId, textFlowTargetId)
                 .process();
     }
 
@@ -277,6 +316,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
     private Collection<Object[]> findMatchingTranslation(
             LocaleId targetLocaleId, LocaleId sourceLocaleId,
             TransMemoryQuery transMemoryQuery, int maxResults,
+            Optional<Long> textFlowTargetId,
             @Nonnull Class<?>... entityTypes) {
         try {
             if (entityTypes.length == 0) {
@@ -285,7 +325,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             }
             List<Object[]> matches =
                     getSearchResult(transMemoryQuery, sourceLocaleId,
-                            targetLocaleId, maxResults, entityTypes);
+                            targetLocaleId, maxResults, textFlowTargetId, entityTypes);
 
             // filter out invalid target
             // TODO filter by entityTypes as well
@@ -498,6 +538,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
     private List<Object[]> getSearchResult(TransMemoryQuery query,
             LocaleId sourceLocale, LocaleId targetLocale, int maxResult,
+            Optional<Long> textFlowTargetId,
             Class<?>... entities) throws ParseException {
         String queryText = null;
         String[] multiQueryText = null;
@@ -553,8 +594,10 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         // Use the TextFlowTarget index
         Query textQuery =
-                generateQuery(query, sourceLocale, targetLocale, queryText,
+                generateQuery(query, sourceLocale, targetLocale, textFlowTargetId, queryText,
                         multiQueryText, IndexFieldLabels.TF_CONTENT_FIELDS);
+
+        log.info("Executing Lucene query: {}", textQuery.toString());
 
         log.info("Executing Lucene query: {}", textQuery.toString());
 
@@ -610,10 +653,11 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
      * @throws ParseException
      */
     private Query generateQuery(TransMemoryQuery query, LocaleId sourceLocale,
-            LocaleId targetLocale, String queryText, String[] multiQueryText,
+            LocaleId targetLocale, Optional<Long> textFlowTargetId, String queryText, String[] multiQueryText,
             String srcContentFields[]) throws ParseException {
         Query textFlowTargetQuery =
                 generateTextFlowTargetQuery(query, sourceLocale, targetLocale,
+                        textFlowTargetId,
                         queryText, multiQueryText, srcContentFields);
         if (query.getSearchType() == HasSearchType.SearchType.CONTENT_HASH) {
             return textFlowTargetQuery;
@@ -644,7 +688,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
      * @throws ParseException
      */
     private Query generateTextFlowTargetQuery(TransMemoryQuery queryParams,
-            LocaleId sourceLocale, LocaleId targetLocale, String queryText,
+            LocaleId sourceLocale, LocaleId targetLocale,
+            Optional<Long> textFlowTargetId, String queryText,
             String[] multiQueryText, String[] srcContentFields)
             throws ParseException {
         BooleanQuery query = new BooleanQuery();
@@ -652,7 +697,34 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         Query contentQuery =
                 buildContentQuery(queryParams, sourceLocale, queryText,
                         multiQueryText, srcContentFields);
+        contentQuery.setBoost(BOOST_CONTENT);
         query.add(contentQuery, BooleanClause.Occur.MUST);
+
+        if (textFlowTargetId.isPresent()) {
+
+            HTextFlowTarget tft =
+                    entityManager.find(HTextFlowTarget.class, textFlowTargetId.get());
+            if (tft != null) {
+                HTextFlow tf = tft.getTextFlow();
+                HDocument doc = tf.getDocument();
+                HProjectIteration iter = doc.getProjectIteration();
+                HProject proj = iter.getProject();
+
+                addTermQueryWithBoost(query, "id", String.valueOf(textFlowTargetId),
+                        BOOST_TFTID);
+                addTermQueryWithBoost(query, "project", proj.getSlug(), BOOST_PROJECT);
+                addTermQueryWithBoost(query, "documentId", doc.getDocId(), BOOST_DOCID);
+                addTermQueryWithBoost(query, "textFlow.resId", tf.getResId(), BOOST_RESID);
+                addTermQueryWithBoost(query, "iteration", iter.getSlug(), BOOST_ITERATION);
+
+                // TODO add projiterslug to the index, replacing iteration slug
+//                String projIterSlug = proj.getSlug()+iter.getSlug();
+//                addTermQueryWithBoost(query, "projIterSlug", projIterSlug, BOOST_PROJITERSLUG);
+            } else {
+                log.warn("Ignoring invalid textFlowTargetId: {}",
+                        textFlowTargetId);
+            }
+        }
 
         TermQuery localeQuery =
                 new TermQuery(new Term(IndexFieldLabels.LOCALE_ID_FIELD,
@@ -675,6 +747,12 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         query.add(rejectedStateQuery, BooleanClause.Occur.MUST_NOT);
 
         return query;
+    }
+
+    private static void addTermQueryWithBoost(BooleanQuery query, String fld, String txt, float boost) {
+        TermQuery q = new TermQuery(new Term(fld, txt));
+        q.setBoost(boost);
+        query.add(q, BooleanClause.Occur.SHOULD);
     }
 
     /**
@@ -898,13 +976,16 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         private final TransMemoryQuery query;
         private final LocaleId srcLocale;
         private final LocaleId transLocale;
+        private final Optional<Long> textFlowTargetId;
         private final Map<TMKey, Suggestion> suggestions;
         private boolean processed;
 
-        public QueryMatchProcessor(TransMemoryQuery query, LocaleId srcLocale, LocaleId transLocale) {
+        public QueryMatchProcessor(TransMemoryQuery query, LocaleId srcLocale,
+                LocaleId transLocale, Optional<Long> textFlowTargetId) {
             this.query = query;
             this.srcLocale = srcLocale;
             this.transLocale = transLocale;
+            this.textFlowTargetId = textFlowTargetId;
             suggestions = new HashMap<>();
             processed = false;
         }
@@ -961,6 +1042,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         private Collection<Object[]> runQuery() {
             return findMatchingTranslation(transLocale, srcLocale, query,
                     SEARCH_MAX_RESULTS,
+                    textFlowTargetId,
                     HTextFlowTarget.class, TransMemoryUnit.class);
         }
 

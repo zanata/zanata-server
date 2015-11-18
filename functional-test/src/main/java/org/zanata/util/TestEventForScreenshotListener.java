@@ -67,11 +67,16 @@ public class TestEventForScreenshotListener extends AbstractWebDriverEventListen
         File testIDDir = null;
         try {
             testIDDir = ScreenshotDirForTest.screenshotForTest(testId);
-            testIDDir.mkdirs();
+            if (!testIDDir.exists()) {
+                log.info("Creating screenshot dir {}", testIDDir.getAbsolutePath());
+                assert (testIDDir.mkdirs());
+            }
             File screenshotFile =
                     ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String filename = generateFileName(ofType);
+            log.info("Screenshot: {}", filename);
             FileUtils.copyFile(screenshotFile,
-                new File(testIDDir, generateFileName(ofType)));
+                new File(testIDDir, filename));
 
         } catch (WebDriverException wde) {
             throw new RuntimeException("[Screenshot]: Invalid WebDriver: "
@@ -125,6 +130,10 @@ public class TestEventForScreenshotListener extends AbstractWebDriverEventListen
         } catch (Throwable all) {
             log.error("error creating screenshot on exception");
         }
+    }
+
+    public void customEvent(final String tag) {
+        createScreenshot(tag);
     }
 
 }

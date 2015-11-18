@@ -4,11 +4,12 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>server</artifactId>
-    <version>3.7.4-SNAPSHOT</version>
+    <version>3.8.0-SNAPSHOT</version>
   </parent>
   <artifactId>zanata-war</artifactId>
   <packaging>war</packaging>
   <name>Zanata web application</name>
+  <description>Zanata translation platform</description>
 
   <!-- Should be the same as zanata-server/pom.xml -->
   <scm>
@@ -35,8 +36,10 @@
     <!--this will get set by maven dependency:properties goal and be used in gwt-maven-plugin-->
     <lombok.lib>${org.projectlombok:lombok:jar}</lombok.lib>
 
-    <groovy.version>2.1.5</groovy.version>
+    <!-- TODO check whether this is still used anywhere -->
     <zanata.web.assets.version>7</zanata.web.assets.version>
+    <jboss.as.standalone.version>7.5.0</jboss.as.standalone.version>
+    <rpm.name>${project.build.finalName}</rpm.name>
 
     <as7.skip.deploy.marker>${jboss.home}/standalone/deployments/zanata.war.skipdeploy</as7.skip.deploy.marker>
     <as7.dodeploy.marker>${jboss.home}/standalone/deployments/zanata.war.dodeploy</as7.dodeploy.marker>
@@ -58,6 +61,22 @@
         </includes>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>testProp.properties</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>testProp.properties</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
 
     <plugins>
       <plugin>
@@ -140,7 +159,6 @@
             <usedDependency>com.google.guava:guava-gwt</usedDependency>
             <!-- Used for StringUtils lib -->
             <!-- Needed by ui rendering at runtime -->
-            <usedDependency>org.jboss.spec.javax.el:jboss-el-api_2.2_spec</usedDependency>
             <usedDependency>javax.servlet.jsp:jsp-api</usedDependency>
             <!-- Used for different content analyzers based on langugage for search. -->
             <usedDependency>org.apache.solr:solr-core</usedDependency>
@@ -154,8 +172,6 @@
             <usedDependency>org.hibernate:hibernate-testing</usedDependency>
             <usedDependency>org.jboss.arquillian.junit:arquillian-junit-container</usedDependency>
             <usedDependency>org.jboss.arquillian.protocol:arquillian-protocol-servlet</usedDependency>
-            <!-- Used by JSON (RestEasy) -->
-            <usedDependency>org.jboss.resteasy:resteasy-jackson-provider</usedDependency>
             <usedDependency>org.codehaus.jackson:jackson-xc</usedDependency>
             <!-- Used in arquillian test - zanata-war/arquillian/components.properties -->
             <usedDependency>org.jboss.seam:jboss-seam-debug</usedDependency>
@@ -1170,6 +1186,7 @@
           <version>${jboss.as.version}</version>
           <scope>test</scope>
         </dependency>
+
       </dependencies>
     </profile>
 
@@ -1247,6 +1264,83 @@
       </dependencies>
     </profile>
 
+    <profile>
+      <id>rpm</id>
+      <activation>
+        <property>
+          <name>rpm</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>rpm-maven-plugin</artifactId>
+            <version>2.1.3</version>
+            <executions>
+              <execution>
+                <id>attach-rpm</id>
+                <goals>
+                  <goal>attached-rpm</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <name>${rpm.name}</name>
+              <group>Applications/Text</group>
+              <license>GNU Lesser General Public License v2.1</license>
+
+              <!-- Make the rpm compatible with RHEL 5 -->
+              <defineStatements>
+                <defineStatement>_source_filedigest_algorithm md5</defineStatement>
+                <defineStatement>_binary_filedigest_algorithm md5</defineStatement>
+                <defineStatement>_source_payload w9.gzdio</defineStatement>
+                <defineStatement>_binary_payload w9.gzdio</defineStatement>
+              </defineStatements>
+
+              <defaultUsername>jboss</defaultUsername>
+              <defaultGroupname>jboss</defaultGroupname>
+              <defaultDirmode>755</defaultDirmode>
+              <defaultFilemode>644</defaultFilemode>
+              <mappings>
+                <mapping>
+                  <directory>/usr/share/webapps/${rpm.name}/${rpm.name}-${project.version}.war/</directory>
+                  <sources>
+                    <source>
+                      <location>target/${project.build.finalName}</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/usr/share/webapps/${rpm.name}/</directory>
+                  <sources>
+                    <softlinkSource>
+                      <location>${rpm.name}-${project.version}.war</location>
+                      <destination>${rpm.name}.war</destination>
+                    </softlinkSource>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/var/lib/${rpm.name}/</directory>
+                </mapping>
+                <mapping>
+                  <directory>/var/lib/${rpm.name}/index/</directory>
+                </mapping>
+                <mapping>
+                  <directory>/var/lib/${rpm.name}/stats/</directory>
+                </mapping>
+              </mappings>
+              <autoProvides>false</autoProvides>
+              <autoRequires>false</autoRequires>
+              <requires>
+                <require>java &gt;= 1:${required.java}</require>
+                <require>jbossas-standalone &gt;= ${jboss.as.standalone.version}</require>
+              </requires>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <dependencies>
@@ -1280,6 +1374,26 @@
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.jodah</groupId>
+      <artifactId>concurrentunit</artifactId>
+      <version>0.4.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jglue.cdi-unit</groupId>
+      <artifactId>cdi-unit</artifactId>
+      <version>3.1.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.weld.se</groupId>
+          <artifactId>weld-se-core</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -1372,6 +1486,18 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jglue.cdi-unit</groupId>
+      <artifactId>cdi-unit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>20090211</version>
@@ -1409,10 +1535,6 @@
 
     <!-- RestEasy dependencies -->
 
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam-resteasy</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
@@ -1455,6 +1577,10 @@
       <artifactId>resteasy-multipart-provider</artifactId>
       <scope>${resteasy.scope}</scope>
       <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
@@ -1599,7 +1725,7 @@
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
-      <version>2.5.1</version>
+      <version>2.6.11</version>
     </dependency>
 
     <dependency>
@@ -1705,6 +1831,12 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -2139,6 +2271,50 @@
       <version>1.1</version>
     </dependency>
 
+    <!-- See https://issues.jboss.org/browse/WFK2-674
+ For some warnings in the console. It happens when deltaspike-jsf
+ doesn't run against jsf 2.1 (eap) -->
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-servlet-module-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-servlet-module-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jsf-module-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jsf-module-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-security-module-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-security-module-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jpa-module-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.modules</groupId>
+      <artifactId>deltaspike-jpa-module-impl</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.ocpsoft.prettytime</groupId>
       <artifactId>prettytime</artifactId>
@@ -2148,18 +2324,10 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.2.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.2.5</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- openid4java -->
@@ -2187,9 +2355,24 @@
     </dependency>
 
     <dependency>
+      <groupId>org.picketlink</groupId>
+      <artifactId>picketlink-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.picketlink</groupId>
+      <artifactId>picketlink-impl</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>commonmark</artifactId>
-      <version>0.19.0</version>
+      <version>0.20.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>google-caja</artifactId>
+      <version>5669.0.0</version>
     </dependency>
 
     <dependency>
@@ -2201,7 +2384,7 @@
     <dependency>
       <groupId>se.jiderhamn</groupId>
       <artifactId>classloader-leak-prevention</artifactId>
-      <version>1.12.0</version>
+      <version>1.15.1</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
@@ -2369,11 +2552,17 @@
 
     <!-- end of GWT related dependencies -->
 
-    <!-- Updated rhino for javax.script API (access by engine name "rhino17R5") -->
     <dependency>
-      <groupId>de.christophkraemer</groupId>
-      <artifactId>rhino-script-engine</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.scannotation</groupId>
+      <artifactId>scannotation</artifactId>
+      <version>1.0.3</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javassist</groupId>
+          <artifactId>javassist</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>

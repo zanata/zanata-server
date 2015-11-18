@@ -20,12 +20,10 @@
  */
 package org.zanata.page.administration;
 
-import com.google.common.base.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.zanata.page.BasePage;
 
@@ -36,20 +34,20 @@ import org.zanata.page.BasePage;
 @Slf4j
 public class ServerConfigurationPage extends BasePage {
 
-    private By urlField = By.id("serverConfigForm:urlField:url");
-    public static By registerUrlField = By.id("serverConfigForm:registerField:registerUrl");
+    private By urlField = By.id("serverConfigForm:url:input:url");
+    public static By registerUrlField = By.id("serverConfigForm:register:input:registerUrl");
     private By emailDomainField = By.id("serverConfigForm:emailDomainField:emailDomain");
-    private By adminEmailField = By.id("serverConfigForm:adminEmailField:adminEml");
-    public static By fromEmailField = By.id("serverConfigForm:fromEmailField:fromEml");
+    private By adminEmailField = By.id("serverConfigForm:adminEmail:input:adminEml");
+    public static By fromEmailField = By.id("serverConfigForm:fromEmail:input:fromEml");
     private By enableLogCheck = By.id("serverConfigForm:enableLogCheck");
     private By logLevelSelect = By.id("serverConfigForm:logEmailLvl");
-    private By emailDestinationField = By.id("serverConfigForm:logDestEmailField:logDestEml");
-    private By helpUrlField = By.id("serverConfigForm:helpUrlField");
-    private By termsUrlField = By.id("serverConfigForm:termsOfUseUrlField");
-    private By piwikUrl = By.id("serverConfigForm:piwikUrlField:piwikUrlEml");
+    private By emailDestinationField = By.id("serverConfigForm:logDestEmail:input:logDestEml");
+    private By helpUrlField = By.id("serverConfigForm:helpUrl:input:helpInput");
+    private By termsUrlField = By.id("serverConfigForm:termsOfUseUrl:input:termsOfUseUrlEml");
+    private By piwikUrl = By.id("serverConfigForm:piwikUrl:input:piwikUrlEml");
     private By piwikId = By.id("serverConfigForm:piwikIdSiteEml");
-    private By maxConcurrentField = By.id("serverConfigForm:maxConcurrentPerApiKeyField:maxConcurrentPerApiKeyEml");
-    private By maxActiveField = By.id("serverConfigForm:maxActiveRequestsPerApiKeyField:maxActiveRequestsPerApiKeyEml");
+    private By maxConcurrentField = By.id("serverConfigForm:maxConcurrentPerApiKey:input:maxConcurrentPerApiKeyEml");
+    private By maxActiveField = By.id("serverConfigForm:maxActiveRequestsPerApiKey:input:maxActiveRequestsPerApiKeyEml");
     private By saveButton = By.id("serverConfigForm:save");
 
     public ServerConfigurationPage(WebDriver driver) {
@@ -57,13 +55,8 @@ public class ServerConfigurationPage extends BasePage {
     }
 
     private void enterTextConfigField(By by, String text) {
-        scrollIntoView(readyElement(by));
-        waitForNotificationsGone();
-        new Actions(getDriver()).moveToElement(readyElement(by))
-                .click()
-                .sendKeys(Keys.chord(Keys.CONTROL, "a"))
-                .sendKeys(Keys.DELETE)
-                .sendKeys(text).perform();
+        enterText(readyElement(by), text);
+        expectFieldValue(by, text);
     }
 
     public ServerConfigurationPage inputServerURL(String url) {
@@ -79,15 +72,9 @@ public class ServerConfigurationPage extends BasePage {
     }
 
     public boolean expectFieldValue(final By by, final String expectedValue) {
-        log.info("Wait for field {} value", by.toString(), expectedValue);
-        return waitForAMoment().until(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver input) {
-                String value = existingElement(by).getAttribute("value");
-                log.info("Found {}", value);
-                return expectedValue.equals(value);
-            }
-        });
+        log.info("Wait for field {} value {}", by.toString(), expectedValue);
+        return waitForAMoment().withMessage("text present: " + by.toString()).until(
+                ExpectedConditions.textToBePresentInElementValue(existingElement(by), expectedValue));
     }
 
     public ServerConfigurationPage inputAdminEmail(String email) {
@@ -169,7 +156,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxConcurrent(int max) {
         log.info("Enter maximum concurrent API requests {}", max);
         readyElement(maxConcurrentField).clear();
-        readyElement(maxConcurrentField).sendKeys(max + "");
+        enterText(readyElement(maxConcurrentField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
@@ -181,7 +168,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxActive(int max) {
         log.info("Enter maximum active API requests {}", max);
         readyElement(maxActiveField).clear();
-        readyElement(maxActiveField).sendKeys(max + "");
+        enterText(readyElement(maxActiveField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 

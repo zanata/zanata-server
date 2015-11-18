@@ -26,15 +26,17 @@
               <span class="is-invisible">#{msgs['jsf.dashboard.projects.maintainedProjects.label']}</span>
             </a>
           </li>
-          <li class="tab__end">
-            <a href="#" jsfc="s:link"
-              id="create-project-link"
-              view="/project/create_project.xhtml"
-              title="#{msgs['jsf.dashboard.projects.createNewProject.label']}">
-              <i aria-hidden="true" class="i i--plus i i--large"></i>
-              <span class="is-invisible">#{msgs['jsf.dashboard.projects.newProject.label']}</span>
-            </a>
-          </li>
+          <ui:fragment rendered="#{identity.hasPermission(projectHome.instance, 'insert')}">
+            <li class="tab__end">
+              <a href="#" jsfc="s:link"
+                id="create-project-link"
+                view="/project/create_project.xhtml"
+                title="#{msgs['jsf.dashboard.projects.createNewProject.label']}">
+                <i aria-hidden="true" class="i i--plus i i--large"></i>
+                <span class="is-invisible">#{msgs['jsf.dashboard.projects.newProject.label']}</span>
+              </a>
+            </li>
+          </ui:fragment>
         </ul>
       </nav>
       <div class="tabs__content">
@@ -73,23 +75,23 @@
                       </li>
                       <ui:repeat value="#{project.projectIterations}" var="version">
                         <li class="txt--nowrap">
-                          <s:link view="/iteration/view.xhtml" propagation="none">
+                          <h:link outcome="/iteration/view.xhtml">
                             <f:param name="projectSlug" value="#{project.slug}"/>
                             <f:param name="iterationSlug" value="#{version.slug}"/>
                             <zanata:version-label version="#{version}"/>
-                          </s:link>
+                          </h:link>
                         </li>
                       </ui:repeat>
                       <li>
-                        <s:link view="/project/project.xhtml" propagation="none">
+                        <h:link outcome="/project/project.xhtml">
                           <f:param name="slug" value="#{project.slug}"/>
                           <h:outputText value="#{msgs['jsf.dashboard.projects.allVersions.label']}"/>
-                        </s:link>
+                        </h:link>
                       </li>
                     </ul>
                   </div>
                 </div>
-                <s:link view="/project/project.xhtml" propagation="none">
+                <h:link outcome="/project/project.xhtml">
                   <f:param name="slug" value="#{project.slug}"/>
                   <div class="list__item__content">
                     <div class="list__item__info">
@@ -103,7 +105,7 @@
                       </span>
                     </div>
                   </div>
-                </s:link>
+                </h:link>
               </li>
             </ui:repeat>
           </ul>

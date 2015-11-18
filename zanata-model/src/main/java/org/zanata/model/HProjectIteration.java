@@ -20,9 +20,9 @@
  */
 package org.zanata.model;
 
-import static org.jboss.seam.security.EntityAction.DELETE;
-import static org.jboss.seam.security.EntityAction.INSERT;
-import static org.jboss.seam.security.EntityAction.UPDATE;
+import static org.zanata.security.EntityAction.DELETE;
+import static org.zanata.security.EntityAction.INSERT;
+import static org.zanata.security.EntityAction.UPDATE;
 
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +48,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -62,7 +63,6 @@ import org.hibernate.annotations.Where;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
-import org.jboss.seam.annotations.security.Restrict;
 import org.zanata.annotation.EntityRestrict;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
@@ -78,13 +78,13 @@ import com.google.common.collect.Sets;
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @TypeDef(name = "entityStatus", typeClass = EntityStatusType.class)
-@Restrict
 @EntityRestrict({ INSERT, UPDATE, DELETE })
 @Indexed
 @Access(AccessType.FIELD)
 @Setter
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true, of = {})
 @ToString(callSuper = true, of = { "project" })
 public class HProjectIteration extends SlugEntityBase implements
         Iterable<DocumentWithId>, HasEntityStatus, IsEntityWithType,

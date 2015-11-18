@@ -50,6 +50,7 @@ import javax.naming.LinkRef;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletContext;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -84,9 +86,9 @@ import org.zanata.util.VersionUtility;
 @Slf4j
 public class ZanataInit {
     private static final DefaultArtifactVersion MIN_EAP_VERSION =
-            new DefaultArtifactVersion("6.4.0.GA");
+            new DefaultArtifactVersion("6.4.2.GA");
     private static final DefaultArtifactVersion MIN_WILDFLY_VERSION =
-            new DefaultArtifactVersion("9.0.0.CR1");
+            new DefaultArtifactVersion("9.0.1.Final");
 
 
     static {
@@ -106,6 +108,9 @@ public class ZanataInit {
 
     @In("event")
     private Event<ServerStarted> startupEvent;
+
+    @In
+    private EntityManagerFactory entityManagerFactory;
 
     @Observer("org.jboss.seam.postInitialization")
     public void initZanata() throws Exception {
@@ -178,6 +183,13 @@ public class ZanataInit {
 
         log.info("Started Zanata...");
     }
+
+    @Destroy
+    private void destroy() {
+        // Tell Hibernate Search to clean up indexes and lock files
+        entityManagerFactory.close();
+    }
+
 
     private void checkAppServerVersion()
             throws MalformedObjectNameException, AttributeNotFoundException,
@@ -427,12 +439,27 @@ public class ZanataInit {
 
     private void logBanner(VersionInfo ver) {
         log.info("============================================");
-        log.info("   _____                     _              ");
-        log.info("  /__  /  ____ _____  ____ _/ /_____ _      ");
-        log.info("    / /  / __ `/ __ \\/ __ `/ __/ __ `/      ");
-        log.info("   / /__/ /_/ / / / / /_/ / /_/ /_/ /       ");
-        log.info("  /____/\\__,_/_/ /_/\\__,_/\\__/\\__,_/        ");
-        log.info("  Application version: " + ver.getVersionNo());
+        log.info("        &(                             ");
+        log.info("       (((((& (((((((((((              ");
+        log.info("     ((((((((((((((((((((((((          ");
+        log.info("   #((((((((((((((         (((((       ");
+        log.info("  (((((((((((((((((((        #((((     ");
+        log.info(" ((((((((((((((((((((((#       ((((    ");
+        log.info("   (((((((((((((((((((((((#      (((   ");
+        log.info("  (((&   #(((((((((((((((((((    &(((  ");
+        log.info("  (((         ((((((((((((((      (((  ");
+        log.info("  ((#          (((((((((((        (((  ");
+        log.info("  ((#        ((((((((((((         (((  ");
+        log.info("  (((       ((((((((((((          (((  ");
+        log.info("  (((      (((((((((((&           (((  ");
+        log.info("   (((      ((((((((((((         (((   ");
+        log.info("    (((         ((((((((((      (((    ");
+        log.info("     ((((          #((((((((  ((((     ");
+        log.info("       (((((           (((((((((       ");
+        log.info("         &(((((((%   %((((((((((       ");
+        log.info("             #(((((((((((#     ((#     ");
+        log.info("");
+        log.info("  Zanata version: " + ver.getVersionNo());
         log.info("  SCM: " + ver.getScmDescribe());
         log.info("  Red Hat Inc 2008-{}",
                 Calendar.getInstance().get(Calendar.YEAR));

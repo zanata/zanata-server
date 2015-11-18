@@ -1,13 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:s="http://jboss.org/schema/seam/taglib"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
-  template="../WEB-INF/template/template.xhtml">
+  template="/WEB-INF/template/template.xhtml">
+
+  <f:metadata>
+    <f:viewParam name="slug" value="#{projectHome.slug}"/>
+    <f:viewParam name="slug" value="#{projectHomeAction.slug}"/>
+    <f:event type="preRenderView" listener="#{projectHome.initialize}"/>
+  </f:metadata>
 
 <ui:define name="page_title">
   #{msgs['jsf.Projects']} - #{projectHome.instance.name}
@@ -28,6 +34,11 @@
     crossroads.addRoute(':pre*:/project/view/{slug}/:section:',
       function (pre, slug, section) {
         section = section || 'versions';
+        // maintainers tab is replaced with people tab, so links to maintainers
+        // tab should direct to the people tab
+        if (section === 'maintainers') {
+          section = 'people';
+        }
         section = validateTab('#' + section + "_tab", section, "versions");
         zanata.tabs.activate(jQuery('#' + section + "_tab"))
       });
@@ -49,28 +60,29 @@
       oncomplete="refreshTooltip('#{rich:clientId('versions_form')}')"
       render="versions_form"
       action="#{projectHomeAction.setPageRendered(true)}"/>
+
   </h:form>
 
 <div class="g">
   <div class="g__item w--1-m w--3-8-l w--1-3 l--push-bottom-half">
     <p class="txt--meta l--push-all-0">
-      <s:link view="/project/home.xhtml" propagation="none"
+      <h:link outcome="/project/home.xhtml"
         value="#{msgs['jsf.Projects']}"/>
     </p>
 
-    <s:div styleClass="media l--push-bottom-half" id="project-info">
+    <h:panelGroup layout="block"  styleClass="media l--push-bottom-half" id="project-info">
       <div class="media__body">
         <h1 class="l--push-all-0">#{projectHome.instance.name}</h1>
 
         <p class="txt--understated">
-          <s:fragment
+          <ui:fragment
             rendered="#{not empty projectHome.instance.description}">
             #{projectHome.instance.description}
-          </s:fragment>
+          </ui:fragment>
         </p>
       </div>
 
-      <s:fragment
+      <ui:fragment
         rendered="#{not empty projectHome.instance.sourceCheckoutURL or not empty projectHome.instance.sourceViewURL}">
         <div class="d--top l--push-top-half l--pad-top-half">
           <h2 class="delta headding--secondary l--push-top-0">
@@ -79,7 +91,7 @@
           </h2>
 
           <ul class="list--no-bullets txt--meta l--push-top-quarter">
-            <s:fragment
+            <ui:fragment
               rendered="#{not empty projectHome.instance.sourceViewURL}">
               <li>
                 <span class="list__title">
@@ -90,8 +102,8 @@
                   class="i--small i--right i--external-link txt--neutral"></i>
                 </a>
               </li>
-            </s:fragment>
-            <s:fragment
+            </ui:fragment>
+            <ui:fragment
               rendered="#{not empty projectHome.instance.sourceCheckoutURL}">
               <li>
                 <div class="bx--table">
@@ -109,17 +121,17 @@
                   </div>
                 </div>
               </li>
-            </s:fragment>
+            </ui:fragment>
           </ul>
         </div>
-      </s:fragment>
-    </s:div>
+      </ui:fragment>
+    </h:panelGroup>
 
-    <s:fragment rendered="#{identity.loggedIn}">
+    <ui:fragment rendered="#{identity.loggedIn}">
       <ui:param name="activities"
         value="#{projectHomeAction.getProjectLastActivity()}"/>
 
-      <s:div styleClass="panel l--push-top-half" rendered="#{not empty activities}">
+      <h:panelGroup layout="block"  styleClass="panel l--push-top-half" rendered="#{not empty activities}">
         <div class="panel__header">
           <h2 class="panel__heading--small">
             #{msgs['jsf.YourLastActivity']}
@@ -132,8 +144,8 @@
             </div>
           </ui:repeat>
         </div>
-      </s:div>
-    </s:fragment>
+      </h:panelGroup>
+    </ui:fragment>
 
 </div>
 <div class="g__item w--1-m w--5-8-l w--2-3">
@@ -146,22 +158,22 @@
           <i class="i i--version"></i>
               <span class="is-hidden--s i__text--right">
                 #{msgs['jsf.Versions']}
-                <s:span styleClass="txt--neutral" id="versions-size">
+                <h:panelGroup styleClass="txt--neutral" id="versions-size">
                   #{projectHomeAction.getProjectVersions().size}
-                </s:span>
+                </h:panelGroup>
               </span>
         </a>
       </li>
       <li>
-        <a id="maintainers_tab"
-          href="#{request.contextPath}/project/view/#{projectHomeAction.slug}/maintainers"
-          class="js-url-mod" data-content="#maintainers">
+        <a id="people_tab"
+          href="#{request.contextPath}/project/view/#{projectHomeAction.slug}/people"
+          class="js-url-mod" data-content="#people">
           <i class="i i--users"></i>
               <span class="is-hidden--s i__text--right">
-                #{msgs['jsf.Maintainers']}
-                <s:span styleClass="txt--neutral" id="maintainers-size">
-                  #{projectHome.instance.maintainers.size}
-                </s:span>
+                #{msgs['jsf.People']}
+                <h:panelGroup styleClass="txt--neutral" id="people-size">
+                  #{projectHomeAction.allMembers.size}
+                </h:panelGroup>
               </span>
         </a>
       </li>
@@ -175,8 +187,8 @@
               </span>
         </a>
       </li>
-      <s:fragment
-        rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+      <ui:fragment
+        rendered="#{identity.hasPermission(projectHome.instance, 'update')}">
         <li class="tab__end">
           <div
             class="dropdown dropdown--tab dropdown--small dropdown--right dropdown--inline js-dropdown">
@@ -209,43 +221,39 @@
             <i class="i i--settings"></i>
           </a>
         </li>
-      </s:fragment>
+      </ui:fragment>
     </ul>
 
     <ul class="tabs__content panels__container js-tabs-content l--push-top-1">
       <li id="versions">
         <ui:include
-          src="../WEB-INF/layout/project/versions-tab.xhtml"/>
+          src="/WEB-INF/layout/project/versions-tab.xhtml"/>
       </li>
 
-      <li id="maintainers">
-        <zanata:maintainers-tab
-          listSize="#{projectHome.instanceMaintainers.size}"
-          filterActionBean="#{projectHome.maintainerFilter}"
-          settingsUrl="#settings-permissions"
-          PermissionToUpdate="#{s:hasPermission(projectHome.instance, 'update')}"/>
+      <li id="people">
+        <ui:include src="/WEB-INF/layout/project/people-tab.xhtml"/>
       </li>
 
       <li id="about">
-        <s:div id="project-about">
+        <h:panelGroup layout="block"  id="project-about">
           <div id="home-content-rendered" class="prose">
             <h:outputText
               rendered="#{not empty projectHome.instance.homeContent}"
               value="#{projectHome.aboutHtml}" escape="false" />
           </div>
-          <s:fragment rendered="#{empty projectHome.instance.homeContent}">
+          <ui:fragment rendered="#{empty projectHome.instance.homeContent}">
             #{msgs['jsf.project.NoHomeContent']}
-          </s:fragment>
-        </s:div>
+          </ui:fragment>
+        </h:panelGroup>
       </li>
 
-      <s:fragment
-        rendered="#{s:hasPermission(projectHome.instance, 'update')}">
+      <ui:fragment
+        rendered="#{identity.hasPermission(projectHome.instance, 'update')}">
         <li id="settings">
           <ui:include
-            src="../WEB-INF/layout/project/settings-tab.xhtml"/>
+            src="/WEB-INF/layout/project/settings-tab.xhtml"/>
         </li>
-      </s:fragment>
+      </ui:fragment>
     </ul>
 
     </div>

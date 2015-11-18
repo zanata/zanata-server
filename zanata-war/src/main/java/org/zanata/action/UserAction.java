@@ -20,39 +20,35 @@
  */
 package org.zanata.action;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import javax.faces.model.DataModel;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.seam.Component;
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.security.management.IdentityManager;
-import org.zanata.ApplicationConfiguration;
+import org.jboss.seam.core.Conversation;
+import org.jboss.seam.international.StatusMessages;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.i18n.Messages;
-import org.zanata.model.HPerson;
-import org.zanata.model.HProjectIteration;
+import org.zanata.seam.security.IdentityManager;
 import org.zanata.service.EmailService;
 import org.zanata.service.UserAccountService;
 import org.zanata.ui.AbstractListFilter;
-import org.zanata.ui.InMemoryListFilter;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.zanata.ui.faces.FacesMessages;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.PAGE;
 import static org.jboss.seam.annotations.Install.APPLICATION;
 
 /**
@@ -63,10 +59,9 @@ import static org.jboss.seam.annotations.Install.APPLICATION;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Name("org.jboss.seam.security.management.userAction")
-@Scope(CONVERSATION)
+@Scope(PAGE)
 @Install(precedence = APPLICATION)
-public class UserAction extends
-        org.jboss.seam.security.management.action.UserAction {
+public class UserAction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @In
@@ -90,16 +85,13 @@ public class UserAction extends
     @In
     private PersonDAO personDAO;
 
-    private boolean newUserFlag;
-
     private String originalUsername;
 
     @Getter
     private AbstractListFilter<String> userFilter =
             new AbstractListFilter<String>() {
                 AccountDAO accountDAO =
-                        (AccountDAO) Component.getInstance(AccountDAO.class,
-                                ScopeType.STATELESS);
+                        (AccountDAO) Component.getInstance(AccountDAO.class);
 
                 @Override
                 protected List<String> fetchRecords(int start, int max,
@@ -112,6 +104,11 @@ public class UserAction extends
                     return accountDAO.getUserCount(filter);
                 }
             };
+    private List<String> roles;
+    private String username;
+    private String password;
+    private String confirm;
+    private boolean enabled;
 
     public void deleteUser(String userName) {
         try {
@@ -119,6 +116,7 @@ public class UserAction extends
             // NB: Need to call flush here to be able to catch the persistence
             // exception, otherwise it would be caught by Seam.
             entityManager.flush();
+            userFilter.reset();
         } catch (PersistenceException e) {
             if (e.getCause() instanceof ConstraintViolationException) {
                 facesMessages
@@ -136,28 +134,18 @@ public class UserAction extends
         return personDAO.findByUsername(username).getName();
     }
 
-    @Override
-    @Begin
-    public void createUser() {
-        super.createUser();
-        newUserFlag = true;
-    }
-
-    @Override
-    @Begin
-    public void editUser(String username) {
-        super.editUser(username);
-        newUserFlag = false;
+    public void loadUser() {
+        roles = identityManager.getGrantedRoles(username);
+        enabled = identityManager.isUserEnabled(username);
         originalUsername = username;
     }
 
-    @Override
     public String save() {
         boolean usernameChanged = false;
         String newUsername = getUsername();
 
         // Allow user name changes when editing
-        if (!newUserFlag && !originalUsername.equals(newUsername)) {
+        if (!originalUsername.equals(newUsername)) {
             if (isNewUsernameValid(newUsername)) {
                 userAccountServiceImpl.editUsername(originalUsername,
                         newUsername);
@@ -171,7 +159,9 @@ public class UserAction extends
             }
         }
 
-        String saveResult = super.save();
+        String saveResult;
+
+        saveResult = saveExistingUser();
 
         if (usernameChanged) {
             String email = getEmail(newUsername);
@@ -180,6 +170,40 @@ public class UserAction extends
             facesMessages.addGlobal(message);
         }
         return saveResult;
+    }
+
+    private String saveExistingUser() {
+        // Check if a new password has been entered
+        if (password != null && !"".equals(password)) {
+            if (!password.equals(confirm)) {
+                facesMessages.addToControl("password", "Passwords do not match");
+                return "failure";
+            } else {
+                identityManager.changePassword(username, password);
+            }
+        }
+
+        List<String> grantedRoles = identityManager.getGrantedRoles(username);
+
+        if (grantedRoles != null) {
+            for (String role : grantedRoles) {
+                if (!roles.contains(role)) identityManager.revokeRole(username, role);
+            }
+        }
+
+        for (String role : roles) {
+            if (grantedRoles == null || !grantedRoles.contains(role)) {
+                identityManager.grantRole(username, role);
+            }
+        }
+
+        if (enabled) {
+            identityManager.enableUser(username);
+        } else {
+            identityManager.disableUser(username);
+        }
+
+        return "success";
     }
 
     /**
@@ -196,5 +220,49 @@ public class UserAction extends
             // pass
             return true;
         }
+    }
+
+    public String cancel() {
+        return "success";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getConfirm() {
+        return confirm;
+    }
+
+    public void setConfirm(String confirm) {
+        this.confirm = confirm;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

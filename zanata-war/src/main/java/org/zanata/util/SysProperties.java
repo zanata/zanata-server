@@ -31,14 +31,34 @@ public class SysProperties {
      * Maximum number of Lucene results to be considered in TM searches.
      */
     public static final String TM_MAX_RESULTS = "zanata.tm.max.results";
-/*
+    /**
+     * Override Lucene boost value for text contents
+     */
     public static final String TM_BOOST_CONTENT = "zanata.tm.boost.content";
+    /**
+     * Override Lucene value for textflowtarget (id)
+     */
     public static final String TM_BOOST_TFTID = "zanata.tm.boost.tftid";
+    /**
+     * Override Lucene value for project (slug)
+     */
     public static final String TM_BOOST_PROJECT = "zanata.tm.boost.project";
+    /**
+     * Override Lucene value for document name (docId)
+     */
     public static final String TM_BOOST_DOCID = "zanata.tm.boost.docid";
+    /**
+     * Override Lucene value for textflow (resId)
+     */
     public static final String TM_BOOST_RESID = "zanata.tm.boost.resid";
+    /**
+     * Override Lucene value for project iteration (slug)
+     */
     public static final String TM_BOOST_ITERATION = "zanata.tm.boost.iteration";
-*/
+    /**
+     * Override default lock timeout for @Synchronized beans
+     */
+    public static final String LOCK_TIMEOUT = "zanata.lock.timeout.millis";
 
     /**
      * Gets the value of a system property as a float if available,
@@ -68,6 +88,17 @@ public class SysProperties {
      */
     public static int getInt(String propName, int defVal) {
         return Integer.getInteger(propName, defVal);
+    }
+
+    /**
+     * Gets the value of a system property as a float if available,
+     * otherwise returning the default value.
+     * @param propName name of the system property
+     * @param defVal the default to use if the property is missing or can't be converted to int
+     * @return the int value
+     */
+    public static long getLong(String propName, long defVal) {
+        return Long.getLong(propName, defVal);
     }
 
 }

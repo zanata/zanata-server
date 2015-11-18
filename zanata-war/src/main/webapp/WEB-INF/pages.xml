@@ -15,25 +15,6 @@
     </navigation>
   </page>
 
-  <!-- Project Search -->
-  <page view-id="/search.xhtml">
-    <param name="query" value="#{projectSearch.projectAutocomplete.query}" />
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.SearchProjects'])}" />
-  </page>
-
-
-  <page view-id="/dashboard/*" login-required="true">
-    <restrict>#{identity.loggedIn}</restrict>
-  </page>
-
-  <page view-id="/edit_home_content.xhtml">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.server.EditHomePage.label'])}" />
-    <restrict>#{s:hasRole('admin')}</restrict>
-  </page>
 
   <!-- Landing page for open id authentication -->
   <page view-id="/openid.xhtml">
@@ -70,10 +51,6 @@
 
   <!-- Landing page for Kerberos ticket-based Authentication -->
   <page view-id="/account/klogin.xhtml">
-    <header name="Cache-Control"
-      value="no-cache, no-store, max-age=0, must-revalidate" />
-    <param name="continue" value="#{userRedirect.encodedUrl}" />
-    <action execute="#{authenticationManager.kerberosLogin}" />
     <navigation evaluate="#{authenticationManager.authenticationRedirect}">
       <rule if-outcome="login">
         <redirect view-id="/account/login.xhtml" />
@@ -100,11 +77,6 @@
   <!-- Landing page for Internal, JAAS and Kerberos form-based
        authentication -->
   <page view-id="/account/login.xhtml">
-    <header name="Cache-Control"
-      value="no-cache, no-store, max-age=0, must-revalidate" />
-    <param name="continue" value="#{userRedirect.encodedUrl}" />
-
-    <action execute="#{loginAction.getLoginPageRedirect()}" />
     <navigation from-action="#{loginAction.getLoginPageRedirect()}">
       <rule if-outcome="dashboard">
         <redirect view-id="/dashboard/home.xhtml" />
@@ -130,23 +102,6 @@
     </navigation>
   </page>
 
-  <page view-id="/account/activate.xhtml">
-    <param name="key" value="#{activate.activationKey}" />
-    <action execute="#{activate.validateActivationKey}" />
-    <action execute="#{activate.activate}" />
-  </page>
-
-  <page view-id="/account/email_validation.xhtml" login-required="true">
-    <param name="key" value="#{validateEmail.activationKey}" />
-    <action execute="#{validateEmail.validate}" />
-  </page>
-
-  <page view-id="/account/password_reset.xhtml">
-    <restrict>#{applicationConfiguration.internalAuth}</restrict>
-    <param name="key" value="#{passwordReset.activationKey}" />
-    <action execute="#{passwordReset.validateActivationKey}" />
-  </page>
-
   <page view-id="/account/password_reset_request.xhtml">
     <navigation from-action="#{passwordResetRequest.requestReset}">
       <rule if-outcome="home">
@@ -157,7 +112,6 @@
   </page>
 
   <page view-id="/account/register.xhtml">
-    <action execute="#{identity.isLoggedIn()}" />
     <navigation from-action="#{identity.isLoggedIn()}">
       <rule if-outcome="true">
         <redirect view-id="/dashboard/home.xhtml" />
@@ -166,7 +120,6 @@
   </page>
 
   <page view-id="/account/inactive_account.xhtml">
-    <restrict>#{authenticationManager.isAuthenticatedAccountWaitingForActivation()}</restrict>
     <navigation from-action="#{inactiveAccountAction.sendActivationEmail}">
       <end-conversation />
       <redirect view-id="/home.xhtml" />
@@ -180,45 +133,46 @@
   </page>
 
 
-  <!-- Glossary -->
-  <page view-id="/glossary/view.xhtml">
-    <restrict>#{identity.loggedIn}</restrict>
-  </page>
-
-  <!-- Admin -->
-
-  <page view-id="/admin/*" login-required="true">
-    <restrict>#{s:hasRole('admin')}</restrict>
-  </page>
-
   <page view-id="/admin/roledetail.xhtml">
-    <navigation from-action="#{roleAction.save}">
+    <param name="role" value="#{zanataRoleAction.role}" />
+    <action execute="#{zanataRoleAction.loadRole()}" />
+    <navigation from-action="#{zanataRoleAction.save}">
+      <rule if-outcome="success">
+        <redirect view-id="/admin/rolemanager.xhtml" />
+      </rule>
+    </navigation>
+    <navigation from-action="#{zanataRoleAction.cancel}">
       <rule if-outcome="success">
         <redirect view-id="/admin/rolemanager.xhtml" />
       </rule>
     </navigation>
   </page>
 
-  <page view-id="/admin/rolemanager.xhtml" action="#{roleSearch.loadRoles}">
-    <restrict>#{s:hasPermission('seam.role', 'read')}</restrict>
-    <navigation from-action="#{roleAction.createRole}">
+  <page view-id="/admin/rolemanager.xhtml">
+    <navigation from-action="#{zanataRoleAction.createRole}">
       <redirect view-id="/admin/roledetail.xhtml" />
     </navigation>
-    <navigation from-action="#{roleAction.editRole(roleSearch.selectedRole)}">
+    <navigation from-action="#{zanataRoleAction.editRole(zanataRoleSearch.selectedRole)}">
       <redirect view-id="/admin/roledetail.xhtml" />
     </navigation>
   </page>
 
   <page view-id="/admin/userdetail.xhtml">
+    <param name="username" value="#{userAction.username}" />
+    <action execute="#{userAction.loadUser()}"/>
     <navigation from-action="#{userAction.save}">
+      <rule if-outcome="success">
+        <redirect view-id="/admin/usermanager.xhtml" />
+      </rule>
+    </navigation>
+    <navigation from-action="#{userAction.cancel}">
       <rule if-outcome="success">
         <redirect view-id="/admin/usermanager.xhtml" />
       </rule>
     </navigation>
   </page>
 
-  <page view-id="/admin/usermanager.xhtml" action="#{userSearch.loadUsers}">
-    <restrict>#{s:hasPermission('seam.user', 'read')}</restrict>
+  <page view-id="/admin/usermanager.xhtml">
     <navigation from-action="#{userAction.editUser(username)}">
       <redirect view-id="/admin/userdetail.xhtml" />
     </navigation>
@@ -256,15 +210,7 @@
   </page>
 
   <!-- Version Group -->
-
-  <page view-id="/version-group/home.xhtml">
-    <action execute="#{versionGroupAction.loadAllActiveGroupsOrIsMaintainer}" />
-    <action execute="#{breadcrumbs.clear}" />
-    <action execute="#{breadcrumbs.addLocation('', msgs['jsf.Groups'])}" />
-  </page>
-
   <page view-id="/version-group/create_version_group.xhtml">
-    <restrict>#{s:hasPermission(versionGroupHome.instance, 'insert')}</restrict>
     <navigation from-action="#{versionGroupHome.persist}">
       <rule if="#{versionGroupHome.managed}">
         <redirect view-id="/version-group/home.xhtml" />
@@ -272,17 +218,7 @@
     </navigation>
   </page>
 
-  <page view-id="/version-group/version_group.xhtml">
-    <header name="Cache-Control"
-      value="no-cache, no-store, max-age=0, must-revalidate" />
-    <param name="versionGroupSlug" value="#{versionGroupHomeAction.slug}" />
-    <param name="versionGroupSlug" value="#{versionGroupHome.slug}" />
-    <param name="versionGroupSlug" value="#{versionGroupJoinAction.slug}" />
-    <action execute="#{versionGroupHome.validateSuppliedId}" />
-  </page>
-
   <page view-id="/profile/create_user.xhtml">
-    <restrict>#{identity.preAuthenticated}</restrict>
     <navigation from-action="#{newProfileAction.createUser}">
       <redirect view-id="/home.xhtml" />
     </navigation>
@@ -291,33 +227,15 @@
     </navigation>
   </page>
 
-  <page view-id="/profile/merge_account.xhtml" login-required="true">
-    <action execute="#{accountMergeAction.validateAccounts}" />
-
+  <page view-id="/profile/merge_account.xhtml">
     <navigation from-action="#{accountMergeAction.cancel}">
       <redirect view-id="/dashboard/home.xhtml" />
     </navigation>
   </page>
 
-  <!-- User profile -->
-  <page view-id="/profile/home.xhtml">
-    <action execute="#{breadcrumbs.clear}" />
-    <param name="username" value="#{profileHome.username}" />
-  </page>
-
   <!-- Project -->
-  <page view-id="/project/home.xhtml">
-    <action execute="#{breadcrumbs.clear}" />
-    <action
-      execute="#{breadcrumbs.addLocation('', msgs['jsf.Projects'])}" />
-  </page>
 
   <page view-id="/project/project.xhtml">
-    <header name="Cache-Control"
-      value="no-cache, no-store, max-age=0, must-revalidate" />
-    <param name="slug" value="#{projectHome.slug}" />
-    <param name="slug" value="#{projectHomeAction.slug}" />
-    <action execute="#{projectHome.initialize}" />
     <navigation from-action="#{projectHome.update}">
       <rule if-outcome="projectSlugUpdated">
         <redirect view-id="/project/project.xhtml">
@@ -328,8 +246,6 @@
   </page>
 
   <page view-id="/project/create_project.xhtml">
-    <restrict>#{s:hasPermission(projectHome.instance, 'insert')}</restrict>
-    <action execute="#{projectHome.createNew}" />
     <navigation from-action="#{projectHome.persist}">
       <redirect view-id="/project/project.xhtml">
         <param name="slug" value="#{projectHome.instance.slug}" />
@@ -338,11 +254,6 @@
   </page>
 
   <page view-id="/project/add_iteration.xhtml">
-    <restrict>#{s:hasPermission(projectHome.instance, 'insert')}</restrict>
-    <param name="projectSlug" value="#{versionHome.projectSlug}" />
-    <param name="copyFromVersionSlug" value="#{versionHome.copyFromVersionSlug}" />
-    <action execute="#{versionHome.validateProjectSlug}" />
-    <action execute="#{versionHome.init(true)}" />
 
     <navigation from-action="#{versionHome.createVersion}">
       <rule if-outcome="invalid-slug">
@@ -364,22 +275,6 @@
 
   <!-- Project Iteration -->
   <page view-id="/iteration/view.xhtml">
-    <header name="Cache-Control"
-      value="no-cache, no-store, max-age=0, must-revalidate" />
-    <param name="projectSlug" value="#{versionHomeAction.projectSlug}" />
-    <param name="iterationSlug" value="#{versionHomeAction.versionSlug}" />
-
-    <param name="projectSlug" value="#{versionHome.projectSlug}" />
-    <param name="iterationSlug" value="#{versionHome.slug}" />
-
-    <param name="projectSlug" value="#{copyTransAction.projectSlug}" />
-    <param name="iterationSlug" value="#{copyTransAction.iterationSlug}" />
-
-    <param name="projectSlug" value="#{mergeTransAction.targetProjectSlug}" />
-    <param name="iterationSlug" value="#{mergeTransAction.targetVersionSlug}" />
-
-    <action execute="#{versionHome.init(false)}" />
-    <action execute="#{versionHome.validateSuppliedId}" />
 
     <navigation from-action="#{versionHomeAction.uploadSourceFile}">
       <redirect view-id="/iteration/view.xhtml">
@@ -425,21 +320,8 @@
     </navigation>
   </page>
 
-  <page view-id="/language/language.xhtml">
-    <param name="id" value="#{languageAction.language}" />
-    <param name="id" value="#{languageJoinAction.language}" />
-    <param name="id" value="#{languageContactCoordinatorAction.localeId}" />
-
-    <action execute="#{languageAction.validateLanguage}" />
-  </page>
-
   <!-- Translation Memory -->
-  <page view-id="/tm/home.xhtml">
-    <restrict>#{s:hasRole('admin')}</restrict>
-  </page>
-
   <page view-id="/tm/create.xhtml">
-    <restrict>#{s:hasRole('admin')}</restrict>
     <navigation from-action="#{translationMemoryHome.persist}">
       <rule if-outcome="persisted">
         <redirect view-id="/tm/home.xhtml" />
@@ -463,6 +345,7 @@
     </navigation>
   </page>
 
+  <!-- TODO [CDI] we will probably use something like this http://stackoverflow.com/a/18411362/345718 -->
   <!-- Exceptions -->
   <exception class="org.zanata.exception.KeyNotFoundException"
     log-level="warn">
@@ -480,7 +363,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.framework.EntityNotFoundException"
+  <exception class="javax.persistence.EntityNotFoundException"
     log-level="warn">
     <redirect view-id="/error.xhtml">
       <message severity="warn">#{msgs['jsf.RecordNotFound']}</message>
@@ -509,7 +392,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.security.AuthorizationException"
+  <exception class="org.zanata.exception.AuthorizationException"
     log-level="debug">
     <redirect view-id="/error.xhtml">
       <message
@@ -518,7 +401,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.security.NotLoggedInException"
+  <exception class="org.zanata.exception.NotLoggedInException"
     log-level="debug">
     <redirect view-id="/account/login.xhtml">
       <message severity="warn">#{msgs['org.jboss.seam.NotLoggedIn']}
@@ -536,7 +419,7 @@
 
   <exception class="javax.faces.application.ViewExpiredException"
     log-level="debug">
-    <redirect view-id="/error.xhtml">
+    <redirect view-id="/error/viewexpiredexception.xhtml">
       <message
         severity="warn">#{msgs['jsf.YourSessionHasTimedOutPleaseTryAgain']}
       </message>
@@ -557,7 +440,7 @@
     </redirect>
   </exception>
 
-  <exception class="org.jboss.seam.web.FileUploadException" log-level="warn">
+  <exception class="org.richfaces.exception.FileUploadException" log-level="warn">
     <redirect view-id="/error.xhtml">
       <message severity="error">
         #{msgs['jsf.iteration.files.UploadFailed']} #{org.jboss.seam.handledException.message}

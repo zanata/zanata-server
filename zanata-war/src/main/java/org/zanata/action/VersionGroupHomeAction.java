@@ -32,7 +32,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.dao.ProjectMemberDAO;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.ProjectIterationDAO;
@@ -68,12 +69,15 @@ public class VersionGroupHomeAction extends AbstractSortAction implements
     private static final long serialVersionUID = 1L;
 
     @In
+    private ProjectMemberDAO projectMemberDAO;
+
+    @In
     private VersionGroupService versionGroupServiceImpl;
 
     @In
     private Messages msgs;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In
@@ -307,8 +311,8 @@ public class VersionGroupHomeAction extends AbstractSortAction implements
                             wordStatistic2.getUntranslated());
                 }
             } else {
-                return o1.getProject().getName().toLowerCase()
-                        .compareTo(o2.getProject().getName().toLowerCase());
+                return ComparatorUtil.compareStringIgnoreCase(
+                        o1.getProject().getName(), o2.getProject().getName());
             }
             return 0;
         }
@@ -316,7 +320,7 @@ public class VersionGroupHomeAction extends AbstractSortAction implements
 
     public boolean isUserProjectMaintainer() {
         return authenticatedAccount != null
-                && authenticatedAccount.getPerson().isMaintainerOfProjects();
+                && projectMemberDAO.isMaintainerOfAnyProject(authenticatedAccount.getPerson());
     }
 
     /**

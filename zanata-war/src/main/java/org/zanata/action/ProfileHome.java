@@ -21,35 +21,27 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import javax.annotation.Nullable;
+import javax.faces.application.FacesMessage;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.editor.service.UserService;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
-import org.zanata.model.HLocale;
-import org.zanata.model.HPerson;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.GravatarService;
+import org.zanata.ui.faces.FacesMessages;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 
 import static org.apache.commons.lang.StringUtils.abbreviate;
 
@@ -68,34 +60,29 @@ public class ProfileHome implements Serializable {
     private String username;
 
     @Getter
-    private String name;
-
-    @Getter
-    private String userImageUrl;
-
-    @Getter
-    private String userLanguageTeams;
+    private User user;
 
     @In
     ZanataIdentity identity;
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     HAccount authenticatedAccount;
     @In
     PersonDAO personDAO;
     @In
     AccountDAO accountDAO;
     @In
-    private GravatarService gravatarServiceImpl;
-    @In
     Messages msgs;
+    @In(value = "editor.userService", create = true)
+    private UserService userService;
+    @In
+    private FacesMessages jsfMessages;
 
     private void init() {
         HAccount account;
-        FacesMessages facesMessages = FacesMessages.instance();
         account = accountDAO.getByUsername(username);
         if (account == null) {
-            facesMessages.clear();
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            jsfMessages.clear();
+            jsfMessages.addGlobal(FacesMessage.SEVERITY_ERROR,
                     msgs.format("jsf.UsernameNotAvailable", abbreviate(username,
                             24)));
             account = useAuthenticatedAccount();
@@ -104,22 +91,7 @@ public class ProfileHome implements Serializable {
                 return;
             }
         }
-        HPerson person =
-                personDAO.findById(account.getPerson().getId());
-        Set<HLocale> languageMemberships = person.getLanguageMemberships();
-        name = person.getName();
-        userImageUrl = gravatarServiceImpl
-                .getUserImageUrl(GravatarService.USER_IMAGE_SIZE,
-                        person.getEmail());
-        userLanguageTeams = Joiner.on(", ").skipNulls().join(
-                Collections2.transform(languageMemberships,
-                        new Function<HLocale, Object>() {
-                            @Nullable
-                            @Override
-                            public Object apply(@NonNull HLocale locale) {
-                                return locale.retrieveDisplayName();
-                            }
-                        }));
+        user = userService.transferToUser(account);
     }
 
     private HAccount useAuthenticatedAccount() {
@@ -130,6 +102,14 @@ public class ProfileHome implements Serializable {
             return account;
         }
         return null;
+    }
+
+    public User getAuthenticatedUser() {
+        User authenticatedUser = new User();
+        if(authenticatedAccount == null) {
+            return authenticatedUser;
+        }
+        return userService.transferToUser(authenticatedAccount);
     }
 
     public String getUsername() {

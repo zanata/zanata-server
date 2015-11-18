@@ -32,9 +32,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.security.Restrict;
+import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.security.annotations.CheckPermission;
+import org.zanata.security.annotations.CheckRole;
 import org.jboss.seam.faces.Redirect;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.LocaleMemberDAO;
@@ -50,6 +52,7 @@ import org.zanata.model.HPerson;
 import org.zanata.rest.editor.dto.Locale;
 import org.zanata.rest.service.ResourceUtils;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.faces.FacesMessages;
@@ -66,6 +69,7 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Name("languageAction")
 @Scope(ScopeType.PAGE)
+@ZanataSecured
 @Slf4j
 public class LanguageAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -82,7 +86,7 @@ public class LanguageAction implements Serializable {
     @In
     private LocaleService localeServiceImpl;
 
-    @In(required = false, value = JpaIdentityStore.AUTHENTICATED_USER)
+    @In(required = false, value = ZanataJpaIdentityStore.AUTHENTICATED_USER)
     private HAccount authenticatedAccount;
 
     @In
@@ -166,8 +170,8 @@ public class LanguageAction implements Serializable {
 
     }
 
-    @Restrict("#{s:hasPermission(languageAction.locale, 'manage-language-team')}")
     public void addSelected() {
+        identity.checkPermission(locale, "manage-language-team");
         for (SelectablePerson selectablePerson : getSearchResults()) {
             if (selectablePerson.isSelected()) {
                 addTeamMember(selectablePerson.getPerson().getId(),
@@ -205,7 +209,7 @@ public class LanguageAction implements Serializable {
         isValidPluralForms((String) e.getNewValue(), e.getComponent().getId());
     }
 
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public void saveSettings() {
         HLocale hLocale = getLocale();
         if(!isValidPluralForms(hLocale.getPluralForms(), "pluralForms")) {
@@ -242,11 +246,9 @@ public class LanguageAction implements Serializable {
         LocaleId localeId = new LocaleId(language);
         HLocale locale = localeServiceImpl.getByLocaleId(localeId);
 
-        if(locale == null) {
+        if (locale == null) {
             redirectToLanguageHome();
-        }
-
-        if(!locale.isActive() && !identity.hasRole("admin")) {
+        } else if (!locale.isActive() && !identity.hasRole("admin")) {
             redirectToLanguageHome();
         }
     }
@@ -264,7 +266,7 @@ public class LanguageAction implements Serializable {
     }
 
     @Transactional
-    @Restrict("#{s:hasRole('admin')}")
+    @CheckRole("admin")
     public void joinLanguageTeam() {
         if (authenticatedAccount == null) {
             log.error("failed to load auth person");
@@ -308,8 +310,8 @@ public class LanguageAction implements Serializable {
                 getLocale().retrieveNativeName()));
     }
 
-    @Restrict("#{s:hasPermission(languageAction.locale, 'manage-language-team')}")
     public void saveTeamCoordinator(HLocaleMember member) {
+        identity.checkPermission(locale, "manage-language-team");
         savePermission(member, msgs.get("jsf.Coordinator"), member.isCoordinator());
         HPerson doneByPerson = authenticatedAccount.getPerson();
         LanguageTeamPermissionChangedEvent changedEvent =
@@ -320,8 +322,8 @@ public class LanguageAction implements Serializable {
         languageTeamPermissionChangedEvent.fire(changedEvent);
     }
 
-    @Restrict("#{s:hasPermission(languageAction.locale, 'manage-language-team')}")
     public void saveTeamReviewer(HLocaleMember member) {
+        identity.checkPermission(locale, "manage-language-team");
         savePermission(member, msgs.get("jsf.Reviewer"), member.isReviewer());
         HPerson doneByPerson = authenticatedAccount.getPerson();
         LanguageTeamPermissionChangedEvent changedEvent =
@@ -332,8 +334,8 @@ public class LanguageAction implements Serializable {
         languageTeamPermissionChangedEvent.fire(changedEvent);
     }
 
-    @Restrict("#{s:hasPermission(languageAction.locale, 'manage-language-team')}")
     public void saveTeamTranslator(HLocaleMember member) {
+        identity.checkPermission(locale, "manage-language-team");
         savePermission(member, msgs.get("jsf.Translator"), member.isTranslator());
         HPerson doneByPerson = authenticatedAccount.getPerson();
         LanguageTeamPermissionChangedEvent changedEvent =
@@ -369,9 +371,8 @@ public class LanguageAction implements Serializable {
                 isCoordinator);
     }
 
-    @Restrict("#{s:hasPermission(languageAction.locale, 'manage-language-team')}")
-    public
-            void removeMembership(HLocaleMember member) {
+    public void removeMembership(HLocaleMember member) {
+        identity.checkPermission(locale, "manage-language-team");
         this.languageTeamServiceImpl.leaveLanguageTeam(this.language, member
                 .getPerson().getId());
         resetLocale();

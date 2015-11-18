@@ -42,10 +42,11 @@
     <class>org.zanata.model.HPersonEmailValidationKey</class>
     <class>org.zanata.model.HProject</class>
     <class>org.zanata.model.HProjectIteration</class>
+    <class>org.zanata.model.HProjectLocaleMember</class>
+    <class>org.zanata.model.HProjectMember</class>
     <class>org.zanata.model.HRawDocument</class>
     <class>org.zanata.model.HRoleAssignmentRule</class>
     <class>org.zanata.model.HSimpleComment</class>
-    <class>org.zanata.model.HTermComment</class>
     <class>org.zanata.model.HTextFlowHistory</class>
     <class>org.zanata.model.HTextFlow</class>
     <class>org.zanata.model.HTextFlowTarget</class>
@@ -99,7 +100,7 @@
       <property name="hibernate.search.default.locking_strategy"
         value="simple" />
       <property name="hibernate.search.default.indexBase"
-        value="zanatasearchindex" />
+        value="./target/zanatasearchindex" />
       <property name="hibernate.search.lucene_version" value="LUCENE_36" />
       <property name="hibernate.search.worker.batch_size" value="50" />
 

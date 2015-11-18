@@ -86,6 +86,13 @@ To remove a language from the list of available locales, first move the cursor o
 </figure>
 
 ------------
+### Invite only
+
+This setting determines which users will be allowed to translate your project.
+When it is inactive, any translator can translate your project into their language,
+as long as their language is enabled in your project. When the setting is active,
+only translators in your [project team](/user-guide/projects/project-team/) are allowed to translate your project.
+
 ### Validations
 
 Validations run in the translation editor and help translators to provide translations that are valid for your project. Validations set to `Warning` or `Error` in this list will be displayed in the translation editor when an invalid translation has been entered.
@@ -112,6 +119,8 @@ Refer to [the Copy Translations reference](/user-guide/translation-reuse/copy-tr
 </figure>
 <br>
 
+Note: Maintainers can also be added and removed through the [project team](/user-guide/projects/project-team/).
+
 ### Add a Maintainer
 
 To search for users, enter at least three characters of a username into the field under "Add a Maintainer". Available users matching the entered text will display in a dropdown.
@@ -133,17 +142,50 @@ The access restriction feature is intended for use with special roles that can b
 <figcaption>Project Webhooks Settings tab</figcaption>
 </figure>
 
-The Webhooks feature is HTTP callbacks which are triggered when a document in a language has reached a certain milestone. Currently, webhooks events will be triggered when
+The Webhooks feature is HTTP callbacks which are triggered when a document in a language has reached a certain milestone. 
+Currently, webhooks events will be triggered when
 
 - A document has reached 100% Translated
 - A document has reached 100% Approved (by reviewer)
 
-When an event occurs, Zanata will make a HTTP POST to the URI configured in the project.
+When an event occurs, Zanata will make a HTTP POST to the provided payload URL in the project.
 
-### Adding a Webhook URI
+Example webhook response:
 
-![Project Webhooks Settings tab](/images/project-webhooks-settings-2.png)
-Enter a valid URI into the provided text input. Hit the 'enter' key or click on 'Add webhook' button to add the URI.
+```
+{
+    "eventType": "org.zanata.events.DocumentMilestoneEvent",
+    "milestone": "100% Translated",
+    "locale": "de",
+    "docId": "zanata-war/src/main/resources/messages",
+    "version": "master",
+    "project": "zanata-server",
+    "editorDocumentUrl": "https://translate.zanata.org/zanata/webtrans/Application.seam?project=zanata-server&iteration=master&localeId=de&locale=en#view:doc;doc:zanata-war/src/main/resources/messages"
+}
+```
+
+If a secret key is provided for that payload URL, Zanata will sign the webhook request with HTTP header `X-Zanata-Webhook`. 
+The header is a double hash of `HMAC-SHA1` in base64 digest. The double hash is generated from the full request body and the payload URL as provided.
+
+Here is some sample pseudocode for checking the validity of a request:
+```
+boolean verifyRequest(request, secret, callbackURL) {
+    Bytes content = request.body.getBytes(UTF8) + callbackURL.getBytes(UTF8);
+    String expectedHash = base64(hmacSha1(secret, base64(hmacSha1(secret, content))));
+    String headerHash = request.getHeader("X-Zanata-Webhook");
+    return headerHash == expectedHash;
+}
+```
+
+
+
+### Adding a webhook
+1. Enter a valid URL and secret key (optional) into the provided text input. 
+2. Click on 'Add webhook' button to add the URL.
+3. If secret key is provided, Zanata will include cryptographic signature in HTTP header `X-Zanata-Webhook`.
+
+### Remove a webhook
+- Click on the `X` sign on right side of the webhook to remove the entry.
 
 ------------
 

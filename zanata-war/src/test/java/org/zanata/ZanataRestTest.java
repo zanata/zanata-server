@@ -14,7 +14,7 @@ import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
-import org.jboss.seam.security.management.JpaIdentityStore;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -70,7 +70,7 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
 
         // register Exception Mappers
         for (Class<? extends ExceptionMapper<? extends Throwable>> mapper : exceptionMappers) {
-            dispatcher.getProviderFactory().addExceptionMapper(mapper);
+            dispatcher.getProviderFactory().registerProvider(mapper);
         }
 
         // register Providers
@@ -106,7 +106,7 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
             account.setPerson(person);
             account = (HAccount) session.merge(account);
         }
-        seamAutowire.use(JpaIdentityStore.AUTHENTICATED_USER, account);
+        seamAutowire.use(ZanataJpaIdentityStore.AUTHENTICATED_USER, account);
     }
 
     @After

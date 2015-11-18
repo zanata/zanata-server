@@ -45,6 +45,10 @@
   <!--   <component name="org.jboss.seam.async.dispatcher" class="org.jboss.seam.async.QuartzDispatcher"/> -->
   <component class="org.jboss.seam.async.QuartzDispatcher" />
 
+  <!-- Disable the automatic transaction JSF messages -->
+  <component class="org.jboss.seam.transaction.FacesTransactionEvents"
+    installed="false"/>
+
   <resteasy:application resource-path-prefix="/restv1" />
 
   <web:multipart-filter create-temp-files="false"
@@ -56,10 +60,7 @@
   <jms:managed-queue-sender name="mailQueueSender" auto-create="true" queue-jndi-name="jms/queue/MailsQueue" />
 
   <!-- Login and security -->
-  <security:identity jaas-config-name="zanata" />
   <web:identity-filter disabled="true" />
-
-  <security:rule-based-permission-resolver security-rules="#{securityRules}" />
 
   <!-- Persistence stuff -->
 
@@ -93,14 +94,11 @@
     entity-manager-factory="#{entityManagerFactory}"
     persistence-unit-jndi-name="java:/zanataEntityManagerFactory" />
 
-  <security:jpa-identity-store
-    user-class="org.zanata.model.HAccount"
-    role-class="org.zanata.model.HAccountRole" />
-
-  <event type="org.jboss.seam.security.notLoggedIn">
+  <!-- TODO [CDI] we need to find a CDI way of doing this -->
+  <event type="org.zanata.events.NotLoggedInEvent">
     <action execute="#{redirect.captureCurrentView}" />
   </event>
-  <event type="org.jboss.seam.security.loginSuccessful">
+  <event type="org.zanata.events.LoginSuccessfulEvent">
     <action execute="#{redirect.returnToCapturedView}" />
   </event>
 
@@ -129,8 +127,7 @@
       If you are using MySQL, don't forget their magic stuff:
       http://dev.mysql.com/doc/refman/5.0/en/packet-too-large.html
   -->
-  <web:multipart-filter create-temp-files="true"
-    max-request-size="10000000" url-pattern="*.seam" />
+  <web:multipart-filter disabled="true" />
 
   <component name="essentialDataCreator"
     class="org.zanata.util.EssentialDataCreator" installed="true">
