@@ -14,7 +14,16 @@
     }
 
     function cancelJoinLanguage() {
-      jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('');
+      reset();
+      clearMessage();
+    }
+
+    function postSendRequest() {
+      reset();
+      zanata.modal.hide('#joinLanguageDialog');
+    }
+
+    function reset() {
       getJoinLanguageForm().find('#request-join-language-send-button').removeClass('is-active');
       jQuery('#asTranslator').val(false);
       jQuery('#asReviewer').val(false);
@@ -34,14 +43,17 @@
       </button>
     </header>
 
-    <h:panelGroup layout="block" id="joinLanguageForm" styleClass="l--push-bottom-0">
+    <h:form id="joinLanguageForm" styleClass="l--push-bottom-0">
       <a4j:jsFunction name="sendJoinLanguageRequest" action="#{languageJoinAction.processRequest(translator, reviewer, coordinator)}"
         execute="@form"
-        oncomplete="jQuery(getJoinLanguageForm()).find('#request-join-language-cancel-button').click();refreshMembersForm()">
+        oncomplete="refreshMembersForm();postSendRequest()">
         <a4j:param name="val1" assignTo="#{translator}"/>
         <a4j:param name="val2" assignTo="#{reviewer}"/>
         <a4j:param name="val3" assignTo="#{coordinator}"/>
       </a4j:jsFunction>
+
+      <a4j:jsFunction name="clearMessage" action="#{languageJoinAction.clearMessage()}"
+        render="messageField"/>
 
       <div class="modal__content l--pad-all-1">
         <input type="hidden" id="asTranslator" value="false"/>
@@ -73,6 +85,6 @@
           </button>
         </h:panelGroup>
       </footer>
-    </h:panelGroup>
+    </h:form>
   </div>
 </div>

@@ -145,7 +145,7 @@ public class LanguageJoinAction implements Serializable {
         facesMessages.addGlobal(msgs.get("jsf.language.request.updated"));
     }
 
-    private void reset() {
+    public void clearMessage() {
         message = "";
     }
 
@@ -161,6 +161,8 @@ public class LanguageJoinAction implements Serializable {
                             authenticatedAccount.getUsername(), getLocale()
                                     .getDisplayName());
             facesMessages.addGlobal(message);
+        } finally {
+            clearMessage();
         }
     }
 
@@ -194,8 +196,6 @@ public class LanguageJoinAction implements Serializable {
                     "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
                     fromName, fromLoginName, replyEmail, subject, message, e);
             facesMessages.addGlobal(sb.toString());
-        } finally {
-            reset();
         }
     }
 
