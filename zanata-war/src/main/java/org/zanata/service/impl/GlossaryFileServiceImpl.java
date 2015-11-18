@@ -177,7 +177,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         }
         GlossaryPoReader poReader =
                 new GlossaryPoReader(sourceLang, transLang, BATCH_SIZE);
-        return poReader.extractGlossary(new InputStreamReader(fileContents));
+        return poReader.extractGlossary(new InputStreamReader(fileContents, "UTF-8"));
     }
 
     /**
