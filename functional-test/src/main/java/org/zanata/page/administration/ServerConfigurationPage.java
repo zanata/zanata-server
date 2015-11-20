@@ -23,9 +23,7 @@ package org.zanata.page.administration;
 import com.google.common.base.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.zanata.page.BasePage;
 
@@ -59,11 +57,7 @@ public class ServerConfigurationPage extends BasePage {
     private void enterTextConfigField(By by, String text) {
         scrollIntoView(readyElement(by));
         waitForNotificationsGone();
-        new Actions(getDriver()).moveToElement(readyElement(by))
-                .click()
-                .sendKeys(Keys.chord(Keys.CONTROL, "a"))
-                .sendKeys(Keys.DELETE)
-                .sendKeys(text).perform();
+        enterText(readyElement(by), text, true, false, false);
     }
 
     public ServerConfigurationPage inputServerURL(String url) {
@@ -169,7 +163,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxConcurrent(int max) {
         log.info("Enter maximum concurrent API requests {}", max);
         readyElement(maxConcurrentField).clear();
-        readyElement(maxConcurrentField).sendKeys(max + "");
+        enterText(readyElement(maxConcurrentField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
@@ -181,7 +175,7 @@ public class ServerConfigurationPage extends BasePage {
     public ServerConfigurationPage inputMaxActive(int max) {
         log.info("Enter maximum active API requests {}", max);
         readyElement(maxActiveField).clear();
-        readyElement(maxActiveField).sendKeys(max + "");
+        enterText(readyElement(maxActiveField), max + "");
         return new ServerConfigurationPage(getDriver());
     }
 
