@@ -14,16 +14,16 @@
     }
 
     function cancelJoinLanguage() {
-      reset();
-      clearMessage();
+      resetRequestToJoinLanguage();
+      clearRequestToJoinLanguageMessage();
     }
 
     function postSendRequest() {
-      reset();
+      resetRequestToJoinLanguage();
       zanata.modal.hide('#joinLanguageDialog');
     }
 
-    function reset() {
+    function resetRequestToJoinLanguage() {
       getJoinLanguageForm().find('#request-join-language-send-button').removeClass('is-active');
       jQuery('#asTranslator').val(false);
       jQuery('#asReviewer').val(false);
@@ -52,20 +52,20 @@
         <a4j:param name="val3" assignTo="#{coordinator}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="clearMessage" action="#{languageJoinAction.clearMessage()}"
-        render="messageField"/>
+      <a4j:jsFunction name="clearRequestToJoinLanguageMessage" action="#{languageJoinAction.clearMessage()}"
+        render="requestToJoinLanguageMessageField" oncomplete="console.info('clear')"/>
 
       <div class="modal__content l--pad-all-1">
         <input type="hidden" id="asTranslator" value="false"/>
         <input type="hidden" id="asReviewer" value="false"/>
         <input type="hidden" id="asCoordinator" value="false"/>
 
-        <zanata:decorate id="message" componentId="messageField">
+        <zanata:decorate id="requestToJoinLanguageMessage" componentId="requestToJoinLanguageMessageField">
           <span>#{msgs['jsf.language.request.introduction']}</span>
           <span class="txt--meta bx--block">#{msgs['jsf.language.email.AdditionalInfoMessage']}</span>
           <h:inputTextarea id="request-join-message" value="#{languageJoinAction.message}"
             styleClass="l--push-bottom-0">
-            <a4j:ajax event="blur" render="messageField" execute="@this"/>
+            <a4j:ajax event="blur" render="requestToJoinLanguageMessageField" execute="@this"/>
             <f:validateLength maximum="1000" />
           </h:inputTextarea>
         </zanata:decorate>

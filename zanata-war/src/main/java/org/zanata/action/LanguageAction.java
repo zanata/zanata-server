@@ -22,9 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.event.ValueChangeEvent;
 
 import com.google.common.base.Joiner;
@@ -134,14 +132,6 @@ public class LanguageAction implements Serializable {
     private HLocale locale;
 
     private List<SelectablePerson> searchResults;
-
-    private Map<LocaleRole, Boolean> roles = new HashMap<LocaleRole, Boolean>();
-
-    {
-        roles.put(LocaleRole.Coordinator, false);
-        roles.put(LocaleRole.Reviewer, false);
-        roles.put(LocaleRole.Translator, false);
-    }
 
     @Getter
     private AbstractListFilter<HLocaleMember> membersFilter =
@@ -354,92 +344,56 @@ public class LanguageAction implements Serializable {
             new LeftLanguageTeam(authenticatedAccount.getUsername(),
                 new LocaleId(language)));
         log.info("{} left language team {}", authenticatedAccount.getUsername(),
-                this.language);
+            this.language);
         facesMessages.addGlobal(msgs.format("jsf.LeftTeam",
             getLocale().retrieveNativeName()));
     }
 
-    public void saveTeamCoordinator(HLocaleMember member) {
+    public void updatePersonRole(Long personId, char localeRoleInitial,
+        boolean isPermissionGranted) {
         identity.checkPermission(locale, "manage-language-team");
-        savePermission(member, msgs.get("jsf.Coordinator"),
-            member.isCoordinator());
-        HPerson doneByPerson = authenticatedAccount.getPerson();
-        LanguageTeamPermissionChangedEvent changedEvent =
-                new LanguageTeamPermissionChangedEvent(
-                        member.getPerson(), getLocale().getLocaleId(),
-                        doneByPerson)
-                         .changedCoordinatorPermission(member);
-        languageTeamPermissionChangedEvent.fire(changedEvent);
-    }
 
-    public void saveTeamReviewer(HLocaleMember member) {
-        identity.checkPermission(locale, "manage-language-team");
-        savePermission(member, msgs.get("jsf.Reviewer"), member.isReviewer());
-        HPerson doneByPerson = authenticatedAccount.getPerson();
-        LanguageTeamPermissionChangedEvent changedEvent =
-                new LanguageTeamPermissionChangedEvent(
-                        member.getPerson(), getLocale().getLocaleId(),
-                        doneByPerson)
-                        .changedReviewerPermission(member);
-        languageTeamPermissionChangedEvent.fire(changedEvent);
-    }
+        LocaleRole role = LocaleRole.valueOf(localeRoleInitial);
 
-    public void saveTeamTranslator(HLocaleMember member) {
-        identity.checkPermission(locale, "manage-language-team");
-        savePermission(member, msgs.get("jsf.Translator"),
-            member.isTranslator());
-        HPerson doneByPerson = authenticatedAccount.getPerson();
-        LanguageTeamPermissionChangedEvent changedEvent =
-                new LanguageTeamPermissionChangedEvent(
-                        member.getPerson(), getLocale().getLocaleId(),
-                        doneByPerson)
-                        .changedTranslatorPermission(member);
-        languageTeamPermissionChangedEvent.fire(changedEvent);
-    }
-
-    public void setPersonAsTranslator(Long personId, boolean isPermissionGranted) {
         HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
             new LocaleId(language));
-        if (member == null) {
-            HPerson person = personDAO.findById(personId);
-            member = new HLocaleMember(person, getLocale(), true, false, false);
-            saveTeamTranslator(member);
-        } else if (member.isTranslator() != isPermissionGranted) {
-            member.setTranslator(isPermissionGranted);
-            saveTeamTranslator(member);
-        }
-    }
 
-    public void setPersonAsReviewer(Long personId, boolean isPermissionGranted) {
-        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
-            new LocaleId(language));
-        if (member == null) {
-            HPerson person = personDAO.findById(personId);
-            member = new HLocaleMember(person, getLocale(), false, true, false);
-            saveTeamReviewer(member);
-        } else if (member.isReviewer() != isPermissionGranted) {
-            member.setReviewer(isPermissionGranted);
-            saveTeamReviewer(member);
-        }
-    }
+        boolean updateAsTranslator = false, updateAsReviewer = false,
+            updateAsCoordinator = false;
 
-    public void setPersonAsCoordinator(Long personId, boolean isPermissionGranted) {
-        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(personId,
-            new LocaleId(language));
+        String permissionDesc = null;
+
+        if(role.equals(LocaleRole.Translator)) {
+            updateAsTranslator = isPermissionGranted;
+            permissionDesc = msgs.get("jsf.Translator");
+        } else if(role.equals(LocaleRole.Reviewer)) {
+            updateAsReviewer = isPermissionGranted;
+            permissionDesc = msgs.get("jsf.Reviewer");
+        } else if(role.equals(LocaleRole.Coordinator)) {
+            updateAsCoordinator = isPermissionGranted;
+            permissionDesc = msgs.get("jsf.Coordinator");
+        }
+
         if (member == null) {
             HPerson person = personDAO.findById(personId);
-            member = new HLocaleMember(person, getLocale(), false, false, true);
-            saveTeamCoordinator(member);
-        } else if (member.isCoordinator() != isPermissionGranted) {
-            member.setCoordinator(isPermissionGranted);
-            saveTeamCoordinator(member);
+            member = new HLocaleMember(person, getLocale(), updateAsTranslator,
+                updateAsReviewer, updateAsCoordinator);
+        } else {
+            if(role.equals(LocaleRole.Translator)) {
+                member.setTranslator(isPermissionGranted);
+            } else if(role.equals(LocaleRole.Reviewer)) {
+                member.setReviewer(isPermissionGranted);
+            } else if(role.equals(LocaleRole.Coordinator)) {
+                member.setCoordinator(isPermissionGranted);
+            }
         }
+        savePermission(member, permissionDesc, isPermissionGranted);
     }
 
     private void savePermission(HLocaleMember member, String permissionDesc,
             boolean isPermissionGranted) {
         languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
-            this.language, member.getPerson().getId(),
+            language, member.getPerson().getId(),
             member.isTranslator(), member.isReviewer(), member.isCoordinator());
         resetLocale();
         HPerson person = member.getPerson();
@@ -452,6 +406,13 @@ public class LanguageAction implements Serializable {
                 msgs.format("jsf.RemovedAPermission",
                     person.getAccount().getUsername(), permissionDesc));
         }
+
+        HPerson doneByPerson = authenticatedAccount.getPerson();
+        LanguageTeamPermissionChangedEvent changedEvent =
+            new LanguageTeamPermissionChangedEvent(
+                member.getPerson(), getLocale().getLocaleId(),
+                doneByPerson).changedTranslatorPermission(member);
+        languageTeamPermissionChangedEvent.fire(changedEvent);
     }
 
     private void addTeamMember(final Long personId, boolean isTranslator,

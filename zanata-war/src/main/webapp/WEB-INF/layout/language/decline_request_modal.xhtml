@@ -39,7 +39,7 @@
       </button>
     </header>
 
-    <h:panelGroup layout="block" id="declineJoinLanguageForm" styleClass="l--push-bottom-0">
+    <h:form id="declineJoinLanguageForm" styleClass="l--push-bottom-0">
       <a4j:jsFunction name="declineRequest"
         render="requests-size"
         action="#{languageJoinAction.declineRequest(langRequestId)}"
@@ -73,6 +73,6 @@
           </button>
         </h:panelGroup>
       </footer>
-    </h:panelGroup>
+    </h:form>
   </div>
 </div>

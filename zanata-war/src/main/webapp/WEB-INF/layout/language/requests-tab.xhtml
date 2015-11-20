@@ -18,13 +18,13 @@
 
     <h:form id="requests-form" styleClass="l--push-bottom-0">
       <script type="text/javascript">
-        function toggleActions(id, accept, acceptAsTranslator, acceptAsReviewer, acceptAsCoordinator) {
+        function requestTabToggleActions(id, accept, acceptAsTranslator, acceptAsReviewer, acceptAsCoordinator) {
           if(accept) {
             jQuery('#' + id + '-actions').addClass('is-hidden');
             jQuery('#' + id + '-actions-roles').removeClass('is-hidden');
             //populate checkboxes according to request accepted
             if(acceptAsCoordinator) {
-              toggleCoordinator(id, acceptAsCoordinator, true);
+              requestTabToggleCoordinator(id, acceptAsCoordinator, true);
             }
             if(acceptAsReviewer) {
               jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
@@ -38,7 +38,7 @@
           }
         }
 
-        function toggleCoordinator(id, checked, selfUpdate) {
+        function requestTabToggleCoordinator(id, checked, selfUpdate) {
           if(selfUpdate) {
             jQuery('#' + id + '-actions-roles').find('[id$=coordinator]').find('.js-form__checkbox__input').attr('checked', checked).trigger('change');
           }
@@ -55,29 +55,29 @@
           }
         }
 
-        function bindAsCoordinator(key, checked) {
+        function requestTabBindAsCoordinator(key, checked) {
           var res = key.split("-");
           var requestId = res[0];
           var personId = res[1];
-          toggleCoordinator(requestId, checked, false);
-          setAsCoordinator(personId, checked);
+          requestTabToggleCoordinator(requestId, checked, false);
+          bindAsCoordinator(personId, checked, refreshMembersForm());
         }
 
-        function bindAsReviewer(key, checked) {
+        function requestTabBindAsReviewer(key, checked) {
           var res = key.split("-");
           var personId = res[1];
-          setAsReviewer(personId, checked);
+          bindAsReviewer(personId, checked, refreshMembersForm());
         }
 
-        function bindAsTranslator(key, checked) {
+        function requestTabBindAsTranslator(key, checked) {
           var res = key.split("-");
           var personId = res[1];
-          setAsTranslator(personId, checked);
+          bindAsTranslator(personId, checked, refreshMembersForm());
         }
       </script>
 
       <a4j:jsFunction name="acceptRequest"
-        oncomplete="toggleActions(#{langRequestId}, true, #{translator}, #{reviewer}, #{coordinator});refreshMembersForm()"
+        oncomplete="requestTabToggleActions(#{langRequestId}, true, #{translator}, #{reviewer}, #{coordinator});refreshMembersForm()"
         action="#{languageJoinAction.acceptRequest(langRequestId)}"
         render="requests-size">
         <a4j:param name="val1" assignTo="#{langRequestId}"/>
@@ -86,32 +86,12 @@
         <a4j:param name="val4" assignTo="#{coordinator}"/>
       </a4j:jsFunction>
 
-      <a4j:jsFunction name="setAsTranslator" action="#{languageAction.setPersonAsTranslator(personId, asTranslator)}"
-        oncomplete="refreshMembersForm()">
-        <a4j:param name="val1" assignTo="#{personId}"/>
-        <a4j:param name="val2" assignTo="#{asTranslator}"/>
-      </a4j:jsFunction>
-
-      <a4j:jsFunction name="setAsReviewer" action="#{languageAction.setPersonAsReviewer(personId, asReviewer)}"
-        oncomplete="refreshMembersForm()">
-        <a4j:param name="val1" assignTo="#{personId}"/>
-        <a4j:param name="val2" assignTo="#{asReviewer}"/>
-      </a4j:jsFunction>
-
-      <a4j:jsFunction name="setAsCoordinator" action="#{languageAction.setPersonAsCoordinator(personId, asCoordinator)}"
-        oncomplete="refreshMembersForm()">
-        <a4j:param name="val1" assignTo="#{personId}"/>
-        <a4j:param name="val2" assignTo="#{asCoordinator}"/>
-      </a4j:jsFunction>
-
       <ui:fragment rendered="#{languageAction.requests.isEmpty()}">
         <p class="txt--meta l--pad-all-half">#{msgs['jsf.language.request.empty']}</p>
       </ui:fragment>
 
       <ui:fragment rendered="#{not languageAction.requests.isEmpty()}">
         <ul class="list--stats">
-          <ui:include src="decline_request_modal.xhtml"/>
-
           <ui:repeat value="#{languageAction.requests}" var="langRequest">
             <li class="l--pad-all-quarter">
               <div class="list__item__content">
@@ -148,17 +128,17 @@
 
                       <li>
                         <zanata:checkbox label="#{msgs['jsf.Translator']}" id="translator" styleClass="#{isCoordinator ? 'is-disabled' : ''}"
-                          checked="#{languageAction.isTranslator(langRequest.request.requester.person)}" onValueChanged="bindAsTranslator"
+                          checked="#{languageAction.isTranslator(langRequest.request.requester.person)}" onValueChanged="requestTabBindAsTranslator"
                           value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                       <li>
                         <zanata:checkbox label="#{msgs['jsf.Reviewer']}" id="reviewer" styleClass="#{isCoordinator ? 'is-disabled' : ''}"
-                          checked="#{languageAction.isReviewer(langRequest.request.requester.person)}" onValueChanged="bindAsReviewer"
+                          checked="#{languageAction.isReviewer(langRequest.request.requester.person)}" onValueChanged="requestTabBindAsReviewer"
                           value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                       <li>
                         <zanata:checkbox label="#{msgs['jsf.Coordinator']}" id="coordinator"
-                          checked="#{isCoordinator}" onValueChanged="bindAsCoordinator"
+                          checked="#{isCoordinator}" onValueChanged="requestTabBindAsCoordinator"
                           value="#{langRequest.id}-#{langRequest.request.requester.person.id}"/>
                       </li>
                     </ul>
@@ -170,5 +150,6 @@
         </ul>
       </ui:fragment>
     </h:form>
+    <ui:include src="decline_request_modal.xhtml"/>
   </div>
 </ui:composition>

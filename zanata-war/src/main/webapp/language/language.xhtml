@@ -37,7 +37,34 @@
 
     <h:form styleClass="l--push-bottom-0">
       <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}" limitRender="true"
-        render="member-info, members-size, members-form"/>
+        render="member-info, members-size, members-form" oncomplete="zanata.form.appendCheckboxes('#members-form')"/>
+
+      <a4j:jsFunction name="refreshRequestsForm" action="#{languageJoinAction.clearMessage}" limitRender="true"
+        render="requests-form" oncomplete="zanata.form.appendCheckboxes('#requests-form')"/>
+
+      <a4j:jsFunction name="refreshRequestsSection" limitRender="true"
+        render="language-tabs" oncomplete="zanata.form.appendCheckboxes('#requests-form');zanata.form.appendCheckboxes('#members-form')"/>
+
+      <a4j:jsFunction name="bindAsTranslator" action="#{languageAction.updatePersonRole(personId, 'T', asTranslator)}"
+        oncomplete="#{oncompleteCallback}">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asTranslator}"/>
+        <a4j:param name="val3" assignTo="#{oncompleteCallback}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="bindAsReviewer" action="#{languageAction.updatePersonRole(personId, 'R', asReviewer)}"
+        oncomplete="#{oncompleteCallback}">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asReviewer}"/>
+        <a4j:param name="val3" assignTo="#{oncompleteCallback}"/>
+      </a4j:jsFunction>
+
+      <a4j:jsFunction name="bindAsCoordinator" action="#{languageAction.updatePersonRole(personId, 'C', asCoordinator)}"
+        oncomplete="#{oncompleteCallback}">
+        <a4j:param name="val1" assignTo="#{personId}"/>
+        <a4j:param name="val2" assignTo="#{asCoordinator}"/>
+        <a4j:param name="val3" assignTo="#{oncompleteCallback}"/>
+      </a4j:jsFunction>
     </h:form>
 
     <div class="g" id="language-page">
@@ -102,7 +129,7 @@
               <div class="dropdown dropdown--single js-dropdown">
                 <div class="button--group">
                   <zanata:ajax-command-button id="leaveTeam"
-                    oncomplete="refreshMembersForm();"
+                    oncomplete="refreshMembersForm();refreshRequestsSection();"
                     action="#{languageAction.leaveLanguageTeam}"
                     styleClass="txt--danger button">
                     #{msgs['jsf.LeaveLanguageTeam']}
@@ -116,6 +143,17 @@
                   </ui:fragment>
                 </div>
                 <ul class="dropdown__content js-dropdown__content">
+                  <ui:fragment rendered="#{not languageJoinAction.isTranslator()}">
+                    <li>
+                      <a href="#" id="requestAsTranslator"
+                        onclick="jQuery('#asTranslator').val(true)"
+                        data-toggle="modal"
+                        data-target="#joinLanguageDialog"
+                        class="dropdown__content__link button--link">
+                        #{msgs['jsf.language.requestAsTranslator']}
+                      </a>
+                    </li>
+                  </ui:fragment>
                   <ui:fragment rendered="#{not languageJoinAction.isReviewer()}">
                     <li>
                       <a href="#" id="requestAsReviewer"
@@ -166,7 +204,7 @@
       </div>
 
       <div class="g__item w--1-m w--5-8-l w--2-3">
-        <div class="tabs--lined js-tabs">
+        <h:panelGroup layout="block" styleClass="tabs--lined js-tabs" id="language-tabs">
           <ul class="tabs__nav js-tabs-nav">
             <ui:param name="languageURL" value="#{request.contextPath.concat('/language/view/').concat(languageAction.locale.localeId)}"/>
             <li>
@@ -181,7 +219,6 @@
               </span>
               </a>
             </li>
-
             <ui:fragment rendered="#{identity.loggedIn and identity.hasPermission(languageAction.locale, 'manage-language-team')}">
               <li>
                 <a id="requests_tab" href="#{languageURL}/requests"
@@ -218,7 +255,6 @@
               </h:form>
             </li>
 
-
             <ui:fragment rendered="#{identity.hasRole('admin')}">
               <li class="tab__end">
                 <a id="settings_tab" href="#{languageURL}/settings"
@@ -233,7 +269,7 @@
           </ul>
 
           <ul class="tabs__content panels__container js-tabs-content l--push-top-1">
-            <li id="members">
+            <li id="members" class="is-active">
               <ui:include src="/WEB-INF/layout/language/members-tab.xhtml"/>
             </li>
 
@@ -250,14 +286,14 @@
               </li>
             </ui:fragment>
           </ul>
-        </div>
+        </h:panelGroup>
       </div>
     </div>
     <ui:fragment rendered="#{identity.loggedIn}">
       <ui:include src="/WEB-INF/layout/language/contact_coordinator_modal.xhtml"/>
-    </ui:fragment>
-    <ui:fragment rendered="#{not languageJoinAction.isUserAlreadyRequest() and not identity.hasRole('admin')}">
-      <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
+      <ui:fragment rendered="#{not identity.hasRole('admin')}">
+        <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
+      </ui:fragment>
     </ui:fragment>
   </ui:define>
 </ui:composition>
