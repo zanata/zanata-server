@@ -41,15 +41,7 @@
       <script type="application/javascript">
         function memberTabBindAsCoordinator(personId, checked) {
           var actionsRoles = jQuery('#' + personId + '-members-actions-roles');
-          if(checked) {
-            actionsRoles.find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', checked).trigger('change');
-            actionsRoles.find('[id$=reviewer]').addClass('is-disabled');
-            actionsRoles.find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', checked).trigger('change');
-            actionsRoles.find('[id$=translator]').addClass('is-disabled');
-          } else {
-            actionsRoles.find('[id$=reviewer]').removeClass('is-disabled');
-            actionsRoles.find('[id$=translator]').removeClass('is-disabled');
-          }
+          toggleMemberRolesEntry(actionsRoles, checked);
           bindAsCoordinator(personId, checked, refreshRequestsForm());
         }
 

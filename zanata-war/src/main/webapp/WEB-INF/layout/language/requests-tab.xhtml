@@ -42,17 +42,8 @@
           if(selfUpdate) {
             jQuery('#' + id + '-actions-roles').find('[id$=coordinator]').find('.js-form__checkbox__input').attr('checked', checked).trigger('change');
           }
-          if(checked) {
-            //if coordinator is checked, check reviewer and translator, disable them
-            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
-            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').addClass('is-disabled');
-            jQuery('#' + id + '-actions-roles').find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', true).trigger('change');
-            jQuery('#' + id + '-actions-roles').find('[id$=translator]').addClass('is-disabled');
-          } else {
-            //if coordinator is unchecked, enable reviewer and translator checkbox
-            jQuery('#' + id + '-actions-roles').find('[id$=reviewer]').removeClass('is-disabled');
-            jQuery('#' + id + '-actions-roles').find('[id$=translator]').removeClass('is-disabled');
-          }
+          var actionsRoles = jQuery('#' + id + '-actions-roles');
+          toggleMemberRolesEntry(actionsRoles, checked);
         }
 
         function requestTabBindAsCoordinator(key, checked) {

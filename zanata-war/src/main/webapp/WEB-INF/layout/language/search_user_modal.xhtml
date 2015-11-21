@@ -17,13 +17,6 @@
     }
   </script>
 
-  <a4j:jsFunction name="clearSearch"
-    action="#{languageAction.clearSearchResult}" render="searchResults"/>
-
-  <a4j:jsFunction name="addSelected" limitRender="true"
-    action="#{languageAction.addSelected}" render="searchResults"
-    oncomplete="refreshMembersForm();jQuery('#cancel').click();zanata.modal.hide('#searchUserDialog')"/>
-
   <div class="modal__dialog l--constrain-medium">
     <header class="modal__header">
       <h2 class="modal__title">#{msgs['jsf.FindUsersToAdd']}</h2>
@@ -35,21 +28,35 @@
 
     <div class="modal__content l--pad-all-1">
       <h:form id="searchForm">
-          <div class="form--inline">
-            <h:inputText value="#{languageAction.searchTerm}" id="searchField"
-              onkeydown="return submitSearchOnEnter(event);"
-              styleClass="form--inline__input">
-              <rich:placeholder value="#{msgs['jsf.SearchUsers']}" styleClass="txt--neutral" />
-            </h:inputText>
-            <div class="form--inline__suffix">
-              <a4j:commandButton id="searchBtn"
-                value="#{msgs['jsf.Search']}"
-                styleClass="form--inline__addon button--primary"
-                action="#{languageAction.searchForTeamMembers}"
-                render="searchResults"
-                status="searchStatus"/>
-            </div>
+        <a4j:jsFunction name="clearSearch"
+          action="#{languageAction.clearSearchResult}" render="searchResults"/>
+
+        <a4j:jsFunction name="addSelected" limitRender="true"
+          action="#{languageAction.addSelected}" render="searchResults"
+          oncomplete="refreshMembersForm();jQuery('#cancel').click();zanata.modal.hide('#searchUserDialog')"/>
+
+        <a4j:jsFunction name="updateSearchResult" action="#{languageAction.updateSearchResult(personId, isTranslator, isReviewer, isCoordinator)}">
+          <a4j:param name="val1" assignTo="#{personId}"/>
+          <a4j:param name="val2" assignTo="#{isTranslator}"/>
+          <a4j:param name="val3" assignTo="#{isReviewer}"/>
+          <a4j:param name="val3" assignTo="#{isCoordinator}"/>
+        </a4j:jsFunction>
+
+        <div class="form--inline">
+          <h:inputText value="#{languageAction.searchTerm}" id="searchField"
+            onkeydown="return submitSearchOnEnter(event);"
+            styleClass="form--inline__input">
+            <rich:placeholder value="#{msgs['jsf.SearchUsers']}" styleClass="txt--neutral" />
+          </h:inputText>
+          <div class="form--inline__suffix">
+            <a4j:commandButton id="searchBtn"
+              value="#{msgs['jsf.Search']}"
+              styleClass="form--inline__addon button--primary"
+              action="#{languageAction.searchForTeamMembers}"
+              render="searchResults"
+              status="searchStatus"/>
           </div>
+        </div>
       </h:form>
       <a4j:status name="searchStatus">
         <f:facet name="start">

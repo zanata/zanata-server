@@ -33,6 +33,20 @@
         updateStateFromUrl();
       });
       //]]>
+
+      function toggleMemberRolesEntry(actionsRolesEntry, isCoordinatorChecked) {
+        if(isCoordinatorChecked) {
+          //if coordinator is checked, check reviewer and translator, disable them
+          actionsRolesEntry.find('[id$=reviewer]').find('.js-form__checkbox__input').attr('checked', isCoordinatorChecked).trigger('change');
+          actionsRolesEntry.find('[id$=reviewer]').addClass('is-disabled');
+          actionsRolesEntry.find('[id$=translator]').find('.js-form__checkbox__input').attr('checked', isCoordinatorChecked).trigger('change');
+          actionsRolesEntry.find('[id$=translator]').addClass('is-disabled');
+        } else {
+          //if coordinator is unchecked, enable reviewer and translator checkbox
+          actionsRolesEntry.find('[id$=reviewer]').removeClass('is-disabled');
+          actionsRolesEntry.find('[id$=translator]').removeClass('is-disabled');
+        }
+      }
     </script>
 
     <h:form styleClass="l--push-bottom-0">

@@ -28,6 +28,7 @@ import javax.faces.event.ValueChangeEvent;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -168,10 +169,20 @@ public class LanguageAction implements Serializable {
 
     public List<SelectablePerson> getSearchResults() {
         if (searchResults == null) {
-            searchResults = new ArrayList<>();
+            searchResults = Lists.<SelectablePerson>newArrayList();
         }
-
         return searchResults;
+    }
+
+    public void updateSearchResult(Long personId, boolean isTranslator,
+        boolean isReviewer, boolean isCoordinator) {
+        for (SelectablePerson selectablePerson : getSearchResults()) {
+            if (selectablePerson.getPerson().getId().equals(personId)) {
+                selectablePerson.setTranslator(isTranslator);
+                selectablePerson.setReviewer(isReviewer);
+                selectablePerson.setCoordinator(isCoordinator);
+            }
+        }
     }
 
     public void reset() {
@@ -479,30 +490,15 @@ public class LanguageAction implements Serializable {
         getSearchResults().clear();
     }
 
+    @Getter
+    @AllArgsConstructor
     public final class SelectablePerson {
-        @Getter
         private HPerson person;
 
-        @Getter
         private boolean selected;
-
-        @Getter
-        private boolean isReviewer;
-
-        @Getter
-        private boolean isCoordinator;
-
-        @Getter
         private boolean isTranslator;
-
-        public SelectablePerson(HPerson person, boolean selected,
-                boolean isTranslator, boolean isReviewer, boolean isCoordinator) {
-            this.person = person;
-            this.selected = selected;
-            this.isReviewer = isReviewer;
-            this.isCoordinator = isCoordinator;
-            this.isTranslator = isTranslator;
-        }
+        private boolean isReviewer;
+        private boolean isCoordinator;
 
         public void setReviewer(boolean isReviewer) {
             this.isReviewer = isReviewer;
