@@ -21,7 +21,6 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.faces.event.ValueChangeEvent;
 
@@ -174,15 +173,34 @@ public class LanguageAction implements Serializable {
         return searchResults;
     }
 
-    public void updateSearchResult(Long personId, boolean isTranslator,
-        boolean isReviewer, boolean isCoordinator) {
+    public void bindSearchResultTranslator(Long personId, boolean asTranslator) {
+        SelectablePerson selectablePerson = getPersonFromSearchResult(personId);
+        if (selectablePerson != null) {
+            selectablePerson.setTranslator(asTranslator);
+        }
+    }
+
+    public void bindSearchResultReviewer(Long personId, boolean asReviewer) {
+        SelectablePerson selectablePerson = getPersonFromSearchResult(personId);
+        if (selectablePerson != null) {
+            selectablePerson.setReviewer(asReviewer);
+        }
+    }
+
+    public void bindSearchResultCoordinator(Long personId, boolean asCoordinator) {
+        SelectablePerson selectablePerson = getPersonFromSearchResult(personId);
+        if (selectablePerson != null) {
+            selectablePerson.setCoordinator(asCoordinator);
+        }
+    }
+
+    private SelectablePerson getPersonFromSearchResult(Long personId) {
         for (SelectablePerson selectablePerson : getSearchResults()) {
             if (selectablePerson.getPerson().getId().equals(personId)) {
-                selectablePerson.setTranslator(isTranslator);
-                selectablePerson.setReviewer(isReviewer);
-                selectablePerson.setCoordinator(isCoordinator);
+                return selectablePerson;
             }
         }
+        return null;
     }
 
     public void reset() {
@@ -507,6 +525,10 @@ public class LanguageAction implements Serializable {
 
         public void setCoordinator(boolean isCoordinator) {
             this.isCoordinator = isCoordinator;
+            if(isCoordinator) {
+                isTranslator = true;
+                isReviewer = true;
+            }
             refreshSelected();
         }
 
