@@ -26,6 +26,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.CopyAction;
+import org.zanata.util.FacesNavigationUtil;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
@@ -194,8 +195,9 @@ public class MergeTransAction extends CopyAction implements Serializable {
             return;
         }
         mergeTranslationsManager.start(sourceProjectSlug,
-                sourceVersionSlug, targetProjectSlug, targetVersionSlug,
-                !keepExistingTranslation);
+            sourceVersionSlug, targetProjectSlug, targetVersionSlug,
+            !keepExistingTranslation);
+        FacesNavigationUtil.handlePageNavigation(null, "merge-translation");
     }
 
     // Check if copy-trans, copy version or merge-trans is running for the
