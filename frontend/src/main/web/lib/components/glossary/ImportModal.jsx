@@ -49,18 +49,9 @@ var ImportModal = React.createClass({
     this.setState(this.getInitialState());
   },
 
-  _onSubmit: function(e) {
-    e.preventDefault();
-  },
-
   _onFileChange: function(e) {
-    var file = e.target.files[0],
-      reader = new FileReader();
-
-    reader.onload = () => {
-      this.setState({file: file});
-    };
-    reader.readAsDataURL(file);
+    var file = e.target.files[0];
+    this.setState({file: file});
   },
 
   _uploadFile: function() {
@@ -126,7 +117,7 @@ var ImportModal = React.createClass({
 
     return (
       <div className={this.props.className}>
-        <Button onClick={this._showModal} link>
+        <Button className='whsnw tove ovh' onClick={this._showModal} link>
           <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
         </Button>
         <Modal show={this.state.show} onHide={this._closeModal}>
@@ -134,9 +125,7 @@ var ImportModal = React.createClass({
             <Modal.Title>Import Glossary</Modal.Title>
           </Modal.Header>
           <Modal.Body className='tal' scrollable={false}>
-            <form onSubmit={this._onSubmit} encType="multipart/form-data" className="mb1">
-              <input type="file" onChange={this._onFileChange} ref="file" multiple={false} disabled={isUploading} />
-            </form>
+            <input type="file" onChange={this._onFileChange} ref="file" multiple={false} disabled={isUploading} className="mb1" />
             {messageSection}
             {transLanguageDropdown}
             <p>

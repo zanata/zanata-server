@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
@@ -40,9 +42,9 @@ import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.ReadOnlyEntityException;
 import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.rest.dto.ProjectIteration;
+import org.zanata.rest.dto.TransUnitStatus;
 import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.editor.dto.Locale;
-import org.zanata.rest.editor.dto.TransUnitStatus;
 import org.zanata.search.FilterConstraints;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ConfigurationService;
@@ -312,9 +314,11 @@ public class ProjectVersionService implements ProjectVersionResource {
     public Response getTransUnitStatus(
             @PathParam("projectSlug") String projectSlug,
             @PathParam("versionSlug") String versionSlug,
-            @PathParam("docId") String docId,
-            @PathParam("localeId") String localeId) {
-        docId = URIHelper.convertFromDocumentURIId(docId);
+            @QueryParam("docId") String docId,
+            @DefaultValue("en-US") @QueryParam("localeId") String localeId) {
+        if(StringUtils.isEmpty(docId)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
         HDocument document =
                 documentDAO.getByProjectIterationAndDocId(projectSlug,
@@ -363,11 +367,8 @@ public class ProjectVersionService implements ProjectVersionResource {
                 hProjectIteration == null ? null : hProjectIteration
                         .getProject();
 
-        if (hProjectIteration == null) {
-            throw new NoSuchEntityException("Project version '" + projectSlug
-                    + ":" + versionSlug + "' not found.");
-        } else if (hProjectIteration.getStatus().equals(EntityStatus.OBSOLETE)
-                || hProject.getStatus().equals(EntityStatus.OBSOLETE)) {
+        if (hProjectIteration == null || hProjectIteration.getStatus().equals(EntityStatus.OBSOLETE)
+            || hProject.getStatus().equals(EntityStatus.OBSOLETE)) {
             throw new NoSuchEntityException("Project version '" + projectSlug
                     + ":" + versionSlug + "' not found.");
         } else if (writeOperation) {
@@ -375,12 +376,9 @@ public class ProjectVersionService implements ProjectVersionResource {
                     || hProject.getStatus().equals(EntityStatus.READONLY)) {
                 throw new ReadOnlyEntityException("Project version '"
                         + projectSlug + ":" + versionSlug + "' is read-only.");
-            } else {
-                return hProjectIteration;
             }
-        } else {
-            return hProjectIteration;
         }
+        return hProjectIteration;
     }
 
     /**
