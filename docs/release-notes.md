@@ -26,7 +26,8 @@
 * [ZNTA-718](https://zanata.atlassian.net/browse/ZNTA-718) - Allow admin and project maintainer to merge translation from all active projects.
 * [ZNTA-639](https://zanata.atlassian.net/browse/ZNTA-639) - Expired sessions causing ViewExpiredExceptions
 * [ZNTA-720](https://zanata.atlassian.net/browse/ZNTA-720) - Redirect to login page after account activation
-
+* [ZNTA-813](https://zanata.atlassian.net/browse/ZNTA-813) - Add tooltip for disabled account
+* [ZNTA-814](https://zanata.atlassian.net/browse/ZNTA-814) - handle enter key in inactive account page
 
 -----------------------
 
