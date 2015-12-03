@@ -1,3 +1,8 @@
+## 3.9
+
+<h5>Bug fixes</h5>
+* [ZNTA-804](https://zanata.atlassian.net/browse/ZNTA-804) - Coordinators' email addresses should be BCC in Contact Coordinator
+
 ## 3.8
 <h5>Infrastructure Changes</h5>
 * In wildfly or EAP standalone.xml, change all occurrences of "org.jboss.seam.security.jaas.SeamLoginModule" to "org.zanata.security.jaas.InternalLoginModule"
@@ -26,7 +31,18 @@
 * [ZNTA-718](https://zanata.atlassian.net/browse/ZNTA-718) - Allow admin and project maintainer to merge translation from all active projects.
 * [ZNTA-639](https://zanata.atlassian.net/browse/ZNTA-639) - Expired sessions causing ViewExpiredExceptions
 * [ZNTA-720](https://zanata.atlassian.net/browse/ZNTA-720) - Redirect to login page after account activation
+* [ZNTA-767](https://zanata.atlassian.net/browse/ZNTA-767) - File names / paths with spaces cannot be navigated to via the Documents tab. **Note:** This will invalidate all existing bookmarked URL with selected document in the project version page.
+* [ZNTA-815](https://zanata.atlassian.net/browse/ZNTA-815) - New user login redirected to login screen again instead of Dashboard
+* [ZNTA-657](https://zanata.atlassian.net/browse/ZNTA-657) - Add new language uses the search text instead of the selected locale
+* [ZNTA-817](https://zanata.atlassian.net/browse/ZNTA-817) - Fix default terms of use url
+* [ZNTA-816](https://zanata.atlassian.net/browse/ZNTA-816) - No success/confirmation message after updating email via Settings->Profile
+* [ZNTA-811](https://zanata.atlassian.net/browse/ZNTA-811) - Downloaded translated .pot file has no extension
+* [ZNTA-726](https://zanata.atlassian.net/browse/ZNTA-726) - leading/trailing newline validation should not check the line numbers
 
+* [ZNTA-818](https://zanata.atlassian.net/browse/ZNTA-818) - 'SHOW' does not work while changing password in the Settings twice
+
+* [ZNTA-813](https://zanata.atlassian.net/browse/ZNTA-813) - Add tooltip for disabled account
+* [ZNTA-814](https://zanata.atlassian.net/browse/ZNTA-814) - handle enter key in inactive account page
 
 -----------------------
 

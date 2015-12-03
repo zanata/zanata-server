@@ -83,12 +83,12 @@
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
-    <zanata.assets.version>8.0.5</zanata.assets.version>
-    <zanata.api.version>3.8.3-SNAPSHOT</zanata.api.version>
+    <zanata.assets.version>8.1</zanata.assets.version>
+    <zanata.api.version>3.8.3</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
-    <zanata.client.version>3.8.0</zanata.client.version>
-    <zanata.common.version>3.8.0</zanata.common.version>
+    <zanata.client.version>3.8.1</zanata.client.version>
+    <zanata.common.version>3.8.1</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
 
@@ -1477,8 +1477,10 @@
                 <echo message="cargo.installation=${cargo.installation}" />
                 <echo message="appserver.home=${appserver.home}" />
                 <echo message="DISPLAY=${env.DISPLAY}" />
-                <echo message="WARNING: 'appserver' property must be set unless skipping integration tests" unless:set="appserver" />
-                <echo message="WARNING: 'cargo.installation' property is null. You might need to set the env var EAP6_URL" unless:set="cargo.installation" />
+                <echo message="WARNING: 'appserver' property must be set unless skipping integration tests"
+                  unless:set="appserver" />
+                <echo message="WARNING: 'cargo.installation' property is null.  You might need to set the env var EAP6_URL"
+                  unless:set="cargo.installation" />
               </target>
             </configuration>
           </execution>
