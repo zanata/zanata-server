@@ -52,7 +52,7 @@ public class RequestUpdatedEvent {
     long actorId;
 
     /**
-     * State to update
+     * New state
      */
     RequestState state;
 }

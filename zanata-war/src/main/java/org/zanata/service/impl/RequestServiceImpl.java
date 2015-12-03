@@ -22,24 +22,33 @@
 package org.zanata.service.impl;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.zanata.ApplicationConfiguration;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LanguageRequestDAO;
 import org.zanata.dao.RequestDAO;
+import org.zanata.email.DeclineLanguageRequestEmailStrategy;
+import org.zanata.email.EmailStrategy;
 import org.zanata.events.RequestUpdatedEvent;
 import org.zanata.exception.RequestExistsException;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.LanguageRequest;
 import org.zanata.model.Request;
 import org.zanata.model.type.RequestState;
 import org.zanata.model.type.RequestType;
+import org.zanata.service.EmailService;
 import org.zanata.service.RequestService;
 import org.zanata.util.Event;
 
+import javax.enterprise.event.Observes;
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +58,7 @@ import java.util.List;
  */
 @Name("requestServiceImpl")
 @Scope(ScopeType.STATELESS)
+@Slf4j
 public class RequestServiceImpl implements RequestService {
 
     @In
@@ -59,6 +69,15 @@ public class RequestServiceImpl implements RequestService {
 
     @In("event")
     private Event<RequestUpdatedEvent> requestUpdatedEvent;
+
+    @In
+    private ApplicationConfiguration applicationConfiguration;
+
+    @In
+    private EmailService emailServiceImpl;
+
+    @In
+    private Messages msgs;
 
     @Override
     public LanguageRequest createLanguageRequest(HAccount requester,
@@ -112,8 +131,8 @@ public class RequestServiceImpl implements RequestService {
         if (languageRequest != null) {
             Request oldRequest = languageRequest.getRequest();
 
-            Date now = new Date();
-            Request newRequest = oldRequest.update(actor, state, comment, now);
+            Request newRequest =
+                oldRequest.update(actor, state, comment, new Date());
             requestDAO.makePersistent(oldRequest);
 
             languageRequest.setRequest(newRequest);
@@ -127,6 +146,70 @@ public class RequestServiceImpl implements RequestService {
             throw new EntityNotFoundException();
         }
     }
+
+    @Observer(RequestUpdatedEvent.EVENT_NAME)
+    public void onRequestUpdated(@Observes RequestUpdatedEvent event) {
+        Request request = requestDAO.findById(event.getId());
+        if(request.getRequestType().equals(RequestType.LOCALE)) {
+            processOnLanguageRequestUpdated(event);
+        }
+    }
+
+    /**
+     * send out decline email if state equals reject
+     */
+    private void processOnLanguageRequestUpdated(RequestUpdatedEvent event) {
+        if (event.getState().equals(RequestState.REJECTED)) {
+            LanguageRequest languageRequest =
+                languageRequestDAO.findById(event.getRequestId());
+
+            String contactCoordinatorLink =
+                applicationConfiguration.getServerPath() +
+                    "/language/view/" +
+                    languageRequest.getLocale().getLocaleId();
+
+            HAccount requester = languageRequest.getRequest().getRequester();
+            String message = languageRequest.getRequest().getComment();
+
+            EmailStrategy strategy =
+                new DeclineLanguageRequestEmailStrategy(
+                    requester.getUsername(),
+                    getRequestRoles(languageRequest), contactCoordinatorLink,
+                    languageRequest.getLocale().retrieveDisplayName(),
+                    languageRequest.getRequest().getComment());
+            try {
+                emailServiceImpl
+                    .sendToLanguageRequester(strategy, requester.getPerson());
+            } catch (Exception e) {
+                String subject = strategy.getSubject(msgs);
+
+                StringBuilder sb =
+                    new StringBuilder()
+                        .append("Failed to send email with subject '")
+                        .append(strategy.getSubject(msgs))
+                        .append("' , message '").append(message)
+                        .append("'");
+                log.error(
+                    "Failed to send email: toName '{}', subject '{}', message '{}'. {}",
+                    requester.getUsername(), subject, message, e);
+            }
+        }
+    }
+
+    private String getRequestRoles(LanguageRequest languageRequest) {
+        StringBuilder sb = new StringBuilder();
+        if(languageRequest.isCoordinator()) {
+            sb.append(StringUtils.lowerCase(msgs.get("jsf.Coordinator")));
+        }
+        if(languageRequest.isReviewer()) {
+            sb.append(StringUtils.lowerCase(msgs.get("jsf.Reviewer")));
+        }
+        if(languageRequest.isTranslator()) {
+            sb.append(StringUtils.lowerCase(msgs.get("jsf.Translator")));
+        }
+        return sb.toString();
+    }
+
 
     @Override
     public LanguageRequest getLanguageRequest(long languageRequestId) {

@@ -36,7 +36,7 @@
   <hr/>
 #end
 
-<p>$msgs.format("jsf.email.coordinator.ResponseInstructions",
+<p>$msgs.format("jsf.email.coordinator.request.responseInstructions",
     $localeId, $fromName, $replyEmail)</p>
 
 <p>

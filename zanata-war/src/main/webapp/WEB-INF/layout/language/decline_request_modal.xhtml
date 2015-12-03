@@ -43,7 +43,7 @@
       <a4j:jsFunction name="declineRequest"
         render="requests-size"
         action="#{languageJoinAction.declineRequest(langRequestId)}"
-        oncomplete="toggleActions(jQuery('#requestId').val(), false);jQuery('#decline-request-cancel-button').click();refreshMembersForm()">
+        oncomplete="requestTabToggleActions(jQuery('#requestId').val(), false);jQuery('#decline-request-cancel-button').click();refreshMembersForm()">
         <a4j:param name="val1" assignTo="#{langRequestId}"/>
       </a4j:jsFunction>
 
