@@ -158,8 +158,8 @@ public class LanguageJoinAction implements Serializable {
         } catch (RequestExistsException e) {
             String message =
                     msgs.format("jsf.language.request.exists",
-                            authenticatedAccount.getUsername(), getLocale()
-                                    .getDisplayName());
+                            authenticatedAccount.getUsername(),
+                            getLocale().retrieveDisplayName());
             facesMessages.addGlobal(message);
         } finally {
             clearMessage();
