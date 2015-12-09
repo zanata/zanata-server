@@ -99,10 +99,10 @@
             <div>
               #{languageAction.locale.retrieveNativeName()}
             </div>
-            <h:panelGroup layout="block"  rendered="#{languageAction.locale.asULocale().country ne ''}">
+            <h:panelGroup layout="block" rendered="#{languageAction.locale.asULocale().country ne ''}">
               #{languageAction.locale.asULocale().country}
             </h:panelGroup>
-            <h:panelGroup layout="block"  rendered="#{languageAction.locale.asULocale().variant ne ''}">
+            <h:panelGroup layout="block" rendered="#{languageAction.locale.asULocale().variant ne ''}">
               #{languageAction.locale.asULocale().variant}
             </h:panelGroup>
           </div>
@@ -150,47 +150,49 @@
                     <s:conversationId name="id"
                       value="#{languageAction.language}"/>
                   </zanata:ajax-command-button>
-                  <ui:fragment rendered="#{not languageJoinAction.isCoordinator()}">
+                  <ui:fragment rendered="#{not languageJoinAction.isCoordinator() and not languageJoinAction.isUserAlreadyRequest()}">
                     <button class="button button--snug js-dropdown__toggle" style="height: 2.15em">
                       <i class="i i--large i--arrow-down"></i>
                     </button>
                   </ui:fragment>
                 </div>
-                <ul class="dropdown__content js-dropdown__content">
-                  <ui:fragment rendered="#{not languageJoinAction.isTranslator()}">
-                    <li>
-                      <a href="#" id="requestAsTranslator"
-                        onclick="jQuery('#asTranslator').val(true)"
-                        data-toggle="modal"
-                        data-target="#joinLanguageDialog"
-                        class="dropdown__content__link button--link">
-                        #{msgs['jsf.language.requestAsTranslator']}
-                      </a>
-                    </li>
-                  </ui:fragment>
-                  <ui:fragment rendered="#{not languageJoinAction.isReviewer()}">
-                    <li>
-                      <a href="#" id="requestAsReviewer"
-                        onclick="jQuery('#asReviewer').val(true)"
-                        data-toggle="modal"
-                        data-target="#joinLanguageDialog"
-                        class="dropdown__content__link button--link">
-                        #{msgs['jsf.language.requestAsReviewer']}
-                      </a>
-                    </li>
-                  </ui:fragment>
-                  <ui:fragment rendered="#{not languageJoinAction.isCoordinator()}">
-                    <li>
-                      <a href="#" id="requestAsCoordinator"
-                        onclick="jQuery('#asCoordinator').val(true)"
-                        data-toggle="modal"
-                        data-target="#joinLanguageDialog"
-                        class="dropdown__content__link button--link">
-                        #{msgs['jsf.language.requestAsCoordinator']}
-                      </a>
-                    </li>
-                  </ui:fragment>
-                </ul>
+                <ui:fragment rendered="#{not languageJoinAction.isUserAlreadyRequest()}">
+                  <ul class="dropdown__content js-dropdown__content">
+                    <ui:fragment rendered="#{not languageJoinAction.isTranslator()}">
+                      <li>
+                        <a href="#" id="requestAsTranslator"
+                          onclick="jQuery('#asTranslator').val(true)"
+                          data-toggle="modal"
+                          data-target="#joinLanguageDialog"
+                          class="dropdown__content__link button--link">
+                          #{msgs['jsf.language.requestAsTranslator']}
+                        </a>
+                      </li>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not languageJoinAction.isReviewer()}">
+                      <li>
+                        <a href="#" id="requestAsReviewer"
+                          onclick="jQuery('#asReviewer').val(true)"
+                          data-toggle="modal"
+                          data-target="#joinLanguageDialog"
+                          class="dropdown__content__link button--link">
+                          #{msgs['jsf.language.requestAsReviewer']}
+                        </a>
+                      </li>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{not languageJoinAction.isCoordinator()}">
+                      <li>
+                        <a href="#" id="requestAsCoordinator"
+                          onclick="jQuery('#asCoordinator').val(true)"
+                          data-toggle="modal"
+                          data-target="#joinLanguageDialog"
+                          class="dropdown__content__link button--link">
+                          #{msgs['jsf.language.requestAsCoordinator']}
+                        </a>
+                      </li>
+                    </ui:fragment>
+                  </ul>
+                </ui:fragment>
               </div>
             </ui:fragment>
 

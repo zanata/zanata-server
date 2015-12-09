@@ -28,6 +28,7 @@
       jQuery('#asTranslator').val(false);
       jQuery('#asReviewer').val(false);
       jQuery('#asCoordinator').val(false);
+      jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('')
     }
   </script>
 
@@ -53,7 +54,7 @@
       </a4j:jsFunction>
 
       <a4j:jsFunction name="clearRequestToJoinLanguageMessage" action="#{languageJoinAction.clearMessage()}"
-        render="requestToJoinLanguageMessageField" oncomplete="console.info('clear')"/>
+        render="requestToJoinLanguageMessageField" oncomplete="jQuery('#' + jqSelector('#{rich:clientId('request-join-message')}')).val('')"/>
 
       <div class="modal__content l--pad-all-1">
         <input type="hidden" id="asTranslator" value="false"/>

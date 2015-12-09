@@ -38,7 +38,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.zanata.exception.RequestExistsException;
+import org.zanata.model.HPerson;
 import org.zanata.model.LanguageRequest;
+import org.zanata.model.LocaleRole;
 import org.zanata.model.type.RequestState;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -127,11 +129,29 @@ public class LanguageJoinAction implements Serializable {
         identity.checkPermission(getLocale(), "manage-language-team");
         LanguageRequest request =
                 requestServiceImpl.getLanguageRequest(languageRequestId);
+        Long personId = request.getRequest().getRequester().getPerson().getId();
+
+        boolean updateAsTranslator, updateAsReviewer, updateAsCoordinator;
+
+        HLocaleMember member = localeMemberDAO.findByPersonAndLocale(
+            personId, new LocaleId(language));
+
+        if (member == null) {
+            updateAsTranslator = request.isTranslator();
+            updateAsReviewer = request.isReviewer();
+            updateAsCoordinator = request.isCoordinator();
+        } else {
+            updateAsTranslator =
+                member.isTranslator() ? true : request.isTranslator();
+            updateAsReviewer =
+                member.isReviewer() ? true : request.isReviewer();
+            updateAsCoordinator =
+                member.isCoordinator() ? true : request.isCoordinator();
+        }
 
         languageTeamServiceImpl.joinOrUpdateRoleInLanguageTeam(
-            language, request.getRequest().getRequester().getId(),
-            request.isTranslator(), request.isReviewer(),
-            request.isCoordinator());
+            language, personId, updateAsTranslator, updateAsReviewer,
+            updateAsCoordinator);
 
         requestServiceImpl.updateLanguageRequest(languageRequestId,
                 authenticatedAccount, RequestState.ACCEPTED, "");
