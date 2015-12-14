@@ -20,7 +20,7 @@
  */
 package org.zanata.email;
 
-import static javax.mail.Message.RecipientType.TO;
+import static javax.mail.Message.RecipientType.BCC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayOutputStream;
@@ -143,10 +143,10 @@ public class EmailStrategyTest {
         assertThat(message.getFrom()).extracting("address").contains(
                 fromAddress);
         assertThat(message.getFrom()).extracting("personal").contains(
-                fromName);
-        assertThat(message.getRecipients(TO)).extracting("address").contains(
-                toAddress);
-        assertThat(message.getRecipients(TO)).extracting("personal").contains(
+            fromName);
+        assertThat(message.getRecipients(BCC)).extracting("address").contains(
+            toAddress);
+        assertThat(message.getRecipients(BCC)).extracting("personal").contains(
                 toName);
     }
 
@@ -155,7 +155,6 @@ public class EmailStrategyTest {
         assertThat(html).contains(msgs.get(
                 "jsf.email.GeneratedFromZanataServerAt"));
     }
-
 
     @Test
     public void activation() throws Exception {
@@ -196,9 +195,35 @@ public class EmailStrategyTest {
         checkGenericTemplate(html);
 
         assertThat(html).contains(msgs.format(
-                "jsf.email.admin.UserMessageIntro", fromName, fromLoginName));
+            "jsf.email.admin.UserMessageIntro", fromName, fromLoginName));
         assertThat(html).contains(
                 htmlMessage);
+    }
+
+    @Test
+    public void declineLanguageRequest() throws Exception {
+        String contactCoordinatorLink = "http://localhost/language";
+        String roles = "coordinator, translator";
+        String localeDisplayName = "Spanish";
+
+        EmailStrategy strategy =
+            new DeclineLanguageRequestEmailStrategy(
+                toName, roles, contactCoordinatorLink, localeDisplayName,
+                htmlMessage);
+
+        builder.buildMessage(message, strategy, toAddresses,
+            Lists.newArrayList("declineLanguageRequest test"));
+
+        checkFromAndTo(message);
+        assertThat(message.getSubject()).isEqualTo(msgs.format(
+            "jsf.email.languageteam.request.reject.subject", localeDisplayName));
+
+        String html = extractHtmlPart(message);
+        checkGenericTemplate(html);
+
+        assertThat(html).contains(msgs.format(
+            "jsf.email.languageteam.request.reject.message", roles, localeDisplayName));
+        assertThat(html).contains(htmlMessage);
     }
 
     @Test
@@ -292,8 +317,7 @@ public class EmailStrategyTest {
         assertThat(html).contains(msgs.format(
                 "jsf.email.joinrequest.UserRequestingToJoin",
                 fromName, fromLoginName, localeId, localeNativeName));
-        assertThat(html).contains(
-                htmlMessage);
+        assertThat(html).contains(htmlMessage);
         assertThat(html).contains(
                 serverPath + "/language/view/" + localeId);
     }

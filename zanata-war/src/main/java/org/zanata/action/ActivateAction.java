@@ -20,13 +20,17 @@
  */
 package org.zanata.action;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -34,15 +38,20 @@ import org.zanata.dao.AccountActivationKeyDAO;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.exception.ActivationLinkExpiredException;
 import org.zanata.model.HAccountActivationKey;
-import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.seam.security.IdentityManager;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.zanata.ui.faces.FacesMessages;
+
 @Name("activate")
-@Scope(ScopeType.PAGE)
+@Scope(ScopeType.CONVERSATION)
 public class ActivateAction implements Serializable {
 
     private static final long serialVersionUID = -8079131168179421345L;
+
+    private static int LINK_ACTIVE_DAYS = 1;
 
     @In
     private AccountActivationKeyDAO accountActivationKeyDAO;
@@ -50,21 +59,17 @@ public class ActivateAction implements Serializable {
     @In
     private IdentityManager identityManager;
 
-    @In
-    private ConversationScopeMessages conversationScopeMessages;
+    @In("jsfMessages")
+    private FacesMessages facesMessages;
 
+    @Getter
+    @Setter
     private String activationKey;
-
-    public String getActivationKey() {
-        return activationKey;
-    }
 
     private HAccountActivationKey key;
 
-    private static int LINK_ACTIVE_DAYS = 1;
-
-    public void validateActivationKey() {
-
+    @Begin(join = true)
+    public void validateAndActivateAccount() throws IOException {
         if (getActivationKey() == null) {
             throw new KeyNotFoundException("null activation key");
         }
@@ -80,34 +85,27 @@ public class ActivateAction implements Serializable {
             throw new ActivationLinkExpiredException("Activation link expired:"
                     + getActivationKey());
         }
+
+        new AbstractRunAsOperation() {
+            public void execute() {
+                identityManager.enableUser(key.getAccount().getUsername());
+                identityManager.grantRole(key.getAccount().getUsername(),
+                    "user");
+            }
+        }.addRole("admin").run();
+        accountActivationKeyDAO.makeTransient(key);
+
+        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+            "Your account was successfully activated. You can now sign in.");
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext ec = context.getExternalContext();
+        ec.getFlash().setKeepMessages(true);
+        ec.redirect(ec.getRequestContextPath() + "/account/sign_in");
     }
 
     private boolean isExpired(Date creationDate, int activeDays) {
         Date expiryDate = DateUtils.addDays(creationDate, activeDays);
         return expiryDate.before(new Date());
     }
-
-    public void setActivationKey(String activationKey) {
-        this.activationKey = activationKey;
-    }
-
-    public void activate() {
-        new AbstractRunAsOperation() {
-            public void execute() {
-                identityManager.enableUser(key.getAccount().getUsername());
-                identityManager.grantRole(key.getAccount().getUsername(),
-                        "user");
-            }
-        }.addRole("admin").run();
-
-        accountActivationKeyDAO.makeTransient(key);
-
-        conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
-            "Your account was successfully activated. You can now sign in.");
-    }
-
-    public String redirectToLogin() {
-        return "/account/login.xhtml";
-    }
-
 }
