@@ -36,7 +36,7 @@ public class DateRange {
     public static DateRange from(String dateRangeParam, String fromTimezoneId) {
         String[] dateRange = dateRangeParam.split("\\.\\.");
         if (dateRange.length != 2) {
-            throw new InvalidDateParamException(dateRangeParam);
+            throw new InvalidDateParamException("Invalid data range: " + dateRangeParam);
         }
         DateTimeZone zone;
         if (fromTimezoneId == null) {
@@ -64,10 +64,10 @@ public class DateRange {
 
             if (fromDate.isAfter(toDate) || Days.daysBetween(fromDate,
                     toDate).getDays() > MAX_STATS_DAYS) {
-                throw new InvalidDateParamException(dateRangeParam);
+                throw new InvalidDateParamException("Invalid data range: " + dateRangeParam);
             }
         } catch (IllegalArgumentException e) {
-            throw new InvalidDateParamException(dateRangeParam);
+            throw new InvalidDateParamException("Invalid data range: " + dateRangeParam);
         }
         return new DateRange(fromDate, toDate, zone);
     }

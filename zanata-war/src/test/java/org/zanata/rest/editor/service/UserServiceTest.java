@@ -14,7 +14,7 @@ import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
-import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.dto.User;
 import org.zanata.service.GravatarService;
 
 public class UserServiceTest {

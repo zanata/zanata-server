@@ -25,6 +25,7 @@ import org.zanata.rest.ReadOnlyEntityException;
 import org.zanata.rest.dto.ProjectIteration;
 import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.editor.dto.Locale;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.rest.service.ETagUtils;
 import org.zanata.rest.service.ProjectVersionService;
 import org.zanata.rest.service.ResourceUtils;
@@ -57,6 +58,8 @@ public class ProjectVersionServiceUnitTest {
     private ProjectIterationDAO projectIterationDAO;
     @Mock
     private LocaleService localeService;
+    @Mock
+    private UserService userService;
 
     @Before
     public void setUp() throws Exception {
@@ -64,7 +67,7 @@ public class ProjectVersionServiceUnitTest {
         service =
             new ProjectVersionService(textFlowDAO, documentDAO, null,
                 projectIterationDAO, localeService, request, etagUtil,
-                new ResourceUtils(), null, null, null);
+                new ResourceUtils(), null, null, userService, null);
 
     }
 

@@ -4,8 +4,14 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.rest.service.ProjectVersionService;
 import org.zanata.seam.SeamAutowire;
+import org.zanata.service.impl.ConfigurationServiceImpl;
+import org.zanata.service.impl.GravatarServiceImpl;
+import org.zanata.service.impl.IndexingServiceImpl;
+import org.zanata.service.impl.LocaleServiceImpl;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -39,8 +45,14 @@ public class ProjectVersionTest extends ZanataDbunitJpaTest {
 
     @Before
     public void initializeSeam() {
-        seam.reset().useImpl(ProjectVersionService.class)
-            .use("session", getSession()).ignoreNonResolvable();
+        seam.reset()
+            .useImpl(ProjectVersionService.class)
+            .use("session", getSession())
+            .useImpl(LocaleServiceImpl.class)
+            .useImpl(GravatarServiceImpl.class)
+            .useImpl(ConfigurationServiceImpl.class)
+            .useImpl(UserService.class)
+            .ignoreNonResolvable();
         service = seam.autowire(ProjectVersionService.class);
     }
 
@@ -50,9 +62,10 @@ public class ProjectVersionTest extends ZanataDbunitJpaTest {
         String versionSlug = "1.0";
         String dateRange = "2010-01-01..2010-12-01";
         Response response = service.getContributors(projectSlug, versionSlug,
-            dateRange);
-        List<String> usernameList = (List<String>) response.getEntity();
-        assertThat(usernameList).contains("admin", "bob", "demo");
+                dateRange);
+        List<User> userList = (List<User>) response.getEntity();
+        assertThat(userList).extracting("username").contains("admin", "bob",
+                "demo");
     }
 
     @Test
@@ -62,7 +75,7 @@ public class ProjectVersionTest extends ZanataDbunitJpaTest {
         String dateRange = "2015-01-01..2015-12-01";
         Response response = service.getContributors(projectSlug, versionSlug,
             dateRange);
-        List<String> usernameList = (List<String>) response.getEntity();
-        assertThat(usernameList).isEmpty();
+        List<User> userList = (List<User>) response.getEntity();
+        assertThat(userList).isEmpty();
     }
 }

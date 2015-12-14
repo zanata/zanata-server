@@ -20,6 +20,7 @@
  */
 package org.zanata.action;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
@@ -27,11 +28,13 @@ import javax.faces.application.FacesMessage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.zanata.rest.editor.dto.User;
+import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.Permission;
 import org.zanata.rest.editor.service.UserService;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.AccountDAO;
@@ -91,7 +94,7 @@ public class ProfileHome implements Serializable {
                 return;
             }
         }
-        user = userService.transferToUser(account);
+        user = userService.transferToUser(account, true);
     }
 
     private HAccount useAuthenticatedAccount() {
@@ -109,7 +112,7 @@ public class ProfileHome implements Serializable {
         if(authenticatedAccount == null) {
             return authenticatedUser;
         }
-        return userService.transferToUser(authenticatedAccount);
+        return userService.transferToUser(authenticatedAccount, true);
     }
 
     public String getUsername() {
@@ -123,5 +126,22 @@ public class ProfileHome implements Serializable {
     public void setUsername(String username) {
         this.username = username;
         init();
+    }
+
+    public Permission getUserPermission() {
+        Permission permission = new Permission();
+        boolean authenticated = authenticatedAccount != null;
+        permission.put("authenticated", authenticated);
+        return permission;
+    }
+
+    public String convertToJSON(User user) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(user);
+        } catch (IOException e) {
+            return this.getClass().getName() + "@"
+                + Integer.toHexString(this.hashCode());
+        }
     }
 }

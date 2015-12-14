@@ -42,6 +42,7 @@ import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.TransUnitCount;
 import org.zanata.common.TransUnitWords;
+import org.zanata.model.HAccount;
 import org.zanata.model.HIterationGroup;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
@@ -523,10 +524,10 @@ public class ProjectIterationDAO extends
         return q.list();
     }
 
-    public List<String> getContributors(String projectSlug, String versionSlug,
+    public List<HAccount> getContributors(String projectSlug, String versionSlug,
         DateRange dataRange) {
             String query =
-                "select account.username from HAccount account where account.id in " +
+                "select account from HAccount account where account.id in " +
                     "(select tft.translator.account.id from HTextFlowTarget tft " +
                     "where tft.textFlow.document.projectIteration.slug = :versionSlug " +
                     "and tft.textFlow.document.projectIteration.project.slug =:projectSlug and tft.lastChanged between :fromDate and :toDate) " +

@@ -33,6 +33,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowDAO;
+import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
@@ -43,8 +44,10 @@ import org.zanata.rest.ReadOnlyEntityException;
 import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.rest.dto.ProjectIteration;
 import org.zanata.rest.dto.TransUnitStatus;
+import org.zanata.rest.dto.User;
 import org.zanata.rest.dto.resource.ResourceMeta;
 import org.zanata.rest.editor.dto.Locale;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.search.FilterConstraints;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ConfigurationService;
@@ -97,6 +100,9 @@ public class ProjectVersionService implements ProjectVersionResource {
 
     @In
     private ZanataIdentity identity;
+
+    @In(value = "editor.userService", create = true)
+    private UserService userService;
 
     @Context
     private UriInfo uri;
@@ -246,12 +252,18 @@ public class ProjectVersionService implements ProjectVersionResource {
         @PathParam("dateRange") String dateRange) {
 
         DateRange dateRangeObject = DateRange.from(dateRange);
-        List<String> usernameList = projectIterationDAO.getContributors(
+        List<HAccount> accountList = projectIterationDAO.getContributors(
             projectSlug, versionSlug, dateRangeObject);
 
-        Type genericType = new GenericType<List<String>>() {
+        List<User> userList = Lists.newArrayList();
+        userList.addAll(accountList.stream()
+            .map(account -> userService.transferToUser(account, false))
+            .collect(Collectors.toList()));
+
+
+        Type genericType = new GenericType<List<User>>() {
         }.getGenericType();
-        Object entity = new GenericEntity<>(usernameList, genericType);
+        Object entity = new GenericEntity<>(userList, genericType);
         return Response.ok(entity).build();
     }
 
