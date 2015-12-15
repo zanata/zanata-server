@@ -120,8 +120,8 @@ Any other value will be treated as the name of a virus scanner command: the comm
 
 Go to the `<JBOSS>/bin` directory and run
 
-* `standalone.sh` or `start-zanata.sh` for Linux, Mac
-* `standalone.bat` or `start-zanata.bat` for Windows
+* `standalone.sh -c standalone-zanata.xml` or `start-zanata.sh` for Linux, Mac
+* `standalone.bat -c standalone-zanata.xml` or `start-zanata.bat` for Windows
 
 ## Using Zanata
 

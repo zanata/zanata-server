@@ -35,35 +35,11 @@ println " Note: This installer will change your standalone.xml"
 println " file."
 println "====================================================="
 
-def downloadWarFile = true
-if( new File(WAR_FILE_LOC).exists() ) {
-    downloadWarFile = askYesNoQuestion("It seems Zanata is already installed. Do you wish to download it again? (y/N)")
-} else {
-    downloadWarFile = askYesNoQuestion("Do you wish to download the Zanata package (zanata.war)? (y/N)")
-}
-
 def dbHost
 def dbPort
 def dbSchema
 def dbUsername
 def dbPassword
-
-// Download the war file
-if( downloadWarFile ) {
-    def fileUrl = "https://github.com/zanata/zanata-server/releases/download/server-${ZANATA_VERSION}/zanata-war-${ZANATA_VERSION}.war"
-    println "Downloading $fileUrl"
-    println "This might take a few minutes."
-
-    try {
-        def file = new FileOutputStream(WAR_FILE_LOC)
-        def out = new BufferedOutputStream(file)
-        out << new URL(fileUrl).openStream()
-        out.close()
-        println "Downloaded Zanata ${ZANATA_VERSION}..."
-    } catch (Exception ex) {
-        println "Could not download zanata-war-${ZANATA_VERSION}.war"
-    }
-}
 
 // Move the original standalone and copy the custom one
 def xmlFile = new File(ORIGINAL_STANDALONE_XML_LOC)
