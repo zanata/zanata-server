@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -22,10 +24,8 @@ import javax.ws.rs.core.UriInfo;
 
 import com.google.common.base.Objects;
 import org.apache.commons.lang.StringUtils;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.jboss.resteasy.util.GenericType;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Transactional;
 import org.zanata.common.ContentState;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.ProjectType;
@@ -65,43 +65,43 @@ import lombok.NoArgsConstructor;
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Name("projectVersionService")
+@Named("projectVersionService")
 @Path(ProjectVersionResource.SERVICE_PATH)
 @Transactional
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectVersionService implements ProjectVersionResource {
-    @In
+    @Inject
     private TextFlowDAO textFlowDAO;
 
-    @In
+    @Inject
     private DocumentDAO documentDAO;
 
-    @In
+    @Inject
     private ProjectDAO projectDAO;
 
-    @In
+    @Inject
     private ProjectIterationDAO projectIterationDAO;
 
-    @In
+    @Inject
     private LocaleService localeServiceImpl;
 
     @Context
     private Request request;
 
-    @In
+    @Inject
     private ETagUtils eTagUtils;
 
-    @In
+    @Inject
     private ResourceUtils resourceUtils;
 
-    @In
+    @Inject
     private ConfigurationService configurationServiceImpl;
 
-    @In
+    @Inject
     private ZanataIdentity identity;
 
-    @In(value = "editor.userService", create = true)
+    @Inject
     private UserService userService;
 
     @Context

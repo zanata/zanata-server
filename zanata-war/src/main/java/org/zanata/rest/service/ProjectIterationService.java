@@ -21,22 +21,20 @@
 package org.zanata.rest.service;
 
 import javax.annotation.Nonnull;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Transactional;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.rest.dto.ProjectIteration;
 
-/**
- * This service class is deprecated. See {@link ProjectVersionService}.
- */
-@Name("projectIterationService")
+@RequestScoped
+@Named("projectIterationService")
 @Path(ProjectIterationResource.SERVICE_PATH)
 @Transactional
-@Deprecated
 public class ProjectIterationService implements ProjectIterationResource {
     /** Project Identifier. */
     @PathParam("projectSlug")
@@ -46,7 +44,7 @@ public class ProjectIterationService implements ProjectIterationResource {
     @PathParam("iterationSlug")
     private String iterationSlug;
 
-    @In
+    @Inject
     private ProjectVersionService projectVersionService;
 
     @SuppressWarnings("null")
