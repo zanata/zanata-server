@@ -23,15 +23,19 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.security.auth.login.LoginException;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Transactional;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.dao.PersonDAO;
 import org.zanata.exception.KeyNotFoundException;
 import org.zanata.model.HAccount;
@@ -39,39 +43,48 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HPersonEmailValidationKey;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
-import org.zanata.security.annotations.ZanataSecured;
 import org.zanata.service.impl.EmailChangeService;
 import org.zanata.ui.faces.FacesMessages;
+import org.zanata.util.FacesNavigationUtil;
+import org.zanata.util.UrlUtil;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
-@Name("validateEmail")
+@Named("validateEmail")
 @Slf4j
-@ZanataSecured
+
+@RequestScoped
 public class ValidateEmailAction implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String activationKey;
 
-    @In
-    PersonDAO personDAO;
+    private static int LINK_ACTIVE_DAYS = 1;
 
-    @In
+    @Inject
+    private PersonDAO personDAO;
+
+    @Inject
     private ZanataIdentity identity;
 
-    @In("jsfMessages")
+    @Inject
     private FacesMessages facesMessages;
 
-    @In
+    @Inject
     EmailChangeService emailChangeService;
 
-    @Create
+    @Inject
+    private UrlUtil urlUtil;
+    @Getter
+    @Setter
+    private String activationKey;
+
+    @PostConstruct
     public void onCreate() {
         identity.checkLoggedIn();
     }
 
     @Transactional
     @CheckLoggedIn
-    public String validate() throws LoginException {
+    public void validate() throws LoginException {
         String returnUrl = "/home.xhtml";
 
         if (activationKey != null && !activationKey.isEmpty()) {
@@ -105,26 +118,16 @@ public class ValidateEmailAction implements Serializable {
                 returnUrl = checkResult;
             }
         }
-        return returnUrl;
+        urlUtil.redirectTo(returnUrl);
     }
-
-    private static int LINK_ACTIVE_DAYS = 1;
 
     private String checkExpiryDate(Date createdDate) {
         if (emailChangeService.isExpired(createdDate, LINK_ACTIVE_DAYS)) {
             log.info("Creation date expired:" + createdDate);
             facesMessages.addGlobal(SEVERITY_ERROR,
                     "Link expired. Please update your email again.");
-            return "/profile/edit.xhtml";
+            return urlUtil.dashboardUrl();
         }
         return "";
-    }
-
-    public String getActivationKey() {
-        return activationKey;
-    }
-
-    public void setActivationKey(String activationKey) {
-        this.activationKey = activationKey;
     }
 }

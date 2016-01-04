@@ -34,11 +34,9 @@ import java.util.stream.Collectors;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
-import org.hibernate.type.Type;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.AutoCreate;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.zanata.common.ContentState;
@@ -52,9 +50,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-@Name("textFlowTargetHistoryDAO")
-@AutoCreate
-@Scope(ScopeType.STATELESS)
+@Named("textFlowTargetHistoryDAO")
+@RequestScoped
 public class TextFlowTargetHistoryDAO extends
         AbstractDAOImpl<HTextFlowTargetHistory, Long> {
 
