@@ -53,6 +53,8 @@ public class UserServiceTest {
     @Test
     public void getMyInfoWillReturnInfoAboutAuthenticatedPerson() {
         when(personDAO.findById(person.getId())).thenReturn(person);
+        when(gravatarService.getUserImageUrl(GravatarService.USER_IMAGE_SIZE,
+                person.getEmail())).thenReturn("imageurl");
 
         Response response = service.getMyInfo();
         assertThat(response.getStatus()).isEqualTo(200);
@@ -61,8 +63,6 @@ public class UserServiceTest {
         User user = (User) response.getEntity();
         assertThat(user.getEmail()).isEqualTo(person.getEmail());
         assertThat(user.getName()).isEqualTo(person.getName());
-
-        verify(gravatarService).getGravatarHash(person.getEmail());
     }
 
     @Test
@@ -76,6 +76,8 @@ public class UserServiceTest {
     public void getUserInfoWillReturnInfoAboutThePerson() {
         when(accountDAO.getByUsername("a")).thenReturn(person.getAccount());
         when(personDAO.findById(person.getId())).thenReturn(person);
+        when(gravatarService.getUserImageUrl(GravatarService.USER_IMAGE_SIZE,
+            person.getEmail())).thenReturn("imageurl");
 
         Response response = service.getUserInfo("a");
         assertThat(response.getStatus()).isEqualTo(200);
@@ -84,7 +86,5 @@ public class UserServiceTest {
         User user = (User) response.getEntity();
         assertThat(user.getEmail()).isEqualTo(person.getEmail());
         assertThat(user.getName()).isEqualTo(person.getName());
-
-        verify(gravatarService).getGravatarHash(person.getEmail());
     }
 }
