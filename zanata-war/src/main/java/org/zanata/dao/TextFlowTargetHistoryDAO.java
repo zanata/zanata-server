@@ -127,7 +127,7 @@ public class TextFlowTargetHistoryDAO extends
             boolean automatedEntry) {
         String lastModifiedColumn =
                 translations ? "translated_by_id" : "reviewed_by_id";
-        
+
         StringBuilder queryString = new StringBuilder();
         queryString
             .append("select sum(wordCount), state, localeId from ")
