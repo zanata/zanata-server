@@ -366,7 +366,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
                 translationStats = localeStatistics.getTranslationStats();
             }
             if(localeStatistics == null) {
-                localeStatistics = new LocaleStatistics();
+                localeStatistics = new LocaleStatistics(localeId);
             }
             if(translationStats == null) {
                 translationStats = new BaseContributionStatistic(0, 0, 0, 0);
@@ -388,7 +388,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
                 reviewStats = localeStatistics.getReviewStats();
             }
             if(localeStatistics == null) {
-                localeStatistics = new LocaleStatistics();
+                localeStatistics = new LocaleStatistics(localeId);
             }
             if(reviewStats == null) {
                 reviewStats = new BaseContributionStatistic(0, null, null, 0);
@@ -399,7 +399,8 @@ public class StatisticsServiceImpl implements StatisticsResource {
             localeStatsMap.put(localeId, localeStatistics);
         }
 
-        return new ContributionStatistics(username, localeStatsMap);
+        return new ContributionStatistics(username,
+            new ArrayList(localeStatsMap.values()));
     }
 
     private HPerson findPersonOrExceptionOnNotFound(String username) {
