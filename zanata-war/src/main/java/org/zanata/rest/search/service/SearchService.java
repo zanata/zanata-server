@@ -25,7 +25,9 @@ import org.apache.lucene.queryParser.ParseException;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.rest.search.dto.LanguageTeamSearchResult;
 import org.zanata.rest.search.dto.PersonSearchResult;
+import org.zanata.rest.search.dto.ProjectSearchResult;
 import org.zanata.rest.search.dto.SearchResult;
 import org.zanata.service.GravatarService;
 
@@ -79,10 +81,12 @@ public class SearchService {
     public List<SearchResult> searchProjects(@QueryParam("q") @DefaultValue("") String query) {
         try {
             return projectDAO.searchProjects(query, 20, 0, false).stream().map(p -> {
-                SearchResult result = new SearchResult();
-                result.setName(p.getName());
+                ProjectSearchResult result = new ProjectSearchResult();
+                result.setId(p.getSlug());
+                result.setTitle(p.getName());
                 result.setDescription(p.getDescription());
                 result.setType(Project);
+                // TODO is contributor count feasible?
                 return result;
             }).collect(Collectors.toList());
         }
@@ -97,9 +101,9 @@ public class SearchService {
     public List<SearchResult> searchPeople(@QueryParam("q") @DefaultValue("") String query) {
         return personDAO.findAllContainingName(query).stream().map(p -> {
             PersonSearchResult result = new PersonSearchResult();
-            result.setName(p.getName());
-            result.setDescription(p.getAccount().getUsername());
-            result.setImageUrl(gravatarService.getUserImageUrl(50, p.getEmail()));
+            result.setId(p.getAccount().getUsername());
+            result.setDescription(p.getName());
+            result.setAvatarUrl(gravatarService.getUserImageUrl(50, p.getEmail()));
             result.setType(Person);
             return result;
         }).collect(Collectors.toList());
@@ -109,9 +113,10 @@ public class SearchService {
     @Path("/teams/language")
     public List<SearchResult> searchLanguageTeams(@QueryParam("q") @DefaultValue("") String query) {
         return localeDAO.searchByName(query).stream().map(l -> {
-            SearchResult result = new SearchResult();
-            result.setName(l.getLocaleId().getId());
-            result.setDescription(l.getDisplayName());
+            LanguageTeamSearchResult result = new LanguageTeamSearchResult();
+            result.setId(l.getLocaleId().getId());
+            result.setLocale(l.asULocale().getDisplayName());
+            result.setMemberCount(l.getMembers().size());
             result.setType(LanguageTeam);
             return result;
         }).collect(Collectors.toList());

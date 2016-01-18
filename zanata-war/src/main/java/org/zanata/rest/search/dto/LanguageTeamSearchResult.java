@@ -26,20 +26,12 @@ import lombok.Setter;
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public class SearchResult {
-
-    public enum SearchResultType {
-        Project,
-        LanguageTeam,
-        Person;
-    }
+public class LanguageTeamSearchResult extends SearchResult {
 
     @Getter @Setter
-    private String id;
+    private String locale;
 
     @Getter @Setter
-    private String description;
+    private long memberCount;
 
-    @Getter @Setter
-    private SearchResultType type;
 }

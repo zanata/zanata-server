@@ -29,6 +29,6 @@ import lombok.Setter;
 public class PersonSearchResult extends SearchResult {
 
     @Getter @Setter
-    private String imageUrl;
+    private String avatarUrl;
 
 }
