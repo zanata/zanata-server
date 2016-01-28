@@ -1,5 +1,5 @@
 import moment from 'moment-range';
-import StringUtils from './StringUtils'
+import { isEmptyOrNull } from './StringUtils'
 
 var DateHelper = {
   dateFormat: 'YYYY-MM-DD',
@@ -66,7 +66,7 @@ var DateHelper = {
   },
 
   getDate: function(milliseconds) {
-    if(!StringUtils.isEmptyOrNull(milliseconds)) {
+    if(!isEmptyOrNull(milliseconds)) {
       return new Date(milliseconds);
     }
     return;

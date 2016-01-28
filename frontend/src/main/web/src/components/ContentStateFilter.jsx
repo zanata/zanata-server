@@ -1,7 +1,7 @@
 import React from 'react';
 import Actions from '../actions/UserMatrixActions';
 import {ContentStates, ContentStateStyles} from '../constants/Options';
-import {PureRenderMixin} from 'react/addons';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 var ContentStateFilter = React.createClass({
   mixins: [PureRenderMixin],

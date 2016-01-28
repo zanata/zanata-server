@@ -1,0 +1,16 @@
+import React from 'react'
+
+class Icons extends React.Component {
+  render () {
+    function icons() {
+      return {__html: {{svgFile: 'icons.svg'}}}
+    }
+    /* eslint-disable */
+    return (
+      <div className='Pos(a)' dangerouslySetInnerHTML={icons()} />
+    )
+    /* eslint-enable */
+  }
+}
+
+export default Icons

@@ -1,8 +1,11 @@
-import React, { PureRenderMixin } from 'react/addons';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 import Configs from '../constants/Configs';
 import GlossaryStore from '../stores/GlossaryStore';
 import Actions from '../actions/GlossaryActions';
-import { Button, Input, Icons, Icon, Loader, Select } from 'zanata-ui'
+import { Button, Input, Loader, Select } from 'zanata-ui'
+import Icons from './Icons'
+import Icon from './Icon'
 import DataTable from './glossary/DataTable'
 import NewEntryModal from './glossary/NewEntryModal'
 import ImportModal from './glossary/ImportModal'

@@ -1,0 +1,90 @@
+.D\(ib\) {
+  display: inline-block;
+}
+.Ff\(zsans\) {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.H\(100\%\) {
+  height: 100%;
+}
+.H\(msn2\) {
+  height: 0.694rem;
+}
+.H\(msn1\) {
+  height: 0.833rem;
+}
+.H\(ms0\) {
+  height: 1rem;
+}
+.H\(ms1\) {
+  height: 1.2rem;
+}
+.H\(ms2\) {
+  height: 1.44rem;
+}
+.H\(ms3\) {
+  height: 1.728rem;
+}
+.H\(ms4\) {
+  height: 2.074rem;
+}
+.H\(ms5\) {
+  height: 2.488rem;
+}
+.H\(ms6\) {
+  height: 2.986rem;
+}
+.Lh\(1\.5\) {
+  line-height: 1.5;
+}
+.M\(0\) {
+  margin: 0;
+}
+.Mah\(100\%\) {
+  max-height: 100%;
+}
+.Maw\(100\%\) {
+  max-width: 100%;
+}
+.Pos\(a\), .StretchedBox {
+  position: absolute;
+}
+.Pos\(r\) {
+  position: relative;
+}
+.W\(msn2\) {
+  width: 0.694rem;
+}
+.W\(msn1\) {
+  width: 0.833rem;
+}
+.W\(ms0\) {
+  width: 1rem;
+}
+.W\(ms1\) {
+  width: 1.2rem;
+}
+.W\(ms2\) {
+  width: 1.44rem;
+}
+.W\(ms3\) {
+  width: 1.728rem;
+}
+.W\(ms4\) {
+  width: 2.074rem;
+}
+.W\(ms5\) {
+  width: 2.488rem;
+}
+.W\(ms6\) {
+  width: 2.986rem;
+}
+.Fill\(cc\) {
+  fill: currentColor;
+}
+.StretchedBox {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}

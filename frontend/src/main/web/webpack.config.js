@@ -14,7 +14,8 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'atomic-loader?configPath=' + __dirname +
+          '/atomicCssConfig.js!babel?presets[]=react,presets[]=stage-0,presets[]=es2015',
         include: path.join(__dirname, 'src')
       },
       {

@@ -1,7 +1,9 @@
-import React, {PureRenderMixin} from 'react/addons';
-import { Button, Icon, Tooltip, OverlayTrigger, Overlay } from 'zanata-ui';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
+import { Button, Tooltip, OverlayTrigger, Overlay } from 'zanata-ui';
 import Actions from '../../actions/GlossaryActions';
 import LoadingCell from './LoadingCell'
+import Icon from '../Icon'
 import GlossaryStore from '../../stores/GlossaryStore';
 import StringUtils from '../../utils/StringUtils'
 import _ from 'lodash';

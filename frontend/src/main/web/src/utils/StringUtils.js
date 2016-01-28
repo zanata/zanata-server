@@ -1,19 +1,15 @@
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty'
 
-var StringUtils = {
-  isEmptyOrNull: function (str) {
-    return _.isEmpty(str);
-  },
+export function isEmptyOrNull (str) { return isEmpty(str) }
+export function trimLeadingSpace (str) {
+  return isEmptyOrNull(str) ? str : str.replace(/^\s+/g, '')
+}
+export function trim (str) {
+  return isEmptyOrNull(str) ? str : str.trim()
+}
 
-  trimLeadingSpace: function (str) {
-    if(this.isEmptyOrNull(str)) {
-      return str;
-    }
-    return str.replace(/^\s+/g, '');
-  },
-
-  trim: function (str) {
-    return this.isEmptyOrNull(str) ? str : str.trim();
-  }
-};
-export default StringUtils;
+export default {
+  isEmptyOrNull,
+  trimLeadingSpace,
+  trim
+}

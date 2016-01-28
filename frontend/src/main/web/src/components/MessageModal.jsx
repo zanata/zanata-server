@@ -1,5 +1,6 @@
 import React from 'react'
-import {Icon, Button, Modal} from 'zanata-ui';
+import { Button, Modal } from 'zanata-ui'
+import Icon from './Icon'
 import Actions from '../actions/GlossaryActions';
 import StringUtils from '../utils/StringUtils'
 

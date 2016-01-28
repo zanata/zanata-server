@@ -1,16 +1,18 @@
-import React, {PureRenderMixin} from 'react/addons';
-import Actions from '../../actions/GlossaryActions';
-import {Table, Column} from 'fixed-data-table';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
+import Actions from '../../actions/GlossaryActions'
+import {Table, Column} from 'fixed-data-table'
 import StringUtils from '../../utils/StringUtils'
-import InputCell from './InputCell';
+import InputCell from './InputCell'
 import LoadingCell from './LoadingCell'
 import ActionCell from './ActionCell'
-import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui';
+import { Button, Tooltip, OverlayTrigger } from 'zanata-ui'
+import Icon from '../Icon'
 import SourceActionCell from './SourceActionCell'
 import ColumnHeader from './ColumnHeader'
 import NewEntryModal from './NewEntryModal'
 import ImportModal from './ImportModal'
-import _ from 'lodash';
+import _ from 'lodash'
 import Messages from '../../constants/Messages'
 
 var DataTable = React.createClass({

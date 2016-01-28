@@ -1,8 +1,7 @@
-import _ from 'lodash';
-import StringUtils from './StringUtils'
+import isUndefined from 'lodash/isUndefined'
+import StringUtils, { trim, isEmptyOrNull } from './StringUtils'
 import DateHelpers from './DateHelper'
-import defined from 'defined';
-
+import defined from 'defined'
 
 var GlossaryHelper = {
   /**
@@ -12,14 +11,14 @@ var GlossaryHelper = {
    * @param data
    */
   generateGlossaryTermDTO: function (data, trimContent) {
-    if(_.isUndefined(data)) {
+    if(isUndefined(data)) {
       return;
     }
-    var content = trimContent ? StringUtils.trim(data.content) : data.content,
+    var content = trimContent ? trim(data.content) : data.content,
       locale = data.locale,
-      comment = StringUtils.trim(data.comment);
+      comment = trim(data.comment);
 
-    if(StringUtils.isEmptyOrNull(locale)) {
+    if(isEmptyOrNull(locale)) {
       return;
     } else {
       return  {
@@ -38,19 +37,19 @@ var GlossaryHelper = {
     var entry = {};
 
     entry.id = data.id;
-    entry.pos = StringUtils.trim(data.pos);
-    entry.description = StringUtils.trim(data.description);
+    entry.pos = trim(data.pos);
+    entry.description = trim(data.description);
     entry.srcLang = data.srcTerm.locale;
     entry.sourceReference = data.srcTerm.reference;
     entry.glossaryTerms = [];
 
     var srcTerm = this.generateGlossaryTermDTO(data.srcTerm, false);
-    if(!_.isUndefined(srcTerm)) {
+    if(!isUndefined(srcTerm)) {
       entry.glossaryTerms.push(srcTerm);
     }
 
     var transTerm = this.generateGlossaryTermDTO(data.transTerm, true);
-    if(!_.isUndefined(transTerm)) {
+    if(!isUndefined(transTerm)) {
       entry.glossaryTerms.push(transTerm);
     }
     return entry;
@@ -79,10 +78,9 @@ var GlossaryHelper = {
 
   generateEntry: function (entry, transLocaleId) {
     var srcTerm =
-      this.getTermByLocale(entry.glossaryTerms, entry.srcLang);
-
+      this.getTermByLocale(entry.glossaryTerms, entry.srcLang)
     srcTerm.reference = entry.sourceReference;
-    if(!StringUtils.isEmptyOrNull(srcTerm.lastModifiedDate)) {
+    if(!isEmptyOrNull(srcTerm.lastModifiedDate)) {
       srcTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(srcTerm.lastModifiedDate));
     }
     var transTerm =
@@ -90,7 +88,7 @@ var GlossaryHelper = {
 
     if(transTerm) {
       transTerm.lastModifiedDate = DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate));
-      if(_.isUndefined(transTerm.comment)) {
+      if(isUndefined(transTerm.comment)) {
         transTerm.comment = ''
       }
     } else {
@@ -135,11 +133,11 @@ var GlossaryHelper = {
   },
 
   isSourceValid: function (entry) {
-    return !StringUtils.isEmptyOrNull(StringUtils.trim(entry.srcTerm.content));
+    return !isEmptyOrNull(trim(entry.srcTerm.content));
   },
 
   canUpdateTransComment: function (entry) {
-    return !StringUtils.isEmptyOrNull(entry.transTerm.content);
+    return !isEmptyOrNull(entry.transTerm.content);
   }
 };
 export default GlossaryHelper;

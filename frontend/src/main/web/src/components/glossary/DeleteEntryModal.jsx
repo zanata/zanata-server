@@ -1,6 +1,8 @@
-import React, { PureRenderMixin } from 'react/addons';
-import Actions from '../../actions/GlossaryActions';
-import { Button, Icon, Tooltip, Overlay } from 'zanata-ui';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
+import Actions from '../../actions/GlossaryActions'
+import { Button, Tooltip, Overlay } from 'zanata-ui'
+import Icon from '../Icon'
 
 var DeleteEntryModal = React.createClass({
   propTypes: {

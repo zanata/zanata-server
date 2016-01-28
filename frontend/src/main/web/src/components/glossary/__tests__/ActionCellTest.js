@@ -8,7 +8,7 @@
 //describe('ActionCellTest', function() {
 //  it('Action cell', function() {
 //    console.info('start');
-//    var React = require('react/addons');
+//    var React = require('react');
 //    console.info('start1');
 //    var ActionCell = require('../ActionCell.jsx');
 //

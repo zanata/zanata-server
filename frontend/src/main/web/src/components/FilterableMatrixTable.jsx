@@ -1,4 +1,4 @@
-import React from 'react/addons';
+import React from 'react'
 import ContentStateFilter from './ContentStateFilter';
 import CalendarMonthMatrix from './CalendarMonthMatrix'
 import CalendarPeriodHeading from './CalendarPeriodHeading';

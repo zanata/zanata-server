@@ -1,4 +1,5 @@
-import React, {PureRenderMixin} from 'react/addons';
+import React from 'react'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 import {Input} from 'zanata-ui';
 import StringUtils from '../../utils/StringUtils';
 import Actions from '../../actions/GlossaryActions';
