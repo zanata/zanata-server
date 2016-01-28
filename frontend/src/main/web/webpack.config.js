@@ -1,14 +1,9 @@
 var webpack = require('webpack')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var path = require('path')
 
 module.exports = {
   context: __dirname,
-  devtool: 'eval',
-  entry: [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/only-dev-server',
-    './index'
-  ],
+  entry: './src/index',
   output: {
     path: __dirname,
     filename: 'bundle.js',
@@ -19,11 +14,12 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loaders: ['react-hot', 'babel-loader']
+        loader: 'babel-loader',
+        include: path.join(__dirname, 'src')
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?safe')
+        loader: 'style-loader!css-loader!autoprefixer-loader?browsers=last 2 versions'
       }
     ]
   },
@@ -36,8 +32,6 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new ExtractTextPlugin('bundle.css'),
     new webpack.DefinePlugin({ 'global.GENTLY': false }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.NoErrorsPlugin()

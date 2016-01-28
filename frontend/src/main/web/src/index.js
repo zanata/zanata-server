@@ -1,9 +1,9 @@
 import React from 'react';
 import Router from 'react-router';
-import RootContent from './lib/components/RootContent';
-import Views from './lib/constants/Views.js';
-import Configs from './lib/constants/Configs';
-import StringUtils from './lib/utils/StringUtils';
+import RootContent from './components/RootContent';
+import Views from './constants/Views.js';
+import Configs from './constants/Configs';
+import StringUtils from './utils/StringUtils';
 import _ from 'lodash';
 import 'zanata-ui/lib/styles/index.css'
 
@@ -39,4 +39,3 @@ var routes = Views.getRoutes(view, !_.isUndefined(dev));
 Router.run(routes, Router.HashLocation, (RootContent) => {
   React.render(<RootContent/>, mountNode);
 });
-
