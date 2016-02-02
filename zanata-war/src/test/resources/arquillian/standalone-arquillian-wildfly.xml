@@ -114,9 +114,9 @@
       </console-handler>
       <periodic-rotating-file-handler name="FILE" autoflush="true">
         <formatter>
-          <named-formatter name="logstash" />
+          <named-formatter name="PATTERN" />
         </formatter>
-        <file relative-to="jboss.server.log.dir" path="server.log.json" />
+        <file relative-to="jboss.server.log.dir" path="server.log" />
         <suffix value=".yyyy-MM-dd" />
         <append value="true" />
       </periodic-rotating-file-handler>
@@ -174,10 +174,6 @@
       <formatter name="COLOR-PATTERN">
         <pattern-formatter
           pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n" />
-      </formatter>
-      <formatter name="logstash">
-        <custom-formatter module="org.jboss.logmanager.ext"
-          class="org.jboss.logmanager.ext.formatters.LogstashFormatter" />
       </formatter>
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:batch-jberet:1.0">
