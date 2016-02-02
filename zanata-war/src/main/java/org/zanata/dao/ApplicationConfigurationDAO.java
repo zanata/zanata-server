@@ -1,5 +1,6 @@
 package org.zanata.dao;
 
+import javax.enterprise.context.RequestScoped;
 import org.hibernate.Session;
 
 import javax.enterprise.context.RequestScoped;
