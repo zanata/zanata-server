@@ -1,3 +1,14 @@
+## 3.9
+
+<h5>Bug fixes</h5>
+* [ZNTA-804](https://zanata.atlassian.net/browse/ZNTA-804) - Coordinators' email addresses should be BCC in Contact Coordinator
+* [ZNTA-693](https://zanata.atlassian.net/browse/ZNTA-693) - Handle ClientAbortException exception and reduce severity.
+* [ZNTA-742](https://zanata.atlassian.net/browse/ZNTA-742) - Get a list of contributors for a Project version via the API
+* [ZNTA-744](https://zanata.atlassian.net/browse/ZNTA-744) - Add review data to the contribution statistics API
+* [ZNTA-879](https://zanata.atlassian.net/browse/ZNTA-879) - Allow admin to configure the visibility of user email
+
+-----------------------
+
 ## 3.8.2
 * [ZNTA-854](https://zanata.atlassian.net/browse/ZNTA-854) - Fast scrolling(infinite scroll) in glossary table not loading data
 
@@ -50,6 +61,8 @@
 <h5>New Features</h5>
 * [1224912](https://bugzilla.redhat.com/show_bug.cgi?id=1224912) - Filter "Last modified by translators other than &lt;user&gt;"
 * [1213630](https://bugzilla.redhat.com/show_bug.cgi?id=1213630) - Webhook header needs to include cryptographic signature in header for identification
+* [1214502](https://bugzilla.redhat.com/show_bug.cgi?id=1214502) -  RFE: Grant project creation permission to certain sets of users
+* [ZNTA-555](https://zanata.atlassian.net/browse/ZNTA-555) - Internal "user request management" and tracking
 * [1214502](https://bugzilla.redhat.com/show_bug.cgi?id=1214502) - RFE: Grant project creation permission to certain sets of users
 * [1233524](https://bugzilla.redhat.com/show_bug.cgi?id=1233524) - Update project search page to include user
 * [ZNTA-108](https://zanata.atlassian.net/browse/ZNTA-108) - Improved glossary management: add, edit and delete individual glossary entries
