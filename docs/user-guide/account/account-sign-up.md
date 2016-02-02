@@ -1,43 +1,79 @@
 # Signing Up
 
 
-You can create an account on Zanata using an OpenID login (such as Google or Fedora), or by creating a password specific to Zanata. You can set or change your password and add OpenID accounts to your Zanata account at any time.
+You can create an account on Zanata using an OpenID login (such as Fedora), Yahoo, or by creating a password specific to Zanata. You can set or change your password and add OpenID accounts to your Zanata account at any time. 
 
-*Note: If you want to translate a JBoss-related project, use the [translate.jboss.org](https://translate.jboss.org) site, which requires a jboss.org account. You can create a jboss.org account at the [jboss.org registration page](https://community.jboss.org/register.jspa); Fedora projects should use [fedora.zanata.org](https://fedora.zanata.org); The general open source projects should use [translate.zanata.org](https://translate.zanata.org), which is used in the following instructions.*
+Zanata team hosts following servers:
+ * [fedora.zanata.org](https://fedora.zanata.org) - For [Fedora](https://getfedora.org/)-releated projects. 
+ * [translate.jboss.org](https://translate.jboss.org) - For [JBoss](http://www.jboss.org/)-releated projects
+ * [translate.zanata.org](https://translate.zanata.org) - Generic open source projects 
 
-## Sign up Using OpenID
+Press `Sign up` to start registration.
 
-To create an account using OpenID:
+Fedora and JBoss have their own account systems. 
+After pressing `Sign up`, Zanata will bring you to corresponding registration pages.
+You will need to follow the instructions on screen to complete sign up process.
 
- 1. Navigate to translate.zanata.org
- 1. Click `Sign up` at the upper right of the page.
- 1. Select your OpenID type or enter an OpenID URL.
- 1. Confirm with your OpenID provider, after which you are returned to the Zanata page.
- 1. Complete the `Name`, `Username`, and `Email` fields. Ensure your email address is entered correctly.
- 1. Click `Save`. This sends a validation email to the address you entered in the previous step.
- 1. Open the validation email and click the validation link.
+## Signing up in translate.zanata.org
+
+In translate.zanata.org, you can sign up with Fedora, Yahoo, Open ID, or Zanata itself.
+
+### Sign up with Fedora
+
+ 1. Click `Fedora` in Sign Up page.
+ 2. Follow the on-screen instructions. You can either use existing Fedora account, or register a new Fedora account.
+ 3. Complete the `Name`, `Username`, and `Email` fields. Ensure your email address is entered correctly.
+ 4. Click `Save`. This sends a validation email to the address you entered in the previous step.
+ 5. Open the validation email and click the validation link.
+
+You can now sign in to Zanata using your Fedora credentials.
+
+### Sign up with Yahoo
+
+ 1. Click `Yahoo` in Sign Up page.
+ 2. Follow the on-screen instructions. You can either use existing Yahoo account, or register a new Yahoo account.
+ 3. Complete the `Name`, `Username`, and `Email` fields. Ensure your email address is entered correctly.
+ 4. Click `Save`. This sends a validation email to the address you entered in the previous step.
+ 5. Open the validation email and click the validation link.
+
+You can now sign in to Zanata using your Yahoo credentials.
+ 
+### Sign up with Generic OpenID
+
+Go to the OpenID service provider to obtain your open ID.
+For example, [Open ID Support WordPress.com](https://en.support.wordpress.com/settings/openid/) shows how to use WordPress.com as OpenID provider.
+
+ 1. Login to your OpenID provider on other browser window or tab.
+    For some OpenID provider (e.g. wordpress.com), this step is mandatory.
+ 2. Fill the OpenID and click `Go`
+ 3. Follow the instruction to grant Zanata to use your openID.
+ 4. Complete the `Name`, `Username`, and `Email` fields. Ensure your email address is entered correctly.
+ 5. Click `Save`. This sends a validation email to the address you entered in the previous step.
+ 6. Open the validation email and click the validation link.
+
 <figure>
-   ![Account signup openid](/images/account-signup-openid-details.png)
- </figure>
+   ![Account sign up OpenID](/images/account-signup-openid-details.png)
+</figure>
 
 You can now sign in to Zanata using your OpenID credentials.
 
 
-## Sign up with a New Password
+### Sign up with Zanata itself (Internal Authentication)
 
-To use a separate password for Zanata, rather than registering with your OpenID credentials:
+If you do not have any other accounts, follow these steps:
 
- 1. Click `Sign up` at the upper right of the page.
- 1. Complete the `Name`, `Email`, and other details.
- 1. Click `Register`
- 1. Open the validation email and click the validation link.
+ 1. Complete the `Name`, `Username`, and `Email` and `Password` field.
+ 2. Click `Sign Up`. This sends a validation email to the address you entered in the previous step.
+ 3. Open the validation email and click the validation link.
 
-You can now sign in to Zanata with the user name and password you entered in step 2.
+You can now sign in to Zanata using your Zanata credentials.
 
+### Adding a Password for Direct Zanata Login 
 
-## Adding a Password
+Even you sign up with third party authentication (e.g. Fedora, Yahoo, OpenID),
+you can still login to Zanata when the third party failed.
 
-If you registered with OpenID, you can still set up a password and sign in directly. To set a password, click `Change Password` under your profile settings and enter the desired password.
+To setup the password for direct Zanata login, click `Change Password` under your profile settings and enter the desired password.
 
 
 ## Adding OpenID Accounts to Your Zanata Account
@@ -47,8 +83,8 @@ You can add OpenID accounts to your Zanata account after it is created. You can 
 To add an OpenID account to your Zanata account:
 
  1. Click the profile avatar at the upper right of the page to display the menu pane.
- 1. Click `Settings` and then click `Manage Identities`.
- 1. In the `Actions` menu, click `Add New Identity` and follow the procedure described earlier.
+ 2. Click `Settings` and then click `Manage Identities`.
+ 3. In the `Actions` menu, click `Add New Identity` and follow the procedure described earlier.
 
 *Note: if you want to translate a project that falls under the Fedora CLA, you must add a Fedora OpenID to your Zanata account. You can then sign in with your password or any OpenID account and be allowed to translate Fedora projects.*
 
