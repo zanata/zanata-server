@@ -82,9 +82,14 @@
     </to>
   </rule>
 
-  <!-- error page rule -->
+  <!-- error pages' rules -->
   <rule>
-    <from casesensitive="true">^/error/?.*\??(.*)</from>
+    <from casesensitive="true">^/error/(.*)\??(.*)</from>
+    <to last="true">/error/$1.seam?$2</to>
+  </rule>
+
+  <rule>
+    <from casesensitive="true">^/error\??(.*)</from>
     <to last="true">/error.seam?$1</to>
   </rule>
 

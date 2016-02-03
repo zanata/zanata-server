@@ -211,4 +211,8 @@ public class UrlUtil implements Serializable {
     public String home() {
         return contextPath + "/";
     }
+
+    public String viewExpiredErrorPage() {
+        return contextPath + "/error/viewexpiredexception";
+    }
 }
