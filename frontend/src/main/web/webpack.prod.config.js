@@ -27,7 +27,7 @@ module.exports = _.merge({}, defaultConfig, {
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
-          warnings: false
+        warnings: false
       }
     }),
     new webpack.DefinePlugin({

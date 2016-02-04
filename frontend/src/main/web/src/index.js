@@ -4,9 +4,9 @@ import Router from 'react-router'
 import RootContent from './components/RootContent'
 import Views from './constants/Views.js'
 import Configs from './constants/Configs'
-import StringUtils from './utils/StringUtils'
 import { isUndefined } from 'lodash'
 import 'zanata-ui/lib/styles/index.css'
+import './styles/atomic.css'
 
 /**
  * Process attributes in dom element:id='main-content'
@@ -22,8 +22,6 @@ var user = JSON.parse(mountNode.getAttribute('user'))
 var data = JSON.parse(mountNode.getAttribute('data'))
 var view = Views.getView(data.view)
 var dev = data.dev
-
-console.log(data)
 
 // base rest url, e.g http://localhost:8080/rest
 Configs.baseUrl = baseUrl;

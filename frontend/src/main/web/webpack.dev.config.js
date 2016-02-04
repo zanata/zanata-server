@@ -7,7 +7,7 @@ module.exports = _.merge({}, defaultConfig, {
   plugins: defaultConfig.plugins.concat([
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify('development'),
+        'NODE_ENV': JSON.stringify('development')
       }
     })
   ]),

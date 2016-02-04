@@ -1,11 +1,10 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { Button, Input, Modal, Select } from 'zanata-ui'
-import Icon from '../Icon'
-import Actions from '../../actions/GlossaryActions';
+import { ButtonLink, ButtonRound, Icon, Modal, Select } from 'zanata-ui'
+import Actions from '../../actions/GlossaryActions'
 import StringUtils from '../../utils/StringUtils'
-import _ from 'lodash';
-import GlossaryStore from '../../stores/GlossaryStore';
+import _ from 'lodash'
+import GlossaryStore from '../../stores/GlossaryStore'
 
 var ImportModal = React.createClass({
   propTypes: {
@@ -99,7 +98,7 @@ var ImportModal = React.createClass({
         } else {
           transLanguageDropdown = (<Select
             name='glossary-import-language-selection'
-            className='w16 mb1'
+            className='W(r16) Mb(r1)'
             placeholder='Select a translation language…'
             value={this.state.transLocale}
             options={localeOptions}
@@ -119,15 +118,22 @@ var ImportModal = React.createClass({
 
     return (
       <div className={this.props.className}>
-        <Button className='whsnw tove ovh' onClick={this._showModal} link>
-          <Icon name='import' className='mr1/4' /><span>Import Glossary</span>
-        </Button>
+        <ButtonLink type='default' onClick={this._showModal}>
+          <Icon name='import' className='mr1/4' /><span className='Hidden--lesm'>Import Glossary</span>
+        </ButtonLink>
         <Modal show={this.state.show} onHide={this._closeModal}>
           <Modal.Header>
             <Modal.Title>Import Glossary</Modal.Title>
           </Modal.Header>
           <Modal.Body className='tal' scrollable={false}>
-            <input type="file" onChange={this._onFileChange} ref="file" multiple={false} disabled={isUploading} className="mb1" />
+            <input
+              type="file"
+              onChange={this._onFileChange}
+              ref="file"
+              multiple={false}
+              disabled={isUploading}
+              className="mb1"
+            />
             {messageSection}
             {transLanguageDropdown}
             <p>
@@ -138,8 +144,23 @@ var ImportModal = React.createClass({
             </p>
           </Modal.Body>
           <Modal.Footer>
-            <Button className='mr1' disabled={isUploading} link onClick={this._closeModal}>Cancel</Button>
-            <Button kind='primary' disabled={disableUpload} onClick={this._uploadFile} loading={isUploading}>Import</Button>
+            <ButtonLink
+              theme={{
+                base: {
+                  m: 'Mend(r1)'
+                }
+              }}
+              disabled={isUploading}
+              onClick={this._closeModal}>
+                Cancel
+              </ButtonLink>
+            <ButtonRound
+              type='primary'
+              disabled={disableUpload}
+              onClick={this._uploadFile}
+              loading={isUploading}>
+              Import
+            </ButtonRound>
           </Modal.Footer>
         </Modal>
       </div>)

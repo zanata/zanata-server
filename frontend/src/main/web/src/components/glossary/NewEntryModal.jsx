@@ -1,11 +1,9 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { Button, Input, Modal } from 'zanata-ui'
-import Icon from '../Icon'
-import Actions from '../../actions/GlossaryActions';
+import { ButtonLink, ButtonRound, Icon, Input, Modal } from 'zanata-ui'
+import Actions from '../../actions/GlossaryActions'
 import StringUtils from '../../utils/StringUtils'
-import _ from 'lodash';
-import GlossaryStore from '../../stores/GlossaryStore';
+import GlossaryStore from '../../stores/GlossaryStore'
 
 var NewEntryModal = React.createClass({
   propTypes: {
@@ -87,9 +85,9 @@ var NewEntryModal = React.createClass({
   render: function () {
     return (
       <div className={this.props.className}>
-        <Button className='whsnw tove ovh' onClick={this._showModal} link>
-          <Icon name='plus' className='mr1/8'/><span>New Term</span>
-        </Button>
+        <ButtonLink onClick={this._showModal}>
+          <Icon name='plus' className='Mend(re)'/><span className='Hidden--lesm'>New Term</span>
+        </ButtonLink>
         <Modal show={this.state.show} onHide={this._closeModal}>
           <Modal.Header>
             <Modal.Title>New Term</Modal.Title>
@@ -129,19 +127,23 @@ var NewEntryModal = React.createClass({
               />
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              className='mr1'
-              link disabled={this.state.isSaving}
+            <ButtonLink
+              theme={{
+                base: {
+                  m: 'Mend(r1)'
+                }
+              }}
+              disabled={this.state.isSaving}
               onClick={this._closeModal}>
               Cancel
-            </Button>
-            <Button
-              kind='primary'
+            </ButtonLink>
+            <ButtonRound
+              type='primary'
               disabled={!this.state.isAllowSave || this.state.isSaving}
               onClick={this._save}
               loading={this.state.isSaving}>
               Save
-            </Button>
+            </ButtonRound>
           </Modal.Footer>
         </Modal>
       </div>);

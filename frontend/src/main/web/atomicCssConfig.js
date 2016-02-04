@@ -24,7 +24,9 @@ module.exports = {
   cssDest: './src/styles/atomic.css',
   configs: {
     breakPoints: {
+      oxsm: '@media screen and (max-width: ' + pxToRem(469) + ')',
       sm: '@media screen and (min-width: ' + pxToRem(470) + ')',
+      lesm: '@media screen and (max-width: ' + pxToRem(879) + ')',
       md: '@media screen and (min-width: ' + pxToRem(880) + ')',
       lg: '@media screen and (min-width: ' + pxToRem(1200) + ')'
     },

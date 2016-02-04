@@ -1,6 +1,6 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import Icon from '../Icon'
+import { Icon } from 'zanata-ui'
 import _ from 'lodash';
 import GlossaryStore from '../../stores/GlossaryStore';
 

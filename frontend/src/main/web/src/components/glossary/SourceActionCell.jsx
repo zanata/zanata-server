@@ -1,12 +1,10 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { Button, Tooltip, OverlayTrigger } from 'zanata-ui'
-import Icon from '../Icon'
-import Actions from '../../actions/GlossaryActions';
+import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui'
+import Actions from '../../actions/GlossaryActions'
 import LoadingCell from './LoadingCell'
 import DeleteEntryModal from './DeleteEntryModal'
-import GlossaryStore from '../../stores/GlossaryStore';
-import _ from 'lodash';
+import GlossaryStore from '../../stores/GlossaryStore'
 import Messages from '../../constants/Messages'
 
 var SourceActionCell = React.createClass({

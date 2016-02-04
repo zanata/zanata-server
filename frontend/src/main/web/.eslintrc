@@ -1,0 +1,6 @@
+{
+  "extends": "zanata/react",
+  "rules": {
+    "react/jsx-uses-react": 1
+  }
+}

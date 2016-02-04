@@ -1,10 +1,8 @@
 import React from 'react'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
-import {Input} from 'zanata-ui';
-import StringUtils from '../../utils/StringUtils';
-import Actions from '../../actions/GlossaryActions';
-import GlossaryStore from '../../stores/GlossaryStore';
-import _ from 'lodash';
+import { Input } from 'zanata-ui'
+import Actions from '../../actions/GlossaryActions'
+import GlossaryStore from '../../stores/GlossaryStore'
+import _ from 'lodash'
 
 var InputCell = React.createClass({
   propTypes: {

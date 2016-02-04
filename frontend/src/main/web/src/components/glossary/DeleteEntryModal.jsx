@@ -1,8 +1,7 @@
 import React from 'react'
-import PureRenderMixin from 'react-addons-pure-render-mixin'
+import ReactDOM from 'react-dom'
 import Actions from '../../actions/GlossaryActions'
-import { Button, Tooltip, Overlay } from 'zanata-ui'
-import Icon from '../Icon'
+import { Button, Icon, Tooltip, Overlay } from 'zanata-ui'
 
 var DeleteEntryModal = React.createClass({
   propTypes: {
@@ -81,7 +80,7 @@ var DeleteEntryModal = React.createClass({
 
     return (
       <div className={this.props.className + ' dib'}>
-        <Overlay placement='top' target={() => React.findDOMNode(this)} onHide={this._closeDialog} rootClose show={this.state.show}>
+        <Overlay placement='top' target={() => ReactDOM.findDOMNode(this)} onHide={this._closeDialog} rootClose show={this.state.show}>
           {tooltip}
         </Overlay>
         <Button kind='danger' loading={isDeleting} onClick={this._toggleDialog} link>
