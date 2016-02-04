@@ -17,7 +17,7 @@
  * The dependency name is not relevant, just an identifier.
  */
 
-'wildfly-9' {
+'wildfly-10' {
     hibernatemodule {
         url = "http://sourceforge.net/projects/zanata/files/wildfly/wildfly-8.1.0.Final-module-hibernate-main-4.2.19.Final.zip/download"
         toFile = "/hibernate-module.zip"
