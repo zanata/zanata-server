@@ -6,7 +6,7 @@
 * [ZNTA-742](https://zanata.atlassian.net/browse/ZNTA-742) - Get a list of contributors for a Project version via the API
 
 <h5>Infrastructure Changes</h5>
-* Zanata now requires JBoss EAP 6.4.5.GA or later (recommended), or WildFly version 10.x.
+* Zanata now requires JBoss EAP 6.4.6.GA or later (recommended), or WildFly version 10.x.
 
 -----------------------
 
