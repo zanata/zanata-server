@@ -1,14 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { ButtonRound, ButtonLink, Icon,
-  Tooltip, OverlayTrigger, Overlay } from 'zanata-ui'
+import {
+  ButtonRound,
+  ButtonLink,
+  Icon,
+  LoaderText,
+  OverlayTrigger,
+  Overlay,
+  Tooltip
+} from 'zanata-ui'
 import Actions from '../../actions/GlossaryActions'
 import LoadingCell from './LoadingCell'
 import GlossaryStore from '../../stores/GlossaryStore'
 import StringUtils from '../../utils/StringUtils'
 import _ from 'lodash'
-import cx from 'classnames'
 import defined from 'defined'
 
 var ActionCell = React.createClass({
@@ -45,6 +51,8 @@ var ActionCell = React.createClass({
   },
 
   _onChange: function () {
+    // TODO: isMounted() is a code smell
+    // It needs to be removed
     if (this.isMounted()) {
       this.setState(this._getState())
     }
@@ -114,11 +122,12 @@ var ActionCell = React.createClass({
       var saveCommentButton = (
         <ButtonRound
           type='primary'
-          size={-1}
+          size='-1'
           disabled={disableCommentUpdate}
-          onClick={this._onUpdateComment}
-          loading={this.state.savingComment}>
-          Update Comment
+          onClick={this._onUpdateComment}>
+          <LoaderText loading={this.state.savingComment} loadingText='Updating'>
+            Update Comment
+          </LoaderText>
         </ButtonRound>
       )
 
@@ -131,9 +140,11 @@ var ActionCell = React.createClass({
               value={this.state.comment}
               onKeyUp={this._handleCommentKeyUp} />
             <div className="mt1/4">
-              <Button className="mr1/2" link onClick={this._onCancelComment}>
+              <ButtonLink
+                theme={{base: { m: 'Mend(rh)' }}}
+                onClick={this._onCancelComment}>
                 Cancel
-              </Button>
+              </ButtonLink>
               {saveCommentButton}
             </div>
           </Tooltip>
@@ -146,13 +157,8 @@ var ActionCell = React.createClass({
                    </Tooltip>)
       }
 
-      var buttonClasses = cx(
-        this.props.className,
-        'mr1/2'
-      )
-
       var comment = (
-      <div className="dib">
+      <div className="D(ib)">
         <Overlay
           placement='top'
           target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
@@ -161,14 +167,15 @@ var ActionCell = React.createClass({
           show={this.state.showComment}>
           {tooltip}
         </Overlay>
-        <ButtonLink
-          ref='commentButton'
-          type={StringUtils.isEmptyOrNull(this.state.comment)
-            ? 'muted' : 'primary'}
-          className={buttonClasses}
-          onClick={this._toggleComment}>
-          <Icon name='comment' />
-        </ButtonLink>
+        <div ref='commentButton'>
+          <ButtonLink
+            type={StringUtils.isEmptyOrNull(this.state.comment)
+              ? 'muted' : 'primary'}
+            theme={{base: { m: 'Mend(rh)' }}}
+            onClick={this._toggleComment}>
+            <Icon name='comment' />
+          </ButtonLink>
+        </div>
       </div>
       )
 
@@ -177,8 +184,12 @@ var ActionCell = React.createClass({
         <div>
           {info}
           {comment}
-          <ButtonRound type='primary' className="ml1/4" loading>
-            Update
+          <ButtonRound
+            type='primary'
+            theme={{base: { m: 'Mstart(rq)' }}}>
+            <LoaderText loading loadingText='Updating'>
+              Update
+            </LoaderText>
           </ButtonRound>
         </div>
         )
@@ -186,14 +197,18 @@ var ActionCell = React.createClass({
 
       if (isTransModified) {
         updateButton = (
-          <Button kind='primary' className='ml1/4' onClick={this._handleUpdate}>
+          <ButtonRound type='primary'
+            theme={{base: { m: 'Mstart(rq)' }}}
+            onClick={this._handleUpdate}>
             Update
-          </Button>
+          </ButtonRound>
         )
         cancelButton = (
-          <Button className='ml1/4' link onClick={this._handleCancel}>
+          <ButtonLink
+            theme={{base: {m: 'Mstart(rq)'}}}
+            onClick={this._handleCancel}>
             Cancel
-          </Button>
+          </ButtonLink>
         )
       }
 

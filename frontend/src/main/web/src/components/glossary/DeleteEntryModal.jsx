@@ -1,7 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Actions from '../../actions/GlossaryActions'
-import { Button, Icon, Tooltip, Overlay } from 'zanata-ui'
+import {
+  ButtonLink,
+  ButtonRound,
+  LoaderText,
+  Icon,
+  Tooltip,
+  Overlay
+} from 'zanata-ui'
 
 var DeleteEntryModal = React.createClass({
   propTypes: {
@@ -12,83 +19,101 @@ var DeleteEntryModal = React.createClass({
 
   deleteTimeout: null,
 
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       show: false,
       deleting: false
     }
   },
 
-  componentWillUnmount: function() {
-    if(this.deleteTimeout !== null) {
-      clearTimeout(this.deleteTimeout);
+  componentWillUnmount: function () {
+    if (this.deleteTimeout !== null) {
+      clearTimeout(this.deleteTimeout)
     }
   },
 
-  _handleDelete: function() {
-    this.setState({deleting: true});
+  _handleDelete: function () {
+    this.setState({deleting: true})
 
-    if(this.deleteTimeout !== null) {
-      clearTimeout(this.deleteTimeout);
+    if (this.deleteTimeout !== null) {
+      clearTimeout(this.deleteTimeout)
     }
 
     this.deleteTimeout = setTimeout(() => {
-      Actions.deleteGlossary(this.props.id);
+      Actions.deleteGlossary(this.props.id)
       this._closeDialog()
-    }, 100);
+    }, 100)
   },
 
   _toggleDialog: function () {
-    this.setState({show: !this.state.show});
+    this.setState({show: !this.state.show})
   },
 
   _closeDialog: function () {
-    this.setState(this.getInitialState());
+    this.setState(this.getInitialState())
   },
 
   render: function () {
-    var isDeleting = this.state.deleting,
-      info = null;
+    var isDeleting = this.state.deleting
+    var info = null
+    const {
+      entry,
+      className
+    } = this.props
 
-    if(this.props.entry.termsCount > 0) {
-      let translationPlural = this.props.entry.termsCount > 1
-        ? 'translations' : 'translation';
+    if (entry.termsCount > 0) {
       info = (
         <p>
           Are you sure you want to delete this term and&nbsp;
-          <strong>{this.props.entry.termsCount}</strong> {translationPlural} ?
+          <strong>{entry.termsCount}</strong>
+          {entry.termsCount > 1 ? 'translations' : 'translation'} ?
         </p>
-      );
+      )
     } else {
-      info = <p>Are you sure you want to delete this term ?</p>
+      info = (
+        <p>
+          Are you sure you want to delete this term?
+        </p>
+      )
     }
 
     const tooltip = (
       <Tooltip id="delete-glossary" title="Delete term and translations">
         {info}
         <div className="mt1/4">
-          <Button className="mr1/2" link onClick={this._closeDialog}>Cancel</Button>
-          <Button kind='danger'
-            size={-1}
-            loading={isDeleting}
-            onClick={this._handleDelete}>
-            Delete all
-          </Button>
+          <ButtonLink
+            theme={{base: { m: 'Mend(rh)' }}}
+            onClick={this._closeDialog}>
+            Cancel
+          </ButtonLink>
+          <ButtonRound type='danger' size='-1' onClick={this._handleDelete}>
+            <LoaderText loading={isDeleting} loadingText='Deleting'>
+              Delete all
+            </LoaderText>
+          </ButtonRound>
         </div>
       </Tooltip>
-    );
+    )
 
     return (
-      <div className={this.props.className + ' dib'}>
-        <Overlay placement='top' target={() => ReactDOM.findDOMNode(this)} onHide={this._closeDialog} rootClose show={this.state.show}>
+      <div className={className + ' dib'}>
+        <Overlay
+          placement='top'
+          target={() => ReactDOM.findDOMNode(this)}
+          onHide={this._closeDialog}
+          rootClose
+          show={this.state.show}>
           {tooltip}
         </Overlay>
-        <Button kind='danger' loading={isDeleting} onClick={this._toggleDialog} link>
-          <Icon name="trash" className='mr1/8'/><span>Delete</span>
-        </Button>
+        <ButtonLink type='danger'
+          onClick={this._toggleDialog}>
+          <LoaderText loading={isDeleting} loadingText='Deleting'>
+            <Icon name="trash" className='mr1/8' /><span>Delete</span>
+          </LoaderText>
+        </ButtonLink>
       </div>
-    );
+    )
   }
-});
+})
 
-export default DeleteEntryModal;
+export default DeleteEntryModal

@@ -1,67 +1,70 @@
-import React from 'react'
-import { Button, Modal } from 'zanata-ui'
+import React, { PropTypes } from 'react'
+import { ButtonRound, Modal } from 'zanata-ui'
 import Actions from '../actions/GlossaryActions'
-import StringUtils from '../utils/StringUtils'
+import { isEmptyOrNull } from '../utils/StringUtils'
 
 var MessageModal = React.createClass({
   propTypes: {
-    value: React.PropTypes.shape({
-      SEVERITY: React.PropTypes.string.isRequired,
-      SUBJECT: React.PropTypes.string.isRequired,
-      MESSAGE: React.PropTypes.string,
-      DETAILS: React.PropTypes.string
+    value: PropTypes.shape({
+      SEVERITY: PropTypes.string.isRequired,
+      SUBJECT: PropTypes.string.isRequired,
+      MESSAGE: PropTypes.string,
+      DETAILS: PropTypes.object
     }).isRequired
   },
 
-  _closeModal: function() {
-    Actions.clearMessage();
+  _closeModal: function () {
+    Actions.clearMessage()
   },
 
   _getSeverityClass: function (severity) {
-    switch(severity) {
+    switch (severity) {
       case 'warn':
-        return 'cwarning';
+        return 'cwarning'
       case 'error':
-        return 'cdanger';
+        return 'cdanger'
       default:
-        return 'chighlight';
+        return 'chighlight'
     }
   },
 
   render: function () {
-    const severityClass = this._getSeverityClass(this.props.value.SEVERITY);
-    var detailsSection;
-
-    if(!StringUtils.isEmptyOrNull(this.props.value.DETAILS)) {
-      detailsSection = (
-        <div className='bdrs1/4 bxsh1 p1/2 fzn1'>
-          {this.props.value.DETAILS}
-        </div>
-      );
-    }
+    const value = this.props.value
+    const severityClass = this._getSeverityClass(value.SEVERITY)
 
     return (
-      <Modal show={true} onHide={this._closeModal}>
-        <Modal.Header>
-          <Modal.Title>Notification</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='tal'>
-          <div className={severityClass + ' fz2'}>{this.props.value.SUBJECT}</div>
-          <div className='mv1/2'>
-            {this.props.value.MESSAGE}
-          </div>
-          {detailsSection}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            kind='primary'
-            onClick={this._closeModal}>
-            Clear message
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
+    <Modal show={true} onHide={this._closeModal}>
+      <Modal.Header>
+        <Modal.Title>
+          Notification
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className='tal'>
+        <div className={severityClass + ' fz2'}>
+          {value.SUBJECT}
+        </div>
+        <div className='mv1/2'>
+          {value.MESSAGE}
+        </div>
+        {!isEmptyOrNull(value.DETAILS)
+          ? (
+            <div className='Brds(rq) Bxsh(sh1) P(rh) Fz(msn1)'>
+              {value.clientError
+                ? value.DETAILS.text
+                : value.DETAILS.error.message
+              }
+            </div>
+          )
+          : undefined}
+      </Modal.Body>
+      <Modal.Footer>
+        <ButtonRound type='primary' onClick={this._closeModal}>
+          Clear message
+        </ButtonRound>
+      </Modal.Footer>
+    </Modal>
+    )
   }
-});
+})
 
-export default MessageModal;
+export default MessageModal

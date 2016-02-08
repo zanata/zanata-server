@@ -1,6 +1,12 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { Button, Icon, Tooltip, OverlayTrigger } from 'zanata-ui'
+import { ButtonLink,
+  ButtonRound,
+  LoaderText,
+  Icon,
+  Tooltip,
+  OverlayTrigger
+} from 'zanata-ui'
 import Actions from '../../actions/GlossaryActions'
 import LoadingCell from './LoadingCell'
 import DeleteEntryModal from './DeleteEntryModal'
@@ -67,12 +73,22 @@ var SourceActionCell = React.createClass({
       );
 
       if(this.state.entry.status.isSaving || this.state.saving) {
-        return <div>{info} <Button kind='primary' className="ml1/4" loading>Update</Button></div>;
+        return (
+          <div>
+            {info}
+            <ButtonRound
+              type='primary'
+              theme={{base: { m: 'Mstart(rq)' }}}>
+              <LoaderText loading loadingText='Updating'>Update</LoaderText>
+            </ButtonRound>
+          </div>
+        )
       } else {
         var deleteButton;
-
-        if(this.props.canDeleteEntry) {
-          deleteButton = <DeleteEntryModal className='ml1/4' id={this.props.id} entry={this.state.entry}/>;
+        if (this.props.canDeleteEntry) {
+          deleteButton = <DeleteEntryModal
+            id={this.props.id}
+            entry={this.state.entry}/>
         }
 
         var isSrcModified= this.state.entry.status.isSrcModified,
@@ -80,9 +96,22 @@ var SourceActionCell = React.createClass({
 
         if(isSrcModified) {
           var updateButton,
-            cancelButton = <Button className='ml1/4' link onClick={this._handleCancel}>Cancel</Button>;
+            cancelButton = (
+              <ButtonLink
+                theme={{base: { m: 'Mstart(rq)' }}}
+                onClick={this._handleCancel}>
+                Cancel
+              </ButtonLink>
+            )
           if(this.props.canUpdateEntry && isSrcValid) {
-            updateButton = <Button kind='primary' className="ml1/4" onClick={this._handleUpdate}>Update</Button>;
+            updateButton = (
+              <ButtonRound
+                type='primary'
+                theme={{base: { m: 'Mstart(rq)' }}}
+                onClick={this._handleUpdate}>
+                Update
+              </ButtonRound>
+            )
           }
           return (
               <div className='difx aic'>

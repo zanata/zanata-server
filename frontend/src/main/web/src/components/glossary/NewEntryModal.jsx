@@ -1,6 +1,13 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { ButtonLink, ButtonRound, Icon, Input, Modal } from 'zanata-ui'
+import {
+  ButtonLink,
+  ButtonRound,
+  LoaderText,
+  Icon,
+  Input,
+  Modal
+} from 'zanata-ui'
 import Actions from '../../actions/GlossaryActions'
 import StringUtils from '../../utils/StringUtils'
 import GlossaryStore from '../../stores/GlossaryStore'
@@ -128,11 +135,7 @@ var NewEntryModal = React.createClass({
           </Modal.Body>
           <Modal.Footer>
             <ButtonLink
-              theme={{
-                base: {
-                  m: 'Mend(r1)'
-                }
-              }}
+              theme={{base: {m: 'Mend(r1)'}}}
               disabled={this.state.isSaving}
               onClick={this._closeModal}>
               Cancel
@@ -140,9 +143,10 @@ var NewEntryModal = React.createClass({
             <ButtonRound
               type='primary'
               disabled={!this.state.isAllowSave || this.state.isSaving}
-              onClick={this._save}
-              loading={this.state.isSaving}>
-              Save
+              onClick={this._save}>
+              <LoaderText loading={this.state.isSaving} loadingText='Saving'>
+                Save
+              </LoaderText>
             </ButtonRound>
           </Modal.Footer>
         </Modal>

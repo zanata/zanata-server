@@ -22,15 +22,17 @@ var ColumnHeader = React.createClass({
   },
 
   componentDidMount: function() {
+    this._isMounted = true
     GlossaryStore.addChangeListener(this._onChange);
   },
 
   componentWillUnmount: function() {
+    this._isMounted = false
     GlossaryStore.removeChangeListener(this._onChange);
   },
 
-  _onChange: function() {
-    this.setState(this.getInitialState());
+  _onChange: function () {
+    if (this._isMounted) this.setState(this.getInitialState())
   },
 
   _getState: function() {

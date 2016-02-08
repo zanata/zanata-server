@@ -1,8 +1,14 @@
+.Bxsh\(sh1\) {
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.185);
+}
 .C\(muted\) {
   color: hsl(204, 18%, 69%);
 }
 .C\(dark\) {
   color: hsl(212, 18%, 40%);
+}
+.D\(ib\), a[class*=LineClamp] {
+  display: inline-block;
 }
 .D\(f\) {
   display: flex;
@@ -15,6 +21,9 @@
 }
 .Ff\(zsans\) {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.Fz\(msn1\) {
+  font-size: 0.833rem;
 }
 .H\(100\%\) {
   height: 100%;
@@ -52,14 +61,20 @@
 .M\(0\) {
   margin: 0;
 }
-.Mend\(r1\) {
-  margin-right: 1.5rem;
+.Mend\(rh\) {
+  margin-right: 0.75rem;
 }
 .Mend\(re\) {
   margin-right: 0.1875rem;
 }
+.Mend\(r1\) {
+  margin-right: 1.5rem;
+}
 .Mb\(r1\) {
   margin-bottom: 1.5rem;
+}
+.Mstart\(rq\) {
+  margin-left: 0.375rem;
 }
 .Mstart\(rh\) {
   margin-left: 0.75rem;
@@ -70,17 +85,20 @@
 .Miw\(r8\) {
   min-width: 12rem;
 }
+.P\(rh\) {
+  padding: 0.75rem;
+}
 .Pstart\(re\) {
   padding-left: 0.1875rem;
 }
 .Ta\(end\) {
   text-align: right;
 }
-.W\(r2\) {
-  width: 3rem;
-}
 .W\(r16\) {
   width: 24rem;
+}
+.W\(r2\) {
+  width: 3rem;
 }
 .W\(msn2\) {
   width: 0.694rem;
@@ -115,7 +133,6 @@
   overflow: hidden;
 }
 a[class*=LineClamp] {
-  display: inline-block;
   display : -webkit-box;
   *display: inline;
   zoom: 1;

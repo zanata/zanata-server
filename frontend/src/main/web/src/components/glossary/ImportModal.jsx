@@ -1,6 +1,13 @@
 import React from 'react'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import { ButtonLink, ButtonRound, Icon, Modal, Select } from 'zanata-ui'
+import {
+  ButtonLink,
+  ButtonRound,
+  Icon,
+  LoaderText,
+  Modal,
+  Select
+} from 'zanata-ui'
 import Actions from '../../actions/GlossaryActions'
 import StringUtils from '../../utils/StringUtils'
 import _ from 'lodash'
@@ -145,11 +152,7 @@ var ImportModal = React.createClass({
           </Modal.Body>
           <Modal.Footer>
             <ButtonLink
-              theme={{
-                base: {
-                  m: 'Mend(r1)'
-                }
-              }}
+              theme={{base: {m: 'Mend(r1)'}}}
               disabled={isUploading}
               onClick={this._closeModal}>
                 Cancel
@@ -157,9 +160,10 @@ var ImportModal = React.createClass({
             <ButtonRound
               type='primary'
               disabled={disableUpload}
-              onClick={this._uploadFile}
-              loading={isUploading}>
-              Import
+              onClick={this._uploadFile}>
+              <LoaderText loading={isUploading} loadingText='Importing'>
+                Import
+              </LoaderText>
             </ButtonRound>
           </Modal.Footer>
         </Modal>

@@ -212,7 +212,6 @@ var DataTable = React.createClass({
       var entry = this._getGlossaryEntry(id)
       var value = _.get(entry, field.field)
       if (readOnly) {
-        let span = <span className="mh1/2" key={key}>{value}</span>
         if (!StringUtils.isEmptyOrNull(tooltip)) {
           return (
           <OverlayTrigger
@@ -220,11 +219,11 @@ var DataTable = React.createClass({
             rootClose
             overlay={<Tooltip id='src-info'>{tooltip}</Tooltip>}
           >
-            {span}
+            <span className="mh1/2" key={key}>{value}</span>
           </OverlayTrigger>
           )
         }
-        return {span}
+        return <span className="mh1/2" key={key}>{value}</span>
       }
       return (
       <InputCell
@@ -482,9 +481,9 @@ var DataTable = React.createClass({
 
   render: function () {
     const columns = [
-      // this._getSourceColumn(),
-      // this._isTranslationSelected()
-      //   ? this._getTransColumn() : this._getTransCountColumn(),
+      this._getSourceColumn(),
+      this._isTranslationSelected()
+        ? this._getTransColumn() : this._getTransCountColumn(),
       this._getPosColumn(),
       this._getDescColumn(),
       this._getActionColumn()
