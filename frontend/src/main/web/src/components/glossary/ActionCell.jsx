@@ -158,25 +158,25 @@ var ActionCell = React.createClass({
       }
 
       var comment = (
-      <div className="D(ib)">
-        <Overlay
-          placement='top'
-          target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
-          onHide={this._onCancelComment}
-          rootClose
-          show={this.state.showComment}>
-          {tooltip}
-        </Overlay>
-        <div ref='commentButton'>
-          <ButtonLink
-            type={StringUtils.isEmptyOrNull(this.state.comment)
-              ? 'muted' : 'primary'}
-            theme={{base: { m: 'Mend(rh)' }}}
-            onClick={this._toggleComment}>
-            <Icon name='comment' />
-          </ButtonLink>
+        <div className="D(ib)">
+          <Overlay
+            placement='top'
+            target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
+            onHide={this._onCancelComment}
+            rootClose
+            show={this.state.showComment}>
+            {tooltip}
+          </Overlay>
+          <div ref='commentButton'>
+            <ButtonLink
+              type={StringUtils.isEmptyOrNull(this.state.comment)
+                ? 'muted' : 'primary'}
+              theme={{base: { m: 'Mend(rh)' }}}
+              onClick={this._toggleComment}>
+              <Icon name='comment' />
+            </ButtonLink>
+          </div>
         </div>
-      </div>
       )
 
       if (isSaving) {
@@ -194,6 +194,8 @@ var ActionCell = React.createClass({
         </div>
         )
       }
+
+      console.log(isTransModified)
 
       if (isTransModified) {
         updateButton = (
@@ -213,14 +215,15 @@ var ActionCell = React.createClass({
       }
 
       return (
-      <div>
-        {info}
-        {comment}
-        <div className='cdtargetib'>
-          {updateButton}
-          {cancelButton}
+        <div>
+          {info}
+          {comment}
+          <div className='cdtargetib'>
+            {updateButton}
+            {cancelButton}
+          </div>
         </div>
-      </div>)
+      )
     }
   }
 })

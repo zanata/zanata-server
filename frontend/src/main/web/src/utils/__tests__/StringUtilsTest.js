@@ -1,48 +1,44 @@
-jest.dontMock('../StringUtils')
-  .dontMock('lodash');
+/* eslint-disable no-undef */
+var StringUtils = require('../StringUtils')
 
-describe('StringUtilsTest', function() {
-  var StringUtils;
+describe('StringUtilsTest', function () {
+  it('test empty, null and undefined value', function () {
+    var value = ''
+    expect(StringUtils.isEmptyOrNull(value)).toEqual(true)
 
-  beforeEach(function() {
-    StringUtils = require('../StringUtils');
-  });
+    value = null
+    expect(StringUtils.isEmptyOrNull(value)).toEqual(true)
 
-  it('test empty, null and undefined value', function() {
-    var value = '';
-    expect(StringUtils.isEmptyOrNull(value)).toEqual(true);
+    value = undefined
+    expect(StringUtils.isEmptyOrNull(value)).toEqual(true)
+  })
 
-    value = null;
-    expect(StringUtils.isEmptyOrNull(value)).toEqual(true);
+  it('test not empty value', function () {
+    var value = '123'
+    expect(StringUtils.isEmptyOrNull(value)).toEqual(false)
+  })
 
-    value = undefined;
-    expect(StringUtils.isEmptyOrNull(value)).toEqual(true);
-  });
+  it('test trim leading space', function () {
+    var value = '   123'
+    expect(StringUtils.trimLeadingSpace(value)).toEqual('123')
 
-  it('test not empty value', function() {
-    var value = '123';
-    expect(StringUtils.isEmptyOrNull(value)).toEqual(false);
-  });
+    value = '123'
+    expect(StringUtils.trimLeadingSpace(value)).toEqual(value)
 
-  it('test trim leading space', function() {
-    var value = '   123';
-    expect(StringUtils.trimLeadingSpace(value)).toEqual('123');
+    value = null
+    expect(StringUtils.trimLeadingSpace(value)).toEqual(value)
+  })
 
-    value = '123';
-    expect(StringUtils.trimLeadingSpace(value)).toEqual(value);
+  it('test trim white space', function () {
+    var value = ' 123 '
+    expect(StringUtils.trim(value)).toEqual('123')
 
-    value = null;
-    expect(StringUtils.trimLeadingSpace(value)).toEqual(value);
-  });
+    value = '123'
+    expect(StringUtils.trim(value)).toEqual(value)
 
-  it('test trim white space', function() {
-    var value = ' 123 ';
-    expect(StringUtils.trim(value)).toEqual('123');
+    value = null
+    expect(StringUtils.trim(value)).toEqual(value)
+  })
+})
 
-    value = '123';
-    expect(StringUtils.trim(value)).toEqual(value);
-
-    value = null;
-    expect(StringUtils.trim(value)).toEqual(value);
-  });
-});
+/* eslint-enable */

@@ -1,23 +1,30 @@
 var webpack = require('webpack')
+var path = require('path')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var _ = require('lodash')
 var defaultConfig = require('./webpack.config.js')
-var bundleDest = process.env.npm_config_env_bundleDest || __dirname;
+var bundleDest = process.env.npm_config_bundleDest || __dirname;
 
 module.exports = _.merge({}, defaultConfig, {
+  cache: false,
   output: {
     path: bundleDest,
     filename: 'frontend.bundle.min.js'
   },
   module: {
     loaders: [
-      defaultConfig.module.loaders[0],
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: 'babel',
+        include: path.join(__dirname, 'src')
+      },
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract(
-          'style-loader',
-          'css-loader?safe',
-          'autoprefixer-loader?browsers=last 2 versions'
+          'style',
+          'css',
+          'autoprefixer?browsers=last 2 versions'
         )
       }
     ]

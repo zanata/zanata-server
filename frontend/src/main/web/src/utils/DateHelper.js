@@ -1,44 +1,45 @@
-import moment from 'moment-range';
+import moment from 'moment-range'
 import { isEmptyOrNull } from './StringUtils'
 
 var DateHelper = {
   dateFormat: 'YYYY-MM-DD',
   getDateRangeFromOption: function (dateRangeOption) {
-    var now = moment(),
-      dateFormat = this.dateFormat,
-      dates = [],
-      range,
-      fromDate,
-      toDate;
+    var now = moment()
+    var dateFormat = this.dateFormat
+    var dates = []
+    var range
+    var fromDate
+    var toDate
 
-    switch(dateRangeOption) {
+    switch (dateRangeOption) {
       case 'This Week':
-        fromDate = moment().weekday(0);
-        toDate = moment().weekday(6);
-        break;
+        fromDate = moment().weekday(0)
+        toDate = moment().weekday(6)
+        break
       case 'Last Week':
-        fromDate = moment().weekday(-7);
-        toDate = moment().weekday(-1);
-        break;
+        fromDate = moment().weekday(-7)
+        toDate = moment().weekday(-1)
+        break
       case 'This Month':
-        fromDate = moment().date(1);
-        toDate = moment().month(now.month() + 1).date(0);
-        break;
+        fromDate = moment().date(1)
+        toDate = moment().month(now.month() + 1).date(0)
+        break
       case 'Last Month':
-        fromDate = moment().month(now.month() - 1).date(1);
-        toDate = moment().date(0);
-        break;
+        fromDate = moment().month(now.month() - 1).date(1)
+        toDate = moment().date(0)
+        break
       default:
-        console.error('selectedDateRange [%s] can not be matched. Using (This Week) instead.', dateRangeOption);
-        fromDate = moment().weekday(0);
-        toDate = moment();
+        console.error('selectedDateRange [%s] can not be matched. ' +
+          'Using (This Week) instead.', dateRangeOption)
+        fromDate = moment().weekday(0)
+        toDate = moment()
     }
 
-    range = moment().range(fromDate, toDate);
+    range = moment().range(fromDate, toDate)
 
-    range.by('days', function(moment) {
-      dates.push(moment.format(dateFormat));
-    });
+    range.by('days', function (moment) {
+      dates.push(moment.format(dateFormat))
+    })
 
     return {
       fromDate: fromDate.format(dateFormat),
@@ -47,37 +48,37 @@ var DateHelper = {
     }
   },
 
-  dayAsLabel: function(dateStr, numOfDays, useFullName) {
+  dayAsLabel: function (dateStr, numOfDays, useFullName) {
     var date = moment(dateStr),
       dayOfWeekFmt,
-      dayOfMonthFmt;
+      dayOfMonthFmt
 
-    dayOfWeekFmt = useFullName ? 'dddd (Do MMM)' : 'ddd';
-    dayOfMonthFmt = useFullName ? 'Do MMM (dddd)' : 'D';
+    dayOfWeekFmt = useFullName ? 'dddd (Do MMM)' : 'ddd'
+    dayOfMonthFmt = useFullName ? 'Do MMM (dddd)' : 'D'
     if (numOfDays < 8) {
-      return date.format(dayOfWeekFmt);
+      return date.format(dayOfWeekFmt)
     } else {
-      return date.format(dayOfMonthFmt);
+      return date.format(dayOfMonthFmt)
     }
   },
 
-  isInFuture: function(dateStr) {
-    return moment(dateStr).isAfter(moment());
+  isInFuture: function (dateStr) {
+    return moment(dateStr).isAfter(moment())
   },
 
-  getDate: function(milliseconds) {
-    if(!isEmptyOrNull(milliseconds)) {
-      return new Date(milliseconds);
+  getDate: function (milliseconds) {
+    if (!isEmptyOrNull(milliseconds)) {
+      return new Date(milliseconds)
     }
-    return;
+    return
   },
 
-  shortDate: function(date) {
-    if(date) {
-      return moment(date).format('MMM Do, YYYY');
+  shortDate: function (date) {
+    if (date) {
+      return moment(date).format('MMM Do, YYYY')
     }
-    return;
+    return
   }
-};
+}
 
-export default DateHelper;
+export default DateHelper
