@@ -195,8 +195,6 @@ var ActionCell = React.createClass({
         )
       }
 
-      console.log(isTransModified)
-
       if (isTransModified) {
         updateButton = (
           <ButtonRound type='primary'
