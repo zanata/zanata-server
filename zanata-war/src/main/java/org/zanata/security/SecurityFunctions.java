@@ -22,7 +22,6 @@ package org.zanata.security;
 
 import com.google.common.base.Optional;
 import org.hibernate.Session;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectLocaleMemberDAO;
 import org.zanata.dao.ProjectMemberDAO;
@@ -44,7 +43,6 @@ import org.zanata.util.ServiceLocator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import lombok.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
 import static org.zanata.model.ProjectRole.Maintainer;
@@ -66,9 +64,7 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Slf4j
-public class SecurityFunctions {
-    protected SecurityFunctions() {
-    }
+public class SecurityFunctions extends PermissionProvider {
 
     /* admin can do anything */
     @GrantsPermission
