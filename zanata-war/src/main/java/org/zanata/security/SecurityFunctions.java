@@ -21,6 +21,7 @@
 package org.zanata.security;
 
 import com.google.common.base.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectLocaleMemberDAO;
@@ -35,15 +36,14 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.LocaleRole;
 import org.zanata.model.ProjectRole;
-import org.zanata.security.annotations.AuthenticatedLiteral;
+import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.permission.GrantsPermission;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
 
 import static org.zanata.model.ProjectRole.Maintainer;
 import static org.zanata.model.ProjectRole.TranslationMaintainer;
@@ -66,25 +66,32 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
 @Slf4j
 public class SecurityFunctions extends PermissionProvider {
 
+    @Inject
+    private ZanataIdentity identity;
+
+    @Inject
+    @Authenticated
+    private HAccount authenticatedAccount;
+
     /* admin can do anything */
     @GrantsPermission
-    public static boolean isAdmin() {
-        return getIdentity().hasRole("admin");
+    public boolean isAdmin() {
+        return identity.hasRole("admin");
     }
 
-    public static boolean isProjectMaintainer(HProject project) {
+    public boolean isProjectMaintainer(HProject project) {
         return isProjectRole(project, Maintainer);
     }
 
-    public static boolean isProjectTranslationMaintainer(HProject project) {
+    public boolean isProjectTranslationMaintainer(HProject project) {
         return isProjectRole(project, TranslationMaintainer);
     }
 
     /* Check whether the authenticated person has the given role in the given
      * project.
      */
-    private static boolean isProjectRole(HProject project, ProjectRole role) {
-        Optional<HAccount> account = getAuthenticatedAccount();
+    private boolean isProjectRole(HProject project, ProjectRole role) {
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
 
         if (account.isPresent()) {
             HPerson person = account.get().getPerson();
@@ -113,10 +120,10 @@ public class SecurityFunctions extends PermissionProvider {
         return new AutoCloseSession(session);
     }
 
-    private static boolean userHasProjectLanguageRole(HProject project,
+    private boolean userHasProjectLanguageRole(HProject project,
             HLocale lang,
             LocaleRole role) {
-        Optional<HAccount> account = getAuthenticatedAccount();
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
 
         if (account.isPresent()) {
             HPerson person = account.get().getPerson();
@@ -133,17 +140,17 @@ public class SecurityFunctions extends PermissionProvider {
      **************************************************************************/
 
     @GrantsPermission(actions = "create")
-    public static boolean canCreateAccount(String target) {
+    public boolean canCreateAccount(String target) {
         return target.equals("seam.account") && isAdmin();
     }
 
     @GrantsPermission
-    public static boolean canManageUsers(String target) {
+    public boolean canManageUsers(String target) {
         return target.equals("seam.user") && isAdmin();
     }
 
     @GrantsPermission
-    public static boolean canManageRoles(String target) {
+    public boolean canManageRoles(String target) {
         return target.equals("seam.role") && isAdmin();
     }
 
@@ -153,8 +160,8 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* 'project-creator' can create project */
     @GrantsPermission(actions = "insert")
-    public static boolean canCreateProject(HProject target) {
-        return getIdentity().hasRole("project-creator");
+    public boolean canCreateProject(HProject target) {
+        return identity.hasRole("project-creator");
     }
 
     /* anyone can read a project */
@@ -180,8 +187,8 @@ public class SecurityFunctions extends PermissionProvider {
      */
     @GrantsPermission(actions = { "update",
             "add-iteration" })
-    public static boolean canUpdateProjectOrAddIteration(HProject project) {
-        if (!getIdentity().isLoggedIn()) {
+    public boolean canUpdateProjectOrAddIteration(HProject project) {
+        if (!identity.isLoggedIn()) {
             return false;
         }
 
@@ -194,13 +201,13 @@ public class SecurityFunctions extends PermissionProvider {
      */
     @GrantsPermission(actions = {
             "insert", "update", "import-template" })
-    public static boolean canInsertOrUpdateProjectIteration(
+    public boolean canInsertOrUpdateProjectIteration(
             HProjectIteration iteration) {
         return isProjectMaintainer(iteration.getProject());
     }
 
     @GrantsPermission(actions = "merge-trans")
-    public static boolean canMergeTrans(HProject project) {
+    public boolean canMergeTrans(HProject project) {
         return isAdmin() || isProjectMaintainer(project);
     }
 
@@ -210,16 +217,16 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* Maintainer can manage all project roles */
     @GrantsPermission(actions = {"manage-members"})
-    public static boolean canManageProjectMembers(HProject project) {
-        return getIdentity().isLoggedIn() && isProjectMaintainer(project);
+    public boolean canManageProjectMembers(HProject project) {
+        return identity.isLoggedIn() && isProjectMaintainer(project);
     }
 
     /* Translation Maintainer can manage project translation team */
     @GrantsPermission(actions = {"manage-translation-members"})
-    public static boolean canManageProjectTranslationMembers(HProject project) {
+    public boolean canManageProjectTranslationMembers(HProject project) {
         // TODO add a DAO check for multiple project roles at once (single query
         // instead of two)
-        return getIdentity().isLoggedIn() &&
+        return identity.isLoggedIn() &&
                 (isProjectTranslationMaintainer(project) ||
                 isProjectMaintainer(project));
     }
@@ -231,28 +238,27 @@ public class SecurityFunctions extends PermissionProvider {
     /* Global Language Team members can add a translation for their language
      * teams, unless global translation is restricted. */
     @GrantsPermission(actions = { "add-translation", "modify-translation" })
-    public static boolean canTranslate(HProject project, HLocale lang) {
+    public boolean canTranslate(HProject project, HLocale lang) {
         return project.isAllowGlobalTranslation() &&
                 isUserAllowedAccess(project) && isUserTranslatorOfLanguage(lang);
     }
 
-    public static boolean isUserTranslatorOfLanguage(HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+    public boolean isUserTranslatorOfLanguage(HLocale lang) {
+        Optional<HAccount> account =
+                Optional.fromNullable(authenticatedAccount);
         PersonDAO personDAO =
                 ServiceLocator.instance().getInstance(PersonDAO.class);
 
-        if (authenticatedAccount.isPresent()) {
+        if (account.isPresent()) {
             return personDAO.isUserInLanguageTeamWithRoles(
-                    authenticatedAccount.get().getPerson(), lang, true, null, null);
+                    account.get().getPerson(), lang, true, null, null);
         }
 
         return false; // No authenticated user
     }
 
-    public static boolean isUserAllowedAccess(HProject project) {
+    public boolean isUserAllowedAccess(HProject project) {
         if (project.isRestrictedByRoles()) {
-            ZanataIdentity identity = getIdentity();
-
             for (HAccountRole role : project.getAllowedRoles()) {
                 if (identity.hasRole(role.getName())) {
                     return true;
@@ -270,9 +276,8 @@ public class SecurityFunctions extends PermissionProvider {
      * regardless of global translation setting.
      */
     @GrantsPermission(actions = { "add-translation", "modify-translation" })
-    public static boolean projectTranslatorCanTranslate(HProject project, HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
-        return authenticatedAccount.isPresent() &&
+    public boolean projectTranslatorCanTranslate(HProject project, HLocale lang) {
+        return authenticatedAccount != null &&
                 userHasProjectLanguageRole(project, lang, LocaleRole.Translator);
     }
 
@@ -284,20 +289,20 @@ public class SecurityFunctions extends PermissionProvider {
     // TODO Unify these two permission actions into a single one
     @GrantsPermission(
             actions = { "review-translation", "translation-review" })
-    public static boolean
+    public boolean
             canReviewTranslation(HProject project, HLocale locale) {
         return project.isAllowGlobalTranslation() &&
                 isUserAllowedAccess(project) && isUserReviewerOfLanguage(locale);
     }
 
-    public static boolean isUserReviewerOfLanguage(HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+    public boolean isUserReviewerOfLanguage(HLocale lang) {
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
         PersonDAO personDAO =
                 ServiceLocator.instance().getInstance(PersonDAO.class);
 
-        if (authenticatedAccount.isPresent()) {
+        if (account.isPresent()) {
             return personDAO.isUserInLanguageTeamWithRoles(
-                    authenticatedAccount.get().getPerson(), lang, null, true, null);
+                    account.get().getPerson(), lang, null, true, null);
         } else {
             return false;
         }
@@ -310,10 +315,9 @@ public class SecurityFunctions extends PermissionProvider {
      */
     @GrantsPermission(actions = { "add-translation", "modify-translation",
             "review-translation", "translation-review" })
-    public static boolean canAddOrReviewTranslation(
+    public boolean canAddOrReviewTranslation(
             HProject project, HLocale locale) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
-        return authenticatedAccount.isPresent() && isProjectMaintainer(project);
+        return authenticatedAccount != null && isProjectMaintainer(project);
     }
 
     /* Project Translation Maintainers can add, modify or review a translation
@@ -321,10 +325,9 @@ public class SecurityFunctions extends PermissionProvider {
      */
     @GrantsPermission(actions = { "add-translation", "modify-translation",
             "review-translation", "translation-review" })
-    public static boolean translationMaintainerCanTranslate(HProject project,
+    public boolean translationMaintainerCanTranslate(HProject project,
                                                             HLocale locale) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
-        return authenticatedAccount.isPresent() && isProjectTranslationMaintainer(
+        return authenticatedAccount != null && isProjectTranslationMaintainer(
                 project);
     }
 
@@ -333,37 +336,36 @@ public class SecurityFunctions extends PermissionProvider {
      */
     @GrantsPermission(actions = { "add-translation", "modify-translation",
             "review-translation", "translation-review" })
-    public static boolean projectReviewerCanTranslateAndReview(HProject project, HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
-        return authenticatedAccount.isPresent() &&
+    public boolean projectReviewerCanTranslateAndReview(HProject project, HLocale lang) {
+        return authenticatedAccount != null &&
                 userHasProjectLanguageRole(project, lang, LocaleRole.Reviewer);
     }
 
     /* Project Maintainer can import translation (merge type is IMPORT) */
     @GrantsPermission(actions = "import-translation")
-    public static boolean canImportTranslation(
+    public boolean canImportTranslation(
             HProjectIteration projectIteration) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && isProjectMaintainer(projectIteration.getProject());
+        return authenticatedAccount != null
+                && isProjectMaintainer(projectIteration.getProject());
     }
 
     /* Project Translation Maintainer can import translation (merge type is IMPORT) */
     @GrantsPermission(actions = "import-translation")
-    public static boolean translationMaintainerCanImportTranslation(
+    public boolean translationMaintainerCanImportTranslation(
             HProjectIteration projectIteration) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && isProjectTranslationMaintainer(projectIteration.getProject());
+        return authenticatedAccount != null
+                && isProjectTranslationMaintainer(projectIteration.getProject());
     }
 
     /* Membership in global language teams. */
-    public static boolean isLanguageTeamMember(HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+    public boolean isLanguageTeamMember(HLocale lang) {
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
         PersonDAO personDAO =
                 ServiceLocator.instance().getInstance(PersonDAO.class);
 
-        if (authenticatedAccount.isPresent()) {
+        if (account.isPresent()) {
             return personDAO.isUserInLanguageTeamWithRoles(
-                    authenticatedAccount.get().getPerson(), lang, null, null, null);
+                    account.get().getPerson(), lang, null, null, null);
         } else {
             return false;
         }
@@ -376,15 +378,15 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* 'glossarist' can push and update glossaries */
     @GrantsPermission(actions = { "glossary-insert", "glossary-update" })
-    public static boolean canPushGlossary() {
-        return getIdentity().hasRole("glossarist");
+    public boolean canPushGlossary() {
+        return identity.hasRole("glossarist");
     }
 
     /* 'glossarist-admin' can also delete */
     @GrantsPermission(actions = { "glossary-insert", "glossary-update",
             "glossary-delete" })
-    public static boolean canAdminGlossary() {
-        return getIdentity().hasRole("glossary-admin");
+    public boolean canAdminGlossary() {
+        return identity.hasRole("glossary-admin");
     }
 
     /***************************************************************************
@@ -399,14 +401,14 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* 'team coordinator' can manage language teams */
     @GrantsPermission(actions = "manage-language-team")
-    public static boolean isUserCoordinatorOfLanguage(HLocale lang) {
-        Optional<HAccount> authenticatedAccount = getAuthenticatedAccount();
+    public boolean isUserCoordinatorOfLanguage(HLocale lang) {
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
         PersonDAO personDAO =
                 ServiceLocator.instance().getInstance(PersonDAO.class);
 
-        if (authenticatedAccount.isPresent()) {
+        if (account.isPresent()) {
             return personDAO.isUserInLanguageTeamWithRoles(
-                    authenticatedAccount.get().getPerson(), lang, null, null, true);
+                    account.get().getPerson(), lang, null, null, true);
         } else {
             return false;
         }
@@ -415,7 +417,7 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* 'team coordinator' can insert/update/delete language team members */
     @GrantsPermission(actions = { "insert", "update", "delete" })
-    public static boolean canModifyLanguageTeamMembers(
+    public boolean canModifyLanguageTeamMembers(
             HLocaleMember localeMember) {
         return isUserCoordinatorOfLanguage(localeMember.getSupportedLanguage());
     }
@@ -426,15 +428,15 @@ public class SecurityFunctions extends PermissionProvider {
 
     // Only admin can view obsolete projects
     @GrantsPermission(actions = "view-obsolete")
-    public static boolean canViewObsoleteProject(HProject project) {
-        return getIdentity().hasRole("admin");
+    public boolean canViewObsoleteProject(HProject project) {
+        return identity.hasRole("admin");
     }
 
     // Only admin can view obsolete project iterations
     @GrantsPermission(actions = "view-obsolete")
-    public static boolean canViewObsoleteProjectIteration(
+    public boolean canViewObsoleteProjectIteration(
             HProjectIteration projectIteration) {
-        return getIdentity().hasRole("admin");
+        return identity.hasRole("admin");
     }
 
     /***************************************************************************
@@ -443,13 +445,13 @@ public class SecurityFunctions extends PermissionProvider {
 
     // Project maintainer can archive/delete projects
     @GrantsPermission(actions = "mark-obsolete")
-    public static boolean canArchiveProject(HProject project) {
+    public boolean canArchiveProject(HProject project) {
         return isProjectMaintainer(project);
     }
 
     // Project maintainer can archive/delete project iterations
     @GrantsPermission(actions = "mark-obsolete")
-    public static boolean canArchiveProjectIteration(
+    public boolean canArchiveProjectIteration(
             HProjectIteration projectIteration) {
         return isProjectMaintainer(projectIteration.getProject());
     }
@@ -463,26 +465,26 @@ public class SecurityFunctions extends PermissionProvider {
      * download files
      */
     @GrantsPermission(actions = { "download-single", "download-all" })
-    public static boolean canDownloadFiles(HProjectIteration projectIteration) {
-        return getIdentity().isLoggedIn();
+    public boolean canDownloadFiles(HProjectIteration projectIteration) {
+        return identity.isLoggedIn();
     }
 
     /***************************************************************************
      * Version Group rules
      **************************************************************************/
     @GrantsPermission(actions = "update")
-    public static boolean canUpdateVersionGroup(HIterationGroup group) {
-        Optional<HAccount> account = getAuthenticatedAccount();
+    public boolean canUpdateVersionGroup(HIterationGroup group) {
+        Optional<HAccount> account = Optional.fromNullable(authenticatedAccount);
         return account.isPresent() && account.get().getPerson().isMaintainer(group);
     }
 
     @GrantsPermission(actions = "insert")
-    public static boolean canInsertVersionGroup(HIterationGroup group) {
+    public boolean canInsertVersionGroup(HIterationGroup group) {
         return isAdmin();
     }
 
     @GrantsPermission(actions = "view-obsolete")
-    public static boolean canViewObsoleteVersionGroup(HIterationGroup group) {
+    public boolean canViewObsoleteVersionGroup(HIterationGroup group) {
         return isAdmin();
     }
 
@@ -492,9 +494,9 @@ public class SecurityFunctions extends PermissionProvider {
 
     /** Admins and Project maintainers can perform copy-trans */
     @GrantsPermission(actions = "copy-trans")
-    public static boolean canRunCopyTrans(HProjectIteration iteration) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && isProjectMaintainer(iteration.getProject());
+    public boolean canRunCopyTrans(HProjectIteration iteration) {
+        return authenticatedAccount != null
+                && isProjectMaintainer(iteration.getProject());
     }
 
     /*****************************************************************************************
@@ -502,58 +504,36 @@ public class SecurityFunctions extends PermissionProvider {
      ******************************************************************************************/
 
     @GrantsPermission(actions = "review-comment")
-    public static boolean canCommentOnReview(HLocale locale, HProject project) {
+    public boolean canCommentOnReview(HLocale locale, HProject project) {
         return project.isAllowGlobalTranslation() &&
                 isUserAllowedAccess(project) && isLanguageTeamMember(locale);
     }
 
     @GrantsPermission(actions = "review-comment")
-    public static boolean canMaintainerCommentOnReview(HLocale locale,
+    public boolean canMaintainerCommentOnReview(HLocale locale,
             HProject project) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && isProjectMaintainer(project);
+        return authenticatedAccount != null && isProjectMaintainer(project);
     }
 
     @GrantsPermission(actions = "review-comment")
-    public static boolean canTranslationMaintainerCommentOnReview(HLocale locale,
+    public boolean canTranslationMaintainerCommentOnReview(HLocale locale,
             HProject project) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() && isProjectTranslationMaintainer(project);
+        return authenticatedAccount != null
+                && isProjectTranslationMaintainer(project);
     }
 
     @GrantsPermission(actions = "review-comment")
-    public static boolean canReviewerCommentOnReview(HLocale locale,
+    public boolean canReviewerCommentOnReview(HLocale locale,
             HProject project) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() &&
+        return authenticatedAccount != null &&
                 userHasProjectLanguageRole(project, locale, LocaleRole.Reviewer);
     }
 
     @GrantsPermission(actions = "review-comment")
-    public static boolean canTranslatorCommentOnReview(HLocale locale,
+    public boolean canTranslatorCommentOnReview(HLocale locale,
             HProject project) {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent() &&
+        return authenticatedAccount != null &&
                 userHasProjectLanguageRole(project, locale, LocaleRole.Translator);
-    }
-
-    private static final ZanataIdentity getIdentity() {
-        return ServiceLocator.instance().getInstance(ZanataIdentity.class);
-    }
-
-    private static final Optional<HAccount> getAuthenticatedAccount() {
-        return Optional.fromNullable(ServiceLocator.instance().getInstance(
-                HAccount.class, new AuthenticatedLiteral()));
-    }
-
-    private static final <T> T extractTarget(Object[] array, Class<T> type) {
-        for (int i = 0; i < array.length; i++) {
-            Object arrayElement = array[i];
-            if (type.isAssignableFrom(arrayElement.getClass())) {
-                return (T) arrayElement;
-            }
-        }
-        return null;
     }
 
     /*****************************************************************************************
@@ -561,9 +541,8 @@ public class SecurityFunctions extends PermissionProvider {
      ******************************************************************************************/
 
     @GrantsPermission(actions = "download-tmx")
-    public static boolean canDownloadTMX() {
-        Optional<HAccount> account = getAuthenticatedAccount();
-        return account.isPresent();
+    public boolean canDownloadTMX() {
+        return authenticatedAccount != null;
     }
 
 
