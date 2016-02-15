@@ -58,8 +58,6 @@ public class ZanataIdentityTest extends ZanataJpaTest {
         getEm().flush();
         ZanataCredentials credentials = new ZanataCredentials();
         PermissionEvaluator permissionEvaluator = new PermissionEvaluator();
-        //permissionEvaluator = seam.autowire(permissionEvaluator);
-        //permissionEvaluator.buildIndex();
         when(identityManager.isEnabled()).thenReturn(true);
         when(identityManager.authenticate(username, validPassword)).thenReturn(true);
         when(identityManager.authenticate(username, apiKey)).thenReturn(true);

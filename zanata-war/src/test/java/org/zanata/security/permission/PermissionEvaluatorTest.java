@@ -32,7 +32,6 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
-import org.zanata.security.PermissionProvider;
 import org.zanata.security.SecurityFunctions;
 
 import java.lang.reflect.InvocationTargetException;

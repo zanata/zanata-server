@@ -22,7 +22,6 @@ package org.zanata.security.permission;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.zanata.security.PermissionProvider;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -42,7 +41,7 @@ import java.util.Collection;
 @ApplicationScoped
 public class PermissionEvaluator {
 
-    public static final String ALL_ACTION_GRANTER = "__**__";
+    static final String ALL_ACTION_GRANTER = "__**__";
 
     private final Multimap<String, PermissionGranter> permissionGrantMethods =
             ArrayListMultimap.create();
