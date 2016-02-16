@@ -3,7 +3,7 @@ var path = require('path')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var _ = require('lodash')
 var defaultConfig = require('./webpack.config.js')
-var bundleDest = process.env.npm_config_bundleDest || __dirname;
+var bundleDest = process.env.npm_config_bundleDest || __dirname
 
 module.exports = _.merge({}, defaultConfig, {
   cache: false,
@@ -16,7 +16,7 @@ module.exports = _.merge({}, defaultConfig, {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel',
+        loader: 'babel?presets[]=react,presets[]=stage-0,presets[]=es2015',
         include: path.join(__dirname, 'src')
       },
       {

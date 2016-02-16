@@ -2,12 +2,10 @@ var webpack = require('webpack')
 var path = require('path')
 
 module.exports = {
-  context: __dirname,
   entry: './src/index',
   output: {
     path: __dirname,
-    filename: 'bundle.js',
-    pathinfo: true
+    filename: 'bundle.js'
   },
   module: {
     loaders: [
@@ -15,7 +13,8 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'atomic-loader?configPath=' + __dirname +
-          '/atomicCssConfig.js!babel',
+          '/atomicCssConfig.js' +
+          '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015',
         include: path.join(__dirname, 'src')
       },
       {
@@ -24,17 +23,8 @@ module.exports = {
       }
     ]
   },
-  cssnext: {
-    compress: true,
-    features: {
-      rem: false,
-      pseudoElements: false,
-      colorRgba: false
-    }
-  },
   plugins: [
-    new webpack.DefinePlugin({ 'global.GENTLY': false }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.NoErrorsPlugin()
   ],
   resolve: {

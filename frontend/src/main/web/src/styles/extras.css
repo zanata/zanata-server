@@ -1,0 +1,20 @@
+/* Styles that can't be achieved with Atomizer */
+
+.Ap\(n\) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.Ph\(neutral\)::placeholder,
+.Ph\(neutral\) ::placeholder {
+  color: hsl(195, 32%, 80%);
+}
+
+[class*=LineClamp] {
+  text-overflow: ellipsis;
+}
+
+[class*=LineClamp\(1\)] {
+  white-space: nowrap;
+}

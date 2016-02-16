@@ -83,6 +83,7 @@ module.exports = {
       ish1: 'inset 0 1px 4px 0 rgba(0, 0, 0, 0.185)',
       // Flexbox
       flx1: '1',
+      flx2: '2',
       if: 'inline-flex',
       // Transitions
       eo: 'transform .3s cubic-bezier(0.19, 1, 0.22, 1), opacity .3s cubic-bezier(0.19, 1, 0.22, 1)', // Ease out

@@ -3,7 +3,7 @@ var _ = require('lodash')
 var defaultConfig = require('./webpack.config.js')
 
 module.exports = _.merge({}, defaultConfig, {
-  devtool: 'eval',
+  devtool: 'source-map',
   plugins: defaultConfig.plugins.concat([
     new webpack.DefinePlugin({
       'process.env': {
@@ -13,7 +13,6 @@ module.exports = _.merge({}, defaultConfig, {
   ]),
   devServer: {
     historyApiFallback: true,
-    noInfo: true,
     stats: {
       colors: true
     }

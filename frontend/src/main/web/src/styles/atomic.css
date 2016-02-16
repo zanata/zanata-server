@@ -1,29 +1,179 @@
+.Bd\(bd2\) {
+  border: solid 2px;
+}
+.Bdb\(bd2\) {
+  border-bottom: solid 2px;
+}
+.Bdb\(bd1\) {
+  border-bottom: solid 1px;
+}
+.Bdc\(neutral\) {
+  border-color: hsl(195, 32%, 80%);
+}
+.Bdc\(light\) {
+  border-color: hsl(213, 44%, 95%);
+}
+.Bdc\(pri\)\:f:focus {
+  border-color: #19a5da;
+}
+.Bdc\(t\) {
+  border-color: transparent;
+}
+.Bdc\(neutral\)\:h:hover {
+  border-color: hsl(195, 32%, 80%);
+}
+.Bds\(s\) {
+  border-style: solid;
+}
+.Bdw\(2px\) {
+  border-width: 2px;
+}
+.Bdrs\(rq\) {
+  border-radius: 0.375rem;
+}
+.Bdrs\(rq\)\:h:hover {
+  border-radius: 0.375rem;
+}
+.Bgc\(light\)\:h:hover {
+  background-color: hsl(213, 44%, 95%);
+}
+.Bgc\(t\) {
+  background-color: transparent;
+}
+.Bgc\(i\) {
+  background-color: inherit;
+}
+.Bgc\(\#fff\.2\)\:h:hover {
+  background-color: rgba(255,255,255,.2);
+}
+.Bgc\(white\) {
+  background-color: white;
+}
+.Bgc\(pri\) {
+  background-color: #19a5da;
+}
+.Bxz\(bb\) {
+  box-sizing: border-box;
+}
+.Bxsh\(shw\) {
+  box-shadow: 0 0 15px 5px #fff;
+}
 .Bxsh\(sh1\) {
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.185);
+}
+.Bxsh\(ish1\) {
+  box-shadow: inset 0 1px 4px 0 rgba(0, 0, 0, 0.185);
 }
 .C\(muted\) {
   color: hsl(204, 18%, 69%);
 }
-.C\(dark\) {
-  color: hsl(212, 18%, 40%);
+.C\(neutral\) {
+  color: hsl(195, 32%, 80%);
 }
-.D\(ib\), a[class*=LineClamp] {
-  display: inline-block;
+.C\(i\) {
+  color: inherit;
+}
+.C\(pri\) {
+  color: #19a5da;
+}
+.C\(light\) {
+  color: hsl(213, 44%, 95%);
+}
+.C\(white\)\:h:hover {
+  color: white;
+}
+.Cur\(p\) {
+  cursor: pointer;
+}
+.Cur\(t\) {
+  cursor: text;
+}
+.Cur\(d\) {
+  cursor: default;
 }
 .D\(f\) {
   display: flex;
 }
+.D\(b\) {
+  display: block;
+}
+.D\(n\) {
+  display: none;
+}
+.Flx\(flx2\) {
+  flex: 2;
+}
+.Flx\(flx1\) {
+  flex: 1;
+}
+.Flx\(n\) {
+  flex: none;
+}
+.Flxg\(1\) {
+  flex-grow: 1;
+}
+.Flxs\(0\) {
+  flex-shrink: 0;
+}
+.Fld\(c\) {
+  flex-direction: column;
+}
 .Ai\(c\) {
   align-items: center;
+}
+.Ai\(st\) {
+  align-items: stretch;
+}
+.Or\(1\) {
+  order: 1;
+}
+.Jc\(c\) {
+  justify-content: center;
 }
 .Jc\(sb\) {
   justify-content: space-between;
 }
+.Flw\(w\) {
+  flex-wrap: wrap;
+}
+.Ff\(inh\) {
+  font-family: inherit;
+}
 .Ff\(zsans\) {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-.Fz\(msn1\) {
-  font-size: 0.833rem;
+.Fw\(600\) {
+  font-weight: 600;
+}
+.Fw\(inh\), .Fw\(i\) {
+  font-weight: inherit;
+}
+.Fz\(ms1\) {
+  font-size: 1.2rem;
+}
+.Fz\(inh\), .Fz\(i\) {
+  font-size: inherit;
+}
+.Fz\(ms0\) {
+  font-size: 1rem;
+}
+.Fz\(msn2\) {
+  font-size: 0.694rem;
+}
+.Fs\(i\) {
+  font-style: italic;
+}
+.Fs\(inh\) {
+  font-style: inherit;
+}
+.H\(r2\) {
+  height: 3rem;
+}
+.H\(ms1\) {
+  height: 1.2rem;
+}
+.H\(100vh\) {
+  height: 100vh;
 }
 .H\(100\%\) {
   height: 100%;
@@ -36,9 +186,6 @@
 }
 .H\(ms0\) {
   height: 1rem;
-}
-.H\(ms1\) {
-  height: 1.2rem;
 }
 .H\(ms2\) {
   height: 1.44rem;
@@ -55,11 +202,23 @@
 .H\(ms6\) {
   height: 2.986rem;
 }
+.Lh\(1\) {
+  line-height: 1;
+}
 .Lh\(1\.5\) {
   line-height: 1.5;
 }
 .M\(0\) {
   margin: 0;
+}
+.My\(rh\), .Mt\(rh\) {
+  margin-top: 0.75rem;
+}
+.My\(rh\) {
+  margin-bottom: 0.75rem;
+}
+.Mend\(rq\) {
+  margin-right: 0.375rem;
 }
 .Mend\(rh\) {
   margin-right: 0.75rem;
@@ -67,38 +226,92 @@
 .Mend\(re\) {
   margin-right: 0.1875rem;
 }
-.Mend\(r1\) {
-  margin-right: 1.5rem;
-}
-.Mb\(r1\) {
-  margin-bottom: 1.5rem;
+.Mstart\(rh\) {
+  margin-left: 0.75rem;
 }
 .Mstart\(rq\) {
   margin-left: 0.375rem;
 }
-.Mstart\(rh\) {
-  margin-left: 0.75rem;
+.Mstart\(a\) {
+  margin-left: auto;
 }
 .Maw\(r4\) {
   max-width: 6rem;
 }
-.Miw\(r8\) {
-  min-width: 12rem;
+.Mih\(r1h\) {
+  min-height: 2.25rem;
 }
-.P\(rh\) {
-  padding: 0.75rem;
+.O\(n\) {
+  outline: none;
+}
+.Ov\(a\) {
+  overflow: auto;
+}
+.Ov\(h\), .Hidden, [class*=LineClamp] {
+  overflow: hidden;
+}
+.Ovx\(h\) {
+  overflow-x: hidden;
+}
+.Ovs\(touch\) {
+  -webkit-overflow-scrolling: touch;
+}
+.P\(rq\) {
+  padding: 0.375rem;
+}
+.Px\(rh\) {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.Px\(rq\), .Pstart\(rq\) {
+  padding-left: 0.375rem;
+}
+.Px\(rq\), .Pend\(rq\) {
+  padding-right: 0.375rem;
+}
+.Py\(rq\) {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+.Py\(re\) {
+  padding-top: 0.1875rem;
+  padding-bottom: 0.1875rem;
+}
+.Py\(r1\), .Pt\(r1\) {
+  padding-top: 1.5rem;
+}
+.Py\(r1\) {
+  padding-bottom: 1.5rem;
 }
 .Pstart\(re\) {
   padding-left: 0.1875rem;
 }
+.Pos\(r\) {
+  position: relative;
+}
 .Ta\(end\) {
   text-align: right;
 }
-.W\(r16\) {
-  width: 24rem;
+.Ta\(c\) {
+  text-align: center;
+}
+.Td\(n\) {
+  text-decoration: none;
+}
+.Td\(u\)\:h:hover {
+  text-decoration: underline;
+}
+.Trs\(aeo\) {
+  transition: all .3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.W\(100\%\) {
+  width: 100%;
 }
 .W\(r2\) {
   width: 3rem;
+}
+.W\(ms1\) {
+  width: 1.2rem;
 }
 .W\(msn2\) {
   width: 0.694rem;
@@ -108,9 +321,6 @@
 }
 .W\(ms0\) {
   width: 1rem;
-}
-.W\(ms1\) {
-  width: 1.2rem;
 }
 .W\(ms2\) {
   width: 1.44rem;
@@ -127,12 +337,21 @@
 .W\(ms6\) {
   width: 2.986rem;
 }
+.Hidden {
+  position: absolute !important;
+  *clip: rect(1px 1px 1px 1px);
+  clip: rect(1px,1px,1px,1px);
+  padding: 0 !important;
+  border: 0 !important;
+  height: 1px !important;
+  width: 1px !important;
+}
 [class*=LineClamp] {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 a[class*=LineClamp] {
+  display: inline-block;
   display : -webkit-box;
   *display: inline;
   zoom: 1;
@@ -146,16 +365,33 @@ a[class*=LineClamp]:after {
   height: 0;
   width: 0;
 }
-.LineClamp\(1\) {
+.LineClamp\(1\,36px\), .LineClamp\(1\), .LineClamp\(1\,48px\) {
   -webkit-line-clamp: 1;
+}
+.LineClamp\(1\,36px\) {
+  max-height: 36px;
+}
+.LineClamp\(1\) {
   max-height: ;
 }
-@media screen and (min-width: 55rem) {
-  .Miw\(r16\)--md {
-    min-width: 24rem;
+.LineClamp\(1\,48px\) {
+  max-height: 48px;
+}
+@media screen and (max-width: 29.313rem) {
+  .D\(n\)--oxsm {
+    display: none;
   }
 }
 @media screen and (max-width: 54.938rem) {
+  .D\(n\)--lesm {
+    display: none;
+  }
+  .Mb\(rh\)--lesm {
+    margin-bottom: 0.75rem;
+  }
+  .Miw\(100\%\)--lesm {
+    min-width: 100%;
+  }
   .Hidden--lesm {
     position: absolute !important;
     *clip: rect(1px 1px 1px 1px);
@@ -165,5 +401,43 @@ a[class*=LineClamp]:after {
     height: 1px !important;
     width: 1px !important;
     overflow: hidden;
+  }
+}
+@media screen and (min-width: 29.375rem) {
+  .D\(n\)--sm {
+    display: none;
+  }
+  .D\(f\)--sm {
+    display: flex;
+  }
+  .Flxg\(0\)--sm {
+    flex-grow: 0;
+  }
+  .Fld\(c\)--sm {
+    flex-direction: column;
+  }
+  .Fld\(r\)--sm {
+    flex-direction: row;
+  }
+  .Or\(0\)--sm {
+    order: 0;
+  }
+  .Fz\(ms2\)--sm {
+    font-size: 1.44rem;
+  }
+  .P\(r1\)--sm {
+    padding: 1.5rem;
+  }
+  .Px\(r1\)--sm {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .Px\(rq\)--sm {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem;
+  }
+  .Py\(rh\)--sm {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 }
