@@ -27,37 +27,6 @@ const classes = {
 }
 
 class TextInput extends Component {
-  static propTypes = {
-    accessibilityLabel: PropTypes.string,
-    autoComplete: PropTypes.bool,
-    autoFocus: PropTypes.bool,
-    clearTextOnFocus: PropTypes.bool,
-    defaultValue: PropTypes.string,
-    editable: PropTypes.bool,
-    keyboardType: PropTypes.oneOf(['default', 'email-address', 'numeric',
-      'phone-pad', 'url']),
-    maxLength: PropTypes.number,
-    maxNumberOfLines: PropTypes.number,
-    multiline: PropTypes.bool,
-    numberOfLines: PropTypes.number,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onChangeText: PropTypes.func,
-    onFocus: PropTypes.func,
-    onSelectionChange: PropTypes.func,
-    placeholder: PropTypes.string,
-    placeholderTextColor: PropTypes.string,
-    secureTextEntry: PropTypes.bool,
-    selectTextOnFocus: PropTypes.bool,
-    value: PropTypes.string
-  };
-  static defaultProps = {
-    editable: true,
-    keyboardType: 'default',
-    multiline: false,
-    numberOfLines: 2,
-    secureTextEntry: false
-  };
   _onBlur (e) {
     const { onBlur } = this.props
     if (onBlur) onBlur(e)
@@ -91,18 +60,18 @@ class TextInput extends Component {
       autoComplete,
       autoFocus,
       defaultValue,
-      editable,
-      keyboardType,
+      editable = true,
+      keyboardType = 'default',
       maxLength,
       maxNumberOfLines,
-      multiline,
-      numberOfLines,
+      multiline = false,
+      numberOfLines = 2,
       onBlur,
       onChange,
       onChangeText,
       onSelectionChange,
       placeholder,
-      secureTextEntry,
+      secureTextEntry = false,
       theme,
       value
     } = this.props
@@ -161,6 +130,31 @@ class TextInput extends Component {
       return <input {...propsSingleline} />
     }
   }
+}
+
+TextInput.propTypes = {
+  accessibilityLabel: PropTypes.string,
+  autoComplete: PropTypes.bool,
+  autoFocus: PropTypes.bool,
+  clearTextOnFocus: PropTypes.bool,
+  defaultValue: PropTypes.string,
+  editable: PropTypes.bool,
+  keyboardType: PropTypes.oneOf(['default', 'email-address', 'numeric',
+    'phone-pad', 'url']),
+  maxLength: PropTypes.number,
+  maxNumberOfLines: PropTypes.number,
+  multiline: PropTypes.bool,
+  numberOfLines: PropTypes.number,
+  onBlur: PropTypes.func,
+  onChange: PropTypes.func,
+  onChangeText: PropTypes.func,
+  onFocus: PropTypes.func,
+  onSelectionChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  placeholderTextColor: PropTypes.string,
+  secureTextEntry: PropTypes.bool,
+  selectTextOnFocus: PropTypes.bool,
+  value: PropTypes.string
 }
 
 export default TextInput

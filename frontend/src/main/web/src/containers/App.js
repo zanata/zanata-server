@@ -12,9 +12,6 @@ class App extends Component {
   constructor (props) {
     super(props)
   }
-  handleChange = (nextValue) => {
-    this.props.pushState(null, `/${nextValue}`)
-  };
   render () {
     const theme = {
       base: {
