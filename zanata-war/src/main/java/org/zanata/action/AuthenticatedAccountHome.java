@@ -24,12 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.Permission;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.seam.framework.EntityHome;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -48,7 +55,13 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
 
     @Inject
     @Authenticated
-    HAccount authenticatedAccount;
+    private HAccount authenticatedAccount;
+
+    @Inject
+    private ZanataIdentity identity;
+
+    @Inject
+    private UserService userService;
 
     @Override
     public Object getId() {
@@ -60,5 +73,26 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
 
     public HPerson getAuthenticatedPerson() {
         return getInstance().getPerson();
+    }
+
+    public String getUser() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            User user = userService.transferToUser(authenticatedAccount, true);
+            return mapper.writeValueAsString(user);
+        } catch (IOException e) {
+            return this.getClass().getName() + "@"
+                    + Integer.toHexString(this.hashCode());
+        }
+    }
+
+    public Permission getUserPermission() {
+        Permission permission = new Permission();
+        boolean isAdmin = false;
+        if(authenticatedAccount != null) {
+            isAdmin = identity.hasRole("admin");
+        }
+        permission.put("isAdmin", isAdmin);
+        return permission;
     }
 }

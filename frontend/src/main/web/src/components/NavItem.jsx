@@ -8,6 +8,7 @@ const NavItem = ({
   icon,
   active,
   title,
+  useHref,
   ...props
 }) => {
   const logo = (icon === 'zanata')
@@ -15,7 +16,7 @@ const NavItem = ({
   const classes = {
     base: {
       bgc: '',
-      c: 'C(light)',
+      c: 'C(light)!',
       d: 'D(n) D(f)--sm',
       fld: 'Fld(c)',
       ai: 'Ai(c)',
@@ -26,7 +27,7 @@ const NavItem = ({
       ta: 'Ta(c)',
       trs: 'Trs(aeo)',
       hover: {
-        c: 'C(white):h',
+        c: 'C(white)!:h',
         bgc: 'Bgc(#fff.2):h',
         td: 'Td(n)'
       }
@@ -34,7 +35,7 @@ const NavItem = ({
     active: {
       bgc: 'Bgc(white)',
       bxsh: 'Bxsh(sh1)',
-      c: 'C(pri)',
+      c: 'C(pri)!',
       cur: 'Cur(d)',
       hover: {
         c: '',
@@ -57,8 +58,10 @@ const NavItem = ({
     )
   }
   const text = logo ? (<span className='Hidden'>{title}</span>) : title
+
+  console.info('link', link)
   return (
-    <Link {...props} link={link} theme={themeClasses}>
+    <Link {...props} link={link} theme={themeClasses} useHref={useHref}>
       <NavIcon name={icon} size={logo ? '6' : '1'} />
       {text}
     </Link>

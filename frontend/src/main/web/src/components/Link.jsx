@@ -19,8 +19,17 @@ const Link = ({
   children,
   theme,
   link,
+  useHref,
   ...props
-}) => (
+}) => {
+  if(useHref) {
+   return (
+     <a href={link} className={flattenClasses(classes, theme)} {...props}>
+       {children}
+     </a>
+   )
+  }
+  return (
   <RouterLink
     to={link}
     className={flattenClasses(classes, theme)}
@@ -28,6 +37,6 @@ const Link = ({
   >
     {children}
   </RouterLink>
-)
+)}
 
 export default Link

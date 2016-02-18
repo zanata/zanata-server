@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "js": "webpack",
-    "build": "npm run build:css && npm run build:webpack",
+    "build": "npm run build:css && npm run build:webpack && npm run build:webpackLegacy",
     "build:css": "webpack --config webpack.config.js",
     "build:webpack": "webpack -p --config webpack.prod.config.js --bail --display-error-details",
+    "build:webpackLegacy": "webpack -p --config webpack.legacy.config.js --bail --display-error-details",
     "hot-dev-server": "webpack-dev-server --config webpack.dev.config.js --progress --inline --hot --port 8000",
     "start": "npm run hot-dev-server",
     "test": "echo \"Error: no test specified. Jest tests need to be migrated to tape.\" && exit 1"
@@ -76,7 +77,7 @@
     "redux-thunk": "^1.0.3",
     "superagent": "^0.21.0",
     "webfontloader": "^1.6.21",
-    "zanata-ui": "^2.0.0-2"
+    "zanata-ui": "^2.0.0-7"
   },
   "jest": {
     "scriptPreprocessor": "./node_modules/babel-jest",

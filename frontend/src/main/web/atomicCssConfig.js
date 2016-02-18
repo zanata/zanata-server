@@ -100,6 +100,10 @@ module.exports = {
       'Ff(zsans)',
       'H(100%)',
       'M(0)',
+      'Bgc(#fff)',
+      'Fz(16px)',
+      'Bgc(i)',
+      'Fz(i)',
       // These are needed for generated icon classes
       'W(msn2)',
       'W(msn1)',
