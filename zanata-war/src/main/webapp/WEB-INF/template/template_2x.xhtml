@@ -33,18 +33,11 @@
     <div class='Ai(st) D(f) Fld(c) Flxs(0)'>
       <div class="Ai(st) D(f) Fld(c) Fld(r)--sm Flxs(0) H(100vh)">
 
-        <ui:fragment rendered="#{applicationConfigurationAction.loginHandledByInternalPage}">
-          <ui:param name="loginUrl" value="/account/sign_in?continue=#{urlUtil.getEncodedLocalUrl(request)}"/>
-        </ui:fragment>
-
-        <ui:fragment rendered="#{applicationConfigurationAction.kerberosAuth}">
-          <ui:param name="loginUrl" value="/account/klogin.seam?continue=#{urlUtil.getEncodedLocalUrl(request)}"/>
-        </ui:fragment>
-
-
         <div id="root" base-url="#{request.contextPath}"
           data='{"activePath": "/", "loggedIn":#{identity.loggedIn and authenticatedAccountHome.instance.enabled},
-          "helpUrl": #{applicationConfigurationAction.helpUrl}, "loginUrl": #{loginUrl},
+          "helpUrl": "#{applicationConfigurationAction.helpUrl}", "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
+          "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
+          "registerUrl": "#{applicationConfigurationAction.registerUrl}",
           "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
           user="#{authenticatedAccountHome.getUser()}"/>
         <div id="container" class="Ai(st) D(f) Fld(c)  Flx(flx1) Ov(h)">

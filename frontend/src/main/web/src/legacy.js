@@ -74,10 +74,18 @@ if(Configs.data.loggedIn === true) {
   auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin';
 }
 
+let links = {
+  'context': Configs.baseUrl,
+  '/login': Configs.data.loginUrl,
+  '/help': Configs.data.helpUrl,
+  '/terms': Configs.data.termsUrl,
+  '/signup': Configs.data.registerUrl
+}
+
 render(
   <div>
     <Icons />
-    <Nav active={Configs.data.activePath} auth={auth} legacy context={Configs.baseUrl} />
+    <Nav active={Configs.data.activePath} auth={auth} legacy links={links} />
   </div>
   ,
   document.getElementById('root')

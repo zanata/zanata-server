@@ -13,7 +13,7 @@ const items = [
   {
     icon: 'search',
     link: '/search',
-    href: '/search',
+    href: '/search.seam',
     title: 'Explore',
     auth: 'public'
   },
@@ -136,32 +136,37 @@ const Nav = ({
   auth,
   active,
   legacy,
+  links,
   context,
   ...props
 }) => {
-  // const filteredItems = [
-  //   logo: [...items.logo],
-  //   ...items.loggedin
-  // ]
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
   return (
     <nav
       {...props}
-      className={flattenClasses(classes)}
-    >
-      {items.map((item, itemId) =>
-        (((item.auth === 'public') || (item.auth === authState) ||
-          (item.auth === 'loggedin' && admin)) && !item.more) ? (
-          <NavItem key={itemId}
+      className={flattenClasses(classes)}>
+      {items.map((item, itemId) => {
+        if(((item.auth === 'public') || (item.auth === authState) ||
+          (item.auth === 'loggedin' && admin)) && !item.more) {
+
+          let link = item.link;
+          if(legacy && links[item.link]) {
+            link = links.context + links[item.link];
+          } else if(legacy) {
+            link = links.context + item.href;
+          }
+
+          return (<NavItem key={itemId}
             small={item.small}
             active={active === item.link}
-            link={legacy ? context + item.href : item.link}
+            link={link}
             useHref={legacy}
             icon={item.icon}
-            title={item.title}
-          />
-        ) : null)
+            title={item.title}/>)
+        }
+        return null;
+        })
       }
     </nav>
   )
