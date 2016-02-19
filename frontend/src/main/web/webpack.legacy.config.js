@@ -5,8 +5,6 @@ var _ = require('lodash')
 var defaultConfig = require('./webpack.prod.config.js')
 var bundleDest = process.env.npm_config_bundleDest || __dirname
 
-console.info('alex legacy....', bundleDest)
-
 module.exports = _.merge({}, defaultConfig, {
   entry: './src/legacy',
   output: {
