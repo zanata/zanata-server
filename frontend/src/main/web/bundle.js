@@ -13563,84 +13563,99 @@
 	var items = [{
 	  icon: 'zanata',
 	  link: '/',
+	  href: '/',
 	  title: 'Zanata',
 	  auth: 'public'
 	}, {
 	  icon: 'search',
 	  link: '/search',
+	  href: '/search.seam',
 	  title: 'Explore',
 	  auth: 'public'
 	}, {
 	  small: true,
 	  icon: 'import',
 	  link: '/login',
+	  href: '/account/sign_in',
 	  title: 'Log In',
 	  auth: 'loggedout'
 	}, {
 	  small: true,
 	  icon: 'upload',
 	  link: '/signup',
+	  href: '/account/register',
 	  title: 'Sign Up',
 	  auth: 'loggedout'
 	}, {
 	  small: true,
 	  icon: 'statistics',
 	  link: '/activity',
+	  href: '/dashboard/activity',
 	  title: 'Activity',
 	  auth: 'loggedin'
 	}, {
 	  small: true,
 	  icon: 'project',
 	  link: '/projects',
+	  href: '/project/list',
 	  title: 'Projects',
 	  auth: 'loggedin'
 	}, {
 	  small: true,
 	  icon: 'folder',
 	  link: '/groups',
+	  href: '/version-group/list',
 	  title: 'Groups',
 	  auth: 'loggedin'
 	}, {
 	  small: true,
 	  icon: 'user',
 	  link: '/user/:uid',
+	  href: '/profile/view/',
 	  title: 'Profile',
 	  auth: 'loggedin'
 	}, {
 	  icon: 'settings',
 	  link: '/settings',
+	  href: '/dashboard/settings',
 	  title: 'Settings',
 	  auth: 'loggedin'
 	}, {
 	  icon: 'admin',
 	  link: '/admin',
+	  href: '/admin/home',
 	  title: 'Admin',
 	  auth: 'admin'
 	}, {
 	  icon: 'glossary',
 	  link: '/glossary',
+	  href: '/glossary',
 	  title: 'Glossary',
 	  auth: 'loggedin'
 	}, {
 	  icon: 'logout',
 	  link: '/logout',
+	  href: '/logout',
 	  title: 'Log Out',
 	  auth: 'loggedin'
 	}, {
 	  small: true,
 	  icon: 'ellipsis',
 	  link: '',
+	  href: '',
 	  title: 'More',
 	  auth: 'public'
 	}, {
 	  icon: 'help',
 	  link: '/help',
+	  href: '',
 	  title: 'Help',
 	  auth: 'public',
 	  more: true
 	}, {
 	  icon: 'info',
 	  link: '/about',
+	  href: '',
 	  title: 'About',
 	  auth: 'public',
 	  more: true
@@ -13653,6 +13668,7 @@
 	    d: 'D(f)',
 	    fld: 'Fld(c)--sm',
 	    flxs: 'Flxs(0)',
+	    h: 'H(100%)',
 	    or: 'Or(1) Or(0)--sm',
 	    ov: 'Ov(h)'
 	  }
@@ -13661,28 +13677,37 @@
 	var Nav = function Nav(_ref) {
 	  var auth = _ref.auth;
 	  var active = _ref.active;
+	  var legacy = _ref.legacy;
+	  var links = _ref.links;
+	  var context = _ref.context;
 
-	  var props = _objectWithoutProperties(_ref, ['auth', 'active']);
+	  var props = _objectWithoutProperties(_ref, ['auth', 'active', 'legacy', 'links', 'context']);
 
-	  // const filteredItems = [
-	  //   logo: [...items.logo],
-	  //   ...items.loggedin
-	  // ]
 	  var authState = auth || 'loggedin';
 	  var admin = auth === 'admin';
 	  return _react2.default.createElement(
 	    'nav',
 	    _extends({}, props, {
-	      className: (0, _zanataUi.flattenClasses)(classes)
-	    }),
+	      className: (0, _zanataUi.flattenClasses)(classes) }),
 	    items.map(function (item, itemId) {
-	      return (item.auth === 'public' || item.auth === authState || item.auth === 'loggedin' && admin) && !item.more ? _react2.default.createElement(_NavItem2.default, { key: itemId,
-	        small: item.small,
-	        active: active === item.link,
-	        link: item.link,
-	        icon: item.icon,
-	        title: item.title
-	      }) : null;
+	      if ((item.auth === 'public' || item.auth === authState || item.auth === 'loggedin' && admin) && !item.more) {
+
+	        var link = item.link;
+	        if (legacy && links[item.link]) {
+	          link = links.context + links[item.link];
+	        } else if (legacy) {
+	          link = links.context + item.href;
+	        }
+
+	        return _react2.default.createElement(_NavItem2.default, { key: itemId,
+	          small: item.small,
+	          active: active === link,
+	          link: link,
+	          useHref: legacy,
+	          icon: item.icon,
+	          title: item.title });
+	      }
+	      return null;
 	    })
 	  );
 	};
@@ -13720,15 +13745,16 @@
 	  var icon = _ref.icon;
 	  var active = _ref.active;
 	  var title = _ref.title;
+	  var useHref = _ref.useHref;
 
-	  var props = _objectWithoutProperties(_ref, ['link', 'small', 'icon', 'active', 'title']);
+	  var props = _objectWithoutProperties(_ref, ['link', 'small', 'icon', 'active', 'title', 'useHref']);
 
 	  var logo = icon === 'zanata';
 	  var search = link === '/search';
 	  var classes = {
 	    base: {
 	      bgc: '',
-	      c: 'C(light)',
+	      c: 'C(light)!',
 	      d: 'D(n) D(f)--sm',
 	      fld: 'Fld(c)',
 	      ai: 'Ai(c)',
@@ -13739,7 +13765,7 @@
 	      ta: 'Ta(c)',
 	      trs: 'Trs(aeo)',
 	      hover: {
-	        c: 'C(white):h',
+	        c: 'C(white)!:h',
 	        bgc: 'Bgc(#fff.2):h',
 	        td: 'Td(n)'
 	      }
@@ -13747,7 +13773,7 @@
 	    active: {
 	      bgc: 'Bgc(white)',
 	      bxsh: 'Bxsh(sh1)',
-	      c: 'C(pri)',
+	      c: 'C(pri)!',
 	      cur: 'Cur(d)',
 	      hover: {
 	        c: '',
@@ -13771,7 +13797,7 @@
 	  ) : title;
 	  return _react2.default.createElement(
 	    _.Link,
-	    _extends({}, props, { link: link, theme: themeClasses }),
+	    _extends({}, props, { link: link, theme: themeClasses, useHref: useHref }),
 	    _react2.default.createElement(_.NavIcon, { name: icon, size: logo ? '6' : '1' }),
 	    text
 	  );
@@ -26451,9 +26477,17 @@
 	  var children = _ref.children;
 	  var theme = _ref.theme;
 	  var link = _ref.link;
+	  var useHref = _ref.useHref;
 
-	  var props = _objectWithoutProperties(_ref, ['children', 'theme', 'link']);
+	  var props = _objectWithoutProperties(_ref, ['children', 'theme', 'link', 'useHref']);
 
+	  if (useHref) {
+	    return _react2.default.createElement(
+	      'a',
+	      _extends({ href: link, className: (0, _zanataUi.flattenClasses)(classes, theme) }, props),
+	      children
+	    );
+	  }
 	  return _react2.default.createElement(
 	    _reactRouter.Link,
 	    _extends({
@@ -34429,7 +34463,7 @@
 
 
 	// module
-	exports.push([module.id, ".Ff\\(zsans\\) {\n  font-family: \"Source Sans Pro\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n}\n.H\\(100\\%\\) {\n  height: 100%;\n}\n.H\\(msn2\\) {\n  height: 0.694rem;\n}\n.H\\(msn1\\) {\n  height: 0.833rem;\n}\n.H\\(ms0\\) {\n  height: 1rem;\n}\n.H\\(ms1\\) {\n  height: 1.2rem;\n}\n.H\\(ms2\\) {\n  height: 1.44rem;\n}\n.H\\(ms3\\) {\n  height: 1.728rem;\n}\n.H\\(ms4\\) {\n  height: 2.074rem;\n}\n.H\\(ms5\\) {\n  height: 2.488rem;\n}\n.H\\(ms6\\) {\n  height: 2.986rem;\n}\n.Lh\\(1\\.5\\) {\n  line-height: 1.5;\n}\n.M\\(0\\) {\n  margin: 0;\n}\n.W\\(msn2\\) {\n  width: 0.694rem;\n}\n.W\\(msn1\\) {\n  width: 0.833rem;\n}\n.W\\(ms0\\) {\n  width: 1rem;\n}\n.W\\(ms1\\) {\n  width: 1.2rem;\n}\n.W\\(ms2\\) {\n  width: 1.44rem;\n}\n.W\\(ms3\\) {\n  width: 1.728rem;\n}\n.W\\(ms4\\) {\n  width: 2.074rem;\n}\n.W\\(ms5\\) {\n  width: 2.488rem;\n}\n.W\\(ms6\\) {\n  width: 2.986rem;\n}\n", ""]);
+	exports.push([module.id, ".Bgc\\(\\#fff\\) {\n  background-color: #fff;\n}\n.Bgc\\(i\\) {\n  background-color: inherit;\n}\n.Ff\\(zsans\\) {\n  font-family: \"Source Sans Pro\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n}\n.Fz\\(16px\\) {\n  font-size: 16px;\n}\n.Fz\\(i\\) {\n  font-size: inherit;\n}\n.H\\(100\\%\\) {\n  height: 100%;\n}\n.H\\(msn2\\) {\n  height: 0.694rem;\n}\n.H\\(msn1\\) {\n  height: 0.833rem;\n}\n.H\\(ms0\\) {\n  height: 1rem;\n}\n.H\\(ms1\\) {\n  height: 1.2rem;\n}\n.H\\(ms2\\) {\n  height: 1.44rem;\n}\n.H\\(ms3\\) {\n  height: 1.728rem;\n}\n.H\\(ms4\\) {\n  height: 2.074rem;\n}\n.H\\(ms5\\) {\n  height: 2.488rem;\n}\n.H\\(ms6\\) {\n  height: 2.986rem;\n}\n.Lh\\(1\\.5\\) {\n  line-height: 1.5;\n}\n.M\\(0\\) {\n  margin: 0;\n}\n.W\\(msn2\\) {\n  width: 0.694rem;\n}\n.W\\(msn1\\) {\n  width: 0.833rem;\n}\n.W\\(ms0\\) {\n  width: 1rem;\n}\n.W\\(ms1\\) {\n  width: 1.2rem;\n}\n.W\\(ms2\\) {\n  width: 1.44rem;\n}\n.W\\(ms3\\) {\n  width: 1.728rem;\n}\n.W\\(ms4\\) {\n  width: 2.074rem;\n}\n.W\\(ms5\\) {\n  width: 2.488rem;\n}\n.W\\(ms6\\) {\n  width: 2.986rem;\n}\n", ""]);
 
 	// exports
 
@@ -41359,9 +41393,10 @@
 	        return copySymbols(value, baseAssign(result, value));
 	      }
 	    } else {
-	      return cloneableTags[tag]
-	        ? initCloneByTag(value, tag, isDeep)
-	        : (object ? value : {});
+	      if (!cloneableTags[tag]) {
+	        return object ? value : {};
+	      }
+	      result = initCloneByTag(value, tag, isDeep);
 	    }
 	  }
 	  // Check for circular references and return its corresponding clone.

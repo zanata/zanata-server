@@ -80,13 +80,16 @@ let links = {
   '/help': Configs.data.helpUrl,
   '/terms': Configs.data.termsUrl,
   '/signup': Configs.data.registerUrl,
-  '/user/:uid': Configs.data.profileUrl
+  '/user/:uid': Configs.data.profileUrl,
+  '/logout': Configs.data.logoutUrl
 }
+
+let activePath = window.location.pathname;
 
 render(
   <div className='H(100%)'>
     <Icons />
-    <Nav active={Configs.data.activePath} auth={auth} legacy links={links} />
+    <Nav active={activePath} auth={auth} legacy links={links} />
   </div>
   ,
   document.getElementById('root')

@@ -5,6 +5,8 @@ var _ = require('lodash')
 var defaultConfig = require('./webpack.config.js')
 var bundleDest = process.env.npm_config_bundleDest || __dirname
 
+console.info('alex....', bundleDest)
+
 module.exports = _.merge({}, defaultConfig, {
   cache: false,
   output: {

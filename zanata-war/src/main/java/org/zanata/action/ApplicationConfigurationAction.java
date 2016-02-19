@@ -91,6 +91,6 @@ public class ApplicationConfigurationAction {
         if(isRegistrationLinkNeeded()) {
             return applicationConfiguration.getRegisterPath();
         }
-        return "/account/register.xhtml";
+        return "/account/register";
     }
 }

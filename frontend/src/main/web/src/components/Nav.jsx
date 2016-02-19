@@ -89,7 +89,7 @@ const items = [
   {
     icon: 'logout',
     link: '/logout',
-    href: '/?actionMethod=home.xhtml%3Aidentity.logout',
+    href: '/logout',
     title: 'Log Out',
     auth: 'loggedin'
   },
@@ -159,7 +159,7 @@ const Nav = ({
 
           return (<NavItem key={itemId}
             small={item.small}
-            active={active === item.link}
+            active={active === link}
             link={link}
             useHref={legacy}
             icon={item.icon}

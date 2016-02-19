@@ -104,7 +104,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>execute npm run build for: ${project.artifactId}</id>
+            <id>execute npm run build for: ${project.artifactId} PROD</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
@@ -115,6 +115,23 @@
                 <argument>${npm.cli.script}</argument>
                 <argument>run</argument>
                 <argument>build</argument>
+                <argument>--</argument>
+                <argument>--bundleDest=${bundle.dest}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>execute npm run build for: ${project.artifactId} LEGACY</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${web.target}</workingDirectory>
+              <arguments>
+                <argument>${npm.cli.script}</argument>
+                <argument>run</argument>
+                <argument>build:webpackLegacy</argument>
                 <argument>--</argument>
                 <argument>--bundleDest=${bundle.dest}</argument>
               </arguments>

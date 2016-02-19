@@ -58,8 +58,6 @@ const NavItem = ({
     )
   }
   const text = logo ? (<span className='Hidden'>{title}</span>) : title
-
-  console.info('link', link)
   return (
     <Link {...props} link={link} theme={themeClasses} useHref={useHref}>
       <NavIcon name={icon} size={logo ? '6' : '1'} />
