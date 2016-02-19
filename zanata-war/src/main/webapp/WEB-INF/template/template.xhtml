@@ -30,6 +30,7 @@
     <meta http-equiv="cleartype" content="on"/>
 
     <link rel="shortcut icon" href="#{assets['img/logo/logo.ico']}" type="image/x-icon" />
+    <link rel="stylesheet" href="#{request.contextPath}/bundle.css" type="text/css"/>
 
     <!--[if gt IE 8]><!-->
     <link type="text/css" rel="stylesheet" href="#{assets['css/style.min.css']}"/>
@@ -38,22 +39,6 @@
     <!--[if (lt IE 9) & (!IEMobile)]>
     <script src="js/vendor/selectivizr-min.js"></script>
     <![endif]-->
-
-    <!-- Async Google Fonts -->
-    <script type="text/javascript">
-      WebFontConfig = {
-        google: { families: [ 'Source+Sans+Pro:300,400,600,700,400italic:latin,latin-ext' ] }
-      };
-      (function() {
-        var wf = document.createElement('script');
-        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-        wf.type = 'text/javascript';
-        wf.async = 'true';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(wf, s);
-      })();
-    </script>
 
     <ui:insert name="head"/>
 
@@ -82,9 +67,9 @@
     </script>
   </h:head>
 
-  <h:body styleClass="new-zanata">
+  <h:body styleClass="new-zanata Bgc(i) Fz(i)">
     <ds:windowId/>
-    <ui:include src="banner.xhtml"/>
+
     <a4j:outputPanel layout="block" ajaxRendered="true" id="messages">
       <ui:fragment rendered="#{showGlobalMessages != 'false'}">
         <ul class="list--no-bullets message--global">
@@ -100,13 +85,27 @@
       </ui:fragment>
     </a4j:outputPanel>
 
-    <main role="main" class="l--pad-top-1">
-      <div class="l__wrapper">
-        <ui:insert name="center_content"/>
-      </div>
-    </main>
+    <div class='Ai(st) D(f) Fld(c) Flxs(0)'>
+      <div class="Ai(st) D(f) Fld(c) Fld(r)--sm Flxs(0) H(100vh)">
+        <div id="root" base-url="#{request.contextPath}"
+          data='{"activePath": "/", "loggedIn":#{identity.loggedIn and authenticatedAccountHome.instance.enabled},
+          "helpUrl": "#{applicationConfigurationAction.helpUrl}", "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
+          "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
+          "registerUrl": "#{applicationConfigurationAction.registerUrl}",
+          "profileUrl": "/profile/view/#{authenticatedAccountHome.username}",
+          "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
+          user="#{authenticatedAccountHome.getUser()}"/>
 
-    <ui:include src="footer.xhtml"/>
+          <main role="main" class="l--pad-top-1 W(100%)">
+            <div class="l__wrapper Ai(st) D(f) Fld(c) Flx(flx1) Ov(h)">
+              <ui:insert name="center_content"/>
+            </div>
+          </main>
+      </div>
+    </div>
+
+    <script type="text/javascript"
+      src="#{request.contextPath}/frontend.legacy.min.js"></script>
 
     <ui:include src="scripts.xhtml"/>
   </h:body>

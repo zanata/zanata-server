@@ -61,7 +61,7 @@ const items = [
     small: true,
     icon: 'user',
     link: '/user/:uid',
-    href: '/profile/view/:uid',
+    href: '/profile/view/',
     title: 'Profile',
     auth: 'loggedin'
   },

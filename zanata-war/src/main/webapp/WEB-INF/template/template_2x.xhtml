@@ -38,6 +38,7 @@
           "helpUrl": "#{applicationConfigurationAction.helpUrl}", "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
           "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
           "registerUrl": "#{applicationConfigurationAction.registerUrl}",
+          "profileUrl": "/profile/view/#{authenticatedAccountHome.username}",
           "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
           user="#{authenticatedAccountHome.getUser()}"/>
         <div id="container" class="Ai(st) D(f) Fld(c)  Flx(flx1) Ov(h)">

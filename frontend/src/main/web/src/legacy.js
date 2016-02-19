@@ -79,11 +79,12 @@ let links = {
   '/login': Configs.data.loginUrl,
   '/help': Configs.data.helpUrl,
   '/terms': Configs.data.termsUrl,
-  '/signup': Configs.data.registerUrl
+  '/signup': Configs.data.registerUrl,
+  '/user/:uid': Configs.data.profileUrl
 }
 
 render(
-  <div>
+  <div className='H(100%)'>
     <Icons />
     <Nav active={Configs.data.activePath} auth={auth} legacy links={links} />
   </div>

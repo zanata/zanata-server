@@ -95,4 +95,11 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
         permission.put("isAdmin", isAdmin);
         return permission;
     }
+
+    public String getUsername() {
+        if(authenticatedAccount != null) {
+            return authenticatedAccount.getUsername();
+        }
+        return null;
+    }
 }
