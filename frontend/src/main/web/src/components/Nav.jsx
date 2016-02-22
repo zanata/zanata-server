@@ -45,7 +45,7 @@ const items = [
     small: true,
     icon: 'project',
     link: '/projects',
-    href: '/project/list',
+    href: '/dashboard/projects',
     title: 'Projects',
     auth: 'loggedin'
   },

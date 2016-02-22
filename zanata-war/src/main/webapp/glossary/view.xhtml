@@ -3,13 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<ui:composition template="../WEB-INF/template/template_ui.xhtml">
+<ui:composition template="/WEB-INF/template/template_ui.xhtml">
 
 <ui:define name="page_title">#{msgs['jsf.Glossary']}</ui:define>
 <ui:define name="center_content">
 
 
-  <div id="main-content"
+  <div id="root"
     base-url="#{request.contextPath}/rest"
     user="#{glossaryAction.convertToJSON(glossaryAction.user)}"
     data='{"view": "glossary", "permission": #{glossaryAction.userPermission.getJSON()}}'/>

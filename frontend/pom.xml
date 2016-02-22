@@ -104,7 +104,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>execute npm run build for: ${project.artifactId} PROD</id>
+            <id>execute npm run build for: ${project.artifactId}</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
@@ -115,8 +115,6 @@
                 <argument>${npm.cli.script}</argument>
                 <argument>run</argument>
                 <argument>build</argument>
-                <argument>--</argument>
-                <argument>--bundleDest=${bundle.dest}</argument>
               </arguments>
             </configuration>
           </execution>
@@ -129,6 +127,28 @@
           <skip>true</skip>
           <failIfNoTests>false</failIfNoTests>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${bundle.dest}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${web.target}</directory>
+                  <include>frontend.*.min.js</include>
+                  <include>bundle.css</include>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
