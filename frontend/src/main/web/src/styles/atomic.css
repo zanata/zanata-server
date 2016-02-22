@@ -157,11 +157,11 @@
 .Fz\(inh\), .Fz\(i\) {
   font-size: inherit;
 }
-.Fz\(ms1\) {
-  font-size: 1.2rem;
-}
 .Fz\(ms0\) {
   font-size: 1rem;
+}
+.Fz\(ms1\) {
+  font-size: 1.2rem;
 }
 .Fz\(msn2\) {
   font-size: 0.694rem;
