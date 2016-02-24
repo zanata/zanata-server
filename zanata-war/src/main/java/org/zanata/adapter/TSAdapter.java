@@ -31,6 +31,7 @@ import net.sf.okapi.common.filterwriter.GenericContent;
 import net.sf.okapi.common.filterwriter.IFilterWriter;
 import net.sf.okapi.common.resource.RawDocument;
 import net.sf.okapi.common.resource.StartSubDocument;
+import net.sf.okapi.common.resource.TextContainer;
 import net.sf.okapi.common.resource.TextUnit;
 import net.sf.okapi.filters.ts.TsFilter;
 import org.apache.commons.io.FilenameUtils;
@@ -89,7 +90,6 @@ public class TSAdapter extends OkapiFilterAdapter {
         if (rawDoc.getTargetLocale() == null) {
             rawDoc.setTargetLocale(localeId);
         }
-
         List<String> encounteredIds = new ArrayList<>();
         IFilter filter = getFilter();
         try {
@@ -106,21 +106,28 @@ public class TSAdapter extends OkapiFilterAdapter {
                 } else if (event.getEventType() == EventType.TEXT_UNIT) {
                     TextUnit tu = (TextUnit) event.getResource();
                     if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
-                        String translatable = GenericContent.fromFragmentToLetterCoded(
-                                tu.getSource().getFirstContent(), true);
+                        String translatable = getTranslatableText(tu);
+                        // Ignore if the source is empty
                         if (!translatable.isEmpty()) {
-                            TextFlowTarget tft = translations.get(getIdFor(tu, translatable, subDocName));
+                            String targetTft = getIdFor(tu, translatable, subDocName);
+                            TextFlowTarget tft = translations.get(targetTft);
                             if (tft != null) {
                                 String id = getIdFor(tu, translatable, subDocName);
                                 if(!encounteredIds.contains(id)) {
+                                    // Dismiss duplicate numerusforms
                                     encounteredIds.add(id);
                                     for (String translated : tft.getContents()) {
+                                        // TODO: Find a method of doing this in one object, not a loop
                                         tu.setTargetContent(localeId, GenericContent
                                                 .fromLetterCodedToFragment(translated,
-                                                        tu.getSource().getFirstContent(), true, true));
+                                                    // Empty fragment here, else the source is altered
+                                                    new TextContainer("").getUnSegmentedContentCopy(),
+                                                    true, true));
                                         writer.handleEvent(event);
                                     }
                                 }
+                            } else {
+                                writer.handleEvent(event);
                             }
                         }
                     }
@@ -136,6 +143,11 @@ public class TSAdapter extends OkapiFilterAdapter {
             filter.close();
             writer.close();
         }
+    }
+
+    @Override
+    protected String getTranslatableText(TextUnit tu) {
+        return tu.getSource().getFirstContent().getText();
     }
 
     @Override
