@@ -215,7 +215,7 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         return tf;
     }
 
-    private String getTranslatableText(TextUnit tu) {
+    protected String getTranslatableText(TextUnit tu) {
         String letterCodedText =
                 GenericContent.fromFragmentToLetterCoded(tu.getSource()
                         .getFirstContent(), true);

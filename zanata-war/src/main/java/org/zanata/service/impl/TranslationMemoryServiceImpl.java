@@ -929,7 +929,6 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         @Override
         public boolean apply(Object[] input) {
             Object entity = input[1];
-            log.info("Array size is {}", input.length);
             if (entity instanceof HTextFlowTarget) {
                 HTextFlowTarget target = (HTextFlowTarget) entity;
                 if (!target.getLocaleId().equals(localeId)) {
