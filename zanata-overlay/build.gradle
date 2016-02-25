@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     runtime "mysql:mysql-connector-java:5.1.29"
-    runtime "org.codehaus.groovy:groovy-all:2.1.5"
+    runtime "org.codehaus.groovy:groovy-all:2.4.5"
     // This is the Zanata war dependency, it has to be available somehow in the
     // local repository
     runtime "org.zanata:zanata-war:${readProjectVersion()}"
