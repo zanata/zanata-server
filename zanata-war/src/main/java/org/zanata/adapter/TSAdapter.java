@@ -109,10 +109,9 @@ public class TSAdapter extends OkapiFilterAdapter {
                         String translatable = getTranslatableText(tu);
                         // Ignore if the source is empty
                         if (!translatable.isEmpty()) {
-                            String targetTft = getIdFor(tu, translatable, subDocName);
-                            TextFlowTarget tft = translations.get(targetTft);
+                            String id = getIdFor(tu, translatable, subDocName);
+                            TextFlowTarget tft = translations.get(id);
                             if (tft != null) {
-                                String id = getIdFor(tu, translatable, subDocName);
                                 if(!encounteredIds.contains(id)) {
                                     // Dismiss duplicate numerusforms
                                     encounteredIds.add(id);
@@ -120,8 +119,7 @@ public class TSAdapter extends OkapiFilterAdapter {
                                         // TODO: Find a method of doing this in one object, not a loop
                                         tu.setTargetContent(localeId, GenericContent
                                                 .fromLetterCodedToFragment(translated,
-                                                    // Empty fragment here, else the source is altered
-                                                    new TextContainer("").getUnSegmentedContentCopy(),
+                                                    tu.getSource().getFirstContent().clone(),
                                                     true, true));
                                         writer.handleEvent(event);
                                     }
