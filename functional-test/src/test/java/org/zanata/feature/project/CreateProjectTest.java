@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projects.ProjectBasePage;
@@ -57,7 +56,6 @@ public class CreateProjectTest extends ZanataTestCase {
     @Feature(summary = "The user can create a project",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 144262)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     public void createABasicProject() throws Exception {
         ProjectVersionsPage projectVersionsPage = new ProjectWorkFlow()
                 .createNewSimpleProject("basicproject", "basicproject");

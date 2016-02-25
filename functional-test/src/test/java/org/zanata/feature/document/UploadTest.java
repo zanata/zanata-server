@@ -23,7 +23,6 @@ package org.zanata.feature.document;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
 import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
 import org.zanata.page.projectversion.VersionDocumentsPage;
@@ -73,7 +72,6 @@ public class UploadTest extends ZanataTestCase {
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     @Ignore("Error in system path")
     public void uploadedDocumentIsInFilesystem() {
         File originalFile =

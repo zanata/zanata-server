@@ -32,6 +32,7 @@ import org.zanata.feature.concurrentedit.ConcurrentEditTest;
 import org.zanata.feature.dashboard.DashboardTest;
 import org.zanata.feature.document.*;
 import org.zanata.feature.editor.*;
+import org.zanata.feature.endtoend.UserEndToEndTest;
 import org.zanata.feature.glossary.GlossaryAdminTest;
 import org.zanata.feature.glossary.GlossaryPushTest;
 import org.zanata.feature.glossary.InvalidGlossaryPushTest;
@@ -65,6 +66,11 @@ import org.zanata.feature.versionGroup.VersionGroupUrlTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+
+        /**
+         * End to End
+         */
+        UserEndToEndTest.class,
 
         /*
          * Account

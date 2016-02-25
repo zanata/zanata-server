@@ -23,9 +23,8 @@ package org.zanata.feature.document;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.zanata.feature.testharness.TestPlan.BasicAcceptanceTest;
-import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.feature.testharness.ZanataTestCase;
+import org.zanata.feature.testharness.TestPlan.DetailedTest;
 import org.zanata.page.projectversion.VersionDocumentsPage;
 import org.zanata.page.projectversion.versionsettings.VersionDocumentsTab;
 import org.zanata.util.CleanDocumentStorageRule;
@@ -72,7 +71,6 @@ public class MultiFileUploadTest extends ZanataTestCase {
     }
 
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
-    @Category(BasicAcceptanceTest.class)
     @Ignore("Error in system path")
     public void uploadedDocumentsAreInFilesystem() {
         File firstFile = testFileGenerator.generateTestFileWithContent(
