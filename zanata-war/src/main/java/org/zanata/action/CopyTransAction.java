@@ -23,11 +23,15 @@ package org.zanata.action;
 import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Any;
 import javax.faces.application.FacesMessage;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.core.api.scope.ConversationGroup;
+import org.apache.deltaspike.core.api.scope.GroupedConversationScoped;
 import org.zanata.async.handle.CopyTransTaskHandle;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.i18n.Messages;
@@ -41,9 +45,6 @@ import org.zanata.ui.CopyAction;
 import org.zanata.util.DateUtil;
 import com.google.common.base.Optional;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * Copy Trans page action bean.
  *
@@ -51,6 +52,8 @@ import lombok.Setter;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("copyTransAction")
+//@GroupedConversationScoped
+//@ConversationGroup(ProjectAndVersionSlug.class)
 @RequestScoped
 public class CopyTransAction extends CopyAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -77,6 +80,7 @@ public class CopyTransAction extends CopyAction implements Serializable {
     private org.zanata.ui.faces.FacesMessages jsfMessages;
 
     @Inject
+    @Any
     private ProjectAndVersionSlug projectAndVersionSlug;
 
     private HProjectIteration projectIteration;
