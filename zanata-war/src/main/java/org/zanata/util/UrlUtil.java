@@ -146,7 +146,14 @@ public class UrlUtil implements Serializable {
             LocaleId targetLocaleId, LocaleId sourceLocaleId, String docId,
             Long tuId) {
         return editorDocumentUrl(projectSlug, versionSlug, targetLocaleId,
-                sourceLocaleId, docId) + ";textflow:" + tuId;
+            sourceLocaleId, docId) + ";textflow:" + tuId;
+    }
+
+    public String fullEditorTransUnitUrl(String projectSlug, String versionSlug,
+        LocaleId targetLocaleId, LocaleId sourceLocaleId, String docId,
+        Long tuId) {
+        return fullEditorDocumentUrl(projectSlug, versionSlug, targetLocaleId,
+            sourceLocaleId, docId) + ";textflow:" + tuId;
     }
 
     public String dashboardUrl() {
