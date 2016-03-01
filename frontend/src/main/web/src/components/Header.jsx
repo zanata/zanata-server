@@ -1,19 +1,28 @@
 import React from 'react' // eslint-disable-line
-import { Icon, mergeClasses } from 'zanata-ui'
+import { Icon, mergeClasses, flattenClasses } from 'zanata-ui'
 import { View, Heading, Link } from './'
 
 const wrapperTheme = {
   base: {
-    bxsh: 'Bxsh(shw)',
-    p: 'Py(rq) Px(rh) P(r1)--sm',
-    pos: 'Pos(r)'
+    // Adjust right position for scrollbar
+    end: 'End(1rem)',
+    p: 'Px(rh) Px(r1)--sm',
+    pos: 'Pos(f)',
+    start: 'Start(0) Start(r3)--sm',
+    z: 'Z(100)'
+  }
+}
+const baseClasses = {
+  base: {
+    bd: 'Bdb(bd2) Bdbc(light)',
+    bgc: 'Bgc(#fff)',
+    p: 'Pt(rq) Pt(r1)--sm'
   }
 }
 const innerViewTheme = {
   base: {
     ai: 'Ai(c)',
-    fld: '',
-    pos: 'Pos(r)'
+    fld: ''
   }
 }
 const logoLinkTheme = {
@@ -59,26 +68,28 @@ const Header = ({
 }) => {
   return (
     <View theme={mergeClasses(wrapperTheme, theme)}>
-      <View theme={innerViewTheme}>
-        <Link link='/' theme={logoLinkTheme}>
-          <Icon name='zanata' size='3' />
-        </Link>
-        <Heading level='1' theme={headingTheme}>
-          {title || 'Title'}
-        </Heading>
-        <View theme={headerActionsTheme}>
-          {extraElements}
-          <Link link='search' theme={searchLinkTheme}>
-            <span className='Hidden'>Search</span>
-            <Icon name='search' size='1' />
-          </Link>
-        </View>
-      </View>
-      {children ? (
+      <div className={flattenClasses(baseClasses)}>
         <View theme={innerViewTheme}>
-          {children}
+          <Link link='/' theme={logoLinkTheme}>
+            <Icon name='zanata' size='3' />
+          </Link>
+          <Heading level='1' theme={headingTheme}>
+            {title || 'Title'}
+          </Heading>
+          <View theme={headerActionsTheme}>
+            {extraElements}
+            <Link link='search' theme={searchLinkTheme}>
+              <span className='Hidden'>Search</span>
+              <Icon name='search' size='1' />
+            </Link>
+          </View>
         </View>
-      ) : undefined}
+        {children ? (
+          <View theme={innerViewTheme}>
+            {children}
+          </View>
+        ) : undefined}
+      </div>
     </View>
   )
 }

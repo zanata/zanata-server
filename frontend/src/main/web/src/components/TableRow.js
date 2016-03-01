@@ -1,12 +1,14 @@
 import React, { PropTypes } from 'react'
 import { mergeClasses } from 'zanata-ui'
-import { View } from './'
+import { Row } from './'
 
-const theme = {
+const classes = {
   base: {
     bd: 'Bdb(bd1) Bdc(light)',
-    fld: '',
-    h: 'H(r2)',
+    h: 'H(r2)'
+  },
+  highlight: {
+    trs: 'Trs(aeo)',
     hover: {
       bgc: 'Bgc(light):h'
     }
@@ -16,26 +18,33 @@ const theme = {
 const TableRow = ({
   children,
   className,
+  highlight = false,
+  theme = {},
   ...props
 }) => {
-  const themeState = {
+  const themed = mergeClasses(
+    classes,
+    theme
+  )
+  const themedState = {
     base: mergeClasses(
-      theme.base,
+      themed.base,
+      highlight && classes.highlight,
       className && { classes: className }
     )
   }
-  console.log(View)
   return (
-    <View
+    <Row
       {...props}
-      theme={themeState}>
+      theme={themedState}>
       {children}
-    </View>
+    </Row>
   )
 }
 
 TableRow.propType = {
-  children: PropTypes.node
+  children: PropTypes.node,
+  highlight: PropTypes.bool
 }
 
 export default TableRow

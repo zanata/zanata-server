@@ -112,7 +112,8 @@ const classes = {
     fld: 'Fld(c)--sm',
     flxs: 'Flxs(0)',
     or: 'Or(1) Or(0)--sm',
-    ov: 'Ov(h)'
+    ov: 'Ov(h)',
+    w: 'W(r3)--sm'
   }
 }
 
