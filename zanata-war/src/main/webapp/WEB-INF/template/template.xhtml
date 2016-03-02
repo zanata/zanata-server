@@ -97,6 +97,7 @@
           "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
           "registerUrl": "#{applicationConfigurationAction.registerUrl}",
           "profileUrl": "/profile/view/#{authenticatedAccountHome.username}",
+          "buildInfo": #{applicationConfigurationAction.buildInfo.getJSON()},
           "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
           user="#{authenticatedAccountHome.getUser()}"/>
 

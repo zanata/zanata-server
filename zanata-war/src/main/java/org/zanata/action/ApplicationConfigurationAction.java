@@ -26,6 +26,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.zanata.ApplicationConfiguration;
+import org.zanata.rest.editor.dto.BuildInfo;
 import org.zanata.util.UrlUtil;
 
 /**
@@ -92,5 +93,14 @@ public class ApplicationConfigurationAction {
             return applicationConfiguration.getRegisterPath();
         }
         return "/account/register";
+    }
+
+    //TODO: integrate this with /version api
+    public BuildInfo getBuildInfo() {
+        String version = applicationConfiguration.getVersion();
+        String scmDescribe = applicationConfiguration.getScmDescribe();
+        String copyrightNotice = applicationConfiguration.copyrightNotice();
+        String buildTimestamp = applicationConfiguration.getBuildTimestamp();
+        return new BuildInfo(version, buildTimestamp, scmDescribe, copyrightNotice);
     }
 }
