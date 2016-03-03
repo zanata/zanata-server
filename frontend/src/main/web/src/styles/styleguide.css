@@ -1,0 +1,12 @@
+.ReactStyleguidist-colors__base {
+  color: hsl(212, 18%, 40%);
+}
+
+.ReactStyleguidist-common__font {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.ReactStyleguidist-Layout__sidebar {
+  overflow: auto;
+  overflow-x: hidden;
+}

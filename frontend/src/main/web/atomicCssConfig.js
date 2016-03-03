@@ -70,6 +70,10 @@ module.exports = {
       ms4: ms(4),
       ms5: ms(5),
       ms6: ms(6),
+      ms7: ms(7),
+      ms8: ms(8),
+      ms9: ms(9),
+      ms10: ms(10),
       // Fonts
       zsans: '"Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif',
       zmono: '"Source Code Pro", Hack, Consolas, monaco, monospace',
@@ -100,10 +104,15 @@ module.exports = {
     classNames: [
       'Bgc(i) ',
       'Bgc(#fff)',
-      'D(f) ',
+      'C(dark)',
+      'D(f)',
       'Ff(zsans)',
-      'Flxg(1) ',
+      'Ff(zmono)',
+      'Flw(w)',
+      'Flxg(1)',
+      'Flxs(1)',
       'Fz(i)',
+      'Fz(msn1)',
       'Fz(16px)',
       'H(100%)',
       'H(msn2)',
@@ -117,20 +126,14 @@ module.exports = {
       'H(ms6)',
       'Lh(1.5)',
       'M(0)',
+      'M(rq)',
+      'Miw(r6)',
       'Ov(a)',
       'Ovx(h)',
       'Ovs(touch)',
       'Ov(h)',
-      // These are needed for generated icon classes
-      'W(msn2)',
-      'W(msn1)',
-      'W(ms0)',
-      'W(ms1)',
-      'W(ms2)',
-      'W(ms3)',
-      'W(ms4)',
-      'W(ms5)',
-      'W(ms6)'
+      'Pt(rq)',
+      'W(r6)'
     ]
   }
 }

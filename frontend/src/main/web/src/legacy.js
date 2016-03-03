@@ -23,8 +23,7 @@ import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
 import { isUndefined } from 'lodash'
-import { Icons } from 'zanata-ui'
-import createLogger from 'redux-logger'
+import { Icons } from './components'
 import WebFont from 'webfontloader'
 import Nav from './components/Nav'
 import Configs from './constants/Configs'
@@ -77,7 +76,7 @@ let links = {
   '/logout': Configs.data.logoutUrl
 }
 
-let activePath = window.location.pathname;
+let activePath = window.location.pathname
 
 render(
   <div className='H(100%)'>

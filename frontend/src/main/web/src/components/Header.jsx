@@ -1,5 +1,8 @@
 import React from 'react' // eslint-disable-line
-import { Icon, mergeClasses, flattenClasses } from 'zanata-ui'
+import { mergeClasses, flattenClasses } from 'zanata-ui'
+import {
+  Icon
+} from './'
 import { View, Heading, Link } from './'
 
 const wrapperTheme = {
