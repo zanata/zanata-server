@@ -20,7 +20,9 @@ import {
   glossaryChangeLocale,
   glossaryUpdateIndex,
   glossaryFilterTextChanged,
-  glossaryGetEntriesIfNeeded
+  glossaryGetTermsIfNeeded,
+  glossarySelectTerm,
+  glossaryUpdateField
 } from '../actions/glossary'
 
 let sameRenders = 0
@@ -52,13 +54,23 @@ class Glossary extends Component {
     this.onScroll = debounce(this.onScroll, 100)
   }
   renderItem (index, key) {
-    const termId = this.props.termIds[index]
-    const term = termId ? this.props.terms[termId] : false
+    const {
+      onSelectTerm,
+      handleTermFieldUpdate,
+      termIds,
+      terms,
+      transLoading,
+      selectedTransLocale,
+      selectedTerm
+    } = this.props
+    const termId = termIds[index]
+    const term = termId ? terms[termId] : false
+    const selected = termId === selectedTerm.id
     const transContent = term && term.glossaryTerms[1]
       ? term.glossaryTerms[1].content
       : ''
-    const transSelected = !!this.props.selectedTransLocale
-    const transLoading = this.props.loading
+    const transSelected = !!selectedTransLocale
+    // TODO: Make this only set when switching locales
     if (!term) {
       return (
         <TableRow key={key}>
@@ -72,10 +84,19 @@ class Glossary extends Component {
       isSameRender()
     }
     return (
-      <TableRow highlight className='editable' key={key}>
+      <TableRow highlight
+        className='editable'
+        key={key}
+        selected={selected}
+        onClick={() => onSelectTerm(term)}>
         <TableCell size='2' tight>
-          <EditableText editable={!this.props.selectedTransLocale}>
-            {term.glossaryTerms[0].content}
+          <EditableText
+            editable={!selectedTransLocale}
+            editing={selected}
+            onChange={(e) => handleTermFieldUpdate('src', e)}>
+            {selected
+              ? selectedTerm.glossaryTerms[0].content
+              : term.glossaryTerms[0].content}
           </EditableText>
         </TableCell>
         <TableCell size='2' tight={transSelected}>
@@ -84,20 +105,42 @@ class Glossary extends Component {
               ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
             : (<EditableText
                 editable={transSelected}
+                editing={selected}
+                onChange={(e) => handleTermFieldUpdate('locale', e)}
                 placeholder='Add a translation…'
                 emptyReadOnlyText='No translation'>
-                {transContent}
+                {selected
+                  ? selectedTerm.glossaryTerms[1]
+                    ? selectedTerm.glossaryTerms[1].content
+                    : ''
+                  : transContent}
               </EditableText>)
             : <div className='LineClamp(1,24px) Px(rq)'>{term.termsCount}</div>
           }
         </TableCell>
         <TableCell hideSmall>
-          {term.pos
-            ? <div className='LineClamp(1,24px)'>{term.pos}</div>
-          : <div className='C(muted) LineClamp(1,24px)'>N/A</div>}
+          <EditableText
+            editable={!selectedTransLocale}
+            editing={selected}
+            onChange={(e) => handleTermFieldUpdate('pos', e)}
+            placeholder='Add part of speech…'
+            emptyReadOnlyText='No part of speech'>
+            {selected
+              ? selectedTerm.pos
+              : term.pos}
+          </EditableText>
         </TableCell>
         <TableCell hideSmall>
-          <div className='LineClamp(1,24px)'>{term.description}</div>
+          <EditableText
+            editable={!selectedTransLocale}
+            editing={selected}
+            onChange={(e) => handleTermFieldUpdate('description', e)}
+            placeholder='Add a description…'
+            emptyReadOnlyText='No description'>
+            {selected
+              ? selectedTerm.description
+              : term.description}
+          </EditableText>
         </TableCell>
       </TableRow>
     )
@@ -149,15 +192,15 @@ class Glossary extends Component {
       index: newIndex
     })
     dispatch(glossaryUpdateIndex(newIndex))
-    dispatch(glossaryGetEntriesIfNeeded(newIndex))
+    dispatch(glossaryGetTermsIfNeeded(newIndex))
     // If close enough, load the prev/next page too
-    dispatch(glossaryGetEntriesIfNeeded(newIndex - loadingThreshold))
-    dispatch(glossaryGetEntriesIfNeeded(newIndexEnd + loadingThreshold))
+    dispatch(glossaryGetTermsIfNeeded(newIndex - loadingThreshold))
+    dispatch(glossaryGetTermsIfNeeded(newIndexEnd + loadingThreshold))
   }
   render () {
     const {
       filterText = '',
-      loading,
+      termsLoading,
       termCount,
       scrollIndex = 0,
       statsLoading,
@@ -248,7 +291,7 @@ class Glossary extends Component {
             </View>
           </Header>
           <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
-            { loading && !termCount
+            { termsLoading && !termCount
               ? (
                   <View theme={loadingContainerTheme}>
                     <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
@@ -276,24 +319,28 @@ class Glossary extends Component {
 
 const mapStateToProps = (state) => {
   const {
-    loading,
+    page,
+    selectedTerm,
+    stats,
+    statsLoading,
+    termsLoading,
     terms,
     termIds,
-    page,
-    totalCount
-  } = state.glossary.entries
+    termCount,
+    filter
+  } = state.glossary
   const query = state.routing.location.query
   return {
     location: state.routing.location,
     terms,
     termIds,
-    termCount: totalCount || 0,
-    loading,
+    termCount,
+    termsLoading,
     page,
-    statsLoading: state.glossary.stats.loading,
-    transLocales: state.glossary.stats.results
-      ? state.glossary.stats.results.transLocale : [],
-    filterText: query.filter,
+    statsLoading,
+    transLocales: stats.transLocales,
+    filterText: filter,
+    selectedTerm: selectedTerm,
     selectedTransLocale: query.locale,
     scrollIndex: Number.parseInt(query.index, 10)
   }
@@ -302,12 +349,19 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
+    onSelectTerm: (term) => dispatch(glossarySelectTerm(term)),
     onTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')
       ),
     onFilterTextChange: (event) =>
-      dispatch(glossaryFilterTextChanged(event.target.value || ''))
+      dispatch(glossaryFilterTextChanged(event.target.value || '')),
+    handleTermFieldUpdate: (field, event) => {
+      return dispatch(glossaryUpdateField({
+        field: field,
+        value: event.target.value || ''
+      }))
+    }
   }
 }
 

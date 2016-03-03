@@ -9,14 +9,22 @@ const classes = {
   root: {
     w: 'W(100%)'
   },
-  textInput: {},
+  textInput: {
+    base: {
+      ai: 'Ai(c)',
+      bgc: 'Bgc(#fff)',
+      h: 'H(r1h)',
+      w: 'W(100%)'
+    }
+  },
   text: {
     base: {
+      ai: 'Ai(c)',
       bd: 'Bd(bd2) Bdc(t)',
       c: 'Cur(t)',
-      p: 'Px(rq) Py(re)',
-      lineClamp: 'LineClamp(1,36px)',
       h: 'H(r1h)',
+      lineClamp: 'LineClamp(1,36px)',
+      p: 'Px(rq) Py(re)',
       w: 'W(100%)'
     },
     editable: {
@@ -33,9 +41,21 @@ const classes = {
 }
 
 class EditableText extends Component {
+  constructor () {
+    super()
+    this.state = {
+      focus: false
+    }
+  }
+  handleClick () {
+    this.setState({ focus: true })
+  }
+  handleBlur () {
+    this.setState({ focus: false })
+  }
   render () {
     const {
-      children,
+      children = '',
       editable = false,
       editing = false,
       emptyReadOnlyText = '',
@@ -57,13 +77,16 @@ class EditableText extends Component {
       return (
         <TextInput
           {...props}
+          autoFocus={this.state.focus}
+          onBlur={::this.handleBlur}
           placeholder={placeholder}
           theme={classes.textInput}
-          value={children} />
+          ref={(ref) => this.textInput = ref}
+          defaultValue={children} />
       )
     }
     return (
-      <Row theme={textStateClasses} align='start'>
+      <Row theme={textStateClasses} align='start' onClick={::this.handleClick}>
         {text}
       </Row>
     )
@@ -71,7 +94,7 @@ class EditableText extends Component {
 }
 
 EditableText.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: PropTypes.string,
   editable: PropTypes.bool,
   editing: PropTypes.bool,
   placeholder: PropTypes.string

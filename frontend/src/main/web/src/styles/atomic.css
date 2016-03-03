@@ -10,8 +10,11 @@
 .Bdb\(bd2\) {
   border-bottom: solid 2px;
 }
-.Bdc\(light\) {
-  border-color: hsl(213, 44%, 95%);
+.Bdc\(t\) {
+  border-color: transparent;
+}
+.editable:hover .editable\:h_Bdc\(neutral\) {
+  border-color: hsl(195, 32%, 80%);
 }
 .Bdc\(neutral\) {
   border-color: hsl(195, 32%, 80%);
@@ -19,11 +22,8 @@
 .Bdc\(pri\)\:f:focus {
   border-color: #19a5da;
 }
-.Bdc\(t\) {
-  border-color: transparent;
-}
-.editable:hover .editable\:h_Bdc\(neutral\) {
-  border-color: hsl(195, 32%, 80%);
+.Bdc\(light\) {
+  border-color: hsl(213, 44%, 95%);
 }
 .Bdbc\(light\) {
   border-bottom-color: hsl(213, 44%, 95%);
@@ -37,14 +37,17 @@
 .Bdrs\(rq\) {
   border-radius: 0.375rem;
 }
-.Bgc\(light\)\:h:hover {
-  background-color: hsl(213, 44%, 95%);
+.Bgc\(\#fff\) {
+  background-color: #fff;
 }
 .Bgc\(t\) {
   background-color: transparent;
 }
-.Bgc\(\#fff\) {
-  background-color: #fff;
+.Bgc\(light\)\:h:hover {
+  background-color: hsl(213, 44%, 95%);
+}
+.Bgc\(light\) {
+  background-color: hsl(213, 44%, 95%);
 }
 .Bgc\(i\) {
   background-color: inherit;
@@ -85,11 +88,11 @@
 .C\(white\)\:h:hover {
   color: white;
 }
-.Cur\(p\) {
-  cursor: pointer;
-}
 .Cur\(t\) {
   cursor: text;
+}
+.Cur\(p\) {
+  cursor: pointer;
 }
 .Cur\(d\) {
   cursor: default;
@@ -169,14 +172,14 @@
 .Fs\(inh\) {
   font-style: inherit;
 }
+.H\(r1h\) {
+  height: 2.25rem;
+}
 .H\(r2\) {
   height: 3rem;
 }
 .H\(ms1\) {
   height: 1.2rem;
-}
-.H\(r1h\) {
-  height: 2.25rem;
 }
 .H\(100vh\) {
   height: 100vh;
@@ -277,15 +280,15 @@
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
+.Py\(re\) {
+  padding-top: 0.1875rem;
+  padding-bottom: 0.1875rem;
+}
 .Py\(rq\), .Pt\(rq\) {
   padding-top: 0.375rem;
 }
 .Py\(rq\) {
   padding-bottom: 0.375rem;
-}
-.Py\(re\) {
-  padding-top: 0.1875rem;
-  padding-bottom: 0.1875rem;
 }
 .Pt\(r6\) {
   padding-top: 9rem;

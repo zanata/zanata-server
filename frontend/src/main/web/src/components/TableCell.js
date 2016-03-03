@@ -13,7 +13,7 @@ const classes = {
     p: 'Py(rq) Px(rq)'
   },
   hideSmall: {
-    d: 'D(n)--lesm'
+    d: 'D(f) D(n)--lesm'
   },
   '1': {
     w: 'W(1/6)'

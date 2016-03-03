@@ -12,12 +12,16 @@ const classes = {
     hover: {
       bgc: 'Bgc(light):h'
     }
+  },
+  selected: {
+    bgc: 'Bgc(light)'
   }
 }
 
 const TableRow = ({
   children,
   className,
+  selected,
   highlight = false,
   theme = {},
   ...props
@@ -30,6 +34,7 @@ const TableRow = ({
     base: mergeClasses(
       themed.base,
       highlight && classes.highlight,
+      selected && classes.selected,
       className && { classes: className }
     )
   }
@@ -44,7 +49,8 @@ const TableRow = ({
 
 TableRow.propType = {
   children: PropTypes.node,
-  highlight: PropTypes.bool
+  highlight: PropTypes.bool,
+  selected: PropTypes.bool
 }
 
 export default TableRow

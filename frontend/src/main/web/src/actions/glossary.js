@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { forOwn } from 'lodash'
+import { isEmpty, forOwn } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -8,21 +8,38 @@ import { replaceRouteQuery } from '../utils/RoutingHelpers'
 // const API_ROOT = 'http://localhost:8080/zanata/rest/'
 const API_ROOT = 'https://translate.zanata.org/zanata/rest/'
 export const GLOSSARY_PAGE_SIZE = 1000
+
 export const GLOSSARY_UPDATE_INDEX = 'GLOSSARY_UPDATE_INDEX'
-export const GLOSSARY_INVALIDATE_RESULTS = 'GLOSSARY_INVALIDATE_RESULTS'
 export const GLOSSARY_UPDATE_LOCALE = 'GLOSSARY_UPDATE_LOCALE'
-export const GLOSSARY_ENTRIES_INVALIDATE = 'GLOSSARY_ENTRIES_INVALIDATE'
-export const GLOSSARY_ENTRIES_REQUEST = 'GLOSSARY_ENTRIES_REQUEST'
-export const GLOSSARY_ENTRIES_SUCCESS = 'GLOSSARY_ENTRIES_SUCCESS'
-export const GLOSSARY_ENTRIES_FAILURE = 'GLOSSARY_ENTRIES_FAILURE'
+export const GLOSSARY_INIT_STATE_FROM_URL = 'GLOSSARY_INIT_STATE_FROM_URL'
+export const GLOSSARY_INVALIDATE_RESULTS = 'GLOSSARY_INVALIDATE_RESULTS'
+export const GLOSSARY_TERMS_INVALIDATE = 'GLOSSARY_TERMS_INVALIDATE'
+export const GLOSSARY_TERMS_REQUEST = 'GLOSSARY_TERMS_REQUEST'
+export const GLOSSARY_TERMS_SUCCESS = 'GLOSSARY_TERMS_SUCCESS'
+export const GLOSSARY_TERMS_FAILURE = 'GLOSSARY_TERMS_FAILURE'
 export const GLOSSARY_INVALIDATE_STATS = 'GLOSSARY_INVALIDATE_STATS'
 export const GLOSSARY_STATS_REQUEST = 'GLOSSARY_STATS_REQUEST'
 export const GLOSSARY_STATS_SUCCESS = 'GLOSSARY_STATS_SUCCESS'
 export const GLOSSARY_STATS_FAILURE = 'GLOSSARY_STATS_FAILURE'
+export const GLOSSARY_SELECT_TERM = 'GLOSSARY_SELECT_TERM'
+export const GLOSSARY_UPDATE_FIELD = 'GLOSSARY_UPDATE_FIELD'
+
+// TODO: Add the following
+export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
+export const GLOSSARY_UPDATE = 'GLOSSARY_UPDATE'
+export const GLOSSARY_DELETE = 'GLOSSARY_DELETE'
+export const GLOSSARY_UPDATE_FILTER = 'GLOSSARY_UPDATE_FILTER'
+export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
+export const GLOSSARY_UPLOAD_FILE = 'GLOSSARY_UPLOAD_FILE'
+export const GLOSSARY_UPDATE_COMMENT = 'GLOSSARY_UPDATE_COMMENT'
+export const GLOSSARY_UPDATE_FOCUSED_ROW = 'GLOSSARY_UPDATE_FOCUSED_ROW'
+export const GLOSSARY_RESET_ENTRY = 'GLOSSARY_RESET_ENTRY'
+export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
-
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
+export const glossarySelectTerm = createAction(GLOSSARY_SELECT_TERM)
+export const glossaryUpdateField = createAction(GLOSSARY_UPDATE_FIELD)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -39,14 +56,14 @@ const generateSortOrderParam = (sort) => {
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
-export const getGlossaryEntries = (state, newIndex) => {
+export const getGlossaryTerms = (state, newIndex) => {
   const {
     src = 'en-US',
     locale = '',
     filter = '',
     sort = '',
     index = 0
-  } = state.glossary.details
+  } = state.glossary
   const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
   const srcQuery = src
     ? `?srcLocale=${src}` : '?srcLocale=en-US'
@@ -65,9 +82,9 @@ export const getGlossaryEntries = (state, newIndex) => {
         'Accept': 'application/json'
       },
       types: [
-        GLOSSARY_ENTRIES_REQUEST,
+        GLOSSARY_TERMS_REQUEST,
         {
-          type: GLOSSARY_ENTRIES_SUCCESS,
+          type: GLOSSARY_TERMS_SUCCESS,
           payload: (action, state, res) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
@@ -85,33 +102,37 @@ export const getGlossaryEntries = (state, newIndex) => {
             receivedAt: Date.now()
           }
         },
-        GLOSSARY_ENTRIES_FAILURE
+        GLOSSARY_TERMS_FAILURE
       ]
     }
   }
 }
 
-const shouldFetchEntries = (state, newIndex) => {
-  const entries = state.glossary.entries
-  const pagesLoaded = state.glossary.entries.pagesLoaded
+const shouldFetchTerms = (state, newIndex) => {
+  const {
+    pagesLoaded,
+    terms,
+    termsDidInvalidate,
+    termsLoading
+  } = state.glossary
   const newPage = getPageNumber(newIndex)
   const isNewPage = pagesLoaded.indexOf(newPage) === -1
   // Find page in pagesLoaded
-  if (!entries) {
+  if (isEmpty(terms)) {
     return true
-  } else if (entries.loading) {
+  } else if (termsLoading) {
     return false
   } else if (isNewPage) {
     return true
   } else {
-    return entries.didInvalidate
+    return termsDidInvalidate
   }
 }
 
-export const glossaryGetEntriesIfNeeded = (newIndex) => {
+export const glossaryGetTermsIfNeeded = (newIndex) => {
   return (dispatch, getState) => {
-    if (shouldFetchEntries(getState(), newIndex)) {
-      return dispatch(getGlossaryEntries(getState(), newIndex))
+    if (shouldFetchTerms(getState(), newIndex)) {
+      return dispatch(getGlossaryTerms(getState(), newIndex))
     }
   }
 }
@@ -136,11 +157,15 @@ export const getGlossaryStats = () => {
   }
 }
 
+export const glossaryInitStateFromUrl =
+  createAction(GLOSSARY_INIT_STATE_FROM_URL)
+
 export const glossaryInitialLoad = () => {
   return (dispatch, getState) => {
-    const index = getState().routing.location.query.index || 0
-    dispatch(getGlossaryEntries(getState(), index))
+    const query = getState().routing.location.query
+    dispatch(glossaryInitStateFromUrl(query))
     dispatch(getGlossaryStats())
+    dispatch(getGlossaryTerms(getState()))
   }
 }
 
@@ -149,17 +174,18 @@ export const glossaryChangeLocale = (locale) => {
     replaceRouteQuery(getState().routing.location, {
       locale: locale
     })
-    dispatch(getGlossaryEntries(getState()))
+    dispatch(glossaryUpdateLocale(locale))
+    dispatch(getGlossaryTerms(getState()))
   }
 }
 
 export const glossaryFilterTextChanged = (newFilter) => {
   return (dispatch, getState) => {
-    if (!getState().glossary.entries.loading) {
+    if (!getState().glossary.termsLoading) {
       replaceRouteQuery(getState().routing.location, {
         filter: newFilter
       })
-      return dispatch(getGlossaryEntries(getState()))
+      dispatch(getGlossaryTerms(getState()))
     }
   }
 }

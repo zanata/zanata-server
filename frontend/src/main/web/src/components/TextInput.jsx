@@ -18,7 +18,7 @@ const classes = {
     fz: 'Fz(inh)',
     fs: 'Fs(inh)',
     o: 'O(n)',
-    p: 'Px(rh) Py(re)',
+    p: 'Px(rq) Py(re)',
     ph: 'Ph(neutral)',
     focus: {
       bdc: 'Bdc(pri):f'
