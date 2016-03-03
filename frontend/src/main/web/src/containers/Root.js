@@ -4,6 +4,9 @@ import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
 import View from '../components/View'
+import {
+  glossaryInitialLoad
+} from '../actions/glossary.js'
 
 export default class Root extends Component {
   render () {
@@ -16,7 +19,9 @@ export default class Root extends Component {
         <View>
           <Router history={history}>
             <Route component={App} >
-              <Route path="glossary" component={Glossary} />
+              <Route path="glossary"
+                component={Glossary}
+                onEnter={store.dispatch(glossaryInitialLoad())} />
               <Redirect from="/" to="glossary" />
             </Route>
           </Router>

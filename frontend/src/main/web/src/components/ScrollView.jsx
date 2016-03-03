@@ -21,7 +21,7 @@ const ScrollView = ({
       <View theme={{
         base: {
           flxg: 'Flxg(1)',
-          p: 'Py(r1) Px(rh) Px(r1)--sm',
+          p: 'Px(rh) Px(r1)--sm',
           pos: 'Pos(r)',
           w: 'W(100%)'
         }

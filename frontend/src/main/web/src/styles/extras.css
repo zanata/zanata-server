@@ -14,7 +14,3 @@
 [class*=LineClamp] {
   text-overflow: ellipsis;
 }
-
-[class*=LineClamp\(1\)] {
-  white-space: nowrap;
-}

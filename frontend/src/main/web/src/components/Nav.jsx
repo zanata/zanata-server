@@ -126,7 +126,8 @@ const classes = {
     flxs: 'Flxs(0)',
     h: 'H(100%)',
     or: 'Or(1) Or(0)--sm',
-    ov: 'Ov(h)'
+    ov: 'Ov(h)',
+    w: 'W(r3)--sm'
   }
 }
 
