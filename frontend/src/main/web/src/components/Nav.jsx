@@ -3,7 +3,6 @@ import NavItem from './NavItem'
 import { flattenClasses } from 'zanata-ui'
 import Configs from '../constants/Configs'
 
-const username = (Configs.user && Configs.user.username) ? Configs.user.username : '';
 const items = [
   {
     icon: 'zanata',
@@ -62,7 +61,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/index.seam/#user/' + username,
+    link: '/a/index.seam#user/:username',
     title: 'Profile',
     auth: 'loggedin'
   },
@@ -82,7 +81,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/index.seam/#glossary',
+    link: '/a/index.seam#glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
@@ -146,6 +145,7 @@ const Nav = ({
     auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin';
   }
 
+  const username = (Configs.user && Configs.user.username) ? Configs.user.username : '';
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
 
@@ -158,12 +158,17 @@ const Nav = ({
           (item.auth === 'loggedin' && admin)) && !item.more) {
 
           let link = item.link;
+
           if(legacy) {
             if(links[item.link]) {
               link = links.context + links[item.link];
             } else {
               link = links.context + (item.href ? item.href : item.link);
             }
+          }
+
+          if(link.endsWith(':username')) {
+            link = link.replace(':username', username);
           }
 
           return (<NavItem key={itemId}

@@ -99,8 +99,8 @@ public class ApplicationConfigurationAction {
     public BuildInfo getBuildInfo() {
         String version = applicationConfiguration.getVersion();
         String scmDescribe = applicationConfiguration.getScmDescribe();
-        String copyrightNotice = applicationConfiguration.copyrightNotice();
         String buildTimestamp = applicationConfiguration.getBuildTimestamp();
+        String copyrightNotice = applicationConfiguration.copyrightNotice();
         return new BuildInfo(version, buildTimestamp, scmDescribe, copyrightNotice);
     }
 }
