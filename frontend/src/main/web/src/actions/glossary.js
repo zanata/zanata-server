@@ -10,6 +10,7 @@ const API_ROOT = 'https://translate.zanata.org/zanata/rest/'
 export const GLOSSARY_PAGE_SIZE = 1000
 
 export const GLOSSARY_UPDATE_INDEX = 'GLOSSARY_UPDATE_INDEX'
+export const GLOSSARY_UPDATE_FILTER = 'GLOSSARY_UPDATE_FILTER'
 export const GLOSSARY_UPDATE_LOCALE = 'GLOSSARY_UPDATE_LOCALE'
 export const GLOSSARY_INIT_STATE_FROM_URL = 'GLOSSARY_INIT_STATE_FROM_URL'
 export const GLOSSARY_INVALIDATE_RESULTS = 'GLOSSARY_INVALIDATE_RESULTS'
@@ -28,7 +29,6 @@ export const GLOSSARY_UPDATE_FIELD = 'GLOSSARY_UPDATE_FIELD'
 export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
 export const GLOSSARY_UPDATE = 'GLOSSARY_UPDATE'
 export const GLOSSARY_DELETE = 'GLOSSARY_DELETE'
-export const GLOSSARY_UPDATE_FILTER = 'GLOSSARY_UPDATE_FILTER'
 export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
 export const GLOSSARY_UPLOAD_FILE = 'GLOSSARY_UPLOAD_FILE'
 export const GLOSSARY_UPDATE_COMMENT = 'GLOSSARY_UPDATE_COMMENT'
@@ -38,6 +38,7 @@ export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
+export const glossaryUpdateFilter = createAction(GLOSSARY_UPDATE_FILTER)
 export const glossarySelectTerm = createAction(GLOSSARY_SELECT_TERM)
 export const glossaryUpdateField = createAction(GLOSSARY_UPDATE_FIELD)
 
@@ -185,6 +186,7 @@ export const glossaryFilterTextChanged = (newFilter) => {
       replaceRouteQuery(getState().routing.location, {
         filter: newFilter
       })
+      dispatch(glossaryUpdateFilter(newFilter))
       dispatch(getGlossaryTerms(getState()))
     }
   }

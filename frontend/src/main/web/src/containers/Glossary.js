@@ -31,7 +31,6 @@ const isSameRender = () => {
   sameRenders++
   console.debug('Same Render', sameRenders)
   if (sameRenders > 10) {
-    debugger
     sameRenders = 0
     console.debug('Debug, Reset')
   }
@@ -91,7 +90,7 @@ class Glossary extends Component {
         onClick={() => onSelectTerm(term)}>
         <TableCell size='2' tight>
           <EditableText
-            editable={!selectedTransLocale}
+            editable={false}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('src', e)}>
             {selected
@@ -125,9 +124,7 @@ class Glossary extends Component {
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
-            {selected
-              ? selectedTerm.pos
-              : term.pos}
+            {selected ? selectedTerm.pos : term.pos}
           </EditableText>
         </TableCell>
         <TableCell hideSmall>
@@ -197,6 +194,7 @@ class Glossary extends Component {
     dispatch(glossaryGetTermsIfNeeded(newIndex - loadingThreshold))
     dispatch(glossaryGetTermsIfNeeded(newIndexEnd + loadingThreshold))
   }
+
   render () {
     const {
       filterText = '',
@@ -207,7 +205,7 @@ class Glossary extends Component {
       transLocales,
       selectedTransLocale,
       onTranslationLocaleChange,
-      onFilterTextChange
+      handleFilterFieldUpdate
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     return (
@@ -222,8 +220,8 @@ class Glossary extends Component {
                   type='search'
                   placeholder='Search Terms…'
                   accessibilityLabel='Search Terms'
-                  value={filterText}
-                  onChange={onFilterTextChange} />
+                  defaultValue={filterText}
+                  onChange={handleFilterFieldUpdate} />
                 <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
                   <Row>
                     <Icon name='import' className='Mend(rq)'
@@ -347,6 +345,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
+  const updateFilter = debounce(val => dispatch(glossaryFilterTextChanged(val)), 500)
+
   return {
     dispatch,
     onSelectTerm: (term) => dispatch(glossarySelectTerm(term)),
@@ -354,8 +354,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')
       ),
-    onFilterTextChange: (event) =>
-      dispatch(glossaryFilterTextChanged(event.target.value || '')),
+    handleFilterFieldUpdate: (event) => {
+      //dispatch(glossaryFilterTextChanged(event.target.value || ''))
+      updateFilter(event.target.value || '')
+    },
     handleTermFieldUpdate: (field, event) => {
       return dispatch(glossaryUpdateField({
         field: field,

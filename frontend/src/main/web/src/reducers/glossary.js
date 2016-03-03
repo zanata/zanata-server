@@ -3,6 +3,7 @@ import { union, isEmpty } from 'lodash'
 import {
   GLOSSARY_UPDATE_INDEX,
   GLOSSARY_UPDATE_LOCALE,
+  GLOSSARY_UPDATE_FILTER,
   GLOSSARY_INIT_STATE_FROM_URL,
   GLOSSARY_TERMS_INVALIDATE,
   GLOSSARY_TERMS_REQUEST,
@@ -33,6 +34,10 @@ const glossary = handleActions({
   [GLOSSARY_UPDATE_LOCALE]: (state, action) => ({
     ...state,
     locale: action.payload
+  }),
+  [GLOSSARY_UPDATE_FILTER]: (state, action) => ({
+    ...state,
+    filter: action.payload
   }),
   [GLOSSARY_UPDATE_FIELD]: (state, action) => {
     // TODO: Rethink how updating fields happens
