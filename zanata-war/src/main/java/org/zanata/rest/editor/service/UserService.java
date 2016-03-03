@@ -16,7 +16,9 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.Permission;
 import org.zanata.rest.editor.service.resource.UserResource;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.service.GravatarService;
@@ -48,6 +50,9 @@ public class UserService implements UserResource {
 
     @Inject
     private PersonDAO personDAO;
+
+    @Inject
+    private ZanataIdentity identity;
 
     @Override
     @CheckLoggedIn
@@ -103,5 +108,27 @@ public class UserService implements UserResource {
         }
         return new User(account.getUsername(), email, person.getName(),
             userImageUrl, userLanguageTeams);
+    }
+
+    public Permission getUserPermission() {
+        Permission permission = new Permission();
+        boolean canUpdate = false;
+        boolean canInsert = false;
+        boolean canDelete = false;
+        boolean isAdmin = false;
+
+        if(authenticatedAccount != null) {
+            canUpdate = identity.hasPermission("", "glossary-update");
+            canInsert = identity.hasPermission("", "glossary-insert");
+            canDelete = identity.hasPermission("", "glossary-delete");
+            isAdmin = identity.hasRole("admin");
+        }
+
+        permission.put("updateGlossary", canUpdate);
+        permission.put("insertGlossary", canInsert);
+        permission.put("deleteGlossary", canDelete);
+        permission.put("isAdmin", isAdmin);
+
+        return permission;
     }
 }

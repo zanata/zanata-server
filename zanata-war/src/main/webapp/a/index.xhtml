@@ -5,18 +5,18 @@
 
 <ui:composition template="/WEB-INF/template/template_ui.xhtml">
 
-  <ui:define name="page_title">#{msgs['jsf.Glossary']}</ui:define>
   <ui:define name="content">
     <div id="root"
       base-url="#{request.contextPath}/rest"
-      data='{"loggedIn":#{identity.loggedIn and authenticatedAccountHome.instance.enabled},
+      data='{"loggedIn":#{authenticatedAccountHome.isLoggedIn()},
           "helpUrl": "#{applicationConfigurationAction.helpUrl}",
           "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
           "logoutUrl": "/account/logout.seam",
           "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
           "registerUrl": "#{applicationConfigurationAction.registerUrl}",
+          "buildInfo": #{applicationConfigurationAction.buildInfo.getJSON()},
           "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
-      user="#{glossaryAction.convertToJSON(glossaryAction.user)}">
+      user="#{authenticatedAccountHome.getUser()}">
     </div>
   </ui:define>
 </ui:composition>

@@ -32,7 +32,7 @@ class App extends Component {
           title="Zanata"
           titleTemplate="%s | Zanata"
         />
-        <Nav active={activePath} auth='loggedin' />
+        <Nav active={activePath} />
         {children}
       </View>
     )

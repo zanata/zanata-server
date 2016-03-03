@@ -1,7 +1,9 @@
 import React from 'react'
 import NavItem from './NavItem'
 import { flattenClasses } from 'zanata-ui'
+import Configs from '../constants/Configs'
 
+const username = (Configs.user && Configs.user.username) ? Configs.user.username : '';
 const items = [
   {
     icon: 'zanata',
@@ -60,7 +62,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/user/:uid',
+    link: '/a/index.seam/#user/' + username,
     title: 'Profile',
     auth: 'loggedin'
   },
@@ -80,7 +82,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/#glossary',
+    link: '/a/index.seam/#glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
@@ -132,15 +134,21 @@ const classes = {
 }
 
 const Nav = ({
-  auth,
   active,
   legacy,
   links,
   context,
   ...props
 }) => {
+
+  let auth = 'loggedout';
+  if(Configs.data.loggedIn === true) {
+    auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin';
+  }
+
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
+
   return (
     <nav
       {...props}

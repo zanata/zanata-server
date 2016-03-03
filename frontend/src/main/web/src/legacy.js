@@ -69,11 +69,6 @@ Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
 // see org.zanata.rest.editor.dto.User
 Configs.user = user
 
-let auth = 'loggedout';
-if(Configs.data.loggedIn === true) {
-  auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin';
-}
-
 let links = {
   'context': Configs.baseUrl,
   '/login': Configs.data.loginUrl,
@@ -88,7 +83,7 @@ let activePath = window.location.pathname;
 render(
   <div className='H(100%)'>
     <Icons />
-    <Nav active={activePath} auth={auth} legacy links={links} />
+    <Nav active={activePath} legacy links={links}/>
   </div>
   ,
   document.getElementById('root')

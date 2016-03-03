@@ -87,13 +87,7 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
     }
 
     public Permission getUserPermission() {
-        Permission permission = new Permission();
-        boolean isAdmin = false;
-        if(authenticatedAccount != null) {
-            isAdmin = identity.hasRole("admin");
-        }
-        permission.put("isAdmin", isAdmin);
-        return permission;
+        return userService.getUserPermission();
     }
 
     public String getUsername() {
@@ -101,5 +95,10 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
             return authenticatedAccount.getUsername();
         }
         return null;
+    }
+
+    public boolean isLoggedIn() {
+        return identity.isLoggedIn() && authenticatedAccount != null &&
+            authenticatedAccount.isEnabled();
     }
 }

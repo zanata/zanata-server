@@ -34,13 +34,12 @@
       <div class="Ai(st) D(f) Fld(c) Fld(r)--sm Flxs(0) H(100vh)">
 
         <div id="root" base-url="#{request.contextPath}"
-          data='{"loggedIn":#{identity.loggedIn and authenticatedAccountHome.instance.enabled},
+          data='{"loggedIn":#{authenticatedAccountHome.isLoggedIn()},
           "helpUrl": "#{applicationConfigurationAction.helpUrl}",
           "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
           "logoutUrl": "/account/logout.seam",
           "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
           "registerUrl": "#{applicationConfigurationAction.registerUrl}",
-          "profileUrl": "/profile/view/#{authenticatedAccountHome.username}",
           "buildInfo": #{applicationConfigurationAction.buildInfo.getJSON()},
           "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
           user="#{authenticatedAccountHome.getUser()}"/>

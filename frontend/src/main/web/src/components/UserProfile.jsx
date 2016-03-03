@@ -52,7 +52,7 @@ var UserProfile = React.createClass({
       );
     }
 
-    if(user !== null) {
+    if(user != null) {
       username =  user.username;
       imageUrl = user.imageUrl;
       name = user.name;
