@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.apache.commons.lang.StringUtils;
+import org.zanata.ApplicationConfiguration;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.model.HAccount;
@@ -54,6 +55,9 @@ public class UserService implements UserResource {
     @Inject
     private ZanataIdentity identity;
 
+    @Inject
+    private ApplicationConfiguration applicationConfiguration;
+
     @Override
     @CheckLoggedIn
     public Response getMyInfo() {
@@ -73,19 +77,29 @@ public class UserService implements UserResource {
         return Response.ok(user).build();
     }
 
-    @Override
-    public User generateUser(String username) {
-        if(StringUtils.isBlank(username)) {
+    /**
+     * Generate {@link org.zanata.rest.dto.User} object from username
+     *
+     * @param username - username in HPerson
+     */
+    private User generateUser(String username) {
+        if (StringUtils.isBlank(username)) {
             return null;
         }
         HAccount account = accountDAO.getByUsername(username);
-        if(account == null) {
+        if (account == null) {
             return null;
         }
-        return transferToUser(account, true);
+        return transferToUser(account,
+            applicationConfiguration.isDisplayUserEmail());
     }
 
-    @Override
+    /**
+     * Generate {@link org.zanata.rest.dto.User} object from HAccount
+     *
+     * @param account - HAccount
+     * @param includeEmail - Display user email
+     */
     public User transferToUser(HAccount account, boolean includeEmail) {
         if(account == null) {
             return new User();
