@@ -80,7 +80,6 @@ let links = {
   '/help': Configs.data.helpUrl,
   '/terms': Configs.data.termsUrl,
   '/signup': Configs.data.registerUrl,
-  '/user/:uid': Configs.data.profileUrl,
   '/logout': Configs.data.logoutUrl
 }
 

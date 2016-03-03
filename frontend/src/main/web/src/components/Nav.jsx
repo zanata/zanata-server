@@ -60,8 +60,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/user/:uid',
-    href: '/profile/view/',
+    link: '/a/user/:uid',
     title: 'Profile',
     auth: 'loggedin'
   },
@@ -81,8 +80,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/glossary',
-    href: '/glossary',
+    link: '/a/#glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
@@ -151,10 +149,12 @@ const Nav = ({
           (item.auth === 'loggedin' && admin)) && !item.more) {
 
           let link = item.link;
-          if(legacy && links[item.link]) {
-            link = links.context + links[item.link];
-          } else if(legacy) {
-            link = links.context + item.href;
+          if(legacy) {
+            if(links[item.link]) {
+              link = links.context + links[item.link];
+            } else {
+              link = links.context + (item.href ? item.href : item.link);
+            }
           }
 
           return (<NavItem key={itemId}
