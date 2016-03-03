@@ -36,16 +36,20 @@ import net.sf.okapi.common.resource.TextUnit;
 import net.sf.okapi.filters.ts.TsFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.zanata.common.ContentState;
 import org.zanata.common.DocumentType;
+import org.zanata.common.HasContents;
 import org.zanata.common.LocaleId;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.model.HDocument;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
+import org.zanata.rest.dto.resource.TranslationsResource;
 
 import javax.annotation.Nonnull;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -148,6 +152,10 @@ public class TSAdapter extends OkapiFilterAdapter {
         return tu.getSource().getFirstContent().getText();
     }
 
+    private String getTranslatedText(TextContainer tc) {
+        return tc.getFirstContent().getText();
+    }
+
     @Override
     protected TextFlow processTextFlow(TextUnit tu, String content, String subDocName, LocaleId sourceLocale) {
         TextFlow tf = new TextFlow(getIdFor(tu, content,
@@ -170,5 +178,57 @@ public class TSAdapter extends OkapiFilterAdapter {
         } else {
             return name;
         }
+    }
+
+    @Override
+    protected TranslationsResource parseTranslationFile(RawDocument rawDoc,
+                                                        Optional<String> params) {
+        TranslationsResource transRes = new TranslationsResource();
+        List<TextFlowTarget> translations = transRes.getTextFlowTargets();
+
+        Map<String, HasContents> addedResources =
+                new HashMap<String, HasContents>();
+        IFilter filter = getFilter();
+
+        try {
+            filter.open(rawDoc);
+            String subDocName = "";
+            while (filter.hasNext()) {
+                Event event = filter.next();
+                if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                    StartSubDocument startSubDoc =
+                            (StartSubDocument) event.getResource();
+                    subDocName = stripPath(startSubDoc.getName());
+                } else if (event.getEventType() == EventType.TEXT_UNIT) {
+                    TextUnit tu = (TextUnit) event.getResource();
+                    if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
+                        String content = getTranslatableText(tu);
+                        TextContainer translation = tu.getTarget(rawDoc.getTargetLocale());
+                        if (!content.isEmpty()) {
+                            TextFlowTarget tft =
+                                    new TextFlowTarget(getIdFor(tu, content, subDocName));
+                            // TODO: Change this
+                            tft.setState(ContentState.NeedReview);
+                            String resId = tft.getResId();
+                            if (addedResources.containsKey(resId)) {
+                                List<String> currentStrings = new ArrayList<>(addedResources.get(resId).getContents());
+                                currentStrings.add(getTranslatedText(translation));
+                                tft.setContents(currentStrings);
+                            } else {
+                                tft.setContents(getTranslatedText(translation));
+                            }
+                            addedResources.put(tft.getResId(), tft);
+                            translations.add(tft);
+                        }
+                    }
+                }
+            }
+        } catch (OkapiIOException e) {
+            throw new FileFormatAdapterException(
+                    "Unable to parse translation file", e);
+        } finally {
+            filter.close();
+        }
+        return transRes;
     }
 }
