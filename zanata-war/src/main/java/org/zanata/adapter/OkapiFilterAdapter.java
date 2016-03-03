@@ -296,10 +296,13 @@ public class OkapiFilterAdapter implements FileFormatAdapter {
         RawDocument rawDoc =
                 new RawDocument(fileUri, "UTF-8",
                         net.sf.okapi.common.LocaleId.fromString("en"));
+        if (rawDoc.getTargetLocale() == null) {
+            rawDoc.setTargetLocale(net.sf.okapi.common.LocaleId.fromString(localeId));
+        }
         return parseTranslationFile(rawDoc, filterParams);
     }
 
-    private TranslationsResource parseTranslationFile(RawDocument rawDoc,
+    protected TranslationsResource parseTranslationFile(RawDocument rawDoc,
             Optional<String> params) {
         TranslationsResource transRes = new TranslationsResource();
         List<TextFlowTarget> translations = transRes.getTextFlowTargets();
