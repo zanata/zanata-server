@@ -98,10 +98,29 @@ module.exports = {
       i: 'inherit'
     },
     classNames: [
-      'Lh(1.5)',
+      'Bgc(i) ',
+      'Bgc(#fff)',
+      'D(f) ',
       'Ff(zsans)',
+      'Flxg(1) ',
+      'Fz(i)',
+      'Fz(16px)',
       'H(100%)',
+      'H(msn2)',
+      'H(msn1)',
+      'H(ms0)',
+      'H(ms1)',
+      'H(ms2)',
+      'H(ms3)',
+      'H(ms4)',
+      'H(ms5)',
+      'H(ms6)',
+      'Lh(1.5)',
       'M(0)',
+      'Ov(a)',
+      'Ovx(h)',
+      'Ovs(touch)',
+      'Ov(h)',
       // These are needed for generated icon classes
       'W(msn2)',
       'W(msn1)',
@@ -111,16 +130,7 @@ module.exports = {
       'W(ms3)',
       'W(ms4)',
       'W(ms5)',
-      'W(ms6)',
-      'H(msn2)',
-      'H(msn1)',
-      'H(ms0)',
-      'H(ms1)',
-      'H(ms2)',
-      'H(ms3)',
-      'H(ms4)',
-      'H(ms5)',
-      'H(ms6)'
+      'W(ms6)'
     ]
   }
 }

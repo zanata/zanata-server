@@ -5,7 +5,7 @@ import { isUndefined } from 'lodash'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import createLogger from 'redux-logger'
-import { browserHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { syncHistory } from 'react-router-redux'
 import WebFont from 'webfontloader'
 import { apiMiddleware } from 'redux-api-middleware'
@@ -27,7 +27,7 @@ WebFont.load({
   timeout: 2000
 })
 
-const routerMiddleware = syncHistory(browserHistory)
+const routerMiddleware = syncHistory(hashHistory)
 
 const finalCreateStore = compose(
   applyMiddleware(
@@ -79,6 +79,6 @@ Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
 Configs.user = user
 
 render(
-  <Root store={store} history={browserHistory} />,
+  <Root store={store} history={hashHistory} />,
   document.getElementById('root')
 )

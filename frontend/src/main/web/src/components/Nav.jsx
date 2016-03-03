@@ -6,12 +6,14 @@ const items = [
   {
     icon: 'zanata',
     link: '/',
+    href: '/',
     title: 'Zanata',
     auth: 'public'
   },
   {
     icon: 'search',
     link: '/search',
+    href: '/search.seam',
     title: 'Explore',
     auth: 'public'
   },
@@ -19,6 +21,7 @@ const items = [
     small: true,
     icon: 'import',
     link: '/login',
+    href: '/account/sign_in',
     title: 'Log In',
     auth: 'loggedout'
   },
@@ -26,6 +29,7 @@ const items = [
     small: true,
     icon: 'upload',
     link: '/signup',
+    href: '/account/register',
     title: 'Sign Up',
     auth: 'loggedout'
   },
@@ -33,6 +37,7 @@ const items = [
     small: true,
     icon: 'statistics',
     link: '/activity',
+    href: '/dashboard/activity',
     title: 'Activity',
     auth: 'loggedin'
   },
@@ -40,6 +45,7 @@ const items = [
     small: true,
     icon: 'project',
     link: '/projects',
+    href: '/dashboard/projects',
     title: 'Projects',
     auth: 'loggedin'
   },
@@ -47,6 +53,7 @@ const items = [
     small: true,
     icon: 'folder',
     link: '/groups',
+    href: '/version-group/list',
     title: 'Groups',
     auth: 'loggedin'
   },
@@ -54,30 +61,35 @@ const items = [
     small: true,
     icon: 'user',
     link: '/user/:uid',
+    href: '/profile/view/',
     title: 'Profile',
     auth: 'loggedin'
   },
   {
     icon: 'settings',
     link: '/settings',
+    href: '/dashboard/settings',
     title: 'Settings',
     auth: 'loggedin'
   },
   {
     icon: 'admin',
     link: '/admin',
+    href: '/admin/home',
     title: 'Admin',
     auth: 'admin'
   },
   {
     icon: 'glossary',
     link: '/glossary',
+    href: '/glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
   {
     icon: 'logout',
     link: '/logout',
+    href: '/logout',
     title: 'Log Out',
     auth: 'loggedin'
   },
@@ -85,12 +97,14 @@ const items = [
     small: true,
     icon: 'ellipsis',
     link: '',
+    href: '',
     title: 'More',
     auth: 'public'
   },
   {
     icon: 'help',
     link: '/help',
+    href: '',
     title: 'Help',
     auth: 'public',
     more: true
@@ -98,6 +112,7 @@ const items = [
   {
     icon: 'info',
     link: '/about',
+    href: '',
     title: 'About',
     auth: 'public',
     more: true
@@ -111,6 +126,7 @@ const classes = {
     d: 'D(f)',
     fld: 'Fld(c)--sm',
     flxs: 'Flxs(0)',
+    h: 'H(100%)',
     or: 'Or(1) Or(0)--sm',
     ov: 'Ov(h)',
     w: 'W(r3)--sm'
@@ -120,30 +136,38 @@ const classes = {
 const Nav = ({
   auth,
   active,
+  legacy,
+  links,
+  context,
   ...props
 }) => {
-  // const filteredItems = [
-  //   logo: [...items.logo],
-  //   ...items.loggedin
-  // ]
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
   return (
     <nav
       {...props}
-      className={flattenClasses(classes)}
-    >
-      {items.map((item, itemId) =>
-        (((item.auth === 'public') || (item.auth === authState) ||
-          (item.auth === 'loggedin' && admin)) && !item.more) ? (
-          <NavItem key={itemId}
+      className={flattenClasses(classes)}>
+      {items.map((item, itemId) => {
+        if(((item.auth === 'public') || (item.auth === authState) ||
+          (item.auth === 'loggedin' && admin)) && !item.more) {
+
+          let link = item.link;
+          if(legacy && links[item.link]) {
+            link = links.context + links[item.link];
+          } else if(legacy) {
+            link = links.context + item.href;
+          }
+
+          return (<NavItem key={itemId}
             small={item.small}
-            active={active === item.link}
-            link={item.link}
+            active={active === link}
+            link={link}
+            useHref={legacy}
             icon={item.icon}
-            title={item.title}
-          />
-        ) : null)
+            title={item.title}/>)
+        }
+        return null;
+        })
       }
     </nav>
   )

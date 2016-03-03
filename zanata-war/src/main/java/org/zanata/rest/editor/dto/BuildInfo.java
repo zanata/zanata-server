@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2016, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,17 +18,30 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.events;
 
-import java.io.IOException;
-import java.io.Serializable;
+package org.zanata.rest.editor.dto;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.zanata.rest.editor.dto.JsonObject;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public abstract class WebhookEventType extends JsonObject {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+public class BuildInfo extends JsonObject {
+
+    private final String version;
+    private final String buildTimestamp;
+    private final String scmDescribe;
+    private final String copyrightNotice;
+
+    public BuildInfo(String version, String buildTimestamp,
+            String scmDescribe, String copyrightNotice) {
+        this.version = version;
+        this.buildTimestamp = buildTimestamp;
+        this.scmDescribe = scmDescribe;
+        this.copyrightNotice = copyrightNotice;
+    }
 }

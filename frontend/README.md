@@ -13,7 +13,7 @@ See [Servlet 3 static resources](http://www.webjars.org/documentation#servlet3).
 The following Maven properties can be overridden on the command line with ```-Dkey=value```:
 
 ```
-<node.version>v0.12.2</node.version>
+<node.version>v4.2.6</node.version>
 <npm.version>2.7.6</npm.version>
 <node.install.directory>${download.dir}/zanata-frontend/node-${node.version}-npm-${npm.version}</node.install.directory>
 <npm.cli.script>${node.install.directory}/node/npm/bin/npm-cli.js</npm.cli.script>
