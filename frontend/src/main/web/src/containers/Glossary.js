@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import ReactList from 'react-list'
-import { ButtonLink, Icon, LoaderText, Select } from 'zanata-ui'
+import { ButtonLink, ButtonRound, Icon, LoaderText, Select } from 'zanata-ui'
 import { debounce } from 'lodash'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import {
@@ -98,7 +98,7 @@ class Glossary extends Component {
               : term.glossaryTerms[0].content}
           </EditableText>
         </TableCell>
-        <TableCell size='2' tight={transSelected}>
+        <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
           {transSelected
             ? transLoading
               ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
@@ -119,7 +119,7 @@ class Glossary extends Component {
         </TableCell>
         <TableCell hideSmall>
           <EditableText
-            editable={!selectedTransLocale}
+            editable={!transSelected}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
@@ -127,17 +127,47 @@ class Glossary extends Component {
             {selected ? selectedTerm.pos : term.pos}
           </EditableText>
         </TableCell>
+        {!transSelected ?
+          (
+            <TableCell hideSmall>
+              <EditableText
+                editable={!transSelected}
+                editing={selected}
+                onChange={(e) => handleTermFieldUpdate('description', e)}
+                placeholder='Add a description…'
+                emptyReadOnlyText='No description'>
+                {selected
+                  ? selectedTerm.description
+                  : term.description}
+              </EditableText>
+            </TableCell>
+          ) : ''
+        }
         <TableCell hideSmall>
-          <EditableText
-            editable={!selectedTransLocale}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('description', e)}
-            placeholder='Add a description…'
-            emptyReadOnlyText='No description'>
-            {selected
-              ? selectedTerm.description
-              : term.description}
-          </EditableText>
+          <ButtonLink>
+            <Icon name='info'/>
+          </ButtonLink>
+
+          {transSelected ?
+            (
+              <ButtonLink theme={{base: {m: 'Mstart(re)'}}} type='muted'>
+                <Icon name='comment'/>
+              </ButtonLink>
+            ) : ''}
+          
+
+          <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
+            Update
+          </ButtonRound>
+
+          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}>
+            Cancel
+          </ButtonLink>
+
+          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}} type='danger'>
+            <Icon name='trash'/><span className='Mstart(re)'>Delete</span>
+          </ButtonLink>
+
         </TableCell>
       </TableRow>
     )
@@ -208,6 +238,7 @@ class Glossary extends Component {
       handleFilterFieldUpdate
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
+    const transSelected = !!selectedTransLocale
     return (
       <Page>
         <Helmet title='Glossary' />
@@ -256,7 +287,8 @@ class Glossary extends Component {
                     <span className='C(muted) Mstart(rq)'>{termCount}</span>
                   </Row>
                 </TableCell>
-                <TableCell tight size='2' theme={{base: {lineClamp: ''}}}>
+                <TableCell tight size={transSelected ? '2' : '1'}
+                  theme={{base: {lineClamp: ''}}}>
                   <Select
                     name='language-selection'
                     placeholder={statsLoading
@@ -282,8 +314,15 @@ class Glossary extends Component {
                 <TableCell hideSmall>
                   <div className="LineClamp(1,24px)">Part of Speech</div>
                 </TableCell>
+                {!transSelected ?
+                  (
+                  <TableCell hideSmall>
+                    Description
+                  </TableCell>
+                  ) : ''
+                }
                 <TableCell hideSmall>
-                  Description
+
                 </TableCell>
               </TableRow>
             </View>
