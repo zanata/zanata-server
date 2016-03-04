@@ -15,8 +15,10 @@ import {
   GLOSSARY_STATS_FAILURE,
   GLOSSARY_SELECT_TERM,
   GLOSSARY_PAGE_SIZE,
-  GLOSSARY_UPDATE_FIELD
+  GLOSSARY_UPDATE_FIELD,
+  GLOSSARY_DELETE
 } from '../actions/glossary'
+import Configs from '../constants/Configs'
 
 const glossary = handleActions({
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => ({
@@ -25,7 +27,12 @@ const glossary = handleActions({
     locale: action.payload.locale || '',
     filter: action.payload.filter || '',
     sort: action.payload.sort || '',
-    index: action.payload.index || 0
+    index: action.payload.index || 0,
+    permission: {
+      canAddNewEntry: Configs.data.permission.insertGlossary,
+      canUpdateEntry: Configs.data.permission.updateGlossary,
+      canDeleteEntry: Configs.data.permission.deleteGlossary
+    }
   }),
   [GLOSSARY_UPDATE_INDEX]: (state, action) => ({
     ...state,
@@ -146,9 +153,11 @@ const glossary = handleActions({
   selectedTerm: {},
   page: 1,
   pagesLoaded: [],
-  canAddNewEntry: false,
-  canUpdateEntry: false,
-  canDeleteEntry: false,
+  permission: {
+    canAddNewEntry: false,
+    canUpdateEntry: false,
+    canDeleteEntry: false
+  },
   terms: {},
   termIds: [],
   termCount: 0,

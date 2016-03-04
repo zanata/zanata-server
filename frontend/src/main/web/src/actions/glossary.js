@@ -9,6 +9,7 @@ import { replaceRouteQuery } from '../utils/RoutingHelpers'
 const API_ROOT = 'https://translate.zanata.org/zanata/rest/'
 export const GLOSSARY_PAGE_SIZE = 1000
 
+export const GLOSSARY_DELETE = 'GLOSSARY_DELETE'
 export const GLOSSARY_UPDATE_INDEX = 'GLOSSARY_UPDATE_INDEX'
 export const GLOSSARY_UPDATE_FILTER = 'GLOSSARY_UPDATE_FILTER'
 export const GLOSSARY_UPDATE_LOCALE = 'GLOSSARY_UPDATE_LOCALE'
@@ -18,22 +19,24 @@ export const GLOSSARY_TERMS_INVALIDATE = 'GLOSSARY_TERMS_INVALIDATE'
 export const GLOSSARY_TERMS_REQUEST = 'GLOSSARY_TERMS_REQUEST'
 export const GLOSSARY_TERMS_SUCCESS = 'GLOSSARY_TERMS_SUCCESS'
 export const GLOSSARY_TERMS_FAILURE = 'GLOSSARY_TERMS_FAILURE'
+export const GLOSSARY_DELETE_REQUEST = 'GLOSSARY_DELETE_REQUEST'
+export const GLOSSARY_DELETE_SUCCESS = 'GLOSSARY_DELETE_SUCCESS'
+export const GLOSSARY_DELETE_FAILURE = 'GLOSSARY_DELETE_FAILURE'
 export const GLOSSARY_INVALIDATE_STATS = 'GLOSSARY_INVALIDATE_STATS'
 export const GLOSSARY_STATS_REQUEST = 'GLOSSARY_STATS_REQUEST'
 export const GLOSSARY_STATS_SUCCESS = 'GLOSSARY_STATS_SUCCESS'
 export const GLOSSARY_STATS_FAILURE = 'GLOSSARY_STATS_FAILURE'
 export const GLOSSARY_SELECT_TERM = 'GLOSSARY_SELECT_TERM'
 export const GLOSSARY_UPDATE_FIELD = 'GLOSSARY_UPDATE_FIELD'
+export const GLOSSARY_RESET_ENTRY = 'GLOSSARY_RESET_ENTRY'
 
 // TODO: Add the following
 export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
 export const GLOSSARY_UPDATE = 'GLOSSARY_UPDATE'
-export const GLOSSARY_DELETE = 'GLOSSARY_DELETE'
 export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
 export const GLOSSARY_UPLOAD_FILE = 'GLOSSARY_UPLOAD_FILE'
 export const GLOSSARY_UPDATE_COMMENT = 'GLOSSARY_UPDATE_COMMENT'
 export const GLOSSARY_UPDATE_FOCUSED_ROW = 'GLOSSARY_UPDATE_FOCUSED_ROW'
-export const GLOSSARY_RESET_ENTRY = 'GLOSSARY_RESET_ENTRY'
 export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
@@ -56,6 +59,24 @@ const generateSortOrderParam = (sort) => {
 
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
+
+export const deleteGlossaryEntry = (id) => {
+  const endpoint = API_ROOT + 'glossary/entries/' + id
+  return {
+    [CALL_API]: {
+      endpoint,
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json'
+      },
+      types: [
+        GLOSSARY_DELETE_REQUEST,
+        GLOSSARY_DELETE_SUCCESS,
+        GLOSSARY_DELETE_FAILURE
+      ]
+    }
+  }
+}
 
 export const getGlossaryTerms = (state, newIndex) => {
   const {
@@ -180,6 +201,10 @@ export const glossaryChangeLocale = (locale) => {
   }
 }
 
+export const glossaryEntryReset = () => {
+  return console.info('reset')
+}
+
 export const glossaryFilterTextChanged = (newFilter) => {
   return (dispatch, getState) => {
     if (!getState().glossary.termsLoading) {
@@ -189,5 +214,12 @@ export const glossaryFilterTextChanged = (newFilter) => {
       dispatch(glossaryUpdateFilter(newFilter))
       dispatch(getGlossaryTerms(getState()))
     }
+  }
+}
+
+export const glossaryDeleteEntry = (id) => {
+  return (dispatch, getState) => {
+    dispatch(deleteGlossaryEntry(id))
+    dispatch(getGlossaryTerms(getState()))
   }
 }

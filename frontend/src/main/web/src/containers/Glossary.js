@@ -14,7 +14,8 @@ import {
   TableCell,
   TableRow,
   TextInput,
-  View
+  View,
+  DeleteEntryModal
 } from '../components'
 import {
   glossaryChangeLocale,
@@ -22,7 +23,9 @@ import {
   glossaryFilterTextChanged,
   glossaryGetTermsIfNeeded,
   glossarySelectTerm,
-  glossaryUpdateField
+  glossaryUpdateField,
+  glossaryDeleteEntry,
+  glossaryEntryReset
 } from '../actions/glossary'
 
 let sameRenders = 0
@@ -54,13 +57,16 @@ class Glossary extends Component {
   }
   renderItem (index, key) {
     const {
-      onSelectTerm,
+      handleSelectTerm,
       handleTermFieldUpdate,
+      handleDeleteEntry,
+      handleEntryReset,
       termIds,
       terms,
       transLoading,
       selectedTransLocale,
-      selectedTerm
+      selectedTerm,
+      permission
     } = this.props
     const termId = termIds[index]
     const term = termId ? cloneDeep(terms[termId]) : false
@@ -87,12 +93,11 @@ class Glossary extends Component {
         className='editable'
         key={key}
         selected={selected}
-        onClick={() => onSelectTerm(term)}>
+        onClick={() => handleSelectTerm(term)}>
         <TableCell size='2' tight>
-          <EditableText
+          <EditableText ref={termId + '0'}
             editable={false}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('src', e)}>
+            editing={selected}>
             {term.glossaryTerms[0].content}
           </EditableText>
         </TableCell>
@@ -100,8 +105,8 @@ class Glossary extends Component {
           {transSelected
             ? transLoading
               ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-            : (<EditableText
-                editable={transSelected}
+            : (<EditableText ref={termId + '1'}
+                editable={transSelected && permission.canUpdateEntry}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('locale', e)}
                 placeholder='Add a translation…'
@@ -112,8 +117,8 @@ class Glossary extends Component {
           }
         </TableCell>
         <TableCell hideSmall>
-          <EditableText
-            editable={!transSelected}
+          <EditableText ref={termId + '2'}
+            editable={!transSelected && permission.canUpdateEntry}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
@@ -121,11 +126,10 @@ class Glossary extends Component {
             {term.pos}
           </EditableText>
         </TableCell>
-        {!transSelected ?
-          (
+        {!transSelected ? (
             <TableCell hideSmall>
-              <EditableText
-                editable={!transSelected}
+              <EditableText ref={termId + '3'}
+                editable={!transSelected && permission.canUpdateEntry}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('description', e)}
                 placeholder='Add a description…'
@@ -140,25 +144,30 @@ class Glossary extends Component {
             <Icon name='info'/>
           </ButtonLink>
 
-          {transSelected ?
-            (
+          {transSelected ? (
               <ButtonLink theme={{base: {m: 'Mstart(re)'}}} type='muted'>
                 <Icon name='comment'/>
               </ButtonLink>
             ) : ''}
 
-
-          <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
-            Update
-          </ButtonRound>
-
-          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}>
+          {permission.canUpdateEntry ? (
+              <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
+                Update
+              </ButtonRound>
+            ) : ''
+          }
+          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
+                      onClick={() => handleEntryReset(termId)}>
             Cancel
           </ButtonLink>
 
-          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}} type='danger'>
-            <Icon name='trash'/><span className='Mstart(re)'>Delete</span>
-          </ButtonLink>
+          {permission.canDeleteEntry ? (
+              <DeleteEntryModal id={termId}
+                                entry={term}
+                                className='Mstart(rh)'
+                                onDelete={handleDeleteEntry}/>
+            ) : ''
+          }
 
         </TableCell>
       </TableRow>
@@ -226,8 +235,9 @@ class Glossary extends Component {
       statsLoading,
       transLocales,
       selectedTransLocale,
-      onTranslationLocaleChange,
-      handleFilterFieldUpdate
+      handleTranslationLocaleChange,
+      handleFilterFieldUpdate,
+      permission
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
@@ -245,20 +255,25 @@ class Glossary extends Component {
                   accessibilityLabel='Search Terms'
                   defaultValue={filterText}
                   onChange={handleFilterFieldUpdate} />
-                <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
-                  <Row>
-                    <Icon name='import' className='Mend(rq)'
-                      theme={{ base: { m: 'Mend(rq)' } }}/>
-                    <span className='Hidden--lesm'>Import Glossary</span>
-                  </Row>
-                </ButtonLink>
-                <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
-                  <Row>
-                    <Icon name='plus' className='Mend(rq)'
-                      theme={{ base: { m: 'Mend(rq)' } }}/>
-                    <span className='Hidden--lesm'>New Term</span>
-                  </Row>
-                </ButtonLink>
+                  {permission.canAddNewEntry ? (
+                    <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
+                      <Row>
+                        <Icon name='import' className='Mend(rq)'
+                          theme={{ base: { m: 'Mend(rq)' } }}/>
+                        <span className='Hidden--lesm'>Import Glossary</span>
+                      </Row>
+                    </ButtonLink> ) : ''}
+
+                   {permission.canAddNewEntry ? (
+                      <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
+                        <Row>
+                          <Icon name='plus' className='Mend(rq)'
+                            theme={{ base: { m: 'Mend(rq)' } }}/>
+                          <span className='Hidden--lesm'>New Term</span>
+                        </Row>
+                      </ButtonLink> ) : ''
+                   }
+
               </View>
             )}>
             <View theme={{
@@ -291,7 +306,7 @@ class Glossary extends Component {
                     options={transLocales}
                     pageSize={20}
                     optionRenderer={this.localeOptionsRenderer}
-                    onChange={onTranslationLocaleChange}
+                    onChange={handleTranslationLocaleChange}
                   />
                   {selectedTransLocale &&
                     (<Row>
@@ -356,7 +371,8 @@ const mapStateToProps = (state) => {
     terms,
     termIds,
     termCount,
-    filter
+    filter,
+    permission
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -371,29 +387,32 @@ const mapStateToProps = (state) => {
     filterText: filter,
     selectedTerm: selectedTerm,
     selectedTransLocale: query.locale,
-    scrollIndex: Number.parseInt(query.index, 10)
+    scrollIndex: Number.parseInt(query.index, 10),
+    permission
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   const updateFilter = debounce(val => dispatch(glossaryFilterTextChanged(val)), 500)
+  const updateTerm = debounce((field, val) => dispatch(glossaryUpdateField({ field: field, value: val })), 500)
 
   return {
     dispatch,
-    onSelectTerm: (term) => dispatch(glossarySelectTerm(term)),
-    onTranslationLocaleChange: (selectedLocale) =>
+    handleSelectTerm: (term) => dispatch(glossarySelectTerm(term)),
+    handleTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')
       ),
     handleFilterFieldUpdate: (event) => {
-      //dispatch(glossaryFilterTextChanged(event.target.value || ''))
       updateFilter(event.target.value || '')
     },
     handleTermFieldUpdate: (field, event) => {
-      return dispatch(glossaryUpdateField({
-        field: field,
-        value: event.target.value || ''
-      }))
+      updateTerm(field, event.target.value || '')
+    },
+    handleDeleteEntry: (termId) => dispatch(glossaryDeleteEntry(termId)),
+    handleEntryReset: function (termId) {
+      console.info('aklex reset', termId, this.refs)
+      //dispatch(glossaryEntryReset(termId))
     }
   }
 }

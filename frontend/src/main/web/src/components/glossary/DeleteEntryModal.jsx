@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Actions from '../../actions/GlossaryActions'
 import {
   ButtonLink,
   ButtonRound,
@@ -14,7 +13,8 @@ var DeleteEntryModal = React.createClass({
   propTypes: {
     id: React.PropTypes.number.isRequired,
     className: React.PropTypes.string,
-    entry: React.PropTypes.object
+    entry: React.PropTypes.object,
+    onDelete: React.PropTypes.func
   },
 
   deleteTimeout: null,
@@ -32,7 +32,7 @@ var DeleteEntryModal = React.createClass({
     }
   },
 
-  _handleDelete: function () {
+  handleDeleteEntry: function () {
     this.setState({deleting: true})
 
     if (this.deleteTimeout !== null) {
@@ -40,7 +40,7 @@ var DeleteEntryModal = React.createClass({
     }
 
     this.deleteTimeout = setTimeout(() => {
-      Actions.deleteGlossary(this.props.id)
+      this.props.onDelete(this.props.id)
       this._closeDialog()
     }, 100)
   },
@@ -86,7 +86,7 @@ var DeleteEntryModal = React.createClass({
             onClick={this._closeDialog}>
             Cancel
           </ButtonLink>
-          <ButtonRound type='danger' size='-1' onClick={this._handleDelete}>
+          <ButtonRound type='danger' size='-1' onClick={this.handleDeleteEntry}>
             <LoaderText loading={isDeleting} loadingText='Deleting'>
               Delete all
             </LoaderText>
