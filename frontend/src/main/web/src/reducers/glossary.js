@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions'
-import { union, isEmpty } from 'lodash'
+import { union, isEmpty, cloneDeep } from 'lodash'
 import {
   GLOSSARY_UPDATE_INDEX,
   GLOSSARY_UPDATE_LOCALE,
@@ -41,7 +41,7 @@ const glossary = handleActions({
   }),
   [GLOSSARY_UPDATE_FIELD]: (state, action) => {
     // TODO: Rethink how updating fields happens
-    let newSelectedTerm = { ...state.selectedTerm }
+    let newSelectedTerm = cloneDeep(state.selectedTerm)
     switch (action.payload.field) {
       case 'src':
         newSelectedTerm.glossaryTerms[0].content = action.payload.value

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import ReactList from 'react-list'
 import { ButtonLink, ButtonRound, Icon, LoaderText, Select } from 'zanata-ui'
-import { debounce } from 'lodash'
+import { debounce, cloneDeep } from 'lodash'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import {
   EditableText,
@@ -63,7 +63,7 @@ class Glossary extends Component {
       selectedTerm
     } = this.props
     const termId = termIds[index]
-    const term = termId ? terms[termId] : false
+    const term = termId ? cloneDeep(terms[termId]) : false
     const selected = termId === selectedTerm.id
     const transContent = term && term.glossaryTerms[1]
       ? term.glossaryTerms[1].content
@@ -93,9 +93,7 @@ class Glossary extends Component {
             editable={false}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('src', e)}>
-            {selected
-              ? selectedTerm.glossaryTerms[0].content
-              : term.glossaryTerms[0].content}
+            {term.glossaryTerms[0].content}
           </EditableText>
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
@@ -108,11 +106,7 @@ class Glossary extends Component {
                 onChange={(e) => handleTermFieldUpdate('locale', e)}
                 placeholder='Add a translation…'
                 emptyReadOnlyText='No translation'>
-                {selected
-                  ? selectedTerm.glossaryTerms[1]
-                    ? selectedTerm.glossaryTerms[1].content
-                    : ''
-                  : transContent}
+                {transContent}
               </EditableText>)
             : <div className='LineClamp(1,24px) Px(rq)'>{term.termsCount}</div>
           }
@@ -124,7 +118,7 @@ class Glossary extends Component {
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
-            {selected ? selectedTerm.pos : term.pos}
+            {term.pos}
           </EditableText>
         </TableCell>
         {!transSelected ?
@@ -136,9 +130,7 @@ class Glossary extends Component {
                 onChange={(e) => handleTermFieldUpdate('description', e)}
                 placeholder='Add a description…'
                 emptyReadOnlyText='No description'>
-                {selected
-                  ? selectedTerm.description
-                  : term.description}
+                {term.description}
               </EditableText>
             </TableCell>
           ) : ''
@@ -154,7 +146,7 @@ class Glossary extends Component {
                 <Icon name='comment'/>
               </ButtonLink>
             ) : ''}
-          
+
 
           <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
             Update
