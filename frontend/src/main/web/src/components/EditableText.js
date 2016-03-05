@@ -71,8 +71,6 @@ class EditableText extends Component {
         !children && classes.text.placeholder
       )
     }
-    const emptyText = editable ? placeholder : emptyReadOnlyText
-    const text = children || emptyText
     if (editable && editing) {
       return (
         <TextInput
@@ -82,9 +80,12 @@ class EditableText extends Component {
           placeholder={placeholder}
           theme={classes.textInput}
           ref={(ref) => this.textInput = ref}
-          defaultValue={children} />
+          value={children}
+          />
       )
     }
+    const emptyText = editable ? placeholder : emptyReadOnlyText
+    const text = children || emptyText
     return (
       <Row theme={textStateClasses} align='start' onClick={::this.handleClick}>
         {text}

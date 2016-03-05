@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TextareaAutosize from 'react-textarea-autosize'
 import { flattenClasses } from 'zanata-ui'
+import { debounce } from 'lodash'
 
 const classes = {
   base: {
@@ -27,15 +28,19 @@ const classes = {
 }
 
 class TextInput extends Component {
-
   _onBlur (e) {
     const { onBlur } = this.props
-    if (onBlur) onBlur(e)
+    if (onBlur) {
+      onBlur(e)
+    }
   }
-  _onChange (e) {
+  _updateText (e) {
     const { onChange, onChangeText } = this.props
     if (onChangeText) onChangeText(e.target.value)
     if (onChange) onChange(e)
+  }
+  _onChange (e) {
+    debounce(this._updateText(e), 300)
   }
   _onFocus (e) {
     const { clearTextOnFocus, onFocus, selectTextOnFocus } = this.props
