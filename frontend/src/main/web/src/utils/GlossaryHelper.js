@@ -109,21 +109,36 @@ var GlossaryHelper = {
     }
   },
 
-  getEntryStatus: function (entry, originalEntry) {
-    var isSrcModified = (entry.description !== originalEntry.description) ||
-      (entry.pos !== originalEntry.pos) ||
-      (entry.srcTerm.content !== originalEntry.srcTerm.content)
-    var isTransModified =
-      entry.transTerm.content !== originalEntry.transTerm.content
+  toEmptyStringIfUndefined: function (val) {
+    return isEmptyOrNull(val) ? '' : val
+  },
 
-    var isSrcValid = this.isSourceValid(entry)
-    var canUpdateTransComment = this.canUpdateTransComment(originalEntry)
+  getEntryStatus: function (entry, originalEntry) {
+    const source = this.toEmptyStringIfUndefined(entry.glossaryTerms[0].content)
+    const trans = this.toEmptyStringIfUndefined(entry.glossaryTerms[1].content)
+    const desc = this.toEmptyStringIfUndefined(entry.description)
+    const pos = this.toEmptyStringIfUndefined(entry.pos)
+    const ori_source = this.toEmptyStringIfUndefined(
+      originalEntry.glossaryTerms[0].content)
+    const ori_trans = this.toEmptyStringIfUndefined(
+      originalEntry.glossaryTerms[1].content)
+    const ori_desc = this.toEmptyStringIfUndefined(originalEntry.description)
+    const ori_pos = this.toEmptyStringIfUndefined(originalEntry.pos)
+
+    let isSrcModified = (desc !== ori_desc) ||
+      (pos !== ori_pos) ||
+      (source !== ori_source)
+    let isTransModified = trans !== ori_trans
+
+    let isSrcValid = !isEmptyOrNull(trim(source))
+    let canUpdateTransComment = !isEmptyOrNull(ori_trans)
+
     return {
       isSrcModified: isSrcModified,
       isTransModified: isTransModified,
       isSrcValid: isSrcValid, // source content is mandatory
       canUpdateTransComment: canUpdateTransComment,
-      isSaving: entry.status.isSaving
+      isSaving: entry.status ? entry.status.isSaving : false
     }
   },
 
@@ -135,10 +150,6 @@ var GlossaryHelper = {
       canUpdateTransComment: true,
       isSaving: false
     }
-  },
-
-  isSourceValid: function (entry) {
-    return !isEmptyOrNull(trim(entry.srcTerm.content))
   },
 
   canUpdateTransComment: function (entry) {

@@ -40,7 +40,7 @@ class TextInput extends Component {
     if (onChange) onChange(e)
   }
   _onChange (e) {
-    debounce(this._updateText(e), 300)
+    debounce(this._updateText(e), 200)
   }
   _onFocus (e) {
     const { clearTextOnFocus, onFocus, selectTextOnFocus } = this.props

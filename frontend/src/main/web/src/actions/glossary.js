@@ -223,8 +223,7 @@ export const glossaryDeleteEntry = (id) => {
 
 export const glossaryEntryReset = (id) => {
   return (dispatch, getState) => {
-    console.info('reset..', id, getState())
-    dispatch(glossaryEntryReset1(id));
+    dispatch(glossaryEntryReset1(id))
   }
 }
 

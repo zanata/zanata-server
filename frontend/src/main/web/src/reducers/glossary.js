@@ -20,6 +20,7 @@ import {
   GLOSSARY_RESET_ENTRY
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
+import GlossaryHelper from '../utils/GlossaryHelper'
 
 const glossary = handleActions({
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => ({
@@ -47,10 +48,12 @@ const glossary = handleActions({
     ...state,
     filter: action.payload
   }),
-  [GLOSSARY_RESET_ENTRY]: (state, action) => ({
-    ...state,
-    selectedTerm: cloneDeep(state.terms[action.payload])
-  }),
+  [GLOSSARY_RESET_ENTRY]: (state, action) => {
+    return {
+      ...state,
+      selectedTerm: cloneDeep(state.terms[action.payload])
+    }
+  },
   [GLOSSARY_UPDATE_FIELD]: (state, action) => {
     let newSelectedTerm = state.selectedTerm
     switch (action.payload.field) {
@@ -68,6 +71,8 @@ const glossary = handleActions({
         break
       default: console.error('Not a valid field')
     }
+    newSelectedTerm.status = GlossaryHelper.getEntryStatus(
+      newSelectedTerm, state.terms[newSelectedTerm.id])
     return {
       ...state,
       selectedTerm: newSelectedTerm
@@ -127,7 +132,7 @@ const glossary = handleActions({
         action.payload.result.results.length,
         ...action.payload.result.results
       )
-    return ({
+    return {
       ...state,
       termsLoading: false,
       termsLastUpdated: action.meta.receivedAt,
@@ -136,7 +141,7 @@ const glossary = handleActions({
       termCount: action.payload.result.totalCount,
       page,
       pagesLoaded
-    })
+    }
   },
   [GLOSSARY_TERMS_FAILURE]: (state, action) => ({
     ...state,
@@ -144,10 +149,13 @@ const glossary = handleActions({
     termsErrorMessage: action.payload,
     termsLoading: false
   }),
-  [GLOSSARY_SELECT_TERM]: (state, action) => ({
-    ...state,
-    selectedTerm: cloneDeep(state.terms[action.payload])
-  })
+  [GLOSSARY_SELECT_TERM]: (state, action) => {
+    //:TODO: save if currentSelectedTerm is modified
+    return {
+      ...state,
+      selectedTerm: cloneDeep(state.terms[action.payload])
+    }
+  }
 }, {
   src: 'en-US',
   locale: '',

@@ -89,19 +89,16 @@ class Glossary extends Component {
       isSameRender()
     }
 
-    let className = ''
-    let handleMouseOver = function () {
-      console.info('mouse over')
-      className = 'moueoverClass'
-    }
+    const isTermModified = transSelected
+      ? (term.status && term.status.isTransModified)
+      : (term.status && term.status.isSrcModified)
+    const displayUpdateButton = permission.canUpdateEntry && isTermModified
 
     return (
       <TableRow highlight
         className='editable'
         key={key}
         selected={selected}
-        onMouseOver={() => handleMouseOver}
-        className={className}
         onClick={() => handleSelectTerm(termId)}>
         <TableCell size='2' tight>
           <EditableText
@@ -159,16 +156,23 @@ class Glossary extends Component {
               </ButtonLink>
             ) : ''}
 
-          {permission.canUpdateEntry ? (
+          {displayUpdateButton ? (
               <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
-                Update
+                {term.status && term.status.isSaving ?
+                  (<LoaderText loading loadingText='Updating'>Update</LoaderText>)
+                  : 'Update'
+                }
               </ButtonRound>
             ) : ''
           }
-          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                      onClick={() => handleEntryReset(termId)}>
-            Cancel
-          </ButtonLink>
+
+          {displayUpdateButton ? (
+              <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
+                          onClick={() => handleEntryReset(termId)}>
+                Cancel
+              </ButtonLink>
+            ) : ''
+          }
 
           {permission.canDeleteEntry ? (
               <DeleteEntryModal id={termId}
@@ -402,8 +406,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const updateFilter = debounce(val => dispatch(glossaryFilterTextChanged(val)), 500)
-  const updateTerm = debounce((field, val) => dispatch(glossaryUpdateField({ field: field, value: val })), 500)
+  const updateFilter = debounce(val => dispatch(glossaryFilterTextChanged(val)), 200)
+  const updateTerm = debounce((field, val) => dispatch(glossaryUpdateField({ field: field, value: val })), 200)
 
   return {
     dispatch,
