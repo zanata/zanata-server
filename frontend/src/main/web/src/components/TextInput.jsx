@@ -27,6 +27,7 @@ const classes = {
 }
 
 class TextInput extends Component {
+
   _onBlur (e) {
     const { onBlur } = this.props
     if (onBlur) onBlur(e)
@@ -127,7 +128,7 @@ class TextInput extends Component {
     if (multiline) {
       return <TextareaAutosize {...propsMultiline} />
     } else {
-      return <input {...propsSingleline} />
+      return <input {...propsSingleline}/>
     }
   }
 }

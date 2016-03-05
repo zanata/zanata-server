@@ -69,8 +69,8 @@ class Glossary extends Component {
       permission
     } = this.props
     const termId = termIds[index]
-    const term = termId ? cloneDeep(terms[termId]) : false
     const selected = termId === selectedTerm.id
+    const term = selected ? selectedTerm : termId ? cloneDeep(terms[termId]) : false
     const transContent = term && term.glossaryTerms[1]
       ? term.glossaryTerms[1].content
       : ''
@@ -88,14 +88,23 @@ class Glossary extends Component {
     if (index === 1) {
       isSameRender()
     }
+
+    let className = ''
+    let handleMouseOver = function () {
+      console.info('mouse over')
+      className = 'moueoverClass'
+    }
+
     return (
       <TableRow highlight
         className='editable'
         key={key}
         selected={selected}
-        onClick={() => handleSelectTerm(term)}>
+        onMouseOver={() => handleMouseOver}
+        className={className}
+        onClick={() => handleSelectTerm(termId)}>
         <TableCell size='2' tight>
-          <EditableText ref={termId + '0'}
+          <EditableText
             editable={false}
             editing={selected}>
             {term.glossaryTerms[0].content}
@@ -105,7 +114,7 @@ class Glossary extends Component {
           {transSelected
             ? transLoading
               ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-            : (<EditableText ref={termId + '1'}
+            : (<EditableText
                 editable={transSelected && permission.canUpdateEntry}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('locale', e)}
@@ -117,7 +126,7 @@ class Glossary extends Component {
           }
         </TableCell>
         <TableCell hideSmall>
-          <EditableText ref={termId + '2'}
+          <EditableText
             editable={!transSelected && permission.canUpdateEntry}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
@@ -128,7 +137,7 @@ class Glossary extends Component {
         </TableCell>
         {!transSelected ? (
             <TableCell hideSmall>
-              <EditableText ref={termId + '3'}
+              <EditableText
                 editable={!transSelected && permission.canUpdateEntry}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('description', e)}
@@ -398,7 +407,7 @@ const mapDispatchToProps = (dispatch) => {
 
   return {
     dispatch,
-    handleSelectTerm: (term) => dispatch(glossarySelectTerm(term)),
+    handleSelectTerm: (termId) => dispatch(glossarySelectTerm(termId)),
     handleTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')
@@ -410,10 +419,7 @@ const mapDispatchToProps = (dispatch) => {
       updateTerm(field, event.target.value || '')
     },
     handleDeleteEntry: (termId) => dispatch(glossaryDeleteEntry(termId)),
-    handleEntryReset: function (termId) {
-      console.info('aklex reset', termId, this.refs)
-      //dispatch(glossaryEntryReset(termId))
-    }
+    handleEntryReset: (termId) => dispatch(glossaryEntryReset(termId))
   }
 }
 

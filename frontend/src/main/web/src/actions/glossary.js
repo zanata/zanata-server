@@ -44,6 +44,7 @@ export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
 export const glossaryUpdateFilter = createAction(GLOSSARY_UPDATE_FILTER)
 export const glossarySelectTerm = createAction(GLOSSARY_SELECT_TERM)
 export const glossaryUpdateField = createAction(GLOSSARY_UPDATE_FIELD)
+export const glossaryEntryReset1 = createAction(GLOSSARY_RESET_ENTRY)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -201,10 +202,6 @@ export const glossaryChangeLocale = (locale) => {
   }
 }
 
-export const glossaryEntryReset = () => {
-  return console.info('reset')
-}
-
 export const glossaryFilterTextChanged = (newFilter) => {
   return (dispatch, getState) => {
     if (!getState().glossary.termsLoading) {
@@ -223,3 +220,11 @@ export const glossaryDeleteEntry = (id) => {
     dispatch(getGlossaryTerms(getState()))
   }
 }
+
+export const glossaryEntryReset = (id) => {
+  return (dispatch, getState) => {
+    console.info('reset..', id, getState())
+    dispatch(glossaryEntryReset1(id));
+  }
+}
+

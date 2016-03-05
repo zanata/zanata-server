@@ -16,7 +16,8 @@ import {
   GLOSSARY_SELECT_TERM,
   GLOSSARY_PAGE_SIZE,
   GLOSSARY_UPDATE_FIELD,
-  GLOSSARY_DELETE
+  GLOSSARY_DELETE,
+  GLOSSARY_RESET_ENTRY
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
 
@@ -46,9 +47,12 @@ const glossary = handleActions({
     ...state,
     filter: action.payload
   }),
+  [GLOSSARY_RESET_ENTRY]: (state, action) => ({
+    ...state,
+    selectedTerm: cloneDeep(state.terms[action.payload])
+  }),
   [GLOSSARY_UPDATE_FIELD]: (state, action) => {
-    // TODO: Rethink how updating fields happens
-    let newSelectedTerm = cloneDeep(state.selectedTerm)
+    let newSelectedTerm = state.selectedTerm
     switch (action.payload.field) {
       case 'src':
         newSelectedTerm.glossaryTerms[0].content = action.payload.value
@@ -142,7 +146,7 @@ const glossary = handleActions({
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => ({
     ...state,
-    selectedTerm: action.payload
+    selectedTerm: cloneDeep(state.terms[action.payload])
   })
 }, {
   src: 'en-US',
