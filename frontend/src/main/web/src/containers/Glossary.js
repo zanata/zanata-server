@@ -24,8 +24,9 @@ import {
   glossaryGetTermsIfNeeded,
   glossarySelectTerm,
   glossaryUpdateField,
-  glossaryDeleteEntry,
-  glossaryEntryReset
+  glossaryDeleteTerm,
+  glossaryResetTerm,
+  glossaryUpdateTerm
 } from '../actions/glossary'
 
 let sameRenders = 0
@@ -59,8 +60,9 @@ class Glossary extends Component {
     const {
       handleSelectTerm,
       handleTermFieldUpdate,
-      handleDeleteEntry,
-      handleEntryReset,
+      handleDeleteTerm,
+      handleResetTerm,
+      handleUpdateTerm,
       termIds,
       terms,
       transLoading,
@@ -157,7 +159,8 @@ class Glossary extends Component {
             ) : ''}
 
           {displayUpdateButton ? (
-              <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'>
+              <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+                           onClick={() => handleUpdateTerm(term)}>
                 {term.status && term.status.isSaving ?
                   (<LoaderText loading loadingText='Updating'>Update</LoaderText>)
                   : 'Update'
@@ -168,7 +171,7 @@ class Glossary extends Component {
 
           {displayUpdateButton ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleEntryReset(termId)}>
+                          onClick={() => handleResetTerm(termId)}>
                 Cancel
               </ButtonLink>
             ) : ''
@@ -178,7 +181,7 @@ class Glossary extends Component {
               <DeleteEntryModal id={termId}
                                 entry={term}
                                 className='Mstart(rh)'
-                                onDelete={handleDeleteEntry}/>
+                                onDelete={handleDeleteTerm}/>
             ) : ''
           }
 
@@ -422,8 +425,9 @@ const mapDispatchToProps = (dispatch) => {
     handleTermFieldUpdate: (field, event) => {
       updateTerm(field, event.target.value || '')
     },
-    handleDeleteEntry: (termId) => dispatch(glossaryDeleteEntry(termId)),
-    handleEntryReset: (termId) => dispatch(glossaryEntryReset(termId))
+    handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
+    handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
+    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term))
   }
 }
 

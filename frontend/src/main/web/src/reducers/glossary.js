@@ -16,8 +16,10 @@ import {
   GLOSSARY_SELECT_TERM,
   GLOSSARY_PAGE_SIZE,
   GLOSSARY_UPDATE_FIELD,
-  GLOSSARY_DELETE,
-  GLOSSARY_RESET_ENTRY
+  GLOSSARY_RESET_TERM,
+  GLOSSARY_UPDATE_REQUEST,
+  GLOSSARY_UPDATE_SUCCESS,
+  GLOSSARY_UPDATE_FAILURE
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
@@ -48,7 +50,7 @@ const glossary = handleActions({
     ...state,
     filter: action.payload
   }),
-  [GLOSSARY_RESET_ENTRY]: (state, action) => {
+  [GLOSSARY_RESET_TERM]: (state, action) => {
     return {
       ...state,
       selectedTerm: cloneDeep(state.terms[action.payload])
@@ -110,6 +112,21 @@ const glossary = handleActions({
   [GLOSSARY_TERMS_INVALIDATE]: (state, action) => ({
     ...state,
     termsDidInvalidate: true
+  }),
+  [GLOSSARY_UPDATE_REQUEST]: (state, action) => ({
+    ...state
+    //TODO: set loading to selectedTerm
+  }),
+  [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
+    state.terms[action.payload.id] = action.payload
+    console.info('success update', action, state.terms[action.payload.id])
+    return {
+      ...state
+    }
+  },
+  [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
+    ...state
+    //TODO: set loading to selectedTerm
   }),
   [GLOSSARY_TERMS_REQUEST]: (state, action) => ({
     ...state,
