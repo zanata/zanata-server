@@ -72,11 +72,16 @@ class Glossary extends Component {
     } = this.props
     const termId = termIds[index]
     const selected = termId === selectedTerm.id
-    const term = selected ? selectedTerm : termId ? cloneDeep(terms[termId]) : false
+    const term = selected ? selectedTerm : termId
+      ? cloneDeep(terms[termId]) : false
     const transContent = term && term.glossaryTerms[1]
       ? term.glossaryTerms[1].content
       : ''
     const transSelected = !!selectedTransLocale
+
+    if(term.id == 6772) {
+    console.info('alex,,', selected, terms[termId].description, selectedTerm.description)
+    }
     // TODO: Make this only set when switching locales
     if (!term) {
       return (
@@ -95,7 +100,8 @@ class Glossary extends Component {
       ? (term.status && term.status.isTransModified)
       : (term.status && term.status.isSrcModified)
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
-
+    const isSaving = term.status && term.status.isSaving
+    const editable = permission.canUpdateEntry && !isSaving
     return (
       <TableRow highlight
         className='editable'
@@ -114,7 +120,7 @@ class Glossary extends Component {
             ? transLoading
               ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
             : (<EditableText
-                editable={transSelected && permission.canUpdateEntry}
+                editable={transSelected && editable}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('locale', e)}
                 placeholder='Add a translation…'
@@ -126,7 +132,7 @@ class Glossary extends Component {
         </TableCell>
         <TableCell hideSmall>
           <EditableText
-            editable={!transSelected && permission.canUpdateEntry}
+            editable={!transSelected && editable}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
@@ -137,7 +143,7 @@ class Glossary extends Component {
         {!transSelected ? (
             <TableCell hideSmall>
               <EditableText
-                editable={!transSelected && permission.canUpdateEntry}
+                editable={!transSelected && editable}
                 editing={selected}
                 onChange={(e) => handleTermFieldUpdate('description', e)}
                 placeholder='Add a description…'
@@ -161,15 +167,17 @@ class Glossary extends Component {
           {displayUpdateButton ? (
               <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
                            onClick={() => handleUpdateTerm(term)}>
-                {term.status && term.status.isSaving ?
-                  (<LoaderText loading loadingText='Updating'>Update</LoaderText>)
+                {term.status && term.status.isSaving
+                  ? (<LoaderText loading loadingText='Updating'>
+                      Update
+                    </LoaderText>)
                   : 'Update'
                 }
               </ButtonRound>
             ) : ''
           }
 
-          {displayUpdateButton ? (
+          {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
                           onClick={() => handleResetTerm(termId)}>
                 Cancel
@@ -177,7 +185,7 @@ class Glossary extends Component {
             ) : ''
           }
 
-          {permission.canDeleteEntry ? (
+          {permission.canDeleteEntry && !isSaving ? (
               <DeleteEntryModal id={termId}
                                 entry={term}
                                 className='Mstart(rh)'

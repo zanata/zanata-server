@@ -4,7 +4,8 @@ import { isEmpty, forOwn } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
-import Configs from '../constants/Configs';
+import Configs from '../constants/Configs'
+import GlossaryHelper from '../utils/GlossaryHelper'
 
 export const GLOSSARY_PAGE_SIZE = 1000
 
@@ -63,7 +64,7 @@ const generateSortOrderParam = (sort) => {
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
-export const updateGlossaryTerm = (term) => {
+export const updateGlossaryTerm = (dispatch, term) => {
   const endpoint = Configs.API_ROOT + 'glossary/entries/'
   return {
     [CALL_API]: {
@@ -71,12 +72,27 @@ export const updateGlossaryTerm = (term) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'x-auth-token': Configs.auth ? Configs.auth.token : '',
+        'x-auth-user': Configs.auth ? Configs.auth.user : ''
       },
-      body: term,
+      body: GlossaryHelper.convertToDTO(term),
       types: [
-        GLOSSARY_UPDATE_REQUEST,
-        GLOSSARY_UPDATE_SUCCESS,
+        {
+          type: GLOSSARY_UPDATE_REQUEST,
+          payload: (action, state) => {
+            return term
+          }
+        },
+        {
+          type: GLOSSARY_UPDATE_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryStats(dispatch))
+              return json
+            })
+          }
+        },
         GLOSSARY_UPDATE_FAILURE
       ]
     }
@@ -265,8 +281,7 @@ export const glossaryDeleteTerm = (id) => {
 
 export const glossaryUpdateTerm = (term) => {
   return (dispatch, getState) => {
-    dispatch(updateGlossaryTerm(term))
-    dispatch(getGlossaryStats())
+    dispatch(updateGlossaryTerm(dispatch, term))
   }
 }
 

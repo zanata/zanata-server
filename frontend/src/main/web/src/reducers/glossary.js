@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions'
-import { union, isEmpty, cloneDeep } from 'lodash'
+import { union, isEmpty, cloneDeep, forEach } from 'lodash'
 import {
   GLOSSARY_UPDATE_INDEX,
   GLOSSARY_UPDATE_LOCALE,
@@ -113,15 +113,39 @@ const glossary = handleActions({
     ...state,
     termsDidInvalidate: true
   }),
-  [GLOSSARY_UPDATE_REQUEST]: (state, action) => ({
-    ...state
-    //TODO: set loading to selectedTerm
-  }),
-  [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
-    state.terms[action.payload.id] = action.payload
-    console.info('success update', action, state.terms[action.payload.id])
+  [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
+    let terms = state.terms
+    let term = terms[action.payload.id]
+    if (term) {
+      if (!term.status) {
+        term.status = GlossaryHelper.getDefaultEntryStatus()
+      }
+      term.status.isSaving = true
+    }
+    let selectedTerm = state.selectedTerm
+    if (selectedTerm && selectedTerm.id === term.id) {
+      if (!selectedTerm.status) {
+        selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
+      }
+      selectedTerm.status.isSaving = true
+    }
     return {
-      ...state
+      ...state,
+      terms: terms,
+      selectedTerm: selectedTerm
+    }
+  },
+  [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
+    let selectedTerm = state.selectedTerm
+    forEach(action.payload.glossaryEntries, (entry) => {
+      state.terms[entry.id] = entry
+      if (selectedTerm && selectedTerm.id === entry.id) {
+        selectedTerm = entry
+      }
+    })
+    return {
+      ...state,
+      selectedTerm: selectedTerm
     }
   },
   [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
@@ -168,9 +192,13 @@ const glossary = handleActions({
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => {
     //:TODO: save if currentSelectedTerm is modified
+    let selectedTerm = state.selectedTerm
+    if (selectedTerm && selectedTerm.id !== action.payload) {
+      selectedTerm = cloneDeep(state.terms[action.payload])
+    }
     return {
       ...state,
-      selectedTerm: cloneDeep(state.terms[action.payload])
+      selectedTerm: selectedTerm
     }
   }
 }, {

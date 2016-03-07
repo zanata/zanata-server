@@ -1,4 +1,4 @@
-import { isUndefined, filter } from 'lodash'
+import { isUndefined, filter, cloneDeep } from 'lodash'
 import { trim, isEmptyOrNull } from './StringUtils'
 import DateHelpers from './DateHelper'
 import defined from 'defined'
@@ -11,22 +11,22 @@ var GlossaryHelper = {
    * @param data
    */
   generateGlossaryTermDTO: function (data, trimContent) {
-    if (isUndefined(data)) {
+    if (isUndefined(data) || isEmptyOrNull(data.locale)) {
       return
     }
-    var content = trimContent ? trim(data.content) : data.content
-    var locale = data.locale
-    var comment = trim(data.comment)
+    return {
+      content: trimContent ? trim(data.content) : data.content,
+      locale: data.locale,
+      comment: trim(data.comment)
+    }
+  },
 
-    if (isEmptyOrNull(locale)) {
-      return
-    } else {
-      return {
-        content: content,
-        locale: locale,
-        comment: comment
-      }
-    }
+  convertToDTO: function (term) {
+    let newTerm = cloneDeep(term)
+    newTerm.pos = trim(newTerm.pos)
+    newTerm.description = trim(newTerm.description)
+    delete newTerm.status
+    return JSON.stringify([newTerm])
   },
 
   /**
