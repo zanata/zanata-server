@@ -8,10 +8,8 @@ import {
   Modal,
   Select
 } from 'zanata-ui'
-import Actions from '../../actions/GlossaryActions'
 import StringUtils from '../../utils/StringUtils'
-import _ from 'lodash'
-import GlossaryStore from '../../stores/GlossaryStore'
+import { forEach } from 'lodash'
 
 var ImportModal = React.createClass({
   propTypes: {
@@ -23,30 +21,31 @@ var ImportModal = React.createClass({
         displayName: React.PropTypes.string.isRequired,
         alias: React.PropTypes.string.isRequired
       }).isRequired,
-      numberOfTerms: React.PropTypes.number.isRequired
+      numberOfTerms: React.PropTypes.number.isRequired,
+      onImport: React.PropTypes.func.isRequired
     })
   },
 
   mixins: [PureRenderMixin],
 
-  getInitialState: function() {
-    return this._getState();
+  getInitialState: function () {
+    return this._getState()
   },
 
-  _getState: function() {
-    return GlossaryStore.getUploadFileState();
+  _getState: function () {
+    return GlossaryStore.getUploadFileState()
   },
 
-  componentDidMount: function() {
-    GlossaryStore.addChangeListener(this._onChange);
+  componentDidMount: function () {
+    GlossaryStore.addChangeListener(this._onChange)
   },
 
-  componentWillUnmount: function() {
-    GlossaryStore.removeChangeListener(this._onChange);
+  componentWillUnmount: function () {
+    GlossaryStore.removeChangeListener(this._onChange)
   },
 
-  _onChange: function() {
-    this.setState(this._getState());
+  _onChange: function () {
+    this.setState(this._getState())
   },
 
   _showModal: function () {
@@ -54,79 +53,64 @@ var ImportModal = React.createClass({
   },
 
   _closeModal: function () {
-    this.setState(this.getInitialState());
+    this.setState(this.getInitialState())
   },
 
-  _onFileChange: function(e) {
-    var file = e.target.files[0];
-    this.setState({file: file});
+  _onFileChange: function (e) {
+    var file = e.target.files[0]
+    this.setState({file: file})
   },
 
-  _uploadFile: function() {
-    this.setState({status: 0});
-    Actions.uploadFile(this.state, this.props.srcLocale.locale.localeId);
+  _uploadFile: function () {
+    this.setState({status: 0})
+    this.props.onImport(this.state, this.props.srcLocale.locale.localeId)
+    //Actions.uploadFile(this.state, this.props.srcLocale.locale.localeId)
   },
 
   _getUploadFileExtension: function () {
-    var extension = '';
-    if(this.state.file) {
-      extension = this.state.file.name.split(".").pop();
+    var extension = ''
+    if (this.state.file) {
+      extension = this.state.file.name.split('.').pop()
     }
-    return extension;
+    return extension
   },
 
   _isSupportedFile: function (extension) {
-    return extension === 'po' || extension === 'csv';
+    return extension === 'po' || extension === 'csv'
   },
 
   _onTransLocaleChange: function (localeId) {
-    this.setState({transLocale : localeId});
+    this.setState({transLocale: localeId})
   },
 
   render: function () {
-    var transLanguageDropdown,
-      messageSection,
-      fileExtension = this._getUploadFileExtension(),
+    let fileExtension = this._getUploadFileExtension(),
       disableUpload = true,
-      isUploading = this.state.status !== -1;
+      isUploading = this.state.status !== -1
 
-    if(this._isSupportedFile(fileExtension)) {
-      if(fileExtension === 'po') {
-        var localeOptions = [];
-        _.forEach(this.props.transLocales, function(locale, localeId) {
+    if (this._isSupportedFile(fileExtension)) {
+      if (fileExtension === 'po') {
+        var localeOptions = []
+        forEach(this.props.transLocales, function (locale, localeId) {
           localeOptions.push({
             value: localeId,
             label: locale.locale.displayName
-          });
-        });
-
-        if(isUploading) {
-          transLanguageDropdown = (<span className='csec fz2'>{this.state.transLocale.label}</span>);
-        } else {
-          transLanguageDropdown = (<Select
-            name='glossary-import-language-selection'
-            className='W(r16) Mb(r1)'
-            placeholder='Select a translation language…'
-            value={this.state.transLocale}
-            options={localeOptions}
-            onChange={this._onTransLocaleChange}
-          />);
-        }
-
-        if(!StringUtils.isEmptyOrNull(this.state.transLocale)) {
-          disableUpload = false;
+          })
+        })
+        if (!StringUtils.isEmptyOrNull(this.state.transLocale)) {
+          disableUpload = false
         }
       } else {
-        disableUpload = false;
+        disableUpload = false
       }
-    } else if(this.state.file) {
-      messageSection = <div className='cdanger mv1/4'>File {this.state.file.name} is not supported.</div>
     }
 
     return (
       <div className={this.props.className}>
         <ButtonLink type='default' onClick={this._showModal}>
-          <Icon name='import' className='mr1/4' /><span className='Hidden--lesm'>Import Glossary</span>
+          <Icon name='import' className='Mend(rq)'
+            theme={{ base: { m: 'Mend(rq)' } }} />
+          <span className='Hidden--lesm'>Import Glossary</span>
         </ButtonLink>
         <Modal show={this.state.show} onHide={this._closeModal}>
           <Modal.Header>
@@ -141,8 +125,24 @@ var ImportModal = React.createClass({
               disabled={isUploading}
               className="mb1"
             />
-            {messageSection}
-            {transLanguageDropdown}
+            { this.state.file
+              ? (<div className='cdanger mv1/4'>
+                  File {this.state.file.name} is not supported.
+                </div>)
+              : ''
+            }
+            { isUploading
+              ? (<span className='csec fz2'>
+                  {this.state.transLocale.label}</span>)
+              : (<Select
+                name='glossary-import-language-selection'
+                className='W(r16) Mb(r1)'
+                placeholder='Select a translation language…'
+                value={this.state.transLocale}
+                options={localeOptions}
+                onChange={this._onTransLocaleChange}
+                />)
+              }
             <p>
               CSV and PO files are supported. <strong>The source language should be in {this.props.srcLocale.locale.displayName}</strong>.
               For more details on how to prepare glossary files, see our <a
@@ -169,6 +169,6 @@ var ImportModal = React.createClass({
         </Modal>
       </div>)
   }
-});
+})
 
-export default ImportModal;
+export default ImportModal

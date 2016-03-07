@@ -15,7 +15,8 @@ import {
   TableRow,
   TextInput,
   View,
-  DeleteEntryModal
+  DeleteEntryModal,
+  ImportModal
 } from '../components'
 import {
   glossaryChangeLocale,
@@ -282,9 +283,10 @@ class Glossary extends Component {
                   {permission.canAddNewEntry ? (
                     <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
                       <Row>
-                        <Icon name='import' className='Mend(rq)'
-                          theme={{ base: { m: 'Mend(rq)' } }}/>
-                        <span className='Hidden--lesm'>Import Glossary</span>
+                         <ImportModal
+                          className='ml1/4'
+                          srcLocale={this.props.srcLocale}
+                          transLocales={this.props.locales} />
                       </Row>
                     </ButtonLink> ) : ''}
 

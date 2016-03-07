@@ -14,7 +14,7 @@ var DeleteEntryModal = React.createClass({
     id: React.PropTypes.number.isRequired,
     className: React.PropTypes.string,
     entry: React.PropTypes.object,
-    onDelete: React.PropTypes.func
+    onDelete: React.PropTypes.func.isRequired
   },
 
   deleteTimeout: null,
