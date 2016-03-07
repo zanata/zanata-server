@@ -38,6 +38,11 @@ $ ./install.sh
 
 (there's also a .bat file if you are on Windows) The installation script will start asking some configuration questions. It will also download the Zanata web application and place it in the JBoss installation.
 
+## Editing standalone.xml yourself
+
+This is not generally recommended, but if you want to create the configuration yourself, please ensure you start with `standalone-full.xml`, not `standalone.xml`, since `standalone-full.xml` enables subsystems which are required by Zanata. Either copy `standalone-full.xml` to `standalone.xml`, or make sure `standalone.sh` is always launched with arguments to activate the desired configuration, for instance `$JBOSS_HOME/bin/standalone.sh --server-config=standalone-full.xml`.
+
+
 ## Some advanced configuration
 
 Zanata does not create an admin user by default. You need to register specific users to have administrative privileges.
