@@ -7,10 +7,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +43,6 @@ import org.zanata.service.impl.GlossaryFileServiceImpl;
 @Slf4j
 @Transactional
 public class GlossaryService implements GlossaryResource {
-    @Context
-    private Request request;
-
     @Inject
     private GlossaryDAO glossaryDAO;
 
@@ -63,11 +57,6 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response getInfo() {
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-
         //set en-US as source, should get this from server settings.
         LocaleId srcLocaleId = LocaleId.EN_US;
         HLocale srcLocale = localeServiceImpl.getByLocaleId(srcLocaleId);
@@ -136,11 +125,6 @@ public class GlossaryService implements GlossaryResource {
             @QueryParam("filter") String filter,
             @QueryParam("sort") String fields) {
 
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-
         if(sizePerPage > MAX_PAGE_SIZE || sizePerPage < 1 || page < 1) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -171,13 +155,8 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response post(List<GlossaryEntry> glossaryEntries) {
         identity.checkPermission("", "glossary-insert");
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
 
         GlossaryResults results = saveGlossaryEntries(glossaryEntries);
-
         return Response.ok(results).build();
     }
 
@@ -236,11 +215,6 @@ public class GlossaryService implements GlossaryResource {
     public Response deleteEntry(Long id) {
         identity.checkPermission("", "glossary-delete");
 
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
-
         HGlossaryEntry entry = glossaryDAO.findById(id);
         GlossaryEntry deletedEntry = generateGlossaryEntry(entry);
 
@@ -257,10 +231,7 @@ public class GlossaryService implements GlossaryResource {
     @Override
     public Response deleteAllEntries() {
         identity.checkPermission("", "glossary-delete");
-        ResponseBuilder response = request.evaluatePreconditions();
-        if (response != null) {
-            return response.build();
-        }
+
         int rowCount = glossaryDAO.deleteAllEntries();
         log.info("Glossary delete all: " + rowCount);
 

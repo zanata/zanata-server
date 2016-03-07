@@ -11,7 +11,7 @@
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <node.version>v4.2.6</node.version>
+    <node.version>v5.6.0</node.version>
     <npm.version>2.14.16</npm.version>
     <web.target>${project.build.directory}/web</web.target>
     <bundle.dest>${project.build.outputDirectory}/META-INF/resources</bundle.dest>

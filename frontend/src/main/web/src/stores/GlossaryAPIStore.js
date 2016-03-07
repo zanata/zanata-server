@@ -5,7 +5,7 @@ import StringUtils from '../utils/StringUtils'
 
 var GlossaryAPIStore = ({
   loadLocalesStats: function () {
-    var url = Configs.baseUrl + "/glossary/info" + Configs.urlPostfix;
+    var url = Configs.API_ROOT + "/glossary/info" + Configs.urlPostfix;
 
     return new Promise(function (resolve, reject) {
       Request.get(url)
@@ -38,7 +38,7 @@ var GlossaryAPIStore = ({
   },
 
   glossaryAPIUrl: function (srcLocaleId, transLocale, filter, sort, page, pageSize) {
-    var url = Configs.baseUrl + "/glossary/entries" + Configs.urlPostfix + "?srcLocale=" + srcLocaleId;
+    var url = Configs.API_ROOT + "/glossary/entries" + Configs.urlPostfix + "?srcLocale=" + srcLocaleId;
 
     if (!StringUtils.isEmptyOrNull(transLocale)) {
       url = url + "&transLocale=" + transLocale;
@@ -62,7 +62,7 @@ var GlossaryAPIStore = ({
   },
 
   saveOrUpdateGlossary: function(entry) {
-    var url = Configs.baseUrl + "/glossary/entries" + Configs.urlPostfix;
+    var url = Configs.API_ROOT + "/glossary/entries" + Configs.urlPostfix;
     return new Promise(function(resolve, reject) {
       Request.post(url)
         .set('Content-Type', 'application/json')
@@ -80,7 +80,7 @@ var GlossaryAPIStore = ({
  * }
    */
   deleteGlossary: function(data) {
-    var url = Configs.baseUrl + "/glossary/entries/" + data.id + Configs.urlPostfix;
+    var url = Configs.API_ROOT + "/glossary/entries/" + data.id + Configs.urlPostfix;
 
     return new Promise(function(resolve, reject) {
       Request.del(url)
@@ -93,7 +93,7 @@ var GlossaryAPIStore = ({
   },
 
   uploadFile: function(data, onProgressCallback) {
-    var url = Configs.baseUrl + "/glossary",
+    var url = Configs.API_ROOT + "/glossary",
       uploadFile = data.uploadFile;
 
     return new Promise(function(resolve, reject) {

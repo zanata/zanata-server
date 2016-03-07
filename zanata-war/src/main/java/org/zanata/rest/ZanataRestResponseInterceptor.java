@@ -29,6 +29,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 
 import com.google.common.base.Joiner;
@@ -44,6 +45,8 @@ import com.google.common.collect.Lists;
 @Provider
 @HeaderDecoratorPrecedence
 public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
+    private static final String METHODS = "PUT, POST, DELETE, GET, OPTIONS";
+
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
         throws IOException {
 
@@ -54,7 +57,7 @@ public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
         MultivaluedMap<String, Object> headers = responseContext.getHeaders();
 
         headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Methods", requestContext.getMethod());
+        headers.add("Access-Control-Allow-Methods", METHODS);
         headers.add("Access-Control-Allow-Headers",
             "X-Requested-With, Content-Type, Accept, " + Joiner.on(",").join(
                 requestHeaders));

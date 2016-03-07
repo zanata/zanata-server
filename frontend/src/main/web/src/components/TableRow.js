@@ -14,7 +14,8 @@ const classes = {
     }
   },
   selected: {
-    bgc: 'Bgc(light)'
+    bgc: 'Bgc(light)',
+    custom: 'row--selected'
   }
 }
 

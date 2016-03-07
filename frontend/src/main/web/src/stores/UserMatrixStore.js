@@ -49,7 +49,7 @@ function loadFromServer() {
 }
 
 function statsAPIUrl() {
-  return Configs.baseUrl + "/stats/user/" + Configs.data.profileUser.username + Configs.urlPostfix + "/";
+  return Configs.API_ROOT + "/stats/user/" + Configs.data.profileUser.username + Configs.urlPostfix + "/";
 }
 
 function handleServerResponse(serverResponse) {

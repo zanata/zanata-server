@@ -55,14 +55,13 @@ WebFont.load({
  * from .json file in test directory.
  */
 var mountNode = document.getElementById('root')
-var baseUrl = mountNode.getAttribute('base-url')
 var user = JSON.parse(mountNode.getAttribute('user'))
 var data = JSON.parse(mountNode.getAttribute('data'))
 var dev = data.dev
 
 // Replace with redux state
 // base rest url, e.g http://localhost:8080/rest
-Configs.baseUrl = baseUrl
+Configs.API_ROOT = mountNode.getAttribute('base-url')
 Configs.data = data
 // append with .json extension in 'dev' environment
 Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
@@ -70,7 +69,7 @@ Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
 Configs.user = user
 
 let links = {
-  'context': Configs.baseUrl,
+  'context': Configs.API_ROOT,
   '/login': Configs.data.loginUrl,
   '/help': Configs.data.helpUrl,
   '/terms': Configs.data.termsUrl,

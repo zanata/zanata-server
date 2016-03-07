@@ -4,9 +4,8 @@ import { isEmpty, forOwn } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
+import Configs from '../constants/Configs';
 
-// const API_ROOT = 'http://localhost:8080/zanata/rest/'
-const API_ROOT = 'https://translate.zanata.org/zanata/rest/'
 export const GLOSSARY_PAGE_SIZE = 1000
 
 export const GLOSSARY_UPDATE_INDEX = 'GLOSSARY_UPDATE_INDEX'
@@ -65,7 +64,7 @@ export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
 export const updateGlossaryTerm = (term) => {
-  const endpoint = API_ROOT + 'glossary/entries/'
+  const endpoint = Configs.API_ROOT + 'glossary/entries/'
   return {
     [CALL_API]: {
       endpoint,
@@ -84,18 +83,28 @@ export const updateGlossaryTerm = (term) => {
   }
 }
 
-export const deleteGlossaryTerm = (id) => {
-  const endpoint = API_ROOT + 'glossary/entries/' + id
+export const deleteGlossaryTerm = (dispatch, id) => {
+  const endpoint = Configs.API_ROOT + 'glossary/entries/' + id
   return {
     [CALL_API]: {
       endpoint,
       method: 'DELETE',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'x-auth-token': Configs.auth ? Configs.auth.token : '',
+        'x-auth-user': Configs.auth ? Configs.auth.user : ''
       },
       types: [
         GLOSSARY_DELETE_REQUEST,
-        GLOSSARY_DELETE_SUCCESS,
+        {
+          type: GLOSSARY_DELETE_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryStats(dispatch))
+              return json
+            })
+          }
+        },
         GLOSSARY_DELETE_FAILURE
       ]
     }
@@ -117,7 +126,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
   const sortQuery = sort ? generateSortOrderParam(sort) : ''
-  const endpoint = API_ROOT + 'glossary/entries' + srcQuery +
+  const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
   return {
@@ -125,7 +134,9 @@ export const getGlossaryTerms = (state, newIndex) => {
       endpoint,
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'x-auth-token': Configs.auth ? Configs.auth.token : '',
+        'x-auth-user': Configs.auth ? Configs.auth.user : ''
       },
       types: [
         GLOSSARY_TERMS_REQUEST,
@@ -186,17 +197,27 @@ export const glossaryGetTermsIfNeeded = (newIndex) => {
 export const glossaryInvalidateStats =
   createAction(GLOSSARY_INVALIDATE_STATS)
 
-export const getGlossaryStats = () => {
+export const getGlossaryStats = (dispatch) => {
   return {
     [CALL_API]: {
-      endpoint: API_ROOT + '/glossary/info',
+      endpoint: Configs.API_ROOT + 'glossary/info',
       method: 'GET',
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'x-auth-token': Configs.auth ? Configs.auth.token : '',
+        'x-auth-user': Configs.auth ? Configs.auth.user : ''
       },
       types: [
         GLOSSARY_STATS_REQUEST,
-        GLOSSARY_STATS_SUCCESS,
+        {
+          type: GLOSSARY_STATS_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryTerms(state))
+              return json
+            })
+          }
+        },
         GLOSSARY_STATS_FAILURE
       ]
     }
@@ -210,8 +231,7 @@ export const glossaryInitialLoad = () => {
   return (dispatch, getState) => {
     const query = getState().routing.location.query
     dispatch(glossaryInitStateFromUrl(query))
-    dispatch(getGlossaryStats())
-    dispatch(getGlossaryTerms(getState()))
+    dispatch(getGlossaryStats(dispatch))
   }
 }
 
@@ -239,9 +259,7 @@ export const glossaryFilterTextChanged = (newFilter) => {
 
 export const glossaryDeleteTerm = (id) => {
   return (dispatch, getState) => {
-    dispatch(deleteGlossaryTerm(id))
-    dispatch(getGlossaryStats())
-    dispatch(getGlossaryTerms(getState()))
+    dispatch(deleteGlossaryTerm(dispatch, id))
   }
 }
 

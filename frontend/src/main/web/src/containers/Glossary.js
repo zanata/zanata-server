@@ -147,7 +147,7 @@ class Glossary extends Component {
             </TableCell>
           ) : ''
         }
-        <TableCell hideSmall>
+        <TableCell hideSmall className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
           <ButtonLink>
             <Icon name='info'/>
           </ButtonLink>
