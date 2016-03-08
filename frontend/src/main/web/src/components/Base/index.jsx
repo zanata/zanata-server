@@ -23,10 +23,11 @@ const Base = ({
   warning(!className,
     'Please use `theme` instead of `className` to style `' +
     componentName + '` with `' + className + '`.')
+  console.log('Component: ', componentName, tagName)
   return (
     <Component
-      className={classes}
       {...props}
+      className={classes}
     >
       {children}
     </Component>

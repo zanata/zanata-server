@@ -1,4 +1,7 @@
 export Base from './Base'
+export Button from './Button'
+export ButtonLink from './ButtonLink'
+export ButtonRound from './ButtonRound'
 export EditableText from './EditableText'
 export Header from './Header'
 export Heading from './Heading'
