@@ -4,6 +4,10 @@ A rounded button. Should only be used for page interaction.
 
     <ButtonRound>Button Round</ButtonRound>
 
+## Disabled
+
+    <ButtonRound disabled>Button Round Disabled</ButtonRound>
+
 ## Types
 
     const types = require('../../constants/styles').types;

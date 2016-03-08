@@ -21,7 +21,6 @@ const Button = ({
 }) => {
   const themed = merge({}, classes, theme)
   const themedState = merge({}, themed.base)
-  console.log(props)
   return (
     <Base
       componentName='Button'

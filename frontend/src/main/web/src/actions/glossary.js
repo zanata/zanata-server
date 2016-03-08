@@ -267,7 +267,6 @@ export const getGlossaryTerms = (state, newIndex) => {
               return res.json().then((json) => {
                 const normalized =
                   normalize(json, { results: arrayOf(glossaryTerm) })
-                console.log(json, normalized)
                 return normalized
               }
               )
