@@ -2,7 +2,15 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import ReactList from 'react-list'
-import { ButtonLink, ButtonRound, Icon, LoaderText, Select } from 'zanata-ui'
+import {
+  ButtonLink,
+  ButtonRound,
+  Icon,
+  LoaderText,
+  Select,
+  OverlayTrigger,
+  Overlay,
+  Tooltip } from 'zanata-ui'
 import { debounce, cloneDeep } from 'lodash'
 import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import {
@@ -106,7 +114,6 @@ class Glossary extends Component {
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
     const isSaving = term.status && term.status.isSaving
     const editable = permission.canUpdateEntry && !isSaving
-
     let updateButton
 
     if (isSaving) {
@@ -122,6 +129,59 @@ class Glossary extends Component {
           Update
         </ButtonRound>)
     }
+
+    const canUpdateComment = term.status && term.status.canUpdateComment
+    const readOnlyComment =
+      !permission.canUpdateEntry || !canUpdateComment || isSaving
+    //var tooltip
+    //if (!readOnlyComment) {
+    //  tooltip = (
+    //    <Tooltip id="comment" title="Comment">
+    //        <textarea
+    //          className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
+    //          onChange={this._onCommentChange}
+    //          value={this.state.comment}
+    //          onKeyUp={this._handleCommentKeyUp} />
+    //      <div className="mt1/4">
+    //        <ButtonLink
+    //          theme={{base: { m: 'Mend(rh)' }}}
+    //          onClick={this._onCancelComment}>
+    //          Cancel
+    //        </ButtonLink>
+    //        {saveCommentButton}
+    //      </div>
+    //    </Tooltip>
+    //  )
+    //} else {
+    //  var commentSpan = StringUtils.isEmptyOrNull(this.state.comment)
+    //    ? (<i>No comment</i>) : (<span>{this.state.comment}</span>)
+    //  tooltip = (<Tooltip id="comment">
+    //    {commentSpan}
+    //  </Tooltip>)
+    //}
+
+    //var comment = (
+    //  <div className="D(ib)">
+    //    <Overlay
+    //      placement='top'
+    //      target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
+    //      onHide={this._onCancelComment}
+    //      rootClose
+    //      show={this.state.showComment}>
+    //      {tooltip}
+    //    </Overlay>
+    //    <div ref='commentButton'>
+    //      <ButtonLink
+    //        type={StringUtils.isEmptyOrNull(this.state.comment)
+    //            ? 'muted' : 'primary'}
+    //        theme={{base: { m: 'Mend(rh)' }}}
+    //        onClick={this._toggleComment}>
+    //        <Icon name='comment' />
+    //      </ButtonLink>
+    //    </div>
+    //  </div>
+    //)
+
 
     return (
       <TableRow highlight
@@ -285,7 +345,6 @@ class Glossary extends Component {
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
-    console.info(sort.src_content, !!sort.src_content)
     return (
       <Page>
         <Helmet title='Glossary' />
