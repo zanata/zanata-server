@@ -19,25 +19,52 @@ import {
   GLOSSARY_RESET_TERM,
   GLOSSARY_UPDATE_REQUEST,
   GLOSSARY_UPDATE_SUCCESS,
-  GLOSSARY_UPDATE_FAILURE
+  GLOSSARY_UPDATE_FAILURE,
+  GLOSSARY_UPLOAD_REQUEST,
+  GLOSSARY_UPLOAD_SUCCESS,
+  GLOSSARY_UPLOAD_FAILURE,
+  GLOSSARY_UPDATE_IMPORT_FILE,
+  GLOSSARY_UPDATE_IMPORT_FILE_LOCALE,
+  GLOSSARY_TOGGLE_IMPORT_DISPLAY,
+  GLOSSARY_UPDATE_COL_SORT,
+  SEVERITY
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
-const glossary = handleActions({
-  [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => ({
-    ...state,
-    src: action.payload.src || 'en-US',
-    locale: action.payload.locale || '',
-    filter: action.payload.filter || '',
-    sort: action.payload.sort || '',
-    index: action.payload.index || 0,
-    permission: {
-      canAddNewEntry: Configs.data.permission.insertGlossary,
-      canUpdateEntry: Configs.data.permission.updateGlossary,
-      canDeleteEntry: Configs.data.permission.deleteGlossary
+const convertSortToObject = (sortString) => {
+  if (sortString) {
+    let sort = {}
+    if (sortString.startsWith('-')) {
+      sort[sortString.substring(1, sortString.length)] = false
+    } else {
+      sort[sortString] = true
     }
-  }),
+    return sort
+  } else {
+    return {
+      src_content: true
+    }
+  }
+
+}
+
+const glossary = handleActions({
+  [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
+    return {
+      ...state,
+      src: action.payload.src || 'en-US',
+      locale: action.payload.locale || '',
+      filter: action.payload.filter || '',
+      sort: convertSortToObject(action.payload.sort),
+      index: action.payload.index || 0,
+      permission: {
+        canAddNewEntry: Configs.data.permission.insertGlossary,
+        canUpdateEntry: Configs.data.permission.updateGlossary,
+        canDeleteEntry: Configs.data.permission.deleteGlossary
+      }
+    }
+  },
   [GLOSSARY_UPDATE_INDEX]: (state, action) => ({
     ...state,
     index: action.payload
@@ -50,6 +77,67 @@ const glossary = handleActions({
     ...state,
     filter: action.payload
   }),
+  [GLOSSARY_UPDATE_COL_SORT]: (state, action) => {
+    return {
+      ...state,
+      sort: action.payload
+    }
+  },
+  [GLOSSARY_UPLOAD_REQUEST]: (state, action) => {
+    let importFile = state.importFile
+    importFile.status = 0
+    return {
+      ...state,
+      importFile: importFile
+    }
+  },
+  [GLOSSARY_UPLOAD_SUCCESS]: (state, action) => ({
+    ...state,
+    importFile: {
+      show: false,
+      status: -1,
+      file: null,
+      transLocale: null
+    }
+  }),
+  [GLOSSARY_UPLOAD_FAILURE]: (state, action) => ({
+    ...state,
+    importFile: {
+      show: false,
+      status: -1,
+      file: null,
+      transLocale: null
+    },
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to import your file. Please refresh this page and try again.'
+    }
+  }),
+  [GLOSSARY_UPDATE_IMPORT_FILE]: (state, action) => {
+    let importFile = state.importFile
+    importFile.file = action.payload
+    return {
+      ...state,
+      importFile: importFile
+    }
+  },
+  [GLOSSARY_UPDATE_IMPORT_FILE_LOCALE]: (state, action) => {
+    let importFile = state.importFile
+    importFile.transLocale = action.payload
+    return {
+      ...state,
+      importFile: importFile
+    }
+  },
+  [GLOSSARY_TOGGLE_IMPORT_DISPLAY]: (state, action) => {
+    let importFile = state.importFile
+    importFile.show = action.payload
+    return {
+      ...state,
+      importFile: importFile
+    }
+  },
   [GLOSSARY_RESET_TERM]: (state, action) => {
     return {
       ...state,
@@ -138,9 +226,10 @@ const glossary = handleActions({
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
     let selectedTerm = state.selectedTerm
     forEach(action.payload.glossaryEntries, (entry) => {
-      state.terms[entry.id] = entry
+      let term = state.terms[entry.id]
+      term.status = GlossaryHelper.getDefaultEntryStatus()
       if (selectedTerm && selectedTerm.id === entry.id) {
-        selectedTerm = entry
+        selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
       }
     })
     return {
@@ -149,8 +238,12 @@ const glossary = handleActions({
     }
   },
   [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
-    ...state
-    //TODO: set loading to selectedTerm
+    ...state,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to update the glossary term. Please refresh this page and try again.'
+    }
   }),
   [GLOSSARY_TERMS_REQUEST]: (state, action) => ({
     ...state,
@@ -191,7 +284,6 @@ const glossary = handleActions({
     termsLoading: false
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => {
-    //:TODO: save if currentSelectedTerm is modified
     let selectedTerm = state.selectedTerm
     if (selectedTerm && selectedTerm.id !== action.payload) {
       selectedTerm = cloneDeep(state.terms[action.payload])
@@ -205,7 +297,9 @@ const glossary = handleActions({
   src: 'en-US',
   locale: '',
   filter: '',
-  sort: '',
+  sort: {
+    src_content: true
+  },
   index: 0,
   selectedTerm: {},
   page: 1,
@@ -222,8 +316,14 @@ const glossary = handleActions({
   termsLoading: true,
   termsDidInvalidate: false,
   stats: {
-    srcLocale: [],
+    srcLocale: {},
     transLocales: []
+  },
+  importFile: {
+    show: false,
+    status: -1,
+    file: null,
+    transLocale: null
   },
   statsError: false,
   statsLoading: true,

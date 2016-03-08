@@ -1,11 +1,17 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { isEmpty, forOwn } from 'lodash'
+import { isEmpty, forOwn, cloneDeep } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
+
+export const SEVERITY = {
+  INFO: 'info',
+  WARN: 'warn',
+  ERROR: 'error'
+}
 
 export const GLOSSARY_PAGE_SIZE = 1000
 
@@ -28,16 +34,21 @@ export const GLOSSARY_STATS_FAILURE = 'GLOSSARY_STATS_FAILURE'
 export const GLOSSARY_SELECT_TERM = 'GLOSSARY_SELECT_TERM'
 export const GLOSSARY_UPDATE_FIELD = 'GLOSSARY_UPDATE_FIELD'
 export const GLOSSARY_RESET_TERM = 'GLOSSARY_RESET_TERM'
-
 export const GLOSSARY_UPDATE_REQUEST = 'GLOSSARY_UPDATE_REQUEST'
 export const GLOSSARY_UPDATE_SUCCESS = 'GLOSSARY_UPDATE_SUCCESS'
 export const GLOSSARY_UPDATE_FAILURE = 'GLOSSARY_UPDATE_FAILURE'
+export const GLOSSARY_UPLOAD_REQUEST = 'GLOSSARY_UPLOAD_REQUEST'
+export const GLOSSARY_UPLOAD_SUCCESS = 'GLOSSARY_UPLOAD_SUCCESS'
+export const GLOSSARY_UPLOAD_FAILURE = 'GLOSSARY_UPLOAD_FAILURE'
+export const GLOSSARY_UPDATE_IMPORT_FILE = 'GLOSSARY_UPDATE_IMPORT_FILE'
+export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE = 'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
+export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
+export const GLOSSARY_UPDATE_COL_SORT = 'GLOSSARY_UPDATE_COL_SORT'
 
 // TODO: Add the following
 export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
 export const GLOSSARY_UPDATE = 'GLOSSARY_UPDATE'
 export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
-export const GLOSSARY_UPLOAD_FILE = 'GLOSSARY_UPLOAD_FILE'
 export const GLOSSARY_UPDATE_COMMENT = 'GLOSSARY_UPDATE_COMMENT'
 export const GLOSSARY_UPDATE_FOCUSED_ROW = 'GLOSSARY_UPDATE_FOCUSED_ROW'
 export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
@@ -45,9 +56,16 @@ export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
 export const glossaryUpdateFilter = createAction(GLOSSARY_UPDATE_FILTER)
-export const glossarySelectTerm = createAction(GLOSSARY_SELECT_TERM)
 export const glossaryUpdateField = createAction(GLOSSARY_UPDATE_FIELD)
 export const glossaryResetTerm = createAction(GLOSSARY_RESET_TERM)
+export const updateSelectedTerm = createAction(GLOSSARY_SELECT_TERM)
+export const glossaryUpdateImportFile =
+  createAction(GLOSSARY_UPDATE_IMPORT_FILE)
+export const glossaryToggleImportFileDisplay =
+  createAction(GLOSSARY_TOGGLE_IMPORT_DISPLAY)
+export const glossaryUpdateImportFileLocale =
+  createAction(GLOSSARY_UPDATE_IMPORT_FILE_LOCALE)
+export const glossaryUpdateColSort = createAction(GLOSSARY_UPDATE_COL_SORT)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -58,14 +76,49 @@ const generateSortOrderParam = (sort) => {
     var param = (value ? '' : '-') + field
     params.push(param)
   })
-  return params.length ? '&sort=' + params.join() : ''
+  return params.length ? params.join() : ''
 }
 
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
+export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
+  const endpoint = Configs.API_ROOT + 'glossary'
+  let formData = new FormData()
+  formData.append('file', data.file, data.file.name)
+  formData.append('fileName', data.file.name)
+  formData.append('srcLocale', srcLocaleId)
+  formData.append('transLocale', data.transLocale.value)
+
+  return {
+    [CALL_API]: {
+      endpoint,
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'x-auth-token': Configs.auth ? Configs.auth.token : '',
+        'x-auth-user': Configs.auth ? Configs.auth.user : ''
+      },
+      body: formData,
+      types: [
+        GLOSSARY_UPLOAD_REQUEST,
+        {
+          type: GLOSSARY_UPLOAD_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryStats(dispatch))
+              return json
+            })
+          }
+        },
+        GLOSSARY_UPLOAD_FAILURE
+      ]
+    }
+  }
+}
+
 export const updateGlossaryTerm = (dispatch, term) => {
-  const endpoint = Configs.API_ROOT + 'glossary/entries/'
+  const endpoint = Configs.API_ROOT + 'glossary/entries'
   return {
     [CALL_API]: {
       endpoint,
@@ -141,7 +194,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
-  const sortQuery = sort ? generateSortOrderParam(sort) : ''
+  const sortQuery = sort ? `&sort=${generateSortOrderParam(sort)}` : ''
   const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
@@ -282,6 +335,41 @@ export const glossaryDeleteTerm = (id) => {
 export const glossaryUpdateTerm = (term) => {
   return (dispatch, getState) => {
     dispatch(updateGlossaryTerm(dispatch, term))
+  }
+}
+
+export const glossaryImportFile = () => {
+  return (dispatch, getState) => {
+    dispatch(importGlossaryFile(dispatch,
+      getState().glossary.importFile,
+      getState().glossary.stats.srcLocale.locale.localeId))
+  }
+}
+
+export const glossarySelectTerm = (termId) => {
+  return (dispatch, getState) => {
+    const selectedTerm = getState().glossary.selectedTerm
+    if (selectedTerm && selectedTerm.id !== termId) {
+      const status = selectedTerm.status
+      if (status && (status.isSrcModified || status.isTransModified)) {
+        dispatch(glossaryUpdateTerm(cloneDeep(selectedTerm)))
+      }
+    }
+    dispatch(updateSelectedTerm(termId))
+  }
+}
+
+export const glossarySortColumn = (col) => {
+  return (dispatch, getState) => {
+    let sort = {}
+    sort[col] = getState().glossary.sort[col]
+      ? !getState().glossary.sort[col] : true
+
+    replaceRouteQuery(getState().routing.location, {
+      sort: generateSortOrderParam(sort)
+    })
+    dispatch(glossaryUpdateColSort(sort))
+    //promise to getterm
   }
 }
 

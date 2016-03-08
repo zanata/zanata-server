@@ -65,7 +65,7 @@ var DeleteEntryModal = React.createClass({
       info = (
         <p>
           Are you sure you want to delete this term and&nbsp;
-          <strong>{entry.termsCount}</strong>
+          <strong>{entry.termsCount}</strong>&nbsp;
           {entry.termsCount > 1 ? 'translations' : 'translation'} ?
         </p>
       )

@@ -4,7 +4,7 @@ import Helmet from 'react-helmet'
 import ReactList from 'react-list'
 import { ButtonLink, ButtonRound, Icon, LoaderText, Select } from 'zanata-ui'
 import { debounce, cloneDeep } from 'lodash'
-import { replaceRouteQuery } from '../utils/RoutingHelpers'
+import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import {
   EditableText,
   Header,
@@ -14,10 +14,8 @@ import {
   TableCell,
   TableRow,
   TextInput,
-  View,
-  DeleteEntryModal,
-  ImportModal
-} from '../components'
+  View
+} from '../../components'
 import {
   glossaryChangeLocale,
   glossaryUpdateIndex,
@@ -27,8 +25,16 @@ import {
   glossaryUpdateField,
   glossaryDeleteTerm,
   glossaryResetTerm,
-  glossaryUpdateTerm
-} from '../actions/glossary'
+  glossaryUpdateTerm,
+  glossaryImportFile,
+  glossaryUpdateImportFile,
+  glossaryToggleImportFileDisplay,
+  glossaryUpdateImportFileLocale,
+  glossarySortColumn
+} from '../../actions/glossary'
+
+import DeleteEntryModal from './DeleteEntryModal'
+import ImportModal from './ImportModal'
 
 let sameRenders = 0
 
@@ -80,9 +86,6 @@ class Glossary extends Component {
       : ''
     const transSelected = !!selectedTransLocale
 
-    if(term.id == 6772) {
-    console.info('alex,,', selected, terms[termId].description, selectedTerm.description)
-    }
     // TODO: Make this only set when switching locales
     if (!term) {
       return (
@@ -103,6 +106,23 @@ class Glossary extends Component {
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
     const isSaving = term.status && term.status.isSaving
     const editable = permission.canUpdateEntry && !isSaving
+
+    let updateButton
+
+    if (isSaving) {
+      updateButton = (
+        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+          disabled={true}>
+          <LoaderText loading loadingText='Updating'>Update</LoaderText>
+        </ButtonRound>)
+    } else if (displayUpdateButton) {
+      updateButton = (
+        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+          onClick={() => handleUpdateTerm(term)}>
+          Update
+        </ButtonRound>)
+    }
+
     return (
       <TableRow highlight
         className='editable'
@@ -154,7 +174,7 @@ class Glossary extends Component {
             </TableCell>
           ) : ''
         }
-        <TableCell hideSmall className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
+        <TableCell hideSmall>
           <ButtonLink>
             <Icon name='info'/>
           </ButtonLink>
@@ -165,34 +185,25 @@ class Glossary extends Component {
               </ButtonLink>
             ) : ''}
 
-          {displayUpdateButton ? (
-              <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-                           onClick={() => handleUpdateTerm(term)}>
-                {term.status && term.status.isSaving
-                  ? (<LoaderText loading loadingText='Updating'>
-                      Update
-                    </LoaderText>)
-                  : 'Update'
-                }
-              </ButtonRound>
-            ) : ''
-          }
+          {updateButton}
 
-          {displayUpdateButton && !isSaving ? (
-              <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleResetTerm(termId)}>
-                Cancel
-              </ButtonLink>
-            ) : ''
-          }
+          <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
+            {displayUpdateButton && !isSaving ? (
+                <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
+                            onClick={() => handleResetTerm(termId)}>
+                  Cancel
+                </ButtonLink>
+              ) : ''
+            }
 
-          {permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={termId}
-                                entry={term}
-                                className='Mstart(rh)'
-                                onDelete={handleDeleteTerm}/>
-            ) : ''
-          }
+            {permission.canDeleteEntry && !isSaving ? (
+                <DeleteEntryModal id={termId}
+                                  entry={term}
+                                  className='Mstart(rh)'
+                                  onDelete={handleDeleteTerm}/>
+              ) : ''
+            }
+          </div>
 
         </TableCell>
       </TableRow>
@@ -259,10 +270,17 @@ class Glossary extends Component {
       scrollIndex = 0,
       statsLoading,
       transLocales,
+      srcLocale,
       selectedTransLocale,
       handleTranslationLocaleChange,
       handleFilterFieldUpdate,
-      permission
+      handleImportFile,
+      handleImportFileChange,
+      handleImportFileDisplay,
+      handleImportFileLocaleChange,
+      handleSortColumn,
+      permission,
+      importFile
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
@@ -281,14 +299,18 @@ class Glossary extends Component {
                   defaultValue={filterText}
                   onChange={handleFilterFieldUpdate} />
                   {permission.canAddNewEntry ? (
-                    <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
-                      <Row>
-                         <ImportModal
-                          className='ml1/4'
-                          srcLocale={this.props.srcLocale}
-                          transLocales={this.props.locales} />
-                      </Row>
-                    </ButtonLink> ) : ''}
+                     <ImportModal
+                      onImport={handleImportFile}
+                      onFileSelected={(e) => handleImportFileChange(e)}
+                      onToggleDisplay={(display) => handleImportFileDisplay(display)}
+                      className='ml1/4'
+                      srcLocale={srcLocale}
+                      transLocales={transLocales}
+                      onTransLocaleChanged={(localeId) => handleImportFileLocaleChange(localeId)}
+                      file={importFile.file}
+                      show={importFile.show}
+                      status={importFile.status}
+                      transLocale={importFile.transLocale}/>) : ''}
 
                    {permission.canAddNewEntry ? (
                       <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
@@ -297,7 +319,7 @@ class Glossary extends Component {
                             theme={{ base: { m: 'Mend(rq)' } }}/>
                           <span className='Hidden--lesm'>New Term</span>
                         </Row>
-                      </ButtonLink> ) : ''
+                      </ButtonLink>) : ''
                    }
 
               </View>
@@ -310,7 +332,7 @@ class Glossary extends Component {
               <TableRow
                 theme={{ base: { bd: '' } }}
                 className='Flxg(1)'>
-                <TableCell size='2'>
+                <TableCell size='2' onClick={() => handleSortColumn('src_content')}>
                   <Row>
                     <Icon name='glossary'
                       className='C(neutral) Mend(re)' />
@@ -321,6 +343,7 @@ class Glossary extends Component {
                   </Row>
                 </TableCell>
                 <TableCell tight size={transSelected ? '2' : '1'}
+                  onClick={() => selectedTransLocale ? handleSortColumn('trans_content') : handleSortColumn('trans_count')}
                   theme={{base: {lineClamp: ''}}}>
                   <Select
                     name='language-selection'
@@ -344,18 +367,16 @@ class Glossary extends Component {
                     </Row>)
                   }
                 </TableCell>
-                <TableCell hideSmall>
+                <TableCell hideSmall onClick={() => handleSortColumn('part_of_speech')}>
                   <div className="LineClamp(1,24px)">Part of Speech</div>
                 </TableCell>
-                {!transSelected ?
-                  (
-                  <TableCell hideSmall>
+                {!transSelected ? (
+                  <TableCell hideSmall onClick={() => handleSortColumn('desc')}>
                     Description
                   </TableCell>
                   ) : ''
                 }
                 <TableCell hideSmall>
-
                 </TableCell>
               </TableRow>
             </View>
@@ -398,7 +419,8 @@ const mapStateToProps = (state) => {
     termIds,
     termCount,
     filter,
-    permission
+    permission,
+    importFile
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -410,17 +432,21 @@ const mapStateToProps = (state) => {
     page,
     statsLoading,
     transLocales: stats.transLocales,
+    srcLocale: stats.srcLocale,
     filterText: filter,
     selectedTerm: selectedTerm,
     selectedTransLocale: query.locale,
     scrollIndex: Number.parseInt(query.index, 10),
-    permission
+    permission,
+    importFile
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const updateFilter = debounce(val => dispatch(glossaryFilterTextChanged(val)), 200)
-  const updateTerm = debounce((field, val) => dispatch(glossaryUpdateField({ field: field, value: val })), 200)
+  const updateFilter = debounce(val =>
+    dispatch(glossaryFilterTextChanged(val)), 200)
+  const updateTerm = debounce((field, val) =>
+    dispatch(glossaryUpdateField({ field: field, value: val })), 200)
 
   return {
     dispatch,
@@ -437,7 +463,15 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
     handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
-    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term))
+    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term)),
+    handleImportFile: () => dispatch(glossaryImportFile()),
+    handleImportFileChange: (event) =>
+      dispatch(glossaryUpdateImportFile(event.target.files[0])),
+    handleImportFileDisplay: (display) =>
+      dispatch(glossaryToggleImportFileDisplay(display)),
+    handleImportFileLocaleChange: (localeId) =>
+      dispatch(glossaryUpdateImportFileLocale(localeId)),
+    handleSortColumn: (col) => dispatch(glossarySortColumn(col))
   }
 }
 

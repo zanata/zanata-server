@@ -114,32 +114,35 @@ var GlossaryHelper = {
   },
 
   getEntryStatus: function (entry, originalEntry) {
-    const source = this.toEmptyStringIfUndefined(entry.glossaryTerms[0].content)
-    const trans = this.toEmptyStringIfUndefined(entry.glossaryTerms[1].content)
-    const desc = this.toEmptyStringIfUndefined(entry.description)
-    const pos = this.toEmptyStringIfUndefined(entry.pos)
-    const ori_source = this.toEmptyStringIfUndefined(
-      originalEntry.glossaryTerms[0].content)
-    const ori_trans = this.toEmptyStringIfUndefined(
-      originalEntry.glossaryTerms[1].content)
-    const ori_desc = this.toEmptyStringIfUndefined(originalEntry.description)
-    const ori_pos = this.toEmptyStringIfUndefined(originalEntry.pos)
+    if (entry && originalEntry) {
+      const source = this.toEmptyStringIfUndefined(entry.glossaryTerms[0].content)
+      const trans = this.toEmptyStringIfUndefined(entry.glossaryTerms[1].content)
+      const desc = this.toEmptyStringIfUndefined(entry.description)
+      const pos = this.toEmptyStringIfUndefined(entry.pos)
+      const ori_source = this.toEmptyStringIfUndefined(
+        originalEntry.glossaryTerms[0].content)
+      const ori_trans = this.toEmptyStringIfUndefined(
+        originalEntry.glossaryTerms[1].content)
+      const ori_desc = this.toEmptyStringIfUndefined(originalEntry.description)
+      const ori_pos = this.toEmptyStringIfUndefined(originalEntry.pos)
 
-    let isSrcModified = (desc !== ori_desc) ||
-      (pos !== ori_pos) ||
-      (source !== ori_source)
-    let isTransModified = trans !== ori_trans
+      let isSrcModified = (desc !== ori_desc) ||
+        (pos !== ori_pos) ||
+        (source !== ori_source)
+      let isTransModified = trans !== ori_trans
 
-    let isSrcValid = !isEmptyOrNull(trim(source))
-    let canUpdateTransComment = !isEmptyOrNull(ori_trans)
+      let isSrcValid = !isEmptyOrNull(trim(source))
+      let canUpdateTransComment = !isEmptyOrNull(ori_trans)
 
-    return {
-      isSrcModified: isSrcModified,
-      isTransModified: isTransModified,
-      isSrcValid: isSrcValid, // source content is mandatory
-      canUpdateTransComment: canUpdateTransComment,
-      isSaving: entry.status ? entry.status.isSaving : false
+      return {
+        isSrcModified: isSrcModified,
+        isTransModified: isTransModified,
+        isSrcValid: isSrcValid, // source content is mandatory
+        canUpdateTransComment: canUpdateTransComment,
+        isSaving: entry.status ? entry.status.isSaving : false
+      }
     }
+    return this.getDefaultEntryStatus()
   },
 
   getDefaultEntryStatus: function () {

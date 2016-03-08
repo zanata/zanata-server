@@ -42,7 +42,7 @@ const Row = ({
   const themeState = {
     base: mergeClasses(
       themed.base,
-      themed.align[align],
+      themed.align[align]
     )
   }
   return (
