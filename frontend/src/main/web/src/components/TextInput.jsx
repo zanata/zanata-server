@@ -34,11 +34,13 @@ class TextInput extends Component {
       onBlur(e)
     }
   }
+
   _updateText (e) {
     const { onChange, onChangeText } = this.props
     if (onChangeText) onChangeText(e.target.value)
     if (onChange) onChange(e)
   }
+
   _onChange (e) {
     debounce(this._updateText(e), 200)
   }

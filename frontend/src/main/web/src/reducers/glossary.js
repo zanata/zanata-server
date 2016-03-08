@@ -32,23 +32,6 @@ import {
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
-const convertSortToObject = (sortString) => {
-  if (sortString) {
-    let sort = {}
-    if (sortString.startsWith('-')) {
-      sort[sortString.substring(1, sortString.length)] = false
-    } else {
-      sort[sortString] = true
-    }
-    return sort
-  } else {
-    return {
-      src_content: true
-    }
-  }
-
-}
-
 const glossary = handleActions({
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
     return {
@@ -56,7 +39,7 @@ const glossary = handleActions({
       src: action.payload.src || 'en-US',
       locale: action.payload.locale || '',
       filter: action.payload.filter || '',
-      sort: convertSortToObject(action.payload.sort),
+      sort: GlossaryHelper.convertSortToObject(action.payload.sort),
       index: action.payload.index || 0,
       permission: {
         canAddNewEntry: Configs.data.permission.insertGlossary,

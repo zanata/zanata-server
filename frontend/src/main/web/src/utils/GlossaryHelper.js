@@ -1,4 +1,4 @@
-import { isUndefined, filter, cloneDeep } from 'lodash'
+import { isUndefined, filter, forOwn, cloneDeep } from 'lodash'
 import { trim, isEmptyOrNull } from './StringUtils'
 import DateHelpers from './DateHelper'
 import defined from 'defined'
@@ -109,22 +109,22 @@ var GlossaryHelper = {
     }
   },
 
-  toEmptyStringIfUndefined: function (val) {
+  toEmptyString: function (val) {
     return isEmptyOrNull(val) ? '' : val
   },
 
   getEntryStatus: function (entry, originalEntry) {
     if (entry && originalEntry) {
-      const source = this.toEmptyStringIfUndefined(entry.glossaryTerms[0].content)
-      const trans = this.toEmptyStringIfUndefined(entry.glossaryTerms[1].content)
-      const desc = this.toEmptyStringIfUndefined(entry.description)
-      const pos = this.toEmptyStringIfUndefined(entry.pos)
-      const ori_source = this.toEmptyStringIfUndefined(
+      const source = this.toEmptyString(entry.glossaryTerms[0].content)
+      const trans = this.toEmptyString(entry.glossaryTerms[1].content)
+      const desc = this.toEmptyString(entry.description)
+      const pos = this.toEmptyString(entry.pos)
+      const ori_source = this.toEmptyString(
         originalEntry.glossaryTerms[0].content)
-      const ori_trans = this.toEmptyStringIfUndefined(
+      const ori_trans = this.toEmptyString(
         originalEntry.glossaryTerms[1].content)
-      const ori_desc = this.toEmptyStringIfUndefined(originalEntry.description)
-      const ori_pos = this.toEmptyStringIfUndefined(originalEntry.pos)
+      const ori_desc = this.toEmptyString(originalEntry.description)
+      const ori_pos = this.toEmptyString(originalEntry.pos)
 
       let isSrcModified = (desc !== ori_desc) ||
         (pos !== ori_pos) ||
@@ -157,6 +157,31 @@ var GlossaryHelper = {
 
   canUpdateTransComment: function (entry) {
     return !isEmptyOrNull(entry.transTerm.content)
+  },
+
+  convertSortToObject: function (sortString) {
+    if (!sortString) {
+      return {
+        src_content: true
+      }
+    } else {
+      let sort = {}
+      if (sortString.startsWith('-')) {
+        sort[sortString.substring(1, sortString.length)] = false
+      } else {
+        sort[sortString] = true
+      }
+      return sort
+    }
+  },
+
+  convertSortToParam: function (sort) {
+    let params = []
+    forOwn(sort, function (value, field) {
+      let param = (value ? '' : '-') + field
+      params.push(param)
+    })
+    return params.length ? params.join() : ''
   }
 }
 

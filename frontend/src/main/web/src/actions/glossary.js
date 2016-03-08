@@ -70,15 +70,6 @@ export const glossaryUpdateColSort = createAction(GLOSSARY_UPDATE_COL_SORT)
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
 
-const generateSortOrderParam = (sort) => {
-  var params = []
-  forOwn(sort, function (value, field) {
-    var param = (value ? '' : '-') + field
-    params.push(param)
-  })
-  return params.length ? params.join() : ''
-}
-
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
@@ -194,7 +185,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
-  const sortQuery = sort ? `&sort=${generateSortOrderParam(sort)}` : ''
+  const sortQuery = sort ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
   const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
@@ -366,10 +357,11 @@ export const glossarySortColumn = (col) => {
       ? !getState().glossary.sort[col] : true
 
     replaceRouteQuery(getState().routing.location, {
-      sort: generateSortOrderParam(sort)
+      sort: GlossaryHelper.convertSortToParam(sort)
     })
-    dispatch(glossaryUpdateColSort(sort))
-    //promise to getterm
+    dispatch(glossaryUpdateColSort(sort)).then(
+      dispatch(getGlossaryTerms(getState()))
+    )
   }
 }
 

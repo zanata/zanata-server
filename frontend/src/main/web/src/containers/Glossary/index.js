@@ -280,10 +280,12 @@ class Glossary extends Component {
       handleImportFileLocaleChange,
       handleSortColumn,
       permission,
-      importFile
+      importFile,
+      sort
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
+    console.info(sort.src_content, !!sort.src_content)
     return (
       <Page>
         <Helmet title='Glossary' />
@@ -332,18 +334,20 @@ class Glossary extends Component {
               <TableRow
                 theme={{ base: { bd: '' } }}
                 className='Flxg(1)'>
-                <TableCell size='2' onClick={() => handleSortColumn('src_content')}>
-                  <Row>
-                    <Icon name='glossary'
-                      className='C(neutral) Mend(re)' />
-                    <span className='LineClamp(1,24px)'>
-                      English (United States)
-                    </span>
-                    <span className='C(muted) Mstart(rq)'>{termCount}</span>
-                  </Row>
+                <TableCell size='2'
+                           onClick={() => handleSortColumn('src_content')}>
+                  <ButtonLink type='default'>
+                    <Row>
+                      {'src_content' in sort ? (sort.src_content === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
+                      <Icon name='glossary' className='C(neutral) Mend(re) MStart(rq)' />
+                      <span className='LineClamp(1,24px)'>
+                        English (United States)
+                      </span>
+                      <span className='C(muted) Mstart(rq)'>{termCount}</span>
+                    </Row>
+                  </ButtonLink>
                 </TableCell>
                 <TableCell tight size={transSelected ? '2' : '1'}
-                  onClick={() => selectedTransLocale ? handleSortColumn('trans_content') : handleSortColumn('trans_count')}
                   theme={{base: {lineClamp: ''}}}>
                   <Select
                     name='language-selection'
@@ -368,11 +372,21 @@ class Glossary extends Component {
                   }
                 </TableCell>
                 <TableCell hideSmall onClick={() => handleSortColumn('part_of_speech')}>
-                  <div className="LineClamp(1,24px)">Part of Speech</div>
+                  <ButtonLink type='default'>
+                    <Row>
+                      {'part_of_speech' in sort ? (sort.part_of_speech === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
+                      <span className='LineClamp(1,24px) MStart(rq)'>Part of Speech</span>
+                    </Row>
+                  </ButtonLink>
                 </TableCell>
                 {!transSelected ? (
                   <TableCell hideSmall onClick={() => handleSortColumn('desc')}>
-                    Description
+                    <ButtonLink type='default'>
+                      <Row>
+                        {'desc' in sort ? (sort.desc === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
+                        <span className='LineClamp(1,24px) MStart(rq)'>Description</span>
+                      </Row>
+                    </ButtonLink>
                   </TableCell>
                   ) : ''
                 }
@@ -420,7 +434,8 @@ const mapStateToProps = (state) => {
     termCount,
     filter,
     permission,
-    importFile
+    importFile,
+    sort
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -438,7 +453,8 @@ const mapStateToProps = (state) => {
     selectedTransLocale: query.locale,
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
-    importFile
+    importFile,
+    sort
   }
 }
 
