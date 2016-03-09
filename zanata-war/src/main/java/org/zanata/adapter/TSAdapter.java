@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2016, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -25,23 +25,20 @@ import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.EventType;
+import net.sf.okapi.common.IParameters;
 import net.sf.okapi.common.exceptions.OkapiIOException;
 import net.sf.okapi.common.filters.IFilter;
 import net.sf.okapi.common.filterwriter.GenericContent;
 import net.sf.okapi.common.filterwriter.IFilterWriter;
-import net.sf.okapi.common.resource.RawDocument;
-import net.sf.okapi.common.resource.StartSubDocument;
-import net.sf.okapi.common.resource.TextContainer;
-import net.sf.okapi.common.resource.TextUnit;
+import net.sf.okapi.common.resource.*;
+import net.sf.okapi.filters.ts.Parameters;
 import net.sf.okapi.filters.ts.TsFilter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.zanata.common.ContentState;
-import org.zanata.common.DocumentType;
-import org.zanata.common.HasContents;
-import org.zanata.common.LocaleId;
+import org.zanata.common.*;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.model.HDocument;
+import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
 import org.zanata.rest.dto.resource.TranslationsResource;
@@ -53,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+
 /**
  * Adapter to handle Qt translation (.ts) files.<br/> using the
  * Okapi {@link net.sf.okapi.filters.ts.TsFilter} class
@@ -69,6 +67,78 @@ public class TSAdapter extends OkapiFilterAdapter {
 
     private static TsFilter prepareFilter() {
         return new TsFilter();
+    }
+
+    @Override
+    protected void updateParamsWithDefaults(IParameters params) {
+        Parameters p = (Parameters) params;
+        p.setDecodeByteValues(false);
+        p.setUseCodeFinder(false);
+
+    }
+
+    @Override
+    public Resource parseDocumentFile(URI documentContent,
+                                      LocaleId sourceLocale, Optional<String> filterParams)
+            throws FileFormatAdapterException, IllegalArgumentException {
+        // null documentContent is handled by RawDocument constructor
+        if (sourceLocale == null) {
+            throw new IllegalArgumentException("Source locale cannot be null");
+        }
+        IFilter filter = getFilter();
+        Resource document = new Resource();
+        document.setLang(sourceLocale);
+        document.setContentType(ContentType.TextPlain);
+        updateParamsWithDefaults(filter.getParameters());
+
+        List<TextFlow> resources = document.getTextFlows();
+        Map<String, HasContents> addedResources =
+                new HashMap<String, HasContents>();
+
+        RawDocument rawDoc = new RawDocument(documentContent, "UTF-8",
+                net.sf.okapi.common.LocaleId.fromString("en"));
+        if (rawDoc.getTargetLocale() == null) {
+            rawDoc.setTargetLocale(net.sf.okapi.common.LocaleId.EMPTY);
+        }
+        try {
+            filter.open(rawDoc);
+            String subDocName = "";
+            // TS can contain similar source strings in different contexts
+            String context = "";
+
+            while (filter.hasNext()) {
+                Event event = filter.next();
+                if (isStartContext(event)) {
+                    context = event.getStartGroup().getName() == null ? ""
+                            : event.getStartGroup().getName();
+                }else if (isEndContext(event)) {
+                    context = "";
+                }else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                    StartSubDocument startSubDoc =
+                            (StartSubDocument) event.getResource();
+                    subDocName = stripPath(startSubDoc.getName());
+
+                } else if (event.getEventType() == EventType.TEXT_UNIT) {
+                    TextUnit tu = (TextUnit) event.getResource();
+                    if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
+                        String content = getTranslatableText(tu);
+                        if (!content.isEmpty()) {
+                            TextFlow tf = processTextFlow(tu, context, content,
+                                    subDocName, sourceLocale);
+                            if (!addedResources.containsKey(tf.getId())) {
+                                addedResources.put(tf.getId(), tf);
+                                resources.add(tf);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (OkapiIOException e) {
+            throw new FileFormatAdapterException("Unable to parse document", e);
+        } finally {
+            filter.close();
+        }
+        return document;
     }
 
     @Override
@@ -96,12 +166,23 @@ public class TSAdapter extends OkapiFilterAdapter {
         }
         List<String> encounteredIds = new ArrayList<>();
         IFilter filter = getFilter();
+        updateParamsWithDefaults(filter.getParameters());
+
         try {
             filter.open(rawDoc);
             String subDocName = "";
+            // TS can contain similar source strings in different contexts
+            String context = "";
+
             while (filter.hasNext()) {
                 Event event = filter.next();
-                if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                if (isStartContext(event)) {
+                    context = event.getStartGroup().getName() == null ? ""
+                            : event.getStartGroup().getName();
+                } else if (isEndContext(event)) {
+                    context = "";
+
+                } else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
                     StartSubDocument startSubDoc =
                             (StartSubDocument) event.getResource();
                     subDocName = stripPath(startSubDoc.getName());
@@ -113,7 +194,7 @@ public class TSAdapter extends OkapiFilterAdapter {
                         String translatable = getTranslatableText(tu);
                         // Ignore if the source is empty
                         if (!translatable.isEmpty()) {
-                            String id = getIdFor(tu, translatable, subDocName);
+                            String id = getIdFor(tu, context.concat(translatable), subDocName);
                             TextFlowTarget tft = translations.get(id);
                             if (tft != null) {
                                 if(!encounteredIds.contains(id)) {
@@ -156,9 +237,21 @@ public class TSAdapter extends OkapiFilterAdapter {
         return tc.getFirstContent().getText();
     }
 
-    @Override
-    protected TextFlow processTextFlow(TextUnit tu, String content, String subDocName, LocaleId sourceLocale) {
-        TextFlow tf = new TextFlow(getIdFor(tu, content,
+    /**
+     * Create a TextFlow from Qt ts TextUnit with context and plurals.
+     * ID is derived from a concatenation of context and content.
+     *
+     * @param tu original textunit
+     * @param context ts source context
+     * @param content text unit content
+     * @param subDocName subdocument name
+     * @param sourceLocale source locale
+     * @return
+     */
+    protected TextFlow processTextFlow(TextUnit tu, String context,
+                                       String content, String subDocName,
+                                       LocaleId sourceLocale) {
+        TextFlow tf = new TextFlow(getIdFor(tu, context.concat(content),
                 subDocName), sourceLocale);
         if(tu.hasProperty("numerus") &&
                 tu.getProperty("numerus").getValue().equalsIgnoreCase("yes")) {
@@ -189,16 +282,26 @@ public class TSAdapter extends OkapiFilterAdapter {
         Map<String, HasContents> addedResources =
                 new HashMap<String, HasContents>();
         IFilter filter = getFilter();
+        updateParamsWithDefaults(filter.getParameters());
 
         try {
             filter.open(rawDoc);
             String subDocName = "";
+            // TS can contain similar source strings in different contexts
+            String context = "";
+
             while (filter.hasNext()) {
                 Event event = filter.next();
-                if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                if (isStartContext(event)) {
+                    context = event.getStartGroup().getName() == null ? ""
+                            : event.getStartGroup().getName();
+                }else if (isEndContext(event)) {
+                    context = "";
+                }else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
                     StartSubDocument startSubDoc =
                             (StartSubDocument) event.getResource();
                     subDocName = stripPath(startSubDoc.getName());
+
                 } else if (event.getEventType() == EventType.TEXT_UNIT) {
                     TextUnit tu = (TextUnit) event.getResource();
                     if (!tu.getSource().isEmpty() && tu.isTranslatable()) {
@@ -206,7 +309,7 @@ public class TSAdapter extends OkapiFilterAdapter {
                         TextContainer translation = tu.getTarget(rawDoc.getTargetLocale());
                         if (!content.isEmpty()) {
                             TextFlowTarget tft =
-                                    new TextFlowTarget(getIdFor(tu, content, subDocName));
+                                    new TextFlowTarget(getIdFor(tu, context.concat(content), subDocName));
                             // TODO: Change this
                             tft.setState(ContentState.NeedReview);
                             String resId = tft.getResId();
@@ -230,5 +333,15 @@ public class TSAdapter extends OkapiFilterAdapter {
             filter.close();
         }
         return transRes;
+    }
+
+    private boolean isStartContext(Event event) {
+        return event.isStartGroup() &&
+                event.getStartGroup().toString().toLowerCase().contains("<context");
+    }
+
+    private boolean isEndContext(Event event) {
+        return event.isEndGroup() &&
+                event.getEndGroup().toString().toLowerCase().contains("</context");
     }
 }
