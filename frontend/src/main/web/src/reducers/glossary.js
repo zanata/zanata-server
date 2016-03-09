@@ -131,10 +131,10 @@ const glossary = handleActions({
     let newSelectedTerm = state.selectedTerm
     switch (action.payload.field) {
       case 'src':
-        newSelectedTerm.glossaryTerms[0].content = action.payload.value
+        newSelectedTerm.srcTerm.content = action.payload.value
         break
       case 'locale':
-        newSelectedTerm.glossaryTerms[1].content = action.payload.value
+        newSelectedTerm.transTerm.content = action.payload.value
         break
       case 'pos':
         newSelectedTerm.pos = action.payload.value
@@ -209,9 +209,11 @@ const glossary = handleActions({
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
     let selectedTerm = state.selectedTerm
     forEach(action.payload.glossaryEntries, (entry) => {
-      let term = state.terms[entry.id]
-      term.status = GlossaryHelper.getDefaultEntryStatus()
+      let cacheEntry = state.terms[entry.id]
+      GlossaryHelper.mergeEntry(entry, cacheEntry)
+      cacheEntry.status = GlossaryHelper.getDefaultEntryStatus()
       if (selectedTerm && selectedTerm.id === entry.id) {
+        GlossaryHelper.mergeEntry(entry, selectedTerm)
         selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
       }
     })
@@ -240,15 +242,21 @@ const glossary = handleActions({
     let termIds = isEmpty(state.termIds)
       ? new Array(action.payload.result.totalCount)
       : state.termIds
+
+    let entries = {}
+    forEach(action.payload.entities.glossaryTerms, (entry) => {
+      entries[entry.id] = GlossaryHelper.generateEntry(entry, state.locale)
+    })
     const terms = isEmpty(state.terms)
-      ? action.payload.entities.glossaryTerms
-      : { ...state.terms, ...action.payload.entities.glossaryTerms }
+      ? entries
+      : { ...state.terms, ...entries }
     termIds
       .splice(
         (page - 1) * GLOSSARY_PAGE_SIZE,
         action.payload.result.results.length,
         ...action.payload.result.results
       )
+
     return {
       ...state,
       termsLoading: false,

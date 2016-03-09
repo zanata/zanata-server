@@ -34,15 +34,13 @@ import {
   glossaryDeleteTerm,
   glossaryResetTerm,
   glossaryUpdateTerm,
-  glossaryImportFile,
-  glossaryUpdateImportFile,
-  glossaryToggleImportFileDisplay,
-  glossaryUpdateImportFileLocale,
-  glossarySortColumn
+  glossarySortColumn,
+  glossaryToggleImportFileDisplay
 } from '../../actions/glossary'
-
+import StringUtils from '../../utils/StringUtils'
 import DeleteEntryModal from './DeleteEntryModal'
 import ImportModal from './ImportModal'
+import Comment from './Comment'
 
 let sameRenders = 0
 
@@ -89,8 +87,8 @@ class Glossary extends Component {
     const selected = termId === selectedTerm.id
     const term = selected ? selectedTerm : termId
       ? cloneDeep(terms[termId]) : false
-    const transContent = term && term.glossaryTerms[1]
-      ? term.glossaryTerms[1].content
+    const transContent = term && term.transTerm
+      ? term.transTerm.content
       : ''
     const transSelected = !!selectedTransLocale
 
@@ -114,8 +112,8 @@ class Glossary extends Component {
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
     const isSaving = term.status && term.status.isSaving
     const editable = permission.canUpdateEntry && !isSaving
-    let updateButton
 
+    let updateButton
     if (isSaving) {
       updateButton = (
         <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
@@ -130,59 +128,6 @@ class Glossary extends Component {
         </ButtonRound>)
     }
 
-    const canUpdateComment = term.status && term.status.canUpdateComment
-    const readOnlyComment =
-      !permission.canUpdateEntry || !canUpdateComment || isSaving
-    //var tooltip
-    //if (!readOnlyComment) {
-    //  tooltip = (
-    //    <Tooltip id="comment" title="Comment">
-    //        <textarea
-    //          className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
-    //          onChange={this._onCommentChange}
-    //          value={this.state.comment}
-    //          onKeyUp={this._handleCommentKeyUp} />
-    //      <div className="mt1/4">
-    //        <ButtonLink
-    //          theme={{base: { m: 'Mend(rh)' }}}
-    //          onClick={this._onCancelComment}>
-    //          Cancel
-    //        </ButtonLink>
-    //        {saveCommentButton}
-    //      </div>
-    //    </Tooltip>
-    //  )
-    //} else {
-    //  var commentSpan = StringUtils.isEmptyOrNull(this.state.comment)
-    //    ? (<i>No comment</i>) : (<span>{this.state.comment}</span>)
-    //  tooltip = (<Tooltip id="comment">
-    //    {commentSpan}
-    //  </Tooltip>)
-    //}
-
-    //var comment = (
-    //  <div className="D(ib)">
-    //    <Overlay
-    //      placement='top'
-    //      target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
-    //      onHide={this._onCancelComment}
-    //      rootClose
-    //      show={this.state.showComment}>
-    //      {tooltip}
-    //    </Overlay>
-    //    <div ref='commentButton'>
-    //      <ButtonLink
-    //        type={StringUtils.isEmptyOrNull(this.state.comment)
-    //            ? 'muted' : 'primary'}
-    //        theme={{base: { m: 'Mend(rh)' }}}
-    //        onClick={this._toggleComment}>
-    //        <Icon name='comment' />
-    //      </ButtonLink>
-    //    </div>
-    //  </div>
-    //)
-
-
     return (
       <TableRow highlight
         className='editable'
@@ -193,7 +138,7 @@ class Glossary extends Component {
           <EditableText
             editable={false}
             editing={selected}>
-            {term.glossaryTerms[0].content}
+            {term.srcTerm.content}
           </EditableText>
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
@@ -239,14 +184,9 @@ class Glossary extends Component {
             <Icon name='info'/>
           </ButtonLink>
 
-          {transSelected ? (
-              <ButtonLink theme={{base: {m: 'Mstart(re)'}}} type='muted'>
-                <Icon name='comment'/>
-              </ButtonLink>
-            ) : ''}
-
+          {transSelected ? (<Comment term={term}
+            canUpdateEntry={permission.canUpdateEntry}/>) : ''}
           {updateButton}
-
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
                 <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
@@ -360,18 +300,23 @@ class Glossary extends Component {
                   defaultValue={filterText}
                   onChange={handleFilterFieldUpdate} />
                   {permission.canAddNewEntry ? (
-                     <ImportModal
-                      onImport={handleImportFile}
-                      onFileSelected={(e) => handleImportFileChange(e)}
-                      onToggleDisplay={(display) => handleImportFileDisplay(display)}
-                      className='ml1/4'
-                      srcLocale={srcLocale}
-                      transLocales={transLocales}
-                      onTransLocaleChanged={(localeId) => handleImportFileLocaleChange(localeId)}
-                      file={importFile.file}
-                      show={importFile.show}
-                      status={importFile.status}
-                      transLocale={importFile.transLocale}/>) : ''}
+                    <div className='Mstart(rq)'>
+                      <ButtonLink type='default'
+                        onClick={() => handleImportFileDisplay(true)}
+                        theme={{ base: { m: 'Mstart(rh)' } }}>
+                        <Row>
+                          <Icon name='import' className='Mend(rq)'
+                            theme={{ base: { m: 'Mend(rq)' } }}/>
+                          <span className='Hidden--lesm'>Import Glossary</span>
+                        </Row>
+                      </ButtonLink>
+                       <ImportModal
+                        srcLocale={srcLocale}
+                        transLocales={transLocales}
+                        file={importFile.file}
+                        show={importFile.show}
+                        status={importFile.status}
+                        transLocale={importFile.transLocale}/></div>) : ''}
 
                    {permission.canAddNewEntry ? (
                       <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
@@ -520,8 +465,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const updateFilter = debounce(val =>
     dispatch(glossaryFilterTextChanged(val)), 200)
-  const updateTerm = debounce((field, val) =>
-    dispatch(glossaryUpdateField({ field: field, value: val })), 200)
 
   return {
     dispatch,
@@ -534,19 +477,14 @@ const mapDispatchToProps = (dispatch) => {
       updateFilter(event.target.value || '')
     },
     handleTermFieldUpdate: (field, event) => {
-      updateTerm(field, event.target.value || '')
+      dispatch(glossaryUpdateField({ field, value: event.target.value || '' }))
     },
     handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
     handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
     handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term)),
-    handleImportFile: () => dispatch(glossaryImportFile()),
-    handleImportFileChange: (event) =>
-      dispatch(glossaryUpdateImportFile(event.target.files[0])),
+    handleSortColumn: (col) => dispatch(glossarySortColumn(col)),
     handleImportFileDisplay: (display) =>
       dispatch(glossaryToggleImportFileDisplay(display)),
-    handleImportFileLocaleChange: (localeId) =>
-      dispatch(glossaryUpdateImportFileLocale(localeId)),
-    handleSortColumn: (col) => dispatch(glossarySortColumn(col))
   }
 }
 

@@ -28,22 +28,25 @@ const classes = {
 }
 
 class TextInput extends Component {
+  constructor () {
+    super()
+    // Need to add the debounce to onScroll here
+    // So it creates a new debounce for each instance
+    //this._onChange = debounce(this._onChange, 200)
+  }
+
   _onBlur (e) {
     const { onBlur } = this.props
     if (onBlur) {
       onBlur(e)
     }
   }
-
-  _updateText (e) {
+  _onChange (e) {
     const { onChange, onChangeText } = this.props
     if (onChangeText) onChangeText(e.target.value)
     if (onChange) onChange(e)
   }
 
-  _onChange (e) {
-    debounce(this._updateText(e), 200)
-  }
   _onFocus (e) {
     const { clearTextOnFocus, onFocus, selectTextOnFocus } = this.props
     const node = ReactDOM.findDOMNode(this)

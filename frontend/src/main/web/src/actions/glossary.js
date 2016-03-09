@@ -81,15 +81,19 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   formData.append('srcLocale', srcLocaleId)
   formData.append('transLocale', data.transLocale.value)
 
+  let headers = {
+    'Accept': 'application/json'
+  }
+  if (Configs.auth) {
+    headers['x-auth-token'] = Configs.auth.token
+    headers['x-auth-user'] = Configs.auth.user
+  }
+
   return {
     [CALL_API]: {
       endpoint,
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'x-auth-token': Configs.auth ? Configs.auth.token : '',
-        'x-auth-user': Configs.auth ? Configs.auth.user : ''
-      },
+      headers: headers,
       body: formData,
       types: [
         GLOSSARY_UPLOAD_REQUEST,
@@ -109,18 +113,22 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
 }
 
 export const updateGlossaryTerm = (dispatch, term) => {
+  let headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+  if (Configs.auth) {
+    headers['x-auth-token'] = Configs.auth.token
+    headers['x-auth-user'] = Configs.auth.user
+  }
   const endpoint = Configs.API_ROOT + 'glossary/entries'
+  const entryDTO = GlossaryHelper.convertToDTO(term)
   return {
     [CALL_API]: {
       endpoint,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'x-auth-token': Configs.auth ? Configs.auth.token : '',
-        'x-auth-user': Configs.auth ? Configs.auth.user : ''
-      },
-      body: GlossaryHelper.convertToDTO(term),
+      headers: headers,
+      body: JSON.stringify(entryDTO),
       types: [
         {
           type: GLOSSARY_UPDATE_REQUEST,
@@ -144,16 +152,20 @@ export const updateGlossaryTerm = (dispatch, term) => {
 }
 
 export const deleteGlossaryTerm = (dispatch, id) => {
+  let headers = {
+    'Accept': 'application/json'
+  }
+  if (Configs.auth) {
+    headers['x-auth-token'] = Configs.auth.token
+    headers['x-auth-user'] = Configs.auth.user
+  }
+
   const endpoint = Configs.API_ROOT + 'glossary/entries/' + id
   return {
     [CALL_API]: {
       endpoint,
       method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'x-auth-token': Configs.auth ? Configs.auth.token : '',
-        'x-auth-user': Configs.auth ? Configs.auth.user : ''
-      },
+      headers: headers,
       types: [
         GLOSSARY_DELETE_REQUEST,
         {
@@ -189,15 +201,18 @@ export const getGlossaryTerms = (state, newIndex) => {
   const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
+  let headers = {
+    'Accept': 'application/json'
+  }
+  if (Configs.auth) {
+    headers['x-auth-token'] = Configs.auth.token
+    headers['x-auth-user'] = Configs.auth.user
+  }
   return {
     [CALL_API]: {
       endpoint,
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'x-auth-token': Configs.auth ? Configs.auth.token : '',
-        'x-auth-user': Configs.auth ? Configs.auth.user : ''
-      },
+      headers: headers,
       types: [
         GLOSSARY_TERMS_REQUEST,
         {
@@ -362,6 +377,12 @@ export const glossarySortColumn = (col) => {
     dispatch(glossaryUpdateColSort(sort)).then(
       dispatch(getGlossaryTerms(getState()))
     )
+  }
+}
+
+export const glossaryUpdateComment = (termId, comment) => {
+  return (dispatch, getState) => {
+    console.info(termId, comment)
   }
 }
 

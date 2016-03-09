@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
 import {
   ButtonLink,
   ButtonRound,
@@ -11,6 +12,13 @@ import {
 import {
   Row
 } from '../../components'
+
+import {
+  glossaryImportFile,
+  glossaryUpdateImportFile,
+  glossaryToggleImportFileDisplay,
+  glossaryUpdateImportFileLocale
+} from '../../actions/glossary'
 
 import StringUtils from '../../utils/StringUtils'
 
@@ -29,17 +37,16 @@ class ImportModal extends Component {
 
   render () {
     const {
-      className,
       transLocales,
       srcLocale,
       file,
       show,
       status,
       transLocale,
-      onImport,
-      onFileSelected,
-      onToggleDisplay,
-      onTransLocaleChanged
+      handleImportFile,
+      handleImportFileChange,
+      handleImportFileDisplay,
+      handleImportFileLocaleChange
       } = this.props
 
     const fileExtension = this.getUploadFileExtension(file)
@@ -65,64 +72,55 @@ class ImportModal extends Component {
     }
 
     return (
-      <div className={className}>
-        <ButtonLink type='default' onClick={() => onToggleDisplay(true)} theme={{ base: { m: 'Mstart(rh)' } }}>
-          <Row>
-            <Icon name='import' className='Mend(rq)'
-              theme={{ base: { m: 'Mend(rq)' } }}/>
-            <span className='Hidden--lesm'>Import Glossary</span>
-          </Row>
-        </ButtonLink>
-        <Modal show={show} onHide={() => onToggleDisplay(false)}>
-          <Modal.Header>
-            <Modal.Title>Import Glossary</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className='tal' scrollable={false}>
-            <input
-              type="file"
-              onChange={onFileSelected}
-              ref="file"
-              multiple={false}
-              disabled={isUploading}
-              className="mb1"/>
-            {messageSection}
-            { isUploading
-              ? (<span className='csec fz2'>
-                  {transLocale.label}</span>)
-              : (<Select
-              name='glossary-import-language-selection'
-              className='W(r16) Mb(r1)'
-              placeholder='Select a translation language…'
-              value={transLocale}
-              options={transLocales}
-              onChange={onTransLocaleChanged}
-            />)
-            }
-            <p>
-              CSV and PO files are supported. <strong>The source language should be in {locale}</strong>.
-              For more details on how to prepare glossary files, see our <a
-              href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
-              className="cpri" target="_blank">glossary import documentation</a>.
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <ButtonLink
-              theme={{base: {m: 'Mend(r1)'}}}
-              disabled={isUploading}
-              onClick={() => onToggleDisplay(false)}>
-              Cancel
-            </ButtonLink>
-            <ButtonRound
-              type='primary'
-              disabled={disableUpload}
-              onClick={onImport}>
-              <LoaderText loading={isUploading} loadingText='Importing'>
-                Import
-              </LoaderText>
-            </ButtonRound>
-          </Modal.Footer>
-        </Modal>
-      </div>)
+      <Modal show={show} onHide={() => handleImportFileDisplay(false)}>
+        <Modal.Header>
+          <Modal.Title>Import Glossary</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='tal' scrollable={false}>
+          <input
+            type="file"
+            onChange={handleImportFileChange}
+            ref="file"
+            multiple={false}
+            disabled={isUploading}
+            className="mb1"/>
+          {messageSection}
+          { isUploading
+            ? (<span className='csec fz2'>
+                {transLocale.label}</span>)
+            : (<Select
+            name='glossary-import-language-selection'
+            className='W(r16) Mb(r1)'
+            placeholder='Select a translation language…'
+            value={transLocale}
+            options={transLocales}
+            onChange={handleImportFileLocaleChange}
+          />)
+          }
+          <p>
+            CSV and PO files are supported. <strong>The source language should be in {locale}</strong>.
+            For more details on how to prepare glossary files, see our <a
+            href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
+            className="cpri" target="_blank">glossary import documentation</a>.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <ButtonLink
+            theme={{base: {m: 'Mend(r1)'}}}
+            disabled={isUploading}
+            onClick={() => handleImportFileDisplay(false)}>
+            Cancel
+          </ButtonLink>
+          <ButtonRound
+            type='primary'
+            disabled={disableUpload}
+            onClick={handleImportFile}>
+            <LoaderText loading={isUploading} loadingText='Importing'>
+              Import
+            </LoaderText>
+          </ButtonRound>
+        </Modal.Footer>
+      </Modal>)
   }
 }
 
@@ -140,4 +138,17 @@ ImportModal.propType = {
   onTransLocaleChanged: React.PropTypes.func
 }
 
-export default ImportModal
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatch,
+    handleImportFile: () => dispatch(glossaryImportFile()),
+    handleImportFileChange: (event) =>
+      dispatch(glossaryUpdateImportFile(event.target.files[0])),
+    handleImportFileDisplay: (display) =>
+      dispatch(glossaryToggleImportFileDisplay(display)),
+    handleImportFileLocaleChange: (localeId) =>
+      dispatch(glossaryUpdateImportFileLocale(localeId))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(ImportModal)

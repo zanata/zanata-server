@@ -10,7 +10,7 @@ var GlossaryHelper = {
    *
    * @param data
    */
-  generateGlossaryTermDTO: function (data, trimContent) {
+  generateTermDTO: function (data, trimContent) {
     if (isUndefined(data) || isEmptyOrNull(data.locale)) {
       return
     }
@@ -21,19 +21,11 @@ var GlossaryHelper = {
     }
   },
 
-  convertToDTO: function (term) {
-    let newTerm = cloneDeep(term)
-    newTerm.pos = trim(newTerm.pos)
-    newTerm.description = trim(newTerm.description)
-    delete newTerm.status
-    return JSON.stringify([newTerm])
-  },
-
   /**
    * Generate org.zanata.rest.dto.GlossaryEntry object
    * @param data
    */
-  generateGlossaryEntryDTO: function (data) {
+  convertToDTO: function (data) {
     var entry = {}
 
     entry.id = data.id
@@ -43,16 +35,16 @@ var GlossaryHelper = {
     entry.sourceReference = data.srcTerm.reference
     entry.glossaryTerms = []
 
-    var srcTerm = this.generateGlossaryTermDTO(data.srcTerm, false)
+    var srcTerm = this.generateTermDTO(data.srcTerm, false)
     if (!isUndefined(srcTerm)) {
       entry.glossaryTerms.push(srcTerm)
     }
 
-    var transTerm = this.generateGlossaryTermDTO(data.transTerm, true)
+    var transTerm = this.generateTermDTO(data.transTerm, true)
     if (!isUndefined(transTerm)) {
       entry.glossaryTerms.push(transTerm)
     }
-    return entry
+    return [entry]
   },
 
   generateEmptyTerm: function (transLocaleId) {
@@ -66,42 +58,43 @@ var GlossaryHelper = {
   },
 
   generateSrcTerm: function (localeId) {
-    var term = this.generateEmptyTerm(localeId)
+    let term = this.generateEmptyTerm(localeId)
     term['reference'] = ''
     return term
   },
 
   getTermByLocale: function (terms, localeId) {
-    var term = filter(terms, 'locale', localeId)
+    let term = filter(terms, ['locale', localeId])
     return term.length ? term[0] : null
   },
 
   generateEntry: function (entry, transLocaleId) {
-    var srcTerm =
+    let srcTerm =
       this.getTermByLocale(entry.glossaryTerms, entry.srcLang)
     srcTerm.reference = entry.sourceReference
     if (!isEmptyOrNull(srcTerm.lastModifiedDate)) {
       srcTerm.lastModifiedDate =
         DateHelpers.shortDate(DateHelpers.getDate(srcTerm.lastModifiedDate))
     }
-    var transTerm =
-      this.getTermByLocale(entry.glossaryTerms, transLocaleId)
 
-    if (transTerm) {
-      transTerm.lastModifiedDate =
-        DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate))
-      if (isUndefined(transTerm.comment)) {
-        transTerm.comment = ''
+    let transTerm
+    if (transLocaleId) {
+      transTerm = this.getTermByLocale(entry.glossaryTerms, transLocaleId)
+      if (transTerm) {
+        transTerm.lastModifiedDate =
+          DateHelpers.shortDate(DateHelpers.getDate(transTerm.lastModifiedDate))
+        if (isUndefined(transTerm.comment)) {
+          transTerm.comment = ''
+        }
+      } else {
+        transTerm = this.generateEmptyTerm(transLocaleId)
       }
-    } else {
-      transTerm = this.generateEmptyTerm(transLocaleId)
     }
 
     return {
       id: entry.id,
       pos: defined(entry.pos, ''),
       description: defined(entry.description, ''),
-      // remove source term from count
       termsCount: entry.termsCount > 0 ? entry.termsCount - 1 : 0,
       srcTerm: srcTerm,
       transTerm: transTerm,
@@ -109,20 +102,22 @@ var GlossaryHelper = {
     }
   },
 
-  toEmptyString: function (val) {
+  toEmptyString: (val) => {
     return isEmptyOrNull(val) ? '' : val
   },
 
   getEntryStatus: function (entry, originalEntry) {
     if (entry && originalEntry) {
-      const source = this.toEmptyString(entry.glossaryTerms[0].content)
-      const trans = this.toEmptyString(entry.glossaryTerms[1].content)
+      const source = this.toEmptyString(entry.srcTerm.content)
+      const trans = entry.transTerm
+        ? this.toEmptyString(entry.transTerm.content) : ''
       const desc = this.toEmptyString(entry.description)
       const pos = this.toEmptyString(entry.pos)
+
       const ori_source = this.toEmptyString(
-        originalEntry.glossaryTerms[0].content)
-      const ori_trans = this.toEmptyString(
-        originalEntry.glossaryTerms[1].content)
+        originalEntry.srcTerm.content)
+      const ori_trans = originalEntry.transTerm
+        ? this.toEmptyString(originalEntry.transTerm.content) : ''
       const ori_desc = this.toEmptyString(originalEntry.description)
       const ori_pos = this.toEmptyString(originalEntry.pos)
 
@@ -182,6 +177,16 @@ var GlossaryHelper = {
       params.push(param)
     })
     return params.length ? params.join() : ''
+  },
+
+  mergeEntry: (fromEntry, toEntry) => {
+    if (fromEntry.srcTerm) {
+      toEntry.srcTerm = fromEntry.srcTerm
+    }
+
+    if (fromEntry.transTerm) {
+      toEntry.transTerm = fromEntry.transTerm
+    }
   }
 }
 

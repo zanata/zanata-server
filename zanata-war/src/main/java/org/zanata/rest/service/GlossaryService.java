@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -258,29 +259,32 @@ public class GlossaryService implements GlossaryResource {
         for (HGlossaryEntry hGlossaryEntry : hGlossaryEntries) {
             GlossaryEntry glossaryEntry = generateGlossaryEntry(hGlossaryEntry);
 
-            GlossaryTerm srcTerm =
-                getGlossaryTerm(hGlossaryEntry, hGlossaryEntry.getSrcLocale());
-            if (srcTerm != null) {
-                glossaryEntry.getGlossaryTerms().add(srcTerm);
+            HLocale srcLocale = hGlossaryEntry.getSrcLocale();
+            Optional<GlossaryTerm> srcTerm =
+                    getGlossaryTerm(hGlossaryEntry, srcLocale);
+            if (srcTerm.isPresent()) {
+                glossaryEntry.getGlossaryTerms().add(0, srcTerm.get());
             }
 
-            GlossaryTerm transTerm = getGlossaryTerm(hGlossaryEntry, locale);
-            if (transTerm != null) {
-                glossaryEntry.getGlossaryTerms().add(transTerm);
+            if (locale != srcLocale) {
+                Optional<GlossaryTerm> transTerm =
+                        getGlossaryTerm(hGlossaryEntry, locale);
+                if (transTerm.isPresent()) {
+                    glossaryEntry.getGlossaryTerms().add(transTerm.get());
+                }
             }
             resultList.getResults().add(glossaryEntry);
         }
     }
 
-    public GlossaryTerm getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
+    public Optional<GlossaryTerm> getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
         HLocale locale) {
         if (!hGlossaryEntry.getGlossaryTerms().containsKey(locale)) {
-            return null;
+            return Optional.absent();
         }
         HGlossaryTerm hGlossaryTerm =
             hGlossaryEntry.getGlossaryTerms().get(locale);
-        GlossaryTerm glossaryTerm = generateGlossaryTerm(hGlossaryTerm);
-        return glossaryTerm;
+        return Optional.of(generateGlossaryTerm(hGlossaryTerm));
     }
 
     public GlossaryEntry generateGlossaryEntry(HGlossaryEntry hGlossaryEntry) {
