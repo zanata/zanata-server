@@ -47,10 +47,10 @@ var GlossaryHelper = {
     return [entry]
   },
 
-  generateEmptyTerm: function (transLocaleId) {
+  generateEmptyTerm: function (localeId) {
     return {
       content: '',
-      locale: transLocaleId,
+      locale: localeId,
       comment: '',
       lastModifiedDate: '',
       lastModifiedBy: ''
@@ -66,6 +66,14 @@ var GlossaryHelper = {
   getTermByLocale: function (terms, localeId) {
     let term = filter(terms, ['locale', localeId])
     return term.length ? term[0] : null
+  },
+
+  generateEmptyEntry: function (srcLocaleId) {
+    return {
+      description: null,
+      pos: null,
+      srcTerm: this.generateEmptyTerm(srcLocaleId)
+    }
   },
 
   generateEntry: function (entry, transLocaleId) {

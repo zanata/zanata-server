@@ -27,6 +27,10 @@ import {
   GLOSSARY_UPDATE_IMPORT_FILE_LOCALE,
   GLOSSARY_TOGGLE_IMPORT_DISPLAY,
   GLOSSARY_UPDATE_COL_SORT,
+  GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY,
+  GLOSSARY_CREATE_REQUEST,
+  GLOSSARY_CREATE_SUCCESS,
+  GLOSSARY_CREATE_FAILURE,
   SEVERITY
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
@@ -121,6 +125,14 @@ const glossary = handleActions({
       importFile: importFile
     }
   },
+  [GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY]: (state, action) => {
+    let newEntry = state.newEntry
+    newEntry.show = action.payload
+    return {
+      ...state,
+      newEntry: newEntry
+    }
+  },
   [GLOSSARY_RESET_TERM]: (state, action) => {
     return {
       ...state,
@@ -134,7 +146,13 @@ const glossary = handleActions({
         newSelectedTerm.srcTerm.content = action.payload.value
         break
       case 'locale':
-        newSelectedTerm.transTerm.content = action.payload.value
+        if (newSelectedTerm.transTerm) {
+          newSelectedTerm.transTerm.content = action.payload.value
+        } else {
+          newSelectedTerm.transTerm =
+            GlossaryHelper.generateEmptyTerm(state.locale)
+          newSelectedTerm.transTerm.content = action.payload.value
+        }
         break
       case 'pos':
         newSelectedTerm.pos = action.payload.value
@@ -193,8 +211,9 @@ const glossary = handleActions({
       }
       term.status.isSaving = true
     }
+
     let selectedTerm = state.selectedTerm
-    if (selectedTerm && selectedTerm.id === term.id) {
+    if (selectedTerm && term && selectedTerm.id === term.id) {
       if (!selectedTerm.status) {
         selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
       }
@@ -210,11 +229,13 @@ const glossary = handleActions({
     let selectedTerm = state.selectedTerm
     forEach(action.payload.glossaryEntries, (entry) => {
       let cacheEntry = state.terms[entry.id]
-      GlossaryHelper.mergeEntry(entry, cacheEntry)
-      cacheEntry.status = GlossaryHelper.getDefaultEntryStatus()
-      if (selectedTerm && selectedTerm.id === entry.id) {
-        GlossaryHelper.mergeEntry(entry, selectedTerm)
-        selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
+      if (cacheEntry) {
+        GlossaryHelper.mergeEntry(entry, cacheEntry)
+        cacheEntry.status = GlossaryHelper.getDefaultEntryStatus()
+        if (selectedTerm && selectedTerm.id === entry.id) {
+          GlossaryHelper.mergeEntry(entry, selectedTerm)
+          selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
+        }
       }
     })
     return {
@@ -230,6 +251,37 @@ const glossary = handleActions({
         'We were unable to update the glossary term. Please refresh this page and try again.'
     }
   }),
+  [GLOSSARY_CREATE_REQUEST]: (state, action) => {
+    let newEntry = state.newEntry
+    newEntry.isSaving = true
+    return {
+      ...state,
+      newEntry: newEntry
+    }
+  },
+  [GLOSSARY_CREATE_SUCCESS]: (state, action) => {
+    let newEntry = state.newEntry
+    newEntry.isSaving = false
+    newEntry = GlossaryHelper.generateEmptyEntry(state.src)
+    return {
+      ...state,
+      newEntry: newEntry
+    }
+  },
+  [GLOSSARY_CREATE_FAILURE]: (state, action) => {
+    let newEntry = state.newEntry
+    newEntry.isSaving = false
+    newEntry = GlossaryHelper.generateEmptyEntry(state.src)
+    return {
+      ...state,
+      newEntry: newEntry,
+      notification: {
+        severity: SEVERITY.ERROR,
+        message:
+          'We were unable save glossary entry. Please refresh this page and try again.'
+      }
+    }
+  },
   [GLOSSARY_TERMS_REQUEST]: (state, action) => ({
     ...state,
     termsError: action.error,
@@ -315,6 +367,11 @@ const glossary = handleActions({
     status: -1,
     file: null,
     transLocale: null
+  },
+  newEntry: {
+    show: false,
+    isSaving: false,
+    entry: GlossaryHelper.generateEmptyEntry('en-US')
   },
   statsError: false,
   statsLoading: true,

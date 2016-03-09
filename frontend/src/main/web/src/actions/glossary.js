@@ -44,6 +44,10 @@ export const GLOSSARY_UPDATE_IMPORT_FILE = 'GLOSSARY_UPDATE_IMPORT_FILE'
 export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE = 'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
 export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
 export const GLOSSARY_UPDATE_COL_SORT = 'GLOSSARY_UPDATE_COL_SORT'
+export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY = 'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
+export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
+export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
+export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
 
 // TODO: Add the following
 export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
@@ -66,6 +70,7 @@ export const glossaryToggleImportFileDisplay =
 export const glossaryUpdateImportFileLocale =
   createAction(GLOSSARY_UPDATE_IMPORT_FILE_LOCALE)
 export const glossaryUpdateColSort = createAction(GLOSSARY_UPDATE_COL_SORT)
+export const glossaryToggleNewEntryModal = createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -107,6 +112,45 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
           }
         },
         GLOSSARY_UPLOAD_FAILURE
+      ]
+    }
+  }
+}
+
+export const createGlossaryTerm = (dispatch, term) => {
+  let headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+  if (Configs.auth) {
+    headers['x-auth-token'] = Configs.auth.token
+    headers['x-auth-user'] = Configs.auth.user
+  }
+  const endpoint = Configs.API_ROOT + 'glossary/entries'
+  const entryDTO = GlossaryHelper.convertToDTO(term)
+  return {
+    [CALL_API]: {
+      endpoint,
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(entryDTO),
+      types: [
+        {
+          type: GLOSSARY_CREATE_REQUEST,
+          payload: (action, state) => {
+            return term
+          }
+        },
+        {
+          type: GLOSSARY_CREATE_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryStats(dispatch))
+              return json
+            })
+          }
+        },
+        GLOSSARY_CREATE_FAILURE
       ]
     }
   }
@@ -344,6 +388,12 @@ export const glossaryUpdateTerm = (term) => {
   }
 }
 
+export const glossaryCreateNewEntry = (entry) => {
+  return (dispatch, getState) => {
+    dispatch(createGlossaryTerm(dispatch, entry))
+  }
+}
+
 export const glossaryImportFile = () => {
   return (dispatch, getState) => {
     dispatch(importGlossaryFile(dispatch,
@@ -385,4 +435,3 @@ export const glossaryUpdateComment = (termId, comment) => {
     console.info(termId, comment)
   }
 }
-

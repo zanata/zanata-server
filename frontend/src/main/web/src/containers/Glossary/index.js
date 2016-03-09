@@ -35,11 +35,13 @@ import {
   glossaryResetTerm,
   glossaryUpdateTerm,
   glossarySortColumn,
-  glossaryToggleImportFileDisplay
+  glossaryToggleImportFileDisplay,
+  glossaryToggleNewEntryModal
 } from '../../actions/glossary'
 import StringUtils from '../../utils/StringUtils'
 import DeleteEntryModal from './DeleteEntryModal'
 import ImportModal from './ImportModal'
+import NewEntryModal from './NewEntryModal'
 import Comment from './Comment'
 
 let sameRenders = 0
@@ -196,7 +198,7 @@ class Glossary extends Component {
               ) : ''
             }
 
-            {permission.canDeleteEntry && !isSaving ? (
+            {!transSelected && permission.canDeleteEntry && !isSaving ? (
                 <DeleteEntryModal id={termId}
                                   entry={term}
                                   className='Mstart(rh)'
@@ -274,13 +276,12 @@ class Glossary extends Component {
       selectedTransLocale,
       handleTranslationLocaleChange,
       handleFilterFieldUpdate,
-      handleImportFile,
-      handleImportFileChange,
       handleImportFileDisplay,
-      handleImportFileLocaleChange,
+      handleNewEntryDisplay,
       handleSortColumn,
       permission,
       importFile,
+      newEntry,
       sort
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
@@ -319,13 +320,20 @@ class Glossary extends Component {
                         transLocale={importFile.transLocale}/></div>) : ''}
 
                    {permission.canAddNewEntry ? (
-                      <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}>
-                        <Row>
-                          <Icon name='plus' className='Mend(rq)'
-                            theme={{ base: { m: 'Mend(rq)' } }}/>
-                          <span className='Hidden--lesm'>New Term</span>
-                        </Row>
-                      </ButtonLink>) : ''
+                     <div className='Mstart(rq)'>
+                        <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}
+                          onClick={() => handleNewEntryDisplay(true)}>
+                          <Row>
+                            <Icon name='plus' className='Mend(rq)'
+                              theme={{ base: { m: 'Mend(rq)' } }}/>
+                            <span className='Hidden--lesm'>New Term</span>
+                          </Row>
+                        </ButtonLink>
+                        <NewEntryModal
+                          entry={newEntry.entry}
+                          show={newEntry.show}
+                          isSaving={newEntry.isSaving}/>
+                     </div>) : ''
                    }
 
               </View>
@@ -439,6 +447,7 @@ const mapStateToProps = (state) => {
     filter,
     permission,
     importFile,
+    newEntry,
     sort
   } = state.glossary
   const query = state.routing.location.query
@@ -458,6 +467,7 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     importFile,
+    newEntry,
     sort
   }
 }
@@ -485,6 +495,8 @@ const mapDispatchToProps = (dispatch) => {
     handleSortColumn: (col) => dispatch(glossarySortColumn(col)),
     handleImportFileDisplay: (display) =>
       dispatch(glossaryToggleImportFileDisplay(display)),
+    handleNewEntryDisplay: (display) =>
+      dispatch(glossaryToggleNewEntryModal(display))
   }
 }
 

@@ -125,17 +125,12 @@ class ImportModal extends Component {
 }
 
 ImportModal.propType = {
-  className: React.PropTypes.string,
   transLocales: React.PropTypes.array,
   srcLocale: React.PropTypes.object,
   file: React.PropTypes.object,
   show: React.PropTypes.bool,
   status: React.PropTypes.number,
-  transLocale: React.PropTypes.string,
-  onImport: React.PropTypes.func,
-  onFileSelected: React.PropTypes.func,
-  onToggleDisplay: React.PropTypes.func,
-  onTransLocaleChanged: React.PropTypes.func
+  transLocale: React.PropTypes.string
 }
 
 const mapDispatchToProps = (dispatch) => {
