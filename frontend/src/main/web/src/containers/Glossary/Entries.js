@@ -37,6 +37,22 @@ const isSameRender = () => {
 
 class Entries extends Component {
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      show: {}
+    }
+  }
+
+  toggleModalDisplay (termId, display) {
+    console.info(this)
+    let show = this.state.show
+    show[termId] = display
+    this.setState({
+      show: show
+    })
+  }
+
   renderItem (index, key) {
     const {
       handleSelectTerm,
@@ -147,12 +163,13 @@ class Entries extends Component {
         ) : ''
         }
         <TableCell hideSmall>
-          <ButtonLink>
+          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}
+                      onClick={() => this.toggleModalDisplay(termId, true)}>
             <Icon name='info'/>
           </ButtonLink>
+          <EntryModal entry={term}
+                      show={this.state.show[termId]}/>
 
-          {transSelected ? (<EntryModal term={term}
-            canUpdateEntry={permission.canUpdateEntry}/>) : ''}
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (

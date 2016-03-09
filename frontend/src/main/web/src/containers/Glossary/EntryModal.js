@@ -1,140 +1,83 @@
 import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import ReactDOM from 'react-dom'
 import {
   ButtonLink,
   ButtonRound,
   Icon,
   LoaderText,
-  OverlayTrigger,
-  Overlay,
-  Tooltip } from 'zanata-ui'
-import StringUtils from '../../utils/StringUtils'
-
+  Modal,
+} from 'zanata-ui'
 import {
-  glossaryUpdateComment
-} from '../../actions/glossary'
+  EditableText
+} from '../../components'
 
 class EntryModal extends Component {
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      comment: props.term.transTerm
-        ? props.term.transTerm.comment : '',
-      show: false
-    }
-  }
-
-  onCancelComment () {
-    this.setState({
-      comment: this.props.term.transTerm
-        ? this.props.term.transTerm.comment : '',
-      show: false
-    })
-  }
-
-  onCommentKeyUp (event) {
-    if (event.key === 'Escape') {
-      this.onCancelComment()
-    }
-  }
-
-  onCommentChange (event) {
-    this.setState({
-      comment: event.target.value
-    })
-  }
-
-  toggleDisplay () {
-    this.setState({
-      show: !this.state.show
-    })
-  }
-
   render () {
     const {
-      term,
-      canUpdateEntry,
-      handleUpdateComment
-      } = this.props
+      entry,
+      displayUpdateButton,
+      transSelected,
+      editable,
+      show,
+      handleEntryModalDisplay,
+      handleResetTerm,
+      handleUpdateTerm,
+      handleTermFieldUpdate
+    } = this.props
 
-    let tooltip
-    const isSaving = term.status && term.status.isSaving
-    const canUpdateComment = term.status && term.status.canUpdateComment
-    const readOnlyComment =
-      !canUpdateEntry || !canUpdateComment || isSaving
+    const isSaving = entry.status && entry.status.isSaving
 
-    if (!readOnlyComment) {
-      tooltip = (
-        <Tooltip id="comment">
-          {StringUtils.isEmptyOrNull(this.state.comment)
-            ? (<i>No comment</i>)
-            : (<span>{this.state.comment}</span>)
-          }
-        </Tooltip>)
-    } else {
-      tooltip = (
-        <Tooltip id="comment" title="Comment">
-          <textarea
-            className="p1/4 w100p bd2 bdcsec30 bdrs1/4"
-            onChange={::this.onCommentChange}
-            value={this.state.comment}
-            onKeyUp={::this.onCommentKeyUp} />
-          <div className="mt1/4">
-            <ButtonLink
-              theme={{base: { m: 'Mend(rh)' }}}
-              onClick={::this.onCancelComment}>
-              Cancel
-            </ButtonLink>
-            <ButtonRound
-              type='primary'
-              size='-1'
-              disabled={isSaving || StringUtils.isEmptyOrNull(this.state.comment)}
-              onClick={() => handleUpdateComment(term.id, this.state.comment)}>
-              <LoaderText loading={isSaving} loadingText='Updating'>
-                Update Comment
-              </LoaderText>
-            </ButtonRound>
-          </div>
-        </Tooltip>)
+    let updateButton
+    if (isSaving) {
+      updateButton = (
+        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+                     disabled={true}>
+          <LoaderText loading loadingText='Updating'>Update</LoaderText>
+        </ButtonRound>)
+    } else if (displayUpdateButton) {
+      updateButton = (
+        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+                     onClick={() => handleUpdateTerm()}>
+          Update
+        </ButtonRound>)
     }
 
-    return (
-        <div className="D(ib) MStart(re)">
-          <Overlay
-            placement='top'
-            target={() => ReactDOM.findDOMNode(this.refs.commentButton)}
-            onHide={::this.onCancelComment}
-            rootClose
-            show={this.state.show}>
-            {tooltip}
-          </Overlay>
-          <div ref='commentButton'>
-            <ButtonLink theme={{base: {m: 'Mstart(re)'}}}
-              type={StringUtils.isEmptyOrNull(this.state.comment)
-                  ? 'muted' : 'primary'}
-              theme={{base: { m: 'Mend(rh)' }}}
-              onClick={::this.toggleDisplay}>
-              <Icon name='comment' />
-            </ButtonLink>
+    return(
+      <Modal show={show} onHide={() => handleEntryModalDisplay(entry.id, false)}>
+        <Modal.Header>
+          <Modal.Title>Glossary Term</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='tal' scrollable={true}>
+          {entry.id}
+        </Modal.Body>
+        <Modal.Footer>
+          {updateButton}
+          <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
+            {displayUpdateButton && !isSaving ? (
+                <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
+                            onClick={() => handleResetTerm()}>
+                  Cancel
+                </ButtonLink>
+              ) : ''
+            }
           </div>
-        </div>
+        </Modal.Footer>
+      </Modal>
     )
   }
 }
 
-EntryModal.propTypes = {
-  term: React.PropTypes.object,
-  canUpdateEntry: React.PropTypes.bool,
+EntryModal.propType = {
+  entry: PropTypes.object,
+  permission: PropTypes.object,
+  show: PropTypes.bool,
+  displayUpdateButton: PropTypes.bool,
+  transSelected: PropTypes.bool,
+  editable: PropTypes.bool,
+  handleResetTerm: PropTypes.func,
+  handleEntryModalDisplay: PropTypes.func,
+  handleUpdateTerm: PropTypes.func,
+  handleTermFieldUpdate: PropTypes.func
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    dispatch,
-    handleUpdateComment: (termId, comment) =>
-      dispatch(glossaryUpdateComment(termId, comment))
-  }
-}
-
-export default connect(null, mapDispatchToProps)(EntryModal)
+export default EntryModal

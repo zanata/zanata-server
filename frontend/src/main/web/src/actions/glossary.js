@@ -429,9 +429,3 @@ export const glossarySortColumn = (col) => {
     )
   }
 }
-
-export const glossaryUpdateComment = (termId, comment) => {
-  return (dispatch, getState) => {
-    console.info(termId, comment)
-  }
-}
