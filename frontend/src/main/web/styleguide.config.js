@@ -8,6 +8,7 @@ module.exports = {
   updateWebpackConfig: function (webpackConfig, env) {
     webpackConfig.entry.push(path.join(__dirname, 'src/styles/base.css'))
     webpackConfig.entry.push(path.join(__dirname, 'src/styles/atomic.css'))
+    webpackConfig.entry.push(path.join(__dirname, 'src/styles/animations.css'))
     webpackConfig.entry.push(path.join(__dirname, 'src/styles/extras.css'))
     webpackConfig.entry.push(path.join(__dirname, 'src/styles/styleguide.css'))
     webpackConfig.module.loaders =

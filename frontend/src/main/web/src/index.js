@@ -14,6 +14,7 @@ import Root from './containers/Root'
 import Configs from './constants/Configs'
 import './styles/base.css'
 import './styles/atomic.css'
+import './styles/animations.css'
 import './styles/extras.css'
 
 WebFont.load({
