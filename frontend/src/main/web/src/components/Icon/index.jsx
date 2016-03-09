@@ -94,7 +94,7 @@ const Icon = ({
 Icon.propTypes = {
   /**
    * The name of the icon.
-   * See `src/components/Icons/svgs` for a list of icons
+   * See the list below for possible icons.
    */
   name: PropTypes.string.isRequired,
   /**

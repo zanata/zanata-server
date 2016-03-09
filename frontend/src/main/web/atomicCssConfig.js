@@ -66,6 +66,7 @@ module.exports = {
       'Flxs(1)',
       'Fz(i)',
       'Fz(msn1)',
+      'Fz(ms3)',
       'Fz(16px)',
       'H(100%)',
       'H(msn2)',

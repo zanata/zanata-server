@@ -5,6 +5,7 @@ import { Base } from '../'
 const classes = {
   base: {
     whs: 'Whs(nw)',
+    c: 'C(i)',
     disabled: {
       cur: 'Cur(d):di',
       op: 'Op(.6):di',
