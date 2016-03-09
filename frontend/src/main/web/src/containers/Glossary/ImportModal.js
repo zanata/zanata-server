@@ -124,13 +124,21 @@ class ImportModal extends Component {
   }
 }
 
-ImportModal.propType = {
-  transLocales: React.PropTypes.array,
-  srcLocale: React.PropTypes.object,
-  file: React.PropTypes.object,
-  show: React.PropTypes.bool,
-  status: React.PropTypes.number,
-  transLocale: React.PropTypes.string
+ImportModal.propType = {}
+
+const mapStateToProps = (state) => {
+  const {
+    stats,
+    importFile
+    } = state.glossary
+  return {
+    srcLocale: stats.srcLocale,
+    transLocales: stats.transLocales,
+    file: importFile.file,
+    show: importFile.show,
+    status: importFile.status,
+    transLocale: importFile.transLocale
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -146,4 +154,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(ImportModal)
+export default connect(mapStateToProps, mapDispatchToProps)(ImportModal)

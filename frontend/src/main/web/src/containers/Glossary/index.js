@@ -1,20 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
-import ReactList from 'react-list'
 import {
   ButtonLink,
-  ButtonRound,
   Icon,
   LoaderText,
-  Select,
-  OverlayTrigger,
-  Overlay,
-  Tooltip } from 'zanata-ui'
+  Select } from 'zanata-ui'
 import { debounce, cloneDeep } from 'lodash'
 import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import {
-  EditableText,
   Header,
   Page,
   Row,
@@ -29,31 +23,14 @@ import {
   glossaryUpdateIndex,
   glossaryFilterTextChanged,
   glossaryGetTermsIfNeeded,
-  glossarySelectTerm,
-  glossaryUpdateField,
-  glossaryDeleteTerm,
-  glossaryResetTerm,
-  glossaryUpdateTerm,
   glossarySortColumn,
   glossaryToggleImportFileDisplay,
   glossaryToggleNewEntryModal
 } from '../../actions/glossary'
 import StringUtils from '../../utils/StringUtils'
-import DeleteEntryModal from './DeleteEntryModal'
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
-import Comment from './Comment'
-
-let sameRenders = 0
-
-const isSameRender = () => {
-  sameRenders++
-  console.debug('Same Render', sameRenders)
-  if (sameRenders > 10) {
-    sameRenders = 0
-    console.debug('Debug, Reset')
-  }
-}
+import Entries from './Entries'
 
 const loadingContainerTheme = {
   base: {
@@ -71,146 +48,7 @@ class Glossary extends Component {
     // So it creates a new debounce for each instance
     this.onScroll = debounce(this.onScroll, 100)
   }
-  renderItem (index, key) {
-    const {
-      handleSelectTerm,
-      handleTermFieldUpdate,
-      handleDeleteTerm,
-      handleResetTerm,
-      handleUpdateTerm,
-      termIds,
-      terms,
-      transLoading,
-      selectedTransLocale,
-      selectedTerm,
-      permission
-    } = this.props
-    const termId = termIds[index]
-    const selected = termId === selectedTerm.id
-    const term = selected ? selectedTerm : termId
-      ? cloneDeep(terms[termId]) : false
-    const transContent = term && term.transTerm
-      ? term.transTerm.content
-      : ''
-    const transSelected = !!selectedTransLocale
 
-    // TODO: Make this only set when switching locales
-    if (!term) {
-      return (
-        <TableRow key={key}>
-          <TableCell>
-            <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-          </TableCell>
-        </TableRow>
-      )
-    }
-    if (index === 1) {
-      isSameRender()
-    }
-
-    const isTermModified = transSelected
-      ? (term.status && term.status.isTransModified)
-      : (term.status && term.status.isSrcModified)
-    const displayUpdateButton = permission.canUpdateEntry && isTermModified
-    const isSaving = term.status && term.status.isSaving
-    const editable = permission.canUpdateEntry && !isSaving
-
-    let updateButton
-    if (isSaving) {
-      updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-          disabled={true}>
-          <LoaderText loading loadingText='Updating'>Update</LoaderText>
-        </ButtonRound>)
-    } else if (displayUpdateButton) {
-      updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-          onClick={() => handleUpdateTerm(term)}>
-          Update
-        </ButtonRound>)
-    }
-
-    return (
-      <TableRow highlight
-        className='editable'
-        key={key}
-        selected={selected}
-        onClick={() => handleSelectTerm(termId)}>
-        <TableCell size='2' tight>
-          <EditableText
-            editable={false}
-            editing={selected}>
-            {term.srcTerm.content}
-          </EditableText>
-        </TableCell>
-        <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
-          {transSelected
-            ? transLoading
-              ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-            : (<EditableText
-                editable={transSelected && editable}
-                editing={selected}
-                onChange={(e) => handleTermFieldUpdate('locale', e)}
-                placeholder='Add a translation…'
-                emptyReadOnlyText='No translation'>
-                {transContent}
-              </EditableText>)
-            : <div className='LineClamp(1,24px) Px(rq)'>{term.termsCount}</div>
-          }
-        </TableCell>
-        <TableCell hideSmall>
-          <EditableText
-            editable={!transSelected && editable}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('pos', e)}
-            placeholder='Add part of speech…'
-            emptyReadOnlyText='No part of speech'>
-            {term.pos}
-          </EditableText>
-        </TableCell>
-        {!transSelected ? (
-            <TableCell hideSmall>
-              <EditableText
-                editable={!transSelected && editable}
-                editing={selected}
-                onChange={(e) => handleTermFieldUpdate('description', e)}
-                placeholder='Add a description…'
-                emptyReadOnlyText='No description'>
-                {term.description}
-              </EditableText>
-            </TableCell>
-          ) : ''
-        }
-        <TableCell hideSmall>
-          <ButtonLink>
-            <Icon name='info'/>
-          </ButtonLink>
-
-          {transSelected ? (<Comment term={term}
-            canUpdateEntry={permission.canUpdateEntry}/>) : ''}
-          {updateButton}
-          <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
-            {displayUpdateButton && !isSaving ? (
-                <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                            onClick={() => handleResetTerm(termId)}>
-                  Cancel
-                </ButtonLink>
-              ) : ''
-            }
-
-            {!transSelected && permission.canDeleteEntry && !isSaving ? (
-                <DeleteEntryModal id={termId}
-                                  entry={term}
-                                  className='Mstart(rh)'
-                                  onDelete={handleDeleteTerm}/>
-              ) : ''
-            }
-          </div>
-
-        </TableCell>
-      </TableRow>
-    )
-  }
   currentLocaleCount () {
     if (this.props.filterText && this.props.results) {
       return this.props.results
@@ -272,7 +110,6 @@ class Glossary extends Component {
       scrollIndex = 0,
       statsLoading,
       transLocales,
-      srcLocale,
       selectedTransLocale,
       handleTranslationLocaleChange,
       handleFilterFieldUpdate,
@@ -280,8 +117,6 @@ class Glossary extends Component {
       handleNewEntryDisplay,
       handleSortColumn,
       permission,
-      importFile,
-      newEntry,
       sort
     } = this.props
     const currentLocaleCount = this.currentLocaleCount()
@@ -311,13 +146,8 @@ class Glossary extends Component {
                           <span className='Hidden--lesm'>Import Glossary</span>
                         </Row>
                       </ButtonLink>
-                       <ImportModal
-                        srcLocale={srcLocale}
-                        transLocales={transLocales}
-                        file={importFile.file}
-                        show={importFile.show}
-                        status={importFile.status}
-                        transLocale={importFile.transLocale}/></div>) : ''}
+                      <ImportModal/>
+                    </div>) : ''}
 
                    {permission.canAddNewEntry ? (
                      <div className='Mstart(rq)'>
@@ -329,10 +159,7 @@ class Glossary extends Component {
                             <span className='Hidden--lesm'>New Term</span>
                           </Row>
                         </ButtonLink>
-                        <NewEntryModal
-                          entry={newEntry.entry}
-                          show={newEntry.show}
-                          isSaving={newEntry.isSaving}/>
+                        <NewEntryModal/>
                      </div>) : ''
                    }
 
@@ -416,16 +243,7 @@ class Glossary extends Component {
                       loading />
                   </View>
                 )
-              : (
-                <ReactList
-                  useTranslate3d
-                  itemRenderer={::this.renderItem}
-                  length={termCount}
-                  type='uniform'
-                  initialIndex={scrollIndex || 0}
-                  ref={c => this.list = c}
-                />
-              )
+              : (<Entries ref={c => this.list = c}/>)
             }
           </View>
         </ScrollView>
@@ -437,37 +255,26 @@ class Glossary extends Component {
 const mapStateToProps = (state) => {
   const {
     page,
-    selectedTerm,
     stats,
     statsLoading,
     termsLoading,
-    terms,
-    termIds,
     termCount,
     filter,
     permission,
-    importFile,
-    newEntry,
     sort
   } = state.glossary
   const query = state.routing.location.query
   return {
     location: state.routing.location,
-    terms,
-    termIds,
     termCount,
     termsLoading,
     page,
     statsLoading,
     transLocales: stats.transLocales,
-    srcLocale: stats.srcLocale,
     filterText: filter,
-    selectedTerm: selectedTerm,
     selectedTransLocale: query.locale,
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
-    importFile,
-    newEntry,
     sort
   }
 }
@@ -478,7 +285,6 @@ const mapDispatchToProps = (dispatch) => {
 
   return {
     dispatch,
-    handleSelectTerm: (termId) => dispatch(glossarySelectTerm(termId)),
     handleTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')
@@ -486,12 +292,6 @@ const mapDispatchToProps = (dispatch) => {
     handleFilterFieldUpdate: (event) => {
       updateFilter(event.target.value || '')
     },
-    handleTermFieldUpdate: (field, event) => {
-      dispatch(glossaryUpdateField({ field, value: event.target.value || '' }))
-    },
-    handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
-    handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
-    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term)),
     handleSortColumn: (col) => dispatch(glossarySortColumn(col)),
     handleImportFileDisplay: (display) =>
       dispatch(glossaryToggleImportFileDisplay(display)),

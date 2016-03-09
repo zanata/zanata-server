@@ -132,10 +132,17 @@ class NewEntryModal extends Component {
   }
 }
 
-NewEntryModal.propType = {
-  entry: React.PropTypes.object,
-  show: React.PropTypes.bool,
-  isSaving: React.PropTypes.bool
+NewEntryModal.propType = {}
+
+const mapStateToProps = (state) => {
+  const {
+    newEntry
+    } = state.glossary
+  return {
+    entry: newEntry.entry,
+    show: newEntry.show,
+    isSaving: newEntry.isSaving
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -147,4 +154,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(NewEntryModal)
+export default connect(mapStateToProps, mapDispatchToProps)(NewEntryModal)
