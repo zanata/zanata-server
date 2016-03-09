@@ -19,11 +19,9 @@ import {
   ButtonLink,
   ButtonRound,
   Icon,
-  LoaderText,
-  OverlayTrigger,
-  Overlay,
-  Tooltip } from 'zanata-ui'
-import Comment from './Comment'
+  LoaderText } from 'zanata-ui'
+
+import EntryModal from './EntryModal'
 import DeleteEntryModal from './DeleteEntryModal'
 
 let sameRenders = 0
@@ -46,9 +44,9 @@ class Entries extends Component {
       handleDeleteTerm,
       handleResetTerm,
       handleUpdateTerm,
+      termsLoading,
       termIds,
       terms,
-      transLoading,
       selectedTransLocale,
       selectedTerm,
       permission
@@ -82,7 +80,6 @@ class Entries extends Component {
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
     const isSaving = term.status && term.status.isSaving
     const editable = permission.canUpdateEntry && !isSaving
-
     let updateButton
     if (isSaving) {
       updateButton = (
@@ -113,7 +110,7 @@ class Entries extends Component {
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
           {transSelected
-            ? transLoading
+            ? termsLoading
             ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
             : (<EditableText
             editable={transSelected && editable}
@@ -154,7 +151,7 @@ class Entries extends Component {
             <Icon name='info'/>
           </ButtonLink>
 
-          {transSelected ? (<Comment term={term}
+          {transSelected ? (<EntryModal term={term}
             canUpdateEntry={permission.canUpdateEntry}/>) : ''}
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>

@@ -15,7 +15,7 @@ import {
   glossaryUpdateComment
 } from '../../actions/glossary'
 
-class Comment extends Component {
+class EntryModal extends Component {
 
   constructor (props) {
     super(props)
@@ -124,7 +124,7 @@ class Comment extends Component {
   }
 }
 
-Comment.propTypes = {
+EntryModal.propTypes = {
   term: React.PropTypes.object,
   canUpdateEntry: React.PropTypes.bool,
 }
@@ -137,4 +137,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Comment)
+export default connect(null, mapDispatchToProps)(EntryModal)
