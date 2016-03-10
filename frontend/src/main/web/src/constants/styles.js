@@ -125,6 +125,11 @@ module.exports = {
   },
   defaults: {
     i: 'inherit'
+  },
+  zIndex: {
+    select: 300,
+    backDrop: 400,
+    modal: 500
   }
 }
 

@@ -3,7 +3,7 @@ import { values, merge } from 'lodash'
 import warning from 'warning'
 import flattenObj from 'flat'
 
-const flattenThemeClasses = (base, ...otherClasses) => {
+export const flattenThemeClasses = (base, ...otherClasses) => {
   return values(
     flattenObj(merge({}, base, ...otherClasses))
   ).join(' ').trim()
@@ -22,7 +22,7 @@ const Base = ({
   const classes = flattenThemeClasses(theme, atomic)
   warning(!className,
     'Please use `theme` instead of `className` to style `' +
-    componentName + '` with `' + className + '`.')
+    componentName || 'Undefined Component' + '` with `' + className + '`.')
   return (
     <Component
       {...props}
@@ -43,14 +43,13 @@ Base.propTypes = {
   /**
    * This should not be used.
    * Prefer theme or [atomic classes](acss.io/reference) object over classes.
-   * @type {[type]}
    */
   className: PropTypes.string,
   /**
    * The system name for the component.
    * Used for warnings and references.
    */
-  componentName: PropTypes.string.isRequired,
+  componentName: PropTypes.string,
   /**
   * HTML element string or React component to render.
   */

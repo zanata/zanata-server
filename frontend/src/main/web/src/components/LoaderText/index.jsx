@@ -31,7 +31,9 @@ const LoaderText = ({
 }) => {
   const themed = merge({}, classes, theme)
   return (
-    <Base tagName='span' theme={themed.root} {...props}>
+    <Base tagName='span'
+      componentName='LoaderText'
+      theme={themed.root} {...props}>
       {loading
         ? (<Base theme={themed.root}>
             {loadingText} <Loader theme={themed.loader} size={size} />
