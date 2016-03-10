@@ -111,9 +111,9 @@ public class TSAdapter extends OkapiFilterAdapter {
                 if (isStartContext(event)) {
                     context = event.getStartGroup().getName() == null ? ""
                             : event.getStartGroup().getName();
-                }else if (isEndContext(event)) {
+                } else if (isEndContext(event)) {
                     context = "";
-                }else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                } else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
                     StartSubDocument startSubDoc =
                             (StartSubDocument) event.getResource();
                     subDocName = stripPath(startSubDoc.getName());
@@ -295,9 +295,9 @@ public class TSAdapter extends OkapiFilterAdapter {
                 if (isStartContext(event)) {
                     context = event.getStartGroup().getName() == null ? ""
                             : event.getStartGroup().getName();
-                }else if (isEndContext(event)) {
+                } else if (isEndContext(event)) {
                     context = "";
-                }else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
+                } else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
                     StartSubDocument startSubDoc =
                             (StartSubDocument) event.getResource();
                     subDocName = stripPath(startSubDoc.getName());
@@ -311,7 +311,7 @@ public class TSAdapter extends OkapiFilterAdapter {
                             TextFlowTarget tft =
                                     new TextFlowTarget(getIdFor(tu, context.concat(content), subDocName));
                             // TODO: Change this
-                            tft.setState(ContentState.NeedReview);
+                            tft.setState(ContentState.Translated);
                             String resId = tft.getResId();
                             if (addedResources.containsKey(resId)) {
                                 List<String> currentStrings = new ArrayList<>(addedResources.get(resId).getContents());
