@@ -1,4 +1,9 @@
 {
   "presets": ["es2015", "stage-0", "react"],
-  "plugins": ["babel-plugin-lodash"]
+  "plugins": ["babel-plugin-lodash"],
+  "env": {
+    "development": {
+      "presets": ["react-hmre"]
+    }
+  }
 }

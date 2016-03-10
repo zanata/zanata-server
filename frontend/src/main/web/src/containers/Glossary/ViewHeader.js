@@ -28,7 +28,6 @@ import {
 } from '../../actions/glossary'
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
-import Entries from './Entries'
 
 class ViewHeader extends Component {
 

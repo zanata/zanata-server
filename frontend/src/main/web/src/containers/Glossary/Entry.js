@@ -1,14 +1,4 @@
 import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { debounce, cloneDeep } from 'lodash'
-import ReactList from 'react-list'
-import {
-  glossarySelectTerm,
-  glossaryUpdateField,
-  glossaryDeleteTerm,
-  glossaryResetTerm,
-  glossaryUpdateTerm
-} from '../../actions/glossary'
 import {
   EditableText,
   TableCell,
@@ -20,7 +10,6 @@ import {
   ButtonRound,
   Icon,
   LoaderText } from 'zanata-ui'
-
 import EntryModal from './EntryModal'
 import DeleteEntryModal from './DeleteEntryModal'
 
@@ -35,25 +24,8 @@ const isSameRender = () => {
   }
 }
 
-class Entries extends Component {
-
-  constructor (props) {
-    super(props)
-    this.state = {
-      show: {}
-    }
-  }
-
-  toggleModalDisplay (termId, display) {
-    console.info(this)
-    let show = this.state.show
-    show[termId] = display
-    this.setState({
-      show: show
-    })
-  }
-
-  renderItem (index, key) {
+class Entry extends Component {
+  render () {
     const {
       handleSelectTerm,
       handleTermFieldUpdate,
@@ -61,25 +33,21 @@ class Entries extends Component {
       handleResetTerm,
       handleUpdateTerm,
       termsLoading,
-      termIds,
-      terms,
-      selectedTransLocale,
-      selectedTerm,
+      term,
+      index,
+      transSelected,
+      selected,
       permission
       } = this.props
-    const termId = termIds[index]
-    const selected = termId === selectedTerm.id
-    const term = selected ? selectedTerm : termId
-      ? cloneDeep(terms[termId]) : false
+
     const transContent = term && term.transTerm
       ? term.transTerm.content
       : ''
-    const transSelected = !!selectedTransLocale
 
     // TODO: Make this only set when switching locales
     if (!term) {
       return (
-        <TableRow key={key}>
+        <TableRow>
           <TableCell>
             <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
           </TableCell>
@@ -100,23 +68,22 @@ class Entries extends Component {
     if (isSaving) {
       updateButton = (
         <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-          disabled={true}>
+                     disabled={true}>
           <LoaderText loading loadingText='Updating'>Update</LoaderText>
         </ButtonRound>)
     } else if (displayUpdateButton) {
       updateButton = (
         <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-          onClick={() => handleUpdateTerm(term)}>
+                     onClick={() => handleUpdateTerm(term)}>
           Update
         </ButtonRound>)
     }
 
     return (
       <TableRow highlight
-        className='editable'
-        key={key}
-        selected={selected}
-        onClick={() => handleSelectTerm(termId)}>
+                className='editable'
+                selected={selected}
+                onClick={() => handleSelectTerm(term.id)}>
         <TableCell size='2' tight>
           <EditableText
             editable={false}
@@ -163,96 +130,48 @@ class Entries extends Component {
         ) : ''
         }
         <TableCell hideSmall>
-          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}
-                      onClick={() => this.toggleModalDisplay(termId, true)}>
+          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}>
             <Icon name='info'/>
           </ButtonLink>
-          <EntryModal entry={term}
-                      show={this.state.show[termId]}/>
+          <EntryModal entry={term}/>
 
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                onClick={() => handleResetTerm(termId)}>
+                          onClick={() => handleResetTerm(term.id)}>
                 Cancel
               </ButtonLink>
             ) : ''
             }
 
             {!transSelected && permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={termId}
-                entry={term}
-                className='Mstart(rh)'
-                onDelete={handleDeleteTerm}/>
+              <DeleteEntryModal id={term.id}
+                                entry={term}
+                                className='Mstart(rh)'
+                                onDelete={handleDeleteTerm}/>
             ) : ''
             }
           </div>
-
         </TableCell>
       </TableRow>
     )
   }
-
-  render () {
-    const {
-      scrollIndex,
-      termCount,
-      ...props
-    } = this.props
-
-    return (<ReactList
-      useTranslate3d
-      itemRenderer={::this.renderItem}
-      length={termCount}
-      type='uniform'
-      initialIndex={scrollIndex || 0}
-      ref={c => this.list = c}
-      {...props}
-    />)
-  }
 }
 
-Entries.propType = {}
-
-const mapStateToProps = (state) => {
-  const {
-    selectedTerm,
-    stats,
-    termsLoading,
-    terms,
-    termIds,
-    termCount,
-    filter,
-    permission
-    } = state.glossary
-  const query = state.routing.location.query
-  return {
-    terms,
-    termIds,
-    termCount,
-    termsLoading,
-    transLocales: stats.transLocales,
-    srcLocale: stats.srcLocale,
-    filterText: filter,
-    selectedTerm: selectedTerm,
-    selectedTransLocale: query.locale,
-    scrollIndex: Number.parseInt(query.index, 10),
-    permission
-  }
+Entry.propType = {
+  term: PropTypes.object,
+  selected: PropTypes.bool,
+  index: PropTypes.number,
+  permission: PropTypes.object,
+  transSelected: PropTypes.bool,
+  termsLoading: PropTypes.bool,
+  handleSelectTerm: PropTypes.func,
+  handleTermFieldUpdate: PropTypes.func,
+  handleDeleteTerm: PropTypes.func,
+  handleResetTerm: PropTypes.func,
+  handleUpdateTerm: PropTypes.func
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    dispatch,
-    handleSelectTerm: (termId) => dispatch(glossarySelectTerm(termId)),
-    handleTermFieldUpdate: (field, event) => {
-      dispatch(glossaryUpdateField({ field, value: event.target.value || '' }))
-    },
-    handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
-    handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
-    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term))
-  }
-}
+export default Entry
 
-export default connect(mapStateToProps, mapDispatchToProps)(Entries)
