@@ -34,8 +34,8 @@
   </extensions>
 
   <system-properties>
+    <property name="zanata.javaScriptTestHelper" value="true" />
     <property name="jboss.as.management.blocking.timeout" value="1000"/>
-    <property name="zanata.countAjax" value="true"/>
     <property name="javamelody.storage-directory" value="${jboss.server.data.dir}/zanata/stats"/>
     <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/zanata/indexes"/>
     <property name="ehcache.disk.store.dir" value="${jboss.server.data.dir}/zanata/ehcache"/>

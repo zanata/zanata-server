@@ -59,6 +59,8 @@ public class DswidParamChecker {
     private final WebDriverEventListener urlListener;
     private @Nullable String oldUrl;
     private @Nullable String oldDswid;
+    private boolean checkingDswids = true;
+    private boolean insideInvoke;
 
     /**
      * Creates a listener for the specified driver, but does not register it. See getEventListener().
@@ -84,6 +86,10 @@ public class DswidParamChecker {
 
     private Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
+        if (insideInvoke) {
+            return null;
+        }
+        insideInvoke = true;
         try {
             String url = driver.getCurrentUrl();
             String query = new URL(url).getQuery();
@@ -97,7 +103,7 @@ public class DswidParamChecker {
                         .map(NameValuePair::getValue)
                         .findFirst();
             }
-            if (oldDswid != null) {
+            if (checkingDswids && oldDswid != null) {
                 assert oldUrl != null;
                 if (!dswid.isPresent()) {
                     String msg = "missing dswid on transition from " +
@@ -118,11 +124,21 @@ public class DswidParamChecker {
         } catch (MalformedURLException e) {
             // just ignore this URL entirely
             return null;
+        } finally {
+            insideInvoke = false;
         }
     }
 
     public void clear() {
         oldDswid = null;
         oldUrl = null;
+    }
+
+    public void startChecking() {
+        checkingDswids = true;
+    }
+
+    public void stopChecking() {
+        checkingDswids = false;
     }
 }
