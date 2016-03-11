@@ -141,8 +141,7 @@ var GlossaryHelper = {
         isSrcModified: isSrcModified,
         isTransModified: isTransModified,
         isSrcValid: isSrcValid, // source content is mandatory
-        canUpdateTransComment: canUpdateTransComment,
-        isSaving: entry.status ? entry.status.isSaving : false
+        canUpdateTransComment: canUpdateTransComment
       }
     }
     return this.getDefaultEntryStatus()
@@ -153,8 +152,7 @@ var GlossaryHelper = {
       isSrcModified: false,
       isTransModified: false,
       isSrcValid: true,
-      canUpdateTransComment: true,
-      isSaving: false
+      canUpdateTransComment: true
     }
   },
 

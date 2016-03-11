@@ -54,19 +54,22 @@ class Glossary extends Component {
       terms,
       selectedTransLocale,
       selectedTerm,
-      permission
+      permission,
+      saving
       } = this.props
 
-    const termId = termIds[index]
-    const selected = termId === selectedTerm.id
-    const term = selected ? selectedTerm : termId
-      ? cloneDeep(terms[termId]) : false
+    const entryId = termIds[index]
+    const selected = entryId === selectedTerm.id
+    const entry = selected ? selectedTerm : entryId
+      ? cloneDeep(terms[entryId]) : false
+    const savingEntry = saving[entryId]
 
     return (
       <Entry key={key}
-             term={term}
+             entry={entry}
              index={index}
              selected={selected}
+             savingEntry={savingEntry}
              permission={permission}
              transSelected={!!selectedTransLocale}
              termsLoading={termsLoading}
@@ -147,6 +150,7 @@ const mapStateToProps = (state) => {
     page,
     termsLoading,
     termCount,
+    saving
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -162,7 +166,8 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     location: state.routing.location,
-    page
+    page,
+    saving
   }
 }
 

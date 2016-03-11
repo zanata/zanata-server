@@ -410,8 +410,8 @@ export const glossarySelectTerm = (termId) => {
       if (status && (status.isSrcModified || status.isTransModified)) {
         dispatch(glossaryUpdateTerm(cloneDeep(selectedTerm)))
       }
+      dispatch(updateSelectedTerm(termId))
     }
-    dispatch(updateSelectedTerm(termId))
   }
 }
 

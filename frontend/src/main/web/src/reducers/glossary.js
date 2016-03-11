@@ -203,54 +203,55 @@ const glossary = handleActions({
     termsDidInvalidate: true
   }),
   [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
-    let terms = state.terms
-    let term = terms[action.payload.id]
-    if (term) {
-      if (!term.status) {
-        term.status = GlossaryHelper.getDefaultEntryStatus()
-      }
-      term.status.isSaving = true
-    }
+    let saving = state.saving
+    const selectedTerm = state.selectedTerm
+    const entryId = action.payload.id
 
-    let selectedTerm = state.selectedTerm
-    if (selectedTerm && term && selectedTerm.id === term.id) {
-      if (!selectedTerm.status) {
-        selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
-      }
-      selectedTerm.status.isSaving = true
+    if (selectedTerm && selectedTerm.id === entryId) {
+      saving[entryId] = cloneDeep(selectedTerm)
+      console.info('1alex..', saving)
+    } else if (state.terms[entryId]) {
+      console.info('2alex..')
+      saving[entryId] = cloneDeep(state.terms[entryId])
     }
     return {
       ...state,
-      terms: terms,
-      selectedTerm: selectedTerm
+      saving: saving
     }
   },
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
+    let saving = state.saving
     let selectedTerm = state.selectedTerm
     forEach(action.payload.glossaryEntries, (entry) => {
+      delete saving[entry.id]
       let cacheEntry = state.terms[entry.id]
       if (cacheEntry) {
         GlossaryHelper.mergeEntry(entry, cacheEntry)
-        cacheEntry.status = GlossaryHelper.getDefaultEntryStatus()
-        if (selectedTerm && selectedTerm.id === entry.id) {
-          GlossaryHelper.mergeEntry(entry, selectedTerm)
-          selectedTerm.status = GlossaryHelper.getDefaultEntryStatus()
-        }
       }
     })
+
+    if (selectedTerm) {
+      GlossaryHelper.mergeEntry(state.terms[selectedTerm.id], selectedTerm)
+    }
+
     return {
       ...state,
-      selectedTerm: selectedTerm
+      saving: saving
     }
   },
-  [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
-    ...state,
-    notification: {
-      severity: SEVERITY.ERROR,
-      message:
-        'We were unable to update the glossary term. Please refresh this page and try again.'
+  [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
+    let saving = state.saving
+    //TODO: remove from saving delete saving[action.payload.id]
+    return {
+      ...state,
+      saving: saving,
+      notification: {
+        severity: SEVERITY.ERROR,
+        message:
+          'We were unable to update the glossary term. Please refresh this page and try again.'
+      }
     }
-  }),
+  },
   [GLOSSARY_CREATE_REQUEST]: (state, action) => {
     let newEntry = state.newEntry
     newEntry.isSaving = true
@@ -298,6 +299,7 @@ const glossary = handleActions({
     let entries = {}
     forEach(action.payload.entities.glossaryTerms, (entry) => {
       entries[entry.id] = GlossaryHelper.generateEntry(entry, state.locale)
+      console.info(entries)
     })
     const terms = isEmpty(state.terms)
       ? entries
@@ -327,10 +329,7 @@ const glossary = handleActions({
     termsLoading: false
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => {
-    let selectedTerm = state.selectedTerm
-    if (selectedTerm && selectedTerm.id !== action.payload) {
-      selectedTerm = cloneDeep(state.terms[action.payload])
-    }
+    let selectedTerm = cloneDeep(state.terms[action.payload])
     return {
       ...state,
       selectedTerm: selectedTerm
@@ -362,6 +361,7 @@ const glossary = handleActions({
     srcLocale: {},
     transLocales: []
   },
+  saving: {},
   importFile: {
     show: false,
     status: -1,

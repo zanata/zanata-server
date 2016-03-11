@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react'
+import { isUndefined } from 'lodash'
+
 import {
   EditableText,
   TableCell,
@@ -33,19 +35,21 @@ class Entry extends Component {
       handleResetTerm,
       handleUpdateTerm,
       termsLoading,
-      term,
+      entry,
       index,
       transSelected,
       selected,
-      permission
+      permission,
+      savingTerm
       } = this.props
 
-    const transContent = term && term.transTerm
-      ? term.transTerm.content
+    const isSaving = !isUndefined(savingTerm)
+    const entryToUse = isSaving ? savingTerm : entry
+    const transContent = entry && entry.transTerm
+      ? entry.transTerm.content
       : ''
 
-    // TODO: Make this only set when switching locales
-    if (!term) {
+    if (!entryToUse) {
       return (
         <TableRow>
           <TableCell>
@@ -54,16 +58,17 @@ class Entry extends Component {
         </TableRow>
       )
     }
+
     if (index === 1) {
       isSameRender()
     }
 
     const isTermModified = transSelected
-      ? (term.status && term.status.isTransModified)
-      : (term.status && term.status.isSrcModified)
+      ? (entryToUse.status && entryToUse.status.isTransModified)
+      : (entryToUse.status && entryToUse.status.isSrcModified)
     const displayUpdateButton = permission.canUpdateEntry && isTermModified
-    const isSaving = term.status && term.status.isSaving
     const editable = permission.canUpdateEntry && !isSaving
+
     let updateButton
     if (isSaving) {
       updateButton = (
@@ -74,7 +79,7 @@ class Entry extends Component {
     } else if (displayUpdateButton) {
       updateButton = (
         <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-                     onClick={() => handleUpdateTerm(term)}>
+                     onClick={() => handleUpdateTerm(entryToUse)}>
           Update
         </ButtonRound>)
     }
@@ -83,12 +88,12 @@ class Entry extends Component {
       <TableRow highlight
                 className='editable'
                 selected={selected}
-                onClick={() => handleSelectTerm(term.id)}>
+                onClick={() => handleSelectTerm(entryToUse.id)}>
         <TableCell size='2' tight>
           <EditableText
             editable={false}
             editing={selected}>
-            {term.srcTerm.content}
+            {entryToUse.srcTerm.content}
           </EditableText>
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
@@ -103,7 +108,7 @@ class Entry extends Component {
             emptyReadOnlyText='No translation'>
             {transContent}
           </EditableText>)
-            : <div className='LineClamp(1,24px) Px(rq)'>{term.termsCount}</div>
+            : <div className='LineClamp(1,24px) Px(rq)'>{entryToUse.termsCount}</div>
           }
         </TableCell>
         <TableCell hideSmall>
@@ -113,7 +118,7 @@ class Entry extends Component {
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
-            {term.pos}
+            {entryToUse.pos}
           </EditableText>
         </TableCell>
         {!transSelected ? (
@@ -124,7 +129,7 @@ class Entry extends Component {
               onChange={(e) => handleTermFieldUpdate('description', e)}
               placeholder='Add a description…'
               emptyReadOnlyText='No description'>
-              {term.description}
+              {entryToUse.description}
             </EditableText>
           </TableCell>
         ) : ''
@@ -133,21 +138,21 @@ class Entry extends Component {
           <ButtonLink theme={{base: { m: 'Mend(rh)' }}}>
             <Icon name='info'/>
           </ButtonLink>
-          <EntryModal entry={term}/>
+          <EntryModal entry={entryToUse}/>
 
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleResetTerm(term.id)}>
+                          onClick={() => handleResetTerm(entryToUse.id)}>
                 Cancel
               </ButtonLink>
             ) : ''
             }
 
             {!transSelected && permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={term.id}
-                                entry={term}
+              <DeleteEntryModal id={entryToUse.id}
+                                entry={entryToUse}
                                 className='Mstart(rh)'
                                 onDelete={handleDeleteTerm}/>
             ) : ''
@@ -160,10 +165,11 @@ class Entry extends Component {
 }
 
 Entry.propType = {
-  term: PropTypes.object,
+  entry: PropTypes.object,
   selected: PropTypes.bool,
   index: PropTypes.number,
   permission: PropTypes.object,
+  savingEntry: PropTypes.object,
   transSelected: PropTypes.bool,
   termsLoading: PropTypes.bool,
   handleSelectTerm: PropTypes.func,
