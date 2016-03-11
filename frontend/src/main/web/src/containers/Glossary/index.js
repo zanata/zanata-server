@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
-import { debounce, cloneDeep } from 'lodash'
+import { debounce, cloneDeep, isUndefined } from 'lodash'
 import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import ReactList from 'react-list'
 import {
@@ -60,16 +60,17 @@ class Glossary extends Component {
 
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
-    const entry = selected ? selectedTerm : entryId
-      ? cloneDeep(terms[entryId]) : false
-    const savingEntry = saving[entryId]
+    const isSaving = !isUndefined(saving[entryId])
+    const entry = isSaving ? saving[entryId]
+      : (selected ? selectedTerm : entryId
+      ? cloneDeep(terms[entryId]) : null)
 
     return (
       <Entry key={key}
              entry={entry}
              index={index}
              selected={selected}
-             savingEntry={savingEntry}
+             isSaving={isSaving}
              permission={permission}
              transSelected={!!selectedTransLocale}
              termsLoading={termsLoading}

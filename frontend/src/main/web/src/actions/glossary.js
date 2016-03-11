@@ -137,9 +137,7 @@ export const createGlossaryTerm = (dispatch, term) => {
       types: [
         {
           type: GLOSSARY_CREATE_REQUEST,
-          payload: (action, state) => {
-            return term
-          }
+          payload: (action, state) => ({ entry: term })
         },
         {
           type: GLOSSARY_CREATE_SUCCESS,
@@ -176,9 +174,7 @@ export const updateGlossaryTerm = (dispatch, term) => {
       types: [
         {
           type: GLOSSARY_UPDATE_REQUEST,
-          payload: (action, state) => {
-            return term
-          }
+          payload: (action, state) => ({ entry: term })
         },
         {
           type: GLOSSARY_UPDATE_SUCCESS,
@@ -408,7 +404,7 @@ export const glossarySelectTerm = (termId) => {
     if (selectedTerm && selectedTerm.id !== termId) {
       const status = selectedTerm.status
       if (status && (status.isSrcModified || status.isTransModified)) {
-        dispatch(glossaryUpdateTerm(cloneDeep(selectedTerm)))
+        dispatch(glossaryUpdateTerm(selectedTerm))
       }
       dispatch(updateSelectedTerm(termId))
     }

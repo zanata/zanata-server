@@ -204,16 +204,8 @@ const glossary = handleActions({
   }),
   [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
     let saving = state.saving
-    const selectedTerm = state.selectedTerm
-    const entryId = action.payload.id
-
-    if (selectedTerm && selectedTerm.id === entryId) {
-      saving[entryId] = cloneDeep(selectedTerm)
-      console.info('1alex..', saving)
-    } else if (state.terms[entryId]) {
-      console.info('2alex..')
-      saving[entryId] = cloneDeep(state.terms[entryId])
-    }
+    const entryId = action.payload.entry.id
+    saving[entryId] = cloneDeep(action.payload.entry)
     return {
       ...state,
       saving: saving
@@ -222,26 +214,30 @@ const glossary = handleActions({
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
     let saving = state.saving
     let selectedTerm = state.selectedTerm
+    let terms = state.terms
     forEach(action.payload.glossaryEntries, (entry) => {
-      delete saving[entry.id]
-      let cacheEntry = state.terms[entry.id]
+      let cacheEntry = terms[entry.id]
       if (cacheEntry) {
         GlossaryHelper.mergeEntry(entry, cacheEntry)
       }
+      delete saving[entry.id]
     })
 
     if (selectedTerm) {
-      GlossaryHelper.mergeEntry(state.terms[selectedTerm.id], selectedTerm)
+      GlossaryHelper.mergeEntry(terms[selectedTerm.id], selectedTerm)
+      selectedTerm.status.isSrcModified = false
+      selectedTerm.status.isTransModified = false
     }
 
     return {
       ...state,
-      saving: saving
+      saving: saving,
+      terms: terms,
+      selectedTerm: selectedTerm
     }
   },
   [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
     let saving = state.saving
-    //TODO: remove from saving delete saving[action.payload.id]
     return {
       ...state,
       saving: saving,
@@ -299,7 +295,6 @@ const glossary = handleActions({
     let entries = {}
     forEach(action.payload.entities.glossaryTerms, (entry) => {
       entries[entry.id] = GlossaryHelper.generateEntry(entry, state.locale)
-      console.info(entries)
     })
     const terms = isEmpty(state.terms)
       ? entries

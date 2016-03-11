@@ -40,16 +40,14 @@ class Entry extends Component {
       transSelected,
       selected,
       permission,
-      savingTerm
+      isSaving
       } = this.props
 
-    const isSaving = !isUndefined(savingTerm)
-    const entryToUse = isSaving ? savingTerm : entry
     const transContent = entry && entry.transTerm
       ? entry.transTerm.content
       : ''
 
-    if (!entryToUse) {
+    if (!entry) {
       return (
         <TableRow>
           <TableCell>
@@ -64,9 +62,10 @@ class Entry extends Component {
     }
 
     const isTermModified = transSelected
-      ? (entryToUse.status && entryToUse.status.isTransModified)
-      : (entryToUse.status && entryToUse.status.isSrcModified)
-    const displayUpdateButton = permission.canUpdateEntry && isTermModified
+      ? (entry.status && entry.status.isTransModified)
+      : (entry.status && entry.status.isSrcModified)
+    const displayUpdateButton = permission.canUpdateEntry &&
+      isTermModified && selected
     const editable = permission.canUpdateEntry && !isSaving
 
     let updateButton
@@ -79,7 +78,7 @@ class Entry extends Component {
     } else if (displayUpdateButton) {
       updateButton = (
         <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-                     onClick={() => handleUpdateTerm(entryToUse)}>
+                     onClick={() => handleUpdateTerm(entry)}>
           Update
         </ButtonRound>)
     }
@@ -88,12 +87,12 @@ class Entry extends Component {
       <TableRow highlight
                 className='editable'
                 selected={selected}
-                onClick={() => handleSelectTerm(entryToUse.id)}>
+                onClick={() => handleSelectTerm(entry.id)}>
         <TableCell size='2' tight>
           <EditableText
             editable={false}
             editing={selected}>
-            {entryToUse.srcTerm.content}
+            {entry.srcTerm.content}
           </EditableText>
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
@@ -108,7 +107,7 @@ class Entry extends Component {
             emptyReadOnlyText='No translation'>
             {transContent}
           </EditableText>)
-            : <div className='LineClamp(1,24px) Px(rq)'>{entryToUse.termsCount}</div>
+            : <div className='LineClamp(1,24px) Px(rq)'>{entry.termsCount}</div>
           }
         </TableCell>
         <TableCell hideSmall>
@@ -118,7 +117,7 @@ class Entry extends Component {
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
-            {entryToUse.pos}
+            {entry.pos}
           </EditableText>
         </TableCell>
         {!transSelected ? (
@@ -129,7 +128,7 @@ class Entry extends Component {
               onChange={(e) => handleTermFieldUpdate('description', e)}
               placeholder='Add a description…'
               emptyReadOnlyText='No description'>
-              {entryToUse.description}
+              {entry.description}
             </EditableText>
           </TableCell>
         ) : ''
@@ -138,21 +137,21 @@ class Entry extends Component {
           <ButtonLink theme={{base: { m: 'Mend(rh)' }}}>
             <Icon name='info'/>
           </ButtonLink>
-          <EntryModal entry={entryToUse}/>
+          <EntryModal entry={entry}/>
 
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleResetTerm(entryToUse.id)}>
+                          onClick={() => handleResetTerm(entry.id)}>
                 Cancel
               </ButtonLink>
             ) : ''
             }
 
             {!transSelected && permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={entryToUse.id}
-                                entry={entryToUse}
+              <DeleteEntryModal id={entry.id}
+                                entry={entry}
                                 className='Mstart(rh)'
                                 onDelete={handleDeleteTerm}/>
             ) : ''
@@ -169,7 +168,7 @@ Entry.propType = {
   selected: PropTypes.bool,
   index: PropTypes.number,
   permission: PropTypes.object,
-  savingEntry: PropTypes.object,
+  isSaving: PropTypes.bool,
   transSelected: PropTypes.bool,
   termsLoading: PropTypes.bool,
   handleSelectTerm: PropTypes.func,
