@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TextareaAutosize from 'react-textarea-autosize'
-import { flattenClasses } from 'zanata-ui'
-import { debounce } from 'lodash'
+import { flattenThemeClasses } from './Base'
 
 const classes = {
   base: {
@@ -30,9 +29,6 @@ const classes = {
 class TextInput extends Component {
   constructor () {
     super()
-    // Need to add the debounce to onScroll here
-    // So it creates a new debounce for each instance
-    //this._onChange = debounce(this._onChange, 200)
   }
 
   _onBlur (e) {
@@ -112,7 +108,7 @@ class TextInput extends Component {
       'aria-label': accessibilityLabel,
       autoComplete: autoComplete && 'on',
       autoFocus,
-      className: flattenClasses(classes, theme),
+      className: flattenThemeClasses(classes, theme),
       defaultValue,
       maxLength,
       onBlur: onBlur && this._onBlur.bind(this),

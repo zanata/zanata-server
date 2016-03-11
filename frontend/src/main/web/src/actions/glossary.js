@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { isEmpty, forOwn, cloneDeep } from 'lodash'
+import { isEmpty, cloneDeep } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -41,10 +41,12 @@ export const GLOSSARY_UPLOAD_REQUEST = 'GLOSSARY_UPLOAD_REQUEST'
 export const GLOSSARY_UPLOAD_SUCCESS = 'GLOSSARY_UPLOAD_SUCCESS'
 export const GLOSSARY_UPLOAD_FAILURE = 'GLOSSARY_UPLOAD_FAILURE'
 export const GLOSSARY_UPDATE_IMPORT_FILE = 'GLOSSARY_UPDATE_IMPORT_FILE'
-export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE = 'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
+export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE =
+  'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
 export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
 export const GLOSSARY_UPDATE_COL_SORT = 'GLOSSARY_UPDATE_COL_SORT'
-export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY = 'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
+export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY =
+  'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
 export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
 export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
 export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
@@ -70,7 +72,8 @@ export const glossaryToggleImportFileDisplay =
 export const glossaryUpdateImportFileLocale =
   createAction(GLOSSARY_UPDATE_IMPORT_FILE_LOCALE)
 export const glossaryUpdateColSort = createAction(GLOSSARY_UPDATE_COL_SORT)
-export const glossaryToggleNewEntryModal = createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
+export const glossaryToggleNewEntryModal =
+  createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -241,7 +244,8 @@ export const getGlossaryTerms = (state, newIndex) => {
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
-  const sortQuery = sort ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
+  const sortQuery = sort
+    ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
   const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)

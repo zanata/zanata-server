@@ -1,15 +1,12 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
+
 import {
   ButtonLink,
   ButtonRound,
-  Icon,
+  EditableText,
   LoaderText,
   Modal
-} from 'zanata-ui'
-
-import {
-  EditableText
 } from '../../components'
 
 import {
@@ -25,7 +22,6 @@ class NewEntryModal extends Component {
       entry: props.entry
     }
   }
-
   handleContentChanged (e) {
     let entry = this.state.entry
     entry.srcTerm.content = e.target.value
@@ -33,7 +29,6 @@ class NewEntryModal extends Component {
       entry: entry
     })
   }
-
   handlePosChanged (e) {
     let entry = this.state.entry
     entry.pos = e.target.value
@@ -41,7 +36,6 @@ class NewEntryModal extends Component {
       entry: entry
     })
   }
-
   handleDescChanged (e) {
     let entry = this.state.entry
     entry.description = e.target.value
@@ -49,14 +43,12 @@ class NewEntryModal extends Component {
       entry: entry
     })
   }
-
   handleCancel () {
     this.state = {
       entry: this.props.entry
     }
     this.props.handleNewEntryDisplay(false)
   }
-
   render () {
     const {
       entry,
@@ -65,7 +57,6 @@ class NewEntryModal extends Component {
       handleNewEntryDisplay,
       handleNewEntryCreate
       } = this.props
-
     const isAllowSave =
       !StringUtils.isEmptyOrNull(this.state.entry.srcTerm.content)
 
@@ -74,7 +65,7 @@ class NewEntryModal extends Component {
         <Modal.Header>
           <Modal.Title>New Term</Modal.Title>
         </Modal.Header>
-        <Modal.Body className='tal'>
+        <Modal.Body className='Ta(s)'>
           <div className='Mb(rh)'>
             <label className='Fw(b)'>Term</label>
             <EditableText
@@ -86,7 +77,6 @@ class NewEntryModal extends Component {
               {this.state.entry.srcTerm.content}
             </EditableText>
           </div>
-
           <div className='Mb(rh)'>
             <label className='Fw(b)'>Part of speech</label>
             <EditableText
@@ -99,7 +89,6 @@ class NewEntryModal extends Component {
               {this.state.entry.pos}
             </EditableText>
           </div>
-
           <div className='Mb(rh)'>
             <label className='Fw(b)'>Description</label>
             <EditableText
@@ -114,7 +103,7 @@ class NewEntryModal extends Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonLink
-            theme={{base: {m: 'Mend(r1)'}}}
+            atomic={{m: 'Mend(r1)'}}
             disabled={isSaving}
             onClick={() => this.handleCancel()}>
             Cancel

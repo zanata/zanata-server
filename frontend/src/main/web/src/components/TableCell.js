@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 import { View } from './'
 
 const classes = {
@@ -38,12 +38,12 @@ const TableCell = ({
   hideSmall,
   ...props
 }) => {
-  const themed = mergeClasses(
+  const themed = merge({},
     classes,
     theme
   )
   const themeState = {
-    base: mergeClasses(
+    base: merge({},
       themed.base,
       themed[size],
       hideSmall && themed.hideSmall,

@@ -2,16 +2,14 @@ import React, { Component, PropTypes } from 'react'
 import { isUndefined } from 'lodash'
 
 import {
-  EditableText,
-  TableCell,
-  TableRow,
-  TextInput
-} from '../../components'
-import {
   ButtonLink,
   ButtonRound,
+  EditableText,
   Icon,
-  LoaderText } from 'zanata-ui'
+  LoaderText,
+  TableCell,
+  TableRow
+} from '../../components'
 import EntryModal from './EntryModal'
 import DeleteEntryModal from './DeleteEntryModal'
 
@@ -72,14 +70,14 @@ class Entry extends Component {
     let updateButton
     if (isSaving) {
       updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-                     disabled={true}>
+        <ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
+          disabled={true}>
           <LoaderText loading loadingText='Updating'>Update</LoaderText>
         </ButtonRound>)
     } else if (displayUpdateButton) {
       updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
-                     onClick={() => handleUpdateTerm(entryToUse)}>
+        <ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
+          onClick={() => handleUpdateTerm(entryToUse)}>
           Update
         </ButtonRound>)
     }
@@ -108,7 +106,9 @@ class Entry extends Component {
             emptyReadOnlyText='No translation'>
             {transContent}
           </EditableText>)
-            : <div className='LineClamp(1,24px) Px(rq)'>{entryToUse.termsCount}</div>
+            : (<div className='LineClamp(1,24px) Px(rq)'>
+              {entryToUse.termsCount}
+            </div>)
           }
         </TableCell>
         <TableCell hideSmall>
@@ -135,7 +135,7 @@ class Entry extends Component {
         ) : ''
         }
         <TableCell hideSmall>
-          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}>
+          <ButtonLink atomic={{m: 'Mend(rh)'}}>
             <Icon name='info'/>
           </ButtonLink>
           <EntryModal entry={entryToUse}/>
@@ -143,8 +143,8 @@ class Entry extends Component {
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
-              <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleResetTerm(entryToUse.id)}>
+              <ButtonLink atomic={{m: 'Mstart(rh)'}}
+                onClick={() => handleResetTerm(entryToUse.id)}>
                 Cancel
               </ButtonLink>
             ) : ''
@@ -180,4 +180,3 @@ Entry.propType = {
 }
 
 export default Entry
-

@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 import { View } from './'
 
 const ScrollView = ({
@@ -17,7 +17,7 @@ const ScrollView = ({
     }
   }
   return (
-    <View {...props} theme={mergeClasses(classes, theme)}>
+    <View {...props} theme={merge({}, classes, theme)}>
       <View theme={{
         base: {
           flxg: 'Flxg(1)',

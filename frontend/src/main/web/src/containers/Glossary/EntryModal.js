@@ -2,12 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import {
   ButtonLink,
   ButtonRound,
-  Icon,
   LoaderText,
-  Modal,
-} from 'zanata-ui'
-import {
-  EditableText
+  Modal
 } from '../../components'
 
 class EntryModal extends Component {
@@ -16,13 +12,10 @@ class EntryModal extends Component {
     const {
       entry,
       displayUpdateButton,
-      transSelected,
-      editable,
       show,
       handleEntryModalDisplay,
       handleResetTerm,
-      handleUpdateTerm,
-      handleTermFieldUpdate
+      handleUpdateTerm
     } = this.props
 
     const isSaving = entry.status && entry.status.isSaving
@@ -30,32 +23,33 @@ class EntryModal extends Component {
     let updateButton
     if (isSaving) {
       updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+        <ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
                      disabled={true}>
           <LoaderText loading loadingText='Updating'>Update</LoaderText>
         </ButtonRound>)
     } else if (displayUpdateButton) {
       updateButton = (
-        <ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+        <ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
                      onClick={() => handleUpdateTerm()}>
           Update
         </ButtonRound>)
     }
 
-    return(
-      <Modal show={show} onHide={() => handleEntryModalDisplay(entry.id, false)}>
+    return (
+      <Modal show={show}
+        onHide={() => handleEntryModalDisplay(entry.id, false)}>
         <Modal.Header>
           <Modal.Title>Glossary Term</Modal.Title>
         </Modal.Header>
-        <Modal.Body className='tal' scrollable={true}>
+        <Modal.Body className='Ta(s)' scrollable={true}>
           {entry.id}
         </Modal.Body>
         <Modal.Footer>
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
-                <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                            onClick={() => handleResetTerm()}>
+                <ButtonLink atomic={{m: 'Mstart(rh)'}}
+                  onClick={() => handleResetTerm()}>
                   Cancel
                 </ButtonLink>
               ) : ''

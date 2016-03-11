@@ -7,7 +7,7 @@ import {
   Icon,
   Tooltip,
   Overlay
-} from 'zanata-ui'
+} from '../../components'
 
 var DeleteEntryModal = React.createClass({
   propTypes: {
@@ -82,7 +82,7 @@ var DeleteEntryModal = React.createClass({
         {info}
         <div className="mt1/4">
           <ButtonLink
-            theme={{base: { m: 'Mend(rh)' }}}
+            atomic={{m: 'Mend(rh)'}}
             onClick={this._closeDialog}>
             Cancel
           </ButtonLink>
@@ -108,7 +108,7 @@ var DeleteEntryModal = React.createClass({
         <ButtonLink type='danger'
           onClick={this._toggleDialog}>
           <LoaderText loading={isDeleting} loadingText='Deleting'>
-            <Icon name="trash" className='mr1/8' /><span>Delete</span>
+            <Icon name="trash" atomic={{m: 'Mend(re)'}} /><span>Delete</span>
           </LoaderText>
         </ButtonLink>
       </div>

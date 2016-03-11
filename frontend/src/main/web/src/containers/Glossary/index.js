@@ -5,22 +5,19 @@ import { debounce, cloneDeep } from 'lodash'
 import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import ReactList from 'react-list'
 import {
+  LoaderText,
   Page,
   ScrollView,
   View
 } from '../../components'
 import {
-  glossarySelectTerm,
-  glossaryUpdateField,
   glossaryDeleteTerm,
-  glossaryResetTerm,
-  glossaryUpdateTerm
-} from '../../actions/glossary'
-import {
-  LoaderText } from 'zanata-ui'
-import {
-  glossaryUpdateIndex,
   glossaryGetTermsIfNeeded,
+  glossaryResetTerm,
+  glossarySelectTerm,
+  glossaryUpdateIndex,
+  glossaryUpdateField,
+  glossaryUpdateTerm
 } from '../../actions/glossary'
 import ViewHeader from './ViewHeader'
 import Entry from './Entry'
@@ -41,7 +38,6 @@ class Glossary extends Component {
     // So it creates a new debounce for each instance
     this.onScroll = debounce(this.onScroll, 100)
   }
-
   renderItem (index, key) {
     const {
       handleSelectTerm,
@@ -57,13 +53,11 @@ class Glossary extends Component {
       permission,
       saving
       } = this.props
-
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
     const entry = selected ? selectedTerm : entryId
       ? cloneDeep(terms[entryId]) : false
     const savingEntry = saving[entryId]
-
     return (
       <Entry key={key}
              entry={entry}
@@ -81,7 +75,6 @@ class Glossary extends Component {
       />
     )
   }
-
   onScroll () {
     // Debounced by 100ms in super()
     if (!this.list) return
@@ -102,7 +95,6 @@ class Glossary extends Component {
     dispatch(glossaryGetTermsIfNeeded(newIndex - loadingThreshold))
     dispatch(glossaryGetTermsIfNeeded(newIndexEnd + loadingThreshold))
   }
-
   render () {
     const {
       termsLoading,
@@ -147,7 +139,6 @@ const mapStateToProps = (state) => {
     termIds,
     filter,
     permission,
-    page,
     termsLoading,
     termCount,
     saving
@@ -166,7 +157,6 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     location: state.routing.location,
-    page,
     saving
   }
 }

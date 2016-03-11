@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 import {
   Row,
   TextInput
@@ -63,9 +63,9 @@ class EditableText extends Component {
       theme,
       ...props
     } = this.props
-    const themed = mergeClasses(classes, theme)
+    const themed = merge({}, classes, theme)
     const textStateClasses = {
-      base: mergeClasses(
+      base: merge({},
         themed.text.base,
         editable && classes.text.editable,
         !children && classes.text.placeholder

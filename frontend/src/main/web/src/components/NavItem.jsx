@@ -1,6 +1,6 @@
 import React from 'react' // eslint-disable-line
 import { Link, NavIcon } from './'
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 
 const NavItem = ({
   link,
@@ -50,7 +50,7 @@ const NavItem = ({
     }
   }
   const themeClasses = {
-    base: mergeClasses(
+    base: merge({},
       classes.base,
       active && !logo ? classes.active : {},
       small ? classes.small : {},

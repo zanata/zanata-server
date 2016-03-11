@@ -1,5 +1,6 @@
 import React from 'react' // eslint-disable-line
-import { mergeClasses, flattenClasses } from 'zanata-ui'
+import { merge } from 'lodash'
+import { flattenThemeClasses } from './Base'
 import {
   Icon
 } from './'
@@ -70,8 +71,8 @@ const Header = ({
   ...props
 }) => {
   return (
-    <View theme={mergeClasses(wrapperTheme, theme)}>
-      <div className={flattenClasses(baseClasses)}>
+    <View theme={merge({}, wrapperTheme, theme)}>
+      <div className={flattenThemeClasses(baseClasses)}>
         <View theme={innerViewTheme}>
           <Link link='/' theme={logoLinkTheme}>
             <Icon name='zanata' size='3' />
