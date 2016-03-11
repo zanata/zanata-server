@@ -58,7 +58,7 @@ import org.zanata.rest.dto.Account;
  *
  */
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 @Indexed
 @Setter
@@ -81,21 +81,21 @@ public class HAccount extends ModelEntityBase implements Serializable,
     private HAccount mergedInto;
     private Map<String, HAccountOption> editorOptions;
 
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY,
             mappedBy = "account")
     public HAccountActivationKey getAccountActivationKey() {
         return accountActivationKey;
     }
 
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY,
             mappedBy = "account")
     public HAccountResetPasswordKey getAccountResetPasswordKey() {
         return accountResetPasswordKey;
     }
 
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     public HPerson getPerson() {
         return person;
@@ -128,7 +128,7 @@ public class HAccount extends ModelEntityBase implements Serializable,
         return apiKey;
     }
 
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 //    @UserRoles
     @ManyToMany(targetEntity = HAccountRole.class)
     @JoinTable(name = "HAccountMembership", joinColumns = @JoinColumn(
