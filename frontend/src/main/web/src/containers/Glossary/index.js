@@ -63,7 +63,7 @@ class Glossary extends Component {
     const isSaving = !isUndefined(saving[entryId])
     const entry = isSaving ? saving[entryId]
       : (selected ? selectedTerm : entryId
-      ? cloneDeep(terms[entryId]) : null)
+      ? terms[entryId] : null)
 
     return (
       <Entry key={key}

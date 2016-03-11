@@ -380,7 +380,8 @@ export const glossaryDeleteTerm = (id) => {
 
 export const glossaryUpdateTerm = (term) => {
   return (dispatch, getState) => {
-    dispatch(updateGlossaryTerm(dispatch, term))
+    //do cloning to prevent changes in selectedTerm
+    dispatch(updateGlossaryTerm(dispatch, cloneDeep(term)))
   }
 }
 

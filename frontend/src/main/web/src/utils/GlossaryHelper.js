@@ -183,16 +183,6 @@ var GlossaryHelper = {
       params.push(param)
     })
     return params.length ? params.join() : ''
-  },
-
-  mergeEntry: (fromEntry, toEntry) => {
-    if (fromEntry.srcTerm) {
-      toEntry.srcTerm = fromEntry.srcTerm
-    }
-
-    if (fromEntry.transTerm) {
-      toEntry.transTerm = fromEntry.transTerm
-    }
   }
 }
 

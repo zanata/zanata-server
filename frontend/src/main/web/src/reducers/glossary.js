@@ -215,19 +215,15 @@ const glossary = handleActions({
     let saving = state.saving
     let selectedTerm = state.selectedTerm
     let terms = state.terms
-    forEach(action.payload.glossaryEntries, (entry) => {
-      let cacheEntry = terms[entry.id]
-      if (cacheEntry) {
-        GlossaryHelper.mergeEntry(entry, cacheEntry)
+    forEach(action.payload.glossaryEntries, (rawEntry) => {
+      const entry = GlossaryHelper.generateEntry(rawEntry)
+      terms[rawEntry.id] = entry
+
+      if (selectedTerm && selectedTerm.id === rawEntry.id) {
+        selectedTerm = cloneDeep(entry)
       }
       delete saving[entry.id]
     })
-
-    if (selectedTerm) {
-      GlossaryHelper.mergeEntry(terms[selectedTerm.id], selectedTerm)
-      selectedTerm.status.isSrcModified = false
-      selectedTerm.status.isTransModified = false
-    }
 
     return {
       ...state,
