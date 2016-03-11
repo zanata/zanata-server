@@ -27,6 +27,19 @@ const isSameRender = () => {
 }
 
 class Entry extends Component {
+  constructor () {
+    super()
+    this.state = {
+      showModal: false
+    }
+  }
+
+  handleEntryModalDisplay (display) {
+    this.setState({
+      showModal: display
+    })
+  }
+
   render () {
     const {
       handleSelectTerm,
@@ -37,15 +50,15 @@ class Entry extends Component {
       termsLoading,
       entry,
       index,
-      transSelected,
+      selectedTransLocale,
       selected,
       permission,
       isSaving
       } = this.props
 
     const transContent = entry && entry.transTerm
-      ? entry.transTerm.content
-      : ''
+      ? entry.transTerm.content : ''
+    const transSelected = !!selectedTransLocale
 
     if (!entry) {
       return (
@@ -134,16 +147,25 @@ class Entry extends Component {
         ) : ''
         }
         <TableCell hideSmall>
-          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}>
+          <ButtonLink theme={{base: { m: 'Mend(rh)' }}}
+                      onClick={() => this.handleEntryModalDisplay(true)}>
             <Icon name='info'/>
           </ButtonLink>
-          <EntryModal entry={entry}/>
+          <EntryModal entry={entry}
+                      show={this.state.showModal}
+                      selectedTransLocale={selectedTransLocale}
+                      canUpdate={displayUpdateButton}
+                      handleEntryModalDisplay={(display) => this.handleEntryModalDisplay(display)}
+                      handleResetTerm={(entryId) => handleResetTerm(entryId)}
+                      handleTermFieldUpdate={(field, e) => handleTermFieldUpdate(field, e)}
+                      handleUpdateTerm={(entry) => handleUpdateTerm(entry)}
+          />
 
           {updateButton}
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={() => handleResetTerm(entry.id)}>
+                          onClick={(entryId) => handleResetTerm(entryId)}>
                 Cancel
               </ButtonLink>
             ) : ''
@@ -168,8 +190,8 @@ Entry.propType = {
   selected: PropTypes.bool,
   index: PropTypes.number,
   permission: PropTypes.object,
+  selectedTransLocale: PropTypes.object,
   isSaving: PropTypes.bool,
-  transSelected: PropTypes.bool,
   termsLoading: PropTypes.bool,
   handleSelectTerm: PropTypes.func,
   handleTermFieldUpdate: PropTypes.func,

@@ -72,7 +72,7 @@ class Glossary extends Component {
              selected={selected}
              isSaving={isSaving}
              permission={permission}
-             transSelected={!!selectedTransLocale}
+             selectedTransLocale={selectedTransLocale}
              termsLoading={termsLoading}
              handleSelectTerm={handleSelectTerm}
              handleTermFieldUpdate={handleTermFieldUpdate}

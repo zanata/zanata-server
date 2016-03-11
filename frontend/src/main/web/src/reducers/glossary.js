@@ -26,7 +26,7 @@ import {
   GLOSSARY_UPDATE_IMPORT_FILE,
   GLOSSARY_UPDATE_IMPORT_FILE_LOCALE,
   GLOSSARY_TOGGLE_IMPORT_DISPLAY,
-  GLOSSARY_UPDATE_COL_SORT,
+  GLOSSARY_UPDATE_SORT,
   GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY,
   GLOSSARY_CREATE_REQUEST,
   GLOSSARY_CREATE_SUCCESS,
@@ -64,7 +64,7 @@ const glossary = handleActions({
     ...state,
     filter: action.payload
   }),
-  [GLOSSARY_UPDATE_COL_SORT]: (state, action) => {
+  [GLOSSARY_UPDATE_SORT]: (state, action) => {
     return {
       ...state,
       sort: action.payload

@@ -43,18 +43,12 @@ export const GLOSSARY_UPLOAD_FAILURE = 'GLOSSARY_UPLOAD_FAILURE'
 export const GLOSSARY_UPDATE_IMPORT_FILE = 'GLOSSARY_UPDATE_IMPORT_FILE'
 export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE = 'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
 export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
-export const GLOSSARY_UPDATE_COL_SORT = 'GLOSSARY_UPDATE_COL_SORT'
+export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
 export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY = 'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
 export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
 export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
 export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
 
-// TODO: Add the following
-export const GLOSSARY_SAVE = 'GLOSSARY_SAVE'
-export const GLOSSARY_UPDATE = 'GLOSSARY_UPDATE'
-export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
-export const GLOSSARY_UPDATE_COMMENT = 'GLOSSARY_UPDATE_COMMENT'
-export const GLOSSARY_UPDATE_FOCUSED_ROW = 'GLOSSARY_UPDATE_FOCUSED_ROW'
 export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
@@ -69,8 +63,9 @@ export const glossaryToggleImportFileDisplay =
   createAction(GLOSSARY_TOGGLE_IMPORT_DISPLAY)
 export const glossaryUpdateImportFileLocale =
   createAction(GLOSSARY_UPDATE_IMPORT_FILE_LOCALE)
-export const glossaryUpdateColSort = createAction(GLOSSARY_UPDATE_COL_SORT)
-export const glossaryToggleNewEntryModal = createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
+export const glossaryUpdateSort = createAction(GLOSSARY_UPDATE_SORT)
+export const glossaryToggleNewEntryModal =
+  createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -421,7 +416,7 @@ export const glossarySortColumn = (col) => {
     replaceRouteQuery(getState().routing.location, {
       sort: GlossaryHelper.convertSortToParam(sort)
     })
-    dispatch(glossaryUpdateColSort(sort)).then(
+    dispatch(glossaryUpdateSort(sort)).then(
       dispatch(getGlossaryTerms(getState()))
     )
   }
