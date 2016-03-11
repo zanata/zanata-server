@@ -18,7 +18,7 @@ const Base = ({
   theme = {},
   ...props
 }) => {
-  const Component = tagName || 'div'
+  const Component = tagName || 'div' || 'thing'
   const classes = flattenThemeClasses(theme, atomic)
   warning(!className,
     'Please use `theme` instead of `className` to style `' +
