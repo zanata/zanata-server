@@ -153,12 +153,17 @@ class Entry extends Component {
           </ButtonLink>
           <EntryModal entry={entry}
                       show={this.state.showModal}
+                      isSaving={isSaving}
                       selectedTransLocale={selectedTransLocale}
                       canUpdate={displayUpdateButton}
-                      handleEntryModalDisplay={(display) => this.handleEntryModalDisplay(display)}
-                      handleResetTerm={(entryId) => handleResetTerm(entryId)}
-                      handleTermFieldUpdate={(field, e) => handleTermFieldUpdate(field, e)}
-                      handleUpdateTerm={(entry) => handleUpdateTerm(entry)}
+                      handleEntryModalDisplay={(display) =>
+                        this.handleEntryModalDisplay(display)}
+                      handleResetTerm={(entryId) =>
+                        handleResetTerm(entryId)}
+                      handleTermFieldUpdate={(field, e) =>
+                        handleTermFieldUpdate(field, e)}
+                      handleUpdateTerm={(entry) =>
+                        handleUpdateTerm(entry)}
           />
 
           {updateButton}

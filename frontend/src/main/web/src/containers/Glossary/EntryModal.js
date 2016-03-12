@@ -9,6 +9,7 @@ import {
 import {
   EditableText
 } from '../../components'
+import { isEmptyOrNull } from '../../utils/StringUtils'
 
 class EntryModal extends Component {
 
@@ -25,10 +26,12 @@ class EntryModal extends Component {
       handleTermFieldUpdate
     } = this.props
 
-    const transContent = entry && entry.transTerm
-      ? entry.transTerm.content : ''
+    const transContent = entry.transTerm ? entry.transTerm.content : ''
     const transSelected = !!selectedTransLocale
     const comment = entry.transTerm ? entry.transTerm.comment : ''
+
+    const enableComment = transSelected &&
+      entry.transTerm && !isEmptyOrNull(transContent)
 
     return (
       <Modal show={show}
@@ -64,6 +67,9 @@ class EntryModal extends Component {
             <EditableText
               editable={!transSelected}
               editing={true}
+              maxLength={255}
+              placeholder='Add part of speech…'
+              emptyReadOnlyText='No part of speech'
               onChange={(e) => handleTermFieldUpdate('pos', e)}>
               {entry.pos}
             </EditableText>
@@ -73,6 +79,9 @@ class EntryModal extends Component {
             <EditableText
               editable={!transSelected}
               editing={true}
+              maxLength={255}
+              placeholder='Add a description…'
+              emptyReadOnlyText='No description'
               onChange={(e) => handleTermFieldUpdate('description', e)}>
               {entry.description}
             </EditableText>
@@ -83,6 +92,9 @@ class EntryModal extends Component {
               <EditableText
                 editable={true}
                 editing={true}
+                maxLength={255}
+                placeholder='Add a translation…'
+                emptyReadOnlyText='No translation'
                 onChange={(e) => handleTermFieldUpdate('locale', e)}>
                 {transContent}
               </EditableText>
@@ -93,8 +105,12 @@ class EntryModal extends Component {
             <div className='Mb(rh)'>
               <label className='Fw(b)'>Comment</label>
               <EditableText
-                editable={true}
-                editing={true}
+                maxLength={255}
+                editable={enableComment}
+                editing={enableComment}
+                placeholder='Add a comment…'
+                emptyReadOnlyText='No comment'
+                multiline
                 onChange={(e) => handleTermFieldUpdate('comment', e)}>
                 {comment}
               </EditableText>
@@ -130,7 +146,6 @@ class EntryModal extends Component {
 
 EntryModal.propType = {
   entry: PropTypes.object,
-  permission: PropTypes.object,
   show: PropTypes.bool,
   isSaving: PropTypes.bool,
   canUpdate: PropTypes.bool,

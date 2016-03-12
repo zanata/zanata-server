@@ -6,7 +6,7 @@ import defined from 'defined'
 var GlossaryHelper = {
   /**
    * Generate org.zanata.rest.dto.GlossaryTerm object
-   * returns null if data is undefined or content and locale is empty
+   * returns null if data is undefined or locale is empty
    *
    * @param data
    */
@@ -14,10 +14,11 @@ var GlossaryHelper = {
     if (isUndefined(data) || isEmptyOrNull(data.locale)) {
       return
     }
+    const comment = isEmptyOrNull(data.content) ? null : trim(data.comment)
     return {
       content: trimContent ? trim(data.content) : data.content,
       locale: data.locale,
-      comment: trim(data.comment)
+      comment: comment
     }
   },
 
@@ -119,6 +120,8 @@ var GlossaryHelper = {
       const source = this.toEmptyString(entry.srcTerm.content)
       const trans = entry.transTerm
         ? this.toEmptyString(entry.transTerm.content) : ''
+      const comment = entry.transTerm
+        ? this.toEmptyString(entry.transTerm.comment) : ''
       const desc = this.toEmptyString(entry.description)
       const pos = this.toEmptyString(entry.pos)
 
@@ -126,22 +129,22 @@ var GlossaryHelper = {
         originalEntry.srcTerm.content)
       const ori_trans = originalEntry.transTerm
         ? this.toEmptyString(originalEntry.transTerm.content) : ''
+      const ori_comment = originalEntry.transTerm
+        ? this.toEmptyString(originalEntry.transTerm.comment) : ''
       const ori_desc = this.toEmptyString(originalEntry.description)
       const ori_pos = this.toEmptyString(originalEntry.pos)
 
       let isSrcModified = (desc !== ori_desc) ||
         (pos !== ori_pos) ||
         (source !== ori_source)
-      let isTransModified = trans !== ori_trans
+      let isTransModified = (trans !== ori_trans) || (comment !== ori_comment)
 
       let isSrcValid = !isEmptyOrNull(trim(source))
-      let canUpdateTransComment = !isEmptyOrNull(ori_trans)
 
       return {
         isSrcModified: isSrcModified,
         isTransModified: isTransModified,
-        isSrcValid: isSrcValid, // source content is mandatory
-        canUpdateTransComment: canUpdateTransComment
+        isSrcValid: isSrcValid // source content is mandatory
       }
     }
     return this.getDefaultEntryStatus()
@@ -151,13 +154,8 @@ var GlossaryHelper = {
     return {
       isSrcModified: false,
       isTransModified: false,
-      isSrcValid: true,
-      canUpdateTransComment: true
+      isSrcValid: true
     }
-  },
-
-  canUpdateTransComment: function (entry) {
-    return !isEmptyOrNull(entry.transTerm.content)
   },
 
   convertSortToObject: function (sortString) {

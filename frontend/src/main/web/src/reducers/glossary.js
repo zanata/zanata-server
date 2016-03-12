@@ -35,6 +35,7 @@ import {
 } from '../actions/glossary'
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
+import { isEmptyOrNull } from '../utils/StringUtils'
 
 const glossary = handleActions({
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
@@ -153,12 +154,22 @@ const glossary = handleActions({
             GlossaryHelper.generateEmptyTerm(state.locale)
           newSelectedTerm.transTerm.content = action.payload.value
         }
+        if (isEmptyOrNull(newSelectedTerm.transTerm.content)) {
+          newSelectedTerm.transTerm.comment = null
+        }
         break
       case 'pos':
         newSelectedTerm.pos = action.payload.value
         break
       case 'description':
         newSelectedTerm.description = action.payload.value
+        break
+      case 'comment':
+        if (newSelectedTerm.transTerm) {
+          newSelectedTerm.transTerm.comment = action.payload.value
+        } else {
+          console.error('comment not allow for empty translation')
+        }
         break
       default: console.error('Not a valid field')
     }
@@ -216,7 +227,7 @@ const glossary = handleActions({
     let selectedTerm = state.selectedTerm
     let terms = state.terms
     forEach(action.payload.glossaryEntries, (rawEntry) => {
-      const entry = GlossaryHelper.generateEntry(rawEntry)
+      const entry = GlossaryHelper.generateEntry(rawEntry, state.locale)
       terms[rawEntry.id] = entry
 
       if (selectedTerm && selectedTerm.id === rawEntry.id) {
