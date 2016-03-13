@@ -40,6 +40,13 @@ class Entry extends Component {
     })
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    // TODO: need to handle rerendering here for performance
+    // issue: this.props already updated before this. nextPrps and this.props always equal in this method
+    console.info(this.props.entry, nextProps.entry)
+    return true
+  }
+
   render () {
     const {
       handleSelectTerm,
@@ -170,7 +177,7 @@ class Entry extends Component {
           <div className='Op(0) row--selected_Op(1) editable:h_Op(1) Trs(eo)'>
             {displayUpdateButton && !isSaving ? (
               <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
-                          onClick={(entryId) => handleResetTerm(entryId)}>
+                          onClick={() => handleResetTerm(entry.id)}>
                 Cancel
               </ButtonLink>
             ) : ''

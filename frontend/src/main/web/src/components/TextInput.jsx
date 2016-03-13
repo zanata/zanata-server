@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TextareaAutosize from 'react-textarea-autosize'
 import { flattenClasses } from 'zanata-ui'
-import { debounce } from 'lodash'
 
 const classes = {
   base: {
