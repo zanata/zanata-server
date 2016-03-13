@@ -54,6 +54,7 @@
     "flat": "^1.6.0",
     "flux": "^2.0.3",
     "history": "^2.0.0",
+    "immutable": "^3.7.6",
     "isomorphic-fetch": "^2.2.1",
     "keymirror": "^0.1.1",
     "lodash": "^4.0.1",

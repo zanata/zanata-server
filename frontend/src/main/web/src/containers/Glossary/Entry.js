@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import { isUndefined } from 'lodash'
+import { isUndefined, isEqual } from 'lodash'
 
 import {
   EditableText,
@@ -41,10 +41,7 @@ class Entry extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    // TODO: need to handle rerendering here for performance
-    // issue: this.props already updated before this. nextPrps and this.props always equal in this method
-    console.info(this.props.entry, nextProps.entry)
-    return true
+    return !isEqual(this.props, nextProps)
   }
 
   render () {
