@@ -1811,7 +1811,8 @@
         <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>
 
         <hibernate.module.version>4.2.20.Final</hibernate.module.version>
-        <hibernate.module.name>wildfly-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
+        <hibernate.module.filename>wildfly-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.filename>
+        <hibernate.module.url>https://bintray.com/artifact/download/sflanigan/generic/${hibernate.module.filename}</hibernate.module.url>
       </properties>
 
       <build>
@@ -1832,8 +1833,8 @@
                 <configuration>
                   <target unless="skipITs">
                     <mkdir dir="${download.dir}" />
-                    <get src="http://sourceforge.net/projects/zanata/files/wildfly/${hibernate.module.name}/download" dest="${download.dir}/${hibernate.module.name}" skipexisting="true" />
-                    <unzip src="${download.dir}/${hibernate.module.name}" dest="${appserver.home}" />
+                    <get src="${hibernate.module.url}" dest="${download.dir}/${hibernate.module.filename}" skipexisting="true" />
+                    <unzip src="${download.dir}/${hibernate.module.filename}" dest="${appserver.home}" />
                   </target>
                 </configuration>
               </execution>
