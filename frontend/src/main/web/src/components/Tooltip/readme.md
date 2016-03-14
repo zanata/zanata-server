@@ -1,7 +1,7 @@
 ## Default
 
     const tooltip = (
-      <Tooltip><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+      <Tooltip id='tt1'><strong>Holy guacamole!</strong> Check this info.</Tooltip>
     );
     <OverlayTrigger overlay={tooltip}>
       <Button>Hover for tooltip</Button>
@@ -10,7 +10,7 @@
 ## Inverse
 
     const tooltip = (
-      <Tooltip inverse><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+      <Tooltip id='tt2' inverse><strong>Holy guacamole!</strong> Check this info.</Tooltip>
     );
     <OverlayTrigger overlay={tooltip}>
       <Button>Hover for inverted tooltip</Button>
@@ -19,7 +19,7 @@
 ## Placement
 
     const tooltip = (
-      <Tooltip placement='right'><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+      <Tooltip id='tt3' placement='right'><strong>Holy guacamole!</strong> Check this info.</Tooltip>
     );
     <OverlayTrigger overlay={tooltip}>
       <Button>Hover for right positioned tooltip</Button>
@@ -28,7 +28,7 @@
 ## Alignment
 
     const tooltip = (
-      <Tooltip alignment='left' title='Aligned Left'>
+      <Tooltip id='tt4' alignment='left' title='Aligned Left'>
         <strong>Holy guacamole!</strong> Check this info.
       </Tooltip>
     );
@@ -39,7 +39,7 @@
 ## Title
 
     const tooltip = (
-      <Tooltip title='Look at me'><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+      <Tooltip id='tt5' title='Look at me'><strong>Holy guacamole!</strong> Check this info.</Tooltip>
     );
     <OverlayTrigger overlay={tooltip}>
       <Button>Hover for tooltip with a title</Button>
@@ -48,7 +48,7 @@
 ## On Focus
 
     const tooltip = (
-      <Tooltip>
+      <Tooltip id='tt6'>
         <strong>Holy guacamole!</strong> Check this clickable info.
       </Tooltip>
     );

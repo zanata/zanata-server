@@ -81,6 +81,7 @@ module.exports = {
       'Lh(1.5)',
       'M(0)',
       'M(rq)',
+      'Mstart(r1)',
       'Miw(r6)',
       'Ov(a)',
       'Ovx(h)',

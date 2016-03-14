@@ -6,8 +6,8 @@ import {
 
 const classes = {
   base: {
-    flx: 'Flx(flx1)',
-    p: 'Px(r1) Pt(r1) Pb(r2)'
+    p: 'Px(r1) Pt(r1) Pb(r2)',
+    t: 'Ta(s)'
   },
   scrollable: {
     ov: 'Ov(a) Ovx(h)'

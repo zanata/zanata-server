@@ -1,6 +1,6 @@
 import React from 'react'
 import NavItem from './NavItem'
-import { flattenThemeClasses } from './Base'
+import { flattenThemeClasses } from '../utils/styleUtils'
 import Configs from '../constants/Configs'
 
 const items = [

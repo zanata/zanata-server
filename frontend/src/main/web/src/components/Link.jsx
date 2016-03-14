@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { flattenThemeClasses } from './Base'
+import { flattenThemeClasses } from '../utils/styleUtils'
 import { Link as RouterLink } from 'react-router'
 
 const classes = {

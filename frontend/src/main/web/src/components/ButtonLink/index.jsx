@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
-import { Button } from '../'
+import { Base } from '../'
+import { classes as buttonClasses } from '../Button'
 
 const classes = {
   base: {
@@ -45,23 +46,28 @@ const ButtonLink = ({
   type,
   ...props
 }) => {
-  const themed = merge({}, classes, theme)
+  const themed = merge({}, buttonClasses, classes, theme)
   const themedState = {
     base: merge({}, themed.base, themed[type])
   }
   return (
-    <Button
+    <Base
       {...props}
+      tagName='button'
       componentName='ButtonLink'
       theme={themedState}
     >
       {children}
-    </Button>
+    </Base>
   )
 }
 
 ButtonLink.propTypes = {
   children: PropTypes.node,
+  /**
+   * Toggle whether the button is disabled or not
+   */
+  disabled: PropTypes.bool,
   /**
    * Used to override the default theme.
    */

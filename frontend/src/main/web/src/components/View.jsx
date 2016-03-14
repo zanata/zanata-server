@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react' // eslint-disable-line
-import { flattenClasses } from '../utils/styleUtils'
+import { flattenThemeClasses } from '../utils/styleUtils'
 
 const classes = {
   base: {
@@ -17,7 +17,7 @@ const View = ({
   ...props
 }) => (
   <div
-    className={flattenClasses(classes, theme)}
+    className={flattenThemeClasses(classes, theme)}
     {...props}
   >
     { children }

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
 import { Base } from '../'
 
-const classes = {
+export const classes = {
   base: {
     whs: 'Whs(nw)',
     c: 'C(i)',
@@ -16,19 +16,16 @@ const classes = {
 
 const Button = ({
   children,
-  disabled,
   theme = {},
   ...props
 }) => {
   const themed = merge({}, classes, theme)
-  const themedState = merge({}, themed.base)
   return (
     <Base
       componentName='Button'
       {...props}
       tagName='button'
-      disabled={disabled}
-      theme={themedState}
+      theme={themed}
     >
       {children}
     </Base>

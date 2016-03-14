@@ -1,3 +1,8 @@
+/**
+ *  Add to this file sparingly
+ *  Only use sensible, **application based**, defaults
+ */
+
 @-ms-viewport {
   width: device-width;
 }
@@ -27,6 +32,14 @@ h6 {
   font-size: inherit;
   font-weight: inherit;
   margin: 0;
+}
+
+p {
+  margin: 0 0 1.5rem;
+}
+
+p:last-child {
+  margin-bottom: 0;
 }
 
 img {
