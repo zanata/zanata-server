@@ -29,13 +29,20 @@ class Entry extends Component {
   constructor () {
     super()
     this.state = {
-      showModal: false
+      showEntryModal: false,
+      showDeleteModal: false
     }
   }
 
   handleEntryModalDisplay (display) {
     this.setState({
-      showModal: display
+      showEntryModal: display
+    })
+  }
+
+  handleDeleteEntryDisplay (display) {
+    this.setState({
+      showDeleteModal: display
     })
   }
 
@@ -56,7 +63,8 @@ class Entry extends Component {
       selectedTransLocale,
       selected,
       permission,
-      isSaving
+      isSaving,
+      isDeleting
       } = this.props
 
     const transContent = entry && entry.transTerm
@@ -157,7 +165,7 @@ class Entry extends Component {
             <Icon name='info'/>
           </ButtonLink>
           <EntryModal entry={entry}
-                      show={this.state.showModal}
+                      show={this.state.showEntryModal}
                       isSaving={isSaving}
                       selectedTransLocale={selectedTransLocale}
                       canUpdate={displayUpdateButton}
@@ -182,10 +190,13 @@ class Entry extends Component {
             }
 
             {!transSelected && permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={entry.id}
-                                entry={entry}
+              <DeleteEntryModal entry={entry}
+                                isDeleting={isDeleting}
+                                show={this.state.showDeleteModal}
                                 className='Mstart(rh)'
-                                onDelete={handleDeleteTerm}/>
+                                handleDeleteEntryDisplay={(display) =>
+                                  this.handleDeleteEntryDisplay(display)}
+                                handleDeleteEntry={handleDeleteTerm}/>
             ) : ''
             }
           </div>
@@ -202,6 +213,7 @@ Entry.propType = {
   permission: PropTypes.object,
   selectedTransLocale: PropTypes.object,
   isSaving: PropTypes.bool,
+  isDeleting: PropTypes.bool,
   termsLoading: PropTypes.bool,
   handleSelectTerm: PropTypes.func,
   handleTermFieldUpdate: PropTypes.func,

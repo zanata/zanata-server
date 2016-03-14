@@ -209,7 +209,12 @@ export const deleteGlossaryTerm = (dispatch, id) => {
       method: 'DELETE',
       headers: headers,
       types: [
-        GLOSSARY_DELETE_REQUEST,
+        {
+          type: GLOSSARY_DELETE_REQUEST,
+          payload: (action, state) => {
+            return id
+          }
+        },
         {
           type: GLOSSARY_DELETE_SUCCESS,
           payload: (action, state, res) => {

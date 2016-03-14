@@ -52,7 +52,8 @@ class Glossary extends Component {
       selectedTransLocale,
       selectedTerm,
       permission,
-      saving
+      saving,
+      deleting
       } = this.props
 
     const entryId = termIds[index]
@@ -61,12 +62,14 @@ class Glossary extends Component {
     const entry = isSaving ? saving[entryId]
       : (selected ? selectedTerm : entryId
       ? terms[entryId] : null)
+    const isDeleting = !isUndefined(deleting[entryId])
 
     return (
       <Entry key={key}
              entry={entry}
              index={index}
              selected={selected}
+             isDeleting={isDeleting}
              isSaving={isSaving}
              permission={permission}
              selectedTransLocale={selectedTransLocale}
@@ -147,7 +150,8 @@ const mapStateToProps = (state) => {
     permission,
     termsLoading,
     termCount,
-    saving
+    saving,
+    deleting
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -163,7 +167,8 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     location: state.routing.location,
-    saving
+    saving,
+    deleting
   }
 }
 

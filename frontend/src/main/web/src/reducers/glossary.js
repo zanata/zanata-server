@@ -21,6 +21,9 @@ import {
   GLOSSARY_UPDATE_REQUEST,
   GLOSSARY_UPDATE_SUCCESS,
   GLOSSARY_UPDATE_FAILURE,
+  GLOSSARY_DELETE_REQUEST,
+  GLOSSARY_DELETE_SUCCESS,
+  GLOSSARY_DELETE_FAILURE,
   GLOSSARY_UPLOAD_REQUEST,
   GLOSSARY_UPLOAD_SUCCESS,
   GLOSSARY_UPLOAD_FAILURE,
@@ -214,6 +217,33 @@ const glossary = handleActions({
     ...state,
     termsDidInvalidate: true
   }),
+  [GLOSSARY_DELETE_REQUEST]: (state, action) => {
+    let deleting = state.deleting
+    const entryId = action.payload
+    deleting[entryId] = entryId
+    return {
+      ...state,
+      deleting: deleting
+    }
+  },
+  [GLOSSARY_DELETE_SUCCESS]: (state, action) => {
+    let deleting = state.deleting
+    const entryId = action.payload.id
+    delete deleting[entryId]
+    return {
+      ...state,
+      deleting: deleting
+    }
+  },
+  [GLOSSARY_DELETE_FAILURE]: (state, action) => ({
+    ...state,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to delete the glossary term. Please refresh this page and try again.'
+    }
+  }),
+
   [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
     let saving = state.saving
     const entryId = action.payload.entry.id
@@ -244,18 +274,14 @@ const glossary = handleActions({
       selectedTerm: selectedTerm
     }
   },
-  [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
-    let saving = state.saving
-    return {
-      ...state,
-      saving: saving,
-      notification: {
-        severity: SEVERITY.ERROR,
-        message:
-          'We were unable to update the glossary term. Please refresh this page and try again.'
-      }
+  [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
+    ...state,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to update the glossary term. Please refresh this page and try again.'
     }
-  },
+  }),
   [GLOSSARY_CREATE_REQUEST]: (state, action) => {
     let newEntry = state.newEntry
     newEntry.isSaving = true
@@ -365,6 +391,7 @@ const glossary = handleActions({
     transLocales: []
   },
   saving: {},
+  deleting: {},
   importFile: {
     show: false,
     status: -1,
