@@ -52,10 +52,10 @@ WebFont.load({
  * dev - If 'dev' attribute exist, all api data will be retrieve
  * from .json file in test directory.
  */
-var mountNode = document.getElementById('root')
-var user = JSON.parse(mountNode.getAttribute('user'))
-var data = JSON.parse(mountNode.getAttribute('data'))
-var dev = data.dev
+const mountNode = document.getElementById('root')
+const user = JSON.parse(mountNode.getAttribute('user'))
+const data = JSON.parse(mountNode.getAttribute('data'))
+const dev = data.dev
 
 // Replace with redux state
 // base rest url, e.g http://localhost:8080/rest
@@ -66,7 +66,7 @@ Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
 // see org.zanata.rest.editor.dto.User
 Configs.user = user
 
-let links = {
+const links = {
   'context': Configs.API_ROOT,
   '/login': Configs.data.loginUrl,
   '/help': Configs.data.helpUrl,
