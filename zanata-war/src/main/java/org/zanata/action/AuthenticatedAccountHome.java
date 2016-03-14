@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -43,7 +44,7 @@ import java.io.Serializable;
  * A simple bean to hold the currently authenticated account.
  */
 @Named("authenticatedAccountHome")
-@org.apache.deltaspike.core.api.scope.ViewAccessScoped /* TODO [CDI] check this: migrated from ScopeType.CONVERSATION */
+@RequestScoped
 @Slf4j
 public class AuthenticatedAccountHome extends EntityHome<HAccount>
         implements Serializable {
