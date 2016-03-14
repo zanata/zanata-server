@@ -29,9 +29,9 @@ or not loading. Good for loading state in buttons.
         setState({loading: false})
       }, 1000)
     }
-    <Button onClick={handleClick} disabled={state.loading}>
+    <ButtonRound onClick={handleClick} disabled={state.loading}>
       <LoaderText loading={state.loading}
         loadingText='Submitting'>
         Submit
       </LoaderText>
-    </Button>
+    </ButtonRound>

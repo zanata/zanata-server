@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { flattenThemeClasses } from './Base'
+import { flattenThemeClasses } from '../utils/styleUtils'
 
 const Heading = ({
   children,

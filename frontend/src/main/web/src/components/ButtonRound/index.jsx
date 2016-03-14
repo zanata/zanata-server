@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
-import { Button } from '../'
+import { Base } from '../'
+import { classes as buttonClasses } from '../Button'
 
 const classes = {
   base: {
@@ -85,7 +86,7 @@ const ButtonRound = ({
   size,
   ...props
 }) => {
-  const themed = merge({}, classes, theme)
+  const themed = merge({}, buttonClasses, classes, theme)
   const stateTheme = {
     base: merge({},
       themed.base,
@@ -94,18 +95,22 @@ const ButtonRound = ({
     )
   }
   return (
-    <Button
+    <Base
       {...props}
       componentName='ButtonRound'
+      tagName='button'
       theme={stateTheme}
     >
       {children}
-    </Button>
+    </Base>
   )
 }
 
 ButtonRound.propTypes = {
   children: PropTypes.node,
+  /**
+   * Toggle whether the button is disabled or not
+   */
   disabled: PropTypes.bool,
   theme: PropTypes.object,
   /**

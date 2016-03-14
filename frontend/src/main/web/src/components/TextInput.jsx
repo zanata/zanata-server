@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TextareaAutosize from 'react-textarea-autosize'
-import { flattenThemeClasses } from './Base'
+import { flattenThemeClasses } from '../utils/styleUtils'
 
 const classes = {
   base: {

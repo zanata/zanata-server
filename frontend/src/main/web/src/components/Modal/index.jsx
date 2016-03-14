@@ -10,7 +10,7 @@ import {
   ButtonLink,
   Icon
 } from '../'
-import { flattenThemeClasses } from '../Base'
+import { flattenThemeClasses } from '../../utils/styleUtils'
 
 const commonClasses = {
   b: 'B(0)',

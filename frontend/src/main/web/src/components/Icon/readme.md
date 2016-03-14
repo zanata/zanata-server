@@ -15,24 +15,3 @@
 With a size property. This is based of the modular scale 1-10
 
     <Icon name='project' size='5'/>
-
-## Theme
-
-Theme should match the Icon theme objects structure
-
-    <Icon name='project' size='n1'
-      theme={{base: {c: 'C(muted)'}}} />
-
-## Atomic
-
-Atomic class objects for quick style changes
-
-    <Icon name='project' size='2' atomic={{c: 'C(pri)'}}/>
-
-## Atomic & Theme
-
-Atomic classes can override any theme object **and custom props**.
-
-    <Icon name='project' size='4'
-      theme={{base: {c: 'C(pri)'}}}
-      atomic={{c: 'C(muted)', h: 'H(ms8)', w: 'W(ms8)'}} />

@@ -1,13 +1,6 @@
 import React, { PropTypes } from 'react'
-import { values, merge } from 'lodash'
 import warning from 'warning'
-import flattenObj from 'flat'
-
-export const flattenThemeClasses = (base, ...otherClasses) => {
-  return values(
-    flattenObj(merge({}, base, ...otherClasses))
-  ).join(' ').trim()
-}
+import { flattenThemeClasses } from '../../utils/styleUtils'
 
 const Base = ({
   atomic = {},

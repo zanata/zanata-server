@@ -73,7 +73,7 @@ class ImportModal extends Component {
         <Modal.Header>
           <Modal.Title>Import Glossary</Modal.Title>
         </Modal.Header>
-        <Modal.Body atomic={{t: 'Ta(start)'}} scrollable={false}>
+        <Modal.Body>
           <input
             type="file"
             onChange={handleImportFileChange}

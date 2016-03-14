@@ -1,6 +1,6 @@
 import React from 'react' // eslint-disable-line
 import { merge } from 'lodash'
-import { flattenThemeClasses } from './Base'
+import { flattenThemeClasses } from '../utils/styleUtils'
 import {
   Icon
 } from './'

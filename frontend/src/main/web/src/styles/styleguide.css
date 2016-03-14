@@ -10,3 +10,16 @@
   overflow: auto;
   overflow-x: hidden;
 }
+
+.ReactStyleguidist-Markdown__p,
+.ReactStyleguidist-Markdown__ul,
+.ReactStyleguidist-Markdown__ol,
+.ReactStyleguidist-Markdown__blockquote,
+.ReactStyleguidist-Markdown__table,
+.ReactStyleguidist-Markdown__hr,
+.ReactStyleguidist-Markdown__h3,
+.ReactStyleguidist-Markdown__h4,
+.ReactStyleguidist-Markdown__h5,
+.ReactStyleguidist-Markdown__h6 {
+  margin-bottom: 1.5rem;
+}

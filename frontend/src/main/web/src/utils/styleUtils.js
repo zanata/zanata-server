@@ -1,13 +1,8 @@
-import merge from 'lodash/merge'
-import values from 'lodash/values'
+import { merge, values } from 'lodash'
 import flattenObj from 'flat'
 
-export const mergeClasses = (base, ...otherClasses) => {
-  return merge({}, base, ...otherClasses)
-}
-
-export const flattenClasses = (base, ...otherClasses) => {
+export const flattenThemeClasses = (base, ...otherClasses) => {
   return values(
-    flattenObj(mergeClasses(base, ...otherClasses))
+    flattenObj(merge({}, base, ...otherClasses))
   ).join(' ').trim()
 }
