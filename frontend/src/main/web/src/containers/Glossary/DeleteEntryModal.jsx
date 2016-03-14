@@ -67,7 +67,7 @@ var DeleteEntryModal = React.createClass({
     ) : (<p>Are you sure you want to delete this term?</p>)
 
     return (
-      <div className={className + ' dib'}>
+      <div className={className + ' D(ib)'}>
         <Overlay
           placement='top'
           target={() => ReactDOM.findDOMNode(this)}

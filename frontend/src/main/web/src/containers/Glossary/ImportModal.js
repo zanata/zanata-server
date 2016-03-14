@@ -98,7 +98,7 @@ class ImportModal extends Component {
             CSV and PO files are supported. <strong>The source language should
             be in {locale}</strong>. For more details on how to prepare glossary
             files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
-            className="cpri" target="_blank">glossary import documentation</a>.
+            className="C(pri)" target="_blank">glossary import documentation</a>.
           </p>
         </Modal.Body>
         <Modal.Footer>

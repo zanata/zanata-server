@@ -40,18 +40,20 @@ class EntryModal extends Component {
             {transSelected ? (
               <span>
                 <Icon name='language'
-                      className='C(neutral) Mstart(rq) Mend(re)' />
+                      atomic={{m: 'Mstart(rq) Mend(re)',
+                              c: 'C(neutral)'}}/>
                 <span className='C(muted)'>{selectedTransLocale}</span>
               </span>)
               : (<span>
                     <Icon name='translate'
-                          className='C(neutral) Mstart(rq) Mend(re)' />
+                          atomic={{m: 'Mstart(rq) Mend(re)',
+                              c: 'C(neutral)'}}/>
                     <span className='C(muted)'>{entry.termsCount}</span>
                   </span>)
             }
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className='Ta(s)' scrollable={true}>
+        <Modal.Body atomic={{t: 'Ta(start)'}} scrollable={false}>
           <div className='Mb(rh)'>
             <label className='Fw(b)'>Term</label>
             <EditableText

@@ -40,7 +40,7 @@ class Entry extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    return !isEqual(this.props, nextProps)
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState)
   }
 
   render () {
