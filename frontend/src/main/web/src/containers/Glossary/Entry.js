@@ -107,55 +107,66 @@ class Entry extends Component {
         </ButtonRound>)
     }
 
+    const loadingDiv = (<div className='LineClamp(1,24px) Px(rq)'>Loading…</div>)
+
     return (
       <TableRow highlight
                 className='editable'
                 selected={selected}
                 onClick={() => handleSelectTerm(entry.id)}>
         <TableCell size='2' tight>
-          <EditableText
-            editable={false}
-            editing={selected}>
-            {entry.srcTerm.content}
-          </EditableText>
+          {termsLoading
+            ? loadingDiv
+            : (<EditableText
+                editable={false}
+                editing={selected}>
+                {entry.srcTerm.content}
+              </EditableText>)
+          }
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
-          {transSelected
-            ? termsLoading
-            ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-            : (<EditableText
-            editable={transSelected && editable}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('locale', e)}
-            placeholder='Add a translation…'
-            emptyReadOnlyText='No translation'>
-            {transContent}
-          </EditableText>)
-            : (<div className='LineClamp(1,24px) Px(rq)'>
-              {entry.termsCount}
-            </div>)
+          {termsLoading
+            ? loadingDiv
+            : transSelected
+              ? (<EditableText
+                  editable={transSelected && editable}
+                  editing={selected}
+                  onChange={(e) => handleTermFieldUpdate('locale', e)}
+                  placeholder='Add a translation…'
+                  emptyReadOnlyText='No translation'>
+                  {transContent}
+                </EditableText>)
+              : (<div className='LineClamp(1,24px) Px(rq)'>
+                  {entry.termsCount}
+                </div>)
           }
         </TableCell>
         <TableCell hideSmall>
-          <EditableText
+          {termsLoading
+            ? loadingDiv
+            : (<EditableText
             editable={!transSelected && editable}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
             {entry.pos}
-          </EditableText>
+          </EditableText>)
+          }
         </TableCell>
         {!transSelected ? (
           <TableCell hideSmall>
-            <EditableText
-              editable={!transSelected && editable}
-              editing={selected}
-              onChange={(e) => handleTermFieldUpdate('description', e)}
-              placeholder='Add a description…'
-              emptyReadOnlyText='No description'>
-              {entry.description}
-            </EditableText>
+            {termsLoading
+              ? loadingDiv
+              : (<EditableText
+                  editable={!transSelected && editable}
+                  editing={selected}
+                  onChange={(e) => handleTermFieldUpdate('description', e)}
+                  placeholder='Add a description…'
+                  emptyReadOnlyText='No description'>
+                  {entry.description}
+                </EditableText>)
+            }
           </TableCell>
         ) : ''
         }
