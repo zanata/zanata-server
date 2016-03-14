@@ -9,7 +9,8 @@ const classes = {
     bxsh: 'Bxsh(sh1)',
     c: 'C(#fff)',
     fw: 'Fw(600)',
-    p: 'Px(e3q) Py(eq)',
+    lh: 'Lh(e1h)',
+    p: 'Px(e3q)',
     trs: 'Trs(aeo)',
     hover: {
       bxsh: 'Bxsh(sh2):h',

@@ -6,6 +6,8 @@ export const classes = {
   base: {
     whs: 'Whs(nw)',
     c: 'C(i)',
+    o: 'O(n)',
+    ap: 'Ap(n)',
     disabled: {
       cur: 'Cur(d):di',
       op: 'Op(.6):di',
