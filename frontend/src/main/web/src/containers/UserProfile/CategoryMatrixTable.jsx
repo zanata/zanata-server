@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import CategoryItemMatrix from './CategoryItemMatrix';
+import React from 'react'
+import _ from 'lodash'
+import CategoryItemMatrix from './CategoryItemMatrix'
 
 var CategoryMatrixTable = React.createClass(
   {

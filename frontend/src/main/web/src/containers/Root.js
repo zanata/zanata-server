@@ -3,6 +3,7 @@ import { Provider } from 'react-redux'
 import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
+import UserProfile from '../containers/UserProfile'
 import View from '../components/View'
 import {
   glossaryInitialLoad
@@ -22,6 +23,8 @@ export default class Root extends Component {
               <Route path="glossary"
                 component={Glossary}
                 onEnter={store.dispatch(glossaryInitialLoad())} />
+              <Route path="profile"
+                     component={UserProfile} />
               <Redirect from="/" to="glossary" />
             </Route>
           </Router>

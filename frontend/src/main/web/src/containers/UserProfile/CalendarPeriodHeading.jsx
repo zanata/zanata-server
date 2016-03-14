@@ -1,6 +1,6 @@
-import React from 'react';
-import moment from 'moment';
-import dateUtils from '../utils/DateHelper'
+import React from 'react'
+import moment from 'moment'
+import dateUtils from '../../utils/DateHelper'
 
 var CalendarPeriodHeading = React.createClass(
   {

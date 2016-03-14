@@ -1,10 +1,10 @@
 import React from 'react'
-import ContentStateFilter from './ContentStateFilter';
+import ContentStateFilter from './ContentStateFilter'
 import CalendarMonthMatrix from './CalendarMonthMatrix'
-import CalendarPeriodHeading from './CalendarPeriodHeading';
-import CategoryMatrixTable from './CategoryMatrixTable';
-import {DateRanges} from '../constants/Options';
-import {ContentStates} from '../constants/Options';
+import CalendarPeriodHeading from './CalendarPeriodHeading'
+import CategoryMatrixTable from './CategoryMatrixTable'
+import {DateRanges} from '../../constants/Options'
+import {ContentStates} from '../../constants/Options'
 
 var FilterableMatrixTable = React.createClass({
   propTypes: {

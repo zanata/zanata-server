@@ -1,7 +1,7 @@
-import React from 'react';
-import utilsDate from '../utils/DateHelper';
-import { Line } from 'react-chartjs';
-import {DateRanges} from '../constants/Options';
+import React from 'react'
+import utilsDate from '../../utils/DateHelper'
+import { Line } from 'react-chartjs'
+import {DateRanges} from '../../constants/Options'
 
 var LineChart = Line;
 

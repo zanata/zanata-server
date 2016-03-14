@@ -1,9 +1,9 @@
-import React from 'react';
-import ContributionChart from './ContributionChart';
-import DropDown from './DropDown';
-import FilterableMatrixTable from './FilterableMatrixTable';
-import {DateRanges} from '../constants/Options';
-import Actions from '../actions/UserMatrixActions';
+import React from 'react'
+import ContributionChart from './ContributionChart'
+import DropDown from '../../components/DropDown'
+import FilterableMatrixTable from './FilterableMatrixTable'
+import {DateRanges} from '../../constants/Options'
+import Actions from '../../actions/userMatrix'
 
 var RecentContributions = React.createClass(
   {

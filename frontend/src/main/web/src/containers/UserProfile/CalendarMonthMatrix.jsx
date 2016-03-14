@@ -1,9 +1,9 @@
-import React from 'react';
-import moment from 'moment-range';
-import DayMatrix from './DayMatrix';
-import Actions from '../actions/UserMatrixActions';
-import {ContentStates} from '../constants/Options';
-import {DateRanges} from '../constants/Options';
+import React from 'react'
+import moment from 'moment-range'
+import DayMatrix from './DayMatrix'
+import Actions from '../../actions/userMatrix'
+import {ContentStates} from '../../constants/Options'
+import {DateRanges} from '../../constants/Options'
 
 var CalendarMonthMatrix = React.createClass({
   propTypes: {
@@ -22,12 +22,12 @@ var CalendarMonthMatrix = React.createClass({
   getDefaultProps: function() {
     // this is to make week days locale aware and making sure it align with
     // below display
-    var now = moment(),
-      weekDays = [],
-      weekDay;
+    var now = moment()
+    var weekDays = []
+    var weekDay
     for (var i = 0; i < 7; i++) {
-      weekDay = now.weekday(i).format('ddd');
-      weekDays.push(<th className="cal__heading" key={weekDay}>{weekDay}</th>);
+      weekDay = now.weekday(i).format('ddd')
+      weekDays.push(<th className="cal__heading" key={weekDay}>{weekDay}</th>)
     }
     return {
       weekDays: weekDays
