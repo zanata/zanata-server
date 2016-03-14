@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 import { View } from './'
 
 const classes = {
@@ -16,7 +16,7 @@ const Page = ({
   ...props
 }) => {
   return (
-    <View theme={mergeClasses(classes, theme)} {...props}>
+    <View theme={merge({}, classes, theme)} {...props}>
       {children}
     </View>
   )

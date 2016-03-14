@@ -1,17 +1,12 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { debounce } from 'lodash'
 import {
   ButtonLink,
-  Icon,
-  LoaderText,
-  Select } from 'zanata-ui'
-import { replaceRouteQuery } from '../../utils/RoutingHelpers'
-import {
   Header,
-  Page,
+  Icon,
   Row,
-  ScrollView,
+  Select,
   TableCell,
   TableRow,
   TextInput,
@@ -19,9 +14,7 @@ import {
 } from '../../components'
 import {
   glossaryChangeLocale,
-  glossaryUpdateIndex,
   glossaryFilterTextChanged,
-  glossaryGetTermsIfNeeded,
   glossarySortColumn,
   glossaryToggleImportFileDisplay,
   glossaryToggleNewEntryModal
@@ -63,8 +56,6 @@ class ViewHeader extends Component {
     </span>
     )
   }
-
-
   render () {
     const {
       filterText = '',
@@ -80,13 +71,11 @@ class ViewHeader extends Component {
       permission,
       sort
       } = this.props
-
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
-
     return (
       <Header title='Glossary'
-          extraElements={(
+        extraElements={(
           <View theme={{base: { ai: 'Ai(c)', fld: '' }}}>
             <TextInput
               theme={{base: { flx: 'Flx(flx1)', m: 'Mstart(rh)--md' }}}
@@ -99,10 +88,10 @@ class ViewHeader extends Component {
                 <div className='Mstart(rq)'>
                   <ButtonLink type='default'
                     onClick={() => handleImportFileDisplay(true)}
-                    theme={{ base: { m: 'Mstart(rh)' } }}>
+                    atomic={{m: 'Mstart(rh)'}}>
                     <Row>
-                      <Icon name='import' className='Mend(rq)'
-                        theme={{ base: { m: 'Mend(rq)' } }}/>
+                      <Icon name='import'
+                        atomic={{m: 'Mend(rq)'}}/>
                       <span className='Hidden--lesm'>Import Glossary</span>
                     </Row>
                   </ButtonLink>
@@ -111,11 +100,11 @@ class ViewHeader extends Component {
 
                {permission.canAddNewEntry ? (
                  <div className='Mstart(rq)'>
-                    <ButtonLink theme={{ base: { m: 'Mstart(rh)' } }}
+                    <ButtonLink atomic={{m: 'Mstart(rh)'}}
                       onClick={() => handleNewEntryDisplay(true)}>
                       <Row>
-                        <Icon name='plus' className='Mend(rq)'
-                          theme={{ base: { m: 'Mend(rq)' } }}/>
+                        <Icon name='plus'
+                          atomic={{m: 'Mend(rq)'}}/>
                         <span className='Hidden--lesm'>New Term</span>
                       </Row>
                     </ButtonLink>
@@ -125,10 +114,11 @@ class ViewHeader extends Component {
           </View>
         )}>
         <View theme={{
-              base: {
-                w: 'W(100%)',
-                m: 'Mt(rq) Mt(rh)--sm'
-              }}}>
+          base: {
+            w: 'W(100%)',
+            m: 'Mt(rq) Mt(rh)--sm'
+          }}}
+        >
           <TableRow
             theme={{ base: { bd: '' } }}
             className='Flxg(1)'>
@@ -136,11 +126,16 @@ class ViewHeader extends Component {
                        onClick={() => handleSortColumn('src_content')}>
               <ButtonLink type='default'>
                 <Row>
-                  {'src_content' in sort ? (sort.src_content === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
-                  <Icon name='glossary' className='C(neutral) Mend(re) MStart(rq)' />
-                      <span className='LineClamp(1,24px)'>
-                        English (United States)
-                      </span>
+                  {'src_content' in sort
+                    ? (sort.src_content === true)
+                      ? <Icon name='chevron-down'/>
+                      : <Icon name='chevron-up'/>
+                    : ''}
+                  <Icon name='glossary'
+                    atomic={{c: 'C(neutral)', m: 'Mend(re) MStart(rq)'}} />
+                    <span className='LineClamp(1,24px)'>
+                      English (United States)
+                    </span>
                   <span className='C(muted) Mstart(rq)'>{termCount}</span>
                 </Row>
               </ButtonLink>
@@ -162,18 +157,25 @@ class ViewHeader extends Component {
               {selectedTransLocale &&
               (<Row>
                 <Icon name='translate'
-                      className='C(neutral) Mstart(rq) Mend(re)' />
-                      <span className='C(muted)'>
-                        {currentLocaleCount}
-                      </span>
+                  atomic={{c: 'C(neutral)', m: 'Mstart(rq) Mend(re)'}} />
+                <span className='C(muted)'>
+                  {currentLocaleCount}
+                </span>
               </Row>)
               }
             </TableCell>
-            <TableCell hideSmall onClick={() => handleSortColumn('part_of_speech')}>
+            <TableCell hideSmall
+              onClick={() => handleSortColumn('part_of_speech')}>
               <ButtonLink type='default'>
                 <Row>
-                  {'part_of_speech' in sort ? (sort.part_of_speech === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
-                  <span className='LineClamp(1,24px) MStart(rq)'>Part of Speech</span>
+                  {'part_of_speech' in sort
+                    ? (sort.part_of_speech === true)
+                      ? <Icon name='chevron-down'/>
+                      : <Icon name='chevron-up'/>
+                    : ''}
+                  <span className='LineClamp(1,24px) MStart(rq)'>
+                    Part of Speech
+                  </span>
                 </Row>
               </ButtonLink>
             </TableCell>
@@ -181,8 +183,14 @@ class ViewHeader extends Component {
               <TableCell hideSmall onClick={() => handleSortColumn('desc')}>
                 <ButtonLink type='default'>
                   <Row>
-                    {'desc' in sort ? (sort.desc === true ? <Icon name='chevron-down'/> : <Icon name='chevron-up'/>) : ''}
-                    <span className='LineClamp(1,24px) MStart(rq)'>Description</span>
+                    {'desc' in sort
+                      ? (sort.desc === true)
+                        ? <Icon name='chevron-down'/>
+                        : <Icon name='chevron-up'/>
+                      : ''}
+                    <span className='LineClamp(1,24px) MStart(rq)'>
+                      Description
+                    </span>
                   </Row>
                 </ButtonLink>
               </TableCell>
@@ -196,7 +204,6 @@ class ViewHeader extends Component {
     )
   }
 }
-
 
 const mapStateToProps = (state) => {
   const {

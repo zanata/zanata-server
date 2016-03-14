@@ -1,5 +1,5 @@
 import React from 'react'
-import { Icon } from 'zanata-ui'
+import { Icon } from './'
 
 const classes = {
   base: {

@@ -2,9 +2,11 @@ import React, { Component } from 'react'
 // import a11y from 'react-a11y'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
-import { Icons } from 'zanata-ui'
-import Nav from '../components/Nav'
-import View from '../components/View'
+import {
+  Nav,
+  View,
+  Icons
+} from '../components'
 
 // if (process.env.NODE_ENV === 'development') a11y(React)
 

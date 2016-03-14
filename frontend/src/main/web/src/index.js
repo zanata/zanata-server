@@ -12,9 +12,9 @@ import { apiMiddleware } from 'redux-api-middleware'
 import rootReducer from './reducers'
 import Root from './containers/Root'
 import Configs from './constants/Configs'
-import 'zanata-ui/lib/styles/index.css'
 import './styles/base.css'
 import './styles/atomic.css'
+import './styles/animations.css'
 import './styles/extras.css'
 
 WebFont.load({

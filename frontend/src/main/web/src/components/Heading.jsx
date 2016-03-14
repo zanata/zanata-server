@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { flattenClasses } from 'zanata-ui'
+import { flattenThemeClasses } from './Base'
 
 const Heading = ({
   children,
@@ -16,7 +16,7 @@ const Heading = ({
       lh: 'Lh(1)'
     }
   }
-  const headingClasses = flattenClasses(classes, theme)
+  const headingClasses = flattenThemeClasses(classes, theme)
   return (<h1 {...props} className={headingClasses} >
     {children}
   </h1>)

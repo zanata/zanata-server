@@ -1,6 +1,6 @@
 import React from 'react'
 import NavItem from './NavItem'
-import { flattenClasses } from 'zanata-ui'
+import { flattenThemeClasses } from './Base'
 import Configs from '../constants/Configs'
 
 const items = [
@@ -125,7 +125,7 @@ const classes = {
     d: 'D(f)',
     fld: 'Fld(c)--sm',
     flxs: 'Flxs(0)',
-    h: 'H(100%)',
+    h: 'H(100%)--sm',
     or: 'Or(1) Or(0)--sm',
     ov: 'Ov(h)',
     w: 'W(r3)--sm'
@@ -139,38 +139,34 @@ const Nav = ({
   context,
   ...props
 }) => {
-
-  let auth = 'loggedout';
-  if(Configs.data.loggedIn === true) {
-    auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin';
+  let auth = 'loggedout'
+  if (Configs.data.loggedIn === true) {
+    auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin'
   }
 
-  const username = (Configs.user && Configs.user.username) ? Configs.user.username : '';
+  const username = (Configs.user && Configs.user.username)
+    ? Configs.user.username : ''
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
 
   return (
     <nav
       {...props}
-      className={flattenClasses(classes)}>
+      className={flattenThemeClasses(classes)}>
       {items.map((item, itemId) => {
-        if(((item.auth === 'public') || (item.auth === authState) ||
+        if (((item.auth === 'public') || (item.auth === authState) ||
           (item.auth === 'loggedin' && admin)) && !item.more) {
-
-          let link = item.link;
-
-          if(legacy) {
-            if(links[item.link]) {
-              link = links.context + links[item.link];
+          let link = item.link
+          if (legacy) {
+            if (links[item.link]) {
+              link = links.context + links[item.link]
             } else {
-              link = links.context + (item.href ? item.href : item.link);
+              link = links.context + (item.href ? item.href : item.link)
             }
           }
-
-          if(link.endsWith(':username')) {
-            link = link.replace(':username', username);
+          if (link.endsWith(':username')) {
+            link = link.replace(':username', username)
           }
-
           return (<NavItem key={itemId}
             small={item.small}
             active={active === link}
@@ -179,9 +175,8 @@ const Nav = ({
             icon={item.icon}
             title={item.title}/>)
         }
-        return null;
-        })
-      }
+        return null
+      })}
     </nav>
   )
 }

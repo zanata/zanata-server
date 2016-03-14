@@ -12,13 +12,14 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
         loader: 'atomic-loader?configPath=' + __dirname +
           '/atomicCssConfig.js' +
-          '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015',
-        include: path.join(__dirname, 'src')
+          '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015'
       },
       {
         test: /\.css$/,
+        include: path.join(__dirname, 'src'),
         loader: 'style!css!autoprefixer?browsers=last 2 versions'
       }
     ]

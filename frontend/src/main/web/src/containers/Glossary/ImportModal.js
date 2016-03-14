@@ -1,16 +1,12 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
+
 import {
   ButtonLink,
   ButtonRound,
-  Icon,
   LoaderText,
   Modal,
   Select
-} from 'zanata-ui'
-
-import {
-  Row
 } from '../../components'
 
 import {
@@ -71,26 +67,27 @@ class ImportModal extends Component {
       </div>)
     }
 
+    /* eslint-disable max-len */
     return (
       <Modal show={show} onHide={() => handleImportFileDisplay(false)}>
         <Modal.Header>
           <Modal.Title>Import Glossary</Modal.Title>
         </Modal.Header>
-        <Modal.Body className='tal' scrollable={false}>
+        <Modal.Body atomic={{t: 'Ta(start)'}} scrollable={false}>
           <input
             type="file"
             onChange={handleImportFileChange}
             ref="file"
             multiple={false}
             disabled={isUploading}
-            className="mb1"/>
+            className="Mb(r1)"/>
           {messageSection}
           { isUploading
-            ? (<span className='csec fz2'>
+            ? (<span className='Fz(ms2)'>
                 {transLocale.label}</span>)
             : (<Select
             name='glossary-import-language-selection'
-            className='W(r16) Mb(r1)'
+            className='Maw(r16) Mb(r1)'
             placeholder='Select a translation language…'
             value={transLocale}
             options={transLocales}
@@ -98,15 +95,15 @@ class ImportModal extends Component {
           />)
           }
           <p>
-            CSV and PO files are supported. <strong>The source language should be in {locale}</strong>.
-            For more details on how to prepare glossary files, see our <a
-            href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
+            CSV and PO files are supported. <strong>The source language should
+            be in {locale}</strong>. For more details on how to prepare glossary
+            files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
             className="cpri" target="_blank">glossary import documentation</a>.
           </p>
         </Modal.Body>
         <Modal.Footer>
           <ButtonLink
-            theme={{base: {m: 'Mend(r1)'}}}
+            atomic={{m: 'Mend(r1)'}}
             disabled={isUploading}
             onClick={() => handleImportFileDisplay(false)}>
             Cancel
@@ -123,8 +120,7 @@ class ImportModal extends Component {
       </Modal>)
   }
 }
-
-ImportModal.propType = {}
+/* eslint-enable max-len */
 
 const mapStateToProps = (state) => {
   const {

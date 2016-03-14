@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import { flattenClasses } from 'zanata-ui'
+import { flattenThemeClasses } from './Base'
 import { Link as RouterLink } from 'react-router'
 
 const classes = {
@@ -22,21 +22,22 @@ const Link = ({
   useHref,
   ...props
 }) => {
-  if(useHref) {
-   return (
-     <a href={link} className={flattenClasses(classes, theme)} {...props}>
-       {children}
-     </a>
-   )
+  if (useHref) {
+    return (
+      <a href={link} className={flattenThemeClasses(classes, theme)} {...props}>
+        {children}
+      </a>
+    )
   }
   return (
-  <RouterLink
-    to={link}
-    className={flattenClasses(classes, theme)}
-    {...props}
-  >
-    {children}
-  </RouterLink>
-)}
+    <RouterLink
+      to={link}
+      className={flattenThemeClasses(classes, theme)}
+      {...props}
+    >
+      {children}
+    </RouterLink>
+  )
+}
 
 export default Link

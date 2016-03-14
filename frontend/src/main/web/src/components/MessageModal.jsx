@@ -1,5 +1,8 @@
 import React, { PropTypes } from 'react'
-import { ButtonRound, Modal } from 'zanata-ui'
+import {
+  ButtonRound,
+  Modal
+} from '../'
 import Actions from '../actions/GlossaryActions'
 import { isEmptyOrNull } from '../utils/StringUtils'
 

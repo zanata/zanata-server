@@ -5,22 +5,19 @@ import { debounce, cloneDeep, isUndefined } from 'lodash'
 import { replaceRouteQuery } from '../../utils/RoutingHelpers'
 import ReactList from 'react-list'
 import {
+  LoaderText,
   Page,
   ScrollView,
   View
 } from '../../components'
 import {
+  glossaryDeleteTerm,
+  glossaryGetTermsIfNeeded,
+  glossaryResetTerm,
   glossarySelectTerm,
   glossaryUpdateField,
-  glossaryDeleteTerm,
-  glossaryResetTerm,
-  glossaryUpdateTerm
-} from '../../actions/glossary'
-import {
-  LoaderText } from 'zanata-ui'
-import {
   glossaryUpdateIndex,
-  glossaryGetTermsIfNeeded,
+  glossaryUpdateTerm
 } from '../../actions/glossary'
 import ViewHeader from './ViewHeader'
 import Entry from './Entry'
@@ -148,7 +145,6 @@ const mapStateToProps = (state) => {
     termIds,
     filter,
     permission,
-    page,
     termsLoading,
     termCount,
     saving
@@ -167,7 +163,6 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     location: state.routing.location,
-    page,
     saving
   }
 }

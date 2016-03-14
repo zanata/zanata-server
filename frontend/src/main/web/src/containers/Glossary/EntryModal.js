@@ -2,12 +2,10 @@ import React, { Component, PropTypes } from 'react'
 import {
   ButtonLink,
   ButtonRound,
+  EditableText,
   Icon,
   LoaderText,
-  Modal,
-} from 'zanata-ui'
-import {
-  EditableText
+  Modal
 } from '../../components'
 import { isEmptyOrNull } from '../../utils/StringUtils'
 
@@ -53,7 +51,7 @@ class EntryModal extends Component {
             }
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className='Ta(start)' scrollable={true}>
+        <Modal.Body className='Ta(s)' scrollable={true}>
           <div className='Mb(rh)'>
             <label className='Fw(b)'>Term</label>
             <EditableText
@@ -118,7 +116,7 @@ class EntryModal extends Component {
           ) : '' }
         </Modal.Body>
         <Modal.Footer>
-          <ButtonLink theme={{base: {m: 'Mstart(rh)'}}}
+          <ButtonLink atomic={{m: 'Mstart(rh)'}}
                       onClick={() => {
                         handleResetTerm(entry.id)
                         handleEntryModalDisplay(false)
@@ -127,12 +125,12 @@ class EntryModal extends Component {
           </ButtonLink>
 
           {isSaving
-            ? (<ButtonRound theme={{base: {m: 'Mstart(rh)'}}}
+            ? (<ButtonRound atomic={{m: 'Mstart(rh)'}}
                            type='primary'
                            disabled={true}>
                 <LoaderText loading loadingText='Updating'>Update</LoaderText>
               </ButtonRound>)
-            : (<ButtonRound theme={{base: {m: 'Mstart(rh)'}}} type='primary'
+            : (<ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
                          onClick={() => handleUpdateTerm(entry)}
                          disabled={!canUpdate}>
                   Update

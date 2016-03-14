@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import warning from 'warning'
-import { mergeClasses } from 'zanata-ui'
+import { merge } from 'lodash'
 import { View } from './'
 
 const classes = {
@@ -35,12 +35,12 @@ const Row = ({
 }) => {
   warning(!className,
     'Please use `theme` instead of `className` to style Row.')
-  const themed = mergeClasses(
+  const themed = merge({},
     classes,
     theme
   )
   const themeState = {
-    base: mergeClasses(
+    base: merge({},
       themed.base,
       themed.align[align]
     )

@@ -1,2 +1,4 @@
 frontend.bundle.min.js
 src/styles/atomic.css
+src/components/Select/index.css
+src/constants/styles.json

@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { isEmpty, forOwn, cloneDeep } from 'lodash'
+import { isEmpty, cloneDeep } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -41,14 +41,17 @@ export const GLOSSARY_UPLOAD_REQUEST = 'GLOSSARY_UPLOAD_REQUEST'
 export const GLOSSARY_UPLOAD_SUCCESS = 'GLOSSARY_UPLOAD_SUCCESS'
 export const GLOSSARY_UPLOAD_FAILURE = 'GLOSSARY_UPLOAD_FAILURE'
 export const GLOSSARY_UPDATE_IMPORT_FILE = 'GLOSSARY_UPDATE_IMPORT_FILE'
-export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE = 'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
+export const GLOSSARY_UPDATE_IMPORT_FILE_LOCALE =
+  'GLOSSARY_UPDATE_IMPORT_FILE_LOCALE'
 export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
 export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
-export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY = 'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
+export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY =
+  'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
 export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
 export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
 export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
 
+// TODO: Add the following
 export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
@@ -132,7 +135,9 @@ export const createGlossaryTerm = (dispatch, term) => {
       types: [
         {
           type: GLOSSARY_CREATE_REQUEST,
-          payload: (action, state) => ({ entry: term })
+          payload: (action, state) => {
+            return term
+          }
         },
         {
           type: GLOSSARY_CREATE_SUCCESS,
@@ -169,7 +174,9 @@ export const updateGlossaryTerm = (dispatch, term) => {
       types: [
         {
           type: GLOSSARY_UPDATE_REQUEST,
-          payload: (action, state) => ({ entry: term })
+          payload: (action, state) => {
+            return term
+          }
         },
         {
           type: GLOSSARY_UPDATE_SUCCESS,
@@ -232,7 +239,8 @@ export const getGlossaryTerms = (state, newIndex) => {
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
-  const sortQuery = sort ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
+  const sortQuery = sort
+    ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
   const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
@@ -258,7 +266,6 @@ export const getGlossaryTerms = (state, newIndex) => {
               return res.json().then((json) => {
                 const normalized =
                   normalize(json, { results: arrayOf(glossaryTerm) })
-                console.log(json, normalized)
                 return normalized
               }
               )

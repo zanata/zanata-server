@@ -7,7 +7,7 @@ import {
   Icon,
   Tooltip,
   Overlay
-} from 'zanata-ui'
+} from '../../components'
 
 var DeleteEntryModal = React.createClass({
   propTypes: {
@@ -54,46 +54,17 @@ var DeleteEntryModal = React.createClass({
   },
 
   render: function () {
-    var isDeleting = this.state.deleting
-    var info = null
     const {
       entry,
       className
     } = this.props
-
-    if (entry.termsCount > 0) {
-      info = (
-        <p>
-          Are you sure you want to delete this term and&nbsp;
-          <strong>{entry.termsCount}</strong>&nbsp;
-          {entry.termsCount > 1 ? 'translations' : 'translation'} ?
-        </p>
-      )
-    } else {
-      info = (
-        <p>
-          Are you sure you want to delete this term?
-        </p>
-      )
-    }
-
-    const tooltip = (
-      <Tooltip id="delete-glossary" title="Delete term and translations">
-        {info}
-        <div className="mt1/4">
-          <ButtonLink
-            theme={{base: { m: 'Mend(rh)' }}}
-            onClick={this._closeDialog}>
-            Cancel
-          </ButtonLink>
-          <ButtonRound type='danger' size='-1' onClick={this.handleDeleteEntry}>
-            <LoaderText loading={isDeleting} loadingText='Deleting'>
-              Delete all
-            </LoaderText>
-          </ButtonRound>
-        </div>
-      </Tooltip>
-    )
+    const info = entry.termsCount > 0 ? (
+      <p>
+        Are you sure you want to delete this term and&nbsp;
+        <strong>{entry.termsCount}</strong>&nbsp;
+        {entry.termsCount > 1 ? 'translations' : 'translation'} ?
+      </p>
+    ) : (<p>Are you sure you want to delete this term?</p>)
 
     return (
       <div className={className + ' dib'}>
@@ -103,12 +74,27 @@ var DeleteEntryModal = React.createClass({
           onHide={this._closeDialog}
           rootClose
           show={this.state.show}>
-          {tooltip}
+          <Tooltip id='delete-glossary' title='Delete term and translations'>
+            {info}
+            <div className='Mt(rq)'>
+              <ButtonLink
+                atomic={{m: 'Mend(rh)'}}
+                onClick={this._closeDialog}>
+                Cancel
+              </ButtonLink>
+              <ButtonRound type='danger' size='n1'
+                           onClick={this.handleDeleteEntry}>
+                <LoaderText loading={this.state.deleting}
+                            loadingText='Deleting'>
+                  Delete all
+                </LoaderText>
+              </ButtonRound>
+            </div>
+          </Tooltip>
         </Overlay>
-        <ButtonLink type='danger'
-          onClick={this._toggleDialog}>
-          <LoaderText loading={isDeleting} loadingText='Deleting'>
-            <Icon name="trash" className='mr1/8' /><span>Delete</span>
+        <ButtonLink type='danger' onClick={this._toggleDialog}>
+          <LoaderText loading={this.state.deleting} loadingText='Deleting'>
+            <Icon name="trash" atomic={{m: 'Mend(re)'}} /><span>Delete</span>
           </LoaderText>
         </ButtonLink>
       </div>
