@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import {
   ButtonLink,
@@ -9,55 +9,23 @@ import {
   Overlay
 } from '../../components'
 
-var DeleteEntryModal = React.createClass({
-  propTypes: {
-    id: React.PropTypes.number.isRequired,
-    className: React.PropTypes.string,
-    entry: React.PropTypes.object,
-    onDelete: React.PropTypes.func.isRequired
-  },
+class DeleteEntryModal extends Component {
 
-  deleteTimeout: null,
+  handleDeleteEntry (entryId) {
+    this.props.handleDeleteEntry(entryId)
+    setTimeout(() => {
+      this.props.handleDeleteEntryDisplay(false)
+    }, 200)
+  }
 
-  getInitialState: function () {
-    return {
-      show: false,
-      deleting: false
-    }
-  },
-
-  componentWillUnmount: function () {
-    if (this.deleteTimeout !== null) {
-      clearTimeout(this.deleteTimeout)
-    }
-  },
-
-  handleDeleteEntry: function () {
-    this.setState({deleting: true})
-
-    if (this.deleteTimeout !== null) {
-      clearTimeout(this.deleteTimeout)
-    }
-
-    this.deleteTimeout = setTimeout(() => {
-      this.props.onDelete(this.props.id)
-      this._closeDialog()
-    }, 100)
-  },
-
-  _toggleDialog: function () {
-    this.setState({show: !this.state.show})
-  },
-
-  _closeDialog: function () {
-    this.setState(this.getInitialState())
-  },
-
-  render: function () {
+  render () {
     const {
       entry,
-      className
-    } = this.props
+      className,
+      show,
+      isDeleting,
+      handleDeleteEntryDisplay,
+      } = this.props
     const info = entry.termsCount > 0 ? (
       <p>
         Are you sure you want to delete this term and&nbsp;
@@ -71,20 +39,20 @@ var DeleteEntryModal = React.createClass({
         <Overlay
           placement='top'
           target={() => ReactDOM.findDOMNode(this)}
-          onHide={this._closeDialog}
           rootClose
-          show={this.state.show}>
+          show={show}>
           <Tooltip id='delete-glossary' title='Delete term and translations'>
             {info}
             <div className='Mt(rq)'>
               <ButtonLink
                 atomic={{m: 'Mend(rh)'}}
-                onClick={this._closeDialog}>
+                onClick={() => handleDeleteEntryDisplay(false)}>
                 Cancel
               </ButtonLink>
               <ButtonRound type='danger' size='n1'
-                           onClick={this.handleDeleteEntry}>
-                <LoaderText loading={this.state.deleting}
+                           disabled={isDeleting}
+                           onClick={() => this.handleDeleteEntry(entry.id)}>
+                <LoaderText loading={isDeleting} size='n1'
                             loadingText='Deleting'>
                   Delete all
                 </LoaderText>
@@ -92,14 +60,25 @@ var DeleteEntryModal = React.createClass({
             </div>
           </Tooltip>
         </Overlay>
-        <ButtonLink type='danger' onClick={this._toggleDialog}>
-          <LoaderText loading={this.state.deleting} loadingText='Deleting'>
+        <ButtonLink type='danger'
+                    onClick={() => handleDeleteEntryDisplay(true)}
+                    disabled={isDeleting}>
+          <LoaderText loading={isDeleting} loadingText='Deleting'>
             <Icon name="trash" atomic={{m: 'Mend(re)'}} /><span>Delete</span>
           </LoaderText>
         </ButtonLink>
       </div>
     )
   }
-})
+}
+
+DeleteEntryModal.propType = {
+  className: React.PropTypes.string,
+  entry: React.PropTypes.object,
+  show: React.PropTypes.bool,
+  isDeleting: React.PropTypes.bool,
+  handleDeleteEntryDisplay: PropTypes.func,
+  handleDeleteEntry: React.PropTypes.func.isRequired
+}
 
 export default DeleteEntryModal

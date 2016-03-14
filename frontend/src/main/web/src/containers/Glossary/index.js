@@ -8,7 +8,8 @@ import {
   LoaderText,
   Page,
   ScrollView,
-  View
+  View,
+  MessageModal
 } from '../../components'
 import {
   glossaryDeleteTerm,
@@ -52,7 +53,8 @@ class Glossary extends Component {
       selectedTransLocale,
       selectedTerm,
       permission,
-      saving
+      saving,
+      deleting
       } = this.props
 
     const entryId = termIds[index]
@@ -61,12 +63,14 @@ class Glossary extends Component {
     const entry = isSaving ? saving[entryId]
       : (selected ? selectedTerm : entryId
       ? terms[entryId] : null)
+    const isDeleting = !isUndefined(deleting[entryId])
 
     return (
       <Entry key={key}
              entry={entry}
              index={index}
              selected={selected}
+             isDeleting={isDeleting}
              isSaving={isSaving}
              permission={permission}
              selectedTransLocale={selectedTransLocale}
@@ -105,35 +109,43 @@ class Glossary extends Component {
     const {
       termsLoading,
       termCount,
-      scrollIndex = 0
+      scrollIndex = 0,
+      notification
     } = this.props
-    return (
-      <Page>
-        <Helmet title='Glossary' />
-        <ScrollView onScroll={::this.onScroll}>
-          <ViewHeader />
-          <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
-            { termsLoading && !termCount
-              ? (
-                  <View theme={loadingContainerTheme}>
-                    <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
-                      size='1'
-                      loading />
-                  </View>
-                )
-              : (<ReactList
-                  useTranslate3d
-                  itemRenderer={::this.renderItem}
-                  length={termCount}
-                  type='uniform'
-                  initialIndex={scrollIndex || 0}
-                  ref={c => this.list = c}
-                />)
-            }
-          </View>
-        </ScrollView>
-      </Page>
-    )
+
+    if (notification) {
+      return <MessageModal severity={notification.severity}
+                           message={notification.message}
+                           details={notification.details}/>
+    } else {
+      return (
+        <Page>
+          <Helmet title='Glossary' />
+          <ScrollView onScroll={::this.onScroll}>
+            <ViewHeader />
+            <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
+              { termsLoading && !termCount
+                ? (
+                    <View theme={loadingContainerTheme}>
+                      <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
+                        size='1'
+                        loading />
+                    </View>
+                  )
+                : (<ReactList
+                    useTranslate3d
+                    itemRenderer={::this.renderItem}
+                    length={termCount}
+                    type='uniform'
+                    initialIndex={scrollIndex || 0}
+                    ref={c => this.list = c}
+                  />)
+              }
+            </View>
+          </ScrollView>
+        </Page>
+      )
+    }
   }
 }
 
@@ -147,7 +159,9 @@ const mapStateToProps = (state) => {
     permission,
     termsLoading,
     termCount,
-    saving
+    saving,
+    deleting,
+    notification
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -163,7 +177,9 @@ const mapStateToProps = (state) => {
     scrollIndex: Number.parseInt(query.index, 10),
     permission,
     location: state.routing.location,
-    saving
+    saving,
+    deleting,
+    notification
   }
 }
 

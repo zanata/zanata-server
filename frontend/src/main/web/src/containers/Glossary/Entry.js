@@ -29,13 +29,20 @@ class Entry extends Component {
   constructor () {
     super()
     this.state = {
-      showModal: false
+      showEntryModal: false,
+      showDeleteModal: false
     }
   }
 
   handleEntryModalDisplay (display) {
     this.setState({
-      showModal: display
+      showEntryModal: display
+    })
+  }
+
+  handleDeleteEntryDisplay (display) {
+    this.setState({
+      showDeleteModal: display
     })
   }
 
@@ -56,7 +63,8 @@ class Entry extends Component {
       selectedTransLocale,
       selected,
       permission,
-      isSaving
+      isSaving,
+      isDeleting
       } = this.props
 
     const transContent = entry && entry.transTerm
@@ -99,55 +107,66 @@ class Entry extends Component {
         </ButtonRound>)
     }
 
+    const loadingDiv = (<div className='LineClamp(1,24px) Px(rq)'>Loading…</div>)
+
     return (
       <TableRow highlight
                 className='editable'
                 selected={selected}
                 onClick={() => handleSelectTerm(entry.id)}>
         <TableCell size='2' tight>
-          <EditableText
-            editable={false}
-            editing={selected}>
-            {entry.srcTerm.content}
-          </EditableText>
+          {termsLoading
+            ? loadingDiv
+            : (<EditableText
+                editable={false}
+                editing={selected}>
+                {entry.srcTerm.content}
+              </EditableText>)
+          }
         </TableCell>
         <TableCell size={transSelected ? '2' : '1'} tight={transSelected}>
-          {transSelected
-            ? termsLoading
-            ? <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
-            : (<EditableText
-            editable={transSelected && editable}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('locale', e)}
-            placeholder='Add a translation…'
-            emptyReadOnlyText='No translation'>
-            {transContent}
-          </EditableText>)
-            : (<div className='LineClamp(1,24px) Px(rq)'>
-              {entry.termsCount}
-            </div>)
+          {termsLoading
+            ? loadingDiv
+            : transSelected
+              ? (<EditableText
+                  editable={transSelected && editable}
+                  editing={selected}
+                  onChange={(e) => handleTermFieldUpdate('locale', e)}
+                  placeholder='Add a translation…'
+                  emptyReadOnlyText='No translation'>
+                  {transContent}
+                </EditableText>)
+              : (<div className='LineClamp(1,24px) Px(rq)'>
+                  {entry.termsCount}
+                </div>)
           }
         </TableCell>
         <TableCell hideSmall>
-          <EditableText
+          {termsLoading
+            ? loadingDiv
+            : (<EditableText
             editable={!transSelected && editable}
             editing={selected}
             onChange={(e) => handleTermFieldUpdate('pos', e)}
             placeholder='Add part of speech…'
             emptyReadOnlyText='No part of speech'>
             {entry.pos}
-          </EditableText>
+          </EditableText>)
+          }
         </TableCell>
         {!transSelected ? (
           <TableCell hideSmall>
-            <EditableText
-              editable={!transSelected && editable}
-              editing={selected}
-              onChange={(e) => handleTermFieldUpdate('description', e)}
-              placeholder='Add a description…'
-              emptyReadOnlyText='No description'>
-              {entry.description}
-            </EditableText>
+            {termsLoading
+              ? loadingDiv
+              : (<EditableText
+                  editable={!transSelected && editable}
+                  editing={selected}
+                  onChange={(e) => handleTermFieldUpdate('description', e)}
+                  placeholder='Add a description…'
+                  emptyReadOnlyText='No description'>
+                  {entry.description}
+                </EditableText>)
+            }
           </TableCell>
         ) : ''
         }
@@ -157,7 +176,7 @@ class Entry extends Component {
             <Icon name='info'/>
           </ButtonLink>
           <EntryModal entry={entry}
-                      show={this.state.showModal}
+                      show={this.state.showEntryModal}
                       isSaving={isSaving}
                       selectedTransLocale={selectedTransLocale}
                       canUpdate={displayUpdateButton}
@@ -182,10 +201,13 @@ class Entry extends Component {
             }
 
             {!transSelected && permission.canDeleteEntry && !isSaving ? (
-              <DeleteEntryModal id={entry.id}
-                                entry={entry}
+              <DeleteEntryModal entry={entry}
+                                isDeleting={isDeleting}
+                                show={this.state.showDeleteModal}
                                 className='Mstart(rh)'
-                                onDelete={handleDeleteTerm}/>
+                                handleDeleteEntryDisplay={(display) =>
+                                  this.handleDeleteEntryDisplay(display)}
+                                handleDeleteEntry={handleDeleteTerm}/>
             ) : ''
             }
           </div>
@@ -202,6 +224,7 @@ Entry.propType = {
   permission: PropTypes.object,
   selectedTransLocale: PropTypes.object,
   isSaving: PropTypes.bool,
+  isDeleting: PropTypes.bool,
   termsLoading: PropTypes.bool,
   handleSelectTerm: PropTypes.func,
   handleTermFieldUpdate: PropTypes.func,

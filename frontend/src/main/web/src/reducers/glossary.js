@@ -10,7 +10,6 @@ import {
   GLOSSARY_TERMS_REQUEST,
   GLOSSARY_TERMS_SUCCESS,
   GLOSSARY_TERMS_FAILURE,
-  GLOSSARY_STATS_INVALIDATE,
   GLOSSARY_STATS_REQUEST,
   GLOSSARY_STATS_SUCCESS,
   GLOSSARY_STATS_FAILURE,
@@ -21,6 +20,9 @@ import {
   GLOSSARY_UPDATE_REQUEST,
   GLOSSARY_UPDATE_SUCCESS,
   GLOSSARY_UPDATE_FAILURE,
+  GLOSSARY_DELETE_REQUEST,
+  GLOSSARY_DELETE_SUCCESS,
+  GLOSSARY_DELETE_FAILURE,
   GLOSSARY_UPLOAD_REQUEST,
   GLOSSARY_UPLOAD_SUCCESS,
   GLOSSARY_UPLOAD_FAILURE,
@@ -34,11 +36,20 @@ import {
   GLOSSARY_CREATE_FAILURE,
   SEVERITY
 } from '../actions/glossary'
+import {
+  CLEAR_MESSAGE
+} from '../actions/common'
 import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
 import { isEmptyOrNull } from '../utils/StringUtils'
 
 const glossary = handleActions({
+  [CLEAR_MESSAGE]: (state, action) => {
+    return {
+      ...state,
+      notification: null
+    }
+  },
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
     return {
       ...state,
@@ -181,10 +192,6 @@ const glossary = handleActions({
       selectedTerm: newSelectedTerm
     }
   },
-  [GLOSSARY_STATS_INVALIDATE]: (state, action) => ({
-    ...state,
-    statsDidInvalidate: true
-  }),
   [GLOSSARY_STATS_REQUEST]: (state, action) => ({
     ...state,
     statsError: false,
@@ -214,10 +221,42 @@ const glossary = handleActions({
     ...state,
     termsDidInvalidate: true
   }),
+  [GLOSSARY_DELETE_REQUEST]: (state, action) => {
+    let deleting = state.deleting
+    const entryId = action.payload
+    deleting[entryId] = entryId
+    return {
+      ...state,
+      deleting: deleting
+    }
+  },
+  [GLOSSARY_DELETE_SUCCESS]: (state, action) => {
+    let deleting = state.deleting
+    const entryId = action.payload.id
+    delete deleting[entryId]
+    return {
+      ...state,
+      deleting: deleting,
+      notification: {
+        severity: SEVERITY.INFO,
+        message:
+          'Glossary term deleted'
+      }
+    }
+  },
+  [GLOSSARY_DELETE_FAILURE]: (state, action) => ({
+    ...state,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to delete the glossary term. Please refresh this page and try again.'
+    }
+  }),
+
   [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
     let saving = state.saving
-    const entryId = action.payload.entry.id
-    saving[entryId] = cloneDeep(action.payload.entry)
+    const entryId = action.payload.id
+    saving[entryId] = cloneDeep(action.payload)
     return {
       ...state,
       saving: saving
@@ -241,21 +280,22 @@ const glossary = handleActions({
       ...state,
       saving: saving,
       terms: terms,
-      selectedTerm: selectedTerm
-    }
-  },
-  [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
-    let saving = state.saving
-    return {
-      ...state,
-      saving: saving,
+      selectedTerm: selectedTerm,
       notification: {
-        severity: SEVERITY.ERROR,
+        severity: SEVERITY.INFO,
         message:
-          'We were unable to update the glossary term. Please refresh this page and try again.'
+          'Glossary term updated'
       }
     }
   },
+  [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
+    ...state,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+        'We were unable to update the glossary term. Please refresh this page and try again.'
+    }
+  }),
   [GLOSSARY_CREATE_REQUEST]: (state, action) => {
     let newEntry = state.newEntry
     newEntry.isSaving = true
@@ -365,6 +405,7 @@ const glossary = handleActions({
     transLocales: []
   },
   saving: {},
+  deleting: {},
   importFile: {
     show: false,
     status: -1,
@@ -377,8 +418,7 @@ const glossary = handleActions({
     entry: GlossaryHelper.generateEmptyEntry('en-US')
   },
   statsError: false,
-  statsLoading: true,
-  statsDidInvalidate: false
+  statsLoading: true
 })
 
 export default glossary

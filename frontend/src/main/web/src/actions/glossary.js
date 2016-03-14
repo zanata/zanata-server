@@ -51,9 +51,6 @@ export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
 export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
 export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
 
-// TODO: Add the following
-export const GLOSSARY_CLEAR_MESSAGE = 'GLOSSARY_CLEAR_MESSAGE'
-
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
 export const glossaryUpdateFilter = createAction(GLOSSARY_UPDATE_FILTER)
@@ -209,7 +206,12 @@ export const deleteGlossaryTerm = (dispatch, id) => {
       method: 'DELETE',
       headers: headers,
       types: [
-        GLOSSARY_DELETE_REQUEST,
+        {
+          type: GLOSSARY_DELETE_REQUEST,
+          payload: (action, state) => {
+            return id
+          }
+        },
         {
           type: GLOSSARY_DELETE_SUCCESS,
           payload: (action, state, res) => {
