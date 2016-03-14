@@ -53,18 +53,17 @@ WebFont.load({
  * from .json file in test directory.
  */
 const mountNode = document.getElementById('root')
-const user = JSON.parse(mountNode.getAttribute('user'))
 const data = JSON.parse(mountNode.getAttribute('data'))
-const dev = data.dev
 
 // Replace with redux state
 // base rest url, e.g http://localhost:8080/rest
 Configs.API_ROOT = mountNode.getAttribute('base-url')
 Configs.data = data
 // append with .json extension in 'dev' environment
-Configs.urlPostfix = isUndefined(dev) ? '' : '.json?'
+Configs.urlPostfix = isUndefined(data.dev) ? '' : '.json?'
 // see org.zanata.rest.editor.dto.User
-Configs.user = user
+Configs.user = JSON.parse(mountNode.getAttribute('user'))
+Configs.auth = JSON.parse(mountNode.getAttribute('auth'))
 
 const links = {
   'context': Configs.API_ROOT,

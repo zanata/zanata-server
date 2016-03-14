@@ -1,6 +1,5 @@
 import { handleActions } from 'redux-actions'
-import { union, isEmpty, cloneDeep, forEach } from 'lodash'
-import Immutable from 'immutable'
+import { union, isEmpty, cloneDeep, forEach, size } from 'lodash'
 import {
   GLOSSARY_UPDATE_INDEX,
   GLOSSARY_UPDATE_LOCALE,
@@ -84,11 +83,23 @@ const glossary = handleActions({
     }
   },
   [GLOSSARY_UPLOAD_REQUEST]: (state, action) => {
-    let importFile = state.importFile
-    importFile.status = 0
-    return {
-      ...state,
-      importFile: importFile
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message:
+            'We were unable to import your file. ' +
+            'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      let importFile = state.importFile
+      importFile.status = 0
+      return {
+        ...state,
+        importFile: importFile
+      }
     }
   },
   [GLOSSARY_UPLOAD_SUCCESS]: (state, action) => ({
@@ -98,6 +109,11 @@ const glossary = handleActions({
       status: -1,
       file: null,
       transLocale: null
+    },
+    notification: {
+      severity: SEVERITY.INFO,
+      message: 'File imported successfully',
+      details: size(action.payload.glossaryEntries) + ' terms imported.'
     }
   }),
   [GLOSSARY_UPLOAD_FAILURE]: (state, action) => ({
@@ -111,7 +127,8 @@ const glossary = handleActions({
     notification: {
       severity: SEVERITY.ERROR,
       message:
-        'We were unable to import your file. Please refresh this page and try again.'
+        'We were unable to import your file. ' +
+        'Please refresh this page and try again.'
     }
   }),
   [GLOSSARY_UPDATE_IMPORT_FILE]: (state, action) => {
@@ -192,11 +209,24 @@ const glossary = handleActions({
       selectedTerm: newSelectedTerm
     }
   },
-  [GLOSSARY_STATS_REQUEST]: (state, action) => ({
-    ...state,
-    statsError: false,
-    statsLoading: true
-  }),
+  [GLOSSARY_STATS_REQUEST]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message: 'We are unable to get information from server. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      return {
+        ...state,
+        statsError: false,
+        statsLoading: true
+      }
+    }
+  },
   [GLOSSARY_STATS_SUCCESS]: (state, action) => {
     return ({
       ...state,
@@ -215,19 +245,36 @@ const glossary = handleActions({
     ...state,
     statsError: true,
     statsErrorMessage: action.payload,
-    statsLoading: false
+    statsLoading: false,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message: 'We are unable to get information from server. ' +
+      'Please refresh this page and try again.'
+    }
   }),
   [GLOSSARY_TERMS_INVALIDATE]: (state, action) => ({
     ...state,
     termsDidInvalidate: true
   }),
   [GLOSSARY_DELETE_REQUEST]: (state, action) => {
-    let deleting = state.deleting
-    const entryId = action.payload
-    deleting[entryId] = entryId
-    return {
-      ...state,
-      deleting: deleting
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message:
+          'We were unable to delete the glossary term. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      let deleting = state.deleting
+      const entryId = action.payload
+      deleting[entryId] = entryId
+      return {
+        ...state,
+        deleting: deleting
+      }
     }
   },
   [GLOSSARY_DELETE_SUCCESS]: (state, action) => {
@@ -239,8 +286,7 @@ const glossary = handleActions({
       deleting: deleting,
       notification: {
         severity: SEVERITY.INFO,
-        message:
-          'Glossary term deleted'
+        message: 'Glossary term deleted.'
       }
     }
   },
@@ -249,21 +295,34 @@ const glossary = handleActions({
     notification: {
       severity: SEVERITY.ERROR,
       message:
-        'We were unable to delete the glossary term. Please refresh this page and try again.'
+        'We were unable to delete the glossary term. ' +
+        'Please refresh this page and try again.'
     }
   }),
 
   [GLOSSARY_UPDATE_REQUEST]: (state, action) => {
-    let saving = state.saving
-    const entryId = action.payload.id
-    saving[entryId] = cloneDeep(action.payload)
-    return {
-      ...state,
-      saving: saving
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message:
+          'We were unable to update the glossary term. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      let saving = cloneDeep(state.saving)
+      const entryId = action.payload.id
+      saving[entryId] = cloneDeep(action.payload)
+      return {
+        ...state,
+        saving: saving
+      }
     }
   },
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
-    let saving = state.saving
+    let saving = cloneDeep(state.saving)
     let selectedTerm = state.selectedTerm
     let terms = state.terms
     forEach(action.payload.glossaryEntries, (rawEntry) => {
@@ -283,25 +342,39 @@ const glossary = handleActions({
       selectedTerm: selectedTerm,
       notification: {
         severity: SEVERITY.INFO,
-        message:
-          'Glossary term updated'
+        message: 'Glossary term updated'
       }
     }
   },
-  [GLOSSARY_UPDATE_FAILURE]: (state, action) => ({
-    ...state,
-    notification: {
-      severity: SEVERITY.ERROR,
-      message:
-        'We were unable to update the glossary term. Please refresh this page and try again.'
-    }
-  }),
-  [GLOSSARY_CREATE_REQUEST]: (state, action) => {
-    let newEntry = state.newEntry
-    newEntry.isSaving = true
+  [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
     return {
       ...state,
-      newEntry: newEntry
+      notification: {
+        severity: SEVERITY.ERROR,
+        message:
+          'We were unable to update the glossary term. ' +
+          'Please refresh this page and try again.'
+      }
+    }
+  },
+  [GLOSSARY_CREATE_REQUEST]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message:
+          'We were unable save glossary entry. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      let newEntry = state.newEntry
+      newEntry.isSaving = true
+      return {
+        ...state,
+        newEntry: newEntry
+      }
     }
   },
   [GLOSSARY_CREATE_SUCCESS]: (state, action) => {
@@ -310,7 +383,11 @@ const glossary = handleActions({
     newEntry = GlossaryHelper.generateEmptyEntry(state.src)
     return {
       ...state,
-      newEntry: newEntry
+      newEntry: newEntry,
+      notification: {
+        severity: SEVERITY.INFO,
+        message: 'Glossary term created.'
+      }
     }
   },
   [GLOSSARY_CREATE_FAILURE]: (state, action) => {
@@ -323,16 +400,30 @@ const glossary = handleActions({
       notification: {
         severity: SEVERITY.ERROR,
         message:
-          'We were unable save glossary entry. Please refresh this page and try again.'
+          'We were unable save glossary entry. ' +
+          'Please refresh this page and try again.'
       }
     }
   },
-  [GLOSSARY_TERMS_REQUEST]: (state, action) => ({
-    ...state,
-    termsError: action.error,
-    termsErrorMessage: action.payload,
-    termsLoading: true
-  }),
+  [GLOSSARY_TERMS_REQUEST]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message: 'We are unable to get information from server. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      return {
+        ...state,
+        termsError: action.error,
+        termsErrorMessage: action.payload,
+        termsLoading: true
+      }
+    }
+  },
   [GLOSSARY_TERMS_SUCCESS]: (state, action) => {
     const page = action.meta.page
     const pagesLoaded = union(state.pagesLoaded, [page])
@@ -369,7 +460,12 @@ const glossary = handleActions({
     ...state,
     termsError: action.error,
     termsErrorMessage: action.payload,
-    termsLoading: false
+    termsLoading: false,
+    notification: {
+      severity: SEVERITY.ERROR,
+      message: 'We are unable to get information from server. ' +
+      'Please refresh this page and try again.'
+    }
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => {
     let selectedTerm = cloneDeep(state.terms[action.payload])

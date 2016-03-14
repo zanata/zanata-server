@@ -11,7 +11,7 @@ import {
 } from '../actions/common'
 import { isEmptyOrNull } from '../utils/StringUtils'
 
-class MessageModal extends Component {
+class Notification extends Component {
 
   getSeverityClass (severity) {
     switch (severity) {
@@ -42,13 +42,14 @@ class MessageModal extends Component {
     const {
       severity,
       message,
-      details
+      details,
+      show
       } = this.props
     const severityClass = this.getSeverityClass(severity)
     const icon = this.getIcon(severity)
 
     return (
-      <Modal show={true} onHide={() => this.clearMessage()}>
+      <Modal show={show} onHide={() => this.clearMessage()}>
         <Modal.Header>
           <Modal.Title>
             <Row theme={{ base: {W: 'W(100%)', C: severityClass, Jc: 'Jc(c)'} }}>
@@ -69,7 +70,7 @@ class MessageModal extends Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonRound type='primary' onClick={() => this.clearMessage()}>
-            Clear message
+            Close
           </ButtonRound>
         </Modal.Footer>
       </Modal>
@@ -77,10 +78,11 @@ class MessageModal extends Component {
   }
 }
 
-MessageModal.propType = {
+Notification.propType = {
   severity: PropTypes.string.isRequired,
   message: PropTypes.string,
-  details: PropTypes.object
+  details: PropTypes.object,
+  show: PropTypes.bool
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -90,4 +92,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(MessageModal)
+export default connect(null, mapDispatchToProps)(Notification)
