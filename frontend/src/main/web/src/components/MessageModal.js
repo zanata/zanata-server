@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import {
   ButtonRound,
   Icon,
-  Modal
+  Modal,
+  Row
 } from './'
 import {
   clearMessage
@@ -15,11 +16,21 @@ class MessageModal extends Component {
   getSeverityClass (severity) {
     switch (severity) {
       case 'warn':
-        return 'cwarning'
+        return 'C(danger)'
       case 'error':
-        return 'cdanger'
+        return 'C(danger)'
       default:
-        return 'chighlight'
+        return ''
+    }
+  }
+
+  getIcon (severity) {
+    switch (severity) {
+      case 'warn':
+      case 'error':
+        return 'warning'
+      default:
+        return 'info'
     }
   }
 
@@ -34,12 +45,16 @@ class MessageModal extends Component {
       details
       } = this.props
     const severityClass = this.getSeverityClass(severity)
+    const icon = this.getIcon(severity)
 
     return (
       <Modal show={true} onHide={() => this.clearMessage()}>
         <Modal.Header>
           <Modal.Title>
-            Notification
+            <Row theme={{ base: {W: 'W(100%)', C: severityClass, Jc: 'Jc(c)'} }}>
+              <Icon name={icon} atomic={{m: 'Mend(re)'}} size='2' />
+              <span>Notification</span>
+            </Row>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
