@@ -8,7 +8,7 @@ around to keep a consistent look and feel.
 ### Color Palette
 
 To avoid using to many colors, stick to the colors used in
-[constants/styles.js](../constants/styles.js). For different shades of white
+[constants/styles.js](../src/constants/styles.js). For different shades of white
 or black, atomic.css has shortcut variables (i.e #fff.5, is 50% white).
 Most of the time `opacity` or `filter: brightness()` can be used to change the
 shade of a variable based color. This avoids many color declarations and
@@ -18,7 +18,7 @@ provides a single source of truth for colors.
 
 All measurements/spacing should be based on vertical rhythm. The rhythm is based
 on the line-height, which is set at 1.5, which at the default browser font-size,
-is 24px. There are rhythm variables available in [constants/styles.js](../constants/styles.js).
+is 24px. There are rhythm variables available in [constants/styles.js](../src/constants/styles.js).
 
 ```
 M(r1) = margin: 1.5rem;
@@ -86,14 +86,14 @@ matching a [specific syntax](acss.io/guides/syntax.html).
 
 Each class is usually single purpose (i.e. Maps to a single CSS property).
 The configuration and variables available to Atomic CSS are declared in
-[atomicCssConfig.js](../../atomicCssConfig.js). For more information on how to
+[atomicCssConfig.js](../atomicCssConfig.js). For more information on how to
 use atomic CSS classes (including a reference of
 [every class available](http://acss.io/reference)), see
 [acss.io](http://acss.io/).
 
 ### Styling Components
 
-All custom components should be composed of the [Base](../components/Base.jsx)
+All custom components should be composed of the [Base](../src/components/Base.jsx)
 component, which adds `theme` and `atomic` props.  `theme` should be used when
 creating new components, as it allows other components to extend all the classes
 of the component it is composing. `atomic` is used mostly for specific in app
@@ -106,7 +106,7 @@ based classes.
 
 The `classes` variable can contain classes for more than 1 element, if more than
 one element is declared, the root element should be called `root`. See the
-[LoaderText](../components/LoaderText.jsx) component to see how this might work.
+[LoaderText](../src/components/LoaderText.jsx) component to see how this might work.
 
 Each `theme` or `atomic` object should include a keys for each property. This
 allows the object to be merged and only assign a single set of classes for each
