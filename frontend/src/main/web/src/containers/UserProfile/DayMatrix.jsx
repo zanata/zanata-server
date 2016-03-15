@@ -25,35 +25,32 @@ var DayMatrix = React.createClass({
     }
   },
 
-  render: function() {
-    var cx = React.addons.classSet,
-      selectedContentState = this.props.selectedContentState,
+  render: function () {
+    const selectedContentState = this.props.selectedContentState
     // Note: this will make this component impure. But it will only become
     // impure when you render it between midnight, e.g. two re-render attempt
     // happen across two days with same props, which I think it's ok.
-      dateIsInFuture = dateUtil.isInFuture(this.props.date),
-      wordCount = dateIsInFuture ? '' : this.props.wordCount,
-      rowClass;
+    const dateIsInFuture = dateUtil.isInFuture(this.props.date)
+    const wordCount = dateIsInFuture ? '' : this.props.wordCount
 
-    rowClass = {
-      'cal__day': true,
-      'is-disabled': dateIsInFuture,
-      'is-active': this.props.date === this.props.selectedDay
-    };
+    let rowClass = 'cal__day ' + (dateIsInFuture ? 'is-disabled ' : '') +
+      (this.props.date === this.props.selectedDay ? 'is-active ' : '')
 
-
-
-    ContentStates.forEach(function(option, index) {
-      rowClass[ContentStateStyles[index]] = selectedContentState === option;
-    });
+    ContentStates.forEach(function (option, index) {
+      if (selectedContentState === option) {
+        rowClass += ContentStateStyles[index] + ' '
+      }
+    })
 
     return (
-      <td className={cx(rowClass)} onClick={this.handleDayClick} title={this.props.wordCount + ' words'}>
+      <td className={rowClass}
+        onClick={this.handleDayClick}
+        title={this.props.wordCount + ' words'}>
         <div className="cal__date">{this.props.dateLabel}</div>
         <div className="cal__date-info">{wordCount}</div>
       </td>
-    );
+    )
   }
-});
+})
 
 export default DayMatrix;
