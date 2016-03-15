@@ -4,7 +4,6 @@ import { isEmpty, cloneDeep } from 'lodash'
 import { arrayOf, normalize } from 'normalizr'
 import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
-import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
 export const SEVERITY = {
@@ -74,7 +73,7 @@ export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
 export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
-  const endpoint = Configs.API_ROOT + 'glossary'
+  const endpoint = window.config.baseUrl + '/glossary'
   let formData = new FormData()
   formData.append('file', data.file, data.file.name)
   formData.append('fileName', data.file.name)
@@ -84,9 +83,9 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   let headers = {
     'Accept': 'application/json'
   }
-  if (Configs.auth) {
-    headers['x-auth-token'] = Configs.auth.token
-    headers['x-auth-user'] = Configs.auth.user
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
   }
 
   return {
@@ -117,11 +116,11 @@ export const createGlossaryTerm = (dispatch, term) => {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
-  if (Configs.auth) {
-    headers['x-auth-token'] = Configs.auth.token
-    headers['x-auth-user'] = Configs.auth.user
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
   }
-  const endpoint = Configs.API_ROOT + 'glossary/entries'
+  const endpoint = window.config.baseUrl + '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
   return {
     [CALL_API]: {
@@ -156,11 +155,11 @@ export const updateGlossaryTerm = (dispatch, term) => {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
-  if (Configs.auth) {
-    headers['x-auth-token'] = Configs.auth.token
-    headers['x-auth-user'] = Configs.auth.user
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
   }
-  const endpoint = Configs.API_ROOT + 'glossary/entries'
+  const endpoint = window.config.baseUrl + '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
   return {
     [CALL_API]: {
@@ -194,12 +193,12 @@ export const deleteGlossaryTerm = (dispatch, id) => {
   let headers = {
     'Accept': 'application/json'
   }
-  if (Configs.auth) {
-    headers['x-auth-token'] = Configs.auth.token
-    headers['x-auth-user'] = Configs.auth.user
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
   }
 
-  const endpoint = Configs.API_ROOT + 'glossary/entries/' + id
+  const endpoint = window.config.baseUrl + '/glossary/entries/' + id
   return {
     [CALL_API]: {
       endpoint,
@@ -243,15 +242,15 @@ export const getGlossaryTerms = (state, newIndex) => {
   const filterQuery = filter ? `&filter=${filter}` : ''
   const sortQuery = sort
     ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
-  const endpoint = Configs.API_ROOT + 'glossary/entries' + srcQuery +
+  const endpoint = window.config.baseUrl + '/glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
   let headers = {
     'Accept': 'application/json'
   }
-  if (Configs.auth) {
-    headers['x-auth-token'] = Configs.auth.token
-    headers['x-auth-user'] = Configs.auth.user
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
   }
   return {
     [CALL_API]: {
@@ -317,15 +316,20 @@ export const glossaryInvalidateStats =
   createAction(GLOSSARY_INVALIDATE_STATS)
 
 export const getGlossaryStats = (dispatch) => {
+  let headers = {
+    'Accept': 'application/json'
+  }
+
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
+  }
+
   return {
     [CALL_API]: {
-      endpoint: Configs.API_ROOT + 'glossary/info',
+      endpoint: window.config.baseUrl + '/glossary/info',
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'x-auth-token': Configs.auth ? Configs.auth.token : '',
-        'x-auth-user': Configs.auth ? Configs.auth.user : ''
-      },
+      headers: headers,
       types: [
         GLOSSARY_STATS_REQUEST,
         {

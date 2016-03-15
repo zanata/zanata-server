@@ -1,6 +1,5 @@
 import React from 'react'
 import RecentContributions from './RecentContributions'
-import Configs from '../../constants/Configs'
 import UserMatrixStore from '../../stores/UserMatrixStore'
 
 var UserProfile = React.createClass({
@@ -26,8 +25,7 @@ var UserProfile = React.createClass({
   },
 
   render: function () {
-    const user = Configs.data.profileUser
-    const authenticated = Configs.data.permission.authenticated
+    const user = window.config.user
     const username = user && user.username ? user.username : ''
     const languageTeams = user && user.languageTeams
       ? user.languageTeams.join() : ''
@@ -48,7 +46,7 @@ var UserProfile = React.createClass({
                     title="Username"></i>
                   {username}&nbsp;
                   {user && user.email
-                    ? (<span class="txt--meta">({user.email})</span>)
+                    ? (<span className="txt--meta">({user.email})</span>)
                     : undefined
                   }
                 </li>
@@ -62,7 +60,7 @@ var UserProfile = React.createClass({
             </div>
           </div>
         </div>
-        {authenticated
+        {window.config.permission.isLoggedIn
           ? (
               <div className="g__item w--3-4 w--1-2-m">
                 <div className="bg--pop-highest l--pad-v-1">

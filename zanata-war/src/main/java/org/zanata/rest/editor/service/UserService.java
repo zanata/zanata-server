@@ -130,6 +130,7 @@ public class UserService implements UserResource {
         boolean canInsert = false;
         boolean canDelete = false;
         boolean isAdmin = false;
+        boolean isLoggedIn = authenticatedAccount != null;
 
         if(authenticatedAccount != null) {
             canUpdate = identity.hasPermission("", "glossary-update");
@@ -142,6 +143,7 @@ public class UserService implements UserResource {
         permission.put("insertGlossary", canInsert);
         permission.put("deleteGlossary", canDelete);
         permission.put("isAdmin", isAdmin);
+        permission.put("isLoggedIn", isLoggedIn);
 
         return permission;
     }

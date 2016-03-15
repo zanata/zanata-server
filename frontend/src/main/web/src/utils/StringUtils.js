@@ -8,8 +8,18 @@ export function trim (str) {
   return isEmptyOrNull(str) ? str : str.trim()
 }
 
+export function isJsonString (str) {
+  try {
+    JSON.parse(str)
+  } catch (e) {
+    return false
+  }
+  return true
+}
+
 export default {
   isEmptyOrNull,
   trimLeadingSpace,
-  trim
+  trim,
+  isJsonString
 }

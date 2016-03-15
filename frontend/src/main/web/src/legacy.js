@@ -22,7 +22,7 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { isUndefined } from 'lodash'
+import { isUndefined, forEach } from 'lodash'
 import { Icons } from './components'
 import WebFont from 'webfontloader'
 import Nav from './components/Nav'
@@ -30,6 +30,7 @@ import Configs from './constants/Configs'
 import './styles/base.css'
 import './styles/atomic.css'
 import './styles/extras.css'
+import StringUtils from './utils/StringUtils'
 
 WebFont.load({
   google: {
@@ -41,37 +42,24 @@ WebFont.load({
   timeout: 2000
 })
 
-/**
- * Process attributes in dom element:id='main-content'
- *
- * base-url - base url for rest api
- * user - json object of user information.
- * See {@link org.zanata.rest.editor.dto.User}
- * data - json object of any information to be included.
- * e.g Permission {@link org.zanata.rest.editor.dto.Permission}, and View
- * dev - If 'dev' attribute exist, all api data will be retrieve
- * from .json file in test directory.
- */
-const mountNode = document.getElementById('root')
-const data = JSON.parse(mountNode.getAttribute('data'))
+let config = {}
+forEach(window.config, (value, key) => {
+  if (StringUtils.isJsonString(value)) {
+    config[key] = JSON.parse(value)
+  } else {
+    config[key] = value
+  }
+})
 
-// Replace with redux state
-// base rest url, e.g http://localhost:8080/rest
-Configs.API_ROOT = mountNode.getAttribute('base-url')
-Configs.data = data
-// append with .json extension in 'dev' environment
-Configs.urlPostfix = isUndefined(data.dev) ? '' : '.json?'
-// see org.zanata.rest.editor.dto.User
-Configs.user = JSON.parse(mountNode.getAttribute('user'))
-Configs.auth = JSON.parse(mountNode.getAttribute('auth'))
+window.config = config
 
 const links = {
-  'context': Configs.API_ROOT,
-  '/login': Configs.data.loginUrl,
-  '/help': Configs.data.helpUrl,
-  '/terms': Configs.data.termsUrl,
-  '/signup': Configs.data.registerUrl,
-  '/logout': Configs.data.logoutUrl
+  'context': config.baseUrl,
+  '/login': config.links.loginUrl,
+  '/help': config.links.helpUrl,
+  '/terms': config.links.termsUrl,
+  '/signup': config.links.registerUrl,
+  '/logout': config.links.logoutUrl
 }
 
 let activePath = window.location.pathname

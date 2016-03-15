@@ -34,13 +34,12 @@ var CalendarMonthMatrix = React.createClass({
     }
   },
 
-  handleClearSelection: function() {
-    Actions.clearSelectedDay();
+  handleClearSelection: function () {
+    Actions.clearSelectedDay()
   },
 
-  render: function() {
+  render: function () {
     var selectedDay = this.props.selectedDay,
-      cx = React.addons.classSet,
       clearClass = this.props.selectedDay ? '' : 'is-hidden',
       tableClasses = {
         'l--push-bottom-1': true,
@@ -60,16 +59,15 @@ var CalendarMonthMatrix = React.createClass({
     firstDay = moment(matrixData[0]['date']);
     for (var i = firstDay.weekday() - 1; i >= 0; i--) {
       // for the first week, we pre-fill missing week days
-      days.push(<td className="cal__day" key={firstDay.weekday(i).format()}></td>);
+      days.push(<td className="cal__day" key={firstDay.weekday(i).format()}></td>)
     }
 
-    matrixData.forEach(function(entry) {
-      var date = entry['date'];
-
+    matrixData.forEach(function (entry) {
+      var date = entry['date']
       days.push(
         <DayMatrix key={date} dateLabel={moment(date).format('Do')} date={date} wordCount={entry['wordCount']} selectedDay={selectedDay} />
-      );
-    });
+      )
+    })
 
     while(days.length) {
       dayColumns = days.splice(0, 7);

@@ -38,7 +38,6 @@ import {
 import {
   CLEAR_MESSAGE
 } from '../actions/common'
-import Configs from '../constants/Configs'
 import GlossaryHelper from '../utils/GlossaryHelper'
 import { isEmptyOrNull } from '../utils/StringUtils'
 
@@ -58,9 +57,9 @@ const glossary = handleActions({
       sort: GlossaryHelper.convertSortToObject(action.payload.sort),
       index: action.payload.index || 0,
       permission: {
-        canAddNewEntry: Configs.data.permission.insertGlossary,
-        canUpdateEntry: Configs.data.permission.updateGlossary,
-        canDeleteEntry: Configs.data.permission.deleteGlossary
+        canAddNewEntry: window.config.permission.insertGlossary,
+        canUpdateEntry: window.config.permission.updateGlossary,
+        canDeleteEntry: window.config.permission.deleteGlossary
       }
     }
   },

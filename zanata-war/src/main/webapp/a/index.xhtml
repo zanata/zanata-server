@@ -4,20 +4,24 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <ui:composition template="/WEB-INF/template/template_ui.xhtml">
-
   <ui:define name="content">
-    <div id="root"
-      base-url="#{request.contextPath}/rest"
-      data='{"loggedIn":#{authenticatedAccountHome.isLoggedIn()},
-          "helpUrl": "#{applicationConfigurationAction.helpUrl}",
-          "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
-          "logoutUrl": "/account/logout.seam",
-          "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
-          "registerUrl": "#{applicationConfigurationAction.registerUrl}",
-          "buildInfo": #{applicationConfigurationAction.buildInfo.getJSON()},
-          "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
-      user="#{authenticatedAccountHome.getUser()}">
+    <div id="config"
+      data-base-url="#{request.contextPath}/rest"
+      data-user="#{authenticatedAccountHome.getUser()}"
+      data-permission="#{authenticatedAccountHome.getUserPermission().getJSON()}}"
+      data-build-info="#{applicationConfigurationAction.buildInfo.getJSON()}"
+      data-links='{"helpUrl": "#{applicationConfigurationAction.helpUrl}",
+                   "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
+                   "logoutUrl": "/account/logout.seam",
+                   "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
+                   "registerUrl": "#{applicationConfigurationAction.registerUrl}"
+                  }'
+    >
     </div>
+    <script type="application/javascript">
+      window.config = JSON.parse(JSON.stringify(document.getElementById('config').dataset))
+    </script>
+    <div id="root" />
   </ui:define>
 </ui:composition>
 </html>
