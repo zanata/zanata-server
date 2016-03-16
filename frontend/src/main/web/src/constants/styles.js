@@ -128,9 +128,9 @@ module.exports = {
   },
   zIndex: {
     tooltipArrow: 100,
-    select: 300,
+    select: 200,
+    tooltip: 300,
     backDrop: 400,
-    tooltip: 400,
     modal: 500
   }
 }
