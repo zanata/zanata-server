@@ -34,7 +34,8 @@
 * [ZNTA-793](https://zanata.atlassian.net/browse/ZNTA-793) - Remove unused method in TranslationMemoryAction
 
 <h5>Infrastructure Changes</h5>
-* Zanata now requires JBoss EAP 6.4.6.GA or later (recommended), or WildFly version 10.x.
+* Recommended platform: JBoss EAP 6 (6.4.6.GA or later).
+* Alternative platform: WildFly version 10.x.
 
 -----------------------
 ## 3.8.3
