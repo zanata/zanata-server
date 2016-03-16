@@ -2,3 +2,4 @@
 node_modules/
 # compiled resources
 bundle.css
+bundle.js

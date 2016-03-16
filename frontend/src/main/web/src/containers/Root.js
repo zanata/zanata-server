@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import { Provider } from 'react-redux'
-import { Router, Route, Redirect } from 'react-router'
+import { Router, Route, Redirect, IndexRedirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
 import UserProfile from '../containers/UserProfile'
@@ -11,6 +11,7 @@ import {
 
 export default class Root extends Component {
   render () {
+    const username = window.config.user.username
     const {
       store,
       history
@@ -20,12 +21,11 @@ export default class Root extends Component {
         <View>
           <Router history={history}>
             <Route component={App} >
-              <Route path="glossary"
-                component={Glossary}
-                onEnter={store.dispatch(glossaryInitialLoad())} />
-              <Route path="profile"
-                     component={UserProfile} />
-              <Redirect from="/" to="glossary" />
+              <Route path="glossary" component={Glossary}
+                onEnter={() => store.dispatch(glossaryInitialLoad())} />
+              <Route path="profile/:username" component={UserProfile} />
+              <Redirect from="profile" to={`profile/${username}`} />
+              <Redirect from="/" to={`profile/${username}`} />
             </Route>
           </Router>
         </View>

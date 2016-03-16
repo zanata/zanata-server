@@ -23,7 +23,6 @@ class App extends Component {
     }
     const {
       children,
-      pageTitle,
       activePath,
       ...props
     } = this.props

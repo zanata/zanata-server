@@ -1,7 +1,6 @@
 import React from 'react'
 import NavItem from './NavItem'
 import { flattenThemeClasses } from '../utils/styleUtils'
-import Configs from '../constants/Configs'
 
 const items = [
   {
@@ -61,7 +60,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/index.seam#user/:username',
+    link: '/profile',
     title: 'Profile',
     auth: 'loggedin'
   },
@@ -81,7 +80,8 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/index.seam#glossary',
+    link: '/glossary',
+    href: '/a/index.seam#glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
@@ -117,7 +117,6 @@ const items = [
     more: true
   }
 ]
-
 const classes = {
   base: {
     bgc: 'Bgc(pri)',
@@ -136,16 +135,12 @@ const Nav = ({
   active,
   legacy,
   links,
-  context,
   ...props
 }) => {
   let auth = 'loggedout'
-  if (Configs.data.loggedIn === true) {
-    auth = Configs.data.permission.isAdmin === true ? 'admin' : 'loggedin'
+  if (window.config.permission.isLoggedIn === true) {
+    auth = window.config.permission.isAdmin === true ? 'admin' : 'loggedin'
   }
-
-  const username = (Configs.user && Configs.user.username)
-    ? Configs.user.username : ''
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
 
@@ -158,14 +153,9 @@ const Nav = ({
           (item.auth === 'loggedin' && admin)) && !item.more) {
           let link = item.link
           if (legacy) {
-            if (links[item.link]) {
-              link = links.context + links[item.link]
-            } else {
-              link = links.context + (item.href ? item.href : item.link)
-            }
-          }
-          if (link.endsWith(':username')) {
-            link = link.replace(':username', username)
+            link = links[item.link]
+              ? (links.context + links[item.link])
+              : (links.context + (item.href ? item.href : item.link))
           }
           return (<NavItem key={itemId}
             small={item.small}

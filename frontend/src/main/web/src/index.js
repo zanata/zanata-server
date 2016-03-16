@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { isUndefined } from 'lodash'
+import { isUndefined, forEach } from 'lodash'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import createLogger from 'redux-logger'
@@ -11,11 +11,11 @@ import WebFont from 'webfontloader'
 import { apiMiddleware } from 'redux-api-middleware'
 import rootReducer from './reducers'
 import Root from './containers/Root'
-import Configs from './constants/Configs'
 import './styles/base.css'
 import './styles/atomic.css'
 import './styles/animations.css'
 import './styles/extras.css'
+import StringUtils from './utils/StringUtils'
 
 WebFont.load({
   google: {
@@ -52,29 +52,16 @@ const store = ((initialState) => {
   return store
 })()
 
-/**
- * Process attributes in dom element:id='main-content'
- *
- * base-url - base url for rest api
- * user - json object of user information.
- * See {@link org.zanata.rest.editor.dto.User}
- * data - json object of any information to be included.
- * e.g Permission {@link org.zanata.rest.editor.dto.Permission}, and View
- * dev - If 'dev' attribute exist, all api data will be retrieve
- * from .json file in test directory.
- */
-const mountNode = document.getElementById('root')
-const data = JSON.parse(mountNode.getAttribute('data'))
+let config = {}
+forEach(window.config, (value, key) => {
+  if (StringUtils.isJsonString(value)) {
+    config[key] = JSON.parse(value)
+  } else {
+    config[key] = value
+  }
+})
 
-// Replace with redux state
-// base rest url, e.g http://localhost:8080/rest
-Configs.API_ROOT = mountNode.getAttribute('base-url')
-Configs.data = data
-// append with .json extension in 'dev' environment
-Configs.urlPostfix = isUndefined(data.dev) ? '' : '.json?'
-// see org.zanata.rest.editor.dto.User
-Configs.user = JSON.parse(mountNode.getAttribute('user'))
-Configs.auth = JSON.parse(mountNode.getAttribute('auth'))
+window.config = config
 
 render(
   <Root store={store} history={hashHistory} />,

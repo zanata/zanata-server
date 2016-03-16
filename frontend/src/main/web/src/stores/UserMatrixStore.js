@@ -1,14 +1,13 @@
-import Dispatcher from '../dispatchers/UserMatrixDispatcher';
-import assign from 'object-assign';
-import {Promise} from 'es6-promise';
-import {EventEmitter} from 'events';
-import {ContentStates, DateRanges} from '../constants/Options';
-import {UserMatrixActionTypes} from '../constants/ActionTypes';
-import Configs from '../constants/Configs';
-import utilsDate from '../utils/DateHelper';
-import Request from 'superagent';
+import Dispatcher from '../dispatchers/UserMatrixDispatcher'
+import assign from 'object-assign'
+import {Promise} from 'es6-promise'
+import {EventEmitter} from 'events'
+import {ContentStates, DateRanges} from '../constants/Options'
+import {UserMatrixActionTypes} from '../constants/ActionTypes'
+import utilsDate from '../utils/DateHelper'
+import Request from 'superagent'
 
-var CHANGE_EVENT = "change";
+const CHANGE_EVENT = 'change'
 
 var _state = {
   matrix: [],
@@ -48,8 +47,9 @@ function loadFromServer() {
   });
 }
 
-function statsAPIUrl() {
-  return Configs.API_ROOT + "/stats/user/" + Configs.data.profileUser.username + Configs.urlPostfix + "/";
+function statsAPIUrl () {
+  const postFix = window.config.dev ? '.json?' : ''
+  return window.config.baseUrl + '/stats/user/' + window.config.user.username + postFix + '/'
 }
 
 function handleServerResponse(serverResponse) {
@@ -177,47 +177,48 @@ function filterByContentStateAndDay(listOfMatrices, selectedContentState, select
     };
     filteredEntries = listOfMatrices.filter(predicate);
   }
-  return filteredEntries;
+  return filteredEntries
 }
 
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
-  getMatrixState: function() {
-    if (_state.matrixForAllDays.length === 0 && Configs.data.permission.authenticated) {
+  getMatrixState: function () {
+    if (_state.matrixForAllDays.length === 0 &&
+      window.config.permission.isLoggedIn) {
       loadFromServer()
         .then(handleServerResponse)
         .then(function (newState) {
-          UserMatrixStore.emitChange();
+          UserMatrixStore.emitChange()
         })
     }
-    return _state;
+    return _state
   }.bind(this),
 
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
+  emitChange: function () {
+    this.emit(CHANGE_EVENT)
   },
 
   /**
    * @param {function} callback
    */
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback);
+  addChangeListener: function (callback) {
+    this.on(CHANGE_EVENT, callback)
   },
 
   /**
    * @param {function} callback
    */
-  removeChangeListener: function(callback) {
+  removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
 
   dispatchToken: Dispatcher.register(function(payload) {
-    var action = payload.action;
+    var action = payload.action
     switch (action.actionType) {
       case UserMatrixActionTypes.DATE_RANGE_UPDATE:
-        console.log('date range from %s -> %s', _state.dateRangeOption, action.data);
-        _state.dateRangeOption = action.data;
-        _state.selectedDay = null;
-        if(Configs.data.permission.authenticated) {
+        console.log('date range from %s -> %s', _state.dateRangeOption, action.data)
+        _state.dateRangeOption = action.data
+        _state.selectedDay = null
+        if (window.config.permission.isLoggedIn) {
           loadFromServer()
             .then(handleServerResponse)
             .then(function(newState) {
@@ -225,9 +226,9 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
             })
             .catch(function(err) {
               console.error('failed trying to load user statistic from server' + err.stack);
-            });
+            })
         }
-        break;
+        break
       case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
         console.log('content state from %s -> %s', _state.contentStateOption, action.data);
         _state.contentStateOption = action.data;
