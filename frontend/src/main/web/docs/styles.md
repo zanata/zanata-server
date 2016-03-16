@@ -67,7 +67,9 @@ highest. A button default may only use `sh1`, where a modal may use `sh5`.
 To keep things consistent, define a variable for every style that may be reused
 to avoid repetition or inconsistencies. e.g. transitions, borders, etc.
 
-## Base
+## CSS Files
+
+### Base
 
 These are the default html styles. Styles here should be kept very minimal and
 should be the most common styles used in the application. E.g. don't set custom
@@ -78,7 +80,7 @@ context. Favour "reseting" default elements as much as possible.
 This allow developers to use the correct html tags in each use case without
 the fear of having to "reset defaults" or just use a div.
 
-## Atomic CSS
+### Atomic CSS
 
 Most of Zanata's CSS should be in this file. **It is a generated file and
 should not be edited**. This file is added to by declaring classes in Javascript
@@ -91,7 +93,7 @@ use atomic CSS classes (including a reference of
 [every class available](http://acss.io/reference)), see
 [acss.io](http://acss.io/).
 
-### Styling Components
+#### Styling Components
 
 All custom components should be composed of the [Base](../src/components/Base.jsx)
 component, which adds `theme` and `atomic` props.  `theme` should be used when
@@ -133,20 +135,31 @@ const classes = {
 }
 ```
 
-## Animations
+### Animations
 
 Animation definitions are something that can't be declared in atomic.css, but
 they can be referenced. When you need to declare a new animation, do it in this
 file, then reference it from atomic.css.
 
-## Extra
+### Extra
 
 **This file should be a last resort**. If you find something is not possible in
 atomic.css, you can add it here. Where possible, try and match the syntax of
 atomic.css (see if there is an emmet version available) e.g. `appearance: none;`
 is not available in atomic.css so add `Ap(n)` to extra.css.
 
+## Icons
+
+Icons are handled by the [Icons](../src/components/Icons) and
+[Icon](../src/components/Icon) components. The source fro all icons is the
+[svgs folder](../src/components/Icons/svgs) in the Icons component.
+
+On build, there are scripts that will generate an Icon sprite and list all the
+icons to be displayed in the styleguide. To understand how to use the Icon
+component, see the [Styleguide](./styleguide.md).
+
 ## Styleguide
 
-This CSS is specific to the Styleguide and is not used in production. It is
-used for styleguide specific overrides of it's included classes.
+This CSS is specific to the [Styleguide](./styleguide.md) and is not used in
+production. It is used for styleguide specific overrides of it's included
+classes.
