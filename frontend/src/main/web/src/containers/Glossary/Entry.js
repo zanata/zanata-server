@@ -107,7 +107,9 @@ class Entry extends Component {
         </ButtonRound>)
     }
 
-    const loadingDiv = (<div className='LineClamp(1,24px) Px(rq)'>Loading…</div>)
+    const loadingDiv = (
+      <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
+    )
 
     return (
       <TableRow highlight
@@ -118,6 +120,7 @@ class Entry extends Component {
           {termsLoading
             ? loadingDiv
             : (<EditableText
+                title={entry.srcTerm.content}
                 editable={false}
                 editing={selected}>
                 {entry.srcTerm.content}
@@ -129,6 +132,7 @@ class Entry extends Component {
             ? loadingDiv
             : transSelected
               ? (<EditableText
+                  title={transContent}
                   editable={transSelected && editable}
                   editing={selected}
                   onChange={(e) => handleTermFieldUpdate('locale', e)}
@@ -145,13 +149,14 @@ class Entry extends Component {
           {termsLoading
             ? loadingDiv
             : (<EditableText
-            editable={!transSelected && editable}
-            editing={selected}
-            onChange={(e) => handleTermFieldUpdate('pos', e)}
-            placeholder='Add part of speech…'
-            emptyReadOnlyText='No part of speech'>
-            {entry.pos}
-          </EditableText>)
+                title={entry.pos}
+                editable={!transSelected && editable}
+                editing={selected}
+                onChange={(e) => handleTermFieldUpdate('pos', e)}
+                placeholder='Add part of speech…'
+                emptyReadOnlyText='No part of speech'>
+                {entry.pos}
+              </EditableText>)
           }
         </TableCell>
         {!transSelected ? (
@@ -159,6 +164,7 @@ class Entry extends Component {
             {termsLoading
               ? loadingDiv
               : (<EditableText
+                  title={entry.description}
                   editable={!transSelected && editable}
                   editing={selected}
                   onChange={(e) => handleTermFieldUpdate('description', e)}

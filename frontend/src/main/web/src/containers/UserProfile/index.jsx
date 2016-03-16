@@ -1,4 +1,5 @@
 import React from 'react'
+import Helmet from 'react-helmet'
 import RecentContributions from './RecentContributions'
 import UserMatrixStore from '../../stores/UserMatrixStore'
 
@@ -50,7 +51,6 @@ var UserProfile = React.createClass({
         }
         <Helmet title='User Profile'/>
         <ScrollView>
-          <ViewHeader />
           <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
             <div id="profile-overview" className="g__item w--1-4 w--1-2-m">
               <div className="media l--push-bottom-half">
