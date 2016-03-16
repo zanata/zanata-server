@@ -61,6 +61,7 @@ class EditableText extends Component {
       emptyReadOnlyText = '',
       placeholder = '',
       theme,
+      title,
       ...props
     } = this.props
     const themed = merge({}, classes, theme)
@@ -87,7 +88,7 @@ class EditableText extends Component {
     const emptyText = editable ? placeholder : emptyReadOnlyText
     const text = children || emptyText
     return (
-      <Row theme={textStateClasses} align='start' onClick={::this.handleClick}>
+      <Row theme={textStateClasses} align='start' onClick={::this.handleClick} title={title}>
         {text}
       </Row>
     )

@@ -282,11 +282,7 @@ const glossary = handleActions({
     delete deleting[entryId]
     return {
       ...state,
-      deleting: deleting,
-      notification: {
-        severity: SEVERITY.INFO,
-        message: 'Glossary term deleted.'
-      }
+      deleting: deleting
     }
   },
   [GLOSSARY_DELETE_FAILURE]: (state, action) => ({
@@ -338,11 +334,7 @@ const glossary = handleActions({
       ...state,
       saving: saving,
       terms: terms,
-      selectedTerm: selectedTerm,
-      notification: {
-        severity: SEVERITY.INFO,
-        message: 'Glossary term updated'
-      }
+      selectedTerm: selectedTerm
     }
   },
   [GLOSSARY_UPDATE_FAILURE]: (state, action) => {
@@ -407,12 +399,7 @@ const glossary = handleActions({
   [GLOSSARY_TERMS_REQUEST]: (state, action) => {
     if (action.error) {
       return {
-        ...state,
-        notification: {
-          severity: SEVERITY.ERROR,
-          message: 'We are unable to get information from server. ' +
-          'Please refresh this page and try again.'
-        }
+        ...state
       }
     } else {
       return {
@@ -459,12 +446,7 @@ const glossary = handleActions({
     ...state,
     termsError: action.error,
     termsErrorMessage: action.payload,
-    termsLoading: false,
-    notification: {
-      severity: SEVERITY.ERROR,
-      message: 'We are unable to get information from server. ' +
-      'Please refresh this page and try again.'
-    }
+    termsLoading: false
   }),
   [GLOSSARY_SELECT_TERM]: (state, action) => {
     let selectedTerm = cloneDeep(state.terms[action.payload])
