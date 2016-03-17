@@ -50,6 +50,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Adapter to handle Qt translation (.ts) files.<br/> using the
@@ -109,8 +111,7 @@ public class TSAdapter extends OkapiFilterAdapter {
             while (filter.hasNext()) {
                 Event event = filter.next();
                 if (isStartContext(event)) {
-                    context = event.getStartGroup().getName() == null ? ""
-                            : event.getStartGroup().getName();
+                    context = getContext(event);
                 } else if (isEndContext(event)) {
                     context = "";
                 } else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
@@ -177,8 +178,7 @@ public class TSAdapter extends OkapiFilterAdapter {
             while (filter.hasNext()) {
                 Event event = filter.next();
                 if (isStartContext(event)) {
-                    context = event.getStartGroup().getName() == null ? ""
-                            : event.getStartGroup().getName();
+                    context = getContext(event);
                 } else if (isEndContext(event)) {
                     context = "";
 
@@ -293,8 +293,7 @@ public class TSAdapter extends OkapiFilterAdapter {
             while (filter.hasNext()) {
                 Event event = filter.next();
                 if (isStartContext(event)) {
-                    context = event.getStartGroup().getName() == null ? ""
-                            : event.getStartGroup().getName();
+                    context = getContext(event);
                 } else if (isEndContext(event)) {
                     context = "";
                 } else if (event.getEventType() == EventType.START_SUBDOCUMENT) {
@@ -343,5 +342,19 @@ public class TSAdapter extends OkapiFilterAdapter {
     private boolean isEndContext(Event event) {
         return event.isEndGroup() &&
                 event.getEndGroup().toString().toLowerCase().contains("</context");
+    }
+
+    private String getContext(Event event) {
+        // TODO: Numerusform bug workaround, remove when fixed
+        StartGroup startGroup = event.getStartGroup();
+        {
+            Pattern pattern = Pattern.compile("<name>(.+)</name>", Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(startGroup.toString());
+            if (startGroup.getName() == null && matcher.find()) {
+                log.info("Qt ts context bug encountered, returning {} from {}", matcher.group(1), startGroup.toString());
+                return matcher.group(1);
+            }
+        }
+        return startGroup.getName() == null ? "" : event.getStartGroup().getName();
     }
 }
