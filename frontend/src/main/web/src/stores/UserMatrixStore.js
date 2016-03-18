@@ -49,7 +49,7 @@ function loadFromServer() {
 
 function statsAPIUrl () {
   const postFix = window.config.dev ? '.json?' : ''
-  return window.config.baseUrl + '/stats/user/' + window.config.user.username + postFix + '/'
+  return window.config.baseUrl + window.config.apiRoot + '/stats/user/' + window.config.user.username + postFix + '/'
 }
 
 function handleServerResponse(serverResponse) {

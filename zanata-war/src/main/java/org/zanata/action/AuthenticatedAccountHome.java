@@ -72,10 +72,6 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
         return authenticatedAccount.getId();
     }
 
-    public HPerson getAuthenticatedPerson() {
-        return getInstance().getPerson();
-    }
-
     public String getUser() {
         ObjectMapper mapper = new ObjectMapper();
         try {

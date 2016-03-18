@@ -15,7 +15,9 @@ module.exports = {
         include: path.join(__dirname, 'src'),
         loader: 'atomic-loader?configPath=' + __dirname +
           '/atomicCssConfig.js' +
-          '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015'
+          '!babel?' + JSON.stringify({
+            presents: ['react', 'stage-0', 'es2015']
+          })
       },
       {
         test: /\.css$/,

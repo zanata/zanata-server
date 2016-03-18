@@ -6,17 +6,17 @@
 <ui:composition template="/WEB-INF/template/template_ui.xhtml">
   <ui:define name="content">
     <div id="config"
-      data-base-url="#{request.contextPath}/rest"
+      data-base-url="#{request.contextPath}"
+      data-api-root="/rest"
       data-user="#{authenticatedAccountHome.getUser()}"
-      data-permission="#{authenticatedAccountHome.getUserPermission().getJSON()}}"
+      data-permission="#{authenticatedAccountHome.getUserPermission().getJSON()}"
       data-build-info="#{applicationConfigurationAction.buildInfo.getJSON()}"
       data-links='{"helpUrl": "#{applicationConfigurationAction.helpUrl}",
                    "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
                    "logoutUrl": "/account/logout.seam",
                    "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
                    "registerUrl": "#{applicationConfigurationAction.registerUrl}"
-                  }'
-    >
+                  }'>
     </div>
     <script type="application/javascript">
       window.config = JSON.parse(JSON.stringify(document.getElementById('config').dataset))

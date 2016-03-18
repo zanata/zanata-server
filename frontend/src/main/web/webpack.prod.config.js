@@ -16,11 +16,11 @@ module.exports = _.merge({}, defaultConfig, {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
+        include: path.join(__dirname, 'src'),
         loader: 'babel',
         query: {
           presets: ['react', 'stage-0', 'es2015']
-        },
-        include: path.join(__dirname, 'src')
+        }
       },
       {
         test: /\.css$/,
