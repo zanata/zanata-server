@@ -22,13 +22,9 @@ package org.zanata.page;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.StringDescription;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
@@ -151,7 +147,7 @@ public class AbstractPage {
         return 0;
     }
 
-
+    // TODO use this to wait for a page load after user input (eg click)
     public void execAndWaitForNewPage(Runnable runnable) {
         final WebElement oldPage = driver.findElement(By.tagName("html"));
         runnable.run();
@@ -172,7 +168,7 @@ public class AbstractPage {
                             // This exception means the new page has loaded
                             // (or started to).
                             String script = "return document.readyState === " +
-                                    "'complete' && window.javascriptFinished";
+                                    "'complete' && window.deferScriptsFinished";
                             Boolean documentComplete =
                                     (Boolean) getExecutor().executeScript(
                                             script);
@@ -202,16 +198,17 @@ public class AbstractPage {
                         String url = getDriver().getCurrentUrl();
                         String pageSource = ShortString.shorten(
                                 getDriver().getPageSource(), 2000);
-                        log.warn("XMLHttpRequest.active is null. Is AjaxCounterBean missing? URL: {}\nPartial page source follows:\n{}", url, pageSource);
+                        log.warn("XMLHttpRequest.active is null. Is zanata-testing-extension installed? URL: {}\nPartial page source follows:\n{}", url, pageSource);
                     }
                     return true;
                 }
                 if (outstanding < 0) {
                     throw new RuntimeException("XMLHttpRequest.active " +
                             "and/or window.timeoutCounter " +
-                            "is negative.  Please ensure that " +
-                            "AjaxCounterBean's script is run before " +
-                            "any other JavaScript in the page.");
+                            "is negative.  Please check the " +
+                            "implementation of zanata-testing-extension, " +
+                            "and ensure that the injected script is run " +
+                            "before any other JavaScript in the page.");
                 }
                 int expected = getExpectedBackgroundRequests();
                 if (outstanding < expected) {
@@ -294,7 +291,7 @@ public class AbstractPage {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().until(new Function<WebDriver, WebElement>() {
+        return waitForAMoment().withMessage(msg).until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver input) {
                 return getDriver().findElement(elementBy);
@@ -314,7 +311,7 @@ public class AbstractPage {
         String msg = "element exists " + elementBy;
         logWaiting(msg);
         waitForPageSilence();
-        return waitForAMoment().until(new Function<WebDriver, WebElement>() {
+        return waitForAMoment().withMessage(msg).until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver input) {
                 return parentElement.findElement(elementBy);
@@ -410,6 +407,23 @@ public class AbstractPage {
             log.info("Not checking text entered");
         }
         triggerScreenshot("_text");
+    }
+
+    /**
+     * 'Touch' a text field to see if it's writable. For cases
+     * where fields are available but briefly won't accept text
+     * for some reason
+     * @param textField
+     */
+    public void touchTextField(WebElement textField) {
+        waitForAMoment().until(new Predicate<WebDriver>() {
+            @Override
+            public boolean apply(WebDriver input) {
+                enterText(textField, ".", true, false, false);
+                return textField.getAttribute("value").equals(".");
+            }
+        });
+        textField.clear();
     }
 
     private void waitForElementReady(final WebElement element) {

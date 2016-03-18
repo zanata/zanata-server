@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>25</version>
+    <version>27-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -33,20 +33,22 @@
     <!-- Applies to surefire and failsafe (if enabled) -->
     <failIfNoTests>true</failIfNoTests>
 
-    <deltaspike.version>1.5.1</deltaspike.version>
+    <deltaspike.version>1.5.2</deltaspike.version>
     <cdi.runtime>runtime</cdi.runtime>
     <cdi.compile>compile</cdi.compile>
     <picketlink.version>2.5.4.SP4</picketlink.version>
     <infinispan.version>6.0.2.Final</infinispan.version>
+    <lombok.version>1.16.6</lombok.version>
     <weld.version>1.1.31.Final</weld.version>
     <weld.se.version>${weld.version}</weld.se.version>
     <groovy.version>2.4.5</groovy.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>19.0</guava.version>
     <gwt.version>2.7.0</gwt.version>
     <icu4j.version>50.1.1</icu4j.version>
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
     <lucene.version>3.6.2</lucene.version>
     <org.mock-server.version>3.9.17</org.mock-server.version>
+    <rewrite.version>3.0.0.Alpha10</rewrite.version>
 
     <!--
     Version of java compiler used for building. (Specified as major.minor,
@@ -79,19 +81,18 @@
     -->
 
     <solr.version>${lucene.version}</solr.version>
-    <seam.version>2.3.1.Final</seam.version>
-    <slf4j.version>1.7.12</slf4j.version>
+    <slf4j.version>1.7.18</slf4j.version>
     <gwteventservice.version>1.2.1</gwteventservice.version>
     <okapi.version>0.22</okapi.version>
 
     <zanata.assets.version>8.2</zanata.assets.version>
     <zanata.api.version>3.9.0-SNAPSHOT</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
-    <zanata.api.compat.version>3.4.1</zanata.api.compat.version>
+    <zanata.api.compat.version>3.8.3</zanata.api.compat.version>
     <zanata.client.version>3.8.1</zanata.client.version>
     <zanata.common.version>3.8.1</zanata.common.version>
 
-    <richfaces.version>4.5.4.Final</richfaces.version>
+    <richfaces.version>4.5.11.Final</richfaces.version>
 
     <arquillian.version>1.1.5.Final</arquillian.version>
     <shrinkwrap.api.version>1.2.2</shrinkwrap.api.version>
@@ -261,6 +262,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>2.1</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.picketlink</groupId>
         <artifactId>picketlink-idm-api</artifactId>
         <version>${picketlink.version}</version>
@@ -326,19 +333,6 @@
       </dependency>
 
       <dependency>
-        <groupId>dom4j</groupId>
-        <artifactId>dom4j</artifactId>
-        <version>1.6.1</version>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
         <groupId>com.sun.faces</groupId>
         <artifactId>jsf-impl</artifactId>
         <version>2.1.28</version>
@@ -348,7 +342,7 @@
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
       </dependency>
 
       <dependency>
@@ -527,7 +521,7 @@
       <dependency>
         <groupId>org.jglue.cdi-unit</groupId>
         <artifactId>cdi-unit</artifactId>
-        <version>3.1.2</version>
+        <version>3.1.3</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -561,7 +555,7 @@
       <dependency>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-core</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.2</version>
       </dependency>
 
       <dependency>
@@ -652,6 +646,12 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-common-util</artifactId>
         <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.zanata</groupId>
@@ -682,6 +682,10 @@
           <exclusion>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jsr173_api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -936,7 +940,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.14</version>
+        <version>0.9.18</version>
       </dependency>
 
       <dependency>
@@ -1142,6 +1146,10 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1302,6 +1310,12 @@
       </dependency>
 
       <dependency>
+        <groupId>javax.xml.stream</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0-2</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.concordion</groupId>
         <artifactId>concordion</artifactId>
         <version>1.4.2</version>
@@ -1315,6 +1329,10 @@
           <exclusion>
             <artifactId>xml-apis</artifactId>
             <groupId>xml-apis</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
           </exclusion>
         </exclusions>
         <scope>test</scope>
@@ -1340,18 +1358,15 @@
         <artifactId>functionaljava</artifactId>
         <version>3.1</version>
       </dependency>
-      <!--
-        In the server, we can use a newer version than Fedora has.
-        This one also has a source jar!
-      -->
       <dependency>
-        <groupId>xom</groupId>
+        <!-- New group Id -->
+        <groupId>com.io7m.xom</groupId>
         <artifactId>xom</artifactId>
-        <version>1.2.5</version>
+        <version>1.2.10</version>
         <exclusions>
           <exclusion>
-            <artifactId>xml-apis</artifactId>
             <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1760,7 +1775,7 @@
           <plugin>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok-maven-plugin</artifactId>
-            <version>0.11.0.0</version>
+            <version>1.16.6.1</version>
             <executions>
               <execution>
                 <phase>generate-sources</phase>

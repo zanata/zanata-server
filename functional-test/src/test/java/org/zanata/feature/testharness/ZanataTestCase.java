@@ -28,9 +28,14 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestName;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.zanata.page.WebDriverFactory;
 import org.zanata.util.EnsureLogoutRule;
 import org.zanata.util.SampleProjectRule;
@@ -46,6 +51,18 @@ public class ZanataTestCase {
 
     public final static int MAX_SHORT_TEST_DURATION = 180000;
     public final static int MAX_LONG_TEST_DURATION = 600000;
+
+    @ClassRule
+    public static ExternalResource javascriptLogging = new ExternalResource() {
+        @Override
+        protected void before() throws Throwable {
+            WebDriverFactory.INSTANCE.registerLogListener();
+        }
+        @Override
+        protected void after() {
+            WebDriverFactory.INSTANCE.unregisterLogListener();
+        }
+    };
 
     @Rule
     public TestName testName = new TestName();
@@ -71,13 +88,14 @@ public class ZanataTestCase {
     }
 
     @Before
-    public void testEntry() {
+    public final void testEntry() {
         log.info("Starting ".concat(getTestDescription()));
         testFunctionStart = new DateTime();
+        WebDriverFactory.INSTANCE.testEntry();
     }
 
     @After
-    public void testExit() {
+    public final void testExit() {
         WebDriverFactory.INSTANCE.logLogs();
         Duration duration = new Duration(testFunctionStart, new DateTime());
         PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
@@ -92,6 +110,7 @@ public class ZanataTestCase {
                 .appendSuffix("ms")
                 .toFormatter();
         log.info(periodFormatter.print(duration.toPeriod()));
+        WebDriverFactory.INSTANCE.testExit();
     }
 
 }

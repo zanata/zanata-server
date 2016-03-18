@@ -1,5 +1,6 @@
 package org.zanata.security;
 
+import org.apache.deltaspike.core.spi.scope.window.WindowContext;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,6 +18,7 @@ import org.zanata.seam.SeamAutowire;
 import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.permission.CustomPermissionResolver;
 import org.zanata.security.permission.PermissionEvaluator;
+
 import javax.enterprise.event.Event;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,15 +57,14 @@ public class ZanataIdentityTest extends ZanataJpaTest {
         MockitoAnnotations.initMocks(this);
         deleteAllTables();
         getEm().flush();
-        seam.reset();
         ZanataCredentials credentials = new ZanataCredentials();
         PermissionEvaluator permissionEvaluator = new PermissionEvaluator();
-        permissionEvaluator.buildIndex();
         when(identityManager.isEnabled()).thenReturn(true);
         when(identityManager.authenticate(username, validPassword)).thenReturn(true);
         when(identityManager.authenticate(username, apiKey)).thenReturn(true);
 
         identity = seam
+                .reset().ignoreNonResolvable()
                 .use("credentials", credentials)
                 .use("entityManager", getEm())
                 .use("identityManager", identityManager)
@@ -72,11 +73,25 @@ public class ZanataIdentityTest extends ZanataJpaTest {
                 .use("alreadyLoggedInEventEvent", event)
                 .use("loginFailedEventEvent", event)
                 .use("notLoggedInEventEvent", event)
-                .use("permissionEvaluator", permissionEvaluator)
                 .use("session", getSession())
                 .use("serverPath", "/")
+                .use("windowContext", new WindowContext() {
+                    @Override
+                    public String getCurrentWindowId() {
+                        return "dummyWindowId";
+                    }
+                    @Override
+                    public void activateWindow(String windowId) {
+                    }
+                    @Override
+                    public boolean closeWindow(String windowId) {
+                        return false;
+                    }
+                })
                 .autowire(ZanataIdentity.class);
         seam.use("identity", identity);
+        seam.use("permissionProviders", seam.autowire(SecurityFunctions.class))
+            .use("permissionEvaluator", seam.autowire(permissionEvaluator));
         identity.setJaasConfigName(null);
         identity.setPermissionResolver(new CustomPermissionResolver());
         AutowireContexts.simulateSessionContext(true);

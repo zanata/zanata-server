@@ -193,7 +193,6 @@ public class AuthenticationManager {
      * @return A String with the result of the operation.
      */
     public String openIdLogin() {
-        zanataOpenId.setProvider(credentials.getOpenIdProviderType());
         String loginResult = identity.login(AuthenticationType.OPENID);
         return loginResult;
     }
@@ -262,6 +261,7 @@ public class AuthenticationManager {
                 if (userRedirect != null) {
                     if (userRedirect.isRedirect()
                             && !userRedirect.isRedirectToHome()
+                            && !userRedirect.isRedirectToError()
                             && !userRedirect.isRedirectToRegister()) {
                         return "redirect";
                     }
