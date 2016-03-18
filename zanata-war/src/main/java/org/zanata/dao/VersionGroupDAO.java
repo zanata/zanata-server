@@ -86,6 +86,39 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
         return q.list();
     }
 
+    public List<HIterationGroup> getGroupsByMaintainer(HPerson maintainer,
+        String filter, int firstResult, int maxResults) {
+        final String sqlFilter = filter == null ? "" : filter;
+        Query q = getSession().createQuery(
+            "from HIterationGroup g " +
+                "where :maintainer in elements(g.maintainers) " +
+                "and g.status <> :obsolete " +
+                "and (g.name like :filter " +
+                "or g.slug like :filter) " +
+                "order by g.name")
+            .setParameter("maintainer", maintainer)
+            .setParameter("obsolete", EntityStatus.OBSOLETE)
+            .setParameter("filter", "%" + sqlFilter + "%")
+            .setFirstResult(firstResult)
+            .setMaxResults(maxResults);
+        return q.list();
+    }
+
+    public int getMaintainedGroupCount(HPerson maintainer, String filter) {
+        final String sqlFilter = filter == null ? "" : filter;
+        Query q = getSession().createQuery(
+            "select count(g) from HIterationGroup g " +
+                "where :maintainer in elements(g.maintainers) " +
+                "and g.status <> :obsolete " +
+                "and (g.name like :filter " +
+                "or g.slug like :filter) " +
+                "order by g.name")
+            .setParameter("maintainer", maintainer)
+            .setParameter("obsolete", EntityStatus.OBSOLETE)
+            .setParameter("filter", "%" + sqlFilter + "%");
+        return ((Long) q.uniqueResult()).intValue();
+    }
+
     public List<HIterationGroup> searchGroupBySlugAndName(String searchTerm) {
         if (StringUtils.isEmpty(searchTerm)) {
             return new ArrayList<HIterationGroup>();

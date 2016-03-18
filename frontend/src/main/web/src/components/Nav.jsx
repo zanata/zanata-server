@@ -54,7 +54,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/index.xhtml/#profile',
+    link: '/a/#profile',
     internalLink: '/profile',
     title: 'Profile',
     auth: 'loggedin',
@@ -73,7 +73,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/index.xhtml/#glossary',
+    link: '/a/#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin'
@@ -156,12 +156,13 @@ const Nav = ({
                     : (links.context + item.link))
           }
 
-          console.log(item, link)
+          const useHref = legacy ? true : (item.internalLink ? false : true)
+
           return (<NavItem key={itemId}
             small={item.small}
             active={active === link}
             link={link}
-            useHref={item.internalLink ? false : true}
+            useHref={useHref}
             icon={item.icon}
             title={item.title}/>)
         }
