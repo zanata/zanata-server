@@ -190,6 +190,7 @@ public class ZanataInit {
         log.info("App server release version: {}", releaseVersion);
 
         switch ((productName == null) ? "" : productName) {
+            case "JBoss EAP":
             case "EAP":
                 checkEAPVersion(productVersion);
                 break;
