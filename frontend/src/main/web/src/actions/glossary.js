@@ -1,8 +1,8 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
 import { isEmpty, cloneDeep } from 'lodash'
-import { normalize } from 'normalizr'
-import { GLOSSARY_TERM_ARRAY } from '../schemas'
+import { arrayOf, normalize } from 'normalizr'
+import { glossaryTerm } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
@@ -72,6 +72,9 @@ const getPageNumber =
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
 
+export const glossaryInvalidateStats =
+  createAction(GLOSSARY_INVALIDATE_STATS)
+
 export const getGlossaryTerms = (state, newIndex) => {
   const {
     src = 'en-US',
@@ -88,7 +91,8 @@ export const getGlossaryTerms = (state, newIndex) => {
   const filterQuery = filter ? `&filter=${filter}` : ''
   const sortQuery = sort
     ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
-  const endpoint = window.config.baseUrl + '/glossary/entries' + srcQuery +
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
   let headers = {
@@ -112,7 +116,7 @@ export const getGlossaryTerms = (state, newIndex) => {
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
                 const normalized =
-                  normalize(json, { results: GLOSSARY_TERM_ARRAY })
+                  normalize(json, { results: arrayOf(glossaryTerm) })
                 return normalized
               }
               )
@@ -129,9 +133,6 @@ export const getGlossaryTerms = (state, newIndex) => {
   }
 }
 
-export const glossaryInvalidateStats =
-  createAction(GLOSSARY_INVALIDATE_STATS)
-
 export const getGlossaryStats = (dispatch) => {
   let headers = {
     'Accept': 'application/json'
@@ -144,7 +145,8 @@ export const getGlossaryStats = (dispatch) => {
 
   return {
     [CALL_API]: {
-      endpoint: window.config.baseUrl + '/glossary/info',
+      endpoint: window.config.baseUrl + window.config.apiRoot +
+        '/glossary/info',
       method: 'GET',
       headers: headers,
       types: [
@@ -165,7 +167,7 @@ export const getGlossaryStats = (dispatch) => {
 }
 
 export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
-  const endpoint = window.config.baseUrl + '/glossary'
+  const endpoint = window.config.baseUrl + window.config.apiRoot + '/glossary'
   let formData = new FormData()
   formData.append('file', data.file, data.file.name)
   formData.append('fileName', data.file.name)
@@ -212,7 +214,8 @@ export const createGlossaryTerm = (dispatch, term) => {
     headers['x-auth-token'] = window.config.auth.token
     headers['x-auth-user'] = window.config.auth.user
   }
-  const endpoint = window.config.baseUrl + '/glossary/entries'
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
   return {
     [CALL_API]: {
@@ -251,7 +254,8 @@ export const updateGlossaryTerm = (dispatch, term) => {
     headers['x-auth-token'] = window.config.auth.token
     headers['x-auth-user'] = window.config.auth.user
   }
-  const endpoint = window.config.baseUrl + '/glossary/entries'
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
   return {
     [CALL_API]: {
@@ -290,7 +294,8 @@ export const deleteGlossaryTerm = (dispatch, id) => {
     headers['x-auth-user'] = window.config.auth.user
   }
 
-  const endpoint = window.config.baseUrl + '/glossary/entries/' + id
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/glossary/entries/' + id
   return {
     [CALL_API]: {
       endpoint,

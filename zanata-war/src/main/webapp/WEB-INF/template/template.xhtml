@@ -67,7 +67,7 @@
     </script>
   </h:head>
 
-  <h:body styleClass="new-zanata Bgc(i) Bgc(i) Fz(i) Ov(h)!">
+  <h:body styleClass="new-zanata Bgc(i)! Fz(i) Ov(h)!">
     <ds:windowId/>
 
     <a4j:outputPanel layout="block" ajaxRendered="true" id="messages">
@@ -83,24 +83,30 @@
       </ui:fragment>
     </a4j:outputPanel>
 
+    <div id="config"
+      data-base-url="#{request.contextPath}"
+      data-api-root="/rest"
+      data-user="#{authenticatedAccountHome.getUser()}"
+      data-permission="#{authenticatedAccountHome.getUserPermission().getJSON()}"
+      data-build-info="#{applicationConfigurationAction.buildInfo.getJSON()}"
+      data-links='{"helpUrl": "#{applicationConfigurationAction.helpUrl}",
+                   "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
+                   "logoutUrl": "/account/logout.seam",
+                   "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
+                   "registerUrl": "#{applicationConfigurationAction.registerUrl}"
+                  }'>
+    </div>
+    <script type="application/javascript">
+      window.config = JSON.parse(JSON.stringify(document.getElementById('config').dataset))
+    </script>
     <div class='Ai(st) D(f) Fld(c) Flxs(0)'>
       <div class="Ai(st) D(f) Fld(c) Fld(r)--sm Flxs(0) H(100vh)">
-        <div id="root" base-url="#{request.contextPath}"
-          data='{"loggedIn":#{authenticatedAccountHome.isLoggedIn()},
-          "helpUrl": "#{applicationConfigurationAction.helpUrl}",
-          "loginUrl": "#{applicationConfigurationAction.getLoginUrl(request)}",
-          "logoutUrl": "/account/logout.seam",
-          "termsUrl": "#{applicationConfigurationAction.termOfUseUrl}",
-          "registerUrl": "#{applicationConfigurationAction.registerUrl}",
-          "buildInfo": #{applicationConfigurationAction.buildInfo.getJSON()},
-          "permission": #{authenticatedAccountHome.getUserPermission().getJSON()}}'
-          user="#{authenticatedAccountHome.getUser()}"/>
-
-          <main role="main" class="l--pad-top-1 W(100%) D(f) Flxg(1) Ov(a) Ovx(h) Ovs(touch)">
-            <div class="l__wrapper Ai(st) D(f) Fld(c) Flx(flx1) Ov(h)">
-              <ui:insert name="center_content"/>
-            </div>
-          </main>
+        <div id="root" />
+        <main role="main" class="l--pad-top-1 W(100%) D(f) Flxg(1) Ov(a) Ovx(h) Ovs(touch)">
+          <div class="l__wrapper Ai(st) D(f) Fld(c) Flx(flx1) Ov(h)">
+            <ui:insert name="center_content"/>
+          </div>
+        </main>
       </div>
     </div>
 

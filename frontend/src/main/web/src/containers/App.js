@@ -23,6 +23,16 @@ class App extends Component {
       activePath,
       ...props
     } = this.props
+
+    const links = {
+      'context': config.baseUrl,
+      '/login': config.links.loginUrl,
+      '/help': config.links.helpUrl,
+      '/terms': config.links.termsUrl,
+      '/signup': config.links.registerUrl,
+      '/logout': config.links.logoutUrl
+    }
+
     return (
       <View {...props} theme={theme}>
         <Icons />
@@ -30,7 +40,7 @@ class App extends Component {
           title='Zanata'
           titleTemplate='%s | Zanata'
         />
-        <Nav active={activePath} />
+        <Nav active={activePath} links={links} />
         {children}
       </View>
     )

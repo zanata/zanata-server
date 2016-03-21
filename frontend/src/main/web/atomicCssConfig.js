@@ -55,7 +55,8 @@ module.exports = {
     },
     custom: customVars,
     classNames: [
-      'Bgc(i) ',
+      'Bgc(i)',
+      'Bgc(i)!',
       'Bgc(#fff)',
       'C(dark)',
       'D(f)',

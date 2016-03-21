@@ -12,8 +12,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/explore',
-    href: '/search.seam',
+    link: '/search',
     title: 'Explore',
     auth: 'public'
   },
@@ -21,7 +20,6 @@ const items = [
     small: true,
     icon: 'import',
     link: '/login',
-    href: '/account/sign_in',
     title: 'Log In',
     auth: 'loggedout'
   },
@@ -29,66 +27,60 @@ const items = [
     small: true,
     icon: 'upload',
     link: '/signup',
-    href: '/account/register',
     title: 'Sign Up',
     auth: 'loggedout'
   },
   {
     small: true,
     icon: 'statistics',
-    link: '/activity',
-    href: '/dashboard/activity',
+    link: '/dashboard/activity',
     title: 'Activity',
     auth: 'loggedin'
   },
   {
     small: true,
     icon: 'project',
-    link: '/projects',
-    href: '/dashboard/projects',
+    link: '/dashboard/projects',
     title: 'Projects',
     auth: 'loggedin'
   },
   {
     small: true,
     icon: 'folder',
-    link: '/groups',
-    href: '/version-group/list',
+    link: '/version-group/list',
     title: 'Groups',
     auth: 'loggedin'
   },
   {
     small: true,
     icon: 'user',
-    link: '/profile',
+    link: '/a/#profile',
+    internalLink: '/profile',
     title: 'Profile',
-    auth: 'loggedin'
+    auth: 'loggedin',
   },
   {
     icon: 'settings',
-    link: '/settings',
-    href: '/dashboard/settings',
+    link: '/dashboard/settings',
     title: 'Settings',
     auth: 'loggedin'
   },
   {
     icon: 'admin',
-    link: '/admin',
-    href: '/admin/home',
+    link: '/admin/home',
     title: 'Admin',
     auth: 'admin'
   },
   {
     icon: 'glossary',
-    link: '/glossary',
-    href: '/a/index.seam#glossary',
+    link: '/a/#glossary',
+    internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin'
   },
   {
     icon: 'logout',
     link: '/logout',
-    href: '/logout',
     title: 'Log Out',
     auth: 'loggedin'
   },
@@ -96,14 +88,12 @@ const items = [
     small: true,
     icon: 'ellipsis',
     link: '',
-    href: '',
     title: 'More',
     auth: 'public'
   },
   {
     icon: 'help',
     link: '/help',
-    href: '',
     title: 'Help',
     auth: 'public',
     more: true
@@ -111,7 +101,6 @@ const items = [
   {
     icon: 'info',
     link: '/about',
-    href: '',
     title: 'About',
     auth: 'public',
     more: true
@@ -133,8 +122,8 @@ const classes = {
 
 const Nav = ({
   active,
-  legacy,
   links,
+  legacy,
   ...props
 }) => {
   let auth = 'loggedout'
@@ -151,17 +140,29 @@ const Nav = ({
       {items.map((item, itemId) => {
         if (((item.auth === 'public') || (item.auth === authState) ||
           (item.auth === 'loggedin' && admin)) && !item.more) {
-          let link = item.link
+
+          let link = null
           if (legacy) {
+            //jsf pages
             link = links[item.link]
               ? (links.context + links[item.link])
-              : (links.context + (item.href ? item.href : item.link))
+              : (links.context + item.link)
+          } else {
+            //react pages, /a/index.xhtml
+            link = item.internalLink
+              ? item.internalLink
+              : (links[item.link]
+                    ? (links.context + links[item.link])
+                    : (links.context + item.link))
           }
+
+          const useHref = legacy ? true : (item.internalLink ? false : true)
+
           return (<NavItem key={itemId}
             small={item.small}
             active={active === link}
             link={link}
-            useHref={legacy}
+            useHref={useHref}
             icon={item.icon}
             title={item.title}/>)
         }

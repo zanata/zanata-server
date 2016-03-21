@@ -16,8 +16,11 @@ module.exports = _.merge({}, defaultConfig, {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel?presets[]=react,presets[]=stage-0,presets[]=es2015',
-        include: path.join(__dirname, 'src')
+        include: path.join(__dirname, 'src'),
+        loader: 'babel',
+        query: {
+          presets: ['react', 'stage-0', 'es2015']
+        }
       },
       {
         test: /\.css$/,
@@ -39,7 +42,7 @@ module.exports = _.merge({}, defaultConfig, {
     }),
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production')
+        'NODE_ENV': JSON.stringify('production')
       }
     })
   ])
