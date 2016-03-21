@@ -124,8 +124,9 @@
     <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
     <jdbc.version>5.1.26</jdbc.version>
 
+    <jaxrsapi.version>3.0.12.Final</jaxrsapi.version>
     <resteasy.scope>compile</resteasy.scope>
-    <resteasy.version>3.0.11.Final</resteasy.version>
+    <resteasy.version>3.0.13.Final</resteasy.version>
 
     <cargo.extract.dir>${project.build.directory}/cargo/installs</cargo.extract.dir>
     <!-- This URL must be set by a profile (wildfly), settings.xml or mvn command line -->
@@ -341,6 +342,23 @@
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
         <version>1.2.13</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${resteasy.version}</version>
+        <scope>${resteasy.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -1086,6 +1104,42 @@
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging-processor</artifactId>
         <version>1.2.0.Final</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${jaxrsapi.version}</version>
+        <scope>${resteasy.scope}</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${resteasy.version}</version>
+        <scope>${resteasy.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jcip-annotations</artifactId>
+            <groupId>net.jcip</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
