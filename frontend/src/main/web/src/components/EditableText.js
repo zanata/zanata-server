@@ -80,7 +80,7 @@ class EditableText extends Component {
           onBlur={::this.handleBlur}
           placeholder={placeholder}
           theme={classes.textInput}
-          ref={(ref) => this.textInput = ref}
+          ref={(ref) => { this.textInput = ref }}
           value={children}
           />
       )

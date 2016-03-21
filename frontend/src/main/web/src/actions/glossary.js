@@ -1,8 +1,8 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
 import { isEmpty, cloneDeep } from 'lodash'
-import { arrayOf, normalize } from 'normalizr'
-import { glossaryTerm } from '../schemas'
+import { normalize } from 'normalizr'
+import { GLOSSARY_TERM_ARRAY } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
@@ -71,6 +71,98 @@ const getPageNumber =
 
 export const glossaryInvalidateResults =
   createAction(GLOSSARY_INVALIDATE_RESULTS)
+
+export const getGlossaryTerms = (state, newIndex) => {
+  const {
+    src = 'en-US',
+    locale = '',
+    filter = '',
+    sort = '',
+    index = 0
+  } = state.glossary
+  const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
+  const srcQuery = src
+    ? `?srcLocale=${src}` : '?srcLocale=en-US'
+  const localeQuery = locale ? `&transLocale=${locale}` : ''
+  const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
+  const filterQuery = filter ? `&filter=${filter}` : ''
+  const sortQuery = sort
+    ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
+  const endpoint = window.config.baseUrl + '/glossary/entries' + srcQuery +
+    localeQuery + pageQuery + filterQuery + sortQuery
+  console.log(endpoint)
+  let headers = {
+    'Accept': 'application/json'
+  }
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
+  }
+  return {
+    [CALL_API]: {
+      endpoint,
+      method: 'GET',
+      headers: headers,
+      types: [
+        GLOSSARY_TERMS_REQUEST,
+        {
+          type: GLOSSARY_TERMS_SUCCESS,
+          payload: (action, state, res) => {
+            const contentType = res.headers.get('Content-Type')
+            if (contentType && ~contentType.indexOf('json')) {
+              return res.json().then((json) => {
+                const normalized =
+                  normalize(json, { results: GLOSSARY_TERM_ARRAY })
+                return normalized
+              }
+              )
+            }
+          },
+          meta: {
+            page,
+            receivedAt: Date.now()
+          }
+        },
+        GLOSSARY_TERMS_FAILURE
+      ]
+    }
+  }
+}
+
+export const glossaryInvalidateStats =
+  createAction(GLOSSARY_INVALIDATE_STATS)
+
+export const getGlossaryStats = (dispatch) => {
+  let headers = {
+    'Accept': 'application/json'
+  }
+
+  if (window.config.auth) {
+    headers['x-auth-token'] = window.config.auth.token
+    headers['x-auth-user'] = window.config.auth.user
+  }
+
+  return {
+    [CALL_API]: {
+      endpoint: window.config.baseUrl + '/glossary/info',
+      method: 'GET',
+      headers: headers,
+      types: [
+        GLOSSARY_STATS_REQUEST,
+        {
+          type: GLOSSARY_STATS_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              dispatch(getGlossaryTerms(state))
+              return json
+            })
+          }
+        },
+        GLOSSARY_STATS_FAILURE
+      ]
+    }
+  }
+}
 
 export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   const endpoint = window.config.baseUrl + '/glossary'
@@ -226,63 +318,6 @@ export const deleteGlossaryTerm = (dispatch, id) => {
   }
 }
 
-export const getGlossaryTerms = (state, newIndex) => {
-  const {
-    src = 'en-US',
-    locale = '',
-    filter = '',
-    sort = '',
-    index = 0
-  } = state.glossary
-  const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
-  const srcQuery = src
-    ? `?srcLocale=${src}` : '?srcLocale=en-US'
-  const localeQuery = locale ? `&transLocale=${locale}` : ''
-  const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
-  const filterQuery = filter ? `&filter=${filter}` : ''
-  const sortQuery = sort
-    ? `&sort=${GlossaryHelper.convertSortToParam(sort)}` : ''
-  const endpoint = window.config.baseUrl + '/glossary/entries' + srcQuery +
-    localeQuery + pageQuery + filterQuery + sortQuery
-  console.log(endpoint)
-  let headers = {
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
-  return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: headers,
-      types: [
-        GLOSSARY_TERMS_REQUEST,
-        {
-          type: GLOSSARY_TERMS_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                const normalized =
-                  normalize(json, { results: arrayOf(glossaryTerm) })
-                return normalized
-              }
-              )
-            }
-          },
-          meta: {
-            page,
-            receivedAt: Date.now()
-          }
-        },
-        GLOSSARY_TERMS_FAILURE
-      ]
-    }
-  }
-}
-
 const shouldFetchTerms = (state, newIndex) => {
   const {
     pagesLoaded,
@@ -308,41 +343,6 @@ export const glossaryGetTermsIfNeeded = (newIndex) => {
   return (dispatch, getState) => {
     if (shouldFetchTerms(getState(), newIndex)) {
       return dispatch(getGlossaryTerms(getState(), newIndex))
-    }
-  }
-}
-
-export const glossaryInvalidateStats =
-  createAction(GLOSSARY_INVALIDATE_STATS)
-
-export const getGlossaryStats = (dispatch) => {
-  let headers = {
-    'Accept': 'application/json'
-  }
-
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
-
-  return {
-    [CALL_API]: {
-      endpoint: window.config.baseUrl + '/glossary/info',
-      method: 'GET',
-      headers: headers,
-      types: [
-        GLOSSARY_STATS_REQUEST,
-        {
-          type: GLOSSARY_STATS_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryTerms(state))
-              return json
-            })
-          }
-        },
-        GLOSSARY_STATS_FAILURE
-      ]
     }
   }
 }
@@ -388,7 +388,7 @@ export const glossaryDeleteTerm = (id) => {
 
 export const glossaryUpdateTerm = (term) => {
   return (dispatch, getState) => {
-    //do cloning to prevent changes in selectedTerm
+    // do cloning to prevent changes in selectedTerm
     dispatch(updateGlossaryTerm(dispatch, cloneDeep(term)))
   }
 }

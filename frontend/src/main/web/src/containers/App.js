@@ -11,9 +11,6 @@ import {
 // if (process.env.NODE_ENV === 'development') a11y(React)
 
 class App extends Component {
-  constructor (props) {
-    super(props)
-  }
   render () {
     const theme = {
       base: {
@@ -30,8 +27,8 @@ class App extends Component {
       <View {...props} theme={theme}>
         <Icons />
         <Helmet
-          title="Zanata"
-          titleTemplate="%s | Zanata"
+          title='Zanata'
+          titleTemplate='%s | Zanata'
         />
         <Nav active={activePath} />
         {children}

@@ -3,7 +3,7 @@ var _ = require('lodash')
 var defaultConfig = require('./webpack.config.js')
 
 module.exports = _.merge({}, defaultConfig, {
-  devtool: 'source-map',
+  devtool: 'eval',
   plugins: defaultConfig.plugins.concat([
     new webpack.DefinePlugin({
       'process.env': {

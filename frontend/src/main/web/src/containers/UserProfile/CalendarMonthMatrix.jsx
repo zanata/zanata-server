@@ -1,5 +1,5 @@
 import React from 'react'
-import moment from 'moment-range'
+import moment from 'moment'
 import DayMatrix from './DayMatrix'
 import Actions from '../../actions/userMatrix'
 import {ContentStates} from '../../constants/Options'
@@ -19,7 +19,7 @@ var CalendarMonthMatrix = React.createClass({
     dateRangeOption: React.PropTypes.oneOf(DateRanges).isRequired
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function () {
     // this is to make week days locale aware and making sure it align with
     // below display
     var now = moment()

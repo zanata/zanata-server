@@ -1,4 +1,5 @@
-import moment from 'moment-range'
+import moment from 'moment'
+import 'moment-range'
 import { isEmptyOrNull } from './StringUtils'
 
 var DateHelper = {
@@ -34,8 +35,7 @@ var DateHelper = {
         fromDate = moment().weekday(0)
         toDate = moment()
     }
-
-    range = moment().range(fromDate, toDate)
+    range = moment.range(fromDate, toDate)
 
     range.by('days', function (moment) {
       dates.push(moment.format(dateFormat))
@@ -49,9 +49,9 @@ var DateHelper = {
   },
 
   dayAsLabel: function (dateStr, numOfDays, useFullName) {
-    var date = moment(dateStr),
-      dayOfWeekFmt,
-      dayOfMonthFmt
+    var date = moment(dateStr)
+    var dayOfWeekFmt
+    var dayOfMonthFmt
 
     dayOfWeekFmt = useFullName ? 'dddd (Do MMM)' : 'ddd'
     dayOfMonthFmt = useFullName ? 'Do MMM (dddd)' : 'D'

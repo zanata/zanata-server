@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import { Provider } from 'react-redux'
-import { Router, Route, Redirect, IndexRedirect } from 'react-router'
+import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
+import Explore from '../containers/Explore'
 import UserProfile from '../containers/UserProfile'
 import View from '../components/View'
 import {
@@ -24,6 +25,7 @@ export default class Root extends Component {
               <Route path="glossary" component={Glossary}
                 onEnter={() => store.dispatch(glossaryInitialLoad())} />
               <Route path="profile/:username" component={UserProfile} />
+              <Route path="explore" component={Explore} />
               <Redirect from="profile" to={`profile/${username}`} />
               <Redirect from="/" to={`profile/${username}`} />
             </Route>

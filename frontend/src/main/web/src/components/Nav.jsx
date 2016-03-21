@@ -12,7 +12,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/search',
+    link: '/explore',
     href: '/search.seam',
     title: 'Explore',
     auth: 'public'

@@ -33,7 +33,7 @@ const loadingContainerTheme = {
 }
 
 class Glossary extends Component {
-  constructor() {
+  constructor () {
     super()
     // Need to add the debounce to onScroll here
     // So it creates a new debounce for each instance
@@ -55,7 +55,7 @@ class Glossary extends Component {
       permission,
       saving,
       deleting
-      } = this.props
+    } = this.props
 
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
@@ -67,30 +67,30 @@ class Glossary extends Component {
 
     return (
       <Entry key={key}
-             entry={entry}
-             index={index}
-             selected={selected}
-             isDeleting={isDeleting}
-             isSaving={isSaving}
-             permission={permission}
-             selectedTransLocale={selectedTransLocale}
-             termsLoading={termsLoading}
-             handleSelectTerm={handleSelectTerm}
-             handleTermFieldUpdate={handleTermFieldUpdate}
-             handleDeleteTerm={handleDeleteTerm}
-             handleResetTerm={handleResetTerm}
-             handleUpdateTerm={handleUpdateTerm}
+        entry={entry}
+        index={index}
+        selected={selected}
+        isDeleting={isDeleting}
+        isSaving={isSaving}
+        permission={permission}
+        selectedTransLocale={selectedTransLocale}
+        termsLoading={termsLoading}
+        handleSelectTerm={handleSelectTerm}
+        handleTermFieldUpdate={handleTermFieldUpdate}
+        handleDeleteTerm={handleDeleteTerm}
+        handleResetTerm={handleResetTerm}
+        handleUpdateTerm={handleUpdateTerm}
       />
     )
   }
 
-  onScroll() {
+  onScroll () {
     // Debounced by 100ms in super()
     if (!this.list) return
     const {
       dispatch,
       location
-      } = this.props
+    } = this.props
     const loadingThreshold = 250
     const indexRange = this.list.getVisibleRange()
     const newIndex = indexRange[0]
@@ -111,37 +111,36 @@ class Glossary extends Component {
       termCount,
       scrollIndex = 0,
       notification
-      } = this.props
+    } = this.props
 
     return (
       <Page>
         {notification
           ? (<Notification severity={notification.severity}
-                          message={notification.message}
-                          details={notification.details}
-                          show={notification ? true : false}/>)
+            message={notification.message}
+            details={notification.details}
+            show={!!notification}/>
+          )
           : undefined
         }
         <Helmet title='Glossary'/>
         <ScrollView onScroll={::this.onScroll}>
           <ViewHeader />
           <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
-            { termsLoading && !termCount
-              ? (
-              <View theme={loadingContainerTheme}>
+            {termsLoading && !termCount
+              ? (<View theme={loadingContainerTheme}>
                 <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
-                            size='1'
-                            loading/>
-              </View>
-            )
+                  size='1'
+                  loading/>
+              </View>)
               : (<ReactList
-              useTranslate3d
-              itemRenderer={::this.renderItem}
-              length={termCount}
-              type='uniform'
-              initialIndex={scrollIndex || 0}
-              ref={c => this.list = c}
-            />)
+                useTranslate3d
+                itemRenderer={::this.renderItem}
+                length={termCount}
+                type='uniform'
+                initialIndex={scrollIndex || 0}
+                ref={(c) => { this.list = c }}
+              />)
             }
           </View>
         </ScrollView>
