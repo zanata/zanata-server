@@ -11,13 +11,14 @@ import javax.ws.rs.core.Response;
 import org.zanata.model.HAccount;
 import org.zanata.rest.dto.User;
 import org.zanata.rest.editor.MediaTypes;
+import org.zanata.rest.service.RestResource;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Produces({ MediaType.APPLICATION_JSON })
 @Consumes({ MediaType.APPLICATION_JSON })
-public interface UserResource {
+public interface UserResource extends RestResource {
 
     public static final String SERVICE_PATH = "/user";
 

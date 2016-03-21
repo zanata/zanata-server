@@ -3,6 +3,7 @@ package org.zanata.rest;
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
 import org.atteo.classindex.ClassIndex;
+import org.zanata.rest.service.RestResource;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ApplicationPath;
@@ -36,15 +37,19 @@ public class Application extends javax.ws.rs.core.Application {
      * @return
      */
     private static Set<Class<?>> buildClassesSet() {
+        Iterable<Class<? extends RestResource>> resourceClasses =
+                ClassIndex.getSubclasses(RestResource.class);
+        log.debug("Indexed RestResource classes: {}", resourceClasses);
+        assert resourceClasses.iterator().hasNext();
         Iterable<Class<?>> pathClasses = ClassIndex.getAnnotated(Path.class);
         log.debug("Indexed @Path classes: {}", pathClasses);
         assert pathClasses.iterator().hasNext();
         Iterable<Class<?>> providerClasses = ClassIndex.getAnnotated(Provider.class);
         log.debug("Indexed @Provider classes: {}", providerClasses);
         assert providerClasses.iterator().hasNext();
-        return concat(
+        return concat(stream(resourceClasses), concat(
                 stream(pathClasses),
-                stream(providerClasses))
+                stream(providerClasses)))
                 .filter(clazz ->
                         !clazz.getName().startsWith("org.zanata.rest.client.") &&
                         !clazz.getName().startsWith("org.zanata.rest.enunciate."))
