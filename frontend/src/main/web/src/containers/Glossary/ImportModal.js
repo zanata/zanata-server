@@ -69,7 +69,10 @@ class ImportModal extends Component {
 
     /* eslint-disable max-len */
     return (
-      <Modal show={show} onHide={() => handleImportFileDisplay(false)}>
+      <Modal
+        show={show}
+        onHide={() => handleImportFileDisplay(false)}
+        rootClose>
         <Modal.Header>
           <Modal.Title>Import Glossary</Modal.Title>
         </Modal.Header>

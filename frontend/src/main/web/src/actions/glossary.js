@@ -1,8 +1,8 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
 import { isEmpty, cloneDeep } from 'lodash'
-import { arrayOf, normalize } from 'normalizr'
-import { glossaryTerm } from '../schemas'
+import { normalize } from 'normalizr'
+import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
@@ -115,8 +115,10 @@ export const getGlossaryTerms = (state, newIndex) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
+                console.log(json, GLOSSARY_TERM_ARRAY)
                 const normalized =
-                  normalize(json, { results: arrayOf(glossaryTerm) })
+                  normalize(json, { results: GLOSSARY_TERM_ARRAY })
+                console.log(normalized)
                 return normalized
               }
               )

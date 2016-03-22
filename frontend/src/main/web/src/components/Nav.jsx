@@ -12,7 +12,8 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/search',
+    link: '/a/#explore',
+    internalLink: '/explore',
     title: 'Explore',
     auth: 'public'
   },
@@ -57,7 +58,7 @@ const items = [
     link: '/a/#profile',
     internalLink: '/profile',
     title: 'Profile',
-    auth: 'loggedin',
+    auth: 'loggedin'
   },
   {
     icon: 'settings',
@@ -157,10 +158,9 @@ const Nav = ({
           }
 
           const useHref = legacy ? true : (item.internalLink ? false : true)
-
           return (<NavItem key={itemId}
             small={item.small}
-            active={active === link}
+            active={active.indexOf(link) >= 0}
             link={link}
             useHref={useHref}
             icon={item.icon}

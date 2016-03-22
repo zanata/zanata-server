@@ -122,7 +122,7 @@ class ViewHeader extends Component {
           <TableRow
             theme={{ base: { bd: '' } }}
             className='Flxg(1)'>
-            <TableCell size='2'
+            <TableCell size='3'
                        onClick={() => handleSortColumn('src_content')}>
               <ButtonLink type='default'>
                 <Row>
@@ -140,7 +140,7 @@ class ViewHeader extends Component {
                 </Row>
               </ButtonLink>
             </TableCell>
-            <TableCell tight size={transSelected ? '2' : '1'}
+            <TableCell tight size={'3'}
                        theme={{base: {lineClamp: ''}}}>
               <Select
                 name='language-selection'
@@ -179,24 +179,7 @@ class ViewHeader extends Component {
                 </Row>
               </ButtonLink>
             </TableCell>
-            {!transSelected ? (
-              <TableCell hideSmall onClick={() => handleSortColumn('desc')}>
-                <ButtonLink type='default'>
-                  <Row>
-                    {'desc' in sort
-                      ? (sort.desc === true)
-                        ? <Icon name='chevron-down'/>
-                        : <Icon name='chevron-up'/>
-                      : ''}
-                    <span className='LineClamp(1,24px) MStart(rq)'>
-                      Description
-                    </span>
-                  </Row>
-                </ButtonLink>
-              </TableCell>
-            ) : ''
-            }
-            <TableCell hideSmall>
+            <TableCell size='2'>
             </TableCell>
           </TableRow>
         </View>

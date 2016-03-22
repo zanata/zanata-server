@@ -50,10 +50,10 @@ class DeleteEntryModal extends Component {
                 Cancel
               </ButtonLink>
               <ButtonRound type='danger' size='n1'
-                           disabled={isDeleting}
-                           onClick={() => this.handleDeleteEntry(entry.id)}>
+                disabled={isDeleting}
+                onClick={() => this.handleDeleteEntry(entry.id)}>
                 <LoaderText loading={isDeleting} size='n1'
-                            loadingText='Deleting'>
+                  loadingText='Deleting'>
                   Delete all
                 </LoaderText>
               </ButtonRound>
@@ -61,10 +61,11 @@ class DeleteEntryModal extends Component {
           </Tooltip>
         </Overlay>
         <ButtonLink type='danger'
-                    onClick={() => handleDeleteEntryDisplay(true)}
-                    disabled={isDeleting}>
+          onClick={() => handleDeleteEntryDisplay(true)}
+          disabled={isDeleting}>
           <LoaderText loading={isDeleting} loadingText='Deleting'>
-            <Icon name="trash" atomic={{m: 'Mend(re)'}} /><span>Delete</span>
+            <Icon name='trash' atomic={{m: 'Mend(re)'}} />
+            <span className='Hidden--lesm'>Delete</span>
           </LoaderText>
         </ButtonLink>
       </div>

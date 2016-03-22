@@ -61,7 +61,10 @@ class NewEntryModal extends Component {
       !StringUtils.isEmptyOrNull(this.state.entry.srcTerm.content)
 
     return (
-      <Modal show={show} onHide={() => handleNewEntryDisplay(false)}>
+      <Modal
+        show={show}
+        onHide={() => handleNewEntryDisplay(false)}
+        rootClose>
         <Modal.Header>
           <Modal.Title>New Term</Modal.Title>
         </Modal.Header>
