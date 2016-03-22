@@ -15,9 +15,7 @@ public abstract class AbstractActionHandler<A extends Action<R>, R extends Resul
         implements ActionHandler<A, R> {
 
     protected AbstractActionHandler() {
-        // TODO This is a sanity check only. It has been disabled to allow for
-        // CDIUnit tests
-        //assert getActionType() != null;
+        assert getActionType() != null;
     }
 
     @SuppressWarnings("unchecked")

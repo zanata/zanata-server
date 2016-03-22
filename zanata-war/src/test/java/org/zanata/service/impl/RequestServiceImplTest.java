@@ -11,6 +11,7 @@ import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.RequestDAO;
+import org.zanata.events.RequestUpdatedEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
@@ -20,6 +21,7 @@ import org.zanata.model.type.RequestState;
 import org.zanata.model.type.RequestType;
 import org.zanata.service.EmailService;
 import org.zanata.test.CdiUnitRunner;
+import org.zanata.test.EventListener;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -45,6 +47,9 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
 
     @Inject
     private AccountDAO accountDAO;
+
+    @Inject
+    private EventListener eventListener;
 
     @Produces @Mock ApplicationConfiguration applicationConfiguration;
     @Produces @Mock EmailService emailService;
@@ -133,7 +138,9 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
             RequestState.ACCEPTED, comment);
 
         // TODO Mock events to do this kind of check
-        //verify(requestUpdatedEvent).fire(isA(RequestUpdatedEvent.class));
+        List<RequestUpdatedEvent> firedEvents =
+                eventListener.getFiredEvents(RequestUpdatedEvent.class);
+        assertThat(firedEvents.size()).isEqualTo(1);
 
         assertThat(
             service.getPendingLanguageRequests(requester, locale.getLocaleId()))
