@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.zanata.ZanataDbunitJpaTest;
+import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.cdi.TestTransaction;
 import org.zanata.common.ContentState;
@@ -62,12 +63,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(CdiUnitRunner.class)
@@ -147,35 +147,35 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     @InRequestScope
-    public void testMergeVersionNotExist() {
+    public void testMergeVersionNotExist() throws Exception {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "non-exist-version";
 
-        MergeTranslationsServiceImpl spyService = spy(service);
-
-        spyService.startMergeTranslations(projectSlug,
-            sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
+        MergeTranslationsTaskHandle handle = new MergeTranslationsTaskHandle();
+        Future<Void> future = service.startMergeTranslations(projectSlug,
+                sourceVersionSlug, projectSlug, targetVersionSlug, true,
+                handle);
         verifyZeroInteractions(identity);
-        verify(spyService, never()).mergeTranslationBatch(Matchers.any(
-                HProjectIteration.class),
-                Matchers.any(HProjectIteration.class), Matchers.anyList(),
-                Matchers.anyBoolean(), Matchers.anyInt(), Matchers.anyInt());
+        // wait for the async process to finish...
+        future.get();
+        // No translations were performed
+        assertThat(handle.getTotalTranslations()).isEqualTo(0);
     }
 
     @Test
     @InRequestScope
-    public void testMergeEmptyDoc() {
+    public void testMergeEmptyDoc() throws Exception {
         String sourceVersionSlug = "1.0";
         String targetVersionSlug = "3.0";
-        MergeTranslationsServiceImpl spyService = spy(service);
 
-        spyService.startMergeTranslations(projectSlug,
+        MergeTranslationsTaskHandle handle = new MergeTranslationsTaskHandle();
+        Future<Void> future = service.startMergeTranslations(projectSlug,
                 sourceVersionSlug, projectSlug, targetVersionSlug, true, null);
         verifyZeroInteractions(identity);
-        verify(spyService, never()).mergeTranslationBatch(Matchers.any(
-                HProjectIteration.class),
-            Matchers.any(HProjectIteration.class), Matchers.anyList(),
-            Matchers.anyBoolean(), Matchers.anyInt(), Matchers.anyInt());
+        // wait for the async process to finish...
+        future.get();
+        // No translations were performed
+        assertThat(handle.getTotalTranslations()).isEqualTo(0);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                 projectIterationDAO.getBySlug(projectSlug, targetVersionSlug);
         assertThat(expectedTargetVersion).isNotNull();
 
-        List<HTextFlow[]> preMergeData =
+        List<HTextFlow[]> matchingTextFlows =
             textFlowDAO.getSourceByMatchedContext(
                 expectedSourceVersion.getId(), expectedTargetVersion.getId(), 0,
                 100);
@@ -201,8 +201,11 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
         List<HLocale> locales =
                 service.getSupportedLocales(projectSlug, targetVersionSlug);
 
+        service.startMergeTranslations(projectSlug, sourceVersionSlug,
+            projectSlug, targetVersionSlug, useNewerTranslation, null);
+
         List<HTextFlowTarget[]> expectedMergeData = Lists.newArrayList();
-        for (HTextFlow[] data : preMergeData) {
+        for (HTextFlow[] data : matchingTextFlows) {
             for(HLocale locale: locales) {
                 HTextFlowTarget sourceTft =
                         data[0].getTargets().get(locale.getId());
@@ -210,8 +213,8 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
                         data[1].getTargets().get(locale.getId());
 
                 if(targetTft == null) {
-                    targetTft = textFlowTargetDAO
-                                    .getOrCreateTarget(data[1], locale);
+                    // If untranslated, create a dummy untranslated target
+                    targetTft = new HTextFlowTarget(null, sourceTft.getLocale());
                 }
                 if (MergeTranslationsServiceImpl.shouldMerge(sourceTft,
                         targetTft, useNewerTranslation)) {
@@ -221,18 +224,7 @@ public class MergeTranslationsServiceImplTest extends ZanataDbunitJpaTest {
             }
         }
 
-        MergeTranslationsServiceImpl spyService = spy(service);
-        spyService.startMergeTranslations(projectSlug, sourceVersionSlug,
-            projectSlug, targetVersionSlug, useNewerTranslation, null);
-
-        //entity in preMergeData should be updated after merge process
-
-        // TODO This verification is not correctly detecting that the method
-        // has been invoked
-        /*verify(spyService).mergeTranslationBatch(Matchers.eq(
-                expectedSourceVersion), Matchers.eq(expectedTargetVersion),
-                Matchers.anyList(), Matchers.eq(useNewerTranslation),
-                Matchers.anyInt(), Matchers.anyInt());*/
+        //entity in matchingTextFlows should be updated after merge process
 
         // check all results has same contents and states
         // check generated comments in [1]
