@@ -131,9 +131,6 @@ public class DataSetOperation {
         if (replaceNull) {
             dataSet.addReplacementObject("[NULL]", null);
         }
-        // TODO This method doesn't implement the functionality of its
-        // original form  (see ZanataDbUnitJpaTest) with regard to the binary
-        // dir replacement.
     }
 
     public void execute(IDatabaseConnection connection) {
