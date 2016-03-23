@@ -73,6 +73,7 @@ class ViewHeader extends Component {
       } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const transSelected = !!selectedTransLocale
+
     return (
       <Header title='Glossary'
         extraElements={(

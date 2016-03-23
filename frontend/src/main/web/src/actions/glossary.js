@@ -6,12 +6,6 @@ import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
-export const SEVERITY = {
-  INFO: 'info',
-  WARN: 'warn',
-  ERROR: 'error'
-}
-
 export const GLOSSARY_PAGE_SIZE = 1000
 
 export const GLOSSARY_UPDATE_INDEX = 'GLOSSARY_UPDATE_INDEX'

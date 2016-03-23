@@ -100,7 +100,6 @@ public class ApplicationConfigurationAction {
         String version = applicationConfiguration.getVersion();
         String scmDescribe = applicationConfiguration.getScmDescribe();
         String buildTimestamp = applicationConfiguration.getBuildTimestamp();
-        String copyrightNotice = applicationConfiguration.copyrightNotice();
-        return new BuildInfo(version, buildTimestamp, scmDescribe, copyrightNotice);
+        return new BuildInfo(version, buildTimestamp, scmDescribe);
     }
 }

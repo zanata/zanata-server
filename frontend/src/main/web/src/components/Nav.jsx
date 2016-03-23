@@ -88,23 +88,10 @@ const items = [
   {
     small: true,
     icon: 'ellipsis',
-    link: '',
+    link: '/a/#more',
+    internalLink: '/more',
     title: 'More',
     auth: 'public'
-  },
-  {
-    icon: 'help',
-    link: '/help',
-    title: 'Help',
-    auth: 'public',
-    more: true
-  },
-  {
-    icon: 'info',
-    link: '/about',
-    title: 'About',
-    auth: 'public',
-    more: true
   }
 ]
 const classes = {

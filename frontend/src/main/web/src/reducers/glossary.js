@@ -32,11 +32,11 @@ import {
   GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY,
   GLOSSARY_CREATE_REQUEST,
   GLOSSARY_CREATE_SUCCESS,
-  GLOSSARY_CREATE_FAILURE,
-  SEVERITY
+  GLOSSARY_CREATE_FAILURE
 } from '../actions/glossary'
 import {
-  CLEAR_MESSAGE
+  CLEAR_MESSAGE,
+  SEVERITY
 } from '../actions/common'
 import GlossaryHelper from '../utils/GlossaryHelper'
 import { isEmptyOrNull } from '../utils/StringUtils'

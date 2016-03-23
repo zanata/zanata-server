@@ -4,6 +4,7 @@ import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
 import Explore from '../containers/Explore'
+import More from '../containers/More'
 import UserProfile from '../containers/UserProfile'
 import View from '../components/View'
 import {
@@ -26,6 +27,7 @@ export default class Root extends Component {
                 onEnter={() => store.dispatch(glossaryInitialLoad())} />
               <Route path="profile/:username" component={UserProfile} />
               <Route path="explore" component={Explore} />
+              <Route path="more" component={More} />
               <Redirect from="profile" to={`profile/${username}`} />
               <Redirect from="/" to={`profile/${username}`} />
             </Route>
