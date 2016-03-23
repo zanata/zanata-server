@@ -2,9 +2,9 @@ import React from 'react' // eslint-disable-line
 import View from '../components/View'
 import TeaserListHeader from '../components/TeaserListHeader'
 import ProjectTeaser from '../components/ProjectTeaser'
+import GroupTeaser from '../components/GroupTeaser'
 import LanguageTeamTeaser from '../components/LanguageTeamTeaser'
 import PersonTeaser from '../components/PersonTeaser'
-// import { flattenClasses } from '../utils'
 
 const TeaserList = ({
   children,
@@ -26,14 +26,17 @@ const TeaserList = ({
     }
   }
   switch (type) {
-    case 'project':
+    case 'Project':
       TeaserComponent = ProjectTeaser
       break
-    case 'languageTeam':
+    case 'LanguageTeam':
       TeaserComponent = LanguageTeamTeaser
       break
-    case 'person':
+    case 'Person':
       TeaserComponent = PersonTeaser
+      break
+    case 'Group':
+      TeaserComponent = GroupTeaser
       break
     default:
       TeaserComponent = () => (<div>Teaser</div>)

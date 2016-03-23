@@ -33,4 +33,8 @@ public class ProjectSearchResult extends SearchResult {
 
     @Getter @Setter
     private long contributorCount;
+
+    public ProjectSearchResult() {
+        this.setType(SearchResultType.Project);
+    }
 }

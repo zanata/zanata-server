@@ -48,7 +48,7 @@ const items = [
   {
     small: true,
     icon: 'folder',
-    link: '/version-group/list',
+    link: '/dashboard/groups',
     title: 'Groups',
     auth: 'loggedin'
   },

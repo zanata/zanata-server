@@ -18,51 +18,54 @@ var _state = {
   selectedDay: null,
   contentStateOption: ContentStates[0],
   loading: false,
-  dateRange: function(option) {
-    return utilsDate.getDateRangeFromOption(option);
+  dateRange: function (option) {
+    return utilsDate.getDateRangeFromOption(option)
   }
-};
+}
 
-function loadFromServer() {
-  _state.loading = true;
-  UserMatrixStore.emitChange();
+function loadFromServer () {
+  _state.loading = true
+  UserMatrixStore.emitChange()
 
   var dateRangeOption = _state.dateRangeOption,
     dateRange = utilsDate.getDateRangeFromOption(dateRangeOption),
     url = statsAPIUrl() + dateRange.fromDate + '..' + dateRange.toDate;
 
-  _state['dateRange'] = dateRange;
-  //console.log('about to load from server: %s', url);
-  return new Promise(function(resolve, reject) {
+  _state['dateRange'] = dateRange
+  return new Promise(function (resolve, reject) {
     // we turn off cache because it seems like if server(maybe just node?)
     // returns 304 unmodified, it won't even reach the callback!
     Request.get(url)
-      .set("Cache-Control", "no-cache, no-store, must-revalidate")
-      .set("Pragma", "no-cache")
-      .set("Expires", 0)
+      .set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .set('Pragma', 'no-cache')
+      .set('Expires', 0)
       .end(function (err, res) {
-        err ? reject(err) : resolve(res.body);
-        _state.loading = false;
-      });
-  });
+        err ? reject(err) : resolve(res.body)
+        _state.loading = false
+      })
+  })
 }
 
 function statsAPIUrl () {
   const postFix = window.config.dev ? '.json?' : ''
-  return window.config.baseUrl + window.config.apiRoot + '/stats/user/' + window.config.user.username + postFix + '/'
+  return window.config.baseUrl + window.config.apiRoot +
+    '/stats/user/' + window.config.user.username + postFix + '/'
 }
 
 function handleServerResponse(serverResponse) {
   var dateRange = _state.dateRange,
-    wordCountsForEachDay = transformToTotalWordCountsForEachDay(serverResponse, dateRange),
+    wordCountsForEachDay =
+      transformToTotalWordCountsForEachDay(serverResponse, dateRange),
     contentState = _state.contentStateOption,
-    selectedDay = _state.selectedDay;
+    selectedDay = _state.selectedDay
 
-  _state.matrix = serverResponse;
-  _state.matrixForAllDays = wordCountsForEachDay;
-  _state.wordCountsForEachDayFilteredByContentState = mapTotalWordCountByContentState(wordCountsForEachDay, contentState);
-  _state.wordCountsForSelectedDayFilteredByContentState = filterByContentStateAndDay(_state.matrix, contentState, selectedDay);
-  return _state;
+  _state.matrix = serverResponse
+  _state.matrixForAllDays = wordCountsForEachDay
+  _state.wordCountsForEachDayFilteredByContentState =
+    mapTotalWordCountByContentState(wordCountsForEachDay, contentState)
+  _state.wordCountsForSelectedDayFilteredByContentState =
+    filterByContentStateAndDay(_state.matrix, contentState, selectedDay)
+  return _state
 }
 
 /**
@@ -77,27 +80,27 @@ function handleServerResponse(serverResponse) {
 function transformToTotalWordCountsForEachDay(listOfMatrices, dateRange) {
   var datesOfThisPeriod = dateRange['dates'],
     result = [],
-    index = 0;
+    index = 0
 
   datesOfThisPeriod.forEach(function (dateStr) {
     var entry = listOfMatrices[index] || {},
-      totalApproved = 0, totalTranslated = 0, totalNeedsWork = 0;
+      totalApproved = 0, totalTranslated = 0, totalNeedsWork = 0
 
     while (entry.savedDate === dateStr) {
       switch (entry.savedState) {
         case 'Approved':
-          totalApproved += entry.wordCount;
-          break;
+          totalApproved += entry.wordCount
+          break
         case 'Translated':
-          totalTranslated += entry.wordCount;
-          break;
+          totalTranslated += entry.wordCount
+          break
         case 'NeedReview':
-          totalNeedsWork += entry.wordCount;
-          break;
+          totalNeedsWork += entry.wordCount
+          break
         default:
-          throw new Error('unrecognized state:' + entry['savedState']);
+          throw new Error('unrecognized state:' + entry['savedState'])
       }
-      index++;
+      index++
       entry = listOfMatrices[index] || {}
     }
 
@@ -108,22 +111,22 @@ function transformToTotalWordCountsForEachDay(listOfMatrices, dateRange) {
         totalTranslated: totalTranslated,
         totalNeedsWork: totalNeedsWork,
         totalActivity: totalApproved + totalNeedsWork + totalTranslated
-      });
-  });
+      })
+  })
 
-  return result;
+  return result
 }
 
 function mapContentStateToFieldName(selectedOption) {
   switch (selectedOption) {
     case 'Total':
-      return 'totalActivity';
+      return 'totalActivity'
     case 'Approved':
-      return 'totalApproved';
+      return 'totalApproved'
     case 'Translated':
-      return 'totalTranslated';
+      return 'totalTranslated'
     case 'Needs Work':
-      return 'totalNeedsWork';
+      return 'totalNeedsWork'
   }
 }
 
@@ -134,7 +137,7 @@ function mapContentStateToFieldName(selectedOption) {
  * @param {string} selectedContentState
  * @returns {{key: string, label: string, wordCount: number}[]}
  */
-function mapTotalWordCountByContentState(listOfMatrices, selectedContentState) {
+function mapTotalWordCountByContentState (listOfMatrices, selectedContentState) {
   var wordCountFieldName = mapContentStateToFieldName(selectedContentState);
   return listOfMatrices.map(function (entry) {
     return {
@@ -151,31 +154,33 @@ function mapTotalWordCountByContentState(listOfMatrices, selectedContentState) {
  * @param {string?} selectedDay optional day
  * @return filtered entries in same form as original server response
  */
-function filterByContentStateAndDay(listOfMatrices, selectedContentState, selectedDay) {
+function filterByContentStateAndDay (listOfMatrices, selectedContentState, selectedDay) {
   var filteredEntries = listOfMatrices,
     predicates = [],
     predicate;
 
   // we have messy terminologies!
-  selectedContentState = (selectedContentState === 'Needs Work' ? 'NeedReview' : selectedContentState);
+  selectedContentState = (
+    selectedContentState === 'Needs Work'
+    ? 'NeedReview' : selectedContentState)
 
   if (selectedDay) {
     predicates.push(function (entry) {
-      return entry.savedDate === selectedDay;
-    });
+      return entry.savedDate === selectedDay
+    })
   }
   if (selectedContentState !== 'Total') {
-    predicates.push(function(entry) {
-      return entry.savedState === selectedContentState;
-    });
+    predicates.push(function (entry) {
+      return entry.savedState === selectedContentState
+    })
   }
   if (predicates.length > 0) {
-    predicate = function(entry) {
-      return predicates.every(function(func) {
-        return func.call({}, entry);
-      });
-    };
-    filteredEntries = listOfMatrices.filter(predicate);
+    predicate = function (entry) {
+      return predicates.every(function (func) {
+        return func.call({}, entry)
+      })
+    }
+    filteredEntries = listOfMatrices.filter(predicate)
   }
   return filteredEntries
 }
@@ -221,29 +226,32 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
         if (window.config.permission.isLoggedIn) {
           loadFromServer()
             .then(handleServerResponse)
-            .then(function(newState) {
-              UserMatrixStore.emitChange();
+            .then(function (newState) {
+              UserMatrixStore.emitChange()
             })
-            .catch(function(err) {
-              console.error('failed trying to load user statistic from server' + err.stack);
+            .catch(function (err) {
+              console.error('failed trying to load user statistic from server' + err.stack)
             })
         }
         break
       case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
-        console.log('content state from %s -> %s', _state.contentStateOption, action.data);
-        _state.contentStateOption = action.data;
-        _state.wordCountsForEachDayFilteredByContentState = mapTotalWordCountByContentState(_state.matrixForAllDays, _state.contentStateOption);
-        _state.wordCountsForSelectedDayFilteredByContentState = filterByContentStateAndDay(_state.matrix, _state.contentStateOption, _state.selectedDay);
-        UserMatrixStore.emitChange();
-        break;
+        console.log('content state from %s -> %s', _state.contentStateOption, action.data)
+        _state.contentStateOption = action.data
+        _state.wordCountsForEachDayFilteredByContentState =
+          mapTotalWordCountByContentState(_state.matrixForAllDays, _state.contentStateOption)
+        _state.wordCountsForSelectedDayFilteredByContentState =
+          filterByContentStateAndDay(_state.matrix, _state.contentStateOption, _state.selectedDay)
+        UserMatrixStore.emitChange()
+        break
       case UserMatrixActionTypes.DAY_SELECTED:
-        console.log('day selection from %s -> %s', _state.selectedDay, action.data);
-        _state.selectedDay = action.data;
-        _state.wordCountsForSelectedDayFilteredByContentState = filterByContentStateAndDay(_state.matrix, _state.contentStateOption, _state.selectedDay);
-        UserMatrixStore.emitChange();
-        break;
+        console.log('day selection from %s -> %s', _state.selectedDay, action.data)
+        _state.selectedDay = action.data
+        _state.wordCountsForSelectedDayFilteredByContentState =
+          filterByContentStateAndDay(_state.matrix, _state.contentStateOption, _state.selectedDay)
+        UserMatrixStore.emitChange()
+        break
     }
   })
 });
 
-export default UserMatrixStore;
+export default UserMatrixStore

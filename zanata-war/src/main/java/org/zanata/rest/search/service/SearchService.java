@@ -25,6 +25,8 @@ import org.apache.lucene.queryParser.ParseException;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.VersionGroupDAO;
+import org.zanata.rest.search.dto.GroupSearchResult;
 import org.zanata.rest.search.dto.LanguageTeamSearchResult;
 import org.zanata.rest.search.dto.PersonSearchResult;
 import org.zanata.rest.search.dto.ProjectSearchResult;
@@ -67,10 +69,16 @@ public class SearchService {
     @Inject
     private LocaleDAO localeDAO;
 
+    @Inject
+    private VersionGroupDAO versionGroupDAO;
+
+    private static final int MAX_RESULT = 20;
+
     @GET
     public List<SearchResult> search(
             @QueryParam("q") @DefaultValue("") String query) {
         List<SearchResult> searchResults = searchProjects(query);
+        searchResults.addAll(searchGroups(query));
         searchResults.addAll(searchPeople(query));
         searchResults.addAll(searchLanguageTeams(query));
         return searchResults;
@@ -80,12 +88,11 @@ public class SearchService {
     @Path("/projects")
     public List<SearchResult> searchProjects(@QueryParam("q") @DefaultValue("") String query) {
         try {
-            return projectDAO.searchProjects(query, 20, 0, false).stream().map(p -> {
+            return projectDAO.searchProjects(query, MAX_RESULT, 0, false).stream().map(p -> {
                 ProjectSearchResult result = new ProjectSearchResult();
                 result.setId(p.getSlug());
                 result.setTitle(p.getName());
                 result.setDescription(p.getDescription());
-                result.setType(Project);
                 // TODO is contributor count feasible?
                 return result;
             }).collect(Collectors.toList());
@@ -97,6 +104,18 @@ public class SearchService {
     }
 
     @GET
+    @Path("/groups")
+    public List<SearchResult> searchGroups(@QueryParam("q") @DefaultValue("") String query) {
+        return versionGroupDAO.searchGroupBySlugAndName(query, MAX_RESULT, 0).stream().map(g -> {
+            GroupSearchResult result = new GroupSearchResult();
+            result.setId(g.getSlug());
+            result.setTitle(g.getName());
+            result.setDescription(g.getDescription());
+            return result;
+        }).collect(Collectors.toList());
+    }
+
+    @GET
     @Path("/people")
     public List<SearchResult> searchPeople(@QueryParam("q") @DefaultValue("") String query) {
         return personDAO.findAllContainingName(query).stream().map(p -> {
@@ -104,7 +123,6 @@ public class SearchService {
             result.setId(p.getAccount().getUsername());
             result.setDescription(p.getName());
             result.setAvatarUrl(gravatarService.getUserImageUrl(50, p.getEmail()));
-            result.setType(Person);
             return result;
         }).collect(Collectors.toList());
     }
@@ -117,7 +135,6 @@ public class SearchService {
             result.setId(l.getLocaleId().getId());
             result.setLocale(l.asULocale().getDisplayName());
             result.setMemberCount(l.getMembers().size());
-            result.setType(LanguageTeam);
             return result;
         }).collect(Collectors.toList());
     }

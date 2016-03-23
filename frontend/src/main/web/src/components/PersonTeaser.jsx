@@ -41,7 +41,7 @@ const UserTeaser = ({
           alt={details.id}
           className='Bdrs(rnd) Mend(rq) W(r1h) H(r1h)'
         />
-        <Link to={details.id}
+        <Link link={'/profile/' + details.id }
           theme={{ base: { fw: 'Fw(600)' } }}>
           {details.description}
         </Link>

@@ -47,7 +47,6 @@
     "jsonfile": "^2.2.3",
     "node-sass": "^3.4.2",
     "node-sass-json-importer": "^1.0.6",
-    "left-pad": "git://github.com/azer/left-pad.git#bff80e3ef0db0bfaba7698606c4f623433d14355",
     "react-addons-test-utils": "^0.14.7",
     "react-styleguidist": "^2.0.1",
     "react-transform-hmr": "^1.0.4",

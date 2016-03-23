@@ -85,9 +85,10 @@ const contentViewContainerTheme = {
 }
 
 const titles = {
-  project: 'Projects',
-  languageTeam: 'Language Teams',
-  person: 'People'
+  Project: 'Projects',
+  LanguageTeam: 'Language Teams',
+  Person: 'People',
+  Group: 'Groups'
 }
 
 class Explore extends Component {
@@ -99,12 +100,11 @@ class Explore extends Component {
       handleSearchCancelClick,
       handleSearchTextChange,
       searchText,
-      searchResults = {},
+      searchResults,
       searchError,
       searchLoading,
       ...props
     } = this.props
-    const searchEntities = searchResults.entities || {}
     return (
       <Page>
         <Helmet title='Search' />
@@ -130,7 +130,7 @@ class Explore extends Component {
         </Base>
         <ScrollView theme={scrollViewTheme}>
           <View theme={contentViewContainerTheme}>
-            {isEmpty(searchEntities)
+            {isEmpty(searchResults)
               ? searchLoading
                 ? (<div>Loading results…</div>)
                 : searchError
@@ -139,9 +139,9 @@ class Explore extends Component {
                     {searchResults.message}. Please try again.
                   </p>)
                   : (<p>No Results</p>)
-              : Object.keys(searchEntities).map((type, key) =>
+              : Object.keys(searchResults).map((type, key) =>
                 (<TeaserList
-                  items={values(searchEntities[type])}
+                  items={searchResults[type]}
                   title={titles[type]}
                   type={type}
                   key={key}

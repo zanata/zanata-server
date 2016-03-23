@@ -17,9 +17,10 @@ const TeaserListHeader = ({
     }
   }
   const icons = {
-    project: 'project',
-    languageTeam: 'language',
-    person: 'user'
+    Project: 'project',
+    LanguageTeam: 'language',
+    Person: 'user',
+    Group: 'folder'
   }
   const headerTitle = showFilter ? 'Most Active ' + title : title
   const headerIcon = type

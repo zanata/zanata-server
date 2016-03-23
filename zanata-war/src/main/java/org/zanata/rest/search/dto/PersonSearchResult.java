@@ -31,4 +31,7 @@ public class PersonSearchResult extends SearchResult {
     @Getter @Setter
     private String avatarUrl;
 
+    public PersonSearchResult() {
+        this.setType(SearchResultType.Person);
+    }
 }

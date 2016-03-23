@@ -11,7 +11,7 @@ const viewTheme = {
   }
 }
 
-const ProjectTeaser = ({
+const GroupTeaser = ({
   details,
   children,
   ...props
@@ -51,16 +51,12 @@ const ProjectTeaser = ({
           }
         }}
       />
-      <Link
-        to={details.owner + '/' + details.id + '/people'}>
-        {details.contributorCount}
-      </Link>
     </View>
   ) : undefined
   const useHref = true
   const link = useHref
-    ? window.config.baseUrl + '/project/view/' + details.id
-    : 'projects/' + details.id
+    ? window.config.baseUrl + '/version-group/view/' + details.id
+    : 'groups/' + details.id
   return (
     <View theme={viewTheme}>
       {/* <View className='Mend(rh)'>
@@ -80,4 +76,4 @@ const ProjectTeaser = ({
   )
 }
 
-export default ProjectTeaser
+export default GroupTeaser

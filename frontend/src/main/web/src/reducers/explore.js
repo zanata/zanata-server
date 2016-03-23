@@ -4,7 +4,7 @@ import {
   SEARCH_SUCCESS,
   SEARCH_FAILURE,
   SEARCH_DEFAULT_RETURNED
-} from '../actions'
+} from '../actions/explore'
 
 export default handleActions({
   [SEARCH_REQUEST]: (state, action) => ({
@@ -32,6 +32,6 @@ export default handleActions({
 }, {
   default: [],
   error: false,
-  loading: true,
+  loading: false,
   results: null
 })

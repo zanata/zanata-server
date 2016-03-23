@@ -19,10 +19,16 @@ const LanguageTeamTeaser = ({
 }) => {
   const org = details.org ? details.org : 'Zanata'
   const orgIcon = details.org ? 'company' : 'zanata'
+
+  const useHref = true
+  const link = useHref
+    ? window.config.baseUrl + '/language/view/' + details.id
+    : 'language/' + details.id
+
   return (
     <View theme={viewTheme}>
       <View theme={{ base: {fld: 'Fld(r)'} }}>
-        <Link to={'/language/' + details.id}
+        <Link link={link} useHref={useHref}
           theme={{ base: { fw: 'Fw(600)' } }}>
           {details.locale}
         </Link>

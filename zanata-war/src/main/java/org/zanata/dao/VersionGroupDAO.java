@@ -119,7 +119,8 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
         return ((Long) q.uniqueResult()).intValue();
     }
 
-    public List<HIterationGroup> searchGroupBySlugAndName(String searchTerm) {
+    public List<HIterationGroup> searchGroupBySlugAndName(String searchTerm,
+            int maxResult, int firstResult) {
         if (StringUtils.isEmpty(searchTerm)) {
             return new ArrayList<HIterationGroup>();
         }
@@ -128,6 +129,8 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
                         .createQuery(
                                 "from HIterationGroup g where (lower(g.slug) LIKE :searchTerm OR lower(g.name) LIKE :searchTerm) AND g.status = :status");
         query.setParameter("searchTerm", "%" + searchTerm.toLowerCase() + "%");
+        query.setFirstResult(firstResult);
+        query.setMaxResults(maxResult);
         query.setParameter("status", EntityStatus.ACTIVE);
         query.setComment("VersionGroupDAO.searchGroupBySlugAndName");
         return query.list();

@@ -23,18 +23,13 @@ package org.zanata.rest.search.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
- */
-public class LanguageTeamSearchResult extends SearchResult {
+
+public class GroupSearchResult extends SearchResult {
 
     @Getter @Setter
-    private String locale;
+    private String title;
 
-    @Getter @Setter
-    private long memberCount;
-
-    public LanguageTeamSearchResult() {
-        this.setType(SearchResultType.LanguageTeam);
+    public GroupSearchResult() {
+        this.setType(SearchResultType.Group);
     }
 }
