@@ -4,6 +4,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <ui:composition template="/WEB-INF/template/template_ui.xhtml">
+  <f:metadata>
+    <f:event type="preRenderView" listener="#{identity.checkLoggedIn}"/>
+  </f:metadata>
+
   <ui:define name="content">
     <div id="config"
       data-base-url="#{request.contextPath}"

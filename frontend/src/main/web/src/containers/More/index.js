@@ -43,6 +43,9 @@ class More extends Component {
                 <Link useHref={true} target='_blank' link='http://zanata.org/about'>About</Link>
               </li>
               <li>
+                <Link useHref={true} target='_blank' link='http://zanata.org/issues'>Report an issue</Link>
+              </li>
+              <li>
                 <ButtonLink type='default'>
                   <Row>
                     <Icon name='mail' atomic={{m: 'Mend(rq)'}}/>
