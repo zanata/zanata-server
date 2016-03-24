@@ -21,23 +21,28 @@ export const SEVERITY = {
   ERROR: 'error'
 }
 
-export const requestUpdateLocale = (locale) => {
-  const endpoint = window.config.baseUrl + window.config.apiRoot + '/language'
-  let headers = {
-    'Accept': 'application/json'
-  }
+export const DEFAULT_LOCALE = {
+  'localeId': 'en-US',
+  'displayName': 'English (United States)'
+}
+
+export const getJsonHeaders = () => {
+  let headers = {'Accept': 'application/json'}
   if (window.config.auth) {
     headers['x-auth-token'] = window.config.auth.token
     headers['x-auth-user'] = window.config.auth.user
   }
-  let formData = new FormData()
-  formData.append('locale', locale)
+  return headers
+}
+
+export const requestUpdateLocale = (locale) => {
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/locales/system/' + locale
   return {
     [CALL_API]: {
       endpoint,
       method: 'POST',
-      headers: headers,
-      body: formData,
+      headers: getJsonHeaders(),
       types: [
         UPDATE_LOCALE_REQUEST,
         {
@@ -54,9 +59,39 @@ export const requestUpdateLocale = (locale) => {
   }
 }
 
+export const getUILocales = () => {
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/locales/system'
+  return {
+    [CALL_API]: {
+      endpoint,
+      method: 'GET',
+      headers: getJsonHeaders(),
+      types: [
+        GET_LOCALE_LIST_REQUEST,
+        {
+          type: GET_LOCALE_LIST_SUCCESS,
+          payload: (action, state, res) => {
+            return res.json().then((json) => {
+              return json
+            })
+          }
+        },
+        GET_LOCALE_LIST_FAILURE
+      ]
+    }
+  }
+}
+
 export const updateLocale = (locale) => {
   return (dispatch, getState) => {
     dispatch(updateUILocale(locale)).then(
       dispatch(requestUpdateLocale(locale)))
+  }
+}
+
+export const initialLoad = () => {
+  return (dispatch, getState) => {
+    dispatch(getUILocales())
   }
 }

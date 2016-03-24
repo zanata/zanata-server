@@ -36,7 +36,8 @@ import {
 } from '../actions/glossary'
 import {
   CLEAR_MESSAGE,
-  SEVERITY
+  SEVERITY,
+  DEFAULT_LOCALE
 } from '../actions/common'
 import GlossaryHelper from '../utils/GlossaryHelper'
 import { isEmptyOrNull } from '../utils/StringUtils'
@@ -51,7 +52,7 @@ const glossary = handleActions({
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
     return {
       ...state,
-      src: action.payload.src || 'en-US',
+      src: action.payload.src || DEFAULT_LOCALE.localeId,
       locale: action.payload.locale || '',
       filter: action.payload.filter || '',
       sort: GlossaryHelper.convertSortToObject(action.payload.sort),
@@ -456,7 +457,7 @@ const glossary = handleActions({
     }
   }
 }, {
-  src: 'en-US',
+  src: DEFAULT_LOCALE.localeId,
   locale: '',
   filter: '',
   sort: {
@@ -492,7 +493,7 @@ const glossary = handleActions({
   newEntry: {
     show: false,
     isSaving: false,
-    entry: GlossaryHelper.generateEmptyEntry('en-US')
+    entry: GlossaryHelper.generateEmptyEntry(DEFAULT_LOCALE.localeId)
   },
   statsError: false,
   statsLoading: true

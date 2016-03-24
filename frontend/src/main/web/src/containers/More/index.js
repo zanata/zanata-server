@@ -12,7 +12,8 @@ import {
   ButtonLink
 } from '../../components'
 import {
-  updateLocale
+  updateLocale,
+  getUILocales
 } from '../../actions/common'
 
 class More extends Component {
@@ -20,19 +21,9 @@ class More extends Component {
     const {
       handleLocaleChange,
       selectedLocale,
-      loading
+      loading,
+      locales
       } = this.props
-
-    const locales = [
-      {
-        'label': 'Chinese (Simplified)',
-        'value': 'zh-Hans'
-      },
-      {
-        'label': 'English',
-        'value': 'en-US'
-      }
-    ]
 
     const buildInfo = window.config.buildInfo
     const copyrightYears = '© 2008-' + new Date().getFullYear()
@@ -43,13 +34,13 @@ class More extends Component {
           <View>
             <ul>
               <li>
-                <Link useHref={true} link={window.config.links.helpUrl}>Help</Link>
+                <Link useHref={true} target='_blank' link={window.config.links.helpUrl}>Help</Link>
               </li>
               <li>
-                <Link useHref={true} link={window.config.links.termsUrl}>Terms</Link>
+                <Link useHref={true} target='_blank' link={window.config.links.termsUrl}>Terms</Link>
               </li>
               <li>
-                <Link useHref={true} link='http://zanata.org/about'>About</Link>
+                <Link useHref={true} target='_blank' link='http://zanata.org/about'>About</Link>
               </li>
               <li>
                 <ButtonLink type='default'>

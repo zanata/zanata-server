@@ -2,6 +2,9 @@ package org.zanata.rest.editor.service.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,4 +33,34 @@ public interface LocalesResource {
     @Produces({ MediaTypes.APPLICATION_ZANATA_LOCALES_JSON,
             MediaType.APPLICATION_JSON })
     public Response get();
+
+    /**
+     * Retrieves a full list of locales translated for Zanata. The result is
+     *
+     * @return The following response status codes will be returned from this
+     *         operation:<br>
+     *         OK(200) - Response containing a full list of locales. <br>
+     *         INTERNAL SERVER ERROR(500) - If there is an unexpected error in
+     *         the server while performing this operation.
+     */
+    @GET
+    @Path("/system")
+    @Produces({ MediaTypes.APPLICATION_ZANATA_LOCALES_JSON,
+        MediaType.APPLICATION_JSON })
+    public Response getUILocales();
+
+    /**
+     * Update Zanata UI locale
+     *
+     * @return The following response status codes will be returned from this
+     *       operation:<br>
+     *       OK(200) - Response containing a full list of locales. <br>
+     *       INTERNAL SERVER ERROR(500) - If there is an unexpected error in
+     *       the server while performing this operation.
+     */
+    @POST
+    @Path("/system/{localeId}")
+    @Produces({ MediaTypes.APPLICATION_ZANATA_LOCALES_JSON,
+        MediaType.APPLICATION_JSON })
+    public Response updateUiLocale(@PathParam("localeId") String localeId);
 }

@@ -10,6 +10,9 @@ import View from '../components/View'
 import {
   glossaryInitialLoad
 } from '../actions/glossary.js'
+import {
+  initialLoad
+} from '../actions/common.js'
 
 export default class Root extends Component {
   render () {
@@ -27,7 +30,8 @@ export default class Root extends Component {
                 onEnter={() => store.dispatch(glossaryInitialLoad())} />
               <Route path="profile/:username" component={UserProfile} />
               <Route path="explore" component={Explore} />
-              <Route path="more" component={More} />
+              <Route path="more" component={More}
+                onEnter={() => store.dispatch(initialLoad())}/>
               <Redirect from="profile" to={`profile/${username}`} />
               <Redirect from="/" to={`profile/${username}`} />
             </Route>

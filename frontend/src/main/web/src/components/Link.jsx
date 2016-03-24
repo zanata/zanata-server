@@ -24,7 +24,7 @@ const Link = ({
 }) => {
   if (useHref) {
     return (
-      <a href={link} target='_blank'
+      <a href={link}
         className={flattenThemeClasses(classes, theme)} {...props}>
         {children}
       </a>
