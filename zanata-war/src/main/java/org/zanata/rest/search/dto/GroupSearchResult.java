@@ -22,8 +22,14 @@ package org.zanata.rest.search.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-
-
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+/**
+ * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class GroupSearchResult extends SearchResult {
 
     @Getter @Setter

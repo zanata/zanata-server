@@ -9,6 +9,7 @@ import PersonTeaser from '../components/PersonTeaser'
 const TeaserList = ({
   children,
   title,
+  totalCount,
   items,
   type,
   filterable,
@@ -44,7 +45,7 @@ const TeaserList = ({
   }
   return (items.length > 0) ? (
     <View theme={teaserListTheme}>
-      <TeaserListHeader title={title} type={type} showFilter={filterable}/>
+      <TeaserListHeader title={title} type={type} showFilter={filterable} totalCount={totalCount}/>
       <View theme={listTheme}>
         {items.map((item, key) => (
           <TeaserComponent details={item} key={key}/>

@@ -130,9 +130,15 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
                                 "from HIterationGroup g where (lower(g.slug) LIKE :searchTerm OR lower(g.name) LIKE :searchTerm) AND g.status = :status");
         query.setParameter("searchTerm", "%" + searchTerm.toLowerCase() + "%");
         query.setFirstResult(firstResult);
-        query.setMaxResults(maxResult);
+        if(maxResult != -1) {
+            query.setMaxResults(maxResult);
+        }
         query.setParameter("status", EntityStatus.ACTIVE);
         query.setComment("VersionGroupDAO.searchGroupBySlugAndName");
         return query.list();
+    }
+
+    public int searchGroupBySlugAndNameCount(String searchTerm) {
+        return searchGroupBySlugAndName(searchTerm, -1, 0).size();
     }
 }

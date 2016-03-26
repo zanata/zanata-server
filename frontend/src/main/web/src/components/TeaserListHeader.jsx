@@ -8,6 +8,7 @@ const TeaserListHeader = ({
   children,
   title,
   type,
+  totalCount,
   showFilter,
   ...props
 }) => {
@@ -34,6 +35,7 @@ const TeaserListHeader = ({
       >
         {headerTitle}
       </Heading>
+      <span className='C(muted) Mstart(rq)'>{totalCount}</span>
       {showFilter ? (
         <span select className='Lh(1) Tt(u) Mstart(rq) C(pri) D(f) Ai(c)'>
           This Week <Icon name='chevron-down' />

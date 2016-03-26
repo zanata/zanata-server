@@ -27,7 +27,7 @@ import lombok.Setter;
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
-public class SearchResult {
+public abstract class SearchResult {
 
     public enum SearchResultType {
         Project,

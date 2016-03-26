@@ -141,8 +141,9 @@ class Explore extends Component {
                   : (<p>No Results</p>)
               : Object.keys(searchResults).map((type, key) =>
                 (<TeaserList
-                  items={searchResults[type]}
+                  items={searchResults[type].results}
                   title={titles[type]}
+                  totalCount={searchResults[type].totalCount}
                   type={type}
                   key={key}
                   filterable={!searchText}
