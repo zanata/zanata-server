@@ -34,8 +34,8 @@ const TeaserListHeader = ({
         theme={{ base: { c: 'C(dark)', tt: 'Tt(u)' } }}
       >
         {headerTitle}
+        <span className='C(muted) Mstart(rq)'>{totalCount}</span>
       </Heading>
-      <span className='C(muted) Mstart(rq)'>{totalCount}</span>
       {showFilter ? (
         <span select className='Lh(1) Tt(u) Mstart(rq) C(pri) D(f) Ai(c)'>
           This Week <Icon name='chevron-down' />

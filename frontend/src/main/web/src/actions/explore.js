@@ -15,10 +15,7 @@ export const SEARCH_FAILURE = 'SEARCH_FAILURE'
 const normalisedSearch = (json) => {
   let results = {}
   forEach(json, function (result) {
-    if (!results[result.type]) {
-      results[result.type] = []
-    }
-    results[result.type].push(result)
+    results[result.type] = result
   })
   return results
 }

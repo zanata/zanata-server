@@ -12,11 +12,13 @@ export default handleActions({
     error: false,
     loading: true
   }),
-  [SEARCH_SUCCESS]: (state, action) => ({
-    ...state,
-    results: action.payload,
-    loading: false
-  }),
+  [SEARCH_SUCCESS]: (state, action) => {
+    return {
+      ...state,
+      results: action.payload,
+      loading: false
+    }
+  },
   [SEARCH_FAILURE]: (state, action) => ({
     ...state,
     results: action.payload,

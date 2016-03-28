@@ -140,14 +140,17 @@ class Explore extends Component {
                   </p>)
                   : (<p>No Results</p>)
               : Object.keys(searchResults).map((type, key) =>
-                (<TeaserList
-                  items={searchResults[type].results}
-                  title={titles[type]}
-                  totalCount={searchResults[type].totalCount}
-                  type={type}
-                  key={key}
-                  filterable={!searchText}
-                />)
+                {
+                  return searchResults[type].totalCount > 0
+                  ? (<TeaserList
+                      items={searchResults[type].results}
+                      title={titles[type]}
+                      totalCount={searchResults[type].totalCount}
+                      type={type}
+                      key={key}
+                      filterable={!searchText}/>
+                  )
+                  : null }
               )
             }
           </View>
@@ -173,12 +176,7 @@ const mapDispatchToProps = (dispatch, {
 }) => {
   return {
     handleSearchCancelClick: () => {
-      console.log(hashHistory)
-      if (canGoBack) {
-        dispatch(hashHistory.goBack())
-      } else {
-        dispatch(hashHistory.push('/'))
-      }
+      dispatch(searchTextChanged(''))
     },
     handleSearchTextChange: (event) => {
       dispatch(searchTextChanged(event.target.value))
