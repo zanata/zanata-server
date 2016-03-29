@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>27-SNAPSHOT</version>
+    <version>28-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -28,6 +28,7 @@
     <failsafe.skipAfterFailureCount>10</failsafe.skipAfterFailureCount>
     <failsafe.rerunFailingTestsCount>0</failsafe.rerunFailingTestsCount>
     <failsafe.useFile>false</failsafe.useFile>
+    <maven.javadoc.version>2.9.1</maven.javadoc.version>
     <surefire.useFile>false</surefire.useFile>
     <surefire.version>2.19.1</surefire.version>
     <!-- Applies to surefire and failsafe (if enabled) -->
@@ -235,6 +236,27 @@
         <artifactId>junit</artifactId>
         <version>4.12</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${resteasy.version}</version>
+        <scope>${resteasy.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jcip-annotations</artifactId>
+            <groupId>net.jcip</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -1695,6 +1717,13 @@
           </configuration>
         </plugin>
         <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven.javadoc.version}</version>
+          <configuration>
+            <additionalparam>${javadoc.opts}</additionalparam>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.8</version>
@@ -1722,6 +1751,15 @@
   </build>
 
   <profiles>
+    <profile>
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+      </properties>
+    </profile>
 
     <profile>
       <!-- This profile runs a single integration test with
@@ -1832,15 +1870,14 @@
         <wildfly.client.version>8.1.0.Final</wildfly.client.version>
         <!-- used in the wildfly8 profile in zanata-war -->
         <!-- This is the server version -->
-        <wildfly.version>9.0.1.Final</wildfly.version>
+        <wildfly.version>10.0.0.Final</wildfly.version>
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>
 
-        <!-- Versions of our compatibility modules for wildfly -->
-        <module.wildfly.version>8.1.0.Final</module.wildfly.version>
-        <hibernate.module.version>4.2.19.Final</hibernate.module.version>
-        <hibernate.module.name>wildfly-${module.wildfly.version}-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.name>
+        <hibernate.module.version>4.2.20.Final</hibernate.module.version>
+        <hibernate.module.filename>wildfly-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.filename>
+        <hibernate.module.url>https://bintray.com/artifact/download/sflanigan/generic/${hibernate.module.filename}</hibernate.module.url>
       </properties>
 
       <build>
@@ -1861,8 +1898,8 @@
                 <configuration>
                   <target unless="skipITs">
                     <mkdir dir="${download.dir}" />
-                    <get src="http://sourceforge.net/projects/zanata/files/wildfly/${hibernate.module.name}/download" dest="${download.dir}/${hibernate.module.name}" skipexisting="true" />
-                    <unzip src="${download.dir}/${hibernate.module.name}" dest="${appserver.home}" />
+                    <get src="${hibernate.module.url}" dest="${download.dir}/${hibernate.module.filename}" skipexisting="true" />
+                    <unzip src="${download.dir}/${hibernate.module.filename}" dest="${appserver.home}" />
                   </target>
                 </configuration>
               </execution>
