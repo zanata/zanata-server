@@ -72,10 +72,10 @@ var UserProfile = React.createClass({
   render: function () {
     const user = isEmpty(this.state.user) ? window.config.user : this.state.user
     const username = user && user.username ? user.username : ''
-    const languageTeams = user && user.languageTeams
+    const languageTeams = user && user.languageTeams.length > 0
       ? user.languageTeams.join() : ''
     const notification = this.state.notification
-
+    console.log(languageTeams, user)
     return (
       <Page>
         {notification && (<Notification
@@ -87,16 +87,14 @@ var UserProfile = React.createClass({
         <Helmet title='User Profile' />
         <ScrollView>
           <Flex dir='c' atomic={classes.wrapper}>
-            {user.loading
-              ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
-                size='1' loading/>
-              )
-              : (<Flex dir='rr' id='profile-overview' atomic={classes.details}>
-                <Base atomic={classes.detailsAvatar}>
-                  <img src={user && user.imageUrl ? user.imageUrl : ''}
-                    alt={username} />
-                </Base>
-                <Flex dir='c'
+            <Flex dir='rr' id='profile-overview' atomic={classes.details}>
+              {!user.loading && (<Base atomic={classes.detailsAvatar}>
+                <img src={user && user.imageUrl ? user.imageUrl : ''}
+                  alt={username} />
+              </Base>)}
+              {user.loading
+                ? <LoaderText loading atomic={{w: 'W(100%)'}}/>
+                : (<Flex dir='c'
                   id='profile-displayname'
                   atomic={classes.detailsText}>
                   <Base atomic={classes.usersName}>
@@ -114,7 +112,7 @@ var UserProfile = React.createClass({
                         </span>)
                       }
                     </Flex>
-                    {user && user.languageTeams &&
+                    {user && user.languageTeams.length > 0 &&
                       (<Flex tagName='li' align='c' id='profile-languages'>
                         <Icon name='language'
                           atomic={{m: 'Mend(re)'}}
@@ -122,8 +120,9 @@ var UserProfile = React.createClass({
                         {languageTeams}
                       </Flex>)}
                   </ul>
-                </Flex>
-              </Flex>)}
+                </Flex>)
+              }
+            </Flex>
             {window.config.permission.isLoggedIn &&
               (<RecentContributions
                 loading={this.state.loading}
