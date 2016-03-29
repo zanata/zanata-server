@@ -20,15 +20,19 @@
  */
 package org.zanata.rest.search.service;
 
+import com.google.common.collect.Lists;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.apache.lucene.queryParser.ParseException;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.VersionGroupDAO;
+import org.zanata.rest.search.dto.GroupSearchResult;
 import org.zanata.rest.search.dto.LanguageTeamSearchResult;
 import org.zanata.rest.search.dto.PersonSearchResult;
 import org.zanata.rest.search.dto.ProjectSearchResult;
 import org.zanata.rest.search.dto.SearchResult;
+import org.zanata.rest.search.dto.SearchResults;
 import org.zanata.service.GravatarService;
 
 import javax.enterprise.context.RequestScoped;
@@ -38,6 +42,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,58 +72,116 @@ public class SearchService {
     @Inject
     private LocaleDAO localeDAO;
 
-    @GET
-    public List<SearchResult> search(
-            @QueryParam("q") @DefaultValue("") String query) {
-        List<SearchResult> searchResults = searchProjects(query);
-        searchResults.addAll(searchPeople(query));
-        searchResults.addAll(searchLanguageTeams(query));
-        return searchResults;
-    }
+    @Inject
+    private VersionGroupDAO versionGroupDAO;
+
+    private static final int MAX_RESULT = 20;
+    private static final int DEFAULT_PAGE = 1;
 
     @GET
     @Path("/projects")
-    public List<SearchResult> searchProjects(@QueryParam("q") @DefaultValue("") String query) {
+    public SearchResults searchProjects(
+        @QueryParam("q") @DefaultValue("") String query,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+
+        sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
+            ((sizePerPage < 1) ? 1 : sizePerPage);
+        page = page < 1 ? 1 : page;
+        int offset = (page - 1) * sizePerPage;
+
         try {
-            return projectDAO.searchProjects(query, 20, 0, false).stream().map(p -> {
-                ProjectSearchResult result = new ProjectSearchResult();
-                result.setId(p.getSlug());
-                result.setTitle(p.getName());
-                result.setDescription(p.getDescription());
-                result.setType(Project);
-                // TODO is contributor count feasible?
-                return result;
-            }).collect(Collectors.toList());
-        }
-        catch (ParseException e) {
+            int totalCount = projectDAO.getQueryProjectSize(query, false);
+            List<SearchResult> results =
+                projectDAO.searchProjects(query, sizePerPage, offset, false)
+                    .stream().map(p -> {
+                    ProjectSearchResult result = new ProjectSearchResult();
+                    result.setId(p.getSlug());
+                    result.setTitle(p.getName());
+                    result.setDescription(p.getDescription());
+                    // TODO is contributor count feasible?
+                    return result;
+                }).collect(Collectors.toList());
+            return new SearchResults(totalCount, results, SearchResult.SearchResultType.Project);
+        } catch (ParseException e) {
             // TODO Handle better
             throw new RuntimeException(e);
         }
     }
 
     @GET
+    @Path("/groups")
+    public SearchResults searchGroups(
+        @QueryParam("q") @DefaultValue("") String query,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+
+        sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
+            ((sizePerPage < 1) ? 1 : sizePerPage);
+        page = page < 1 ? 1 : page;
+        int offset = (page - 1) * sizePerPage;
+
+        int totalCount = versionGroupDAO.searchGroupBySlugAndNameCount(query);
+
+        List<SearchResult> results = versionGroupDAO
+            .searchGroupBySlugAndName(query, sizePerPage, offset)
+            .stream().map(g -> {
+                GroupSearchResult result = new GroupSearchResult();
+                result.setId(g.getSlug());
+                result.setTitle(g.getName());
+                result.setDescription(g.getDescription());
+                return result;
+            }).collect(Collectors.toList());
+        return new SearchResults(totalCount, results, SearchResult.SearchResultType.Group);
+    }
+
+    @GET
     @Path("/people")
-    public List<SearchResult> searchPeople(@QueryParam("q") @DefaultValue("") String query) {
-        return personDAO.findAllContainingName(query).stream().map(p -> {
-            PersonSearchResult result = new PersonSearchResult();
-            result.setId(p.getAccount().getUsername());
-            result.setDescription(p.getName());
-            result.setAvatarUrl(gravatarService.getUserImageUrl(50, p.getEmail()));
-            result.setType(Person);
-            return result;
-        }).collect(Collectors.toList());
+    public SearchResults searchPeople(
+        @QueryParam("q") @DefaultValue("") String query,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+
+        sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
+            ((sizePerPage < 1) ? 1 : sizePerPage);
+        page = page < 1 ? 1 : page;
+        int offset = (page - 1) * sizePerPage;
+
+        int totalCount = personDAO.findAllContainingNameSize(query);
+        List<SearchResult> results = personDAO.findAllContainingName(query, sizePerPage, offset)
+            .stream().map(p -> {
+                PersonSearchResult result = new PersonSearchResult();
+                result.setId(p.getAccount().getUsername());
+                result.setDescription(p.getName());
+                result.setAvatarUrl(
+                    gravatarService.getUserImageUrl(50, p.getEmail()));
+                return result;
+            }).collect(Collectors.toList());
+        return new SearchResults(totalCount, results, SearchResult.SearchResultType.Person);
     }
 
     @GET
     @Path("/teams/language")
-    public List<SearchResult> searchLanguageTeams(@QueryParam("q") @DefaultValue("") String query) {
-        return localeDAO.searchByName(query).stream().map(l -> {
-            LanguageTeamSearchResult result = new LanguageTeamSearchResult();
-            result.setId(l.getLocaleId().getId());
-            result.setLocale(l.asULocale().getDisplayName());
-            result.setMemberCount(l.getMembers().size());
-            result.setType(LanguageTeam);
-            return result;
-        }).collect(Collectors.toList());
+    public SearchResults searchLanguageTeams(
+        @QueryParam("q") @DefaultValue("") String query,
+        @DefaultValue("1") @QueryParam("page") int page,
+        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+
+        sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
+            ((sizePerPage < 1) ? 1 : sizePerPage);
+        page = page < 1 ? 1 : page;
+        int offset = (page - 1) * sizePerPage;
+
+        int totalCount = localeDAO.searchByNameCount(query);
+        List<SearchResult> results = localeDAO.searchByName(query, sizePerPage, offset).stream()
+            .map(l -> {
+                LanguageTeamSearchResult result =
+                    new LanguageTeamSearchResult();
+                result.setId(l.getLocaleId().getId());
+                result.setLocale(l.asULocale().getDisplayName());
+                result.setMemberCount(l.getMembers().size());
+                return result;
+            }).collect(Collectors.toList());
+        return new SearchResults(totalCount, results, SearchResult.SearchResultType.LanguageTeam);
     }
 }

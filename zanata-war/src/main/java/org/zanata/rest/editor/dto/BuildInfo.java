@@ -31,20 +31,18 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@JsonPropertyOrder({ "version", "buildTimestamp", "scmDescribe", "copyrightNotice" })
+@JsonPropertyOrder({ "version", "buildTimestamp", "scmDescribe"})
 public class BuildInfo extends JsonObject {
 
     private final String version;
     private final String buildTimestamp;
     private final String scmDescribe;
-    private final String copyrightNotice;
 
     public BuildInfo(String version, String buildTimestamp,
-            String scmDescribe, String copyrightNotice) {
+            String scmDescribe) {
         this.version = version;
         this.buildTimestamp = buildTimestamp;
         this.scmDescribe = scmDescribe;
-        this.copyrightNotice = copyrightNotice;
     }
 
     public String getVersion() {
@@ -59,14 +57,10 @@ public class BuildInfo extends JsonObject {
         return scmDescribe;
     }
 
-    public String getCopyrightNotice() {
-        return copyrightNotice;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BuildInfo)) return false;
 
         BuildInfo buildInfo = (BuildInfo) o;
 
@@ -75,11 +69,8 @@ public class BuildInfo extends JsonObject {
         if (buildTimestamp != null ?
             !buildTimestamp.equals(buildInfo.buildTimestamp) :
             buildInfo.buildTimestamp != null) return false;
-        if (scmDescribe != null ? !scmDescribe.equals(buildInfo.scmDescribe) :
-            buildInfo.scmDescribe != null) return false;
-        return !(copyrightNotice != null ?
-            !copyrightNotice.equals(buildInfo.copyrightNotice) :
-            buildInfo.copyrightNotice != null);
+        return scmDescribe != null ? scmDescribe.equals(buildInfo.scmDescribe) :
+            buildInfo.scmDescribe == null;
 
     }
 
@@ -91,8 +82,6 @@ public class BuildInfo extends JsonObject {
                 (buildTimestamp != null ? buildTimestamp.hashCode() : 0);
         result =
             31 * result + (scmDescribe != null ? scmDescribe.hashCode() : 0);
-        result = 31 * result +
-            (copyrightNotice != null ? copyrightNotice.hashCode() : 0);
         return result;
     }
 }

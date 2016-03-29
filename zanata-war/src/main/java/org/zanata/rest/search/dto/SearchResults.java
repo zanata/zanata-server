@@ -18,24 +18,31 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+
 package org.zanata.rest.search.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
+ * @author Alex Eng<a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class PersonSearchResult extends SearchResult {
+@AllArgsConstructor
+public class SearchResults implements Serializable {
+    @Getter
+    public int totalCount;
 
-    @Getter @Setter
-    private String avatarUrl;
+    @Getter
+    public List<SearchResult> results;
 
-    public PersonSearchResult() {
-        this.setType(SearchResultType.Person);
-    }
+    @Getter
+    private SearchResult.SearchResultType type;
 }

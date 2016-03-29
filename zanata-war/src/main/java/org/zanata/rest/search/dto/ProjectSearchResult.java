@@ -22,10 +22,14 @@ package org.zanata.rest.search.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ProjectSearchResult extends SearchResult {
 
     @Getter @Setter
@@ -33,4 +37,8 @@ public class ProjectSearchResult extends SearchResult {
 
     @Getter @Setter
     private long contributorCount;
+
+    public ProjectSearchResult() {
+        this.setType(SearchResultType.Project);
+    }
 }

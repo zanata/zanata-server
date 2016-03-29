@@ -1,14 +1,17 @@
 import React from 'react'
 import Helmet from 'react-helmet'
+import { isEmpty } from 'lodash'
 import RecentContributions from './RecentContributions'
 import UserMatrixStore from '../../stores/UserMatrixStore'
 import {
   Base,
   Flex,
   Icon,
+  LoaderText,
   Notification,
   Page,
-  ScrollView
+  ScrollView,
+  View
 } from '../../components'
 
 const classes = {
@@ -38,7 +41,10 @@ const classes = {
 
 var UserProfile = React.createClass({
   getMatrixState: function () {
-    return UserMatrixStore.getMatrixState()
+    const username = this.props.params.username
+      ? this.props.params.username
+      : window.config.user.username
+    return UserMatrixStore.getMatrixState(username)
   },
 
   getInitialState: function () {
@@ -53,12 +59,18 @@ var UserProfile = React.createClass({
     UserMatrixStore.removeChangeListener(this._onChange)
   },
 
+  componentWillReceiveProps: function (nextProps) {
+    if (nextProps.params.username !== this.props.params.username) {
+      this.setState(UserMatrixStore.getMatrixState(nextProps.params.username))
+    }
+  },
+
   _onChange: function () {
     this.setState(this.getMatrixState())
   },
 
   render: function () {
-    const user = window.config.user
+    const user = isEmpty(this.state.user) ? window.config.user : this.state.user
     const username = user && user.username ? user.username : ''
     const languageTeams = user && user.languageTeams
       ? user.languageTeams.join() : ''
@@ -75,39 +87,43 @@ var UserProfile = React.createClass({
         <Helmet title='User Profile' />
         <ScrollView>
           <Flex dir='c' atomic={classes.wrapper}>
-            <Flex dir='rr' id='profile-overview' atomic={classes.details}>
-              <Base atomic={classes.detailsAvatar}>
-                <img src={user && user.imageUrl ? user.imageUrl : ''}
-                  alt={username} />
-              </Base>
-              <Flex dir='c'
-                id='profile-displayname'
-                atomic={classes.detailsText}>
-                <Base atomic={classes.usersName}>
-                  {user && user.name ? user.name : ''}
+            {user.loading
+              ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
+                size='1' loading/>
+              )
+              : (<Flex dir='rr' id='profile-overview' atomic={classes.details}>
+                <Base atomic={classes.detailsAvatar}>
+                  <img src={user && user.imageUrl ? user.imageUrl : ''}
+                    alt={username} />
                 </Base>
-                <ul className='Fz(msn1)'>
-                  <Flex tagName='li' align='c' id='profile-username'>
-                    <Icon name='user'
-                      atomic={{m: 'Mend(re)'}}
-                      title='Username'/>
-                    {username}
-                    {user && user.email &&
-                      (<span className='Mstart(rq) C(muted)'>
-                        {user.email}
-                      </span>)
-                    }
-                  </Flex>
-                  {user && user.languageTeams &&
-                    (<Flex tagName='li' align='c' id='profile-languages'>
-                      <Icon name='language'
+                <Flex dir='c'
+                  id='profile-displayname'
+                  atomic={classes.detailsText}>
+                  <Base atomic={classes.usersName}>
+                    {user && user.name ? user.name : ''}
+                  </Base>
+                  <ul className='Fz(msn1)'>
+                    <Flex tagName='li' align='c' id='profile-username'>
+                      <Icon name='user'
                         atomic={{m: 'Mend(re)'}}
-                        title='Spoken languages'/>
-                      {languageTeams}
-                    </Flex>)}
-                </ul>
-              </Flex>
-            </Flex>
+                        title='Username'/>
+                      {username}
+                      {user && user.email &&
+                        (<span className='Mstart(rq) C(muted)'>
+                          {user.email}
+                        </span>)
+                      }
+                    </Flex>
+                    {user && user.languageTeams &&
+                      (<Flex tagName='li' align='c' id='profile-languages'>
+                        <Icon name='language'
+                          atomic={{m: 'Mend(re)'}}
+                          title='Spoken languages'/>
+                        {languageTeams}
+                      </Flex>)}
+                  </ul>
+                </Flex>
+              </Flex>)}
             {window.config.permission.isLoggedIn &&
               (<RecentContributions
                 loading={this.state.loading}

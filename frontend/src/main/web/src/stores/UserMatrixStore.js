@@ -9,7 +9,7 @@ import Request from 'superagent'
 
 const CHANGE_EVENT = 'change'
 
-var _state = {
+let _state = {
   matrix: [],
   matrixForAllDays: [],
   wordCountsForEachDayFilteredByContentState: [],
@@ -20,18 +20,43 @@ var _state = {
   loading: false,
   dateRange: function (option) {
     return utilsDate.getDateRangeFromOption(option)
+  },
+  user: {
+    username: '',
+    loading: false
   }
+}
+
+const loadUserInfo = () => {
+  _state.user.loading = true
+  UserMatrixStore.emitChange()
+
+  const url = window.config.baseUrl + window.config.apiRoot +
+    '/user/' + _state.user.username
+  return new Promise(function (resolve, reject) {
+    // we turn off cache because it seems like if server(maybe just node?)
+    // returns 304 unmodified, it won't even reach the callback!
+    Request.get(url)
+      .set('Cache-Control', 'no-cache, no-store, must-revalidate')
+      .set('Pragma', 'no-cache')
+      .set('Expires', 0)
+      .set('Accept', 'application/json')
+      .end(function (err, res) {
+        err ? reject(err) : resolve(res.body)
+        _state.user.loading = false
+      })
+  })
 }
 
 function loadFromServer () {
   _state.loading = true
   UserMatrixStore.emitChange()
+
   var dateRangeOption = _state.dateRangeOption
   var dateRange = utilsDate.getDateRangeFromOption(dateRangeOption)
   var url = statsAPIUrl() + dateRange.fromDate + '..' + dateRange.toDate
 
   _state['dateRange'] = dateRange
-  // console.log('about to load from server: %s', url);
   return new Promise(function (resolve, reject) {
     // we turn off cache because it seems like if server(maybe just node?)
     // returns 304 unmodified, it won't even reach the callback!
@@ -48,14 +73,14 @@ function loadFromServer () {
 
 function statsAPIUrl () {
   const postFix = window.config.dev ? '.json?' : ''
-  return window.config.baseUrl + window.config.apiRoot + '/stats/user/' +
-    window.config.user.username + postFix + '/'
+  return window.config.baseUrl + window.config.apiRoot +
+    '/stats/user/' + _state.user.username + postFix + '/'
 }
 
 function handleServerResponse (serverResponse) {
   var dateRange = _state.dateRange
-  var wordCountsForEachDay = transformToTotalWordCountsForEachDay(
-    serverResponse, dateRange)
+  var wordCountsForEachDay =
+      transformToTotalWordCountsForEachDay(serverResponse, dateRange)
   var contentState = _state.contentStateOption
   var selectedDay = _state.selectedDay
 
@@ -140,7 +165,7 @@ function mapContentStateToFieldName (selectedOption) {
  * @returns {{key: string, label: string, wordCount: number}[]}
  */
 function mapTotalWordCountByContentState (listOfMatrices,
-  selectedContentState) {
+                                          selectedContentState) {
   var wordCountFieldName = mapContentStateToFieldName(selectedContentState)
   return listOfMatrices.map(function (entry) {
     return {
@@ -164,7 +189,8 @@ function filterByContentStateAndDay (listOfMatrices, selectedContentState,
   var predicate
 
   // we have messy terminologies!
-  selectedContentState = (selectedContentState === 'Needs Work'
+  selectedContentState = (
+    selectedContentState === 'Needs Work'
     ? 'NeedReview' : selectedContentState)
 
   if (selectedDay) {
@@ -189,14 +215,21 @@ function filterByContentStateAndDay (listOfMatrices, selectedContentState,
 }
 
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
-  getMatrixState: function () {
-    if (_state.matrixForAllDays.length === 0 &&
-      window.config.permission.isLoggedIn) {
+  getMatrixState: function (username) {
+    if (_state.user.username !== username) {
+      _state.user.username = username
+      loadUserInfo().then(function (userInfo) {
+        _state.user = userInfo
+        UserMatrixStore.emitChange()
+      })
+    }
+    if ((_state.matrixForAllDays.length === 0 &&
+      window.config.permission.isLoggedIn)) {
       loadFromServer()
-        .then(handleServerResponse)
-        .then(function (newState) {
-          UserMatrixStore.emitChange()
-        })
+      .then(handleServerResponse)
+      .then(function (newState) {
+        UserMatrixStore.emitChange()
+      })
     }
     return _state
   },
@@ -219,8 +252,8 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
     var action = payload.action
     switch (action.actionType) {
       case UserMatrixActionTypes.DATE_RANGE_UPDATE:
-        console.log('date range from %s -> %s', _state.dateRangeOption.label,
-          action.data)
+        console.log('date range from %s -> %s',
+          _state.dateRangeOption, action.data)
         _state.dateRangeOption = action.data
         _state.selectedDay = null
         if (window.config.permission.isLoggedIn) {
@@ -230,30 +263,30 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
               UserMatrixStore.emitChange()
             })
             .catch(function (err) {
-              console.error('failed trying to load user statistic from server' +
-                err.stack)
+              console.error(
+                'failed trying to load user statistic from server' + err.stack)
             })
         }
         break
       case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
-        console.log('content state from %s -> %s', _state.contentStateOption,
-          action.data)
+        console.log('content state from %s -> %s',
+          _state.contentStateOption, action.data)
         _state.contentStateOption = action.data
         _state.wordCountsForEachDayFilteredByContentState =
           mapTotalWordCountByContentState(_state.matrixForAllDays,
             _state.contentStateOption)
         _state.wordCountsForSelectedDayFilteredByContentState =
-          filterByContentStateAndDay(_state.matrix, _state.contentStateOption,
-            _state.selectedDay)
+          filterByContentStateAndDay(_state.matrix,
+            _state.contentStateOption, _state.selectedDay)
         UserMatrixStore.emitChange()
         break
       case UserMatrixActionTypes.DAY_SELECTED:
-        console.log('day selection from %s -> %s', _state.selectedDay,
-          action.data)
+        console.log('day selection from %s -> %s',
+          _state.selectedDay, action.data)
         _state.selectedDay = action.data
         _state.wordCountsForSelectedDayFilteredByContentState =
-          filterByContentStateAndDay(_state.matrix, _state.contentStateOption,
-            _state.selectedDay)
+          filterByContentStateAndDay(_state.matrix,
+            _state.contentStateOption, _state.selectedDay)
         UserMatrixStore.emitChange()
         break
     }

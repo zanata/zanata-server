@@ -2,13 +2,14 @@ import React from 'react' // eslint-disable-line
 import View from '../components/View'
 import TeaserListHeader from '../components/TeaserListHeader'
 import ProjectTeaser from '../components/ProjectTeaser'
+import GroupTeaser from '../components/GroupTeaser'
 import LanguageTeamTeaser from '../components/LanguageTeamTeaser'
 import PersonTeaser from '../components/PersonTeaser'
-// import { flattenClasses } from '../utils'
 
 const TeaserList = ({
   children,
   title,
+  totalCount,
   items,
   type,
   filterable,
@@ -26,14 +27,17 @@ const TeaserList = ({
     }
   }
   switch (type) {
-    case 'project':
+    case 'Project':
       TeaserComponent = ProjectTeaser
       break
-    case 'languageTeam':
+    case 'LanguageTeam':
       TeaserComponent = LanguageTeamTeaser
       break
-    case 'person':
+    case 'Person':
       TeaserComponent = PersonTeaser
+      break
+    case 'Group':
+      TeaserComponent = GroupTeaser
       break
     default:
       TeaserComponent = () => (<div>Teaser</div>)
@@ -41,14 +45,15 @@ const TeaserList = ({
   }
   return (items.length > 0) ? (
     <View theme={teaserListTheme}>
-      <TeaserListHeader title={title} type={type} showFilter={filterable}/>
+      <TeaserListHeader title={title} type={type}
+        showFilter={filterable} totalCount={totalCount}/>
       <View theme={listTheme}>
         {items.map((item, key) => (
           <TeaserComponent details={item} key={key}/>
         ))}
       </View>
     </View>
-  ) : null
+  ) : (<span/>)
 }
 
 export default TeaserList

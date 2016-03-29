@@ -20,6 +20,7 @@
  */
 package org.zanata.dao;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.zanata.common.LocaleId;
@@ -70,14 +71,23 @@ public class LocaleDAO extends AbstractDAOImpl<HLocale, Long> {
         return findByCriteria(); // Return all of them
     }
 
-    public List<HLocale> searchByName(String query) {
-        return getSession().createQuery(
-                "from HLocale l where " +
-                        "lower(l.localeId) like :query " +
-                        "or lower(l.displayName) like :query " +
-                        "or lower(l.nativeName) like :query")
-                .setString("query", "%" + query.toLowerCase() + "%")
-                .setComment("LocaleDAO.searchByName")
-                .list();
+    public List<HLocale> searchByName(String query, int maxResult,
+        int firstResult) {
+        Query q = getSession().createQuery(
+            "from HLocale l where " +
+                "lower(l.localeId) like :query " +
+                "or lower(l.displayName) like :query " +
+                "or lower(l.nativeName) like :query")
+            .setString("query", "%" + query.toLowerCase() + "%")
+            .setFirstResult(firstResult);
+        if (maxResult != -1) {
+            q.setMaxResults(maxResult);
+        }
+        q.setComment("LocaleDAO.searchByName");
+        return q.list();
+    }
+
+    public int searchByNameCount(String query) {
+        return searchByName(query, -1, 0).size();
     }
 }

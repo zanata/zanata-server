@@ -5,12 +5,10 @@ import { normalize } from 'normalizr'
 import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
-
-export const SEVERITY = {
-  INFO: 'info',
-  WARN: 'warn',
-  ERROR: 'error'
-}
+import {
+  DEFAULT_LOCALE,
+  getJsonHeaders
+} from './common'
 
 export const GLOSSARY_PAGE_SIZE = 1000
 
@@ -77,7 +75,7 @@ export const glossaryInvalidateStats =
 
 export const getGlossaryTerms = (state, newIndex) => {
   const {
-    src = 'en-US',
+    src = DEFAULT_LOCALE.localeId,
     locale = '',
     filter = '',
     sort = '',
@@ -85,7 +83,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   } = state.glossary
   const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
   const srcQuery = src
-    ? `?srcLocale=${src}` : '?srcLocale=en-US'
+    ? `?srcLocale=${src}` : '?srcLocale=' + DEFAULT_LOCALE.localeId
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
@@ -95,18 +93,11 @@ export const getGlossaryTerms = (state, newIndex) => {
     '/glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
   console.log(endpoint)
-  let headers = {
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
   return {
     [CALL_API]: {
       endpoint,
       method: 'GET',
-      headers: headers,
+      headers: getJsonHeaders(),
       types: [
         GLOSSARY_TERMS_REQUEST,
         {
@@ -136,21 +127,12 @@ export const getGlossaryTerms = (state, newIndex) => {
 }
 
 export const getGlossaryStats = (dispatch) => {
-  let headers = {
-    'Accept': 'application/json'
-  }
-
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
-
   return {
     [CALL_API]: {
       endpoint: window.config.baseUrl + window.config.apiRoot +
         '/glossary/info',
       method: 'GET',
-      headers: headers,
+      headers: getJsonHeaders(),
       types: [
         GLOSSARY_STATS_REQUEST,
         {
@@ -176,19 +158,11 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   formData.append('srcLocale', srcLocaleId)
   formData.append('transLocale', data.transLocale.value)
 
-  let headers = {
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
-
   return {
     [CALL_API]: {
       endpoint,
       method: 'POST',
-      headers: headers,
+      headers: getJsonHeaders(),
       body: formData,
       types: [
         GLOSSARY_UPLOAD_REQUEST,
@@ -208,14 +182,8 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
 }
 
 export const createGlossaryTerm = (dispatch, term) => {
-  let headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
+  let headers = getJsonHeaders()
+  headers['Content-Type'] = 'application/json'
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
@@ -248,14 +216,9 @@ export const createGlossaryTerm = (dispatch, term) => {
 }
 
 export const updateGlossaryTerm = (dispatch, term) => {
-  let headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
+  let headers = getJsonHeaders()
+  headers['Content-Type'] = 'application/json'
+
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
@@ -288,21 +251,13 @@ export const updateGlossaryTerm = (dispatch, term) => {
 }
 
 export const deleteGlossaryTerm = (dispatch, id) => {
-  let headers = {
-    'Accept': 'application/json'
-  }
-  if (window.config.auth) {
-    headers['x-auth-token'] = window.config.auth.token
-    headers['x-auth-user'] = window.config.auth.user
-  }
-
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries/' + id
   return {
     [CALL_API]: {
       endpoint,
       method: 'DELETE',
-      headers: headers,
+      headers: getJsonHeaders(),
       types: [
         {
           type: GLOSSARY_DELETE_REQUEST,

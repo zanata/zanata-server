@@ -23,19 +23,19 @@ package org.zanata.rest.search.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 /**
- * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
+ * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class PersonSearchResult extends SearchResult {
+public class GroupSearchResult extends SearchResult {
 
     @Getter @Setter
-    private String avatarUrl;
+    private String title;
 
-    public PersonSearchResult() {
-        this.setType(SearchResultType.Person);
+    public GroupSearchResult() {
+        this.setType(SearchResultType.Group);
     }
 }
