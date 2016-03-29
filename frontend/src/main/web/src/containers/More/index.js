@@ -4,7 +4,7 @@ import Helmet from 'react-helmet'
 import {
   Page,
   ScrollView,
-  View,
+  Flex,
   Link,
   Icon,
   Row,
@@ -12,9 +12,17 @@ import {
   ButtonLink
 } from '../../components'
 import {
-  updateLocale,
-  getUILocales
+  updateLocale
 } from '../../actions/common'
+
+const classes = {
+  list: {
+    fz: 'Fz(ms1)--md',
+    m: 'My(r2) Mx(a)',
+    maw: 'Maw(20em)',
+    w: 'W(100%)'
+  }
+}
 
 class More extends Component {
   render () {
@@ -23,29 +31,44 @@ class More extends Component {
       selectedLocale,
       loading,
       locales
-      } = this.props
-
+    } = this.props
     const buildInfo = window.config.buildInfo
     const copyrightYears = '© 2008-' + new Date().getFullYear()
     return (
       <Page>
         <Helmet title='More'/>
         <ScrollView theme={{base: {ai: 'Ai(c)'}}}>
-          <View>
-            <ul>
-              <li>
-                <Link useHref={true} target='_blank' link={window.config.links.helpUrl}>Help</Link>
+          <Flex dir='c' atomic={classes.list}>
+            <ul className='W(100%)'>
+              <li className='Py(rq) Bdb(bd1) Bdc(light)'>
+                <Link useHref
+                  target='_blank'
+                  link={window.config.links.helpUrl}>
+                  Help
+                </Link>
               </li>
-              <li>
-                <Link useHref={true} target='_blank' link={window.config.links.termsUrl}>Terms</Link>
+              <li className='Py(rq) Bdb(bd1) Bdc(light)'>
+                <Link useHref
+                  target='_blank'
+                  link={window.config.links.termsUrl}>
+                  Terms
+                </Link>
               </li>
-              <li>
-                <Link useHref={true} target='_blank' link='http://zanata.org/about'>About</Link>
+              <li className='Py(rq) Bdb(bd1) Bdc(light)'>
+                <Link useHref
+                  target='_blank'
+                  link='http://zanata.org/about'>
+                  About
+                </Link>
               </li>
-              <li>
-                <Link useHref={true} target='_blank' link='http://zanata.org/issues'>Report an issue</Link>
+              <li className='Py(rq) Bdb(bd1) Bdc(light)'>
+                <Link useHref
+                  target='_blank'
+                  link='http://zanata.org/issues'>
+                  Report an issue
+                </Link>
               </li>
-              <li>
+              <li className='Py(rq)'>
                 <ButtonLink type='default'>
                   <Row>
                     <Icon name='mail' atomic={{m: 'Mend(rq)'}}/>
@@ -53,7 +76,7 @@ class More extends Component {
                   </Row>
                 </ButtonLink>
               </li>
-              <li>
+              <li className='Pt(r1)'>
                 <Select
                   name='locale-selection'
                   placeholder={'Select a language…'}
@@ -64,16 +87,14 @@ class More extends Component {
                   onChange={handleLocaleChange}
                 />
               </li>
-              <li>
-                Version: {buildInfo.version} <br/>
-                Build timestamp: {buildInfo.buildTimestamp}<br/>
-                Scm: {buildInfo.scmDescribe}<br/>
-                Copyright notice: {copyrightYears} <Link useHref={true} link='http://www.redhat.com/'>Red Hat, Inc</Link>
+              <li className='Pt(r1) Fz(msn1) C(muted)'>
+                Zanata {buildInfo.version} ({buildInfo.buildTimestamp}) [{buildInfo.scmDescribe}]<br />
+                {copyrightYears} <Link useHref={true} link='http://www.redhat.com/'>Red Hat, Inc</Link>
               </li>
             </ul>
             <span>
             </span>
-          </View>
+          </Flex>
         </ScrollView>
       </Page>
     )

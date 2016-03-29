@@ -4,13 +4,17 @@ import { Link as RouterLink } from 'react-router'
 
 const classes = {
   base: {
-    bgc: 'Bgc(i)',
     c: 'C(pri)',
-    cur: 'Cur(p)',
-    fz: 'Fz(i)',
     td: 'Td(n)',
+    trs: 'Trs(aeo)',
     hover: {
-      td: 'Td(u):h'
+      filter: 'Brightness(.75):h'
+    },
+    focus: {
+      filter: 'Brightness(.75):f'
+    },
+    active: {
+      filter: 'Brightness(.5):a'
     }
   }
 }
