@@ -4,15 +4,11 @@ import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
 import Glossary from '../containers/Glossary'
 import Explore from '../containers/Explore'
-import More from '../containers/More'
 import UserProfile from '../containers/UserProfile'
 import View from '../components/View'
 import {
   glossaryInitialLoad
 } from '../actions/glossary.js'
-import {
-  initialLoad
-} from '../actions/common.js'
 
 export default class Root extends Component {
   render () {
@@ -26,14 +22,12 @@ export default class Root extends Component {
         <View>
           <Router history={history}>
             <Route component={App} >
-              <Route path="glossary" component={Glossary}
+              <Route path='glossary' component={Glossary}
                 onEnter={() => store.dispatch(glossaryInitialLoad())} />
-              <Route path="profile/:username" component={UserProfile} />
-              <Route path="explore" component={Explore} />
-              <Route path="more" component={More}
-                onEnter={() => store.dispatch(initialLoad())}/>
-              <Redirect from="profile" to={`profile/${username}`} />
-              <Redirect from="/" to={`profile/${username}`} />
+              <Route path='profile/:username' component={UserProfile} />
+              <Route path='explore' component={Explore} />
+              <Redirect from='profile' to={`profile/${username}`} />
+              <Redirect from='/' to={`profile/${username}`} />
             </Route>
           </Router>
         </View>

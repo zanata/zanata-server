@@ -81,15 +81,14 @@ const items = [
   },
   {
     icon: 'logout',
-    link: '/logout',
+    link: '/account/sign_out',
     title: 'Log Out',
     auth: 'loggedin'
   },
   {
     small: true,
     icon: 'ellipsis',
-    link: '/a/#more',
-    internalLink: '/more',
+    link: '/a/more',
     title: 'More',
     auth: 'public'
   }

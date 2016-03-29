@@ -92,7 +92,6 @@ export const getGlossaryTerms = (state, newIndex) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
-  console.log(endpoint)
   return {
     [CALL_API]: {
       endpoint,
@@ -106,10 +105,8 @@ export const getGlossaryTerms = (state, newIndex) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
-                console.log(json, GLOSSARY_TERM_ARRAY)
                 const normalized =
                   normalize(json, { results: GLOSSARY_TERM_ARRAY })
-                console.log(normalized)
                 return normalized
               }
               )

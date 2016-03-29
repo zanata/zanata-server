@@ -94,12 +94,4 @@ public class ApplicationConfigurationAction {
         }
         return "/account/register";
     }
-
-    //TODO: integrate this with /version api
-    public BuildInfo getBuildInfo() {
-        String version = applicationConfiguration.getVersion();
-        String scmDescribe = applicationConfiguration.getScmDescribe();
-        String buildTimestamp = applicationConfiguration.getBuildTimestamp();
-        return new BuildInfo(version, buildTimestamp, scmDescribe);
-    }
 }

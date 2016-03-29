@@ -27,10 +27,7 @@ class App extends Component {
     const links = {
       'context': config.baseUrl,
       '/login': config.links.loginUrl,
-      '/help': config.links.helpUrl,
-      '/terms': config.links.termsUrl,
-      '/signup': config.links.registerUrl,
-      '/logout': config.links.logoutUrl
+      '/signup': config.links.registerUrl
     }
 
     return (

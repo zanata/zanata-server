@@ -34,7 +34,6 @@ const logger = createLogger({
   process.env && (process.env.NODE_ENV === 'development')
 })
 
-console.log('alex', process.env.NODE_ENV)
 const finalCreateStore = compose(
   applyMiddleware(
     thunk,
