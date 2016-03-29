@@ -137,7 +137,6 @@ public class RequestServiceImplTest extends ZanataDbunitJpaTest {
         service.updateLanguageRequest(languageRequest.getId(), requester,
             RequestState.ACCEPTED, comment);
 
-        // TODO Mock events to do this kind of check
         List<RequestUpdatedEvent> firedEvents =
                 eventListener.getFiredEvents(RequestUpdatedEvent.class);
         assertThat(firedEvents.size()).isEqualTo(1);
