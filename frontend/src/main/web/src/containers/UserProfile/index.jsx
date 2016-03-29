@@ -72,10 +72,9 @@ var UserProfile = React.createClass({
   render: function () {
     const user = isEmpty(this.state.user) ? window.config.user : this.state.user
     const username = user && user.username ? user.username : ''
-    const languageTeams = user && user.languageTeams.length > 0
+    const languageTeams = user && !isEmpty(user.languageTeams)
       ? user.languageTeams.join() : ''
     const notification = this.state.notification
-    console.log(languageTeams, user)
     return (
       <Page>
         {notification && (<Notification
@@ -112,7 +111,7 @@ var UserProfile = React.createClass({
                         </span>)
                       }
                     </Flex>
-                    {user && user.languageTeams.length > 0 &&
+                    {user && !isEmpty(user.languageTeams) &&
                       (<Flex tagName='li' align='c' id='profile-languages'>
                         <Icon name='language'
                           atomic={{m: 'Mend(re)'}}

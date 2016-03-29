@@ -29,12 +29,13 @@ WebFont.load({
 
 const routerMiddleware = syncHistory(hashHistory)
 
+console.log('alex', process)
 const finalCreateStore = compose(
   applyMiddleware(
     thunk,
     apiMiddleware,
     routerMiddleware,
-    createLogger()
+    process.env === 'development' && createLogger()
   )
   // DevTools.instrument()
 )(createStore)
