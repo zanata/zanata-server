@@ -1,17 +1,29 @@
 import React, { PropTypes } from 'react'
 import warning from 'warning'
+import { merge } from 'lodash'
 import { flattenThemeClasses } from '../../utils/styleUtils'
 
 const Base = ({
   atomic = {},
   children,
   className,
-  tagName,
   componentName,
+  states,
+  tagName,
   theme = {},
   ...props
 }) => {
   const Component = tagName || 'div'
+  if (states && theme.states) {
+    const themeStates = theme.states
+    delete theme.states
+    Object.keys(states).forEach((state) => {
+      theme.base = merge({},
+        theme.base,
+        states[state] && themeStates[state]
+      )
+    })
+  }
   const classes = flattenThemeClasses(theme, atomic)
   warning(!className,
     'Please use `theme` instead of `className` to style `' +
@@ -43,6 +55,11 @@ Base.propTypes = {
    * Used for warnings and references.
    */
   componentName: PropTypes.string,
+  /**
+   * An object of states and whether they are true or not
+   * This will be used to merge state styles
+   */
+  states: PropTypes.object,
   /**
   * HTML element string or React component to render.
   */

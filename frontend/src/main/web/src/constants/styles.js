@@ -28,16 +28,16 @@ module.exports = {
     'muted'
   ],
   colors: {
-    pri: '#19a5da',
-    sec: 'hsl(256, 76%, 65%)',
-    success: 'hsl(157, 70%, 46%)',
-    unsure: 'hsl(60, 85%, 50%)',
-    warning: 'hsl(27, 97%, 63%)',
-    danger: 'hsl(353, 80%, 59%)',
-    dark: 'hsl(212, 18%, 40%)',
-    muted: 'hsl(204, 18%, 69%)',
-    neutral: 'hsl(195, 32%, 80%)',
-    light: 'hsl(213, 44%, 95%)'
+    pri: 'rgb(27, 167, 217)',
+    sec: 'rgb(135, 98, 234)',
+    success: 'rgb(36, 200, 137)',
+    unsure: 'rgb(215, 213, 67)',
+    warning: 'rgb(252, 153, 71)',
+    danger: 'rgb(234, 66, 86)',
+    dark: 'rgb(84, 102, 122)',
+    muted: 'rgb(162, 179, 190)',
+    neutral: 'rgb(189, 212, 220)',
+    light: 'rgb(237, 242, 248)'
   },
   gradients: {
     grdshine: 'linear-gradient(rgba(255,255,255,.4), transparent)'

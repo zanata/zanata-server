@@ -8,12 +8,19 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
+    // preLoaders: [
+    //   {
+    //     test: /\.js$/,
+    //     loader: 'eslint-loader',
+    //     exclude: /node_modules/
+    //   }
+    // ],
     loaders: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         include: path.join(__dirname, 'src'),
-        loader: 'atomic-loader?configPath=' + __dirname +
+        loader: 'atomic-loader?configPath=' + __dirname + // eslint-disable-line
           '/atomicCssConfig.js' +
           '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015'
       },

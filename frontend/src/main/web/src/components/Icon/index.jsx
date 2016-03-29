@@ -5,6 +5,7 @@ import { Base } from '../'
 const classes = {
   base: {
     d: 'D(ib)',
+    flxs: 'Flxs(0)',
     pos: 'Pos(r)'
   },
   sizes: {

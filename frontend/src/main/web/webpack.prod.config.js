@@ -20,7 +20,8 @@ module.exports = _.merge({}, defaultConfig, {
         loader: 'babel',
         query: {
           presets: ['react', 'stage-0', 'es2015']
-        }
+        },
+        babelrc: false
       },
       {
         test: /\.css$/,

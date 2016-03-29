@@ -17,26 +17,52 @@ const classes = {
       filter: 'Brightness(.5):a'
     }
   },
-  default: {
-    c: 'C(pri)'
+  states: {
+    active: {
+      filter: 'Brightness(.5):a'
+    }
   },
-  primary: {
-    c: 'C(pri)'
-  },
-  success: {
-    c: 'C(success)'
-  },
-  unsure: {
-    c: 'C(unsure)'
-  },
-  warning: {
-    c: 'C(warning)'
-  },
-  danger: {
-    c: 'C(danger)'
-  },
-  muted: {
-    c: 'C(muted)'
+  types: {
+    default: {
+      base: {
+        c: 'C(pri)'
+      }
+    },
+    plain: {
+      base: {
+        c: ''
+      }
+    },
+    primary: {
+      base: {
+        c: 'C(pri)'
+      }
+    },
+    success: {
+      base: {
+        c: 'C(success)'
+      }
+    },
+    unsure: {
+      base: {
+        c: 'C(unsure)'
+      }
+    },
+    warning: {
+      base: {
+        c: 'C(warning)'
+      }
+    },
+    danger: {
+      base: {
+        c: 'C(danger)'
+      }
+    },
+    muted: {
+      base: {
+        c: 'C(muted)'
+      }
+    }
   }
 }
 
@@ -48,7 +74,8 @@ const ButtonLink = ({
 }) => {
   const themed = merge({}, buttonClasses, classes, theme)
   const themedState = {
-    base: merge({}, themed.base, themed[type])
+    base: merge({}, themed.base, themed.types[type].base),
+    states: merge({}, themed.states, themed.types[type].states)
   }
   return (
     <Base
@@ -75,7 +102,7 @@ ButtonLink.propTypes = {
   /**
    * The style of the link based on it's context or state.
    */
-  type: PropTypes.oneOf(['default', 'primary', 'success', 'unsure',
+  type: PropTypes.oneOf(['default', 'plain', 'primary', 'success', 'unsure',
     'warning', 'danger', 'muted'])
 }
 

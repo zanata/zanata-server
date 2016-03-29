@@ -1,56 +1,86 @@
 import React from 'react'
 import ContributionChart from './ContributionChart'
-import DropDown from '../../components/DropDown'
 import FilterableMatrixTable from './FilterableMatrixTable'
-import {DateRanges} from '../../constants/Options'
 import Actions from '../../actions/userMatrix'
+import { DateRanges } from '../../constants/Options'
+import {
+  Base,
+  Flex,
+  LoaderText,
+  Select
+} from '../../components'
 
-var RecentContributions = React.createClass(
-  {
-    render: function() {
-      var dateRange = this.props.dateRange,
-        chart,
-        matrix;
-
-      if(this.props.loading) {
-        chart = (
-          <a href="#" className="loader--large is-active">
-          <span className="loader__spinner">
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-          </a>);
-      } else {
-        chart = (
-          <ContributionChart wordCountForEachDay={this.props.matrixForAllDays} dateRangeOption={this.props.dateRangeOption} />);
-
-        matrix =  (
-          <FilterableMatrixTable
-            wordCountForSelectedDay={this.props.wordCountsForSelectedDayFilteredByContentState}
-            wordCountForEachDay={this.props.wordCountsForEachDayFilteredByContentState}
-            fromDate={dateRange.fromDate} toDate={dateRange.toDate}
-            dateRangeOption={this.props.dateRangeOption}
-            selectedContentState={this.props.contentStateOption}
-            selectedDay={this.props.selectedDay}
-            />);
-      }
-      return (
-        <div className="l__wrapper">
-          <div className="l--push-bottom-1">
-            <div className="l--float-right txt--uppercase">
-              <DropDown options={DateRanges} selectedOption={this.props.dateRangeOption} onSelectionChange={Actions.changeDateRange}/>
-            </div>
-            <h2 className='delta txt--uppercase'>Recent Contributions</h2>
-          </div>
-          <div className="l--push-bottom-1">
-            {chart}
-          </div>
-          {matrix}
-        </div>
-      )
-    }
+const classes = {
+  root: {
+    flxg: 'Flxg(1)',
+    flxs: 'Flxg(0)',
+    m: 'Mstart(r2)--md',
+    maw: 'Maw(100%)',
+    miw: 'Miw(100%) Miw(0)--md'
+  },
+  heading: {
+    fz: 'Fz(ms1)',
+    fw: 'Fw(600)',
+    tt: 'Tt(u)'
+  },
+  dropDownContainer: {
+    m: 'Mstart(a)',
+    miw: 'Miw(r6)'
+  },
+  chartContainer: {
+    m: 'Mb(r1)',
+    mih: 'Mih(r4)'
   }
-);
+}
 
-export default RecentContributions;
+const RecentContributions = ({
+  dateRange,
+  loading,
+  matrixForAllDays,
+  dateRangeOption,
+  wordCountsForSelectedDayFilteredByContentState,
+  wordCountsForEachDayFilteredByContentState,
+  contentStateOption,
+  selectedDay,
+  ...props
+}) => {
+  const chart = loading
+    ? <LoaderText loading />
+    : (<ContributionChart
+      wordCountForEachDay={matrixForAllDays}
+      dateRangeOption={dateRangeOption} />)
+  const matrix = (
+    <FilterableMatrixTable
+      wordCountForSelectedDay={wordCountsForSelectedDayFilteredByContentState}
+      wordCountForEachDay={wordCountsForEachDayFilteredByContentState}
+      fromDate={dateRange.fromDate} toDate={dateRange.toDate}
+      dateRangeOption={dateRangeOption}
+      selectedContentState={contentStateOption}
+      selectedDay={selectedDay}
+      />)
+  return (
+    <Base atomic={classes.root}>
+      <Flex align='c'>
+        <Base tagName='h2' atomic={classes.heading}>Recent Contributions</Base>
+        <Base atomic={classes.dropDownContainer}>
+          <Select
+            name='dateRange'
+            placeholder={loading ? 'Loading…' : false}
+            className='Flx(flx1)'
+            isLoading={loading}
+            searchable={false}
+            clearable={false}
+            value={dateRangeOption}
+            options={DateRanges}
+            onChange={Actions.changeDateRange} />
+        </Base>
+      </Flex>
+      <Flex dir='c' align='c' justify='c' atomic={classes.chartContainer}>
+        {chart}
+      </Flex>
+      {matrix}
+    </Base>
+  )
+}
+
+export default RecentContributions

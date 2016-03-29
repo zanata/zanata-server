@@ -2,8 +2,39 @@ import React from 'react'
 import Helmet from 'react-helmet'
 import RecentContributions from './RecentContributions'
 import UserMatrixStore from '../../stores/UserMatrixStore'
+import {
+  Base,
+  Flex,
+  Icon,
+  Notification,
+  Page,
+  ScrollView
+} from '../../components'
 
-import { Page, ScrollView, View, Notification } from '../../components'
+const classes = {
+  wrapper: {
+    p: 'Py(r1)',
+    fld: 'Fld(c) Fld(r)--md'
+  },
+  details: {
+    w: 'W(100%) Miw(21rem) Maw(r16)',
+    m: 'Mb(r1)'
+  },
+  detailsAvatar: {
+    bdrs: 'Bdrs(rnd)',
+    m: 'Mstart(a)',
+    ov: 'Ov(h)',
+    w: 'Maw(1/4)'
+  },
+  detailsText: {
+    m: 'Mend(rh)',
+    flx: 'Flx(flx1)'
+  },
+  usersName: {
+    fz: 'Fz(ms3)',
+    fw: 'Fw(600)'
+  }
+}
 
 var UserProfile = React.createClass({
   getMatrixState: function () {
@@ -43,56 +74,55 @@ var UserProfile = React.createClass({
         )}
         <Helmet title='User Profile' />
         <ScrollView>
-          <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
-            <div id='profile-overview' className='g__item w--1-4 w--1-2-m'>
-              <div className='media l--push-bottom-half'>
-                <div className='media__item--right bx--round'>
-                  <img src={user && user.imageUrl ? user.imageUrl : ''}
-                    alt={username} />
-                </div>
-                <div className='media__body'>
-                  <h1 id='profile-displayname' className='l--push-all-0'>
-                    {user && user.name ? user.name : ''}
-                  </h1>
-                  <ul className='list--no-bullets txt--meta'>
-                    <li id='profile-username'>
-                      <i className='i i--user list__icon' title='Username'></i>
-                      {username}&nbsp
-                      {user && user.email
-                         ? (<span className='txt--meta'>({user.email})</span>)
-                         : undefined}
-                    </li>
-                    {user && user.languageTeams
-                      ? (<li id='profile-languages'>
-                        <i className='i i--language list__icon'
-                          title='Spoken languages'>
-                        </i>
-                        {languageTeams}
-                      </li>)
-                      : undefined}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            {window.config.permission.isLoggedIn &&
-              (<div className='g__item w--3-4 w--1-2-m'>
-                <div className='bg--pop-highest l--pad-v-1'>
-                  <RecentContributions
-                    loading={this.state.loading}
-                    dateRangeOption={this.state.dateRangeOption}
-                    matrixForAllDays={this.state.matrixForAllDays}
-                    wordCountsForSelectedDayFilteredByContentState={
-                      this.state.wordCountsForSelectedDayFilteredByContentState
+          <Flex dir='c' atomic={classes.wrapper}>
+            <Flex dir='rr' id='profile-overview' atomic={classes.details}>
+              <Base atomic={classes.detailsAvatar}>
+                <img src={user && user.imageUrl ? user.imageUrl : ''}
+                  alt={username} />
+              </Base>
+              <Flex dir='c'
+                id='profile-displayname'
+                atomic={classes.detailsText}>
+                <Base atomic={classes.usersName}>
+                  {user && user.name ? user.name : ''}
+                </Base>
+                <ul className='Fz(msn1)'>
+                  <Flex tagName='li' align='c' id='profile-username'>
+                    <Icon name='user'
+                      atomic={{m: 'Mend(re)'}}
+                      title='Username'/>
+                    {username}
+                    {user && user.email &&
+                      (<span className='Mstart(rq) C(muted)'>
+                        {user.email}
+                      </span>)
                     }
-                    wordCountsForEachDayFilteredByContentState={
-                      this.state.wordCountsForEachDayFilteredByContentState}
-                    contentStateOption={this.state.contentStateOption}
-                    selectedDay={this.state.selectedDay}
-                    dateRange={this.state.dateRange} />
-                </div>
-              </div>)
+                  </Flex>
+                  {user && user.languageTeams &&
+                    (<Flex tagName='li' align='c' id='profile-languages'>
+                      <Icon name='language'
+                        atomic={{m: 'Mend(re)'}}
+                        title='Spoken languages'/>
+                      {languageTeams}
+                    </Flex>)}
+                </ul>
+              </Flex>
+            </Flex>
+            {window.config.permission.isLoggedIn &&
+              (<RecentContributions
+                loading={this.state.loading}
+                dateRangeOption={this.state.dateRangeOption}
+                matrixForAllDays={this.state.matrixForAllDays}
+                wordCountsForSelectedDayFilteredByContentState={
+                  this.state.wordCountsForSelectedDayFilteredByContentState
+                }
+                wordCountsForEachDayFilteredByContentState={
+                  this.state.wordCountsForEachDayFilteredByContentState}
+                contentStateOption={this.state.contentStateOption}
+                selectedDay={this.state.selectedDay}
+                dateRange={this.state.dateRange} />)
             }
-          </View>
+          </Flex>
         </ScrollView>
       </Page>
     )

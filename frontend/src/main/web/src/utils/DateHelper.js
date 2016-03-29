@@ -12,20 +12,20 @@ var DateHelper = {
     var fromDate
     var toDate
 
-    switch (dateRangeOption) {
-      case 'This Week':
+    switch (dateRangeOption.value) {
+      case 'thisWeek':
         fromDate = moment().weekday(0)
         toDate = moment().weekday(6)
         break
-      case 'Last Week':
+      case 'lastWeek':
         fromDate = moment().weekday(-7)
         toDate = moment().weekday(-1)
         break
-      case 'This Month':
+      case 'thisMonth':
         fromDate = moment().date(1)
         toDate = moment().month(now.month() + 1).date(0)
         break
-      case 'Last Month':
+      case 'lastMonth':
         fromDate = moment().month(now.month() - 1).date(1)
         toDate = moment().date(0)
         break

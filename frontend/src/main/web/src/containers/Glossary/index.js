@@ -39,7 +39,6 @@ class Glossary extends Component {
     // So it creates a new debounce for each instance
     this.onScroll = debounce(this.onScroll, 100)
   }
-
   renderItem (index, key) {
     const {
       handleSelectTerm,
@@ -56,7 +55,6 @@ class Glossary extends Component {
       saving,
       deleting
     } = this.props
-
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
     const isSaving = !isUndefined(saving[entryId])
@@ -64,7 +62,6 @@ class Glossary extends Component {
       : (selected ? selectedTerm : entryId
       ? terms[entryId] : null)
     const isDeleting = !isUndefined(deleting[entryId])
-
     return (
       <Entry key={key}
         entry={entry}
@@ -83,7 +80,6 @@ class Glossary extends Component {
       />
     )
   }
-
   onScroll () {
     // Debounced by 100ms in super()
     if (!this.list) return
@@ -104,7 +100,6 @@ class Glossary extends Component {
     dispatch(glossaryGetTermsIfNeeded(newIndex - loadingThreshold))
     dispatch(glossaryGetTermsIfNeeded(newIndexEnd + loadingThreshold))
   }
-
   render () {
     const {
       termsLoading,
@@ -112,7 +107,6 @@ class Glossary extends Component {
       scrollIndex = 0,
       notification
     } = this.props
-
     return (
       <Page>
         {notification

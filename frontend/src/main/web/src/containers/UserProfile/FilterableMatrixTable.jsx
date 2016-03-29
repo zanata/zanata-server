@@ -1,69 +1,92 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import ContentStateFilter from './ContentStateFilter'
 import CalendarMonthMatrix from './CalendarMonthMatrix'
 import CalendarPeriodHeading from './CalendarPeriodHeading'
 import CategoryMatrixTable from './CategoryMatrixTable'
-import {DateRanges} from '../../constants/Options'
-import {ContentStates} from '../../constants/Options'
+import {
+  Base,
+  Flex
+} from '../../components'
+import {
+  DateRanges,
+  ContentStates
+} from '../../constants/Options'
 
-var FilterableMatrixTable = React.createClass({
-  propTypes: {
-    wordCountForEachDay: React.PropTypes.arrayOf(
-      React.PropTypes.shape(
-        {
-          date: React.PropTypes.string.isRequired,
-          wordCount: React.PropTypes.number.isRequired,
-        })
-    ).isRequired,
-    wordCountForSelectedDay: React.PropTypes.arrayOf(
-      React.PropTypes.shape(
-        {
-          savedDate: React.PropTypes.string.isRequired,
-          projectSlug: React.PropTypes.string.isRequired,
-          projectName: React.PropTypes.string.isRequired,
-          versionSlug: React.PropTypes.string.isRequired,
-          localeId: React.PropTypes.string.isRequired,
-          localeDisplayName: React.PropTypes.string.isRequired,
-          savedState: React.PropTypes.string.isRequired,
-          wordCount: React.PropTypes.number.isRequired
-        })
-    ).isRequired,
-    fromDate: React.PropTypes.string.isRequired,
-    toDate: React.PropTypes.string.isRequired,
-    dateRangeOption: React.PropTypes.oneOf(DateRanges).isRequired,
-    selectedContentState: React.PropTypes.oneOf(ContentStates).isRequired,
-    selectedDay: React.PropTypes.string
-  },
-
-  render: function () {
-    var selectedContentState = this.props.selectedContentState,
-      selectedDay = this.props.selectedDay,
-      categoryTables;
-
-    if (this.props.wordCountForSelectedDay.length > 0) {
-      categoryTables =
-        [
-          <CategoryMatrixTable key='locales' matrixData={this.props.wordCountForSelectedDay} category='localeId' categoryTitle='localeDisplayName' categoryName='Languages' />,
-          <CategoryMatrixTable key='projects' matrixData={this.props.wordCountForSelectedDay} category='projectSlug' categoryTitle='projectName' categoryName='Projects' />
-        ];
-    } else {
-      categoryTables = <div>No contributions</div>
-    }
-    return (
-      <div>
-        <ContentStateFilter selectedContentState={selectedContentState}  />
-        <div className="g">
-          <div className="g__item w--1-2-l w--1-2-h">
-            <CalendarMonthMatrix matrixData={this.props.wordCountForEachDay} selectedDay={selectedDay} selectedContentState={selectedContentState} dateRangeOption={this.props.dateRangeOption} />
-          </div>
-          <div className="g__item w--1-2-l w--1-2-h">
-            <CalendarPeriodHeading fromDate={this.props.fromDate} toDate={this.props.toDate} dateRange={this.props.dateRangeOption} selectedDay={selectedDay}/>
-            {categoryTables}
-          </div>
+const FilterableMatrixTable = ({
+  dateRangeOption,
+  fromDate,
+  selectedContentState,
+  selectedDay,
+  toDate,
+  wordCountForEachDay,
+  wordCountForSelectedDay
+}) => {
+  const categoryTables = (wordCountForSelectedDay.length > 0)
+    ? ([
+      <CategoryMatrixTable
+        key='locales'
+        matrixData={wordCountForSelectedDay}
+        category='localeId'
+        categoryTitle='localeDisplayName'
+        categoryName='Languages' />,
+      <CategoryMatrixTable
+        key='projects'
+        matrixData={wordCountForSelectedDay}
+        category='projectSlug'
+        categoryTitle='projectName'
+        categoryName='Projects' />
+    ])
+    : <Base atomic={{c: 'C(muted)'}}>No contributions</Base>
+  return (
+    <div>
+      <ContentStateFilter selectedContentState={selectedContentState} />
+      <Flex atomic={{fld: 'Fld(c) Fld(r)--lg'}}>
+        <div className='W(100%) W(1/2)--lg Mend(rh)--lg'>
+          <CalendarMonthMatrix
+            matrixData={wordCountForEachDay}
+            selectedDay={selectedDay}
+            selectedContentState={selectedContentState}
+            dateRangeOption={dateRangeOption} />
         </div>
-      </div>
-    )
-  }
-});
+        <div className='W(100%) W(1/2)--lg Mstart(rh)--lg'>
+          <CalendarPeriodHeading
+            fromDate={fromDate}
+            toDate={toDate}
+            dateRange={dateRangeOption.label}
+            selectedDay={selectedDay}/>
+          {categoryTables}
+        </div>
+      </Flex>
+    </div>
+  )
+}
 
-export default FilterableMatrixTable;
+FilterableMatrixTable.propTypes = {
+  wordCountForEachDay: PropTypes.arrayOf(
+    PropTypes.shape(
+      {
+        date: PropTypes.string.isRequired,
+        wordCount: PropTypes.number.isRequired
+      })
+  ).isRequired,
+  wordCountForSelectedDay: PropTypes.arrayOf(
+    PropTypes.shape(
+      {
+        savedDate: PropTypes.string.isRequired,
+        projectSlug: PropTypes.string.isRequired,
+        projectName: PropTypes.string.isRequired,
+        versionSlug: PropTypes.string.isRequired,
+        localeId: PropTypes.string.isRequired,
+        localeDisplayName: PropTypes.string.isRequired,
+        savedState: PropTypes.string.isRequired,
+        wordCount: PropTypes.number.isRequired
+      })
+  ).isRequired,
+  fromDate: PropTypes.string.isRequired,
+  toDate: PropTypes.string.isRequired,
+  dateRangeOption: PropTypes.oneOf(DateRanges).isRequired,
+  selectedContentState: PropTypes.oneOf(ContentStates).isRequired,
+  selectedDay: PropTypes.string
+}
+
+export default FilterableMatrixTable

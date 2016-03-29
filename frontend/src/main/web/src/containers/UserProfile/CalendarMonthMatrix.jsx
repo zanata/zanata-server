@@ -1,9 +1,38 @@
 import React from 'react'
 import moment from 'moment'
+import { merge } from 'lodash'
 import DayMatrix from './DayMatrix'
 import Actions from '../../actions/userMatrix'
-import {ContentStates} from '../../constants/Options'
-import {DateRanges} from '../../constants/Options'
+import { ContentStates } from '../../constants/Options'
+import {
+  Base,
+  ButtonLink,
+  Flex
+} from '../../components'
+
+const classes = {
+  calendar: {
+    base: {
+      m: 'Mb(r1)',
+      tbl: 'Tbl(f)',
+      w: 'W(100%)'
+    },
+    types: {
+      total: {
+        c: ''
+      },
+      approved: {
+        c: 'C(pri)'
+      },
+      translated: {
+        c: 'C(success)'
+      },
+      needswork: {
+        c: 'C(unsure)'
+      }
+    }
+  }
+}
 
 var CalendarMonthMatrix = React.createClass({
   propTypes: {
@@ -16,7 +45,7 @@ var CalendarMonthMatrix = React.createClass({
     ).isRequired,
     selectedDay: React.PropTypes.string,
     selectedContentState: React.PropTypes.oneOf(ContentStates).isRequired,
-    dateRangeOption: React.PropTypes.oneOf(DateRanges).isRequired
+    dateRangeOption: React.PropTypes.object.isRequired
   },
 
   getDefaultProps: function () {
@@ -27,33 +56,27 @@ var CalendarMonthMatrix = React.createClass({
     var weekDay
     for (var i = 0; i < 7; i++) {
       weekDay = now.weekday(i).format('ddd')
-      weekDays.push(<th className="cal__heading" key={weekDay}>{weekDay}</th>)
+      weekDays.push(<th key={weekDay}>{weekDay}</th>)
     }
     return {
       weekDays: weekDays
     }
   },
-
   handleClearSelection: function () {
     Actions.clearSelectedDay()
   },
-
-  getTableClass: function (contentState) {
-    if (contentState === ContentStates[1]) {
-      return 'cal--highlight'
-    } else if (contentState === ContentStates[2]) {
-      return 'cal--success'
-    } else if (contentState === ContentStates[3]) {
-      return 'cal--unsure'
-    }
-  },
-
   render: function () {
-    const selectedDay = this.props.selectedDay
-    const clearClass = this.props.selectedDay ? '' : 'is-hidden'
-    const tableClasses = 'l--push-bottom-1 cal ' +
-      this.getTableClass(this.props.selectedContentState)
-    const matrixData = this.props.matrixData
+    const {
+      selectedDay,
+      selectedContentState,
+      matrixData,
+      weekDays
+    } = this.props
+    const calTheme = merge({},
+      classes.calendar.base,
+      classes.calendar
+        .types[selectedContentState.toLowerCase().replace(' ', '')]
+    )
 
     let days = []
     let result = []
@@ -62,14 +85,14 @@ var CalendarMonthMatrix = React.createClass({
     let heading
 
     if (matrixData.length === 0) {
-      return <table><tr><td>Loading</td></tr></table>
+      return <table><tbody><tr><td>Loading</td></tr></tbody></table>
     }
 
     firstDay = moment(matrixData[0]['date'])
     for (var i = firstDay.weekday() - 1; i >= 0; i--) {
       // for the first week, we pre-fill missing week days
       days.push(
-        <td className="cal__day" key={firstDay.weekday(i).format()}></td>
+        <DayMatrix key={firstDay.weekday(i).format()} />
       )
     }
 
@@ -87,42 +110,40 @@ var CalendarMonthMatrix = React.createClass({
     while (days.length) {
       dayColumns = days.splice(0, 7)
       result.push(
-        <tr className="cal__week"
-          key={this.props.dateRangeOption + '-week' + result.length}>
+        <tr
+          key={this.props.dateRangeOption.value + '-week' + result.length}>
           {dayColumns}
         </tr>
       )
     }
 
     heading = (
-      <div className="l--push-bottom-half g">
-        <div className="g__item w--1-2">
-          <h3 className="epsilon txt--uppercase">
-            {this.props.dateRangeOption}'s Activity
+      <Flex atomic={{m: 'Mb(rh)'}}>
+        <div>
+          <h3 className='Fw(600) Tt(u)'>
+            {this.props.dateRangeOption.label}'s Activity
           </h3>
         </div>
-        <div className="g__item w--1-2 txt--align-right">
-          <p className={clearClass}>
-            <button className="button--link"
-              onClick={this.handleClearSelection}>
-              Clear selection
-            </button>
-          </p>
-        </div>
-      </div>
+        {selectedDay && (<div className='Mstart(a)'>
+          <ButtonLink
+            onClick={this.handleClearSelection}>
+            Clear selection
+          </ButtonLink>
+        </div>)}
+      </Flex>
     )
 
     return (
       <div>
         {heading}
-        <table className={tableClasses}>
-          <thead className="cal__head">
-            <tr>{this.props.weekDays}</tr>
+        <Base tagName='table' theme={calTheme}>
+          <thead>
+            <tr>{weekDays}</tr>
           </thead>
           <tbody>
             {result}
           </tbody>
-        </table>
+        </Base>
       </div>
     )
   }

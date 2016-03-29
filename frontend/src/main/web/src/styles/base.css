@@ -69,6 +69,7 @@ html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: none;
+  color: inherit;
 }
 
 /* Reset buttons so they can be used like links */
@@ -98,4 +99,13 @@ ol:empty {
 
 dd {
   margin: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th {
+  font-weight: normal;
 }
