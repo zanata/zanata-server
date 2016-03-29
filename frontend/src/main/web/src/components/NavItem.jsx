@@ -29,7 +29,13 @@ const NavItem = ({
       hover: {
         c: 'C(white)!:h',
         bgc: 'Bgc(#fff.2):h',
-        td: 'Td(n)'
+        filter: ''
+      },
+      focus: {
+        filter: ''
+      },
+      active: {
+        filter: ''
       }
     },
     active: {
