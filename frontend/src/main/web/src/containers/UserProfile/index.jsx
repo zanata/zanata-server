@@ -75,7 +75,6 @@ var UserProfile = React.createClass({
     const languageTeams = user && !isEmpty(user.languageTeams)
       ? user.languageTeams.join() : ''
     const notification = this.state.notification
-    console.info(user.loading || this.state.loading)
     return (
       <Page>
         {notification && (<Notification

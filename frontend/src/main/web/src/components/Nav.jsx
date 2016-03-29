@@ -2,6 +2,8 @@ import React from 'react'
 import NavItem from './NavItem'
 import { flattenThemeClasses } from '../utils/styleUtils'
 
+const dswid = window.dswh.windowId ? '?' + window.dswh.windowId : ''
+
 const items = [
   {
     icon: 'zanata',
@@ -12,7 +14,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/a/#explore',
+    link: '/a/' + dswid + '#explore',
     internalLink: '/explore',
     title: 'Explore',
     auth: 'public'
@@ -55,7 +57,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/#profile',
+    link: '/a/' + dswid + '#profile',
     internalLink: '/profile',
     title: 'Profile',
     auth: 'loggedin'
@@ -74,7 +76,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/#glossary',
+    link: '/a/' + dswid + '#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin'
