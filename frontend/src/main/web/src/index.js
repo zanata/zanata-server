@@ -29,13 +29,18 @@ WebFont.load({
 
 const routerMiddleware = syncHistory(hashHistory)
 
-console.log('alex', process)
+const logger = createLogger({
+  predicate: (getState, action) =>
+  process.env && (process.env.NODE_ENV === 'development')
+})
+
+console.log('alex', process.env.NODE_ENV)
 const finalCreateStore = compose(
   applyMiddleware(
     thunk,
     apiMiddleware,
     routerMiddleware,
-    process.env === 'development' && createLogger()
+    logger
   )
   // DevTools.instrument()
 )(createStore)
