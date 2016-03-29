@@ -54,10 +54,11 @@
                 </h:selectOneMenu>
               </h:form>
             </li>
-            <li class="Pt(r1) Fz(msn1) C(muted)">
+            <li class="Pt(r1) Fz(msn1)! C(muted)">
               <h:outputText escape="false"
                 value="#{msgs.format('jsf.RunningVersionInfo',
                   msgs['jsf.Zanata'], applicationConfiguration.version,
+                  applicationConfiguration.buildTimestamp,
                   applicationConfiguration.scmDescribe)}"/>
               <br/>
               <h:outputText escape="false"
