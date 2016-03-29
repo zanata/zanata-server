@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
 import { hashHistory } from 'react-router'
-import { isEmpty, values } from 'lodash'
-import { canGoBack } from '../../utils/RoutingHelpers'
+import { isEmpty, flatMap } from 'lodash'
 import {
   Base,
   Page,
@@ -13,7 +12,8 @@ import {
   Icon,
   Button,
   TextInput,
-  TeaserList
+  TeaserList,
+  LoaderText
 } from '../../components'
 import {
   searchTextChanged,
@@ -95,6 +95,7 @@ class Explore extends Component {
   componentWillMount () {
     this.props.handleSearchPageLoad()
   }
+
   render () {
     const {
       handleSearchCancelClick,
@@ -105,6 +106,8 @@ class Explore extends Component {
       searchLoading,
       ...props
     } = this.props
+    const emptyResults = isEmpty(searchResults) ||
+      isEmpty(flatMap(searchResults, 'results'))
     return (
       <Page>
         <Helmet title='Search' />
@@ -130,10 +133,8 @@ class Explore extends Component {
         </Base>
         <ScrollView theme={scrollViewTheme}>
           <View theme={contentViewContainerTheme}>
-            {isEmpty(searchResults)
-              ? searchLoading
-                ? (<div>Loading results…</div>)
-                : searchError
+            {emptyResults
+              ? searchError
                   ? (<p>
                       Error completing search for "{searchText}".<br/>
                     {searchResults.message}. Please try again.
@@ -141,15 +142,18 @@ class Explore extends Component {
                   : (<p>No Results</p>)
               : Object.keys(searchResults).map((type, key) =>
                 {
-                  return searchResults[type].totalCount > 0
-                  ? (<TeaserList
-                      items={searchResults[type].results}
-                      title={titles[type]}
-                      totalCount={searchResults[type].totalCount}
-                      type={type}
-                      key={key}
-                      filterable={!searchText}/>
-                  )
+                  return searchLoading[type]
+                    ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
+                        size='1' loading/>)
+                    : searchResults[type].totalCount > 0
+                      ? (<TeaserList
+                          items={searchResults[type].results}
+                          title={titles[type]}
+                          totalCount={searchResults[type].totalCount}
+                          type={type}
+                          key={key}
+                          filterable={!searchText}/>
+                      )
                   : null }
               )
             }
@@ -164,8 +168,7 @@ const mapStateToProps = (state) => {
   return {
     location: state.routing.location,
     searchText: state.routing.location.query.q,
-    searchResults: state.routing.location.query.q
-      ? state.explore.results : state.explore.default,
+    searchResults: state.explore.results,
     searchError: state.explore.error,
     searchLoading: state.explore.loading
   }

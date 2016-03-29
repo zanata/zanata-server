@@ -79,18 +79,6 @@ public class SearchService {
     private static final int DEFAULT_PAGE = 1;
 
     @GET
-    public List<SearchResults> search(
-        @QueryParam("q") @DefaultValue("") String query) {
-        List<SearchResults> results = Lists.newArrayList();
-
-        results.add(searchProjects(query, DEFAULT_PAGE, MAX_RESULT));
-        results.add(searchGroups(query, DEFAULT_PAGE, MAX_RESULT));
-        results.add(searchPeople(query, DEFAULT_PAGE, MAX_RESULT));
-        results.add(searchLanguageTeams(query, DEFAULT_PAGE, MAX_RESULT));
-        return results;
-    }
-
-    @GET
     @Path("/projects")
     public SearchResults searchProjects(
         @QueryParam("q") @DefaultValue("") String query,
