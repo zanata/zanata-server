@@ -6,7 +6,6 @@ import { DateRanges } from '../../constants/Options'
 import {
   Base,
   Flex,
-  LoaderText,
   Select
 } from '../../components'
 
@@ -35,7 +34,6 @@ const classes = {
 
 const RecentContributions = ({
   dateRange,
-  loading,
   matrixForAllDays,
   dateRangeOption,
   wordCountsForSelectedDayFilteredByContentState,
@@ -44,20 +42,6 @@ const RecentContributions = ({
   selectedDay,
   ...props
 }) => {
-  const chart = loading
-    ? <LoaderText loading />
-    : (<ContributionChart
-      wordCountForEachDay={matrixForAllDays}
-      dateRangeOption={dateRangeOption} />)
-  const matrix = (
-    <FilterableMatrixTable
-      wordCountForSelectedDay={wordCountsForSelectedDayFilteredByContentState}
-      wordCountForEachDay={wordCountsForEachDayFilteredByContentState}
-      fromDate={dateRange.fromDate} toDate={dateRange.toDate}
-      dateRangeOption={dateRangeOption}
-      selectedContentState={contentStateOption}
-      selectedDay={selectedDay}
-      />)
   return (
     <Base atomic={classes.root}>
       <Flex align='c'>
@@ -65,9 +49,7 @@ const RecentContributions = ({
         <Base atomic={classes.dropDownContainer}>
           <Select
             name='dateRange'
-            placeholder={loading ? 'Loading…' : false}
             className='Flx(flx1)'
-            isLoading={loading}
             searchable={false}
             clearable={false}
             value={dateRangeOption}
@@ -76,9 +58,18 @@ const RecentContributions = ({
         </Base>
       </Flex>
       <Flex dir='c' align='c' justify='c' atomic={classes.chartContainer}>
-        {chart}
+        <ContributionChart
+          wordCountForEachDay={matrixForAllDays}
+          dateRangeOption={dateRangeOption} />
       </Flex>
-      {matrix}
+      <FilterableMatrixTable
+        wordCountForSelectedDay={wordCountsForSelectedDayFilteredByContentState}
+        wordCountForEachDay={wordCountsForEachDayFilteredByContentState}
+        fromDate={dateRange.fromDate} toDate={dateRange.toDate}
+        dateRangeOption={dateRangeOption}
+        selectedContentState={contentStateOption}
+        selectedDay={selectedDay}
+      />
     </Base>
   )
 }

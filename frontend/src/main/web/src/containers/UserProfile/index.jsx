@@ -75,6 +75,7 @@ var UserProfile = React.createClass({
     const languageTeams = user && !isEmpty(user.languageTeams)
       ? user.languageTeams.join() : ''
     const notification = this.state.notification
+    console.info(user.loading || this.state.loading)
     return (
       <Page>
         {notification && (<Notification
@@ -85,15 +86,20 @@ var UserProfile = React.createClass({
         )}
         <Helmet title='User Profile' />
         <ScrollView>
-          <Flex dir='c' atomic={classes.wrapper}>
-            <Flex dir='rr' id='profile-overview' atomic={classes.details}>
-              {!user.loading && (<Base atomic={classes.detailsAvatar}>
-                <img src={user && user.imageUrl ? user.imageUrl : ''}
-                  alt={username} />
-              </Base>)}
-              {user.loading
-                ? <LoaderText loading atomic={{w: 'W(100%)'}}/>
-                : (<Flex dir='c'
+          {user.loading || this.state.loading
+            ? (
+            <div
+              className='D(f) Ai(fs) Ac(fs) Fld(c) Jc(fs) Flw(nw) My(r3) Mx(a) Maw(20em) W(100%)'>
+              <LoaderText size='10' loading atomic={{w: 'W(100%)'}}/>
+            </div>)
+            : (
+            <Flex dir='c' atomic={classes.wrapper}>
+              <Flex dir='rr' id='profile-overview' atomic={classes.details}>
+                <Base atomic={classes.detailsAvatar}>
+                  <img src={user && user.imageUrl ? user.imageUrl : ''}
+                    alt={username} />
+                </Base>
+                <Flex dir='c'
                   id='profile-displayname'
                   atomic={classes.detailsText}>
                   <Base atomic={classes.usersName}>
@@ -106,37 +112,34 @@ var UserProfile = React.createClass({
                         title='Username'/>
                       {username}
                       {user && user.email &&
-                        (<span className='Mstart(rq) C(muted)'>
-                          {user.email}
-                        </span>)
+                      (<span className='Mstart(rq) C(muted)'>{user.email}</span>)
                       }
                     </Flex>
                     {user && !isEmpty(user.languageTeams) &&
-                      (<Flex tagName='li' align='c' id='profile-languages'>
-                        <Icon name='language'
-                          atomic={{m: 'Mend(re)'}}
-                          title='Spoken languages'/>
-                        {languageTeams}
-                      </Flex>)}
+                    (<Flex tagName='li' align='c' id='profile-languages'>
+                      <Icon name='language'
+                        atomic={{m: 'Mend(re)'}}
+                        title='Spoken languages'/>
+                      {languageTeams}
+                    </Flex>)}
                   </ul>
-                </Flex>)
-              }
-            </Flex>
-            {window.config.permission.isLoggedIn &&
+                </Flex>
+              </Flex>
+              {window.config.permission.isLoggedIn &&
               (<RecentContributions
-                loading={this.state.loading}
                 dateRangeOption={this.state.dateRangeOption}
                 matrixForAllDays={this.state.matrixForAllDays}
                 wordCountsForSelectedDayFilteredByContentState={
-                  this.state.wordCountsForSelectedDayFilteredByContentState
-                }
+                    this.state.wordCountsForSelectedDayFilteredByContentState
+                  }
                 wordCountsForEachDayFilteredByContentState={
-                  this.state.wordCountsForEachDayFilteredByContentState}
+                    this.state.wordCountsForEachDayFilteredByContentState}
                 contentStateOption={this.state.contentStateOption}
                 selectedDay={this.state.selectedDay}
                 dateRange={this.state.dateRange} />)
-            }
-          </Flex>
+              }
+            </Flex>)
+          }
         </ScrollView>
       </Page>
     )
