@@ -89,7 +89,7 @@ var UserProfile = React.createClass({
             ? (
             <div
               className='D(f) Ai(fs) Ac(fs) Fld(c) Jc(fs) Flw(nw) My(r3) Mx(a) Maw(20em) W(100%)'>
-              <LoaderText size='10' loading atomic={{w: 'W(100%)'}}/>
+              <LoaderText size='8' loading atomic={{w: 'W(100%)'}}/>
             </div>)
             : (
             <Flex dir='c' atomic={classes.wrapper}>

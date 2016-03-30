@@ -2,7 +2,9 @@ import React from 'react'
 import NavItem from './NavItem'
 import { flattenThemeClasses } from '../utils/styleUtils'
 
-const dswid = window.dswh.windowId ? '?dswid=' + window.dswh.windowId : ''
+const dswid = window.dswh && window.dswh.windowId
+  ? '?dswid=' + window.dswh.windowId
+  : ''
 
 const items = [
   {
@@ -69,17 +71,17 @@ const items = [
     auth: 'loggedin'
   },
   {
-    icon: 'admin',
-    link: '/admin/home',
-    title: 'Admin',
-    auth: 'admin'
-  },
-  {
     icon: 'glossary',
     link: '/a/' + dswid + '#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin'
+  },
+  {
+    icon: 'admin',
+    link: '/admin/home',
+    title: 'Admin',
+    auth: 'admin'
   },
   {
     icon: 'logout',

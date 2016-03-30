@@ -43,17 +43,21 @@ const TeaserList = ({
       TeaserComponent = () => (<div>Teaser</div>)
       break
   }
-  return (items.length > 0) ? (
+
+  return (
     <View theme={teaserListTheme}>
       <TeaserListHeader title={title} type={type}
         showFilter={filterable} totalCount={totalCount}/>
       <View theme={listTheme}>
-        {items.map((item, key) => (
+        {items.length <= 0
+        ? (<p>No Results</p>)
+        : (items.map((item, key) => (
           <TeaserComponent details={item} key={key}/>
-        ))}
+            )))
+        }
       </View>
     </View>
-  ) : (<span/>)
+  )
 }
 
 export default TeaserList

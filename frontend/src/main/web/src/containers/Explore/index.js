@@ -106,8 +106,66 @@ class Explore extends Component {
       searchLoading,
       ...props
     } = this.props
-    const emptyResults = isEmpty(searchResults) ||
-      isEmpty(flatMap(searchResults, 'results'))
+
+    let content
+    if (searchError) {
+      content = (<p>Error completing search for "{searchText}".<br/>
+                    {searchResults.message}. Please try again.</p>)
+    } else {
+      const projectContent = isEmpty(searchResults) && searchLoading['Project']
+        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
+        : (<TeaserList
+          items={searchResults['Project']
+            ? searchResults['Project'].results : []}
+          title='Projects'
+          totalCount={searchResults['Project']
+            ? searchResults['Project'].totalCount : '0'}
+          type='Project'
+          key='Project'
+          filterable={false}/>)
+
+      const groupContent = isEmpty(searchResults) && searchLoading['Group']
+        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
+        : (<TeaserList
+          items={searchResults['Group']
+            ? searchResults['Group'].results : []}
+          title='Groups'
+          totalCount={searchResults['Group']
+            ? searchResults['Group'].totalCount : '0'}
+          type='Group'
+          key='Group'
+          filterable={false}/>)
+
+      const personContent = isEmpty(searchResults) && searchLoading['Person']
+        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
+        : (<TeaserList
+          items={searchResults['Person']
+            ? searchResults['Person'].results : []}
+          title='People'
+          totalCount={searchResults['Person']
+            ? searchResults['Person'].totalCount : '0'}
+          type='Person'
+          key='Person'
+          filterable={false}/>)
+
+      const languageTeamContent = isEmpty(searchResults) && searchLoading['LanguageTeam']
+        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
+        : (<TeaserList
+          items={searchResults['LanguageTeam']
+            ? searchResults['LanguageTeam'].results : []}
+          title='Language Teams'
+          totalCount={searchResults['LanguageTeam']
+            ? searchResults['LanguageTeam'].totalCount : '0'}
+          type='LanguageTeam'
+          key='LanguageTeam'
+          filterable={false}/>)
+
+      content = (<div>
+                    {projectContent}
+                    {personContent}
+                    {languageTeamContent}
+                    {groupContent}</div>)
+    }
     return (
       <Page>
         <Helmet title='Search' />
@@ -133,30 +191,7 @@ class Explore extends Component {
         </Base>
         <ScrollView theme={scrollViewTheme}>
           <View theme={contentViewContainerTheme}>
-            {emptyResults
-              ? searchError
-                  ? (<p>
-                      Error completing search for "{searchText}".<br/>
-                    {searchResults.message}. Please try again.
-                  </p>)
-                  : (<p>No Results</p>)
-              : Object.keys(searchResults).map((type, key) =>
-                {
-                  return searchLoading[type]
-                    ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
-                        size='1' loading/>)
-                    : searchResults[type].totalCount > 0
-                      ? (<TeaserList
-                          items={searchResults[type].results}
-                          title={titles[type]}
-                          totalCount={searchResults[type].totalCount}
-                          type={type}
-                          key={key}
-                          filterable={!searchText}/>
-                      )
-                  : null }
-              )
-            }
+            {content}
           </View>
         </ScrollView>
       </Page>
