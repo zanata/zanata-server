@@ -2,7 +2,7 @@ import React from 'react'
 import NavItem from './NavItem'
 import { flattenThemeClasses } from '../utils/styleUtils'
 
-const dswid = window.dswh.windowId ? '?' + window.dswh.windowId : ''
+const dswid = window.dswh.windowId ? '?dswid=' + window.dswh.windowId : ''
 
 const items = [
   {
