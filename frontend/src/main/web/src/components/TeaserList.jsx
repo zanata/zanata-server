@@ -52,13 +52,13 @@ const TeaserList = ({
       <TeaserListHeader title={title} type={type}
         sizePerPage={sizePerPage} page={page}
         totalCount={totalCount} updatePage={updatePage}/>
-      <View theme={listTheme}>
+      <View theme={listTheme} id={'explore_' + type + '_result'}>
         {loading
           ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
           : items.length <= 0
           ? (<p className={'C(muted)'}>No Results</p>)
           : (items.map((item, key) => (
-            <TeaserComponent details={item} key={key}/>
+            <TeaserComponent details={item} key={key} name='entry'/>
         )))
         }
       </View>

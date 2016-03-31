@@ -20,6 +20,7 @@ const classes = {
 }
 
 const Link = ({
+  id,
   children,
   theme,
   link,
@@ -28,7 +29,7 @@ const Link = ({
 }) => {
   if (useHref) {
     return (
-      <a href={link}
+      <a href={link} id={id}
         className={flattenThemeClasses(classes, theme)} {...props}>
         {children}
       </a>
@@ -36,6 +37,7 @@ const Link = ({
   }
   return (
     <RouterLink
+      id={id}
       to={link}
       className={flattenThemeClasses(classes, theme)}
       {...props}

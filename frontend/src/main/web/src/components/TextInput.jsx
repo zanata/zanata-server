@@ -63,6 +63,7 @@ class TextInput extends Component {
   }
   render () {
     const {
+      id,
       accessibilityLabel,
       autoComplete,
       autoFocus,
@@ -105,6 +106,7 @@ class TextInput extends Component {
     }
 
     const propsCommon = {
+      id: id,
       'aria-label': accessibilityLabel,
       autoComplete: autoComplete && 'on',
       autoFocus,
@@ -132,7 +134,7 @@ class TextInput extends Component {
     }
 
     if (multiline) {
-      return <TextareaAutosize {...propsMultiline} />
+      return <TextareaAutosize  {...propsMultiline} />
     } else {
       return <input {...propsSingleline}/>
     }

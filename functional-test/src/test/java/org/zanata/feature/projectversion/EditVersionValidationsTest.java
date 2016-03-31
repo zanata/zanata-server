@@ -68,8 +68,9 @@ public class EditVersionValidationsTest extends ZanataTestCase {
 
         versionTranslationTab = versionTranslationTab
                 .goToHomePage()
-                .goToProjects()
-                .goToProject("about fedora")
+                .gotoExplore()
+                .enterSearch("about fedora")
+                .clickProjectEntry("about fedora")
                 .gotoVersion("master")
                 .gotoSettingsTab()
                 .gotoSettingsTranslationTab();

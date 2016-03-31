@@ -84,8 +84,9 @@ public class AddLanguageTest extends ZanataTestCase {
 
         List<String> enabledLocaleList = languagesPage
                 .goToHomePage()
-                .goToProjects()
-                .goToProject("about fedora")
+                .gotoExplore()
+                .enterSearch("about fedora")
+                .clickProjectEntry("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
                 .getEnabledLocaleList();
@@ -126,8 +127,9 @@ public class AddLanguageTest extends ZanataTestCase {
                 .as("The language is disabled by default");
 
         ProjectLanguagesTab projectLanguagesTab = languagesPage.goToHomePage()
-                .goToProjects()
-                .goToProject("about fedora")
+                .gotoExplore()
+                .enterSearch("about fedora")
+                .clickProjectEntry("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab();
         List<String> enabledLocaleList = projectLanguagesTab.getEnabledLocaleList();

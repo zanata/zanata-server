@@ -16,7 +16,7 @@
         <div class="D(f) Ai(fs) Ac(fs) Fld(c) Jc(fs) Flw(nw) Fz(ms1)--md My(r2) Mx(a) Maw(20em) W(100%)">
           <ul class="W(100%) list--no-bullets">
             <li class="Py(rq) Bdb(bd1) Bdc(light)">
-              <a href="#{applicationConfigurationAction.helpUrl}"
+              <a href="#{applicationConfigurationAction.helpUrl}" id="more_help"
                 class="C(pri) Td(n) Trs(aeo) Brightness(.75):h Brightness(.75):f Brightness(.5):a" target="_blank">
                 #{msgs['jsf.Help']}</a>
             </li>
@@ -38,7 +38,7 @@
             <ui:fragment rendered="#{identity.loggedIn}">
               <ui:include src="/WEB-INF/layout/admin/contact_admin_modal.xhtml"/>
               <li class="Py(rq)">
-                <a href="#" data-toggle="modal" data-target="#contactAdminDialog"
+                <a href="#" data-toggle="modal" data-target="#contactAdminDialog" id="more_contact_admin"
                   class="C(pri) Td(n) Trs(aeo) Brightness(.75):h Brightness(.75):f Brightness(.5):a">
                   #{msgs['jsf.ContactAdmin']}</a>
               </li>

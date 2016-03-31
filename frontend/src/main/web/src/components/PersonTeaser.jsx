@@ -13,6 +13,7 @@ const viewTheme = {
 
 const UserTeaser = ({
   children,
+  name,
   details,
   ...props
 }) => {
@@ -34,7 +35,7 @@ const UserTeaser = ({
     )
     : undefined
   return (
-    <View theme={viewTheme}>
+    <View theme={viewTheme} name={name}>
       <View theme={{ base: {ai: 'Ai(c)', fld: 'Fld(r)'} }}>
         <img
           src={details.avatarUrl}

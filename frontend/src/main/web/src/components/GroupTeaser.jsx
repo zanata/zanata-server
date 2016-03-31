@@ -13,6 +13,7 @@ const viewTheme = {
 
 const GroupTeaser = ({
   details,
+  name,
   children,
   ...props
 }) => {
@@ -58,7 +59,7 @@ const GroupTeaser = ({
     ? window.config.baseUrl + '/version-group/view/' + details.id
     : 'groups/' + details.id
   return (
-    <View theme={viewTheme}>
+    <View theme={viewTheme} name={name}>
       {/* <View className='Mend(rh)'>
         TODO: Statistics Donut here
       </View> */}

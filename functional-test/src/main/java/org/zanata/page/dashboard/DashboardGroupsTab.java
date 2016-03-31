@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2016, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,42 +18,31 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.page.groups;
 
-import com.google.common.base.Predicate;
+package org.zanata.page.dashboard;
+
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.zanata.page.BasePage;
+import org.zanata.page.groups.CreateVersionGroupPage;
+import org.zanata.page.groups.VersionGroupPage;
 import org.zanata.util.WebElementUtil;
 
 import java.util.List;
 
 /**
- * @author Patrick Huang <a
- *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
+ * @author Alex Eng<a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Slf4j
-public class VersionGroupsPage extends BasePage {
+public class DashboardGroupsTab extends BasePage {
     public static final int GROUP_NAME_COLUMN = 0;
-    public static final int GROUP_DESCRIPTION_COLUMN = 1;
-    public static final int GROUP_TIMESTAMP_COLUMN = 2;
-    public static final int GROUP_STATUS_COLUMN = 3;
 
     private By groupTable = By.id("groupForm:groupTable");
-    private By infomsg = By.className("infomsg.icon-info-circle-2");
-    private By createGroupButton = By.id("group-create");
-    private By toggleArchived = By.id("groupForm:showObsolete");
-    private By archiveLink = By.className("obsolete_link");
+    private By createGroupButton = By.id("create-group-link");
 
-    public VersionGroupsPage(WebDriver driver) {
+    public DashboardGroupsTab(WebDriver driver) {
         super(driver);
-    }
-
-    public List<String> getGroupNames() {
-        return WebElementUtil.getColumnContents(getDriver(), groupTable,
-                GROUP_NAME_COLUMN);
     }
 
     public CreateVersionGroupPage createNewGroup() {
@@ -62,28 +51,16 @@ public class VersionGroupsPage extends BasePage {
         return new CreateVersionGroupPage(getDriver());
     }
 
+    public List<String> getGroupNames() {
+        return WebElementUtil.getColumnContents(getDriver(), groupTable,
+            GROUP_NAME_COLUMN);
+    }
+
     public VersionGroupPage goToGroup(String groupName) {
         log.info("Click group {}", groupName);
         clickElement(readyElement(groupTable).findElement(By.linkText(groupName)));
         return new VersionGroupPage(getDriver());
     }
 
-    public VersionGroupsPage toggleArchived(final boolean show) {
-        WebElement showArchived = readyElement(toggleArchived);
-        if (show != showArchived.isSelected()) {
-            showArchived.click();
-        }
-        waitForAMoment().until((Predicate<WebDriver>) webDriver ->
-                readyElement(groupTable)
-                        .findElements(archiveLink)
-                        .isEmpty() == !show);
-        return new VersionGroupsPage(getDriver());
-    }
-
-    public String getInfoMessage() {
-        log.info("Test info msg");
-        log.info(readyElement(infomsg).getText());
-        return readyElement(infomsg).getText();
-    }
 
 }

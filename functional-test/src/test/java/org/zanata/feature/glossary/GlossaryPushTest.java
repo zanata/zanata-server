@@ -78,8 +78,9 @@ public class GlossaryPushTest extends ZanataTestCase {
 
         EditorPage editorPage = new LoginWorkFlow()
                 .signIn("admin", "admin")
-                .goToProjects()
-                .goToProject("about fedora")
+                .gotoExplore()
+                .enterSearch("about fedora")
+                .clickProjectEntry("about fedora")
                 .gotoVersion("master")
                 .translate("fr", "About_Fedora");
 

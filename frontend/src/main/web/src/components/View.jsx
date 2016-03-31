@@ -11,6 +11,7 @@ const classes = {
 }
 
 const View = ({
+  name,
   items,
   children,
   theme,

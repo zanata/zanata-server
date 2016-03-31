@@ -14,6 +14,7 @@ const viewTheme = {
 
 const LanguageTeamTeaser = ({
   children,
+  name,
   details,
   ...props
 }) => {
@@ -26,7 +27,7 @@ const LanguageTeamTeaser = ({
     : 'language/' + details.id
 
   return (
-    <View theme={viewTheme}>
+    <View theme={viewTheme} name={name}>
       <View theme={{ base: {fld: 'Fld(r)'} }}>
         <Link link={link} useHref={useHref}
           theme={{ base: { fw: 'Fw(600)' } }}>

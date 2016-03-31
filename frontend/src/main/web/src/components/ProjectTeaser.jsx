@@ -13,6 +13,7 @@ const viewTheme = {
 
 const ProjectTeaser = ({
   details,
+  name,
   children,
   ...props
 }) => {
@@ -62,7 +63,7 @@ const ProjectTeaser = ({
     ? window.config.baseUrl + '/project/view/' + details.id
     : 'projects/' + details.id
   return (
-    <View theme={viewTheme}>
+    <View theme={viewTheme} name={name}>
       {/* <View className='Mend(rh)'>
         TODO: Statistics Donut here
       </View> */}

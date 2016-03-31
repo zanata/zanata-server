@@ -183,6 +183,7 @@ class Explore extends Component {
             <Icon name='search' atomic={iconClasses}/>
             <TextInput
               autoFocus
+              id='explore_search'
               type='search'
               placeholder='Search Zanata…'
               accessibilityLabel='Search Zanata'

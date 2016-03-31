@@ -12,49 +12,40 @@ const items = [
     link: '/',
     href: '/',
     title: 'Zanata',
-    auth: 'public'
+    auth: 'public',
+    id: 'nav_home'
   },
   {
     icon: 'search',
     link: '/a/' + dswid + '#explore',
     internalLink: '/explore',
     title: 'Explore',
-    auth: 'public'
+    auth: 'public',
+    id: 'nav_search'
   },
   {
     small: true,
     icon: 'import',
     link: '/login',
     title: 'Log In',
-    auth: 'loggedout'
+    auth: 'loggedout',
+    id: 'nav_login'
   },
   {
     small: true,
     icon: 'upload',
     link: '/signup',
     title: 'Sign Up',
-    auth: 'loggedout'
+    auth: 'loggedout',
+    id: 'nav_sign_up'
   },
   {
     small: true,
-    icon: 'statistics',
-    link: '/dashboard/activity',
-    title: 'Activity',
-    auth: 'loggedin'
-  },
-  {
-    small: true,
-    icon: 'project',
-    link: '/dashboard/projects',
-    title: 'Projects',
-    auth: 'loggedin'
-  },
-  {
-    small: true,
-    icon: 'folder',
-    link: '/dashboard/groups',
-    title: 'Groups',
-    auth: 'loggedin'
+    icon: 'dashboard',
+    link: '/dashboard',
+    title: 'Dashboard',
+    auth: 'loggedin',
+    id: 'nav_dashboard'
   },
   {
     small: true,
@@ -62,39 +53,52 @@ const items = [
     link: '/a/' + dswid + '#profile',
     internalLink: '/profile',
     title: 'Profile',
-    auth: 'loggedin'
-  },
-  {
-    icon: 'settings',
-    link: '/dashboard/settings',
-    title: 'Settings',
-    auth: 'loggedin'
+    auth: 'loggedin',
+    id: 'nav_profile'
   },
   {
     icon: 'glossary',
     link: '/a/' + dswid + '#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
-    auth: 'loggedin'
+    auth: 'loggedin',
+    id: 'nav_glossary'
+  },
+  {
+    icon: 'language',
+    link: '/language/list',
+    title: 'Languages',
+    auth: 'loggedin',
+    id: 'nav_language'
+  },
+  {
+    icon: 'settings',
+    link: '/dashboard/settings',
+    title: 'Settings',
+    auth: 'loggedin',
+    id: 'nav_settings'
   },
   {
     icon: 'admin',
     link: '/admin/home',
     title: 'Admin',
-    auth: 'admin'
+    auth: 'admin',
+    id: 'nav_admin'
   },
   {
     icon: 'logout',
     link: '/account/sign_out',
     title: 'Log Out',
-    auth: 'loggedin'
+    auth: 'loggedin',
+    id: 'nav_logout'
   },
   {
     small: true,
     icon: 'ellipsis',
     link: '/a/more',
     title: 'More',
-    auth: 'public'
+    auth: 'public',
+    id: 'nav_more'
   }
 ]
 const classes = {
@@ -149,6 +153,7 @@ const Nav = ({
 
           const useHref = legacy ? true : (item.internalLink ? false : true)
           return (<NavItem key={itemId}
+            id={item.id}
             small={item.small}
             active={active.indexOf(link) >= 0}
             link={link}

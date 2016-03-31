@@ -3,6 +3,7 @@ import { Link, NavIcon } from './'
 import { merge } from 'lodash'
 
 const NavItem = ({
+  id,
   link,
   small,
   icon,
@@ -60,12 +61,12 @@ const NavItem = ({
       classes.base,
       active && !logo ? classes.active : {},
       small ? classes.small : {},
-      search ? classes.search : {},
+      search ? classes.search : {}
     )
   }
   const text = logo ? (<span className='Hidden'>{title}</span>) : title
   return (
-    <Link {...props} link={link} theme={themeClasses} useHref={useHref}>
+    <Link {...props} id={id} link={link} theme={themeClasses} useHref={useHref}>
       <NavIcon name={icon} size={logo ? '6' : '1'} />
       {text}
     </Link>

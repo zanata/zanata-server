@@ -13,7 +13,7 @@ fs.readdir(iconsSrc, function (err, files) {
     return fileName ? fileName[1] : undefined
   }).filter(file => file)
   const iconsFile =
-    `module.exports = [${fileNames.map(file => `'${file}'`)}]`
+    `module.exports = [${fileNames.map(file => `'${file}'`)}]\r\n`
   fs.writeFile(iconsFileName, iconsFile, (err) => {
     if (err) throw err
     console.log('Icon file list saved')
