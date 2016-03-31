@@ -1,5 +1,5 @@
 import React from 'react' // eslint-disable-line
-import View from '../components/View'
+import { View, LoaderText } from '../components'
 import TeaserListHeader from '../components/TeaserListHeader'
 import ProjectTeaser from '../components/ProjectTeaser'
 import GroupTeaser from '../components/GroupTeaser'
@@ -12,7 +12,10 @@ const TeaserList = ({
   totalCount,
   items,
   type,
-  filterable,
+  sizePerPage,
+  page,
+  updatePage,
+  loading,
   ...props
 }) => {
   let TeaserComponent
@@ -47,13 +50,16 @@ const TeaserList = ({
   return (
     <View theme={teaserListTheme}>
       <TeaserListHeader title={title} type={type}
-        showFilter={filterable} totalCount={totalCount}/>
+        sizePerPage={sizePerPage} page={page}
+        totalCount={totalCount} updatePage={updatePage}/>
       <View theme={listTheme}>
-        {items.length <= 0
-        ? (<p>No Results</p>)
-        : (items.map((item, key) => (
-          <TeaserComponent details={item} key={key}/>
-            )))
+        {loading
+          ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
+          : items.length <= 0
+          ? (<p className={'C(muted)'}>No Results</p>)
+          : (items.map((item, key) => (
+            <TeaserComponent details={item} key={key}/>
+        )))
         }
       </View>
     </View>

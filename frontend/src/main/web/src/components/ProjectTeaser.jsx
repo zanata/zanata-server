@@ -26,7 +26,7 @@ const ProjectTeaser = ({
         No description available
       </div>
     )
-  const metaData = details.owner ? (
+  const metaData = details.owner && (
     <View
       theme={{
         base: {
@@ -56,7 +56,7 @@ const ProjectTeaser = ({
         {details.contributorCount}
       </Link>
     </View>
-  ) : undefined
+  )
   const useHref = true
   const link = useHref
     ? window.config.baseUrl + '/project/view/' + details.id

@@ -1,15 +1,16 @@
 import React from 'react' // eslint-disable-line
 import View from '../components/View'
 import Heading from '../components/Heading'
-import Icon from '../components/Icon'
-// import { flattenClasses } from '../utils'
+import {Icon, ButtonLink} from '../components'
 
 const TeaserListHeader = ({
   children,
   title,
   type,
   totalCount,
-  showFilter,
+  sizePerPage,
+  page,
+  updatePage,
   ...props
 }) => {
   const viewTheme = {
@@ -17,30 +18,42 @@ const TeaserListHeader = ({
       fld: ''
     }
   }
+
   const icons = {
     Project: 'project',
     LanguageTeam: 'language',
     Person: 'user',
     Group: 'folder'
   }
-  const headerTitle = showFilter ? 'Most Active ' + title : title
+  const totalPage = Math.floor(totalCount / sizePerPage) +
+    (totalCount % sizePerPage > 0 ? 1 : 0)
   const headerIcon = type
     ? <Icon name={icons[type]} theme={{ base: { m: 'Mend(rq)' } }}/> : null
+  const currentPage = page ? parseInt(page) : 1
   return (
     <View theme={viewTheme}>
       {headerIcon}
       <Heading
         level='2'
-        theme={{ base: { c: 'C(dark)', tt: 'Tt(u)' } }}
-      >
-        {headerTitle}
-        <span className='C(muted) Mstart(rq)'>{totalCount}</span>
-      </Heading>
-      {showFilter ? (
-        <span select className='Lh(1) Tt(u) Mstart(rq) C(pri) D(f) Ai(c)'>
-          This Week <Icon name='chevron-down' />
+        theme={{ base: { c: 'C(dark)', tt: 'Tt(u)' } }}>
+        {title}
+        <span className='C(muted) Mstart(rq)' title='Total records'>
+          {totalCount}
         </span>
-      ) : undefined}
+      </Heading>
+      {totalPage > 1 && (
+        <div className='Lh(1) Mstart(rh) C(pri) D(f) Ai(c)'>
+          <ButtonLink disabled={currentPage === 1}
+            onClick={() => { updatePage(type, currentPage, totalPage, false) }}>
+            <Icon name='chevron-left' size='1' />
+          </ButtonLink>
+          <span className='C(muted) Mx(re)'>{currentPage} of {totalPage}</span>
+          <ButtonLink disabled={currentPage === totalPage}
+            onClick={() => { updatePage(type, currentPage, totalPage, true)}}>
+            <Icon name='chevron-right' size='1' />
+          </ButtonLink>
+        </div>
+      )}
     </View>
   )
 }

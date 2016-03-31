@@ -20,13 +20,17 @@
  */
 package org.zanata.rest.search.service;
 
-import com.google.common.collect.Lists;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.apache.lucene.queryParser.ParseException;
+import org.zanata.common.EntityStatus;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.VersionGroupDAO;
+import org.zanata.model.HIterationGroup;
+import org.zanata.model.HProject;
 import org.zanata.rest.search.dto.GroupSearchResult;
 import org.zanata.rest.search.dto.LanguageTeamSearchResult;
 import org.zanata.rest.search.dto.PersonSearchResult;
@@ -42,7 +46,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,14 +82,13 @@ public class SearchService {
     private VersionGroupDAO versionGroupDAO;
 
     private static final int MAX_RESULT = 20;
-    private static final int DEFAULT_PAGE = 1;
 
     @GET
     @Path("/projects")
-    public SearchResults searchProjects(
-        @QueryParam("q") @DefaultValue("") String query,
-        @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+    public Response searchProjects(
+            @QueryParam("q") @DefaultValue("") String query,
+            @DefaultValue("1") @QueryParam("page") int page,
+            @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
         sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
             ((sizePerPage < 1) ? 1 : sizePerPage);
@@ -91,48 +96,71 @@ public class SearchService {
         int offset = (page - 1) * sizePerPage;
 
         try {
-            int totalCount = projectDAO.getQueryProjectSize(query, false);
-            List<SearchResult> results =
-                projectDAO.searchProjects(query, sizePerPage, offset, false)
-                    .stream().map(p -> {
-                    ProjectSearchResult result = new ProjectSearchResult();
-                    result.setId(p.getSlug());
-                    result.setTitle(p.getName());
-                    result.setDescription(p.getDescription());
-                    // TODO is contributor count feasible?
-                    return result;
-                }).collect(Collectors.toList());
-            return new SearchResults(totalCount, results, SearchResult.SearchResultType.Project);
+            int totalCount;
+            List<HProject> projects;
+            if (StringUtils.isEmpty(query)) {
+                totalCount = projectDAO.getFilterProjectSize(false, true, true);
+                projects = projectDAO.getOffsetList(offset, sizePerPage, false,
+                        true, true);
+            } else {
+                totalCount = projectDAO.getQueryProjectSize(query, false);
+                projects =
+                        projectDAO.searchProjects(query, sizePerPage, offset,
+                                false);
+            }
+            List<SearchResult> results = projects.stream().map(p -> {
+                ProjectSearchResult result = new ProjectSearchResult();
+                result.setId(p.getSlug());
+                result.setTitle(p.getName());
+                result.setDescription(p.getDescription());
+                // TODO: include contributor count when data is available
+                return result;
+            }).collect(Collectors.toList());
+            SearchResults searchResults = new SearchResults(totalCount, results,
+                SearchResult.SearchResultType.Project);
+            return Response.ok(searchResults).build();
+            
         } catch (ParseException e) {
-            // TODO Handle better
-            throw new RuntimeException(e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .build();
         }
     }
 
     @GET
     @Path("/groups")
-    public SearchResults searchGroups(
-        @QueryParam("q") @DefaultValue("") String query,
-        @DefaultValue("1") @QueryParam("page") int page,
-        @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
+    public Response searchGroups(
+            @QueryParam("q") @DefaultValue("") String query,
+            @DefaultValue("1") @QueryParam("page") int page,
+            @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
         sizePerPage = (sizePerPage > MAX_RESULT) ? MAX_RESULT :
             ((sizePerPage < 1) ? 1 : sizePerPage);
         page = page < 1 ? 1 : page;
         int offset = (page - 1) * sizePerPage;
 
-        int totalCount = versionGroupDAO.searchGroupBySlugAndNameCount(query);
 
-        List<SearchResult> results = versionGroupDAO
-            .searchGroupBySlugAndName(query, sizePerPage, offset)
-            .stream().map(g -> {
+        int totalCount;
+        List<HIterationGroup> groups;
+        if (StringUtils.isEmpty(query)) {
+            totalCount = versionGroupDAO.getAllGroupsCount();
+            groups = versionGroupDAO.getAllGroups(sizePerPage, offset,
+                    new EntityStatus[] { EntityStatus.ACTIVE });
+        } else {
+            totalCount = versionGroupDAO.searchGroupBySlugAndNameCount(query);
+            groups = versionGroupDAO
+                    .searchGroupBySlugAndName(query, sizePerPage, offset);
+        }
+        List<SearchResult> results = groups.stream().map(g -> {
                 GroupSearchResult result = new GroupSearchResult();
                 result.setId(g.getSlug());
                 result.setTitle(g.getName());
                 result.setDescription(g.getDescription());
                 return result;
             }).collect(Collectors.toList());
-        return new SearchResults(totalCount, results, SearchResult.SearchResultType.Group);
+
+        SearchResults searchResults = new SearchResults(totalCount, results,
+                SearchResult.SearchResultType.Group);
+        return Response.ok(searchResults).build();
     }
 
     @GET

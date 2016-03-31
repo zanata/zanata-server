@@ -17,7 +17,9 @@ import {
 } from '../../components'
 import {
   searchTextChanged,
-  searchPageLoaded
+  searchPageLoaded,
+  updateSearchPage,
+  SIZE_PER_PAGE
 } from '../../actions/explore'
 
 const headerClasses = {
@@ -84,13 +86,6 @@ const contentViewContainerTheme = {
   }
 }
 
-const titles = {
-  Project: 'Projects',
-  LanguageTeam: 'Language Teams',
-  Person: 'People',
-  Group: 'Groups'
-}
-
 class Explore extends Component {
   componentWillMount () {
     this.props.handleSearchPageLoad()
@@ -100,7 +95,12 @@ class Explore extends Component {
     const {
       handleSearchCancelClick,
       handleSearchTextChange,
+      handleUpdateSearchPage,
       searchText,
+      projectPage,
+      groupPage,
+      personPage,
+      languageTeamPage,
       searchResults,
       searchError,
       searchLoading,
@@ -112,59 +112,67 @@ class Explore extends Component {
       content = (<p>Error completing search for "{searchText}".<br/>
                     {searchResults.message}. Please try again.</p>)
     } else {
-      const projectContent = isEmpty(searchResults) && searchLoading['Project']
-        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
-        : (<TeaserList
-          items={searchResults['Project']
+      const projectContent = (<TeaserList
+        loading={isEmpty(searchResults) && searchLoading['Project']}
+        items={searchResults['Project']
             ? searchResults['Project'].results : []}
-          title='Projects'
-          totalCount={searchResults['Project']
-            ? searchResults['Project'].totalCount : '0'}
-          type='Project'
-          key='Project'
-          filterable={false}/>)
+        title='Projects'
+        totalCount={searchResults['Project']
+            ? searchResults['Project'].totalCount : 0}
+        type='Project'
+        key='Project'
+        sizePerPage={SIZE_PER_PAGE}
+        updatePage={handleUpdateSearchPage}
+        page={projectPage}/>)
 
-      const groupContent = isEmpty(searchResults) && searchLoading['Group']
-        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
-        : (<TeaserList
-          items={searchResults['Group']
+      const groupContent = (<TeaserList
+        loading={isEmpty(searchResults) && searchLoading['Group']}
+        items={searchResults['Group']
             ? searchResults['Group'].results : []}
-          title='Groups'
-          totalCount={searchResults['Group']
-            ? searchResults['Group'].totalCount : '0'}
-          type='Group'
-          key='Group'
-          filterable={false}/>)
+        title='Groups'
+        totalCount={searchResults['Group']
+            ? searchResults['Group'].totalCount : 0}
+        type='Group'
+        key='Group'
+        sizePerPage={SIZE_PER_PAGE}
+        updatePage={handleUpdateSearchPage}
+        page={groupPage}/>)
 
-      const personContent = isEmpty(searchResults) && searchLoading['Person']
-        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
-        : (<TeaserList
+      const personContent = searchText &&
+        (<TeaserList
+          loading={isEmpty(searchResults) && searchLoading['Person']}
           items={searchResults['Person']
             ? searchResults['Person'].results : []}
           title='People'
           totalCount={searchResults['Person']
-            ? searchResults['Person'].totalCount : '0'}
+            ? searchResults['Person'].totalCount : 0}
           type='Person'
           key='Person'
-          filterable={false}/>)
+          sizePerPage={SIZE_PER_PAGE}
+          updatePage={handleUpdateSearchPage}
+          page={personPage}/>)
 
-      const languageTeamContent = isEmpty(searchResults) && searchLoading['LanguageTeam']
-        ? (<LoaderText theme={{ base: { fz: 'Fz(ms1)' } }} size='1' loading/>)
-        : (<TeaserList
+      const languageTeamContent = searchText &&
+        (<TeaserList
+          loading={isEmpty(searchResults) && searchLoading['LanguageTeam']}
           items={searchResults['LanguageTeam']
             ? searchResults['LanguageTeam'].results : []}
           title='Language Teams'
           totalCount={searchResults['LanguageTeam']
-            ? searchResults['LanguageTeam'].totalCount : '0'}
+            ? searchResults['LanguageTeam'].totalCount : 0}
           type='LanguageTeam'
           key='LanguageTeam'
-          filterable={false}/>)
+          sizePerPage={SIZE_PER_PAGE}
+          updatePage={handleUpdateSearchPage}
+          page={languageTeamPage}/>)
 
-      content = (<div>
-                    {projectContent}
-                    {personContent}
-                    {languageTeamContent}
-                    {groupContent}</div>)
+      content = (
+        <div>
+            {projectContent}
+            {personContent}
+            {languageTeamContent}
+            {groupContent}
+        </div>)
     }
     return (
       <Page>
@@ -203,6 +211,10 @@ const mapStateToProps = (state) => {
   return {
     location: state.routing.location,
     searchText: state.routing.location.query.q,
+    projectPage: state.routing.location.query.projectPage,
+    groupPage: state.routing.location.query.groupPage,
+    personPage: state.routing.location.query.personPage,
+    languageTeamPage: state.routing.location.query.languageTeamPage,
     searchResults: state.explore.results,
     searchError: state.explore.error,
     searchLoading: state.explore.loading
@@ -221,6 +233,9 @@ const mapDispatchToProps = (dispatch, {
     },
     handleSearchPageLoad: () => {
       dispatch(searchPageLoaded())
+    },
+    handleUpdateSearchPage: (type, currentPage, totalPage, next) => {
+      dispatch(updateSearchPage(type, currentPage, totalPage, next))
     }
   }
 }

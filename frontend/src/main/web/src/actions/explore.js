@@ -24,9 +24,14 @@ export const SEARCH_GROUP_REQUEST = 'SEARCH_GROUP_REQUEST'
 export const SEARCH_GROUP_SUCCESS = 'SEARCH_GROUP_SUCCESS'
 export const SEARCH_GROUP_FAILURE = 'SEARCH_GROUP_FAILURE'
 
-export const getSearchProjectResults = (searchText) => {
+export const SIZE_PER_PAGE = 10
+
+export const getSearchProjectResults = (searchText, page) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/projects?q=' + searchText
+    '/search/projects?' +
+    'sizePerPage=' + SIZE_PER_PAGE +
+    '&page=' + (page ? page : '1') +
+    (searchText ? '&q=' + searchText : '')
   return {
     [CALL_API]: {
       endpoint,
@@ -54,9 +59,13 @@ export const getSearchProjectResults = (searchText) => {
   }
 }
 
-export const getSearchLanguageTeamResults = (searchText) => {
+export const getSearchLanguageTeamResults = (searchText, page) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/teams/language?q=' + searchText
+    '/search/teams/language?' +
+    'sizePerPage=' + SIZE_PER_PAGE +
+    '&page=' + (page ? page : '1') +
+    (searchText ? '&q=' + searchText : '')
+
   return {
     [CALL_API]: {
       endpoint,
@@ -84,9 +93,13 @@ export const getSearchLanguageTeamResults = (searchText) => {
   }
 }
 
-export const getSearchPeopleResults = (searchText) => {
+export const getSearchPeopleResults = (searchText, page) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/people?q=' + searchText
+    '/search/people?'+
+    'sizePerPage=' + SIZE_PER_PAGE +
+    '&page=' + (page ? page : '1') +
+    (searchText ? '&q=' + searchText : '')
+
   return {
     [CALL_API]: {
       endpoint,
@@ -114,9 +127,13 @@ export const getSearchPeopleResults = (searchText) => {
   }
 }
 
-export const getSearchGroupResults = (searchText) => {
+export const getSearchGroupResults = (searchText, page) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/groups?q=' + searchText
+    '/search/groups?'+
+    'sizePerPage=' + SIZE_PER_PAGE +
+    '&page=' + (page ? page : '1') +
+    (searchText ? '&q=' + searchText : '')
+
   return {
     [CALL_API]: {
       endpoint,
@@ -144,29 +161,84 @@ export const getSearchGroupResults = (searchText) => {
   }
 }
 
-const search = (dispatch, searchText) => {
+const search = (dispatch, searchText, projectPage, groupPage, personPage, languagePage) => {
+  dispatch(getSearchProjectResults(searchText, projectPage))
+  dispatch(getSearchGroupResults(searchText, groupPage))
   if (searchText) {
-    dispatch(getSearchProjectResults(searchText))
-    dispatch(getSearchLanguageTeamResults(searchText))
-    dispatch(getSearchPeopleResults(searchText))
-    dispatch(getSearchGroupResults(searchText))
-  } else {
-    dispatch(searchDefaultReturned())
+    dispatch(getSearchLanguageTeamResults(searchText, languagePage))
+    dispatch(getSearchPeopleResults(searchText, personPage))
   }
 }
 
 export const searchPageLoaded = () => {
   return (dispatch, getState) => {
-    const searchText = getState().routing.location.query.q
-    search(dispatch, searchText)
+    const query = getState().routing.location.query
+    const searchText = query.q
+    const projectPage = query.projectPage
+    const groupPage = query.groupPage
+    const personPage = query.personPage
+    const languageTeamPage = query.languageTeamPage
+    search(dispatch, searchText, projectPage,
+        groupPage, personPage, languageTeamPage)
   }
 }
 
 export const searchTextChanged = (searchText) => {
   return (dispatch, getState) => {
-    replaceRouteQuery(getState().routing.location, {
-      q: searchText
-    })
-    search(dispatch, searchText)
+    if (getState().routing.location !== searchText) {
+      replaceRouteQuery(getState().routing.location, {
+        q: searchText,
+        projectPage: null,
+        groupPage: null,
+        personPage: null,
+        languageTeamPage: null
+      })
+      const query = getState().routing.location.query
+      const projectPage = query.projectPage
+      const groupPage = query.groupPage
+      const personPage = query.personPage
+      const languageTeamPage = query.languageTeamPage
+      search(dispatch, searchText, projectPage,
+        groupPage, personPage, languageTeamPage)
+    }
+  }
+}
+
+const queryPageType = {
+  'Project': 'projectPage',
+  'Group': 'groupPage',
+  'Person': 'personPage',
+  'LanguageTeam': 'languageTeamPage'
+}
+
+export const updateSearchPage = (type, currentPage, totalPage, next) => {
+  const intCurrentPage = parseInt(currentPage)
+  const newPage = next
+    ? (intCurrentPage + 1) > totalPage ? totalPage : intCurrentPage + 1
+    : (intCurrentPage - 1) < 1 ? 1 : intCurrentPage - 1
+
+  const typePage = queryPageType[type]
+  return (dispatch, getState) => {
+    let queryObj = {}
+    queryObj[typePage] = newPage
+    replaceRouteQuery(getState().routing.location, queryObj)
+    const searchText = getState().routing.location.query.q
+
+    switch (type) {
+      case 'Project':
+        dispatch(getSearchProjectResults(searchText, newPage))
+        break
+      case 'Group':
+        dispatch(getSearchGroupResults(searchText, newPage))
+        break
+      case 'Person':
+        dispatch(getSearchPeopleResults(searchText, newPage))
+        break
+      case 'LanguageTeam':
+        dispatch(getSearchLanguageTeamResults(searchText, newPage))
+        break
+      default:
+        break
+    }
   }
 }
