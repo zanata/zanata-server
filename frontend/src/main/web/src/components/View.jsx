@@ -17,7 +17,7 @@ const View = ({
   theme,
   ...props
 }) => (
-  <div
+  <div name={name}
     className={flattenThemeClasses(classes, theme)}
     {...props}
   >

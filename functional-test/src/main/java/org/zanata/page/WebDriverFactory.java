@@ -421,6 +421,10 @@ public enum WebDriverFactory {
         dswidParamChecker.clear();
     }
 
+    public String getDswid() {
+        return dswidParamChecker.getOldDswid();
+    }
+
     public <T> T ignoringDswid(Supplier<T> supplier) {
         dswidParamChecker.stopChecking();
         try {

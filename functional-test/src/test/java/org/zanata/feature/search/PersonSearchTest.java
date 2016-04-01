@@ -85,14 +85,16 @@ public class PersonSearchTest extends ZanataTestCase {
     }
 
     @Feature(summary = "The user can access another user's profile via the URL",
-            tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
+        tcmsTestPlanIds = 5316, tcmsTestCaseIds = 0)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void viewProfileViaUrl() throws Exception {
-        ProfilePage profilePage = new BasicWorkFlow()
-                .goToPage("a/#/profile/translator", ProfilePage.class);
-
+        BasicWorkFlow basicWorkFlow = new BasicWorkFlow();
+        String dswid = basicWorkFlow.getDswid();
+        ProfilePage profilePage = basicWorkFlow
+            .goToPage("a/?dswid=" + dswid + "#/profile/translator",
+                ProfilePage.class);
         assertThat(profilePage.getUsername().trim())
-                .isEqualTo("translator");
+            .isEqualTo("translator");
     }
 
     @Feature(summary = "A logged user can see another user's contributions",

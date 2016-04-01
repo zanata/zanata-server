@@ -37,7 +37,6 @@ import org.zanata.rest.search.dto.PersonSearchResult;
 import org.zanata.rest.search.dto.ProjectSearchResult;
 import org.zanata.rest.search.dto.SearchResult;
 import org.zanata.rest.search.dto.SearchResults;
-import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GravatarService;
 
 import javax.enterprise.context.RequestScoped;
@@ -77,10 +76,6 @@ public class SearchService {
     @Inject
     private VersionGroupDAO versionGroupDAO;
 
-    @Inject
-    private ZanataIdentity identity;
-
-
     private static final int MAX_RESULT = 20;
 
     @GET
@@ -95,9 +90,8 @@ public class SearchService {
         try {
             int totalCount;
             List<HProject> projects;
-            boolean filterOutReadOnly = identity != null && identity.hasRole("admin") ? false : true;
             if (StringUtils.isEmpty(query)) {
-                totalCount = projectDAO.getFilterProjectSize(false, filterOutReadOnly, true);
+                totalCount = projectDAO.getFilterProjectSize(false, false, true);
                 projects = projectDAO.getOffsetList(offset,
                         validatePageSize(sizePerPage), false,
                         true, true);

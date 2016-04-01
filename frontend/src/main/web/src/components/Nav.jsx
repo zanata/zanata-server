@@ -128,9 +128,12 @@ const Nav = ({
   const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
 
+  const username = window.config.user ? window.config.user.username : ''
   return (
     <nav
       {...props}
+      id='nav'
+      title={username}
       className={flattenThemeClasses(classes)}>
       {items.map((item, itemId) => {
         if (((item.auth === 'public') || (item.auth === authState) ||
@@ -159,6 +162,7 @@ const Nav = ({
             link={link}
             useHref={useHref}
             icon={item.icon}
+            tooltip={item.tooltip}
             title={item.title}/>)
         }
         return null

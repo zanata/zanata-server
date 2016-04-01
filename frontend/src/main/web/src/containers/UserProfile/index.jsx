@@ -98,10 +98,8 @@ var UserProfile = React.createClass({
                   <img src={user && user.imageUrl ? user.imageUrl : ''}
                     alt={username} />
                 </Base>
-                <Flex dir='c'
-                  id='profile-displayname'
-                  atomic={classes.detailsText}>
-                  <Base atomic={classes.usersName}>
+                <Flex dir='c' atomic={classes.detailsText}>
+                  <Base atomic={classes.usersName} id='profile-displayname'>
                     {user && user.name ? user.name : ''}
                   </Base>
                   <ul className='Fz(msn1)'>

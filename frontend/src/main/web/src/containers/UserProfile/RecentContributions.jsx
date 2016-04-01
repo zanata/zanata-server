@@ -43,7 +43,7 @@ const RecentContributions = ({
   ...props
 }) => {
   return (
-    <Base atomic={classes.root}>
+    <Base atomic={classes.root} id='profile-matrix'>
       <Flex align='c'>
         <Base tagName='h2' atomic={classes.heading}>Recent Contributions</Base>
         <Base atomic={classes.dropDownContainer}>

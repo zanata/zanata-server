@@ -48,6 +48,10 @@ public class BasicWorkFlow extends AbstractWebWorkFlow {
         });
     }
 
+    public String getDswid() {
+        return WebDriverFactory.INSTANCE.getDswid();
+    }
+
     private String toUrl(String relativeUrl) {
         return hostUrl + removeLeadingSlash(relativeUrl);
     }

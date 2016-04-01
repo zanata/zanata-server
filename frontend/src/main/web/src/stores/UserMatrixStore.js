@@ -216,7 +216,7 @@ function filterByContentStateAndDay (listOfMatrices, selectedContentState,
 
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function (username) {
-    if (_state.user.username !== username) {
+    if (_state.user && _state.user.username !== username) {
       _state.user.username = username
       loadUserInfo().then(function (userInfo) {
         _state.user = userInfo
