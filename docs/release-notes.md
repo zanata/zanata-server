@@ -1,3 +1,7 @@
+## 3.8.4
+<h5>Bug fixes</h5>
+* [ZNTA-959](https://zanata.atlassian.net/browse/ZNTA-959) - Copy version fails silently and leaves version readonly
+
 ## 3.8.3
 <h5>Bug fixes</h5>
 * [ZNTA-953](https://zanata.atlassian.net/browse/ZNTA-953) - Fix delete version
