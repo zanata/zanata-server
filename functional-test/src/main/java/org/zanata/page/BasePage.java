@@ -116,7 +116,7 @@ public class BasePage extends CorePage {
 
     public String loggedInAs() {
         log.info("Query logged in user name");
-        return existingElement(NAV).getAttribute("title");
+        return existingElement(NAV).getAttribute("name");
     }
 
     public HomePage logout() {
@@ -155,7 +155,7 @@ public class BasePage extends CorePage {
      * @return boolean is valid
      */
     public boolean isPageValid() {
-        return (getDriver().findElements(By.id("nav_home"))).size() > 0;
+        return (getDriver().findElements(By.id("nav"))).size() > 0;
     }
 
 }

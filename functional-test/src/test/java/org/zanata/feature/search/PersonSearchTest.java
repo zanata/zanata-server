@@ -89,10 +89,11 @@ public class PersonSearchTest extends ZanataTestCase {
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
     public void viewProfileViaUrl() throws Exception {
         BasicWorkFlow basicWorkFlow = new BasicWorkFlow();
-        String dswid = basicWorkFlow.getDswid();
         ProfilePage profilePage = basicWorkFlow
-            .goToPage("a/?dswid=" + dswid + "#/profile/translator",
-                ProfilePage.class);
+            .goToHome()
+            .gotoExplore()
+            .enterSearch("translator")
+            .clickUserSearchEntry("translator");
         assertThat(profilePage.getUsername().trim())
             .isEqualTo("translator");
     }

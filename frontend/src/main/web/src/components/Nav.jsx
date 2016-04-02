@@ -133,7 +133,7 @@ const Nav = ({
     <nav
       {...props}
       id='nav'
-      title={username}
+      name={username}
       className={flattenThemeClasses(classes)}>
       {items.map((item, itemId) => {
         if (((item.auth === 'public') || (item.auth === authState) ||
