@@ -69,7 +69,7 @@ public class VersionGroupTest extends ZanataTestCase {
             .saveGroup();
 
         assertThat(versionGroupPage.getGroupName().trim())
-            .isEqualTo("groupName")
+            .isEqualTo(groupName)
             .as("The group name is correct");
     }
 
@@ -140,7 +140,7 @@ public class VersionGroupTest extends ZanataTestCase {
             .saveGroup();
 
         assertThat(versionGroupPage.getGroupName().trim())
-            .isEqualTo("groupName")
+            .isEqualTo(groupName)
             .as("A group description of 100 chars is valid");
     }
 

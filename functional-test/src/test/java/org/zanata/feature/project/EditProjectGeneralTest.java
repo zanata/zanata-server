@@ -21,6 +21,7 @@
 package org.zanata.feature.project;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.zanata.feature.Feature;
@@ -49,6 +50,8 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .as("Admin is logged in");
     }
 
+
+    @Ignore("Duplicate test with setAProjectToWritable")
     @Feature(summary = "The administrator can set a project to read-only",
             tcmsTestPlanIds = 5316, tcmsTestCaseIds = 135848)
     @Test(timeout = ZanataTestCase.MAX_SHORT_TEST_DURATION)
@@ -88,8 +91,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
         ExplorePage explorePage = new BasicWorkFlow()
                 .goToHome()
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsGeneral()
                 .unlockProject()
@@ -114,8 +116,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .enterProjectName(replacementText)
                 .updateProject()
                 .gotoExplore()
-                .enterSearch("replacementText")
-                .clickProjectEntry("replacementText");
+                .searchAndGotoProjectByName(replacementText);
 
         assertThat(projectVersionsPage.getProjectName())
                 .isEqualTo(replacementText)
@@ -178,8 +179,7 @@ public class EditProjectGeneralTest extends ZanataTestCase {
                 .enterRepository("http://git.example.com")
                 .updateProject()
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora");
+                .searchAndGotoProjectByName("about fedora");
 
         assertThat(projectVersionsPage.getHomepage())
                 .isEqualTo("http://www.example.com")

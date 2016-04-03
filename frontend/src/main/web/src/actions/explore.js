@@ -1,12 +1,8 @@
-import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
 import { normalize } from 'normalizr'
 import { SEARCH_RESULTS } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import { getJsonHeaders } from './common'
-
-export const EMPTY_SEARCH = 'EMPTY_SEARCH'
-export const searchDefaultReturned = createAction(EMPTY_SEARCH)
 
 export const SEARCH_PROJECT_REQUEST = 'SEARCH_PROJECT_REQUEST'
 export const SEARCH_PROJECT_SUCCESS = 'SEARCH_PROJECT_SUCCESS'
@@ -26,12 +22,24 @@ export const SEARCH_GROUP_FAILURE = 'SEARCH_GROUP_FAILURE'
 
 export const SIZE_PER_PAGE = 10
 
-export const getSearchProjectResults = (searchText, page) => {
-  const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/projects?' +
+const getEndpoint = (type, page, searchText) => {
+  return window.config.baseUrl + window.config.apiRoot + '/search/' +
+    type + '?' +
     'sizePerPage=' + SIZE_PER_PAGE +
     '&page=' + (page ? page : '1') +
     (searchText ? '&q=' + searchText : '')
+}
+
+const handleCallbacks = (callbacks, dispatch, searchText, pages) => {
+  if (callbacks) {
+    const callback = callbacks[0]
+    dispatch(callback(dispatch, searchText, pages,
+      callbacks.splice(1)))
+  }
+}
+
+const getSearchProjectResults = (dispatch, searchText, pages, callbacks) => {
+  const endpoint = getEndpoint('projects', pages.projectPage, searchText)
   return {
     [CALL_API]: {
       endpoint,
@@ -45,6 +53,7 @@ export const getSearchProjectResults = (searchText, page) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
+                handleCallbacks(callbacks, dispatch, searchText, pages)
                 return json
               })
             }
@@ -59,13 +68,8 @@ export const getSearchProjectResults = (searchText, page) => {
   }
 }
 
-export const getSearchLanguageTeamResults = (searchText, page) => {
-  const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/teams/language?' +
-    'sizePerPage=' + SIZE_PER_PAGE +
-    '&page=' + (page ? page : '1') +
-    (searchText ? '&q=' + searchText : '')
-
+const getSearchLanguageTeamResults = (dispatch, searchText, pages, callbacks) => {
+  const endpoint = getEndpoint('teams/language', pages.languagePage, searchText)
   return {
     [CALL_API]: {
       endpoint,
@@ -79,6 +83,7 @@ export const getSearchLanguageTeamResults = (searchText, page) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
+                handleCallbacks(callbacks, dispatch, searchText, pages)
                 return json
               })
             }
@@ -93,13 +98,8 @@ export const getSearchLanguageTeamResults = (searchText, page) => {
   }
 }
 
-export const getSearchPeopleResults = (searchText, page) => {
-  const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/people?'+
-    'sizePerPage=' + SIZE_PER_PAGE +
-    '&page=' + (page ? page : '1') +
-    (searchText ? '&q=' + searchText : '')
-
+const getSearchPeopleResults = (dispatch, searchText, pages, callbacks) => {
+  const endpoint = getEndpoint('people', pages.personPage, searchText)
   return {
     [CALL_API]: {
       endpoint,
@@ -113,6 +113,7 @@ export const getSearchPeopleResults = (searchText, page) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
+                handleCallbacks(callbacks, dispatch, searchText, pages)
                 return json
               })
             }
@@ -127,13 +128,8 @@ export const getSearchPeopleResults = (searchText, page) => {
   }
 }
 
-export const getSearchGroupResults = (searchText, page) => {
-  const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/search/groups?'+
-    'sizePerPage=' + SIZE_PER_PAGE +
-    '&page=' + (page ? page : '1') +
-    (searchText ? '&q=' + searchText : '')
-
+const getSearchGroupResults = (dispatch, searchText, pages, callbacks) => {
+  const endpoint = getEndpoint('groups', pages.groupPage, searchText)
   return {
     [CALL_API]: {
       endpoint,
@@ -147,6 +143,7 @@ export const getSearchGroupResults = (searchText, page) => {
             const contentType = res.headers.get('Content-Type')
             if (contentType && ~contentType.indexOf('json')) {
               return res.json().then((json) => {
+                handleCallbacks(callbacks, dispatch, searchText, pages)
                 return json
               })
             }
@@ -161,26 +158,22 @@ export const getSearchGroupResults = (searchText, page) => {
   }
 }
 
-const search = (dispatch, searchText, projectPage, groupPage, personPage, languagePage) => {
-  dispatch(getSearchProjectResults(searchText, projectPage))
-  dispatch(getSearchGroupResults(searchText, groupPage))
+const search = (dispatch, searchText, pages) => {
   if (searchText) {
-    dispatch(getSearchLanguageTeamResults(searchText, languagePage))
-    dispatch(getSearchPeopleResults(searchText, personPage))
+    dispatch(getSearchProjectResults(dispatch, searchText, pages,
+      [getSearchGroupResults, getSearchLanguageTeamResults,
+        getSearchPeopleResults]))
+  } else {
+    dispatch(getSearchProjectResults(dispatch, searchText, pages,
+      [getSearchGroupResults]))
   }
 }
 
-export const searchPageLoaded = () => {
-  return (dispatch, getState) => {
-    const query = getState().routing.location.query
-    const searchText = query.q
-    const projectPage = query.projectPage
-    const groupPage = query.groupPage
-    const personPage = query.personPage
-    const languageTeamPage = query.languageTeamPage
-    search(dispatch, searchText, projectPage,
-        groupPage, personPage, languageTeamPage)
-  }
+const queryPageType = {
+  'Project': 'projectPage',
+  'Group': 'groupPage',
+  'Person': 'personPage',
+  'LanguageTeam': 'languageTeamPage'
 }
 
 export const searchTextChanged = (searchText) => {
@@ -198,17 +191,11 @@ export const searchTextChanged = (searchText) => {
       const groupPage = query.groupPage
       const personPage = query.personPage
       const languageTeamPage = query.languageTeamPage
-      search(dispatch, searchText, projectPage,
-        groupPage, personPage, languageTeamPage)
+
+      search(dispatch, searchText, {projectPage,
+        groupPage, personPage, languageTeamPage})
     }
   }
-}
-
-const queryPageType = {
-  'Project': 'projectPage',
-  'Group': 'groupPage',
-  'Person': 'personPage',
-  'LanguageTeam': 'languageTeamPage'
 }
 
 export const updateSearchPage = (type, currentPage, totalPage, next) => {
@@ -224,21 +211,44 @@ export const updateSearchPage = (type, currentPage, totalPage, next) => {
     replaceRouteQuery(getState().routing.location, queryObj)
     const searchText = getState().routing.location.query.q
 
+    const query = getState().routing.location.query
+    const projectPage = query.projectPage
+    const groupPage = query.groupPage
+    const personPage = query.personPage
+    const languageTeamPage = query.languageTeamPage
+
     switch (type) {
       case 'Project':
-        dispatch(getSearchProjectResults(searchText, newPage))
+        dispatch(getSearchProjectResults(dispatch, searchText,
+          {projectPage: newPage, groupPage, personPage, languageTeamPage}))
         break
       case 'Group':
-        dispatch(getSearchGroupResults(searchText, newPage))
+        dispatch(getSearchGroupResults(dispatch, searchText,
+          {projectPage, groupPage: newPage, personPage, languageTeamPage}))
         break
       case 'Person':
-        dispatch(getSearchPeopleResults(searchText, newPage))
+        dispatch(getSearchPeopleResults(dispatch, searchText,
+          {projectPage, groupPage, personPage: newPage, languageTeamPage}))
         break
       case 'LanguageTeam':
-        dispatch(getSearchLanguageTeamResults(searchText, newPage))
+        dispatch(getSearchLanguageTeamResults(dispatch, searchText,
+          {projectPage, groupPage, personPage, languageTeamPage: newPage}))
         break
       default:
         break
     }
+  }
+}
+
+export const searchPageLoaded = () => {
+  return (dispatch, getState) => {
+    const query = getState().routing.location.query
+    const searchText = query.q
+    const projectPage = query.projectPage
+    const groupPage = query.groupPage
+    const personPage = query.personPage
+    const languageTeamPage = query.languageTeamPage
+    search(dispatch, searchText, {projectPage,
+      groupPage, personPage, languageTeamPage})
   }
 }

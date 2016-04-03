@@ -85,13 +85,16 @@ module.exports = {
       'M(rq)',
       'Maw(20em)',
       'Mstart(r1)',
+      'Mih(maxc)',
       'Miw(r6)',
       'My(r2)',
       'Ov(a)',
       'Ovx(h)',
+      'Ovx(s)',
       'Ovs(touch)',
       'Ov(h)',
       'Pt(rq)',
+      'Pt(0)!',
       'Tt(c)',
       'W(r6)'
     ]

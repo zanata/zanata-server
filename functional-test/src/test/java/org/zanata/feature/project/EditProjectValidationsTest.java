@@ -82,8 +82,7 @@ public class EditProjectValidationsTest extends ZanataTestCase {
 
         projectTranslationTab = projectTranslationTab.goToHomePage()
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsTranslationTab();
 

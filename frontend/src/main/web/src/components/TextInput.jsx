@@ -61,6 +61,12 @@ class TextInput extends Component {
     }
     if (onSelectionChange) onSelectionChange(event)
   }
+
+  _onKeyDown (e) {
+    const { onKeyDown } = this.props
+    if (onKeyDown) onKeyDown(e)
+  }
+
   render () {
     const {
       id,
@@ -77,6 +83,7 @@ class TextInput extends Component {
       onBlur,
       onChange,
       onChangeText,
+      onKeyDown,
       onSelectionChange,
       placeholder,
       secureTextEntry = false,
@@ -117,6 +124,7 @@ class TextInput extends Component {
       onChange: (onChange || onChangeText) && this._onChange.bind(this),
       onFocus: this._onFocus.bind(this),
       onSelect: onSelectionChange && this._onSelectionChange.bind(this),
+      onKeyDown: (onKeyDown) && this._onKeyDown.bind(this),
       placeholder,
       readOnly: !editable,
       value
@@ -155,6 +163,7 @@ TextInput.propTypes = {
   multiline: PropTypes.bool,
   numberOfLines: PropTypes.number,
   onBlur: PropTypes.func,
+  onKeyDown: PropTypes.func,
   onChange: PropTypes.func,
   onChangeText: PropTypes.func,
   onFocus: PropTypes.func,

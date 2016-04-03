@@ -214,7 +214,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const updateFilter = debounce(val =>
+  const updateFilter = debounce((val) =>
     dispatch(glossaryFilterTextChanged(val)), 200)
 
   return {

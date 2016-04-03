@@ -57,7 +57,11 @@ public class ExplorePage extends BasePage {
     public ExplorePage enterSearch(String searchText) {
         log.info("Enter Explore search {}", searchText);
         existingElement(searchInput).sendKeys(searchText);
-        waitForPageSilence();
+        waitForAMoment().withMessage("Waiting for search complete").until(
+                (Predicate<WebDriver>) webDriver -> !isProjectSearchLoading()
+                        && !isGroupSearchLoading()
+                        && !isLanguageTeamSearchLoading()
+                        && !isPersonSearchLoading());
         return new ExplorePage(getDriver());
     }
 
@@ -92,6 +96,27 @@ public class ExplorePage extends BasePage {
     public List<String> getUserSearchResults() {
         log.info("Query User search results list");
         return getResultText(personResult);
+    }
+
+    public boolean isProjectSearchLoading() {
+        return isSearchLoading(projectResult);
+    }
+
+    public boolean isGroupSearchLoading() {
+        return isSearchLoading(groupResult);
+    }
+
+    public boolean isPersonSearchLoading() {
+        return isSearchLoading(personResult);
+    }
+
+    public boolean isLanguageTeamSearchLoading() {
+        return isSearchLoading(languageTeamResult);
+    }
+
+    private boolean isSearchLoading(By by) {
+        return !existingElement(by)
+            .findElements(By.name("loader")).isEmpty();
     }
 
     private List<String> getResultText(By by) {
@@ -138,5 +163,14 @@ public class ExplorePage extends BasePage {
             }
         }
         return new ProjectVersionsPage(getDriver());
+    }
+
+    public ProjectVersionsPage searchAndGotoProjectByName(String projectName) {
+        log.info("go to project by name with name: {}", projectName);
+        if (getProjectSearchResults().contains(projectName)) {
+            return clickProjectEntry(projectName);
+        } else {
+            return enterSearch(projectName).clickProjectEntry(projectName);
+        }
     }
 }

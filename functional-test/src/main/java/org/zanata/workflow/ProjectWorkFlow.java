@@ -54,8 +54,8 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
         ExplorePage explorePage = goToHome().gotoExplore();
 
         explorePage = explorePage.enterSearch(projectName);
-        if (!explorePage.getProjectSearchResults()
-            .isEmpty()) {
+        if (!explorePage.getProjectSearchResults().isEmpty() &&
+            explorePage.getProjectSearchResults().contains(projectName)) {
             log.warn("{} already exists. This test environment is not clean.",
                 projectId);
             // since we can't create same project multiple times,
@@ -147,16 +147,13 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
 
     public ProjectVersionsPage goToProjectByName(String projectName) {
         ExplorePage explorePage = goToHome().gotoExplore();
-        log.info("go to project by name with name: {}", projectName);
-        return explorePage.enterSearch(projectName).clickProjectEntry(projectName);
+        return explorePage.searchAndGotoProjectByName(projectName);
     }
 
     public ProjectPermissionsTab addMaintainer(String projectName,
-                                               final String username) {
-        ProjectPermissionsTab projectPermissionsTab = goToHome()
-                .gotoExplore()
-                .enterSearch(projectName)
-                .clickProjectEntry(projectName)
+        final String username) {
+        ProjectPermissionsTab projectPermissionsTab =
+            goToProjectByName(projectName)
                 .gotoSettingsTab()
                 .gotoSettingsPermissionsTab()
                 .enterSearchMaintainer(username)
@@ -166,17 +163,14 @@ public class ProjectWorkFlow extends AbstractWebWorkFlow {
     }
 
     public ProjectPermissionsTab removeMaintainer(String projectName,
-            final String username) {
+        final String username) {
         ProjectPermissionsTab projectPermissionsTab =
-                new BasicWorkFlow().goToHome()
-                        .gotoExplore()
-                        .enterSearch(projectName)
-                        .clickProjectEntry(projectName)
-                        .gotoSettingsTab()
-                        .gotoSettingsPermissionsTab();
+            goToProjectByName(projectName)
+                .gotoSettingsTab()
+                .gotoSettingsPermissionsTab();
 
         projectPermissionsTab.clickRemoveOn(username)
-                .expectMaintainersNotContains(username);
+            .expectMaintainersNotContains(username);
 
         return new ProjectPermissionsTab(driver);
     }

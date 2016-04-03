@@ -58,8 +58,7 @@ public class EditPermissionsTest extends ZanataTestCase {
         ProjectPermissionsTab projectPermissionsTab = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsPermissionsTab();
 
@@ -82,8 +81,7 @@ public class EditPermissionsTest extends ZanataTestCase {
         ProjectPermissionsTab projectPermissionsTab = new LoginWorkFlow()
                 .signIn("admin", "admin")
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsPermissionsTab();
 
@@ -113,8 +111,7 @@ public class EditPermissionsTest extends ZanataTestCase {
         assertThat(new LoginWorkFlow()
                 .signIn("translator", "translator")
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .settingsTabIsDisplayed())
                 .isTrue()
                 .as("The settings tab is now available to the user");
@@ -162,8 +159,7 @@ public class EditPermissionsTest extends ZanataTestCase {
         ProjectVersionsPage projectVersionsPage = new LoginWorkFlow()
                 .signIn("glossarist", "glossarist")
                 .gotoExplore()
-                .enterSearch("addmaintainer")
-                .clickProjectEntry("addmaintainer");
+                .searchAndGotoProjectByName("addmaintainer");
 
         assertThat(projectVersionsPage.settingsTabIsDisplayed())
                 .isTrue()
@@ -236,8 +232,7 @@ public class EditPermissionsTest extends ZanataTestCase {
         ProjectVersionsPage projectVersionsPage = projectBasePage
                 .goToHomePage()
                 .gotoExplore()
-                .enterSearch("removemaintainer")
-                .clickProjectEntry("removemaintainer");
+                .searchAndGotoProjectByName("removemaintainer");
 
 
         assertThat(projectVersionsPage.settingsTabIsDisplayed())

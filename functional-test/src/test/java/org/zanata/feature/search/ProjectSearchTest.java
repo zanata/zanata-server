@@ -31,6 +31,8 @@ import org.zanata.page.projects.ProjectBasePage;
 import org.zanata.workflow.BasicWorkFlow;
 import org.zanata.workflow.LoginWorkFlow;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -83,8 +85,7 @@ public class ProjectSearchTest extends ZanataTestCase {
     public void userCannotSearchDeleteProject() throws Exception {
         new LoginWorkFlow().signIn("admin", "admin")
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsGeneral()
                 .deleteProject()

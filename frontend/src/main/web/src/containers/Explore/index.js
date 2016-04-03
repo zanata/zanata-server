@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
-import { isEmpty, flatMap } from 'lodash'
+import { isEmpty, debounce } from 'lodash'
 import {
   Base,
   Page,
@@ -89,6 +88,12 @@ const contentViewContainerTheme = {
 class Explore extends Component {
   componentWillMount () {
     this.props.handleSearchPageLoad()
+  }
+
+  handleKeyDown (e) {
+    if (e.key === 'Escape') {
+      this.props.handleSearchCancelClick()
+    }
   }
 
   render () {
@@ -189,6 +194,7 @@ class Explore extends Component {
               accessibilityLabel='Search Zanata'
               theme={inputTheme}
               value={searchText}
+              onKeyDown={(e) => { this.handleKeyDown(e) }}
               onChange={handleSearchTextChange}
             />
             <Button
@@ -222,15 +228,16 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, {
-  history
-}) => {
+const mapDispatchToProps = (dispatch) => {
+  const updateSearchText = debounce((val) =>
+    dispatch(searchTextChanged(val)), 200)
+
   return {
     handleSearchCancelClick: () => {
       dispatch(searchTextChanged(''))
     },
     handleSearchTextChange: (event) => {
-      dispatch(searchTextChanged(event.target.value))
+      updateSearchText(event.target.value || '')
     },
     handleSearchPageLoad: () => {
       dispatch(searchPageLoaded())

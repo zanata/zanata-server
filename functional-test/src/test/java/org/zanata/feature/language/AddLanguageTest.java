@@ -85,8 +85,7 @@ public class AddLanguageTest extends ZanataTestCase {
         List<String> enabledLocaleList = languagesPage
                 .goToHomePage()
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab()
                 .getEnabledLocaleList();
@@ -128,8 +127,7 @@ public class AddLanguageTest extends ZanataTestCase {
 
         ProjectLanguagesTab projectLanguagesTab = languagesPage.goToHomePage()
                 .gotoExplore()
-                .enterSearch("about fedora")
-                .clickProjectEntry("about fedora")
+                .searchAndGotoProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsLanguagesTab();
         List<String> enabledLocaleList = projectLanguagesTab.getEnabledLocaleList();

@@ -122,9 +122,9 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
                 .addRule(Join.path("/tm/create").to("/tm/create.xhtml"))
                 .addRule(Join.path("/version-group/create").to("/version-group/create_version_group.xhtml"))
                 .addRule(Join.path("/version-group/list").to("/version-group/home.xhtml"))
-                .addRule(Join.path("/version-group/view/{versionGroupSlug}").to("/version-group/version_group.xhtml"))
+                .addRule(Join.path("/version-group/view/{slug}").to("/version-group/version_group.xhtml"))
 
-                .addRule(Join.path("/version-group/view/{versionGroupSlug}/{section}").to("/version-group/version_group.xhtml"))
+                .addRule(Join.path("/version-group/view/{slug}/{section}").to("/version-group/version_group.xhtml"))
                 .where("section").matches(".*")
 
                 .addRule(Join.path("/webtrans/Application.html").to("/webtrans/Application.xhtml")).when(Direction.isInbound())

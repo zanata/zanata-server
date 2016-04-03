@@ -12,8 +12,7 @@ import {
   SEARCH_PEOPLE_FAILURE,
   SEARCH_GROUP_REQUEST,
   SEARCH_GROUP_SUCCESS,
-  SEARCH_GROUP_FAILURE,
-  EMPTY_SEARCH
+  SEARCH_GROUP_FAILURE
 } from '../actions/explore'
 
 export default handleActions({
@@ -109,20 +108,6 @@ export default handleActions({
     newState.loading.Group = false
     newState.results.Group = action.payload
     newState.error = true
-    return {
-      ...newState
-    }
-  },
-  [EMPTY_SEARCH]: (state, action) => {
-    let newState = cloneDeep(state)
-    newState.results = {}
-    newState.error = false
-    newState.loading = {
-      Project: false,
-      LanguageTeam: false,
-      Person: false,
-      Group: false
-    }
     return {
       ...newState
     }
