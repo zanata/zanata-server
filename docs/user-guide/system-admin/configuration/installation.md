@@ -24,19 +24,13 @@ The following packages are optional, but recommended:
 
 You can run Zanata on JBoss EAP 6 or Wildfly. Just download one of the installer archives below for your platform, and then extract it on top of your JBoss or Wildfly installation.
 
-- [Zanata for JBoss EAP](http://sourceforge.net/projects/zanata/files/installer/zanata-3.6.0-eap-6.zip/download)
-- [Zanata for Wildfly](http://sourceforge.net/projects/zanata/files/installer/zanata-3.6.0-wildfly-8.1.zip/download)
+- [Zanata for JBoss EAP or Wildfly](https://github.com/zanata/zanata-server/releases)
 
-## Run the installer
+## Modify the configuration properties
 
-Zanata comes bundled with an installer that helps with some of the initial setup. Simply run the following commands on a shell terminal:
+Zanata comes bundled with a configuration file to make it easy to set initial properties. You should modify these properties in:
 
-```sh
-$ cd <JBOSS>/bin/zanata-installer
-$ ./install.sh
-```
-
-(there's also a .bat file if you are on Windows) The installation script will start asking some configuration questions. It will also download the Zanata web application and place it in the JBoss installation.
+`<JBOSS>/bin/zanata.properties`
 
 ## Editing standalone.xml yourself
 

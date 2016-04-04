@@ -1,1 +1,1 @@
-standalone.bat -c standalone-zanata.xml
+standalone.bat -c standalone-zanata.xml -P=zanata.properties

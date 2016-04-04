@@ -1,1 +1,1 @@
-./standalone.sh -c standalone-zanata.xml
+./standalone.sh -c standalone-zanata.xml -P=zanata.properties
