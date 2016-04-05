@@ -34,7 +34,7 @@ You will also find `war` archives. Don't download these unless you wish to manua
 
 Zanata comes bundled with a configuration file to make it easy to set initial properties. You should modify these properties in:
 
-`<JBOSS>/bin/zanata.properties`
+`<JBOSS>/standalone/configuration/zanata.properties`
 
 ## Editing standalone.xml yourself
 
@@ -118,8 +118,10 @@ Any other value will be treated as the name of a virus scanner command: the comm
 
 Go to the `<JBOSS>/bin` directory and run
 
-* `standalone.sh -c standalone-zanata.xml` or `start-zanata.sh` for Linux, Mac
-* `standalone.bat -c standalone-zanata.xml` or `start-zanata.bat` for Windows
+* `standalone-zanata.sh` for Linux, Mac
+* `standalone-zanata.bat` for Windows
+
+_Please make sure these are ran from the `<JBOSS>/bin` directory. These scripts are shortcuts which internally use JBoss' standalone running scripts._
 
 ## Using Zanata
 
