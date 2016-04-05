@@ -5,7 +5,7 @@ This modules builds an overlay zip for distribution. The produced artifact is a
 zip file which can be extracted on top of an EAP or wildfly distribution and will
 contain all the necessary artifacts for Zanata to run.
 
-It's built using gradle, which is assumed to ge present in the environment.
+It's built using gradle, which is assumed to be present in the environment.
 
 To build the overlay simply run:
 
