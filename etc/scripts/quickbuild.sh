@@ -1,6 +1,7 @@
 #!/bin/bash
 #set -x
 
+gwtMode="-Dchromefirefox"
 while getopts "cfh:" opt; do
   case ${opt} in
     c)
