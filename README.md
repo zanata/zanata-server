@@ -28,6 +28,16 @@ Zanata is Free software, licensed under the [LGPL][].
 Developers
 ----------
 
+*Prerequisites*
+
+You will need:
+- Java SDK 8 (OpenJDK recommended)
+- npm
+- Mysql or MariaDB
+- JBoss EAP 6 or Wildfly
+
+*Scripts*
+
 You can use one of the scripts to build the project using maven:
 
 [`etc/scripts/quickbuild.sh`](etc/scripts/quickbuild.sh) - Builds the project
