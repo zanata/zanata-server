@@ -46,6 +46,11 @@
 <h5>Bug fixes</h5>
 * [ZNTA-953](https://zanata.atlassian.net/browse/ZNTA-953) - Fix delete version
 
+<h5>New Features</h5>
+* [ZNTA-938](https://zanata.atlassian.net/browse/ZNTA-938) - Webhook event for translation update by user.
+
+-----------------------
+
 ## 3.8.2
 <h5>Bug fixes</h5>
 * [ZNTA-854](https://zanata.atlassian.net/browse/ZNTA-854) - Fast scrolling(infinite scroll) in glossary table not loading data

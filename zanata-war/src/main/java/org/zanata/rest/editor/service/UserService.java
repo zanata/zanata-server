@@ -92,7 +92,8 @@ public class UserService implements UserResource {
     /**
      * Generate {@link org.zanata.rest.dto.User} object from HAccount
      *
-     * @param username - username in HPerson
+     * @param account - HAccount
+     * @param includeEmail - display user email or not
      */
     public User transferToUser(HAccount account, boolean includeEmail) {
         if(account == null) {
