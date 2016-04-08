@@ -28,7 +28,7 @@ Zanata is Free software, licensed under the [LGPL][].
 Developers
 ----------
 
-*Prerequisites*
+### Prerequisites
 
 You will need:
 - Java SDK 8 (OpenJDK recommended)
@@ -36,9 +36,9 @@ You will need:
 - Mysql or MariaDB
 - JBoss EAP 6 or Wildfly
 
-*Scripts*
+### Building
 
-You can use one of the scripts to build the project using maven:
+#### Quickly build a .war file
 
 [`etc/scripts/quickbuild.sh`](etc/scripts/quickbuild.sh) - Builds the project
 as quickly as possible, targeting both Firefox and Chrome when building GWT
@@ -48,6 +48,8 @@ If you wish to build GWT components for chrome or firefox only, you can specify 
 `-c` and `-f` arguments respectively.
 
 The `-h` argument prints the script's help.
+
+#### Build and run a server for testing
 
 [`etc/scripts/cargowait.sh`](etc/scripts/cargowait.sh) - Builds the Zanata artifact
 and starts a JBoss server using the cargo plugin. This script is particularly
