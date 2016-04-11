@@ -55,6 +55,7 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
@@ -403,12 +404,22 @@ public class CopyTransWorkFactory {
         // TODO how was this not causing duplicate events?  Is this bypassing TranslationServiceImpl?
         // FIXME other observers may not be notified
         HDocument document = target.getTextFlow().getDocument();
-        TextFlowTargetStateEvent updateEvent =
-                new TextFlowTargetStateEvent(null, document
-                        .getProjectIteration().getId(), document.getId(),
-                        target.getTextFlow().getId(), target.getLocaleId(),
-                        target.getId(), target.getState(), previousState);
-        versionStateCacheImpl.textFlowStateUpdated(updateEvent);
+
+        TextFlowTargetStateEvent.DocumentLocaleKey key =
+            new TextFlowTargetStateEvent.DocumentLocaleKey(null,
+                document.getProjectIteration().getId(), document.getId(),
+                target.getLocaleId());
+
+        TextFlowTargetStateEvent.TextFlowTargetState state =
+            new TextFlowTargetStateEvent.TextFlowTargetState(
+                target.getTextFlow().getId(),
+                target.getId(), target.getState(),
+                previousState);
+
+        TextFlowTargetStateEvent event =
+            new TextFlowTargetStateEvent(key, state);
+
+        versionStateCacheImpl.textFlowStateUpdated(event);
     }
 
     /**

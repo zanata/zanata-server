@@ -21,9 +21,15 @@
 
 package org.zanata.events;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nullable;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 
@@ -32,16 +38,37 @@ import org.zanata.common.LocaleId;
  *         href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  *
  */
-@Value
+@AllArgsConstructor
 public final class TextFlowTargetStateEvent {
-    // this may be null in the case of document uploads
-    private final @Nullable
-    Long actorId;
-    private final Long projectIterationId;
-    private final Long documentId;
-    private final Long textFlowId;
-    private final LocaleId localeId;
-    private final Long textFlowTargetId;
-    private final ContentState newState;
-    private final ContentState previousState;
+    @Getter
+    private final DocumentLocaleKey key;
+
+    @Getter
+    private final List<TextFlowTargetState> states;
+
+    public TextFlowTargetStateEvent(DocumentLocaleKey key, TextFlowTargetState state) {
+        this.key = key;
+        this.states = Arrays.asList(state);
+    }
+
+    @Getter
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    public static final class TextFlowTargetState implements Serializable {
+        private final Long textFlowId;
+        private final Long textFlowTargetId;
+        private final ContentState newState;
+        private final ContentState previousState;
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @Getter
+    public static final class DocumentLocaleKey implements Serializable {
+        // this may be null in the case of document uploads
+        private final @Nullable Long actorId;
+        private final Long projectIterationId;
+        private final Long documentId;
+        private final LocaleId localeId;
+    }
 }

@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import javax.enterprise.context.RequestScoped;
@@ -184,24 +185,34 @@ public class ActivityServiceImpl implements ActivityService {
     public void logTextFlowStateUpdate(@Observes(during = TransactionPhase.AFTER_SUCCESS) TextFlowTargetStateEvent event_) {
         // workaround for https://issues.jboss.org/browse/WELD-2019
         final TextFlowTargetStateEvent event = event_;
-        Long actorId = event.getActorId();
+
+        Long actorId = event.getKey().getActorId();
+
         if (actorId != null) {
             Lock lock = activityLockManager.getLock(actorId);
             lock.lock();
             try {
-                transactionUtil.run(() -> {
-                    HTextFlowTarget target =
-                            textFlowTargetDAO.findById(event.getTextFlowTargetId(),
-                                    false);
-                    HDocument document = documentDAO.getById(event.getDocumentId());
-                    ActivityType activityType =
-                            event.getNewState().isReviewed() ? ActivityType.REVIEWED_TRANSLATION
-                                    : ActivityType.UPDATE_TRANSLATION;
+                HDocument document =
+                    documentDAO.getById(event.getKey().getDocumentId());
 
-                    logActivityAlreadyLocked(actorId,
-                            document.getProjectIteration(), target, activityType,
-                            target.getTextFlow().getWordCount().intValue());
-                });
+                for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+                    .getStates()) {
+                    transactionUtil.run(() -> {
+                        HTextFlowTarget target =
+                            textFlowTargetDAO.findById(
+                                state.getTextFlowTargetId(), false);
+                        ActivityType activityType =
+                            state.getNewState().isReviewed()
+                                ? ActivityType.REVIEWED_TRANSLATION
+                                : ActivityType.UPDATE_TRANSLATION;
+
+                        logActivityAlreadyLocked(actorId,
+                            document.getProjectIteration(), target,
+                            activityType,
+                            target.getTextFlow().getWordCount()
+                                .intValue());
+                    });
+                }
             } catch (Exception e) {
                 Throwables.propagate(e);
             } finally {

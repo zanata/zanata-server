@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.RequestScoped;
@@ -56,6 +57,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
+import static org.zanata.events.TextFlowTargetStateEvent.DocumentLocaleKey;
+import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
 import static org.zanata.transaction.TransactionUtil.runInTransaction;
 
 /**
@@ -89,7 +92,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     private LocaleService localeServiceImpl;
 
     @Inject
-    private Event<TextFlowTargetStateEvent> textFlowTargetStateEventEvent;
+    private Event<TextFlowTargetStateEvent> textFlowTargetStateEvent;
 
     private final static int TRANSLATION_BATCH_SIZE = 10;
 
@@ -200,6 +203,9 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                         sourceVersionId, targetVersionId, batchStart,
                         batchLength);
 
+        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap =
+            Maps.newHashMap();
+
         for (HTextFlow[] results : matches) {
             HTextFlow sourceTf = results[0];
             HTextFlow targetTf = results[1];
@@ -237,26 +243,34 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                 textFlowDAO.makePersistent(targetTf);
                 textFlowDAO.flush();
 
-                // TODO: Fire single event with batch of updated textFlowTarget
                 if (!localeContentStateMap.isEmpty()) {
                     for (Map.Entry<Long, ContentState> entry : localeContentStateMap
                             .entrySet()) {
                         HTextFlowTarget updatedTarget =
                                 targetTf.getTargets().get(entry.getKey());
 
-                        TextFlowTargetStateEvent event =
-                                new TextFlowTargetStateEvent(null,
-                                        targetVersionId,
-                                        targetTf.getDocument().getId(),
-                                        targetTf.getId(),
-                                        updatedTarget.getLocale().getLocaleId(),
-                                        updatedTarget.getId(),
-                                        updatedTarget.getState(),
-                                        entry.getValue());
+                        DocumentLocaleKey key = new DocumentLocaleKey(null,
+                            targetVersionId, targetTf.getDocument().getId(),
+                            updatedTarget.getLocale().getLocaleId());
 
-                        textFlowTargetStateEventEvent.fire(event);
+                        List<TextFlowTargetState> events = eventMap.get(key);
+                        if(events == null) {
+                            events = Lists.newArrayList();
+                        }
+                        events.add(new TextFlowTargetState(targetTf.getId(),
+                            updatedTarget.getId(), updatedTarget.getState(),
+                            entry.getValue()));
                     }
                 }
+            }
+        }
+        if (!eventMap.isEmpty()) {
+            for (Map.Entry<DocumentLocaleKey, List<TextFlowTargetState>> entry : eventMap
+                .entrySet()) {
+                TextFlowTargetStateEvent tftUpdatedEvent =
+                    new TextFlowTargetStateEvent(entry.getKey(),
+                        entry.getValue());
+                textFlowTargetStateEvent.fire(tftUpdatedEvent);
             }
         }
         stopwatch.stop();

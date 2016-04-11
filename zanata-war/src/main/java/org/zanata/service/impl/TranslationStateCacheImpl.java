@@ -191,18 +191,22 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
     // TODO why not @Observe the event directly?
     @Override
     public void textFlowStateUpdated(TextFlowTargetStateEvent event) {
-        DocumentLocaleKey key =
-                new DocumentLocaleKey(event.getDocumentId(),
-                        event.getLocaleId());
+        Long documentId = event.getKey().getDocumentId();
+        LocaleId localeId = event.getKey().getLocaleId();
 
         //invalidate document statistic cache
-        clearDocumentStatistics(event.getDocumentId(), event.getLocaleId());
+        clearDocumentStatistics(documentId, localeId);
 
-        // update document status information
-        updateDocStatusCache(key, event.getTextFlowTargetId());
+        for(TextFlowTargetStateEvent.TextFlowTargetState state: event.getStates()) {
+            Long tftId = state.getTextFlowTargetId();
 
-        // invalidate target validation
-        targetValidationCache.remove(event.getTextFlowTargetId());
+            // update document status information
+            updateDocStatusCache(new DocumentLocaleKey(documentId,
+                localeId), tftId);
+
+            // invalidate target validation
+            targetValidationCache.remove(tftId);
+        }
     }
 
     private void updateDocStatusCache(DocumentLocaleKey key,

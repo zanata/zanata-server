@@ -22,6 +22,9 @@
 
 package org.zanata.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.annotations.VisibleForTesting;
 import org.infinispan.manager.CacheContainer;
 import javax.annotation.PostConstruct;
@@ -90,19 +93,21 @@ public class VersionStateCacheImpl implements VersionStateCache {
     }
 
     @Override
-    public void textFlowStateUpdated(@Observes(during = TransactionPhase.AFTER_SUCCESS) TextFlowTargetStateEvent event) {
+    public void textFlowStateUpdated(
+        @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            TextFlowTargetStateEvent event) {
         VersionLocaleKey key =
-                new VersionLocaleKey(event.getProjectIterationId(),
-                        event.getLocaleId());
+            new VersionLocaleKey(event.getKey().getProjectIterationId(),
+                event.getKey().getLocaleId());
         WordStatistic stats = versionStatisticCache.get(key);
-        if (stats != null) {
-            TextFlowDAO textFlowDAO = serviceLocator.getInstance(TextFlowDAO.class);
-            HTextFlow textFlow = textFlowDAO.findById(event.getTextFlowId());
+        TextFlowDAO textFlowDAO = serviceLocator.getInstance(TextFlowDAO.class);
 
-            stats.decrement(event.getPreviousState(),
-                    textFlow.getWordCount().intValue());
-            stats.increment(event.getNewState(),
-                    textFlow.getWordCount().intValue());
+        for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+            .getStates()) {
+            int wordCount =
+                textFlowDAO.getWordCount(state.getTextFlowId());
+            stats.decrement(state.getPreviousState(), wordCount);
+            stats.increment(state.getNewState(), wordCount);
             versionStatisticCache.put(key, stats);
         }
     }
