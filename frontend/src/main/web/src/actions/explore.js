@@ -2,7 +2,8 @@ import { CALL_API } from 'redux-api-middleware'
 import { normalize } from 'normalizr'
 import { SEARCH_RESULTS } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
-import { getJsonHeaders } from './common'
+import { getJsonHeaders, buildAPIRequest } from './common'
+import { isEmpty } from 'lodash'
 
 export const SEARCH_PROJECT_REQUEST = 'SEARCH_PROJECT_REQUEST'
 export const SEARCH_PROJECT_SUCCESS = 'SEARCH_PROJECT_SUCCESS'
@@ -40,121 +41,109 @@ const handleCallbacks = (callbacks, dispatch, searchText, pages) => {
 
 const getSearchProjectResults = (dispatch, searchText, pages, callbacks) => {
   const endpoint = getEndpoint('projects', pages.projectPage, searchText)
+  const apiTypes = [
+    SEARCH_PROJECT_REQUEST,
+    {
+      type: SEARCH_PROJECT_SUCCESS,
+      payload: (action, state, res) => {
+        const contentType = res.headers.get('Content-Type')
+        if (contentType && ~contentType.indexOf('json')) {
+          return res.json().then((json) => {
+            !isEmpty(callbacks) &&
+            handleCallbacks(callbacks, dispatch, searchText, pages)
+            return json
+          })
+        }
+      },
+      meta: {
+        receivedAt: Date.now()
+      }
+    },
+    SEARCH_PROJECT_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        SEARCH_PROJECT_REQUEST,
-        {
-          type: SEARCH_PROJECT_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                handleCallbacks(callbacks, dispatch, searchText, pages)
-                return json
-              })
-            }
-          },
-          meta: {
-            receivedAt: Date.now()
-          }
-        },
-        SEARCH_PROJECT_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
 const getSearchLanguageTeamResults = (dispatch, searchText, pages, callbacks) => {
   const endpoint = getEndpoint('teams/language', pages.languagePage, searchText)
+  const apiTypes = [
+    SEARCH_LANG_TEAM_REQUEST,
+    {
+      type: SEARCH_LANG_TEAM_SUCCESS,
+      payload: (action, state, res) => {
+        const contentType = res.headers.get('Content-Type')
+        if (contentType && ~contentType.indexOf('json')) {
+          return res.json().then((json) => {
+            !isEmpty(callbacks) &&
+            handleCallbacks(callbacks, dispatch, searchText, pages)
+            return json
+          })
+        }
+      },
+      meta: {
+        receivedAt: Date.now()
+      }
+    },
+    SEARCH_LANG_TEAM_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        SEARCH_LANG_TEAM_REQUEST,
-        {
-          type: SEARCH_LANG_TEAM_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                handleCallbacks(callbacks, dispatch, searchText, pages)
-                return json
-              })
-            }
-          },
-          meta: {
-            receivedAt: Date.now()
-          }
-        },
-        SEARCH_LANG_TEAM_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
 const getSearchPeopleResults = (dispatch, searchText, pages, callbacks) => {
   const endpoint = getEndpoint('people', pages.personPage, searchText)
+  const apiTypes = [
+    SEARCH_PEOPLE_REQUEST,
+    {
+      type: SEARCH_PEOPLE_SUCCESS,
+      payload: (action, state, res) => {
+        const contentType = res.headers.get('Content-Type')
+        if (contentType && ~contentType.indexOf('json')) {
+          return res.json().then((json) => {
+            !isEmpty(callbacks) &&
+            handleCallbacks(callbacks, dispatch, searchText, pages)
+            return json
+          })
+        }
+      },
+      meta: {
+        receivedAt: Date.now()
+      }
+    },
+    SEARCH_PEOPLE_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        SEARCH_PEOPLE_REQUEST,
-        {
-          type: SEARCH_PEOPLE_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                handleCallbacks(callbacks, dispatch, searchText, pages)
-                return json
-              })
-            }
-          },
-          meta: {
-            receivedAt: Date.now()
-          }
-        },
-        SEARCH_PEOPLE_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
 const getSearchGroupResults = (dispatch, searchText, pages, callbacks) => {
   const endpoint = getEndpoint('groups', pages.groupPage, searchText)
+  const apiTypes = [
+    SEARCH_GROUP_REQUEST,
+    {
+      type: SEARCH_GROUP_SUCCESS,
+      payload: (action, state, res) => {
+        const contentType = res.headers.get('Content-Type')
+        if (contentType && ~contentType.indexOf('json')) {
+          return res.json().then((json) => {
+            !isEmpty(callbacks) &&
+            handleCallbacks(callbacks, dispatch, searchText, pages)
+            return json
+          })
+        }
+      },
+      meta: {
+        receivedAt: Date.now()
+      }
+    },
+    SEARCH_GROUP_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        SEARCH_GROUP_REQUEST,
-        {
-          type: SEARCH_GROUP_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                handleCallbacks(callbacks, dispatch, searchText, pages)
-                return json
-              })
-            }
-          },
-          meta: {
-            receivedAt: Date.now()
-          }
-        },
-        SEARCH_GROUP_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
@@ -240,7 +229,7 @@ export const updateSearchPage = (type, currentPage, totalPage, next) => {
   }
 }
 
-export const searchPageLoaded = () => {
+export const searchPageInitialLoad = () => {
   return (dispatch, getState) => {
     const query = getState().routing.location.query
     const searchText = query.q

@@ -29,6 +29,7 @@ import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
 import org.zanata.dao.VersionGroupDAO;
+import org.zanata.model.HAccount;
 import org.zanata.model.HIterationGroup;
 import org.zanata.model.HProject;
 import org.zanata.rest.search.dto.GroupSearchResult;
@@ -37,6 +38,8 @@ import org.zanata.rest.search.dto.PersonSearchResult;
 import org.zanata.rest.search.dto.ProjectSearchResult;
 import org.zanata.rest.search.dto.SearchResult;
 import org.zanata.rest.search.dto.SearchResults;
+import org.zanata.security.ZanataIdentity;
+import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.GravatarService;
 
 import javax.enterprise.context.RequestScoped;
@@ -76,6 +79,12 @@ public class SearchService {
     @Inject
     private VersionGroupDAO versionGroupDAO;
 
+    @Inject
+    private ZanataIdentity identity;
+
+    @Inject @Authenticated
+    private HAccount authenticatedAccount;
+
     private static final int MAX_RESULT = 20;
 
     @GET
@@ -85,7 +94,7 @@ public class SearchService {
             @DefaultValue("1") @QueryParam("page") int page,
             @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
-        int offset = (validatePage(page) - 1) * sizePerPage;
+        int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
 
         try {
             int totalCount;
@@ -93,8 +102,7 @@ public class SearchService {
             if (StringUtils.isEmpty(query)) {
                 totalCount = projectDAO.getFilterProjectSize(false, false, true);
                 projects = projectDAO.getOffsetList(offset,
-                        validatePageSize(sizePerPage), false,
-                        true, true);
+                        validatePageSize(sizePerPage), false, false, true);
             } else {
                 totalCount = projectDAO.getQueryProjectSize(query, false);
                 projects =
@@ -105,6 +113,7 @@ public class SearchService {
             List<SearchResult> results = projects.stream().map(p -> {
                 ProjectSearchResult result = new ProjectSearchResult();
                 result.setId(p.getSlug());
+                result.setStatus(p.getStatus());
                 result.setTitle(p.getName());
                 result.setDescription(p.getDescription());
                 // TODO: include contributor count when data is available
@@ -126,23 +135,33 @@ public class SearchService {
             @DefaultValue("1") @QueryParam("page") int page,
             @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
-        int offset = (validatePage(page) - 1) * sizePerPage;
+        int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
         int totalCount;
         List<HIterationGroup> groups;
+        boolean includeObsolete =
+            identity.hasPermission("HIterationGroup", "view-obsolete");
+
+        final EntityStatus[] status =
+                includeObsolete ? new EntityStatus[] { EntityStatus.ACTIVE,
+                        EntityStatus.READONLY, EntityStatus.OBSOLETE }
+                        : new EntityStatus[] { EntityStatus.ACTIVE,
+                                EntityStatus.READONLY };
+
         if (StringUtils.isEmpty(query)) {
-            totalCount = versionGroupDAO.getAllGroupsCount();
+            totalCount = versionGroupDAO.getAllGroupsCount(status);
             groups = versionGroupDAO.getAllGroups(validatePageSize(sizePerPage),
-                    offset,
-                    new EntityStatus[] { EntityStatus.ACTIVE });
+                    offset, status);
         } else {
-            totalCount = versionGroupDAO.searchGroupBySlugAndNameCount(query);
+            totalCount = versionGroupDAO.searchGroupBySlugAndNameCount(query,
+                    status);
             groups = versionGroupDAO
                     .searchGroupBySlugAndName(query,
-                            validatePageSize(sizePerPage), offset);
+                            validatePageSize(sizePerPage), offset, status);
         }
         List<SearchResult> results = groups.stream().map(g -> {
                 GroupSearchResult result = new GroupSearchResult();
                 result.setId(g.getSlug());
+                result.setStatus(g.getStatus());
                 result.setTitle(g.getName());
                 result.setDescription(g.getDescription());
                 return result;
@@ -160,7 +179,7 @@ public class SearchService {
         @DefaultValue("1") @QueryParam("page") int page,
         @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
-        int offset = (validatePage(page) - 1) * sizePerPage;
+        int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
 
         int totalCount = personDAO.findAllContainingNameSize(query);
         List<SearchResult> results = personDAO.findAllContainingName(query,
@@ -183,7 +202,7 @@ public class SearchService {
         @DefaultValue("1") @QueryParam("page") int page,
         @DefaultValue("20") @QueryParam("sizePerPage") int sizePerPage) {
 
-        int offset = (validatePage(page) - 1) * sizePerPage;
+        int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
         int totalCount = localeDAO.searchByNameCount(query);
         List<SearchResult> results = localeDAO
                 .searchByName(query, validatePageSize(sizePerPage), offset)

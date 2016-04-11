@@ -278,11 +278,12 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
 
     private FullTextQuery buildSearchQuery(@Nonnull String searchQuery,
         boolean includeObsolete) throws ParseException {
+        String queryText = QueryParser.escape(searchQuery);
 
         BooleanQuery booleanQuery = new BooleanQuery();
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "slug"), BooleanClause.Occur.SHOULD);
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "name"), BooleanClause.Occur.SHOULD);
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "description"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "slug"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "name"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "description"), BooleanClause.Occur.SHOULD);
 
         if (!includeObsolete) {
             TermQuery obsoleteStateQuery =

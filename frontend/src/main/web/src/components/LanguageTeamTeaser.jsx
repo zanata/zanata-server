@@ -18,9 +18,6 @@ const LanguageTeamTeaser = ({
   details,
   ...props
 }) => {
-  const org = details.org ? details.org : 'Zanata'
-  const orgIcon = details.org ? 'company' : 'zanata'
-
   const useHref = true
   const link = useHref
     ? window.config.baseUrl + '/language/view/' + details.id
@@ -38,10 +35,6 @@ const LanguageTeamTeaser = ({
         </span>
       </View>
       <View theme={{ base: { ai: 'Ai(c)', fld: '', m: 'Mstart(a)' } }} >
-        <Icon name={orgIcon}
-          theme={{ base: { c: 'C(muted)', m: 'Mend(rq)' } }}
-        />
-        {org}
         <Icon name='users'
           theme={{
             base: {

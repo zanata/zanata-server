@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.zanata.common.EntityStatus;
 
 /**
  * @author Carlos Munoz <a href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
@@ -37,6 +38,9 @@ public class ProjectSearchResult extends SearchResult {
 
     @Getter @Setter
     private long contributorCount;
+
+    @Getter @Setter
+    private EntityStatus status;
 
     public ProjectSearchResult() {
         this.setType(SearchResultType.Project);

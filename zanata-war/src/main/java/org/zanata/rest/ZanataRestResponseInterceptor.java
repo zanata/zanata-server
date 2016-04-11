@@ -47,16 +47,24 @@ import com.google.common.collect.Lists;
 public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
     private static final String METHODS = "PUT, POST, DELETE, GET, OPTIONS";
 
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-        throws IOException {
+    public void filter(ContainerRequestContext requestContext,
+            ContainerResponseContext responseContext) throws IOException {
 
-        List<String> requestHeaders = requestContext.getHeaders().get("Access-Control-Request-Headers");
+        List<String> requestHeaders = requestContext.getHeaders()
+                .get("Access-Control-Request-Headers");
         if(requestHeaders == null) {
             requestHeaders = Lists.newArrayList();
         }
         MultivaluedMap<String, Object> headers = responseContext.getHeaders();
 
-        headers.add("Access-Control-Allow-Origin", "*");
+        List<String> origins = requestContext.getHeaders().get("origin");
+        if (origins != null && !origins.isEmpty()) {
+            headers.add("Access-Control-Allow-Origin",
+                Joiner.on(" ").skipNulls().join(origins));
+        } else {
+            headers.add("Access-Control-Allow-Origin", "*");
+        }
+        headers.add("Access-Control-Allow-Credentials", true);
         headers.add("Access-Control-Allow-Methods", METHODS);
         headers.add("Access-Control-Allow-Headers",
             "X-Requested-With, Content-Type, Accept, " + Joiner.on(",").join(

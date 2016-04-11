@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
-import { isEmpty, debounce } from 'lodash'
+import { isEmpty, debounce, isEqual } from 'lodash'
 import {
   Base,
   Page,
@@ -16,7 +16,7 @@ import {
 } from '../../components'
 import {
   searchTextChanged,
-  searchPageLoaded,
+  searchPageInitialLoad,
   updateSearchPage,
   SIZE_PER_PAGE
 } from '../../actions/explore'
@@ -86,19 +86,21 @@ const contentViewContainerTheme = {
 }
 
 class Explore extends Component {
-  componentWillMount () {
-    this.props.handleSearchPageLoad()
-  }
-
   handleKeyDown (e) {
     if (e.key === 'Escape') {
-      this.props.handleSearchCancelClick()
+      this.handleClearSearch()
     }
+  }
+
+  handleClearSearch () {
+    if (this.searchInput !== null) {
+      this.searchInput._onClear()
+    }
+    this.props.handleSearchCancelClick()
   }
 
   render () {
     const {
-      handleSearchCancelClick,
       handleSearchTextChange,
       handleUpdateSearchPage,
       searchText,
@@ -114,11 +116,11 @@ class Explore extends Component {
 
     let content
     if (searchError) {
-      content = (<p>Error completing search for "{searchText}".<br/>
+      content = (<p>Error searching for '{searchText}'.<br/>
                     {searchResults.message}. Please try again.</p>)
     } else {
       const projectContent = (<TeaserList
-        loading={isEmpty(searchResults) && searchLoading['Project']}
+        loading={searchLoading['Project'] === true}
         items={searchResults['Project']
             ? searchResults['Project'].results : []}
         title='Projects'
@@ -145,7 +147,7 @@ class Explore extends Component {
 
       const personContent = searchText &&
         (<TeaserList
-          loading={isEmpty(searchResults) && searchLoading['Person']}
+          loading={searchLoading['Person'] === true}
           items={searchResults['Person']
             ? searchResults['Person'].results : []}
           title='People'
@@ -159,7 +161,7 @@ class Explore extends Component {
 
       const languageTeamContent = searchText &&
         (<TeaserList
-          loading={isEmpty(searchResults) && searchLoading['LanguageTeam']}
+          loading={searchLoading['LanguageTeam'] === true}
           items={searchResults['LanguageTeam']
             ? searchResults['LanguageTeam'].results : []}
           title='Language Teams'
@@ -187,20 +189,21 @@ class Explore extends Component {
           <View theme={searchViewTheme}>
             <Icon name='search' atomic={iconClasses}/>
             <TextInput
-              autoFocus
+              maxLength={100}
+              ref={(ref) => this.searchInput = ref}
               id='explore_search'
               type='search'
               placeholder='Search Zanata…'
               accessibilityLabel='Search Zanata'
               theme={inputTheme}
-              value={searchText}
+              defaultValue={searchText}
               onKeyDown={(e) => { this.handleKeyDown(e) }}
               onChange={handleSearchTextChange}
             />
             <Button
-              theme={buttonTheme}
-              onClick={handleSearchCancelClick}>
-            Cancel
+              theme={buttonTheme} disabled={isEmpty(searchText)}
+              onClick={(e) => { this.handleClearSearch() }}>
+              Cancel
             </Button>
           </View>
         </Base>
@@ -229,18 +232,18 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  const updateSearchText = debounce((val) =>
-    dispatch(searchTextChanged(val)), 200)
+  const updateSearchQuery = debounce((val) =>
+    dispatch(searchTextChanged(val)), 250)
 
   return {
     handleSearchCancelClick: () => {
       dispatch(searchTextChanged(''))
     },
     handleSearchTextChange: (event) => {
-      updateSearchText(event.target.value || '')
+      updateSearchQuery(event.target.value || '')
     },
     handleSearchPageLoad: () => {
-      dispatch(searchPageLoaded())
+      dispatch(searchPageInitialLoad())
     },
     handleUpdateSearchPage: (type, currentPage, totalPage, next) => {
       dispatch(updateSearchPage(type, currentPage, totalPage, next))

@@ -1,7 +1,7 @@
 import React from 'react' // eslint-disable-line
 import View from '../components/View'
 import Heading from '../components/Heading'
-import {Icon, ButtonLink} from '../components'
+import {Icon, ButtonLink, Loader, Row} from '../components'
 
 const TeaserListHeader = ({
   children,
@@ -11,11 +11,13 @@ const TeaserListHeader = ({
   sizePerPage,
   page,
   updatePage,
+  loading,
   ...props
 }) => {
   const viewTheme = {
     base: {
-      fld: ''
+      fld: '',
+      ai: 'Ai(c)'
     }
   }
 
@@ -42,7 +44,7 @@ const TeaserListHeader = ({
         </span>
       </Heading>
       {totalPage > 1 && (
-        <div className='Lh(1) Mstart(rh) C(pri) D(f) Ai(c)'>
+        <div className='Mstart(rh) C(pri) D(f) Ai(c)'>
           <ButtonLink disabled={currentPage === 1}
             onClick={() => { updatePage(type, currentPage, totalPage, false) }}>
             <Icon name='chevron-left' size='1' />
@@ -54,6 +56,8 @@ const TeaserListHeader = ({
           </ButtonLink>
         </div>
       )}
+      {loading && <Loader theme={{ base: { fz: 'Fz(ms1)', m: 'MStart(rh)' } }}
+        size='1' loading name='loader'/>}
     </View>
   )
 }

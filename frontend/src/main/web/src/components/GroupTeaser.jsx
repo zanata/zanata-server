@@ -11,12 +11,19 @@ const viewTheme = {
   }
 }
 
+const statusIcons = {
+  ACTIVE: '',
+  READONLY: 'locked',
+  OBSOLETE: 'trash'
+}
+
 const GroupTeaser = ({
   details,
   name,
   children,
   ...props
 }) => {
+  const status = statusIcons[details.status]
   const description = details.description ? (
       <div className={'C(muted)'}>
         {details.description}
@@ -58,6 +65,9 @@ const GroupTeaser = ({
   const link = useHref
     ? window.config.baseUrl + '/version-group/view/' + details.id
     : 'groups/' + details.id
+  const theme = status !== statusIcons.ACTIVE
+    ? { base: { fw: 'Fw(600)', c: 'C(muted)' } }
+    : { base: { fw: 'Fw(600)' } }
   return (
     <View theme={viewTheme} name={name}>
       {/* <View className='Mend(rh)'>
@@ -65,8 +75,10 @@ const GroupTeaser = ({
       </View> */}
       <View theme={{ base: { fld: 'Fld(c) Fld(r)--md', flx: 'Flx(flx1)' } }}>
         <View>
-          <Link link={link} useHref={useHref}
-            theme={{ base: { fw: 'Fw(600)' } }}>
+          <Link link={link} useHref={useHref} theme={theme}>
+            {status !== statusIcons.ACTIVE &&
+            (<Icon name={statusIcons[details.status]} size='1'
+              theme={{ base: { m: 'Mend(rq)' } }}/>)}
             {details.title}
           </Link>
           {description}

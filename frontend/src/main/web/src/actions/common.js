@@ -23,3 +23,22 @@ export const getJsonHeaders = () => {
   }
   return headers
 }
+
+export const buildAPIRequest = (endpoint, method, headers, types, body) => {
+  return body
+    ? {
+      endpoint,
+      method: method,
+      headers: headers,
+      credentials: 'include',
+      body: body,
+      types: types
+    }
+    : {
+      endpoint,
+      method: method,
+      headers: headers,
+      credentials: 'include',
+      types: types
+    }
+}

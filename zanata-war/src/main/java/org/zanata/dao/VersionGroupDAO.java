@@ -52,8 +52,8 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
         super(HIterationGroup.class, session);
     }
 
-    public int getAllGroupsCount() {
-        return getAllGroups(-1, 0, null).size();
+    public int getAllGroupsCount(EntityStatus... statuses) {
+        return getAllGroups(-1, 0, statuses).size();
     }
 
     public List<HIterationGroup> getAllGroups(int maxResult, int firstResult,
@@ -133,28 +133,32 @@ public class VersionGroupDAO extends AbstractDAOImpl<HIterationGroup, Long> {
     }
 
     public List<HIterationGroup> searchGroupBySlugAndName(String searchTerm,
-            int maxResult, int firstResult) {
+            int maxResult, int firstResult, EntityStatus... statuses) {
         if (StringUtils.isEmpty(searchTerm)) {
             return new ArrayList<HIterationGroup>();
         }
         StringBuilder sb = new StringBuilder();
         sb.append("from HIterationGroup ")
-                .append("where (lower(slug) LIKE :searchTerm OR lower(name) LIKE :searchTerm) ")
-                .append("AND status = :status ")
-                .append("order by name asc");
+                .append("where (lower(slug) LIKE :searchTerm OR lower(name) LIKE :searchTerm) ");
+        if (statuses != null && statuses.length >= 1) {
+            sb.append("AND status in :statuses ");
+        }
+        sb.append("order by name asc");
         Query query = getSession().createQuery(sb.toString());
         query.setParameter("searchTerm", "%" + searchTerm.toLowerCase() + "%");
         query.setFirstResult(firstResult);
         if(maxResult != -1) {
             query.setMaxResults(maxResult);
         }
-        query.setParameter("status", EntityStatus.ACTIVE);
+        if (statuses != null && statuses.length >= 1) {
+            query.setParameterList("statuses", Lists.newArrayList(statuses));
+        }
         query.setComment("VersionGroupDAO.searchGroupBySlugAndName");
         query.setCacheable(true);
         return query.list();
     }
 
-    public int searchGroupBySlugAndNameCount(String searchTerm) {
-        return searchGroupBySlugAndName(searchTerm, -1, 0).size();
+    public int searchGroupBySlugAndNameCount(String searchTerm, EntityStatus... statuses) {
+        return searchGroupBySlugAndName(searchTerm, -1, 0, statuses).size();
     }
 }

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import TextareaAutosize from 'react-textarea-autosize'
 import { flattenThemeClasses } from '../utils/styleUtils'
+import { isEqual } from 'lodash'
 
 const classes = {
   base: {
@@ -50,6 +51,7 @@ class TextInput extends Component {
     if (selectTextOnFocus) node.select()
     if (onFocus) onFocus(e)
   }
+
   _onSelectionChange (e) {
     const { onSelectionChange } = this.props
     const { selectionDirection, selectionEnd, selectionStart } = e.target
@@ -65,6 +67,11 @@ class TextInput extends Component {
   _onKeyDown (e) {
     const { onKeyDown } = this.props
     if (onKeyDown) onKeyDown(e)
+  }
+
+  _onClear () {
+    const node = ReactDOM.findDOMNode(this)
+    node.value = ''
   }
 
   render () {

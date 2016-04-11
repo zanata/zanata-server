@@ -7,7 +7,8 @@ import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import GlossaryHelper from '../utils/GlossaryHelper'
 import {
   DEFAULT_LOCALE,
-  getJsonHeaders
+  getJsonHeaders,
+  buildAPIRequest
 } from './common'
 
 export const GLOSSARY_PAGE_SIZE = 1000
@@ -92,58 +93,52 @@ export const getGlossaryTerms = (state, newIndex) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries' + srcQuery +
     localeQuery + pageQuery + filterQuery + sortQuery
-  return {
-    [CALL_API]: {
-      endpoint,
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        GLOSSARY_TERMS_REQUEST,
-        {
-          type: GLOSSARY_TERMS_SUCCESS,
-          payload: (action, state, res) => {
-            const contentType = res.headers.get('Content-Type')
-            if (contentType && ~contentType.indexOf('json')) {
-              return res.json().then((json) => {
-                const normalized =
-                  normalize(json, { results: GLOSSARY_TERM_ARRAY })
-                return normalized
-              }
-              )
+
+  const apiTypes = [
+    GLOSSARY_TERMS_REQUEST,
+    {
+      type: GLOSSARY_TERMS_SUCCESS,
+      payload: (action, state, res) => {
+        const contentType = res.headers.get('Content-Type')
+        if (contentType && ~contentType.indexOf('json')) {
+          return res.json().then((json) => {
+              const normalized =
+                normalize(json, { results: GLOSSARY_TERM_ARRAY })
+              return normalized
             }
-          },
-          meta: {
-            page,
-            receivedAt: Date.now()
-          }
-        },
-        GLOSSARY_TERMS_FAILURE
-      ]
-    }
+          )
+        }
+      },
+      meta: {
+        page,
+        receivedAt: Date.now()
+      }
+    },
+    GLOSSARY_TERMS_FAILURE
+  ]
+  return {
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
 export const getGlossaryStats = (dispatch) => {
+  const endpoint = window.config.baseUrl + window.config.apiRoot +
+    '/glossary/info'
+  const apiTypes = [
+    GLOSSARY_STATS_REQUEST,
+    {
+      type: GLOSSARY_STATS_SUCCESS,
+      payload: (action, state, res) => {
+        return res.json().then((json) => {
+          dispatch(getGlossaryTerms(state))
+          return json
+        })
+      }
+    },
+    GLOSSARY_STATS_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint: window.config.baseUrl + window.config.apiRoot +
-        '/glossary/info',
-      method: 'GET',
-      headers: getJsonHeaders(),
-      types: [
-        GLOSSARY_STATS_REQUEST,
-        {
-          type: GLOSSARY_STATS_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryTerms(state))
-              return json
-            })
-          }
-        },
-        GLOSSARY_STATS_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'GET', getJsonHeaders(), apiTypes)
   }
 }
 
@@ -155,26 +150,22 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   formData.append('srcLocale', srcLocaleId)
   formData.append('transLocale', data.transLocale.value)
 
+
+  const apiTypes = [
+    GLOSSARY_UPLOAD_REQUEST,
+    {
+      type: GLOSSARY_UPLOAD_SUCCESS,
+      payload: (action, state, res) => {
+        return res.json().then((json) => {
+          dispatch(getGlossaryStats(dispatch))
+          return json
+        })
+      }
+    },
+    GLOSSARY_UPLOAD_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'POST',
-      headers: getJsonHeaders(),
-      body: formData,
-      types: [
-        GLOSSARY_UPLOAD_REQUEST,
-        {
-          type: GLOSSARY_UPLOAD_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryStats(dispatch))
-              return json
-            })
-          }
-        },
-        GLOSSARY_UPLOAD_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'POST', getJsonHeaders(), apiTypes, formData)
   }
 }
 
@@ -184,31 +175,26 @@ export const createGlossaryTerm = (dispatch, term) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
+  const apiTypes = [
+    {
+      type: GLOSSARY_CREATE_REQUEST,
+      payload: (action, state) => {
+        return term
+      }
+    },
+    {
+      type: GLOSSARY_CREATE_SUCCESS,
+      payload: (action, state, res) => {
+        return res.json().then((json) => {
+          dispatch(getGlossaryStats(dispatch))
+          return json
+        })
+      }
+    },
+    GLOSSARY_CREATE_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(entryDTO),
-      types: [
-        {
-          type: GLOSSARY_CREATE_REQUEST,
-          payload: (action, state) => {
-            return term
-          }
-        },
-        {
-          type: GLOSSARY_CREATE_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryStats(dispatch))
-              return json
-            })
-          }
-        },
-        GLOSSARY_CREATE_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes, JSON.stringify(entryDTO))
   }
 }
 
@@ -219,61 +205,53 @@ export const updateGlossaryTerm = (dispatch, term) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries'
   const entryDTO = GlossaryHelper.convertToDTO(term)
+
+  const apiTypes = [
+    {
+      type: GLOSSARY_UPDATE_REQUEST,
+      payload: (action, state) => {
+        return term
+      }
+    },
+    {
+      type: GLOSSARY_UPDATE_SUCCESS,
+      payload: (action, state, res) => {
+        return res.json().then((json) => {
+          dispatch(getGlossaryStats(dispatch))
+          return json
+        })
+      }
+    },
+    GLOSSARY_UPDATE_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(entryDTO),
-      types: [
-        {
-          type: GLOSSARY_UPDATE_REQUEST,
-          payload: (action, state) => {
-            return term
-          }
-        },
-        {
-          type: GLOSSARY_UPDATE_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryStats(dispatch))
-              return json
-            })
-          }
-        },
-        GLOSSARY_UPDATE_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes, JSON.stringify(entryDTO))
   }
 }
 
 export const deleteGlossaryTerm = (dispatch, id) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries/' + id
+  const apiTypes = [
+    {
+      type: GLOSSARY_DELETE_REQUEST,
+      payload: (action, state) => {
+        return id
+      }
+    },
+    {
+      type: GLOSSARY_DELETE_SUCCESS,
+      payload: (action, state, res) => {
+        return res.json().then((json) => {
+          dispatch(getGlossaryStats(dispatch))
+          return json
+        })
+      }
+    },
+    GLOSSARY_DELETE_FAILURE
+  ]
   return {
-    [CALL_API]: {
-      endpoint,
-      method: 'DELETE',
-      headers: getJsonHeaders(),
-      types: [
-        {
-          type: GLOSSARY_DELETE_REQUEST,
-          payload: (action, state) => {
-            return id
-          }
-        },
-        {
-          type: GLOSSARY_DELETE_SUCCESS,
-          payload: (action, state, res) => {
-            return res.json().then((json) => {
-              dispatch(getGlossaryStats(dispatch))
-              return json
-            })
-          }
-        },
-        GLOSSARY_DELETE_FAILURE
-      ]
-    }
+    [CALL_API]: buildAPIRequest(endpoint, 'DELETE', getJsonHeaders(), apiTypes)
   }
 }
 

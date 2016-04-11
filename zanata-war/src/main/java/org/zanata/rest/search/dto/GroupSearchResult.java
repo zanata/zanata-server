@@ -25,6 +25,8 @@ import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.zanata.common.EntityStatus;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -34,6 +36,9 @@ public class GroupSearchResult extends SearchResult {
 
     @Getter @Setter
     private String title;
+
+    @Getter @Setter
+    private EntityStatus status;
 
     public GroupSearchResult() {
         this.setType(SearchResultType.Group);

@@ -117,6 +117,15 @@ public class GlossaryService implements GlossaryResource {
         return result;
     }
 
+    private int validatePage(int page) {
+        return page < 1 ? 1 : page;
+    }
+
+    private int validatePageSize(int sizePerPage) {
+        return (sizePerPage > MAX_PAGE_SIZE) ? MAX_PAGE_SIZE
+            : ((sizePerPage < 1) ? 1 : sizePerPage);
+    }
+
     @Override
     public Response getEntries(
             @DefaultValue("en-US") @QueryParam("srcLocale") LocaleId srcLocale,
@@ -126,15 +135,12 @@ public class GlossaryService implements GlossaryResource {
             @QueryParam("filter") String filter,
             @QueryParam("sort") String fields) {
 
-        if(sizePerPage > MAX_PAGE_SIZE || sizePerPage < 1 || page < 1) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        int offset = (page - 1) * sizePerPage;
+        int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
 
         List<HGlossaryEntry> hGlossaryEntries =
-            glossaryDAO.getEntriesByLocale(srcLocale, offset, sizePerPage,
-                filter, convertToSortField(fields));
+                glossaryDAO.getEntriesByLocale(srcLocale, offset,
+                        validatePageSize(sizePerPage),
+                        filter, convertToSortField(fields));
         int totalCount =
             glossaryDAO.getEntriesCount(srcLocale, filter);
 
