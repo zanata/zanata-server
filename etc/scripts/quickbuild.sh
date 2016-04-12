@@ -2,7 +2,7 @@
 #set -x
 
 gwtMode="-Dchromefirefox"
-while getopts "cfh:" opt; do
+while getopts "cfh" opt; do
   case ${opt} in
     c)
       gwtMode="-Dchrome"
