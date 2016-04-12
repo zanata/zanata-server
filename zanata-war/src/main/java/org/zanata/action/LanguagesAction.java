@@ -172,6 +172,7 @@ public class LanguagesAction extends InMemoryListFilter<HLocale> implements
         try {
             localeServiceImpl.delete(locale);
             allLanguages = null;
+            this.reset();
             facesMessages.addGlobal(msgs.format("jsf.language.deleted", localeId));
         } catch (ConstraintViolationException e) {
             facesMessages.addGlobal(SEVERITY_ERROR,

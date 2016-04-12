@@ -77,7 +77,7 @@
 
             <ul class="list--stats">
               <ui:repeat value="#{languagesAction.currentPage}" var="language">
-                <li class="l--pad-all-quarter #{not language.active ? 'is-disabled' : ''} #{identity.hasRole('admin') ? 'list__item--actionable' : ''}">
+                <li name="entry" class="l--pad-all-quarter #{not language.active ? 'is-disabled' : ''} #{identity.hasRole('admin') ? 'list__item--actionable' : ''}">
                   <div>
                     <h:panelGroup layout="block"  styleClass="list__item__action" rendered="#{identity.hasRole('admin')}">
                       <div
