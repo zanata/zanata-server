@@ -59,6 +59,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
 import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
+import org.zanata.repository.LocaleRepository;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.WebHookDAO;
 import org.zanata.i18n.Messages;
@@ -135,6 +136,9 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @Inject
     private LocaleDAO localeDAO;
+
+    @Inject
+    private LocaleRepository localeRepo;
 
     @Inject
     private SlugEntityService slugEntityServiceImpl;
@@ -236,7 +240,7 @@ public class ProjectHome extends SlugHome<HProject> implements
      */
     private List<HLocale> findActiveNotEnabledLocales() {
         Collection<HLocale> filtered =
-                Collections2.filter(localeDAO.findAllActive(),
+                Collections2.filter(localeRepo.findByActive(),
                         new Predicate<HLocale>() {
                             @Override
                             public boolean apply(HLocale input) {
