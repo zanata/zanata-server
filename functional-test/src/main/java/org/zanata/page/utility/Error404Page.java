@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, Red Hat, Inc. and individual contributors as indicated by the
+ * Copyright 2016, Red Hat, Inc. and individual contributors as indicated by the
  * @author tags. See the copyright.txt file in the distribution for a full
  * listing of individual contributors.
  *
@@ -18,29 +18,24 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.exception;
+package org.zanata.page.utility;
 
-import javax.faces.context.ExceptionHandler;
-import javax.faces.context.ExceptionHandlerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.WebDriver;
+import org.zanata.page.CorePage;
 
 /**
- * Exception Handler factory for ViewExpiredException handlers.
- * This class should be configured in faces-config.xml for use.
- * @author Carlos Munoz <a
- *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
+ * @author Damian Jansen <a href="mailto:djansen@redhat.com">djansen@redhat.com</a>
  */
-public class AjaxViewExpiredExceptionHandlerFactory extends
-        ExceptionHandlerFactory {
+@Slf4j
+public class Error404Page extends CorePage {
 
-    private ExceptionHandlerFactory parent;
-
-    public AjaxViewExpiredExceptionHandlerFactory(
-            ExceptionHandlerFactory parent) {
-        this.parent = parent;
+    public Error404Page(WebDriver driver) {
+        super(driver);
     }
 
-    @Override
-    public ExceptionHandler getExceptionHandler() {
-        return new AjaxViewExpiredExceptionHandler(parent.getExceptionHandler());
+    public boolean isItA404() {
+        log.info("Query is 404 page");
+        return getDriver().getTitle().contains("Page Not Found");
     }
 }
