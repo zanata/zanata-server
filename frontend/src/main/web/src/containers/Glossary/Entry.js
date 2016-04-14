@@ -72,14 +72,14 @@ class Entry extends Component {
       ? (entry.status && entry.status.isTransModified)
       : (entry.status && entry.status.isSrcModified)
     const displayUpdateButton = permission.canUpdateEntry &&
-      isTermModified && selected
+      ((isTermModified && selected) || isSaving)
     const editable = permission.canUpdateEntry && !isSaving
 
     const updateButton = displayUpdateButton && (
       <ButtonRound atomic={{m: 'Mend(rh)'}}
         type='primary'
         disabled={isSaving}
-        onClick={() => handleUpdateTerm(entry)}>
+        onClick={() => handleUpdateTerm(entry, transSelected)}>
         <LoaderText loading={isSaving} loadingText='Updating'>
           Update
         </LoaderText>
@@ -153,7 +153,8 @@ class Entry extends Component {
             handleResetTerm={(entryId) => handleResetTerm(entryId)}
             handleTermFieldUpdate={(field, e) =>
               handleTermFieldUpdate(field, e)}
-            handleUpdateTerm={(entry) => handleUpdateTerm(entry)}
+            handleUpdateTerm={(entry) =>
+              handleUpdateTerm(entry, false)}
           />
 
           {updateButton}

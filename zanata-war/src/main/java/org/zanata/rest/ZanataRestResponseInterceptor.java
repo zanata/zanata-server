@@ -26,6 +26,7 @@ import java.util.List;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
@@ -43,6 +44,7 @@ import com.google.common.collect.Lists;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Provider
+@PreMatching
 @HeaderDecoratorPrecedence
 public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
     private static final String METHODS = "PUT, POST, DELETE, GET, OPTIONS";

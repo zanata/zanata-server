@@ -121,7 +121,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   }
 }
 
-export const getGlossaryStats = (dispatch) => {
+export const getGlossaryStats = (dispatch, resetTerms) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/info'
   const apiTypes = [
@@ -130,7 +130,7 @@ export const getGlossaryStats = (dispatch) => {
       type: GLOSSARY_STATS_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          dispatch(getGlossaryTerms(state))
+          resetTerms && dispatch(getGlossaryTerms(state))
           return json
         })
       }
@@ -157,7 +157,7 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
       type: GLOSSARY_UPLOAD_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          dispatch(getGlossaryStats(dispatch))
+          dispatch(getGlossaryStats(dispatch, true))
           return json
         })
       }
@@ -186,7 +186,7 @@ export const createGlossaryTerm = (dispatch, term) => {
       type: GLOSSARY_CREATE_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          dispatch(getGlossaryStats(dispatch))
+          dispatch(getGlossaryStats(dispatch, true))
           return json
         })
       }
@@ -198,7 +198,7 @@ export const createGlossaryTerm = (dispatch, term) => {
   }
 }
 
-export const updateGlossaryTerm = (dispatch, term) => {
+export const updateGlossaryTerm = (dispatch, term, needRefresh) => {
   let headers = getJsonHeaders()
   headers['Content-Type'] = 'application/json'
 
@@ -217,7 +217,7 @@ export const updateGlossaryTerm = (dispatch, term) => {
       type: GLOSSARY_UPDATE_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          dispatch(getGlossaryStats(dispatch))
+          needRefresh === true && dispatch(getGlossaryStats(dispatch, false))
           return json
         })
       }
@@ -243,7 +243,7 @@ export const deleteGlossaryTerm = (dispatch, id) => {
       type: GLOSSARY_DELETE_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          dispatch(getGlossaryStats(dispatch))
+          dispatch(getGlossaryStats(dispatch, true))
           return json
         })
       }
@@ -291,7 +291,7 @@ export const glossaryInitialLoad = () => {
   return (dispatch, getState) => {
     const query = getState().routing.location.query
     dispatch(glossaryInitStateFromUrl(query))
-    dispatch(getGlossaryStats(dispatch))
+    dispatch(getGlossaryStats(dispatch, true))
   }
 }
 
@@ -323,10 +323,10 @@ export const glossaryDeleteTerm = (id) => {
   }
 }
 
-export const glossaryUpdateTerm = (term) => {
+export const glossaryUpdateTerm = (term, needRefresh) => {
   return (dispatch, getState) => {
     // do cloning to prevent changes in selectedTerm
-    dispatch(updateGlossaryTerm(dispatch, cloneDeep(term)))
+    dispatch(updateGlossaryTerm(dispatch, cloneDeep(term), needRefresh))
   }
 }
 
@@ -350,7 +350,7 @@ export const glossarySelectTerm = (termId) => {
     if (selectedTerm && selectedTerm.id !== termId) {
       const status = selectedTerm.status
       if (status && (status.isSrcModified || status.isTransModified)) {
-        dispatch(glossaryUpdateTerm(selectedTerm))
+        dispatch(glossaryUpdateTerm(selectedTerm, status.isTransModified))
       }
       dispatch(updateSelectedTerm(termId))
     }

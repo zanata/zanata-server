@@ -40,7 +40,8 @@ class DeleteEntryModal extends Component {
           placement='top'
           target={() => ReactDOM.findDOMNode(this)}
           rootClose
-          show={show}>
+          show={show}
+          onHide={() => handleDeleteEntryDisplay(false)}>
           <Tooltip id='delete-glossary' title='Delete term and translations'>
             {info}
             <div className='Mt(rq)'>

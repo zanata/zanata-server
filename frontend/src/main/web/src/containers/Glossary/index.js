@@ -97,14 +97,16 @@ class Glossary extends Component {
     dispatch(glossaryUpdateIndex(newIndex))
     dispatch(glossaryGetTermsIfNeeded(newIndex))
     // If close enough, load the prev/next page too
-    dispatch(glossaryGetTermsIfNeeded(newIndex - loadingThreshold))
-    dispatch(glossaryGetTermsIfNeeded(newIndexEnd + loadingThreshold))
+    const preIndex = newIndex - loadingThreshold
+    const nextIndex = newIndexEnd + loadingThreshold
+    preIndex > 0 && dispatch(glossaryGetTermsIfNeeded(preIndex))
+    dispatch(glossaryGetTermsIfNeeded(nextIndex))
   }
   render () {
     const {
       termsLoading,
       termCount,
-      scrollIndex = 0,
+      scrollIndex,
       notification
     } = this.props
     return (
@@ -132,7 +134,7 @@ class Glossary extends Component {
                 itemRenderer={::this.renderItem}
                 length={termCount}
                 type='uniform'
-                initialIndex={scrollIndex || 0}
+                initialIndex={scrollIndex || -5}
                 ref={(c) => { this.list = c }}
               />)
             }
@@ -186,7 +188,8 @@ const mapDispatchToProps = (dispatch) => {
     },
     handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
     handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
-    handleUpdateTerm: (term) => dispatch(glossaryUpdateTerm(term))
+    handleUpdateTerm: (term, needRefresh) =>
+      dispatch(glossaryUpdateTerm(term, needRefresh))
   }
 }
 

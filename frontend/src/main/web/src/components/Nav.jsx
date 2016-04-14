@@ -17,7 +17,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/a/' + dswid + '#explore',
+    link: '/a/#explore',
     internalLink: '/explore',
     title: 'Explore',
     auth: 'public',
@@ -50,7 +50,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/' + dswid + '#profile',
+    link: '/a/#profile',
     internalLink: '/profile',
     title: 'Profile',
     auth: 'loggedin',
@@ -58,7 +58,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/' + dswid + '#glossary',
+    link: '/a/#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin',
