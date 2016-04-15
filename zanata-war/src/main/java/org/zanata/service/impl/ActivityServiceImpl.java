@@ -33,6 +33,8 @@ import javax.enterprise.event.TransactionPhase;
 import javax.persistence.EntityManager;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.time.DateUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -196,21 +198,42 @@ public class ActivityServiceImpl implements ActivityService {
                     HDocument document =
                         documentDAO.getById(event.getKey().getDocumentId());
 
+                    HTextFlowTarget lastReviewedTarget = null;
+                    HTextFlowTarget lastTranslatedTarget = null;
+
+                    int totalReviewedWord = 0;
+                    int totalTranslatedWord = 0;
+
                     for (TextFlowTargetStateEvent.TextFlowTargetState state : event
                         .getStates()) {
                         HTextFlowTarget target =
                             textFlowTargetDAO.findById(
                                 state.getTextFlowTargetId(), false);
-                        ActivityType activityType =
-                            state.getNewState().isReviewed()
-                                ? ActivityType.REVIEWED_TRANSLATION
-                                : ActivityType.UPDATE_TRANSLATION;
-
+                        if (state.getNewState().isReviewed()) {
+                            lastReviewedTarget = target;
+                            totalReviewedWord +=
+                                target.getTextFlow().getWordCount()
+                                    .intValue();
+                        } else {
+                            lastTranslatedTarget = target;
+                            totalTranslatedWord +=
+                                target.getTextFlow().getWordCount()
+                                    .intValue();
+                        }
+                    }
+                    if (lastReviewedTarget != null) {
                         logActivityAlreadyLocked(actorId,
-                            document.getProjectIteration(), target,
-                            activityType,
-                            target.getTextFlow().getWordCount()
-                                .intValue());
+                            document.getProjectIteration(), lastReviewedTarget,
+                            ActivityType.REVIEWED_TRANSLATION,
+                            totalReviewedWord);
+                    }
+
+                    if (lastTranslatedTarget != null) {
+                        logActivityAlreadyLocked(actorId,
+                            document.getProjectIteration(),
+                            lastTranslatedTarget,
+                            ActivityType.UPDATE_TRANSLATION,
+                            totalTranslatedWord);
                     }
                 });
 

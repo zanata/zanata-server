@@ -198,15 +198,16 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         clearDocumentStatistics(documentId, localeId);
 
         for(TextFlowTargetStateEvent.TextFlowTargetState state: event.getStates()) {
-            Long tftId = state.getTextFlowTargetId();
-
-            // update document status information
-            updateDocStatusCache(new DocumentLocaleKey(documentId, localeId),
-                tftId);
-
             // invalidate target validation
-            targetValidationCache.remove(tftId);
+            targetValidationCache.remove(state.getTextFlowTargetId());
         }
+
+        Long tftId = event.getStates().get(event.getStates().size() - 1)
+            .getTextFlowTargetId();
+
+        // update document status information
+        updateDocStatusCache(new DocumentLocaleKey(documentId, localeId),
+            tftId);
     }
 
     private void updateDocStatusCache(DocumentLocaleKey key,

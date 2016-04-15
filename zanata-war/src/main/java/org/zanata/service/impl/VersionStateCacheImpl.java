@@ -22,9 +22,6 @@
 
 package org.zanata.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.annotations.VisibleForTesting;
 import org.infinispan.manager.CacheContainer;
 import javax.annotation.PostConstruct;
@@ -106,8 +103,9 @@ public class VersionStateCacheImpl implements VersionStateCache {
 
             for (TextFlowTargetStateEvent.TextFlowTargetState state : event
                 .getStates()) {
+                HTextFlow textFlow = textFlowDAO.findById(state.getTextFlowId());
                 int wordCount =
-                    textFlowDAO.getWordCount(state.getTextFlowId());
+                    textFlow.getWordCount().intValue();
                 stats.decrement(state.getPreviousState(), wordCount);
                 stats.increment(state.getNewState(), wordCount);
             }
