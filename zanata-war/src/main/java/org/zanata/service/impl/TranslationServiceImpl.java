@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,6 +55,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.DocumentUploadedEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.exception.ZanataServiceException;
@@ -93,7 +95,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import static org.zanata.events.TextFlowTargetStateEvent.DocumentLocaleKey;
 import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
 
 @Named("translationServiceImpl")
@@ -281,7 +282,7 @@ public class TranslationServiceImpl implements TranslationService {
             .entrySet()) {
             TextFlowTargetStateEvent tftUpdatedEvent =
                 new TextFlowTargetStateEvent(entry.getKey(),
-                    entry.getValue());
+                    ImmutableList.copyOf(entry.getValue()));
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
         }
     }

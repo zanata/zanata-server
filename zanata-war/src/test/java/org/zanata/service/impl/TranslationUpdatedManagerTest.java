@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.TextFlowDAO;
+import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.DocumentStatisticUpdatedEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.service.TranslationStateCache;
@@ -85,8 +86,7 @@ public class TranslationUpdatedManagerTest {
                 thenReturn(stats);
         when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
 
-        TextFlowTargetStateEvent.DocumentLocaleKey key =
-            new TextFlowTargetStateEvent.DocumentLocaleKey(null,
+        DocumentLocaleKey key = new DocumentLocaleKey(null,
                 versionId, docId, localeId);
 
         TextFlowTargetStateEvent.TextFlowTargetState state =

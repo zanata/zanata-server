@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Session;
@@ -45,6 +44,7 @@ import org.zanata.cdi.TestTransaction;
 import org.zanata.common.ActivityType;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
+import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.DocumentUploadedEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.Activity;
@@ -264,8 +264,7 @@ public class ActivityServiceImplTest extends ZanataDbunitJpaTest {
         Long documentId, Long tfIf, LocaleId localeId,
         Long tftId, ContentState newState, ContentState oldState) {
 
-        TextFlowTargetStateEvent.DocumentLocaleKey key =
-            new TextFlowTargetStateEvent.DocumentLocaleKey(personId,
+        DocumentLocaleKey key = new DocumentLocaleKey(personId,
                 versionId, documentId, localeId);
 
         TextFlowTargetStateEvent.TextFlowTargetState state =

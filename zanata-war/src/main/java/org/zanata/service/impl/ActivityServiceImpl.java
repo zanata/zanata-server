@@ -195,9 +195,9 @@ public class ActivityServiceImpl implements ActivityService {
                 HDocument document =
                     documentDAO.getById(event.getKey().getDocumentId());
 
-                for (TextFlowTargetStateEvent.TextFlowTargetState state : event
-                    .getStates()) {
-                    transactionUtil.run(() -> {
+                transactionUtil.run(() -> {
+                    for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+                        .getStates()) {
                         HTextFlowTarget target =
                             textFlowTargetDAO.findById(
                                 state.getTextFlowTargetId(), false);
@@ -211,8 +211,9 @@ public class ActivityServiceImpl implements ActivityService {
                             activityType,
                             target.getTextFlow().getWordCount()
                                 .intValue());
-                    });
-                }
+                    }
+                });
+
             } catch (Exception e) {
                 Throwables.propagate(e);
             } finally {
