@@ -186,16 +186,16 @@ public class ActivityServiceImpl implements ActivityService {
         // workaround for https://issues.jboss.org/browse/WELD-2019
         final TextFlowTargetStateEvent event = event_;
 
-        Long actorId = event.getKey().getActorId();
+        Long actorId = event.getActorId();
 
         if (actorId != null) {
             Lock lock = activityLockManager.getLock(actorId);
             lock.lock();
             try {
-                HDocument document =
-                    documentDAO.getById(event.getKey().getDocumentId());
-
                 transactionUtil.run(() -> {
+                    HDocument document =
+                        documentDAO.getById(event.getKey().getDocumentId());
+
                     for (TextFlowTargetStateEvent.TextFlowTargetState state : event
                         .getStates()) {
                         HTextFlowTarget target =

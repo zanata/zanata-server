@@ -35,8 +35,9 @@ import javax.annotation.Nonnull;
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
@@ -191,8 +192,11 @@ public class TranslationServiceImpl implements TranslationService {
         validateReviewPermissionIfApplicable(translationRequests,
                 projectIteration, hLocale);
 
-        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap =
-            Maps.newHashMap();
+        DocumentLocaleKey documentLocaleKey =
+            new DocumentLocaleKey(projectIteration.getId(),
+                sampleHTextFlow.getDocument().getId(), hLocale.getLocaleId());
+
+        List<TextFlowTargetState> states = Lists.newArrayList();
 
         for (TransUnitUpdateRequest request : translationRequests) {
             HTextFlow hTextFlow =
@@ -245,10 +249,13 @@ public class TranslationServiceImpl implements TranslationService {
                                     new TranslationDetails(request));
 
                     // fire event after flush
-                    if (result.targetChanged || hTextFlowTarget.getVersionNum() == 0) {
-                                updateTextFlowTargetStateEvent(eventMap,
-                                        authenticatedAccount.getPerson().getId(),
-                                        hTextFlowTarget, currentState);
+                    if (result.targetChanged ||
+                        hTextFlowTarget.getVersionNum() == 0) {
+                        HTextFlow textFlow = hTextFlowTarget.getTextFlow();
+
+                        states.add(new TextFlowTargetState(textFlow.getId(),
+                            hTextFlowTarget.getId(), hTextFlowTarget.getState(),
+                            currentState));
                     }
                     result.isSuccess = true;
                 } catch (HibernateException e) {
@@ -272,19 +279,12 @@ public class TranslationServiceImpl implements TranslationService {
             result.translatedTextFlowTarget = hTextFlowTarget;
             results.add(result);
         }
-        fireTargetUpdateEvent(eventMap);
+        TextFlowTargetStateEvent tftUpdatedEvent =
+            new TextFlowTargetStateEvent(documentLocaleKey,
+                authenticatedAccount.getPerson().getId(),
+                ImmutableList.copyOf(states));
+        textFlowTargetStateEvent.fire(tftUpdatedEvent);
         return results;
-    }
-
-    private void fireTargetUpdateEvent(
-        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap) {
-        for (Map.Entry<DocumentLocaleKey, List<TextFlowTargetState>> entry : eventMap
-            .entrySet()) {
-            TextFlowTargetStateEvent tftUpdatedEvent =
-                new TextFlowTargetStateEvent(entry.getKey(),
-                    ImmutableList.copyOf(entry.getValue()));
-            textFlowTargetStateEvent.fire(tftUpdatedEvent);
-        }
     }
 
     private void validateReviewPermissionIfApplicable(
@@ -328,8 +328,8 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     private void updateTextFlowTargetStateEvent(
-        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap,
-        Long actorId, HTextFlowTarget hTextFlowTarget,
+        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap,
+        HTextFlowTarget hTextFlowTarget,
         ContentState oldState) {
         HTextFlow textFlow = hTextFlowTarget.getTextFlow();
         Long documentId = textFlow.getDocument().getId();
@@ -341,14 +341,10 @@ public class TranslationServiceImpl implements TranslationService {
         // hTextFlowTarget.getLastChanged(),
         // hTextFlowTarget.getLastModifiedBy().getAccount().getUsername());
 
-        DocumentLocaleKey key = new DocumentLocaleKey(actorId,
+        DocumentLocaleKey key = new DocumentLocaleKey(
             versionId, documentId, hTextFlowTarget.getLocale().getLocaleId());
 
-        List<TextFlowTargetState> events = eventMap.get(key);
-        if(events == null) {
-            events = Lists.newArrayList();
-        }
-        events.add(new TextFlowTargetState(textFlow.getId(),
+        eventMap.put(key, new TextFlowTargetState(textFlow.getId(),
             hTextFlowTarget.getId(), hTextFlowTarget.getState(), oldState));
     }
 
@@ -801,11 +797,10 @@ public class TranslationServiceImpl implements TranslationService {
                         return input.getResId();
                     }
                 }));
-        final int numPlurals = resourceUtils
-                .getNumPlurals(document, locale);
+        final int numPlurals = resourceUtils.getNumPlurals(document, locale);
 
-        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap =
-            Maps.newHashMap();
+        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
+            HashMultimap.create();
 
         for (TextFlowTarget incomingTarget : batch) {
             String resId = incomingTarget.getResId();
@@ -883,29 +878,35 @@ public class TranslationServiceImpl implements TranslationService {
                     hTarget.setVersionNum(hTarget.getVersionNum() + 1);
 
                     changed = true;
-                    Long actorId;
                     if (assignCreditToUploader){
                         HPerson hPerson = authenticatedAccount.getPerson();
                         hTarget.setTranslator(hPerson);
                         hTarget.setLastModifiedBy(hPerson);
-                        actorId = hPerson.getId();
                     } else {
                         hTarget.setTranslator(null);
                         hTarget.setLastModifiedBy(authenticatedAccount.getPerson());
-                        actorId = null;
                     }
                     hTarget.setSourceType(translationSourceType);
                     hTarget.setCopiedEntityId(null);
                     hTarget.setCopiedEntityId(null);
                     textFlowTargetDAO.makePersistent(hTarget);
-                    updateTextFlowTargetStateEvent(eventMap, actorId, hTarget, currentState);
+                    updateTextFlowTargetStateEvent(eventMap, hTarget, currentState);
                 }
             }
             if (handleOp.isPresent()) {
                 handleOp.get().increaseProgress(1);
             }
         }
-        fireTargetUpdateEvent(eventMap);
+        Long actorId =
+            assignCreditToUploader ? authenticatedAccount.getPerson().getId() :
+                null;
+        for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetState>> entry : eventMap
+            .asMap().entrySet()) {
+            TextFlowTargetStateEvent tftUpdatedEvent =
+                new TextFlowTargetStateEvent(entry.getKey(), actorId,
+                    ImmutableList.copyOf(entry.getValue()));
+            textFlowTargetStateEvent.fire(tftUpdatedEvent);
+        }
         textFlowTargetDAO.flush();
         return changed;
     }

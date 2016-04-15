@@ -29,6 +29,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.zanata.common.ContentState;
 
+import javax.annotation.Nullable;
+
 /**
  * @author Sean Flanigan <a
  *         href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
@@ -40,11 +42,15 @@ public final class TextFlowTargetStateEvent {
     private final DocumentLocaleKey key;
 
     @Getter
+    // this may be null in the case of document uploads
+    private final @Nullable Long actorId;
+
+    @Getter
     private final ImmutableList<TextFlowTargetState> states;
 
     public TextFlowTargetStateEvent(DocumentLocaleKey key,
-        TextFlowTargetState state) {
-        this(key, ImmutableList.of(state));
+        Long actorId, TextFlowTargetState state) {
+        this(key, actorId, ImmutableList.of(state));
     }
 
     @Getter

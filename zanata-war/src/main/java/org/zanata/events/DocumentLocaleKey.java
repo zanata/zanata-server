@@ -26,7 +26,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.zanata.common.LocaleId;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
@@ -35,10 +34,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Getter
-public class DocumentLocaleKey implements Serializable{
+public class DocumentLocaleKey implements Serializable {
 
-    // this may be null in the case of document uploads
-    private final @Nullable Long actorId;
     private final Long projectIterationId;
     private final Long documentId;
     private final LocaleId localeId;

@@ -20,14 +20,16 @@
  */
 package org.zanata.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.RequestScoped;
@@ -209,8 +211,8 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                         sourceVersionId, targetVersionId, batchStart,
                         batchLength);
 
-        Map<DocumentLocaleKey, List<TextFlowTargetState>> eventMap =
-            Maps.newHashMap();
+        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
+            HashMultimap.create();
 
         for (HTextFlow[] results : matches) {
             HTextFlow sourceTf = results[0];
@@ -250,35 +252,30 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                 textFlowDAO.flush();
 
                 if (!localeContentStateMap.isEmpty()) {
-                    Long actorId = authenticatedAccount.getPerson().getId();
                     for (Map.Entry<Long, ContentState> entry : localeContentStateMap
                             .entrySet()) {
                         HTextFlowTarget updatedTarget =
                                 targetTf.getTargets().get(entry.getKey());
 
-                        DocumentLocaleKey key = new DocumentLocaleKey(actorId,
+                        DocumentLocaleKey key = new DocumentLocaleKey(
                             targetVersionId, targetTf.getDocument().getId(),
                             updatedTarget.getLocale().getLocaleId());
 
-                        List<TextFlowTargetState> events = eventMap.get(key);
-                        if(events == null) {
-                            events = Lists.newArrayList();
-                        }
-                        events.add(new TextFlowTargetState(targetTf.getId(),
+                        eventMap.put(key, new TextFlowTargetState(targetTf.getId(),
                             updatedTarget.getId(), updatedTarget.getState(),
                             entry.getValue()));
+
                     }
                 }
             }
         }
-        if (!eventMap.isEmpty()) {
-            for (Map.Entry<DocumentLocaleKey, List<TextFlowTargetState>> entry : eventMap
-                .entrySet()) {
-                TextFlowTargetStateEvent tftUpdatedEvent =
-                    new TextFlowTargetStateEvent(entry.getKey(),
-                        ImmutableList.copyOf(entry.getValue()));
-                textFlowTargetStateEvent.fire(tftUpdatedEvent);
-            }
+        Long actorId = authenticatedAccount.getPerson().getId();
+        for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetState>> entry : eventMap
+            .asMap().entrySet()) {
+            TextFlowTargetStateEvent tftUpdatedEvent =
+                new TextFlowTargetStateEvent(entry.getKey(), actorId,
+                    ImmutableList.copyOf(entry.getValue()));
+            textFlowTargetStateEvent.fire(tftUpdatedEvent);
         }
         stopwatch.stop();
         log.info("Complete merge translations of {} in {}", matches.size()

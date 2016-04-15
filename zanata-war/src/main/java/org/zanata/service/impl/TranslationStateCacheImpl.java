@@ -201,8 +201,8 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
             Long tftId = state.getTextFlowTargetId();
 
             // update document status information
-            updateDocStatusCache(new DocumentLocaleKey(documentId,
-                localeId), tftId);
+            updateDocStatusCache(new DocumentLocaleKey(documentId, localeId),
+                tftId);
 
             // invalidate target validation
             targetValidationCache.remove(tftId);

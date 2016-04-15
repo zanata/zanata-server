@@ -100,14 +100,17 @@ public class VersionStateCacheImpl implements VersionStateCache {
             new VersionLocaleKey(event.getKey().getProjectIterationId(),
                 event.getKey().getLocaleId());
         WordStatistic stats = versionStatisticCache.get(key);
-        TextFlowDAO textFlowDAO = serviceLocator.getInstance(TextFlowDAO.class);
+        if (stats != null) {
+            TextFlowDAO textFlowDAO =
+                serviceLocator.getInstance(TextFlowDAO.class);
 
-        for (TextFlowTargetStateEvent.TextFlowTargetState state : event
-            .getStates()) {
-            int wordCount =
-                textFlowDAO.getWordCount(state.getTextFlowId());
-            stats.decrement(state.getPreviousState(), wordCount);
-            stats.increment(state.getNewState(), wordCount);
+            for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+                .getStates()) {
+                int wordCount =
+                    textFlowDAO.getWordCount(state.getTextFlowId());
+                stats.decrement(state.getPreviousState(), wordCount);
+                stats.increment(state.getNewState(), wordCount);
+            }
             versionStatisticCache.put(key, stats);
         }
     }

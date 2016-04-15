@@ -413,9 +413,9 @@ public class CopyTransWorkFactory {
         // FIXME other observers may not be notified
         HDocument document = target.getTextFlow().getDocument();
 
-        DocumentLocaleKey key = new DocumentLocaleKey(actorId,
-                document.getProjectIteration().getId(), document.getId(),
-                target.getLocaleId());
+        DocumentLocaleKey key = new DocumentLocaleKey(
+            document.getProjectIteration().getId(), document.getId(),
+            target.getLocaleId());
 
         TextFlowTargetStateEvent.TextFlowTargetState state =
             new TextFlowTargetStateEvent.TextFlowTargetState(
@@ -424,7 +424,7 @@ public class CopyTransWorkFactory {
                 previousState);
 
         TextFlowTargetStateEvent event =
-            new TextFlowTargetStateEvent(key, state);
+            new TextFlowTargetStateEvent(key, actorId, state);
 
         versionStateCacheImpl.textFlowStateUpdated(event);
     }

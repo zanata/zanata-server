@@ -68,6 +68,8 @@ public class TranslationUpdatedManager {
             for(TextFlowTargetState state: event.getStates()) {
                 int wordCount =
                     textFlowDAO.getWordCount(state.getTextFlowId());
+                // TODO: turn DocumentStatisticUpdatedEvent into an aggregate event like TextFlowTargetStateEvent
+                // TODO: generate one DocumentStatisticUpdatedEvent per TextFlowTargetStateEvent
                 documentStatisticUpdatedEvent
                     .fire(new DocumentStatisticUpdatedEvent(
                         versionId, documentId, localeId,

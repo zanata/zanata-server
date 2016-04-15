@@ -86,14 +86,14 @@ public class TranslationUpdatedManagerTest {
                 thenReturn(stats);
         when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
 
-        DocumentLocaleKey key = new DocumentLocaleKey(null,
-                versionId, docId, localeId);
+        DocumentLocaleKey key =
+            new DocumentLocaleKey(versionId, docId, localeId);
 
         TextFlowTargetStateEvent.TextFlowTargetState state =
             new TextFlowTargetStateEvent.TextFlowTargetState(tfId,
                 1L, newState, oldState);
 
-        TextFlowTargetStateEvent event = new TextFlowTargetStateEvent(key, state);
+        TextFlowTargetStateEvent event = new TextFlowTargetStateEvent(key, null, state);
 
         spyManager.textFlowStateUpdated(event);
 
