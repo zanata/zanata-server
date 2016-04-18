@@ -327,27 +327,6 @@ public class TranslationServiceImpl implements TranslationService {
                 projectSlug, projectIteration.getSlug());
     }
 
-    private void updateTextFlowTargetStateEvent(
-        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap,
-        HTextFlowTarget hTextFlowTarget,
-        ContentState oldState) {
-        HTextFlow textFlow = hTextFlowTarget.getTextFlow();
-        Long documentId = textFlow.getDocument().getId();
-        Long versionId = textFlow.getDocument().getProjectIteration().getId();
-        // TODO remove hasError from DocumentStatus, so that we can pass
-        // everything else directly to cache
-        // DocumentStatus docStatus = new DocumentStatus(
-        // new DocumentId(document.getId(), document.getDocId()), hasError,
-        // hTextFlowTarget.getLastChanged(),
-        // hTextFlowTarget.getLastModifiedBy().getAccount().getUsername());
-
-        DocumentLocaleKey key = new DocumentLocaleKey(
-            versionId, documentId, hTextFlowTarget.getLocale().getLocaleId());
-
-        eventMap.put(key, new TextFlowTargetState(textFlow.getId(),
-            hTextFlowTarget.getId(), hTextFlowTarget.getState(), oldState));
-    }
-
     public class TranslationDetails {
         private final String revisionComment;
         private final EntityType copiedEntityType;
@@ -789,9 +768,9 @@ public class TranslationServiceImpl implements TranslationService {
         // so that it can lazily load associated objects
         HProjectIteration iteration =
                 projectIterationDAO.findById(projectIterationId);
-        Map<String, HTextFlow> resIdToTextFlowMap = textFlowDAO.getByDocumentAndResIds(document, Lists.transform(
-                batch, new Function<TextFlowTarget, String>() {
-
+        Map<String, HTextFlow> resIdToTextFlowMap =
+                textFlowDAO.getByDocumentAndResIds(document, Lists.transform(
+                        batch, new Function<TextFlowTarget, String>() {
                     @Override
                     public String apply(TextFlowTarget input) {
                         return input.getResId();
@@ -799,8 +778,7 @@ public class TranslationServiceImpl implements TranslationService {
                 }));
         final int numPlurals = resourceUtils.getNumPlurals(document, locale);
 
-        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
-            HashMultimap.create();
+        List<TextFlowTargetState> states = Lists.newArrayList();
 
         for (TextFlowTarget incomingTarget : batch) {
             String resId = incomingTarget.getResId();
@@ -890,7 +868,10 @@ public class TranslationServiceImpl implements TranslationService {
                     hTarget.setCopiedEntityId(null);
                     hTarget.setCopiedEntityId(null);
                     textFlowTargetDAO.makePersistent(hTarget);
-                    updateTextFlowTargetStateEvent(eventMap, hTarget, currentState);
+
+                    states.add(new TextFlowTargetState(textFlow.getId(),
+                        hTarget.getId(), hTarget.getState(),
+                        currentState));
                 }
             }
             if (handleOp.isPresent()) {
@@ -900,13 +881,16 @@ public class TranslationServiceImpl implements TranslationService {
         Long actorId =
             assignCreditToUploader ? authenticatedAccount.getPerson().getId() :
                 null;
-        for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetState>> entry : eventMap
-            .asMap().entrySet()) {
-            TextFlowTargetStateEvent tftUpdatedEvent =
-                new TextFlowTargetStateEvent(entry.getKey(), actorId,
-                    ImmutableList.copyOf(entry.getValue()));
-            textFlowTargetStateEvent.fire(tftUpdatedEvent);
-        }
+
+        DocumentLocaleKey documentLocaleKey =
+                new DocumentLocaleKey(projectIterationId,
+                        document.getId(), locale.getLocaleId());
+
+        TextFlowTargetStateEvent tftUpdatedEvent =
+                new TextFlowTargetStateEvent(documentLocaleKey,
+                        actorId, ImmutableList.copyOf(states));
+        textFlowTargetStateEvent.fire(tftUpdatedEvent);
+
         textFlowTargetDAO.flush();
         return changed;
     }

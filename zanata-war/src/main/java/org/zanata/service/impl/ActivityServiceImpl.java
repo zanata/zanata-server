@@ -201,8 +201,8 @@ public class ActivityServiceImpl implements ActivityService {
                     HTextFlowTarget lastReviewedTarget = null;
                     HTextFlowTarget lastTranslatedTarget = null;
 
-                    int totalReviewedWord = 0;
-                    int totalTranslatedWord = 0;
+                    int totalReviewedWords = 0;
+                    int totalTranslatedWords = 0;
 
                     for (TextFlowTargetStateEvent.TextFlowTargetState state : event
                         .getStates()) {
@@ -211,12 +211,12 @@ public class ActivityServiceImpl implements ActivityService {
                                 state.getTextFlowTargetId(), false);
                         if (state.getNewState().isReviewed()) {
                             lastReviewedTarget = target;
-                            totalReviewedWord +=
+                            totalReviewedWords +=
                                 target.getTextFlow().getWordCount()
                                     .intValue();
                         } else {
                             lastTranslatedTarget = target;
-                            totalTranslatedWord +=
+                            totalTranslatedWords +=
                                 target.getTextFlow().getWordCount()
                                     .intValue();
                         }
@@ -225,7 +225,7 @@ public class ActivityServiceImpl implements ActivityService {
                         logActivityAlreadyLocked(actorId,
                             document.getProjectIteration(), lastReviewedTarget,
                             ActivityType.REVIEWED_TRANSLATION,
-                            totalReviewedWord);
+                            totalReviewedWords);
                     }
 
                     if (lastTranslatedTarget != null) {
@@ -233,10 +233,9 @@ public class ActivityServiceImpl implements ActivityService {
                             document.getProjectIteration(),
                             lastTranslatedTarget,
                             ActivityType.UPDATE_TRANSLATION,
-                            totalTranslatedWord);
+                            totalTranslatedWords);
                     }
                 });
-
             } catch (Exception e) {
                 Throwables.propagate(e);
             } finally {
