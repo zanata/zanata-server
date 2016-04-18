@@ -50,7 +50,7 @@ function convertMatrixDataToChartData (matrixData) {
     datasets: [
       {
         label: 'Total',
-        fillColor: 'rgb(84, 102, 122, .05)',
+        fillColor: 'rgba(84, 102, 122, .05)',
         strokeColor: 'rgb(84, 102, 122)',
         pointColor: 'rgb(84, 102, 122)',
         pointStrokeColor: '#fff',
