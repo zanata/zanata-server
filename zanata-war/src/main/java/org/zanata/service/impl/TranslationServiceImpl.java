@@ -192,10 +192,6 @@ public class TranslationServiceImpl implements TranslationService {
         validateReviewPermissionIfApplicable(translationRequests,
                 projectIteration, hLocale);
 
-        DocumentLocaleKey documentLocaleKey =
-            new DocumentLocaleKey(projectIteration.getId(),
-                sampleHTextFlow.getDocument().getId(), hLocale.getLocaleId());
-
         List<TextFlowTargetState> states = Lists.newArrayList();
 
         for (TransUnitUpdateRequest request : translationRequests) {
@@ -279,6 +275,10 @@ public class TranslationServiceImpl implements TranslationService {
             result.translatedTextFlowTarget = hTextFlowTarget;
             results.add(result);
         }
+        DocumentLocaleKey documentLocaleKey =
+            new DocumentLocaleKey(projectIteration.getId(),
+                sampleHTextFlow.getDocument().getId(), hLocale.getLocaleId());
+
         TextFlowTargetStateEvent tftUpdatedEvent =
             new TextFlowTargetStateEvent(documentLocaleKey,
                 authenticatedAccount.getPerson().getId(),
