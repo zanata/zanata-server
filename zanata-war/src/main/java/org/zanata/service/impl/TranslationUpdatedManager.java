@@ -61,7 +61,7 @@ public class TranslationUpdatedManager {
     // Fire asynchronous event
     void publishAsyncEvent(TextFlowTargetStateEvent event) {
         if (BeanManagerProvider.isActive()) {
-            Long versionId = event.getKey().getProjectIterationId();
+            Long versionId = event.getProjectIterationId();
             Long documentId = event.getKey().getDocumentId();
             LocaleId localeId = event.getKey().getLocaleId();
 

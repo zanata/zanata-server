@@ -94,7 +94,7 @@ public class VersionStateCacheImpl implements VersionStateCache {
         @Observes(during = TransactionPhase.AFTER_SUCCESS)
             TextFlowTargetStateEvent event) {
         VersionLocaleKey key =
-            new VersionLocaleKey(event.getKey().getProjectIterationId(),
+            new VersionLocaleKey(event.getProjectIterationId(),
                 event.getKey().getLocaleId());
         WordStatistic stats = versionStatisticCache.get(key);
         if (stats != null) {

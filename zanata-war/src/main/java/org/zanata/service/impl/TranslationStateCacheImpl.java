@@ -42,6 +42,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
@@ -297,13 +298,5 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
                 new DocumentId(document.getId(), document.getDocId()),
                 lastTranslatedDate, lastTranslatedBy);
         return documentStatus;
-    }
-
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    @Getter
-    public static final class DocumentLocaleKey implements Serializable {
-        private Long documentId;
-        private LocaleId localeId;
     }
 }

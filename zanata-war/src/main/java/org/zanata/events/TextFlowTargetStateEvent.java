@@ -42,6 +42,9 @@ public final class TextFlowTargetStateEvent {
     private final DocumentLocaleKey key;
 
     @Getter
+    private final Long projectIterationId;
+
+    @Getter
     // this may be null in the case of document uploads
     private final @Nullable Long actorId;
 
@@ -49,8 +52,8 @@ public final class TextFlowTargetStateEvent {
     private final ImmutableList<TextFlowTargetState> states;
 
     public TextFlowTargetStateEvent(DocumentLocaleKey key,
-        Long actorId, TextFlowTargetState state) {
-        this(key, actorId, ImmutableList.of(state));
+        Long projectIterationId, Long actorId, TextFlowTargetState state) {
+        this(key, projectIterationId, actorId, ImmutableList.of(state));
     }
 
     @Getter

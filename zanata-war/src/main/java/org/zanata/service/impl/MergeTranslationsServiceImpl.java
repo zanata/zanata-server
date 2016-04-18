@@ -258,13 +258,12 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                                 targetTf.getTargets().get(entry.getKey());
 
                         DocumentLocaleKey key = new DocumentLocaleKey(
-                            targetVersionId, targetTf.getDocument().getId(),
+                            targetTf.getDocument().getId(),
                             updatedTarget.getLocale().getLocaleId());
 
                         eventMap.put(key, new TextFlowTargetState(targetTf.getId(),
                             updatedTarget.getId(), updatedTarget.getState(),
                             entry.getValue()));
-
                     }
                 }
             }
@@ -273,8 +272,8 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetState>> entry : eventMap
             .asMap().entrySet()) {
             TextFlowTargetStateEvent tftUpdatedEvent =
-                new TextFlowTargetStateEvent(entry.getKey(), actorId,
-                    ImmutableList.copyOf(entry.getValue()));
+                new TextFlowTargetStateEvent(entry.getKey(), targetVersionId,
+                    actorId, ImmutableList.copyOf(entry.getValue()));
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
         }
         stopwatch.stop();

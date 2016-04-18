@@ -276,11 +276,12 @@ public class TranslationServiceImpl implements TranslationService {
             results.add(result);
         }
         DocumentLocaleKey documentLocaleKey =
-            new DocumentLocaleKey(projectIteration.getId(),
+            new DocumentLocaleKey(
                 sampleHTextFlow.getDocument().getId(), hLocale.getLocaleId());
 
         TextFlowTargetStateEvent tftUpdatedEvent =
             new TextFlowTargetStateEvent(documentLocaleKey,
+                projectIteration.getId(),
                 authenticatedAccount.getPerson().getId(),
                 ImmutableList.copyOf(states));
         textFlowTargetStateEvent.fire(tftUpdatedEvent);
@@ -883,12 +884,12 @@ public class TranslationServiceImpl implements TranslationService {
                 null;
 
         DocumentLocaleKey documentLocaleKey =
-                new DocumentLocaleKey(projectIterationId,
-                        document.getId(), locale.getLocaleId());
+            new DocumentLocaleKey(
+                document.getId(), locale.getLocaleId());
 
         TextFlowTargetStateEvent tftUpdatedEvent =
-                new TextFlowTargetStateEvent(documentLocaleKey,
-                        actorId, ImmutableList.copyOf(states));
+            new TextFlowTargetStateEvent(documentLocaleKey,
+                projectIterationId, actorId, ImmutableList.copyOf(states));
         textFlowTargetStateEvent.fire(tftUpdatedEvent);
 
         textFlowTargetDAO.flush();

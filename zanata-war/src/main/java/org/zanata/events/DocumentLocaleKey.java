@@ -36,7 +36,6 @@ import java.io.Serializable;
 @Getter
 public class DocumentLocaleKey implements Serializable {
 
-    private final Long projectIterationId;
     private final Long documentId;
     private final LocaleId localeId;
 }

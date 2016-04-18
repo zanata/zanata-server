@@ -264,13 +264,12 @@ public class ActivityServiceImplTest extends ZanataDbunitJpaTest {
         Long documentId, Long tfIf, LocaleId localeId,
         Long tftId, ContentState newState, ContentState oldState) {
 
-        DocumentLocaleKey key =
-            new DocumentLocaleKey(versionId, documentId, localeId);
+        DocumentLocaleKey key = new DocumentLocaleKey(documentId, localeId);
 
         TextFlowTargetStateEvent.TextFlowTargetState state =
             new TextFlowTargetStateEvent.TextFlowTargetState(tfIf,
                 tftId, newState, oldState);
 
-        return new TextFlowTargetStateEvent(key, personId, state);
+        return new TextFlowTargetStateEvent(key, versionId, personId, state);
     }
 }
