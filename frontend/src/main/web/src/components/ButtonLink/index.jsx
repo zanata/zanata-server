@@ -92,7 +92,7 @@ const ButtonLink = ({
 ButtonLink.propTypes = {
   children: PropTypes.node,
   /**
-   * Toggle whether the button is disabled or not
+   * Toggle whether the button is disabled or not. Default is 'false'
    */
   disabled: PropTypes.bool,
   /**
@@ -103,7 +103,7 @@ ButtonLink.propTypes = {
    * The style of the link based on it's context or state.
    */
   type: PropTypes.oneOf(['default', 'plain', 'primary', 'success', 'unsure',
-    'warning', 'danger', 'muted'])
+    'warning', 'danger', 'muted']).isRequired
 }
 
 ButtonLink.defaultProps = {
