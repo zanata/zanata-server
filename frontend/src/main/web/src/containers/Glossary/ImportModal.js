@@ -49,6 +49,7 @@ class ImportModal extends Component {
     const isUploading = status !== -1
     const locale = srcLocale.locale ? srcLocale.locale.displayName : ''
     let messageSection
+    let langSelection
     let disableUpload = true
 
     if (this.isSupportedFile(fileExtension) && !isUploading) {
@@ -56,14 +57,22 @@ class ImportModal extends Component {
         if (!StringUtils.isEmptyOrNull(transLocale)) {
           disableUpload = false
         }
+        langSelection = (<Select
+          name='glossary-import-language-selection'
+          className='Maw(r16) Mb(r1)'
+          placeholder='Select a translation language…'
+          value={transLocale}
+          options={transLocales}
+          onChange={handleImportFileLocaleChange}
+        />)
       } else {
         disableUpload = false
       }
     }
 
     if (file && !this.isSupportedFile(fileExtension)) {
-      messageSection = (<div className='cdanger mv1/4'>
-        File {file.name} is not supported.
+      messageSection = (<div className='C(danger) My(rq)'>
+        File '{file.name}' is not supported.
       </div>)
     }
 
@@ -88,14 +97,7 @@ class ImportModal extends Component {
           { isUploading
             ? (<span className='Fz(ms2)'>
                 {transLocale.label}</span>)
-            : (<Select
-            name='glossary-import-language-selection'
-            className='Maw(r16) Mb(r1)'
-            placeholder='Select a translation language…'
-            value={transLocale}
-            options={transLocales}
-            onChange={handleImportFileLocaleChange}
-          />)
+            : langSelection
           }
           <p>
             CSV and PO files are supported. <strong>The source language should
