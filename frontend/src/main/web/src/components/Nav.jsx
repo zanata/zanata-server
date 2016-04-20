@@ -17,7 +17,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/a/#explore',
+    link: '/a/' + dswid + '#explore',
     internalLink: '/explore',
     title: 'Explore',
     auth: 'public',
@@ -50,7 +50,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/#profile',
+    link: '/a/' + dswid + '#profile',
     internalLink: '/profile',
     title: 'Profile',
     auth: 'loggedin',
@@ -58,7 +58,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/#glossary',
+    link: '/a/' + dswid + '#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin',
@@ -115,10 +115,13 @@ const classes = {
   }
 }
 
+/**
+ * Generates side menu bar with icons
+ */
 const Nav = ({
   active,
   links,
-  legacy,
+  isJsfPage,
   ...props
 }) => {
   let auth = 'loggedout'
@@ -140,7 +143,7 @@ const Nav = ({
           (item.auth === 'loggedin' && admin)) && !item.more) {
 
           let link = null
-          if (legacy) {
+          if (isJsfPage) {
             //jsf pages
             link = links[item.link]
               ? (links.context + links[item.link])
@@ -154,8 +157,8 @@ const Nav = ({
                     : (links.context + item.link))
           }
 
-          const useHref = legacy ? true : (item.internalLink ? false : true)
-          return (<NavItem key={itemId}
+          const useHref = isJsfPage || !item.internalLink
+          return <NavItem key={itemId}
             id={item.id}
             small={item.small}
             active={active.indexOf(link) >= 0}
@@ -163,7 +166,7 @@ const Nav = ({
             useHref={useHref}
             icon={item.icon}
             tooltip={item.tooltip}
-            title={item.title}/>)
+            title={item.title}/>
         }
         return null
       })}

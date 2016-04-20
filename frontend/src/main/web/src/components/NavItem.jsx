@@ -1,7 +1,10 @@
-import React from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react' // eslint-disable-line
 import { Link, NavIcon } from './'
 import { merge } from 'lodash'
 
+/**
+ * Item of side menu. See Nav.jsx for usage.
+ */
 const NavItem = ({
   id,
   link,
@@ -12,8 +15,8 @@ const NavItem = ({
   useHref,
   ...props
 }) => {
-  const logo = (icon === 'zanata')
-  const search = (link === '/search')
+  const isLogo = (icon === 'zanata')
+  const isSearchLink = (link === '/search')
   const classes = {
     base: {
       bgc: '',
@@ -59,18 +62,28 @@ const NavItem = ({
   const themeClasses = {
     base: merge({},
       classes.base,
-      active && !logo ? classes.active : {},
+      active && !isLogo ? classes.active : {},
       small ? classes.small : {},
-      search ? classes.search : {}
+      isSearchLink ? classes.search : {}
     )
   }
-  const text = logo ? (<span className='Hidden'>{title}</span>) : title
+  const text = isLogo ? (<span className='Hidden'>{title}</span>) : title
   return (
     <Link {...props} id={id} link={link} theme={themeClasses} useHref={useHref}>
-      <NavIcon name={icon} size={logo ? '6' : '1'} />
+      <NavIcon name={icon} size={isLogo ? '6' : '1'} />
       {text}
     </Link>
   )
+}
+
+NavItem.propTypes = {
+  id: PropTypes.string,
+  link: PropTypes.string,
+  small: PropTypes.bool,
+  icon: PropTypes.string,
+  active: PropTypes.bool,
+  title: PropTypes.string,
+  useHref: PropTypes.bool
 }
 
 export default NavItem

@@ -110,7 +110,7 @@ const ButtonRound = ({
 ButtonRound.propTypes = {
   children: PropTypes.node,
   /**
-   * Toggle whether the button is disabled or not
+   * Toggle whether the button is disabled or not. Default is 'false'
    */
   disabled: PropTypes.bool,
   theme: PropTypes.object,
@@ -120,8 +120,12 @@ ButtonRound.propTypes = {
   type: PropTypes.oneOf(['default', 'primary', 'success', 'unsure',
     'warning', 'danger', 'muted']),
   /**
-   * The size of the button
+   * The size of the button. Default is '0'
    * Uses ems to style padding etc relatively to font-size.
+   * n1 - font size: 0.833rem
+   * 0 - font size: 1rem
+   * 1 - font size: 1.2rem
+   * 2 - font size: 1.44rem
    */
   size: PropTypes.oneOf(['n1', '0', '1', '2'])
 }

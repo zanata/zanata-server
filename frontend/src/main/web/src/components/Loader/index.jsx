@@ -106,9 +106,11 @@ const Loader = ({
 
 Loader.propTypes = {
   /**
-   * The size of each loader, based on modular scale.
+   * The size of each loader, based on modular scale. Default is '0'
    */
-  size: PropTypes.string,
+  size: PropTypes.oneOf(
+    ['n1', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+  ),
   theme: PropTypes.object
 }
 

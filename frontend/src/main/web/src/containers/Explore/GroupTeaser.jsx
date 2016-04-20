@@ -1,7 +1,9 @@
-import React from 'react' // eslint-disable-line
-import Link from '../components/Link'
-import View from '../components/View'
-import Icon from '../components/Icon'
+import React, { PropTypes } from 'react'
+import {
+  Link,
+  View,
+  Icon
+} from '../../components'
 
 const viewTheme = {
   base: {
@@ -16,11 +18,12 @@ const statusIcons = {
   READONLY: 'locked',
   OBSOLETE: 'trash'
 }
-
+/**
+ * Entry of Version Group search results
+ */
 const GroupTeaser = ({
   details,
   name,
-  children,
   ...props
 }) => {
   const status = statusIcons[details.status]
@@ -61,13 +64,10 @@ const GroupTeaser = ({
       />
     </View>
   ) : undefined
-  const useHref = true
-  const link = useHref
-    ? window.config.baseUrl + '/version-group/view/' + details.id
-    : 'groups/' + details.id
+  const link = window.config.baseUrl + '/version-group/view/' + details.id
   const theme = status !== statusIcons.ACTIVE
-    ? { base: { fw: 'Fw(600)', c: 'C(muted)' } }
-    : { base: { fw: 'Fw(600)' } }
+                  ? { base: { fw: 'Fw(600)', c: 'C(muted)' } }
+                  : { base: { fw: 'Fw(600)' } }
   return (
     <View theme={viewTheme} name={name}>
       {/* <View className='Mend(rh)'>
@@ -75,7 +75,7 @@ const GroupTeaser = ({
       </View> */}
       <View theme={{ base: { fld: 'Fld(c) Fld(r)--md', flx: 'Flx(flx1)' } }}>
         <View>
-          <Link link={link} useHref={useHref} theme={theme}>
+          <Link link={link} useHref theme={theme}>
             {status !== statusIcons.ACTIVE &&
             (<Icon name={statusIcons[details.status]} size='1'
               theme={{ base: { m: 'Mend(rq)' } }}/>)}
@@ -87,6 +87,22 @@ const GroupTeaser = ({
       </View>
     </View>
   )
+}
+
+GroupTeaser.propTypes = {
+  /**
+   * Entry of the search results.
+   */
+  details: PropTypes.shape({
+    id: PropTypes.string,
+    status: PropTypes.string,
+    description: PropTypes.string,
+    title: PropTypes.string
+  }),
+  /**
+   * Name for the component
+   */
+  name: PropTypes.string
 }
 
 export default GroupTeaser

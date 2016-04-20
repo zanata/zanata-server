@@ -1,7 +1,5 @@
 import React, { PropTypes } from 'react'
-import {
-  Base
-} from '../'
+import { Base } from '../'
 
 const classes = {
   p: 'P(r1)'
@@ -20,7 +18,10 @@ const ModalHeader = ({
 }
 
 ModalHeader.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node]
+  )
 }
 
 export default ModalHeader

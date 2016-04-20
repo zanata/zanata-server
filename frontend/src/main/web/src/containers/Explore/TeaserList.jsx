@@ -1,10 +1,10 @@
 import React from 'react' // eslint-disable-line
-import { View } from '../components'
-import TeaserListHeader from '../components/TeaserListHeader'
-import ProjectTeaser from '../components/ProjectTeaser'
-import GroupTeaser from '../components/GroupTeaser'
-import LanguageTeamTeaser from '../components/LanguageTeamTeaser'
-import PersonTeaser from '../components/PersonTeaser'
+import { View } from '../../components'
+import TeaserListHeader from './TeaserListHeader'
+import ProjectTeaser from './ProjectTeaser'
+import GroupTeaser from './GroupTeaser'
+import LanguageTeamTeaser from './LanguageTeamTeaser'
+import PersonTeaser from './PersonTeaser'
 
 const TeaserList = ({
   children,

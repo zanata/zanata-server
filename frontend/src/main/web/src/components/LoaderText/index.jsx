@@ -35,9 +35,9 @@ const LoaderText = ({
       componentName='LoaderText'
       theme={themed.root} {...props}>
       {loading
-        ? (<Base theme={themed.root}>
+        ? <Base theme={themed.root}>
             {loadingText} <Loader theme={themed.loader} size={size} />
-        </Base>)
+          </Base>
         : children
       }
     </Base>

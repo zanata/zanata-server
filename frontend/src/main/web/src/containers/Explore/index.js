@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
-import { isEmpty, debounce, isEqual } from 'lodash'
+import { isEmpty, debounce } from 'lodash'
 import {
   Base,
   Page,
@@ -11,9 +11,9 @@ import {
   Icon,
   Button,
   TextInput,
-  TeaserList,
   LoaderText
 } from '../../components'
+import TeaserList from './TeaserList'
 import {
   searchTextChanged,
   searchPageInitialLoad,

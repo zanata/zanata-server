@@ -95,7 +95,7 @@ const Icon = ({
 Icon.propTypes = {
   /**
    * The name of the icon.
-   * See the list below for possible icons.
+   * See list.js in the same folder for possible icons.
    */
   name: PropTypes.string.isRequired,
   /**

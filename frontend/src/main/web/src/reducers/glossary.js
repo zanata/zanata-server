@@ -70,6 +70,7 @@ const glossary = handleActions({
   }),
   [GLOSSARY_UPDATE_LOCALE]: (state, action) => ({
     ...state,
+    selectedTerm : {},
     locale: action.payload
   }),
   [GLOSSARY_UPDATE_FILTER]: (state, action) => ({
@@ -372,7 +373,8 @@ const glossary = handleActions({
   [GLOSSARY_CREATE_SUCCESS]: (state, action) => {
     let newEntry = state.newEntry
     newEntry.isSaving = false
-    newEntry = GlossaryHelper.generateEmptyEntry(state.src)
+    newEntry.entry = GlossaryHelper.generateEmptyEntry(state.src)
+    newEntry.show = false
     return {
       ...state,
       newEntry: newEntry,
@@ -385,7 +387,8 @@ const glossary = handleActions({
   [GLOSSARY_CREATE_FAILURE]: (state, action) => {
     let newEntry = state.newEntry
     newEntry.isSaving = false
-    newEntry = GlossaryHelper.generateEmptyEntry(state.src)
+    newEntry.entry = GlossaryHelper.generateEmptyEntry(state.src)
+    newEntry.show = false
     return {
       ...state,
       newEntry: newEntry,

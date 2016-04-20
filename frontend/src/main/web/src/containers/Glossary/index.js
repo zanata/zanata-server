@@ -58,10 +58,20 @@ class Glossary extends Component {
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
     const isSaving = !isUndefined(saving[entryId])
-    const entry = isSaving ? saving[entryId]
-      : (selected ? selectedTerm : entryId
-      ? terms[entryId] : null)
+    let entry = null
+    if (isSaving && entryId) {
+      const savingTerm = saving[entryId]
+      if (savingTerm.transTerm.locale === selectedTransLocale) {
+        entry = savingTerm
+      }
+    } else if (selected && selectedTerm.transTerm &&
+        selectedTerm.transTerm.locale === selectedTransLocale) {
+      entry = selectedTerm
+    } else if (entryId) {
+      entry = terms[entryId]
+    }
     const isDeleting = !isUndefined(deleting[entryId])
+
     return (
       <Entry key={key}
         entry={entry}

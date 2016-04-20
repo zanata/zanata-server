@@ -63,7 +63,7 @@ let activePath = window.location.pathname
 render(
   <div className='H(100%)'>
     <Icons />
-    <Nav active={activePath} legacy links={links}/>
+    <Nav active={activePath} isJsfPage links={links}/>
   </div>
   ,
   document.getElementById('root')

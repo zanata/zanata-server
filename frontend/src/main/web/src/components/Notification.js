@@ -6,10 +6,8 @@ import {
   Modal,
   Row
 } from './'
-import {
-  clearMessage
-} from '../actions/common'
-import { isEmptyOrNull } from '../utils/StringUtils'
+import { clearMessage } from '../actions/common'
+import { isEmpty } from 'lodash'
 
 class Notification extends Component {
 
@@ -62,11 +60,10 @@ class Notification extends Component {
           <div className={severityClass + ' My(rh)'}>
             {message}
           </div>
-          {!isEmptyOrNull(details)
-            ? (<div className='Brds(rq) Bxsh(sh1) P(rh) Fz(msn1)'>
+          {!isEmpty(details)
+            && (<div className='Brds(rq) Bxsh(sh1) P(rh) Fz(msn1)'>
                   {details}
-                </div>)
-            : undefined}
+                </div>)}
         </Modal.Body>
         <Modal.Footer>
           <ButtonRound type='primary' onClick={() => this.clearMessage()}>

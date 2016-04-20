@@ -1,4 +1,4 @@
-import React from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react' // eslint-disable-line
 import { flattenThemeClasses } from '../utils/styleUtils'
 import { Link as RouterLink } from 'react-router'
 
@@ -19,6 +19,10 @@ const classes = {
   }
 }
 
+/**
+ * Common link component which generates <a href> or in-page navigation link
+ * based on useHref.
+ */
 const Link = ({
   id,
   children,
@@ -45,6 +49,13 @@ const Link = ({
       {children}
     </RouterLink>
   )
+}
+
+Link.propTypes = {
+  id: PropTypes.string,
+  theme: PropTypes.object,
+  link: PropTypes.string,
+  useHref: PropTypes.bool
 }
 
 export default Link

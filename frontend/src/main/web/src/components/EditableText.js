@@ -40,6 +40,9 @@ const classes = {
   }
 }
 
+/**
+ * Text input that switches to label when its not focused.
+ */
 class EditableText extends Component {
   constructor () {
     super()

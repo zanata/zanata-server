@@ -1,10 +1,10 @@
-import React, { PropTypes }from 'react'
+import React, { PropTypes } from 'react'
 import { Modal as OverlayModal } from 'react-overlays'
 import { merge } from 'lodash'
-import Header from './ModalHeader'
-import Title from './ModalTitle'
-import Body from './ModalBody'
-import Footer from './ModalFooter'
+import ModalHeader from './ModalHeader'
+import ModalTitle from './ModalTitle'
+import ModalBody from './ModalBody'
+import ModalFooter from './ModalFooter'
 import {
   Base,
   ButtonLink,
@@ -98,10 +98,10 @@ const Modal = ({
   )
 }
 
-Modal.Header = Header
-Modal.Title = Title
-Modal.Body = Body
-Modal.Footer = Footer
+Modal.Header = ModalHeader
+Modal.Title = ModalTitle
+Modal.Body = ModalBody
+Modal.Footer = ModalFooter
 
 Modal.propTypes = {
   children: PropTypes.node,

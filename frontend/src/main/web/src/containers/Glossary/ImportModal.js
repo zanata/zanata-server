@@ -94,8 +94,8 @@ class ImportModal extends Component {
             disabled={isUploading}
             className="Mb(r1)"/>
           {messageSection}
-          { isUploading
-            ? (<span className='Fz(ms2)'>
+          {isUploading
+            ? transLocale && (<span className='Fz(ms2)'>
                 {transLocale.label}</span>)
             : langSelection
           }

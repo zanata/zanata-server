@@ -1,8 +1,9 @@
-import React from 'react' // eslint-disable-line
-import Link from '../components/Link'
-import View from '../components/View'
-import Icon from '../components/Icon'
-
+import React, { PropTypes } from 'react'
+import {
+  Link,
+  View,
+  Icon
+} from '../../components'
 const viewTheme = {
   base: {
     ai: 'Ai(c)',
@@ -16,10 +17,12 @@ const statusIcons = {
   READONLY: 'locked'
 }
 
+/**
+ * Entry of Project search results
+ */
 const ProjectTeaser = ({
   details,
   name,
-  children,
   ...props
 }) => {
   const status = statusIcons[details.status]
@@ -64,10 +67,7 @@ const ProjectTeaser = ({
       </Link>
     </View>
   )
-  const useHref = true
-  const link = useHref
-    ? window.config.baseUrl + '/project/view/' + details.id
-    : 'projects/' + details.id
+  const link = window.config.baseUrl + '/project/view/' + details.id
   const theme = status !== statusIcons.ACTIVE
     ? { base: { fw: 'Fw(600)', c: 'C(muted)' } }
     : { base: { fw: 'Fw(600)' } }
@@ -76,12 +76,9 @@ const ProjectTeaser = ({
     : ''
   return (
     <View theme={viewTheme} name={name}>
-      {/* <View className='Mend(rh)'>
-        TODO: Statistics Donut here
-      </View> */}
       <View theme={{ base: { fld: 'Fld(c) Fld(r)--md', flx: 'Flx(flx1)' } }}>
         <View>
-          <Link link={link} useHref={useHref} theme={theme} title={tooltip}>
+          <Link link={link} useHref theme={theme} title={tooltip}>
             {status !== statusIcons.ACTIVE &&
             (<Icon name={statusIcons[details.status]} size='1'
               theme={{ base: { m: 'Mend(rq)' } }}/>)}
@@ -93,6 +90,23 @@ const ProjectTeaser = ({
       </View>
     </View>
   )
+}
+
+ProjectTeaser.propTypes = {
+  /**
+   * Entry of the search results.
+   */
+  details: PropTypes.shape({
+    id: PropTypes.string,
+    status: PropTypes.string,
+    description: PropTypes.string,
+    title: PropTypes.string,
+    contributorCount: PropTypes.number
+  }),
+  /**
+   * Name for the component
+   */
+  name: PropTypes.string
 }
 
 export default ProjectTeaser

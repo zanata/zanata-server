@@ -37,7 +37,7 @@ const Button = ({
 Button.propTypes = {
   children: PropTypes.node,
   /**
-   * Toggle whether the button is disabled or not
+   * Toggle whether the button is disabled or not. Default is 'false'
    */
   disabled: PropTypes.bool,
   /**

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import {
   ButtonLink,
   Header,
@@ -44,17 +44,24 @@ class ViewHeader extends Component {
   localeOptionsRenderer (op) {
     return (
       <span className='D(f) Ai(c) Jc(sb)'>
-      <span className='Flx(flx1) LineClamp(1)' title={op.label}>
-        {op.label}
+        <span className='Flx(flx1) LineClamp(1)' title={op.label}>
+          {op.label}
+        </span>
+        <span className='Flx(n) Pstart(re) Ta(end) Maw(r4) LineClamp(1)'>
+          {op.value}
+        </span>
+        <span className='Flx(n) C(muted) Pstart(re) Ta(end) LineClamp(1) W(r2)'>
+          {op.count}
+        </span>
       </span>
-      <span className='Flx(n) Pstart(re) Ta(end) Maw(r4) LineClamp(1)'>
-        {op.value}
-      </span>
-      <span className='Flx(n) C(muted) Pstart(re) Ta(end) LineClamp(1) W(r2)'>
-        {op.count}
-      </span>
-    </span>
     )
+  }
+
+  handleClearSearch () {
+    if (this.searchInput !== null) {
+      this.searchInput._onClear()
+    }
+    this.props.handleSearchCancelClick()
   }
   render () {
     const {
@@ -79,12 +86,20 @@ class ViewHeader extends Component {
         extraElements={(
           <View theme={{base: { ai: 'Ai(c)', fld: '' }}}>
             <TextInput
+              ref={(ref) => this.searchInput = ref}
               theme={{base: { flx: 'Flx(flx1)', m: 'Mstart(rh)--md' }}}
               type='search'
               placeholder='Search Terms…'
               accessibilityLabel='Search Terms'
               defaultValue={filterText}
               onChange={handleFilterFieldUpdate} />
+            <ButtonLink
+              title='Cancel search'
+              disabled={isEmpty(filterText)}
+              onClick={(e) => { this.handleClearSearch() }}>
+              <Icon name='cross'/>
+            </ButtonLink>
+
               {permission.canAddNewEntry ? (
                 <div className='Mstart(rq)'>
                   <ButtonLink type='default'
@@ -225,6 +240,9 @@ const mapDispatchToProps = (dispatch) => {
       ),
     handleFilterFieldUpdate: (event) => {
       updateFilter(event.target.value || '')
+    },
+    handleSearchCancelClick: (event) => {
+      updateFilter('')
     },
     handleSortColumn: (col) => dispatch(glossarySortColumn(col)),
     handleImportFileDisplay: (display) =>

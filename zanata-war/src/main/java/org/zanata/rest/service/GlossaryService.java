@@ -174,8 +174,10 @@ public class GlossaryService implements GlossaryResource {
         final Response response;
         try {
             LocaleId srcLocaleId = new LocaleId(form.getSrcLocale());
-            LocaleId transLocaleId = new LocaleId(form.getTransLocale());
-
+            LocaleId transLocaleId = null;
+            if(!StringUtils.isEmpty(form.getTransLocale())) {
+                transLocaleId = new LocaleId(form.getTransLocale());
+            }
             List<List<GlossaryEntry>> glossaryEntries =
                     glossaryFileServiceImpl
                             .parseGlossaryFile(form.getFileStream(),

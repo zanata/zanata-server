@@ -194,7 +194,7 @@ Entry.propTypes = {
   isSaving: PropTypes.bool,
   isDeleting: PropTypes.bool,
   permission: PropTypes.object,
-  selectedTransLocale: PropTypes.object,
+  selectedTransLocale: PropTypes.string,
   selected: PropTypes.bool,
   termsLoading: PropTypes.bool
 }

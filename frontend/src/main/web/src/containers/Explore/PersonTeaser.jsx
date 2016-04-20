@@ -1,7 +1,9 @@
-import React from 'react' // eslint-disable-line
-import Link from '../components/Link'
-import View from '../components/View'
-import Icon from '../components/Icon'
+import React, { PropTypes } from 'react'
+import {
+  Link,
+  View,
+  Icon
+} from '../../components'
 
 const viewTheme = {
   base: {
@@ -12,7 +14,6 @@ const viewTheme = {
 }
 
 const UserTeaser = ({
-  children,
   name,
   details,
   ...props
@@ -50,6 +51,22 @@ const UserTeaser = ({
       {wordsTranslated}
     </View>
   )
+}
+
+UserTeaser.propTypes = {
+  /**
+   * Entry of the search results.
+   */
+  details: PropTypes.shape({
+    id: PropTypes.string,
+    avatarUrl: PropTypes.string,
+    description: PropTypes.string,
+    wordsTranslated: PropTypes.number
+  }),
+  /**
+   * Name for the component
+   */
+  name: PropTypes.string
 }
 
 export default UserTeaser

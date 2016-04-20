@@ -1,9 +1,7 @@
-import React from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
 import { flattenThemeClasses } from '../utils/styleUtils'
-import {
-  Icon
-} from './'
+import { Icon } from './'
 import { View, Heading, Link } from './'
 
 const wrapperTheme = {
@@ -95,6 +93,15 @@ const Header = ({
         ) : undefined}
       </div>
     </View>
+  )
+}
+
+Header.propTypes = {
+  theme: PropTypes.object,
+  title: PropTypes.string,
+  extraElements: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node]
   )
 }
 

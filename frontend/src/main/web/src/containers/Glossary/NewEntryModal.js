@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { cloneDeep } from 'lodash'
 
 import {
   ButtonLink,
@@ -19,7 +20,7 @@ class NewEntryModal extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      entry: props.entry
+      entry: cloneDeep(props.entry)
     }
   }
   handleContentChanged (e) {
@@ -44,11 +45,16 @@ class NewEntryModal extends Component {
     })
   }
   handleCancel () {
-    this.state = {
-      entry: this.props.entry
-    }
+    this.resetFields()
     this.props.handleNewEntryDisplay(false)
   }
+
+  resetFields () {
+    this.state = {
+      entry: cloneDeep(this.props.entry)
+    }
+  }
+
   render () {
     const {
       entry,
@@ -63,7 +69,7 @@ class NewEntryModal extends Component {
     return (
       <Modal
         show={show}
-        onHide={() => handleNewEntryDisplay(false)}
+        onHide={() => { this.handleCancel(); handleNewEntryDisplay(false) }}
         rootClose>
         <Modal.Header>
           <Modal.Title>New Term</Modal.Title>
@@ -114,7 +120,7 @@ class NewEntryModal extends Component {
           <ButtonRound
             type='primary'
             disabled={!isAllowSave || isSaving}
-            onClick={() => handleNewEntryCreate(entry)}>
+            onClick={() => { this.resetFields(); handleNewEntryCreate(entry) }}>
             <LoaderText loading={isSaving} loadingText='Saving'>
               Save
             </LoaderText>
@@ -127,9 +133,7 @@ class NewEntryModal extends Component {
 NewEntryModal.propType = {}
 
 const mapStateToProps = (state) => {
-  const {
-    newEntry
-    } = state.glossary
+  const { newEntry } = state.glossary
   return {
     entry: newEntry.entry,
     show: newEntry.show,

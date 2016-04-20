@@ -1,8 +1,9 @@
-import React from 'react' // eslint-disable-line
-import Link from '../components/Link'
-import View from '../components/View'
-import Icon from '../components/Icon'
-// import { flattenClasses } from '../utils'
+import React, { PropTypes } from 'react'
+import {
+  Link,
+  View,
+  Icon
+} from '../../components'
 
 const viewTheme = {
   base: {
@@ -12,21 +13,19 @@ const viewTheme = {
   }
 }
 
+/**
+ * Entry of Language team search results
+ */
 const LanguageTeamTeaser = ({
-  children,
   name,
   details,
   ...props
 }) => {
-  const useHref = true
-  const link = useHref
-    ? window.config.baseUrl + '/language/view/' + details.id
-    : 'language/' + details.id
-
+  const link = window.config.baseUrl + '/language/view/' + details.id
   return (
     <View theme={viewTheme} name={name}>
       <View theme={{ base: {fld: 'Fld(r)'} }}>
-        <Link link={link} useHref={useHref}
+        <Link link={link}
           theme={{ base: { fw: 'Fw(600)' } }}>
           {details.locale}
         </Link>
@@ -47,6 +46,21 @@ const LanguageTeamTeaser = ({
       </View>
     </View>
   )
+}
+
+LanguageTeamTeaser.propTypes = {
+  /**
+   * Entry of the search results.
+   */
+  details: PropTypes.shape({
+    id: React.PropTypes.string,
+    locale: React.PropTypes.string,
+    memberCount: React.PropTypes.number
+  }),
+  /**
+   * Name for the component
+   */
+  name: PropTypes.string
 }
 
 export default LanguageTeamTeaser

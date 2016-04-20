@@ -23,7 +23,10 @@ const ModalFooter = ({
 }
 
 ModalFooter.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node]
+  )
 }
 
 export default ModalFooter

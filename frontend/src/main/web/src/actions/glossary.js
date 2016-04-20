@@ -148,7 +148,9 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   formData.append('file', data.file, data.file.name)
   formData.append('fileName', data.file.name)
   formData.append('srcLocale', srcLocaleId)
-  formData.append('transLocale', data.transLocale.value)
+  if (data.transLocale) {
+    formData.append('transLocale', data.transLocale.value)
+  }
 
 
   const apiTypes = [

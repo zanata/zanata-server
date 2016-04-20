@@ -1,8 +1,6 @@
 import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
-import {
-  Base
-} from '../'
+import { Base } from '../'
 
 const classes = {
   base: {
@@ -37,9 +35,12 @@ const ModalBody = ({
 }
 
 ModalBody.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node]
+  ),
   /**
-   * Wether to allow the body tobe scrollable
+   * Wether to allow the body to be scrollable
    */
   scrollable: PropTypes.bool,
   theme: PropTypes.object

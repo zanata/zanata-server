@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -87,7 +88,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     @Override
     public List<List<GlossaryEntry>> parseGlossaryFile(InputStream inputStream,
-            String fileName, LocaleId sourceLang, LocaleId transLang)
+            String fileName, LocaleId sourceLang, @Nullable LocaleId transLang)
             throws ZanataServiceException {
         try {
             if (FilenameUtils.getExtension(fileName).equals("csv")) {

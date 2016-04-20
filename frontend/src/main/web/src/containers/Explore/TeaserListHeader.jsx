@@ -1,7 +1,11 @@
 import React from 'react' // eslint-disable-line
-import View from '../components/View'
-import Heading from '../components/Heading'
-import {Icon, ButtonLink, Loader, Row} from '../components'
+import {
+  Icon,
+  ButtonLink,
+  Loader,
+  Heading,
+  View
+} from '../../components'
 
 const TeaserListHeader = ({
   children,

@@ -30,7 +30,6 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.jboss.resteasy.annotations.interception.HeaderDecoratorPrecedence;
 
 import com.google.common.base.Joiner;
@@ -47,29 +46,36 @@ import com.google.common.collect.Lists;
 @PreMatching
 @HeaderDecoratorPrecedence
 public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
-    private static final String METHODS = "PUT, POST, DELETE, GET, OPTIONS";
+    private static final String ALLOW_METHODS = "PUT, POST, DELETE, GET, OPTIONS";
 
     public void filter(ContainerRequestContext requestContext,
             ContainerResponseContext responseContext) throws IOException {
+        MultivaluedMap<String, String> requestHeaders =
+            requestContext.getHeaders();
+        MultivaluedMap<String, Object> responseHeaders =
+            responseContext.getHeaders();
 
-        List<String> requestHeaders = requestContext.getHeaders()
+        List<String> allowHeaders = requestHeaders
                 .get("Access-Control-Request-Headers");
-        if(requestHeaders == null) {
-            requestHeaders = Lists.newArrayList();
+        if(allowHeaders == null) {
+            allowHeaders = Lists.newArrayList();
         }
-        MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-
-        List<String> origins = requestContext.getHeaders().get("origin");
+        List<String> origins = requestHeaders.get("origin");
         if (origins != null && !origins.isEmpty()) {
-            headers.add("Access-Control-Allow-Origin",
+            responseHeaders.add("Access-Control-Allow-Origin",
                 Joiner.on(" ").skipNulls().join(origins));
         } else {
-            headers.add("Access-Control-Allow-Origin", "*");
+            responseHeaders.add("Access-Control-Allow-Origin", "*");
         }
-        headers.add("Access-Control-Allow-Credentials", true);
-        headers.add("Access-Control-Allow-Methods", METHODS);
-        headers.add("Access-Control-Allow-Headers",
+        if(requestContext.getMethod().equals("OPTIONS")) {
+            responseHeaders.add("Access-Control-Allow-Methods", ALLOW_METHODS);
+        } else {
+            responseHeaders.add("Access-Control-Allow-Methods",
+                    requestContext.getMethod());
+        }
+        responseHeaders.add("Access-Control-Allow-Credentials", true);
+        responseHeaders.add("Access-Control-Allow-Headers",
             "X-Requested-With, Content-Type, Accept, " + Joiner.on(",").join(
-                requestHeaders));
+                allowHeaders));
     }
 }

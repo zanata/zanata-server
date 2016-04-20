@@ -7,7 +7,7 @@ or not loading. Good for loading state in buttons.
       setState({loading: !state.loading})
     }
     <LoaderText loading={state.loading} onClick={handleClick}>
-      I will load when clicked
+      I will toggle loading when clicked
     </LoaderText>
 
 ## Size
@@ -18,7 +18,7 @@ or not loading. Good for loading state in buttons.
     <LoaderText atomic={{fz: 'Fz(ms3)'}}
       loading={state.loading}
       onClick={handleClick} size='3'>
-      I will load when clicked but am larger
+      I will toggle loading when clicked but am larger
     </LoaderText>
 
 ## Custom Loading Text
