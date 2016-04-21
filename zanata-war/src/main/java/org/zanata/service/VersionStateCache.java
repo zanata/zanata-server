@@ -23,7 +23,7 @@
 package org.zanata.service;
 
 import org.zanata.common.LocaleId;
-import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.ui.model.statistic.WordStatistic;
 
 /**
@@ -38,7 +38,7 @@ public interface VersionStateCache {
      * locale. (It's really a Text Flow Target state)
      *
      */
-    void textFlowStateUpdated(TextFlowTargetStateEvent event);
+    void docStatsUpdated(DocStatsEvent event);
 
     WordStatistic getVersionStatistics(Long projectIterationId,
             LocaleId localeId);

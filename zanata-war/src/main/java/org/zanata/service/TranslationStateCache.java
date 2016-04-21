@@ -22,6 +22,7 @@
 package org.zanata.service;
 
 import org.zanata.common.LocaleId;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.webtrans.shared.model.DocumentStatus;
@@ -90,4 +91,6 @@ public interface TranslationStateCache {
      * @param localeId
      */
     void clearDocumentStatistics(Long documentId, LocaleId localeId);
+
+    void docStatsUpdated(DocStatsEvent event);
 }

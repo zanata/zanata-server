@@ -1,4 +1,6 @@
 ## 3.9
+<h5>New Features</h5>
+* [ZNTA-938](https://zanata.atlassian.net/browse/ZNTA-938) - Webhook event for translation update by user.
 
 <h5>Infrastructure Changes</h5>
 * [ZNTA-530](https://zanata.atlassian.net/browse/ZNTA-530) - Replace Seam 2 with CDI

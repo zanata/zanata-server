@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,7 @@ import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.common.ContentState;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.dao.TextFlowDAO;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HAccount;
@@ -62,6 +64,7 @@ import org.zanata.util.TranslationUtil;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
+import com.google.gwt.dom.client.Document;
 
 import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
 import static org.zanata.transaction.TransactionUtil.runInTransaction;
@@ -98,6 +101,9 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
     @Inject
     private Event<TextFlowTargetStateEvent> textFlowTargetStateEvent;
+
+    @Inject
+    private Event<DocStatsEvent> docStatsEvent;
 
     @Inject @Authenticated
     private HAccount authenticatedAccount;
@@ -214,6 +220,12 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
             HashMultimap.create();
 
+        Map<DocumentLocaleKey, Map<ContentState, Integer>> docStatsMap =
+            Maps.newHashMap();
+
+        Map<DocumentLocaleKey, Long> lastUpdatedTargetId =
+            Maps.newHashMap();;
+
         for (HTextFlow[] results : matches) {
             HTextFlow sourceTf = results[0];
             HTextFlow targetTf = results[1];
@@ -251,20 +263,26 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                 textFlowDAO.makePersistent(targetTf);
                 textFlowDAO.flush();
 
-                if (!localeContentStateMap.isEmpty()) {
-                    for (Map.Entry<Long, ContentState> entry : localeContentStateMap
-                            .entrySet()) {
-                        HTextFlowTarget updatedTarget =
-                                targetTf.getTargets().get(entry.getKey());
+                for (Map.Entry<Long, ContentState> entry : localeContentStateMap
+                        .entrySet()) {
+                    HTextFlowTarget updatedTarget =
+                            targetTf.getTargets().get(entry.getKey());
 
-                        DocumentLocaleKey key = new DocumentLocaleKey(
+                    DocumentLocaleKey key = new DocumentLocaleKey(
                             targetTf.getDocument().getId(),
                             updatedTarget.getLocale().getLocaleId());
 
-                        eventMap.put(key, new TextFlowTargetState(targetTf.getId(),
+                    eventMap.put(key, new TextFlowTargetState(targetTf.getId(),
                             updatedTarget.getId(), updatedTarget.getState(),
                             entry.getValue()));
-                    }
+
+                    lastUpdatedTargetId.put(key, updatedTarget.getId());
+
+                    Map<ContentState, Integer> contentStates = DocStatsEvent
+                        .updateContentState(docStatsMap.get(key),
+                            updatedTarget.getState(),
+                            entry.getValue(), targetTf.getWordCount());
+                    docStatsMap.put(key, contentStates);
                 }
             }
         }
@@ -275,6 +293,14 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                 new TextFlowTargetStateEvent(entry.getKey(), targetVersionId,
                     actorId, ImmutableList.copyOf(entry.getValue()));
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
+        }
+        for (Map.Entry<DocumentLocaleKey, Map<ContentState, Integer>> entry : docStatsMap
+                .entrySet()) {
+            DocStatsEvent docEvent =
+                    new DocStatsEvent(entry.getKey(), targetVersionId,
+                            entry.getValue(),
+                            lastUpdatedTargetId.get(entry.getKey()));
+            docStatsEvent.fire(docEvent);
         }
         stopwatch.stop();
         log.info("Complete merge translations of {} in {}", matches.size()

@@ -42,6 +42,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.model.HDocument;
@@ -193,20 +194,21 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
     // TODO why not @Observe the event directly?
     @Override
     public void textFlowStateUpdated(TextFlowTargetStateEvent event) {
-        Long documentId = event.getKey().getDocumentId();
-        LocaleId localeId = event.getKey().getLocaleId();
-
-        //invalidate document statistic cache
-        clearDocumentStatistics(documentId, localeId);
-
         for(TextFlowTargetStateEvent.TextFlowTargetState state: event.getStates()) {
             // invalidate target validation
             targetValidationCache.remove(state.getTextFlowTargetId());
         }
-        Long tftId = getLast(event.getStates()).getTextFlowTargetId();
+    }
+
+    @Override
+    public void docStatsUpdated(DocStatsEvent event) {
+        // invalidate document statistic cache
+        clearDocumentStatistics(event.getKey().getDocumentId(),
+                event.getKey().getLocaleId());
+
         // update document status information
-        updateDocStatusCache(new DocumentLocaleKey(documentId, localeId),
-            tftId);
+        updateDocStatusCache(event.getKey(),
+            event.getLastModifiedTargetId());
     }
 
     private void updateDocStatusCache(DocumentLocaleKey key,

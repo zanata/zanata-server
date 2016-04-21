@@ -1,27 +1,34 @@
 package org.zanata.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.deltaspike.core.api.provider.BeanManagerProvider;
+import org.zanata.ApplicationConfiguration;
 import org.zanata.async.Async;
 import org.zanata.common.LocaleId;
-import org.zanata.dao.TextFlowDAO;
-import org.zanata.events.DocumentStatisticUpdatedEvent;
+import org.zanata.dao.DocumentDAO;
+import org.zanata.dao.PersonDAO;
+import org.zanata.dao.TextFlowTargetDAO;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.events.webhook.DocumentStatsEvent;
+import org.zanata.model.HDocument;
+import org.zanata.model.HPerson;
+import org.zanata.model.HProject;
+import org.zanata.model.HTextFlowTarget;
+import org.zanata.model.WebHook;
+import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.service.UserService;
 import org.zanata.service.TranslationStateCache;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
-
-import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
 
 /**
  * Manager that handles post update of translation. Important:
@@ -41,10 +48,19 @@ public class TranslationUpdatedManager {
     private TranslationStateCache translationStateCacheImpl;
 
     @Inject
-    private TextFlowDAO textFlowDAO;
+    private TextFlowTargetDAO textFlowTargetDAO;
 
     @Inject
-    private Event<DocumentStatisticUpdatedEvent> documentStatisticUpdatedEvent;
+    private PersonDAO personDAO;
+
+    @Inject
+    private DocumentDAO documentDAO;
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private ApplicationConfiguration applicationConfiguration;
 
     /**
      * This method contains all logic to be run immediately after a Text Flow
@@ -55,37 +71,62 @@ public class TranslationUpdatedManager {
             @Observes(during = TransactionPhase.AFTER_SUCCESS)
             TextFlowTargetStateEvent event) {
         translationStateCacheImpl.textFlowStateUpdated(event);
-        publishAsyncEvent(event);
     }
 
-    // Fire asynchronous event
-    void publishAsyncEvent(TextFlowTargetStateEvent event) {
-        if (BeanManagerProvider.isActive()) {
-            Long versionId = event.getProjectIterationId();
-            Long documentId = event.getKey().getDocumentId();
-            LocaleId localeId = event.getKey().getLocaleId();
+    @Async
+    public void docStatsUpdated(
+        @Observes(during = TransactionPhase.AFTER_SUCCESS)
+        DocStatsEvent event) {
+        translationStateCacheImpl.docStatsUpdated(event);
+        processWebHookEvent(event);
+    }
 
-            for(TextFlowTargetState state: event.getStates()) {
-                int wordCount =
-                    textFlowDAO.getWordCount(state.getTextFlowId());
-                // TODO PERF: generate one DocumentStatisticUpdatedEvent per
-                // TextFlowTargetStateEvent. See
-                // DocumentServiceImpl.documentStatisticUpdated
-                documentStatisticUpdatedEvent
-                    .fire(new DocumentStatisticUpdatedEvent(
-                        versionId, documentId, localeId,
-                        wordCount, state.getPreviousState(),
-                        state.getNewState()));
-            }
+    void processWebHookEvent(DocStatsEvent event) {
+        HTextFlowTarget target =
+                textFlowTargetDAO.findById(event.getLastModifiedTargetId());
+        HPerson person = target.getLastModifiedBy();
+        if(person == null) {
+            return;
+        }
+        HDocument document = documentDAO.findById(event.getKey().getDocumentId());
+        String docId = document.getDocId();
+        String versionSlug = document.getProjectIteration().getSlug();
+        HProject project = document.getProjectIteration().getProject();
+        if (project.getWebHooks().isEmpty()) {
+            return;
+        }
+        String projectSlug = project.getSlug();
+        LocaleId localeId = event.getKey().getLocaleId();
+
+        User user = userService.transferToUser(person.getAccount(),
+            applicationConfiguration.isDisplayUserEmail());
+
+        DocumentStatsEvent webhookEvent =
+            new DocumentStatsEvent(user, projectSlug,
+                versionSlug, docId, localeId, event.getContentStates());
+
+        publishWebhookEvent(project.getWebHooks(), webhookEvent);
+    }
+
+    public void publishWebhookEvent(List<WebHook> webHooks,
+            DocumentStatsEvent event) {
+        for (WebHook webHook : webHooks) {
+            WebHooksPublisher.publish(webHook.getUrl(), event,
+                    Optional.fromNullable(webHook.getSecret()));
         }
     }
 
     @VisibleForTesting
     public void init(TranslationStateCache translationStateCacheImpl,
-            TextFlowDAO textFlowDAO,
-            Event<DocumentStatisticUpdatedEvent> documentStatisticUpdatedEvent) {
+            DocumentDAO documentDAO,
+            PersonDAO personDAO, TextFlowTargetDAO textFlowTargetDAO,
+            UserService userService,
+            ApplicationConfiguration applicationConfiguration) {
         this.translationStateCacheImpl = translationStateCacheImpl;
-        this.textFlowDAO = textFlowDAO;
-        this.documentStatisticUpdatedEvent = documentStatisticUpdatedEvent;
+        this.documentDAO = documentDAO;
+        this.personDAO = personDAO;
+        this.textFlowTargetDAO = textFlowTargetDAO;
+        this.userService = userService;
+        this.applicationConfiguration = applicationConfiguration;
     }
 }
