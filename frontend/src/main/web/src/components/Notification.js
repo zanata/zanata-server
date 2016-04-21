@@ -9,12 +9,14 @@ import {
 import { clearMessage } from '../actions/common'
 import { isEmpty } from 'lodash'
 
+/**
+ * Notification popup modal that overlays on the page.
+ */
 class Notification extends Component {
 
   getSeverityClass (severity) {
     switch (severity) {
       case 'warn':
-        return 'C(danger)'
       case 'error':
         return 'C(danger)'
       default:
@@ -78,9 +80,9 @@ class Notification extends Component {
 }
 
 Notification.propType = {
-  severity: PropTypes.string.isRequired,
+  severity: PropTypes.oneOf(['warn', 'error', 'info']).isRequired,
   message: PropTypes.string,
-  details: PropTypes.object,
+  details: PropTypes.string,
   show: PropTypes.bool
 }
 

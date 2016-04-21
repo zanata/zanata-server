@@ -12,7 +12,7 @@ import Overlay from '../Overlay'
  * @param {string|array} of
  * @returns {boolean}
  */
-function isOneOf (one, of) {
+const isOrContains = (of, one) => {
   if (Array.isArray(of)) {
     return of.indexOf(one) >= 0
   }
@@ -23,16 +23,19 @@ class OverlayTrigger extends Component {
   state = {
     isOverlayShown: this.props.defaultOverlayShown
   }
+
   show = () => {
     this.setState({
       isOverlayShown: true
     })
   }
+
   hide = () => {
     this.setState({
       isOverlayShown: false
     })
   }
+
   toggle = () => {
     if (this.state.isOverlayShown) {
       this.hide()
@@ -40,16 +43,23 @@ class OverlayTrigger extends Component {
       this.show()
     }
   }
+
+  /**
+   * This is to preserve React context in "overlay" components
+   * without resetting up all context.
+   */
   renderOverlay = () => {
     ReactDOM.unstable_renderSubtreeIntoContainer(
       this, this._overlay, this._mountNode
     )
   }
+
   getOverlayTarget = () => {
     return ReactDOM.findDOMNode(this)
   }
+
   getOverlay = () => {
-    let overlayProps = {
+    const overlayProps = {
       ...pick(this.props, Object.keys(Overlay.propTypes)),
       show: this.state.isOverlayShown,
       placement: this.props.overlay.props.placement || this.props.placement,
@@ -63,25 +73,25 @@ class OverlayTrigger extends Component {
       onEntered: this.props.onEntered
     }
 
-    let overlay = cloneElement(this.props.overlay, {
+    const overlay = cloneElement(this.props.overlay, {
       placement: overlayProps.placement,
       container: overlayProps.container
     })
 
     return (
       <Overlay {...overlayProps}>
-        { overlay }
+        {overlay}
       </Overlay>
     )
   }
   handleDelayedShow = () => {
-    if (this._hoverHideDelay != null) {
+    if (this._hoverHideDelay !== undefined) {
       clearTimeout(this._hoverHideDelay)
-      this._hoverHideDelay = null
+      this._hoverHideDelay = undefined
       return
     }
 
-    if (this.state.isOverlayShown || this._hoverShowDelay != null) {
+    if (this.state.isOverlayShown || this._hoverShowDelay !== undefined) {
       return
     }
 
@@ -94,23 +104,24 @@ class OverlayTrigger extends Component {
     }
 
     this._hoverShowDelay = setTimeout(() => {
-      this._hoverShowDelay = null
+      this._hoverShowDelay = undefined
       this.show()
     }, delay)
   }
+
   handleDelayedHide = () => {
-    if (this._hoverShowDelay != null) {
+    if (this._hoverShowDelay !== undefined) {
       clearTimeout(this._hoverShowDelay)
-      this._hoverShowDelay = null
+      this._hoverShowDelay = undefined
       return
     }
 
-    if (!this.state.isOverlayShown || this._hoverHideDelay != null) {
+    if (!this.state.isOverlayShown || this._hoverHideDelay !== undefined) {
       return
     }
 
-    const delay = this.props.delayHide != null
-      ? this.props.delayHide : this.props.delay
+    const delay = this.props.delayHide === undefined
+      ? this.props.delay : this.props.delayHide
 
     if (!delay) {
       this.hide()
@@ -118,7 +129,7 @@ class OverlayTrigger extends Component {
     }
 
     this._hoverHideDelay = setTimeout(() => {
-      this._hoverHideDelay = null
+      this._hoverHideDelay = undefined
       this.hide()
     }, delay)
   }
@@ -135,27 +146,32 @@ class OverlayTrigger extends Component {
       handler(e)
     }
   }
+
   componentWillMount () {
     this.handleMouseOver =
       this.handleMouseOverOut.bind(null, this.handleDelayedShow)
     this.handleMouseOut =
       this.handleMouseOverOut.bind(null, this.handleDelayedHide)
   }
+
   componentDidMount () {
     this._mountNode = document.createElement('div')
     this.renderOverlay()
   }
-  componentWillUnmount () {
+
+   componentWillUnmount () {
     ReactDOM.unmountComponentAtNode(this._mountNode)
     this._mountNode = null
     clearTimeout(this._hoverShowDelay)
     clearTimeout(this._hoverHideDelay)
   }
+
   componentDidUpdate () {
     if (this._mountNode) {
       this.renderOverlay()
     }
   }
+
   render () {
     const trigger = React.Children.only(this.props.children)
     const triggerProps = trigger.props
@@ -172,11 +188,11 @@ class OverlayTrigger extends Component {
       this.props.onClick
     )
 
-    if (isOneOf('click', this.props.trigger)) {
+    if (isOrContains(this.props.trigger, 'click')) {
       props.onClick = createChainedFunction(this.toggle, props.onClick)
     }
 
-    if (isOneOf('hover', this.props.trigger)) {
+    if (isOrContains( this.props.trigger, 'hover')) {
       warning(!(this.props.trigger === 'hover'),
         `[zanata] Specifying only the "hover" trigger limits the
         visibilty of the overlay to just mouse users. Consider also including
@@ -195,7 +211,7 @@ class OverlayTrigger extends Component {
       )
     }
 
-    if (isOneOf('focus', this.props.trigger)) {
+    if (isOrContains(this.props.trigger, 'focus')) {
       props.onFocus = createChainedFunction(
         this.handleDelayedShow,
         this.props.onFocus,
@@ -221,10 +237,7 @@ OverlayTrigger.propTypes = {
    /**
    * Specify which action or actions trigger Overlay visibility
    */
-  trigger: PropTypes.oneOfType([
-    PropTypes.oneOf(['click', 'hover', 'focus']),
-    PropTypes.arrayOf(PropTypes.oneOf(['click', 'hover', 'focus']))
-  ]),
+  trigger: PropTypes.arrayOf(PropTypes.oneOf(['click', 'hover', 'focus'])),
   /**
    * A millisecond delay amount to show and hide the Overlay once triggered
    */

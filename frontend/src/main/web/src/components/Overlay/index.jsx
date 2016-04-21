@@ -1,7 +1,10 @@
 import React, { cloneElement, PropTypes } from 'react'
 import BaseOverlay from 'react-overlays/lib/Overlay'
 import { elementType } from 'react-prop-types'
-
+/**
+ * Custom overlay component that based of http://react-bootstrap.github.io/react-overlays/
+ * See http://react-bootstrap.github.io/react-overlays/examples/ for documentation.
+ */
 const Overlay = ({
   children,
   transition,
@@ -40,7 +43,10 @@ Overlay.propTypes = {
    */
   onHide: PropTypes.func,
   /**
-   * Use animation
+   * Use animation. Boolean is enabling default animation.
+   * elementType - react-overlays/lib/Overlay/Transitions to handle animation.
+   *
+   * See react-overlays/lib/BaseOverlay for more information
    */
   animation: PropTypes.oneOfType([
     PropTypes.bool,
