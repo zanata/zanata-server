@@ -7,7 +7,8 @@ import {
   ButtonRound,
   EditableText,
   LoaderText,
-  Modal
+  Modal,
+  Row
 } from '../../components'
 
 import {
@@ -111,20 +112,22 @@ class NewEntryModal extends Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <ButtonLink
-            atomic={{m: 'Mend(r1)'}}
-            disabled={isSaving}
-            onClick={() => this.handleCancel()}>
-            Cancel
-          </ButtonLink>
-          <ButtonRound
-            type='primary'
-            disabled={!isAllowSave || isSaving}
-            onClick={() => { this.resetFields(); handleNewEntryCreate(entry) }}>
-            <LoaderText loading={isSaving} loadingText='Saving'>
-              Save
-            </LoaderText>
-          </ButtonRound>
+          <Row theme={{ base: {j: 'Jc(c)'} }}>
+            <ButtonLink
+              atomic={{m: 'Mend(r1)'}}
+              disabled={isSaving}
+              onClick={() => this.handleCancel()}>
+              Cancel
+            </ButtonLink>
+            <ButtonRound
+              type='primary'
+              disabled={!isAllowSave || isSaving}
+              onClick={() => { this.resetFields(); handleNewEntryCreate(entry) }}>
+              <LoaderText loading={isSaving} loadingText='Saving'>
+                Save
+              </LoaderText>
+            </ButtonRound>
+          </Row>
         </Modal.Footer>
       </Modal>)
   }

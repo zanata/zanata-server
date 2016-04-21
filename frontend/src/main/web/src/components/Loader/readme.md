@@ -7,4 +7,6 @@ font color.
 
 ## Size
 
+This is based of the modular scale 'n1', '0'-'10'
+
     <Loader size='4' />

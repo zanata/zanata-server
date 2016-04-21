@@ -66,9 +66,11 @@ class Notification extends Component {
                 </div>)}
         </Modal.Body>
         <Modal.Footer>
-          <ButtonRound type='primary' onClick={() => this.clearMessage()}>
-            Close
-          </ButtonRound>
+          <Row theme={{ base: {j: 'Jc(c)'} }}>
+            <ButtonRound type='primary' onClick={() => this.clearMessage()}>
+              Close
+            </ButtonRound>
+          </Row>
         </Modal.Footer>
       </Modal>
     )

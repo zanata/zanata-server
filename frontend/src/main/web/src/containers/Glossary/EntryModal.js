@@ -5,7 +5,8 @@ import {
   EditableText,
   Icon,
   LoaderText,
-  Modal
+  Modal,
+  Row
 } from '../../components'
 import { isEmptyOrNull } from '../../utils/StringUtils'
 
@@ -116,26 +117,28 @@ class EntryModal extends Component {
           ) : '' }
         </Modal.Body>
         <Modal.Footer>
-          <ButtonLink atomic={{m: 'Mstart(rh)'}}
-                      onClick={() => {
-                        handleResetTerm(entry.id)
-                        handleEntryModalDisplay(false)
-                      }}>
-            Cancel
-          </ButtonLink>
+          <Row theme={{ base: {j: 'Jc(c)'} }}>
+            <ButtonLink atomic={{m: 'Mstart(rh)'}}
+                        onClick={() => {
+                          handleResetTerm(entry.id)
+                          handleEntryModalDisplay(false)
+                        }}>
+              Cancel
+            </ButtonLink>
 
-          {isSaving
-            ? (<ButtonRound atomic={{m: 'Mstart(rh)'}}
-                           type='primary'
-                           disabled={true}>
-                <LoaderText loading loadingText='Updating'>Update</LoaderText>
-              </ButtonRound>)
-            : (<ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
-                         onClick={() => handleUpdateTerm(entry)}
-                         disabled={!canUpdate}>
-                  Update
-              </ButtonRound>)
-          }
+            {isSaving
+              ? (<ButtonRound atomic={{m: 'Mstart(rh)'}}
+                             type='primary'
+                             disabled={true}>
+                  <LoaderText loading loadingText='Updating'>Update</LoaderText>
+                </ButtonRound>)
+              : (<ButtonRound atomic={{m: 'Mstart(rh)'}} type='primary'
+                           onClick={() => handleUpdateTerm(entry)}
+                           disabled={!canUpdate}>
+                    Update
+                </ButtonRound>)
+            }
+          </Row>
         </Modal.Footer>
       </Modal>
     )

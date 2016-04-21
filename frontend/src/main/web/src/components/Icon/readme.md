@@ -12,6 +12,6 @@
 
 ## Size
 
-With a size property. This is based of the modular scale 1-10
+With a size property. This is based of the modular scale 'n2', 'n1', '0'-'10'
 
     <Icon name='project' size='5'/>

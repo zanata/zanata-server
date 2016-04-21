@@ -6,7 +6,8 @@ import {
   ButtonRound,
   LoaderText,
   Modal,
-  Select
+  Select,
+  Row
 } from '../../components'
 
 import {
@@ -107,20 +108,22 @@ class ImportModal extends Component {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <ButtonLink
-            atomic={{m: 'Mend(r1)'}}
-            disabled={isUploading}
-            onClick={() => handleImportFileDisplay(false)}>
-            Cancel
-          </ButtonLink>
-          <ButtonRound
-            type='primary'
-            disabled={disableUpload}
-            onClick={handleImportFile}>
-            <LoaderText loading={isUploading} loadingText='Importing'>
-              Import
-            </LoaderText>
-          </ButtonRound>
+          <Row theme={{ base: {j: 'Jc(c)'} }}>
+            <ButtonLink
+              atomic={{m: 'Mend(r1)'}}
+              disabled={isUploading}
+              onClick={() => handleImportFileDisplay(false)}>
+              Cancel
+            </ButtonLink>
+            <ButtonRound
+              type='primary'
+              disabled={disableUpload}
+              onClick={handleImportFile}>
+              <LoaderText loading={isUploading} loadingText='Importing'>
+                Import
+              </LoaderText>
+            </ButtonRound>
+          </Row>
         </Modal.Footer>
       </Modal>)
   }
