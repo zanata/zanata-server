@@ -4,7 +4,7 @@ import TeaserListHeader from './TeaserListHeader'
 import ProjectTeaser from './ProjectTeaser'
 import GroupTeaser from './GroupTeaser'
 import LanguageTeamTeaser from './LanguageTeamTeaser'
-import PersonTeaser from './PersonTeaser'
+import UserTeaser from './UserTeaser'
 
 const TeaserList = ({
   children,
@@ -37,13 +37,14 @@ const TeaserList = ({
       TeaserComponent = LanguageTeamTeaser
       break
     case 'Person':
-      TeaserComponent = PersonTeaser
+      TeaserComponent = UserTeaser
       break
     case 'Group':
       TeaserComponent = GroupTeaser
       break
     default:
-      TeaserComponent = () => (<div>Teaser</div>)
+      console.error('Unknown teaser type', type)
+      TeaserComponent = undefined
       break
   }
 

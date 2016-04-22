@@ -84,7 +84,9 @@ const contentViewContainerTheme = {
     w: 'W(100%)'
   }
 }
-
+/**
+ * Root component for Explore page
+ */
 class Explore extends Component {
   handleKeyDown (e) {
     if (e.key === 'Escape') {

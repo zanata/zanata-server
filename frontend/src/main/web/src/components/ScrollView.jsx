@@ -2,6 +2,9 @@ import React from 'react' // eslint-disable-line
 import { merge } from 'lodash'
 import { View } from './'
 
+/**
+ * Scrollbar enabled flexbox
+ */
 const ScrollView = ({
   children,
   theme,

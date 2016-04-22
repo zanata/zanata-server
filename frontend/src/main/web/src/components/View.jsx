@@ -9,7 +9,9 @@ const classes = {
     flxs: 'Flxs(0)'
   }
 }
-
+/**
+ * A flexbox component in div element
+ */
 const View = ({
   name,
   items,

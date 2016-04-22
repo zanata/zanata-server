@@ -76,8 +76,8 @@ class ImportModal extends Component {
         File '{file.name}' is not supported.
       </div>)
     }
-
-    /* eslint-disable max-len */
+    const uploadGlossaryUrl =
+      'http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/'
     return (
       <Modal
         show={show}
@@ -103,7 +103,7 @@ class ImportModal extends Component {
           <p>
             CSV and PO files are supported. <strong>The source language should
             be in {locale}</strong>. For more details on how to prepare glossary
-            files, see our <a href="http://docs.zanata.org/en/release/user-guide/glossary/upload-glossaries/"
+            files, see our <a href={uploadGlossaryUrl}
             className="C(pri)" target="_blank">glossary import documentation</a>.
           </p>
         </Modal.Body>
@@ -128,7 +128,6 @@ class ImportModal extends Component {
       </Modal>)
   }
 }
-/* eslint-enable max-len */
 
 const mapStateToProps = (state) => {
   const {

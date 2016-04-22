@@ -18,7 +18,9 @@ const classes = {
     custom: 'row--selected'
   }
 }
-
+/**
+ * Styled table row component (based on Row) which used with TableCell.
+ */
 const TableRow = ({
   children,
   className,

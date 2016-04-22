@@ -124,10 +124,12 @@ Tooltip.propTypes = {
   placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
   /**
    * The `left` position value for the tooltip
+   * TODO: pixels or em?
    */
   positionLeft: PropTypes.number,
   /**
    * The `top` position value for the tooltip
+   * TODO: pixels or em?
    */
   positionTop: PropTypes.number,
   /**
@@ -138,7 +140,7 @@ Tooltip.propTypes = {
     PropTypes.string
   ]),
   /**
-   * The `top` position value for the tooltip arrow
+   * The css attribute `top` position value for the tooltip arrow
    */
   arrowOffsetTop: PropTypes.oneOfType([
     PropTypes.number,

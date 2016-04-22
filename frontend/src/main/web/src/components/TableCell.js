@@ -27,7 +27,7 @@ const classes = {
 }
 
 /**
- * A Table Cell for use in Table Rows
+ * A Table Cell for use in TableRow component
  */
 const TableCell = ({
   children,

@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
-// import a11y from 'react-a11y'
+/**
+ * TODO: use react-ally to identify accessibility issue
+ * import a11y from 'react-a11y'
+ */
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import {
@@ -8,7 +11,10 @@ import {
   Icons
 } from '../components'
 
-// if (process.env.NODE_ENV === 'development') a11y(React)
+/**
+ * TODO: use react-ally to identify accessibility issue in dev mode
+ * if (process.env.NODE_ENV === 'development') a11y(React)
+ */
 
 class App extends Component {
   render () {

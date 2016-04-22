@@ -64,9 +64,13 @@ class Glossary extends Component {
       if (savingTerm.transTerm.locale === selectedTransLocale) {
         entry = savingTerm
       }
-    } else if (selected && selectedTerm.transTerm &&
+    } else if (selected) {
+      if(selectedTerm.transTerm &&
         selectedTerm.transTerm.locale === selectedTransLocale) {
-      entry = selectedTerm
+        entry = selectedTerm
+      } else {
+        entry = selectedTerm
+      }
     } else if (entryId) {
       entry = terms[entryId]
     }

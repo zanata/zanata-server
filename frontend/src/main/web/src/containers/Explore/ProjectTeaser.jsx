@@ -71,9 +71,9 @@ const ProjectTeaser = ({
   const theme = status !== statusIcons.ACTIVE
     ? { base: { fw: 'Fw(600)', c: 'C(muted)' } }
     : { base: { fw: 'Fw(600)' } }
-  const tooltip = status !== statusIcons.ACTIVE
-    ? 'This project is currently read only'
-    : ''
+  const tooltip = status === statusIcons.ACTIVE
+    ? ''
+    : 'This project is currently read only'
   return (
     <View theme={viewTheme} name={name}>
       <View theme={{ base: { fld: 'Fld(c) Fld(r)--md', flx: 'Flx(flx1)' } }}>
