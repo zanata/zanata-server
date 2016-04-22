@@ -45,7 +45,6 @@
     }
 
     function completeSending() {
-      //var errMsg = getContactAdminForm().find('#contactAdminForm\\:messageField\\:input\\:contact-admin-error-message\\:contactAdminForm\\:messageField\\:input\\:contact-admin-message').text();
       var errMsg = getContactAdminMessageErrorField().text();
       if (errMsg != '') {
         getContactAdminSendButton().removeClass('is-active');
