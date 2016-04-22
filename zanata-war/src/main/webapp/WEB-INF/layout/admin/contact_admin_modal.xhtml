@@ -3,19 +3,21 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  xmlns:f="http://java.sun.com/jsf/core"
   class="modal" id="contactAdminDialog" tabindex="-1" role="dialog"
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
     jQuery(document).ready(function () {
-      getContactAdminMessageField().bind('input propertychange', function() {
+      getContactAdminSendButton().prop('disabled', true);
+      getContactAdminMessageField().keyup(function() {
         toggleSendButton();
       });
     });
 
-
     function cancelContactAdmin() {
       getContactAdminMessageField().val('');
+      getContactAdminMessageErrorField().text('');
       getContactAdminSendButton().removeClass('is-active');
       toggleSendButton();
     }
@@ -32,10 +34,27 @@
       return getContactAdminForm().find('#contact-admin-send-button');
     }
 
+    // Returns a span.
+    function getContactAdminMessageErrorField(){
+      return getContactAdminForm().find('#contactAdminForm\\:messageField\\:input\\:contact-admin-error-message\\:contactAdminForm\\:messageField\\:input\\:contact-admin-message');
+    }
+
     function toggleSendButton() {
       var hasMessage = getContactAdminMessageField().val() !== '';
       getContactAdminSendButton().prop('disabled', !hasMessage);
     }
+
+    function completeSending() {
+      //var errMsg = getContactAdminForm().find('#contactAdminForm\\:messageField\\:input\\:contact-admin-error-message\\:contactAdminForm\\:messageField\\:input\\:contact-admin-message').text();
+      var errMsg = getContactAdminMessageErrorField().text();
+      if (errMsg != '') {
+        getContactAdminSendButton().removeClass('is-active');
+      }
+      else {
+        getContactAdminForm().find('#contact-admin-cancel-button').click();
+      }
+    }
+
   </script>
 
   <div class="modal__dialog l--constrain-medium">
@@ -53,14 +72,14 @@
     <h:form id="contactAdminForm" styleClass="l--push-bottom-0">
 
       <a4j:jsFunction name="sendContactAdminEmail" action="#{contactAdminAction.send}"
-        execute="@form"
-        oncomplete="getContactAdminForm().find('#contact-admin-cancel-button').click()"/>
+        execute="@form" oncomplete="completeSending()"/>
 
       <div class="modal__content l--pad-all-1">
         <zanata:decorate id="messageField" componentId="message">
           <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.message}"
             required="true">
-            <a4j:ajax event="blur" render="message" execute="@this"/>
+            <f:validateLength maximum="300"/>
+            <rich:message for="contact-admin-message" ajaxRendered="true" id="contact-admin-error-message" name="contact-admin-error-message" />
           </h:inputTextarea>
         </zanata:decorate>
       </div>
@@ -72,7 +91,6 @@
             data-dismiss="modal">
             #{msgs['jsf.Cancel']}
           </button>
-
           <button id="contact-admin-send-button" class="button loader button--primary"
             disabled="disabled" onclick="sendContactAdminEmail();return false;">
             <span class="loader__label">#{msgs['jsf.email.Send']}</span>
@@ -81,5 +99,4 @@
       </footer>
     </h:form>
   </div>
-
 </div>
