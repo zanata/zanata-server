@@ -40,7 +40,7 @@ import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.TextFlowTargetStateEvent;
-import org.zanata.events.webhook.DocumentStatsEvent;
+import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
@@ -145,34 +145,6 @@ public class TranslationUpdatedManagerTest {
             .thenReturn(user);
         when(textFlowTargetDAO.findById(tftId)).thenReturn(target);
         when(target.getLastModifiedBy()).thenReturn(person);
-    }
-
-    @Test
-    public void onTranslationUpdateTest() {
-        TranslationUpdatedManager spyManager = Mockito.spy(manager);
-
-        WordStatistic stats = new WordStatistic(10, 10, 10, 10, 10);
-        WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
-        oldStats.decrement(newState, wordCount);
-        oldStats.increment(oldState, wordCount);
-
-        when(translationStateCache.getDocumentStatistics(docId, localeId)).
-                thenReturn(stats);
-        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
-
-        DocumentLocaleKey key =
-            new DocumentLocaleKey(docId, localeId);
-
-        TextFlowTargetStateEvent.TextFlowTargetState state =
-            new TextFlowTargetStateEvent.TextFlowTargetState(tfId,
-                1L, newState, oldState);
-
-        TextFlowTargetStateEvent event =
-            new TextFlowTargetStateEvent(key, versionId, personId, state);
-
-        spyManager.textFlowStateUpdated(event);
-
-        verify(translationStateCache).textFlowStateUpdated(event);
     }
 
     @Test

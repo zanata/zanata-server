@@ -25,34 +25,28 @@ public class DocStatsEvent {
     /**
      * Updated content states with word counts
      */
-    private final Map<ContentState, Integer> contentStates;
+    private final Map<ContentState, Integer> wordDeltasByState;
 
     private final Long lastModifiedTargetId;
 
     public static Map<ContentState, Integer> updateContentState(
         @Nullable Map<ContentState, Integer> contentStates, ContentState newState,
-        ContentState previousState, Long longWordCount) {
+        ContentState previousState, @Nullable Long longWordCount) {
 
         Map<ContentState, Integer> newContentStates =
             contentStates == null ? new HashMap<ContentState, Integer>() :
                 contentStates;
         int wordCount = longWordCount == null ? 0 : longWordCount.intValue();
 
-        Integer previousStateCount = newContentStates.get(previousState);
-        if (previousStateCount == null) {
-            previousStateCount = wordCount * -1;
-        } else {
-            previousStateCount -= wordCount;
-        }
+        Integer previousStateCount =
+            newContentStates.getOrDefault(previousState, 0);
+        previousStateCount -= wordCount;
         newContentStates.put(previousState, previousStateCount);
 
-        Integer newStateCount = newContentStates.get(newState);
-        if (newStateCount == null) {
-            newStateCount = wordCount;
-        } else {
-            newStateCount += wordCount;
-        }
+        Integer newStateCount = newContentStates.getOrDefault(newState, 0);
+        newStateCount += wordCount;
         newContentStates.put(newState, newStateCount);
+
         return newContentStates;
     }
 }

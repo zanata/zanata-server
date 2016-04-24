@@ -44,7 +44,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentUploadedEvent;
-import org.zanata.events.webhook.DocumentMilestoneEvent;
+import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.lock.Lock;
 import org.zanata.model.HAccount;
@@ -265,7 +265,7 @@ public class DocumentServiceImpl implements DocumentService {
             WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
             if(oldStats != null) {
 
-                for(Map.Entry<ContentState, Integer> entry: event.getContentStates().entrySet()) {
+                for(Map.Entry<ContentState, Integer> entry: event.getWordDeltasByState().entrySet()) {
                     oldStats.increment(entry.getKey(), entry.getValue());
                 }
 

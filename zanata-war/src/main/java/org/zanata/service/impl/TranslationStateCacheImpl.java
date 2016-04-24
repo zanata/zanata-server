@@ -20,21 +20,21 @@
  */
 package org.zanata.service.impl;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import org.infinispan.manager.CacheContainer;
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.zanata.async.Async;
 import org.zanata.cache.CacheWrapper;
 import org.zanata.cache.InfinispanCacheWrapper;
 import org.zanata.common.LocaleId;
@@ -59,9 +59,6 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Iterables;
-
-import static com.google.common.collect.Iterables.getLast;
 
 /**
  * Default Implementation of the Translation State Cache.
@@ -191,20 +188,29 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         }
     }
 
-    // TODO why not @Observe the event directly?
+    /**
+     * This method contains all logic to be run immediately after a Text Flow
+     * Target has been successfully translated.
+     */
+    @Async
     @Override
-    public void textFlowStateUpdated(TextFlowTargetStateEvent event) {
-        for(TextFlowTargetStateEvent.TextFlowTargetState state: event.getStates()) {
+    public void textFlowStateUpdated(
+        @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            TextFlowTargetStateEvent event) {
+        for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+            .getStates()) {
             // invalidate target validation
             targetValidationCache.remove(state.getTextFlowTargetId());
         }
     }
 
-    @Override
-    public void docStatsUpdated(DocStatsEvent event) {
+    @Async
+    public void docStatsUpdated(
+        @Observes(during = TransactionPhase.AFTER_SUCCESS)
+            DocStatsEvent event) {
         // invalidate document statistic cache
         clearDocumentStatistics(event.getKey().getDocumentId(),
-                event.getKey().getLocaleId());
+            event.getKey().getLocaleId());
 
         // update document status information
         updateDocStatusCache(event.getKey(),

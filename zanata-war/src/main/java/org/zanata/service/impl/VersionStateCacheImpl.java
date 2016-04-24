@@ -100,7 +100,7 @@ public class VersionStateCacheImpl implements VersionStateCache {
         WordStatistic stats = versionStatisticCache.get(key);
         if (stats != null) {
             for (Map.Entry<ContentState, Integer> entry : event
-                    .getContentStates().entrySet()) {
+                    .getWordDeltasByState().entrySet()) {
                 stats.increment(entry.getKey(), entry.getValue().intValue());
             }
             versionStatisticCache.put(key, stats);

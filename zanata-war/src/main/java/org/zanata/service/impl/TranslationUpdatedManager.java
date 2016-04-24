@@ -13,7 +13,7 @@ import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.TextFlowTargetStateEvent;
-import org.zanata.events.webhook.DocumentStatsEvent;
+import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
@@ -35,7 +35,7 @@ import javax.enterprise.event.TransactionPhase;
  * TextFlowTargetStateEvent IS NOT asynchronous, that is why
  * DocumentStatisticUpdatedEvent is used for webhook processes. See
  * {@link org.zanata.events.TextFlowTargetStateEvent} See
- * {@link org.zanata.events.DocumentStatisticUpdatedEvent}
+ * {@link org.zanata.webhook.events.DocumentStatsEvent}
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -62,22 +62,10 @@ public class TranslationUpdatedManager {
     @Inject
     private ApplicationConfiguration applicationConfiguration;
 
-    /**
-     * This method contains all logic to be run immediately after a Text Flow
-     * Target has been successfully translated.
-     */
-    @Async
-    public void textFlowStateUpdated(
-            @Observes(during = TransactionPhase.AFTER_SUCCESS)
-            TextFlowTargetStateEvent event) {
-        translationStateCacheImpl.textFlowStateUpdated(event);
-    }
-
     @Async
     public void docStatsUpdated(
         @Observes(during = TransactionPhase.AFTER_SUCCESS)
         DocStatsEvent event) {
-        translationStateCacheImpl.docStatsUpdated(event);
         processWebHookEvent(event);
     }
 
@@ -103,7 +91,7 @@ public class TranslationUpdatedManager {
 
         DocumentStatsEvent webhookEvent =
             new DocumentStatsEvent(user, projectSlug,
-                versionSlug, docId, localeId, event.getContentStates());
+                versionSlug, docId, localeId, event.getWordDeltasByState());
 
         publishWebhookEvent(project.getWebHooks(), webhookEvent);
     }

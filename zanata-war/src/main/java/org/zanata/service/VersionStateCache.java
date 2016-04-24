@@ -35,7 +35,7 @@ public interface VersionStateCache {
 
     /**
      * Informs the cache that a text flow has changed its state in a given
-     * locale. (It's really a Text Flow Target state)
+     * locale.
      *
      */
     void docStatsUpdated(DocStatsEvent event);

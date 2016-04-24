@@ -18,15 +18,13 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package org.zanata.events.webhook;
+package org.zanata.webhook.events;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.zanata.common.ContentState;
@@ -43,9 +41,12 @@ import org.zanata.rest.dto.User;
 @Getter
 @Setter
 @AllArgsConstructor
-@JsonPropertyOrder({"user", "project", "version", "docId", "locale", "contentStates"})
+@JsonPropertyOrder({"user", "project", "version", "docId", "locale", "contentStates", "type"})
 @EqualsAndHashCode
 public class DocumentStatsEvent extends WebhookEventType {
+
+    private static final String type = "DocumentStatsEvent";
+
     /**
      * User information
      * {@link org.zanata.rest.dto.User}
@@ -83,6 +84,6 @@ public class DocumentStatsEvent extends WebhookEventType {
 
     @Override
     public String getType() {
-        return this.getClass().getName();
+        return type;
     }
 }

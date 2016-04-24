@@ -44,7 +44,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
-import org.zanata.events.webhook.DocumentMilestoneEvent;
+import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HDocument;
 import org.zanata.model.HProject;
