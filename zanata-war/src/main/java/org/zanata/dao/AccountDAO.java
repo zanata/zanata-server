@@ -204,4 +204,12 @@ public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
         query.setComment("AccountDAO.getAllMergedAccounts");
         return (List<HAccount>) query.list();
     }
+
+    public String getUsername(String keyHash) {
+        return (String) getSession()
+            .createQuery(
+                "select account.username from HAccount account where account.id =(select keytable.account from HAccountResetPasswordKey keytable where keytable.keyHash = :keyHash ) ")
+            .setParameter("keyHash", keyHash)
+            .setComment("AccountDAO.getUsername").uniqueResult();
+    }
 }

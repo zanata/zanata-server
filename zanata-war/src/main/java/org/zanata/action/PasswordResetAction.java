@@ -1,29 +1,28 @@
 package org.zanata.action;
 
-import java.io.Serializable;
-
-import javax.persistence.EntityManager;
-import javax.validation.constraints.Size;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.deltaspike.core.api.scope.GroupedConversation;
 import org.apache.deltaspike.core.api.scope.GroupedConversationScoped;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.hibernate.validator.constraints.NotEmpty;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import org.zanata.ApplicationConfiguration;
+import org.zanata.dao.AccountDAO;
 import org.zanata.dao.AccountResetPasswordKeyDAO;
 import org.zanata.exception.AuthorizationException;
-import org.zanata.exception.NotLoggedInException;
-import org.zanata.ApplicationConfiguration;
 import org.zanata.exception.KeyNotFoundException;
+import org.zanata.exception.NotLoggedInException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.seam.security.IdentityManager;
 import org.zanata.ui.faces.FacesMessages;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Named("passwordReset")
 @GroupedConversationScoped
@@ -48,6 +47,9 @@ public class PasswordResetAction implements Serializable {
 
     @Inject
     private AccountResetPasswordKeyDAO accountResetPasswordKeyDAO;
+
+    @Inject
+    private AccountDAO accountDAO;
 
     @Inject
     private ApplicationConfiguration applicationConfiguration;
@@ -108,9 +110,9 @@ public class PasswordResetAction implements Serializable {
 
     @Transactional
     public String changePassword() {
-        // need to get username from DAO due to lazy loading of account in key
         String username =
-            accountResetPasswordKeyDAO.getUsername(key.getKeyHash());
+            accountDAO.getUsername(key.getKeyHash());
+
         if (!validatePasswordsMatch())
             return null;
 
