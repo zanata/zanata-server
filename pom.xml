@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>25</version>
+    <version>27</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -88,8 +88,8 @@
     <zanata.api.version>3.8.4</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
     <zanata.api.compat.version>3.8.3</zanata.api.compat.version>
-    <zanata.client.version>3.8.1</zanata.client.version>
-    <zanata.common.version>3.8.1</zanata.common.version>
+    <zanata.client.version>3.8.2</zanata.client.version>
+    <zanata.common.version>3.8.3-SNAPSHOT</zanata.common.version>
 
     <richfaces.version>4.5.4.Final</richfaces.version>
 
@@ -125,8 +125,9 @@
     <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
     <jdbc.version>5.1.26</jdbc.version>
 
+    <jaxrsapi.version>3.0.12.Final</jaxrsapi.version>
     <resteasy.scope>compile</resteasy.scope>
-    <resteasy.version>3.0.11.Final</resteasy.version>
+    <resteasy.version>3.0.13.Final</resteasy.version>
 
     <cargo.extract.dir>${project.build.directory}/cargo/installs</cargo.extract.dir>
     <!-- This URL must be set by a profile (wildfly), settings.xml or mvn command line -->
@@ -235,6 +236,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.objenesis</groupId>
+        <artifactId>objenesis</artifactId>
+        <version>2.1</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.picketlink</groupId>
         <artifactId>picketlink-api</artifactId>
         <version>${picketlink.version}</version>
@@ -309,7 +316,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.9</version>
+        <version>1.10</version>
       </dependency>
 
       <dependency>
@@ -335,7 +342,24 @@
       <dependency>
         <groupId>com.sun.xml.fastinfoset</groupId>
         <artifactId>FastInfoset</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>${resteasy.version}</version>
+        <scope>${resteasy.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -660,6 +684,12 @@
         <groupId>org.zanata</groupId>
         <artifactId>zanata-common-util</artifactId>
         <version>${zanata.common.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.zanata</groupId>
@@ -690,6 +720,10 @@
           <exclusion>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jsr173_api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1074,6 +1108,42 @@
       </dependency>
 
       <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>jaxrs-api</artifactId>
+        <version>${jaxrsapi.version}</version>
+        <scope>${resteasy.scope}</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${resteasy.version}</version>
+        <scope>${resteasy.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jcip-annotations</artifactId>
+            <groupId>net.jcip</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>${seam.version}</version>
@@ -1206,6 +1276,12 @@
       </dependency>
 
       <dependency>
+        <groupId>javax.xml.stream</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>1.0-2</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.concordion</groupId>
         <artifactId>concordion</artifactId>
         <version>1.4.2</version>
@@ -1219,6 +1295,10 @@
           <exclusion>
             <artifactId>xml-apis</artifactId>
             <groupId>xml-apis</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
           </exclusion>
         </exclusions>
         <scope>test</scope>
@@ -1244,18 +1324,15 @@
         <artifactId>functionaljava</artifactId>
         <version>3.1</version>
       </dependency>
-      <!--
-        In the server, we can use a newer version than Fedora has.
-        This one also has a source jar!
-      -->
       <dependency>
-        <groupId>xom</groupId>
+        <!-- New group Id -->
+        <groupId>com.io7m.xom</groupId>
         <artifactId>xom</artifactId>
-        <version>1.2.5</version>
+        <version>1.2.10</version>
         <exclusions>
           <exclusion>
-            <artifactId>xml-apis</artifactId>
             <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

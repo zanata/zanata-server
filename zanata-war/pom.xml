@@ -2183,7 +2183,6 @@
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
-      <version>3.1.3.GA</version>
       <scope>provided</scope>
     </dependency>
 
@@ -2426,7 +2425,7 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
-      <version>${resteasy.version}</version>
+      <version>${jaxrsapi.version}</version>
       <scope>${resteasy.scope}</scope>
     </dependency>
     <dependency>
@@ -2440,7 +2439,8 @@
       <version>1.4</version>
     </dependency>
     <dependency>
-      <groupId>xom</groupId>
+      <!-- New group Id -->
+      <groupId>com.io7m.xom</groupId>
       <artifactId>xom</artifactId>
       <exclusions>
         <exclusion>
