@@ -45,8 +45,8 @@
     }
 
     function completeSending() {
-      var errMsg = getContactAdminMessageErrorField().text();
-      if (errMsg != '') {
+      var errMsg = getContactAdminMessageErrorField();
+      if (errMsg.is(":visible")) {
         getContactAdminSendButton().removeClass('is-active');
       }
       else {
@@ -78,7 +78,7 @@
           <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.message}"
             required="true">
             <f:validateLength maximum="300"/>
-            <rich:message for="contact-admin-message" ajaxRendered="true" id="contact-admin-error-message" name="contact-admin-error-message" />
+            <rich:message for="contact-admin-message" ajaxRendered="true" id="contact-admin-error-message" name="contact-admin-error-message"/>
           </h:inputTextarea>
         </zanata:decorate>
       </div>
