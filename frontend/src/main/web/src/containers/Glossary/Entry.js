@@ -110,7 +110,7 @@ class Entry extends Component {
           {entry.termsCount}
         </div>
     }
-    
+
     return (
       <TableRow highlight
         className='editable'

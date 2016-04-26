@@ -25,10 +25,16 @@ class NewEntryModal extends Component {
     }
   }
   handleContentChanged (e) {
-    let entry = this.state.entry
-    entry.srcTerm.content = e.target.value
+    const { entry } = this.state
+    const { srcTerm } = entry
     this.setState({
-      entry: entry
+      entry: {
+        ...entry,
+        srcTerm: {
+          ...srcTerm,
+          content: e.target.value
+        }
+      }
     })
   }
   handlePosChanged (e) {
@@ -133,15 +139,11 @@ class NewEntryModal extends Component {
   }
 }
 
-NewEntryModal.propType = {}
+NewEntryModal.propTypes = {}
 
 const mapStateToProps = (state) => {
-  const { newEntry } = state.glossary
-  return {
-    entry: newEntry.entry,
-    show: newEntry.show,
-    isSaving: newEntry.isSaving
-  }
+  const { entry, isSaving, show } = state.glossary.newEntry
+  return { entry, isSaving, show }
 }
 
 const mapDispatchToProps = (dispatch) => {

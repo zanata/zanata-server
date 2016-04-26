@@ -61,7 +61,10 @@ class Glossary extends Component {
     let entry = null
     if (isSaving && entryId) {
       const savingTerm = saving[entryId]
-      if (savingTerm.transTerm.locale === selectedTransLocale) {
+      if (savingTerm.transTerm &&
+        (savingTerm.transTerm.locale === selectedTransLocale)) {
+        entry = savingTerm
+      } else {
         entry = savingTerm
       }
     } else if (selected) {
