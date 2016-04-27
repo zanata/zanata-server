@@ -8,18 +8,11 @@
   aria-labelledby="myModalLabel" aria-hidden="true">
 
   <script>
-    jQuery(document).ready(function () {
-      getContactAdminSendButton().prop('disabled', true);
-      getContactAdminMessageField().keyup(function() {
-        toggleSendButton();
-      });
-    });
 
     function cancelContactAdmin() {
       getContactAdminMessageField().val('');
       getContactAdminMessageErrorField().text('');
-      getContactAdminSendButton().removeClass('is-active');
-      toggleSendButton();
+      getContactAdminMessageCountField().text('');
     }
 
     function getContactAdminForm() {
@@ -34,24 +27,26 @@
       return getContactAdminForm().find('#contact-admin-send-button');
     }
 
-    // Returns a span.
-    function getContactAdminMessageErrorField(){
-      return getContactAdminForm().find('#contactAdminForm\\:messageField\\:input\\:contact-admin-error-message\\:contactAdminForm\\:messageField\\:input\\:contact-admin-message');
+    function getContactAdminMessageCountField(){
+      return jQuery('#' + jqSelector('#{rich:clientId('contact-admin-message-count')}'));
     }
 
-    function toggleSendButton() {
-      var hasMessage = getContactAdminMessageField().val() !== '';
-      getContactAdminSendButton().prop('disabled', !hasMessage);
+    // Returns a span
+    function getContactAdminMessageErrorField(){
+      return jQuery(".rf-msg-err");
     }
 
     function completeSending() {
-      var errMsg = getContactAdminMessageErrorField();
-      if (errMsg.is(":visible")) {
-        getContactAdminSendButton().removeClass('is-active');
-      }
-      else {
+      var errMsg = getContactAdminMessageErrorField().text();
+      if(errMsg.length == 0 ){
         getContactAdminForm().find('#contact-admin-cancel-button').click();
       }
+      getContactAdminSendButton().removeClass('is-active');
+    }
+
+    function ShowContactAdminMessageCharCount(val){
+      var len = 300 - val.value.length;
+      getContactAdminMessageCountField().text('Characters left: ' + len);
     }
 
   </script>
@@ -75,11 +70,11 @@
 
       <div class="modal__content l--pad-all-1">
         <zanata:decorate id="messageField" componentId="message">
-          <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.message}"
-            required="true">
+          <h:inputTextarea id="contact-admin-message" value="#{contactAdminAction.message}" required="true" onkeyup="ShowContactAdminMessageCharCount(this)">
             <f:validateLength maximum="300"/>
             <rich:message for="contact-admin-message" ajaxRendered="true" id="contact-admin-error-message" name="contact-admin-error-message"/>
           </h:inputTextarea>
+          <h:outputLabel id="contact-admin-message-count"></h:outputLabel>
         </zanata:decorate>
       </div>
 
@@ -91,7 +86,7 @@
             #{msgs['jsf.Cancel']}
           </button>
           <button id="contact-admin-send-button" class="button loader button--primary"
-            disabled="disabled" onclick="sendContactAdminEmail();return false;">
+             onclick="sendContactAdminEmail();return false;">
             <span class="loader__label">#{msgs['jsf.email.Send']}</span>
           </button>
         </div>
