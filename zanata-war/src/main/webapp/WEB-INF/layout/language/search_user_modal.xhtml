@@ -36,7 +36,7 @@
           action="#{languageAction.clearSearchResult}" render="searchResults" oncomplete="zanata.form.appendCheckboxes(getLanguageSearchUserResultsId())"/>
 
         <a4j:jsFunction name="addSelected" limitRender="true"
-          action="#{languageAction.addSelected}" render="searchResults"
+          action="#{languageAction.addSelected}" render="searchResults, contactMembersModal"
           oncomplete="refreshMembersForm();jQuery('#cancel').click();zanata.modal.hide('#searchUserDialog');zanata.form.appendCheckboxes(getLanguageSearchUserResultsId())"/>
 
         <a4j:jsFunction name="bindSearchResultTranslator" action="#{languageAction.bindSearchResultTranslator(personId, checked)}"

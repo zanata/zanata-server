@@ -1,0 +1,125 @@
+<!--
+  ~ Copyright 2016, Red Hat, Inc. and individual contributors as indicated by the
+  ~ @author tags. See the copyright.txt file in the distribution for a full
+  ~ listing of individual contributors.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 2.1 of the License, or (at your option)
+  ~ any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  class="modal" id="contactMembersDialog" tabindex="-1" role="dialog"
+  aria-labelledby="myModalLabel" aria-hidden="true">
+
+  <script>
+
+    jQuery(document).ready(function () {
+      getContactMembersMessageField().bind('input propertychange', function() {
+        updateContactMembersSendButton();
+      });
+      getContactMembersSubjectField().bind('input propertychange', function() {
+        updateContactMembersSendButton();
+      });
+    });
+
+    function cancelContactMembers() {
+      getContactMembersMessageField().val('');
+      getContactMembersSubjectField().val('');
+      getContactMembersForm().find('#contact-members-send-button').removeClass('is-active');
+      updateContactMembersSendButton();
+    }
+
+    function getContactMembersMessageField() {
+      return getContactMembersForm().find('#' + jqSelector('#{rich:clientId('contact-members-message')}'));
+    }
+
+    function getContactMembersSubjectField() {
+      return getContactMembersForm().find('#' + jqSelector('#{rich:clientId('contact-members-subject')}'));
+    }
+
+    function getContactMembersForm() {
+      return jQuery('#' + jqSelector('#{rich:clientId('contactMembersForm')}'));
+    }
+
+    function updateContactMembersSendButton() {
+      var isEmpty = getContactMembersMessageField().val().trim() === ''
+        || getContactMembersSubjectField().val().trim() === '' ;
+      getContactMembersForm().find('#contact-members-send-button').prop('disabled', isEmpty);
+    }
+
+  </script>
+
+  <div class="modal__dialog l--constrain-medium">
+    <header class="modal__header">
+      <h2 class="modal__title">
+        #{msgs.format('jsf.message.contact.members.title',contactLanguageTeamMembersAction.getMembers().size(), contactLanguageTeamMembersAction.getLocale().retrieveDisplayName())}
+      </h2>
+      <button type="button"
+        class="modal__close button--link"
+        data-dismiss="modal" onclick="cancelContactMembers();return false;">
+        <i class="i i--huge i--cancel"></i>
+      </button>
+    </header>
+
+    <h:form id="contactMembersForm" styleClass="l--push-bottom-0">
+
+      <div class="modal__content l--pad-all-1">
+        <div class="l--push-buttom-quarter">
+          <h:outputLabel for="contact-members-error-subject">#{msgs['jsf.email.Subject']}</h:outputLabel>
+          <zanata:decorate id="subjectField" componentId="subject">
+            <h:inputText id="contact-members-subject" value="#{contactLanguageTeamMembersAction.subject}"
+              styleClass="l--push-bottom-0" maxlength="100" required="true">
+              <rich:message for="contact-members-subject" ajaxRendered="true" id="contact-members-error-subject" name="contact-members-error-subject"/>
+            </h:inputText>
+          </zanata:decorate>
+        </div>
+
+        <h:outputLabel for="contact-members-error-message">#{msgs['jsf.email.MessageBody']}</h:outputLabel>
+        <zanata:decorate id="messageField" componentId="message">
+          <h:inputTextarea id="contact-members-message" value="#{contactLanguageTeamMembersAction.message}"
+            styleClass="l--push-bottom-0" required="true">
+            <f:validateLength maximum="300"/>
+            <rich:message for="contact-members-message" ajaxRendered="true" id="contact-members-error-message" name="contact-members-error-message"/>
+          </h:inputTextarea>
+        </zanata:decorate>
+      </div>
+
+      <a4j:jsFunction name="sendContactMembersEmail" execute="@form"
+        action="#{contactLanguageTeamMembersAction.send}"
+        oncomplete="jQuery(getContactMembersForm()).find('#contact-members-cancel-button').click()"/>
+
+      <footer class="modal__footer l--pad-h-1 l--pad-v-half bg--highest">
+        <div class="txt--align-right">
+          <button id="contact-members-cancel-button" onclick="cancelContactMembers();return false;"
+            class="cancel button--link l--push-right-half"
+            data-dismiss="modal">
+            #{msgs['jsf.Cancel']}
+          </button>
+
+          <button id="contact-members-send-button" class="button loader button--primary" disabled="disabled"
+            onclick="sendContactMembersEmail();return false;">
+            <span class="loader__label">#{msgs['jsf.email.Send']}</span>
+          </button>
+        </div>
+      </footer>
+    </h:form>
+  </div>
+
+</div>
