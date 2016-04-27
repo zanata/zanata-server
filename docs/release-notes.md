@@ -31,7 +31,6 @@
 * [ZNTA-412](https://zanata.atlassian.net/browse/ZNTA-412) - Profile link to project maintainers, language members, and version group maintainers
 * [ZNTA-905](https://zanata.atlassian.net/browse/ZNTA-905) - Remove 0% matching translation memory entry
 * [ZNTA-928](https://zanata.atlassian.net/browse/ZNTA-928) - Readonly project doesn't have "lock" icon in UI
-* [ZNTA-793](https://zanata.atlassian.net/browse/ZNTA-793) - Remove unused method in TranslationMemoryAction
 * [ZNTA-54](https://zanata.atlassian.net/browse/ZNTA-54) - Allow delete language
 
 <h5>Infrastructure Changes</h5>
@@ -40,6 +39,11 @@
 
 -----------------------
 ## 3.8.4
+##### Changes
+* [ZNTA-1000](https://zanata.atlassian.net/browse/ZNTA-1000) - Try catch finally on copy version action, logging exception
+* [ZNTA-1001](https://zanata.atlassian.net/browse/ZNTA-1001) - Investigate and fix: copy version fails silently after triggering
+
+
 <h5>Bug fixes</h5>
 * [ZNTA-959](https://zanata.atlassian.net/browse/ZNTA-959) - Copy version fails silently and leaves version readonly
 * [ZNTA-1013](https://zanata.atlassian.net/browse/ZNTA-1013) - Fix Merge translation exception
