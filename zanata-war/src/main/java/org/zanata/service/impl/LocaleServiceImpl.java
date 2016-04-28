@@ -89,11 +89,15 @@ public class LocaleServiceImpl implements LocaleService {
     }
 
     public static Map<LocaleId, String> getLocaleAliasesByIteration(HProjectIteration iteration) {
-        Map<LocaleId, String> localeAliases;
-        if (iteration.isOverrideLocales()) {
-            localeAliases = iteration.getLocaleAliases();
-        } else {
-            localeAliases = iteration.getProject().getLocaleAliases();
+        Map<LocaleId, String> localeAliases = null;
+        try {
+            if (iteration.isOverrideLocales()) {
+                localeAliases = iteration.getLocaleAliases();
+            } else {
+                localeAliases = iteration.getProject().getLocaleAliases();
+            }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
         }
         return localeAliases;
     }
