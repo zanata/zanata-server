@@ -709,4 +709,22 @@ public class TargetContentsPresenter implements TargetContentsDisplay.Listener,
             getCurrentDisplay().toggleSyntaxHighlighting();
         }
     }
+
+    public void acceptTranslationAndMoveNext() {
+        TransUnitId id = getCurrentTransUnitIdOrNull();
+
+        if (currentEditorIndex + 1 < display.getEditors().size()) {
+            display.focusEditor(currentEditorIndex + 1);
+            currentEditorIndex++;
+        } else {
+            acceptTranslation(id);
+            currentEditorIndex = 0;
+            eventBus.fireEvent(NavTransUnitEvent.NEXT_ENTRY_EVENT);
+        }
+    }
+
+    public void rejectTranslation() {
+        TransUnitId id = getCurrentTransUnitIdOrNull();
+        rejectTranslation(id);
+    }
 }
