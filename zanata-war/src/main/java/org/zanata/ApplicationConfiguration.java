@@ -54,7 +54,6 @@ import org.zanata.util.ServiceLocator;
 import org.zanata.util.Synchronized;
 import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
-import org.zanata.config.JndiBackedConfig;
 import org.zanata.events.ConfigurationChanged;
 import org.zanata.events.LogoutEvent;
 import org.zanata.events.PostAuthenticateEvent;
@@ -89,8 +88,6 @@ public class ApplicationConfiguration implements Serializable {
 
     @Inject
     private DatabaseBackedConfig databaseBackedConfig;
-    @Inject
-    private JndiBackedConfig jndiBackedConfig;
     @Inject
     private JaasConfig jaasConfig;
     @Inject @DefaultLocale
@@ -144,7 +141,6 @@ public class ApplicationConfiguration implements Serializable {
         String configName = configChange.getConfigKey();
         // Remove the value from all stores
         databaseBackedConfig.reset(configName);
-        jndiBackedConfig.reset(configName);
     }
 
     /**
@@ -152,12 +148,12 @@ public class ApplicationConfiguration implements Serializable {
      * configuration
      */
     private void loadLoginModuleNames() {
-        for (String policyName : jndiBackedConfig
+        for (String policyName : sysPropConfigStore
                 .getEnabledAuthenticationPolicies()) {
             AuthenticationType authType =
                     AuthenticationType.valueOf(policyName.toUpperCase());
             loginModuleNames.put(authType,
-                    jndiBackedConfig.getAuthPolicyName(policyName));
+                    sysPropConfigStore.getAuthPolicyName(policyName));
         }
     }
 
@@ -255,7 +251,7 @@ public class ApplicationConfiguration implements Serializable {
     }
 
     public String getDocumentFileStorageLocation() {
-        return jndiBackedConfig.getDocumentFileStorageLocation();
+        return sysPropConfigStore.getDocumentFileStorageLocation();
     }
 
     public String getDomainName() {
@@ -279,8 +275,8 @@ public class ApplicationConfiguration implements Serializable {
 
         // Look in the properties file next
         if (emailAddr == null
-                && jndiBackedConfig.getDefaultFromEmailAddress() != null) {
-            emailAddr = jndiBackedConfig.getDefaultFromEmailAddress();
+                && sysPropConfigStore.getDefaultFromEmailAddress() != null) {
+            emailAddr = sysPropConfigStore.getDefaultFromEmailAddress();
         }
 
         // Finally, just throw an Exception
@@ -333,7 +329,7 @@ public class ApplicationConfiguration implements Serializable {
 
     public Set<String> getAdminUsers() {
         String configValue =
-                Strings.nullToEmpty(jndiBackedConfig.getAdminUsersList());
+                Strings.nullToEmpty(sysPropConfigStore.getAdminUsersList());
         if (adminUsers == null) {
             adminUsers =
                     Sets.newHashSet(Splitter.on(",").omitEmptyStrings()
