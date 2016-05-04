@@ -45,7 +45,7 @@ import org.zanata.rest.dto.User;
 @EqualsAndHashCode
 public class DocumentStatsEvent extends WebhookEventType {
 
-    private static final String type = "DocumentStatsEvent";
+    private static final String EVENT_TYPE = "DocumentStatsEvent";
 
     /**
      * User information
@@ -84,6 +84,6 @@ public class DocumentStatsEvent extends WebhookEventType {
 
     @Override
     public String getType() {
-        return type;
+        return EVENT_TYPE;
     }
 }

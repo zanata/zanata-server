@@ -44,7 +44,7 @@ import org.zanata.events.WebhookEventType;
 @EqualsAndHashCode
 public class DocumentMilestoneEvent extends WebhookEventType {
 
-    private static final String type = "DocumentMilestoneEvent";
+    private static final String EVENT_TYPE = "DocumentMilestoneEvent";
 
     /**
      * Target project slug.
@@ -83,6 +83,6 @@ public class DocumentMilestoneEvent extends WebhookEventType {
 
     @Override
     public String getType() {
-        return type;
+        return EVENT_TYPE;
     }
 }
