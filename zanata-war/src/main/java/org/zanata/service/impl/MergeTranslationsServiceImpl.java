@@ -220,7 +220,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
         Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
             HashMultimap.create();
 
-        Map<DocumentLocaleKey, Map<ContentState, Integer>> docStatsMap =
+        Map<DocumentLocaleKey, Map<ContentState, Long>> docStatsMap =
             Maps.newHashMap();
 
         Map<DocumentLocaleKey, Long> lastUpdatedTargetId =
@@ -278,7 +278,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
                     lastUpdatedTargetId.put(key, updatedTarget.getId());
 
-                    Map<ContentState, Integer> contentStates = DocStatsEvent
+                    Map<ContentState, Long> contentStates = DocStatsEvent
                         .updateContentState(docStatsMap.get(key),
                             updatedTarget.getState(),
                             entry.getValue(), targetTf.getWordCount());
@@ -294,7 +294,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                     actorId, ImmutableList.copyOf(entry.getValue()));
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
         }
-        for (Map.Entry<DocumentLocaleKey, Map<ContentState, Integer>> entry : docStatsMap
+        for (Map.Entry<DocumentLocaleKey, Map<ContentState, Long>> entry : docStatsMap
                 .entrySet()) {
             DocStatsEvent docEvent =
                     new DocStatsEvent(entry.getKey(), targetVersionId,

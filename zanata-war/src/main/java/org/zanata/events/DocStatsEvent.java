@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -25,25 +26,25 @@ public class DocStatsEvent {
     /**
      * Updated content states with word counts
      */
-    private final Map<ContentState, Integer> wordDeltasByState;
+    private final Map<ContentState, Long> wordDeltasByState;
 
     private final Long lastModifiedTargetId;
 
-    public static Map<ContentState, Integer> updateContentState(
-        @Nullable Map<ContentState, Integer> contentStates, ContentState newState,
-        ContentState previousState, @Nullable Long longWordCount) {
+    public static Map<ContentState, Long> updateContentState(
+            @Nullable Map<ContentState, Long> contentStates,
+            ContentState newState,
+            ContentState previousState, @Nonnull Long wordCount) {
 
-        Map<ContentState, Integer> newContentStates =
-            contentStates == null ? new HashMap<ContentState, Integer>() :
-                contentStates;
-        int wordCount = longWordCount == null ? 0 : longWordCount.intValue();
+        Map<ContentState, Long> newContentStates =
+                contentStates == null ? new HashMap<ContentState, Long>()
+                        : contentStates;
 
-        Integer previousStateCount =
-            newContentStates.getOrDefault(previousState, 0);
+        Long previousStateCount =
+                newContentStates.getOrDefault(previousState, 0L);
         previousStateCount -= wordCount;
         newContentStates.put(previousState, previousStateCount);
 
-        Integer newStateCount = newContentStates.getOrDefault(newState, 0);
+        Long newStateCount = newContentStates.getOrDefault(newState, 0L);
         newStateCount += wordCount;
         newContentStates.put(newState, newStateCount);
 

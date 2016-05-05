@@ -196,7 +196,7 @@ public class TranslationServiceImpl implements TranslationService {
                 projectIteration, hLocale);
 
         List<TextFlowTargetState> states = Lists.newArrayList();
-        Map<ContentState, Integer> contentStates = Maps.newHashMap();
+        Map<ContentState, Long> contentStates = Maps.newHashMap();
 
         for (TransUnitUpdateRequest request : translationRequests) {
             HTextFlow hTextFlow =
@@ -803,7 +803,7 @@ public class TranslationServiceImpl implements TranslationService {
         ImmutableList.Builder<TextFlowTargetState> states =
                 ImmutableList.builder();
 
-        Map<ContentState, Integer> contentStates = Maps.newHashMap();
+        Map<ContentState, Long> contentStates = Maps.newHashMap();
 
         for (TextFlowTarget incomingTarget : batch) {
             String resId = incomingTarget.getResId();

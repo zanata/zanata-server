@@ -247,12 +247,12 @@ public class DocumentServiceImplTest {
             ContentState oldState, ContentState newState) {
         int wordCount = 10;
         DocumentLocaleKey key = new DocumentLocaleKey(docId, localeId);
-        Map<ContentState, Integer> map = new HashMap<>();
+        Map<ContentState, Long> map = new HashMap<>();
 
-        int oldStatCount = wordCount * -1;
+        Long oldStatCount = wordCount * -1L;
         map.put(oldState, oldStatCount);
 
-        int newStatCount = wordCount + (map.get(newState) != null ? map.get(newState) : 0);
+        Long newStatCount = wordCount + (map.get(newState) != null ? map.get(newState) : 0);
         map.put(newState, newStatCount);
         DocStatsEvent event =
                 new DocStatsEvent(key, versionId, map, null);

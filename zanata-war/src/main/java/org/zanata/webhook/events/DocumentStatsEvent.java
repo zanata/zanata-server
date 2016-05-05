@@ -80,7 +80,7 @@ public class DocumentStatsEvent extends WebhookEventType {
     /**
      * Updated content states with word counts
      */
-    private final Map<ContentState, Integer> contentStates;
+    private final Map<ContentState, Long> contentStates;
 
     @Override
     public String getType() {

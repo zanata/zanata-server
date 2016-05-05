@@ -99,7 +99,7 @@ public class VersionStateCacheImpl implements VersionStateCache {
                 event.getKey().getLocaleId());
         WordStatistic stats = versionStatisticCache.get(key);
         if (stats != null) {
-            for (Map.Entry<ContentState, Integer> entry : event
+            for (Map.Entry<ContentState, Long> entry : event
                     .getWordDeltasByState().entrySet()) {
                 stats.increment(entry.getKey(), entry.getValue().intValue());
             }

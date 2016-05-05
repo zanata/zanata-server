@@ -418,7 +418,7 @@ public class CopyTransWorkFactory {
         DocumentLocaleKey key =
             new DocumentLocaleKey(document.getId(), target.getLocaleId());
 
-        Map<ContentState, Integer> contentStates = DocStatsEvent
+        Map<ContentState, Long> contentStates = DocStatsEvent
             .updateContentState(null, target.getState(), previousState,
                 wordCount);
 

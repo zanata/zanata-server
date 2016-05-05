@@ -265,8 +265,10 @@ public class DocumentServiceImpl implements DocumentService {
             WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
             if(oldStats != null) {
 
-                for(Map.Entry<ContentState, Integer> entry: event.getWordDeltasByState().entrySet()) {
-                    oldStats.increment(entry.getKey(), entry.getValue());
+                for (Map.Entry<ContentState, Long> entry : event
+                        .getWordDeltasByState().entrySet()) {
+                    oldStats.increment(entry.getKey(),
+                            entry.getValue().intValue());
                 }
 
                 boolean shouldPublish = hasContentStateReachedMilestone(oldStats, stats,
