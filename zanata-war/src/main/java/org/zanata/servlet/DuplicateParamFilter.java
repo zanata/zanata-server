@@ -81,7 +81,7 @@ public class DuplicateParamFilter implements Filter {
         public String[] getParameterValues(String paramName) {
             // avoid constructing the entire map unless requested
             String[] value = getRequest().getParameterValues(paramName);
-            return value == null ? null : new String[] { value[0] };
+            return value == null ? null : value;
         }
 
         @Override
@@ -96,7 +96,7 @@ public class DuplicateParamFilter implements Filter {
                     for (Entry<String, String[]> e : origMap.entrySet()) {
                         String key = e.getKey();
                         String[] value = e.getValue();
-                        mapBuilder.put(key, new String[] { value[0]});
+                        mapBuilder.put(key, value);
                     }
                     lazyMap = mapBuilder.build();
                 }
