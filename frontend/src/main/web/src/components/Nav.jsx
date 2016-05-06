@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import NavItem from './NavItem'
 import { flattenThemeClasses } from '../utils/styleUtils'
 
@@ -173,5 +173,27 @@ const Nav = ({
     </nav>
   )
 }
+
+Nav.propTypes = {
+  /**
+   * Current active path
+   */
+  active: PropTypes.string,
+  /**
+   * Object of links
+   * e.g.
+   * {
+   * 'context': http://localhost:8080,
+   * 'helpPage': http://localhost/help
+   * }
+   */
+  links: PropTypes.object,
+  /**
+   * If true, all links will be using href
+   * If false, RouterLink will be use
+   */
+  isJsfPage: PropTypes.bool
+}
+
 
 export default Nav

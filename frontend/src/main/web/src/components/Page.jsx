@@ -9,7 +9,9 @@ const classes = {
     ov: 'Ov(h)'
   }
 }
-
+/**
+ * Pre styled View.jsx component with overflow hidden (no scrollbar)
+ */
 const Page = ({
   children,
   theme,
