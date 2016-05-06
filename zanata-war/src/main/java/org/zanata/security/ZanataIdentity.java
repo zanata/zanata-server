@@ -440,7 +440,7 @@ public class ZanataIdentity implements Identity, Serializable {
                 postAuthenticate();
             } finally {
                 // Set password to null whether authentication is successful or not
-                credentials.setPassword(null);
+                credentials.clearPassword();
                 authenticating = false;
             }
         }
@@ -470,7 +470,7 @@ public class ZanataIdentity implements Identity, Serializable {
             preAuthenticationRoles.clear();
         }
 
-        credentials.setPassword(null);
+        credentials.clearPassword();
 
         // It's used in:
         // - org.jboss.seam.security.management.JpaIdentityStore.setUserAccountForSession()

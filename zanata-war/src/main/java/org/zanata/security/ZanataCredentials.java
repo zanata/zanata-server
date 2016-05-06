@@ -80,7 +80,7 @@ public class ZanataCredentials implements Serializable {
 
     public void clear() {
         username = null;
-        password = null;
+        clearPassword();
         authType = null;
         openIdProviderType = null;
     }
@@ -102,6 +102,10 @@ public class ZanataCredentials implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void clearPassword() {
+        setPassword(null);
     }
 
     public boolean isInitialized() {
