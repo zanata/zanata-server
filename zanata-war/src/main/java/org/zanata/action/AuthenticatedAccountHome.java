@@ -26,11 +26,18 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.Permission;
+import org.zanata.rest.editor.service.UserService;
+import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.seam.framework.EntityHome;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -42,11 +49,20 @@ import java.io.Serializable;
 public class AuthenticatedAccountHome extends EntityHome<HAccount>
         implements Serializable {
 
+    /**
+    *
+    */
     private static final long serialVersionUID = 1L;
 
     @Inject
     @Authenticated
     private HAccount authenticatedAccount;
+
+    @Inject
+    private ZanataIdentity identity;
+
+    @Inject
+    private UserService userService;
 
     @Override
     public Object getId() {
@@ -56,4 +72,30 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
         return authenticatedAccount.getId();
     }
 
+    public String getUser() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            User user = userService.transferToUser(authenticatedAccount, true);
+            return mapper.writeValueAsString(user);
+        } catch (IOException e) {
+            return this.getClass().getName() + "@"
+                    + Integer.toHexString(this.hashCode());
+        }
+    }
+
+    public Permission getUserPermission() {
+        return userService.getUserPermission();
+    }
+
+    public String getUsername() {
+        if(authenticatedAccount != null) {
+            return authenticatedAccount.getUsername();
+        }
+        return null;
+    }
+
+    public boolean isLoggedIn() {
+        return identity.isLoggedIn() && authenticatedAccount != null &&
+            authenticatedAccount.isEnabled();
+    }
 }

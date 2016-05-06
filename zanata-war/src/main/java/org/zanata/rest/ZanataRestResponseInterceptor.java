@@ -26,6 +26,7 @@ import java.util.List;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
@@ -42,21 +43,39 @@ import com.google.common.collect.Lists;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Provider
+@PreMatching
 @HeaderDecoratorPrecedence
 public class ZanataRestResponseInterceptor implements ContainerResponseFilter {
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-        throws IOException {
+    private static final String ALLOW_METHODS = "PUT, POST, DELETE, GET, OPTIONS";
 
-        List<String> requestHeaders = requestContext.getHeaders().get("Access-Control-Request-Headers");
-        if(requestHeaders == null) {
-            requestHeaders = Lists.newArrayList();
+    public void filter(ContainerRequestContext requestContext,
+            ContainerResponseContext responseContext) throws IOException {
+        MultivaluedMap<String, String> requestHeaders =
+            requestContext.getHeaders();
+        MultivaluedMap<String, Object> responseHeaders =
+            responseContext.getHeaders();
+
+        List<String> allowHeaders = requestHeaders
+                .get("Access-Control-Request-Headers");
+        if(allowHeaders == null) {
+            allowHeaders = Lists.newArrayList();
         }
-        MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-
-        headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Methods", requestContext.getMethod());
-        headers.add("Access-Control-Allow-Headers",
+        List<String> origins = requestHeaders.get("origin");
+        if (origins != null && !origins.isEmpty()) {
+            responseHeaders.add("Access-Control-Allow-Origin",
+                Joiner.on(" ").skipNulls().join(origins));
+        } else {
+            responseHeaders.add("Access-Control-Allow-Origin", "*");
+        }
+        if(requestContext.getMethod().equals("OPTIONS")) {
+            responseHeaders.add("Access-Control-Allow-Methods", ALLOW_METHODS);
+        } else {
+            responseHeaders.add("Access-Control-Allow-Methods",
+                    requestContext.getMethod());
+        }
+        responseHeaders.add("Access-Control-Allow-Credentials", true);
+        responseHeaders.add("Access-Control-Allow-Headers",
             "X-Requested-With, Content-Type, Accept, " + Joiner.on(",").join(
-                requestHeaders));
+                allowHeaders));
     }
 }

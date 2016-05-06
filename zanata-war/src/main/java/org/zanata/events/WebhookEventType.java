@@ -25,20 +25,10 @@ import java.io.Serializable;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.zanata.rest.editor.dto.JsonObject;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public abstract class WebhookEventType implements Serializable {
-
-    @JsonIgnore
-    public String getJSON() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (IOException e) {
-            return this.getClass().getName() + "@"
-                + Integer.toHexString(this.hashCode());
-        }
-    }
+public abstract class WebhookEventType extends JsonObject {
 }
