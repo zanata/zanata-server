@@ -252,7 +252,7 @@ public class DocumentServiceImplTest {
         Long oldStatCount = wordCount * -1L;
         map.put(oldState, oldStatCount);
 
-        Long newStatCount = wordCount + (map.get(newState) != null ? map.get(newState) : 0);
+        long newStatCount = wordCount + (map.get(newState) != null ? map.get(newState) : 0);
         map.put(newState, newStatCount);
         DocStatsEvent event =
                 new DocStatsEvent(key, versionId, map, null);

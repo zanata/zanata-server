@@ -100,7 +100,7 @@ public class TranslationUpdatedManagerTest {
     private LocaleId localeId = LocaleId.DE;
     private String versionSlug = "versionSlug";
     private String projectSlug = "projectSlug";
-    private Long wordCount = 10L;
+    private int wordCount = 10;
     private ContentState oldState = ContentState.New;
     private ContentState newState = ContentState.Translated;
     private boolean isDisplayUserEmail = true;
@@ -140,7 +140,7 @@ public class TranslationUpdatedManagerTest {
         when(version.getProject()).thenReturn(project);
         when(project.getSlug()).thenReturn(projectSlug);
         when(project.getWebHooks()).thenReturn(webHooks);
-        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount.intValue());
+        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
         when(userService.transferToUser(account, isDisplayUserEmail))
             .thenReturn(user);
         when(textFlowTargetDAO.findById(tftId)).thenReturn(target);
@@ -153,19 +153,20 @@ public class TranslationUpdatedManagerTest {
 
         WordStatistic stats = new WordStatistic(10, 10, 10, 10, 10);
         WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
-        oldStats.decrement(newState, wordCount.intValue());
-        oldStats.increment(oldState, wordCount.intValue());
+        oldStats.decrement(newState, wordCount);
+        oldStats.increment(oldState, wordCount);
 
         when(translationStateCache.getDocumentStatistics(docId, localeId)).
             thenReturn(stats);
-        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount.intValue());
+        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
 
         DocumentLocaleKey key =
             new DocumentLocaleKey(docId, localeId);
 
         Map<ContentState, Long> contentStates = new HashMap<>();
-        contentStates.put(newState, wordCount);
-        contentStates.put(oldState, wordCount);
+        Long longWordCount = new Long(wordCount);
+        contentStates.put(newState, longWordCount);
+        contentStates.put(oldState, longWordCount);
 
         DocStatsEvent event =
             new DocStatsEvent(key, versionId, contentStates, tftId);

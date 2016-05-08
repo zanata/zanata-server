@@ -33,7 +33,7 @@ public class DocStatsEvent {
     public static Map<ContentState, Long> updateContentState(
             @Nullable Map<ContentState, Long> contentStates,
             ContentState newState,
-            ContentState previousState, @Nonnull Long wordCount) {
+            ContentState previousState, long wordCount) {
 
         Map<ContentState, Long> newContentStates =
                 contentStates == null ? new HashMap<ContentState, Long>()
