@@ -26,18 +26,15 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.zanata.rest.dto.User;
 import org.zanata.rest.editor.dto.Permission;
 import org.zanata.rest.editor.service.UserService;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.model.HAccount;
-import org.zanata.model.HPerson;
 import org.zanata.seam.framework.EntityHome;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
+import org.zanata.util.JsonUtil;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -72,15 +69,14 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
         return authenticatedAccount.getId();
     }
 
+    /**
+     * Produce json string of {@link org.zanata.rest.dto.User} for js module
+     * (frontend). This allows js module to have basic information for any
+     * API request.
+     */
     public String getUser() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            User user = userService.transferToUser(authenticatedAccount, true);
-            return mapper.writeValueAsString(user);
-        } catch (IOException e) {
-            return this.getClass().getName() + "@"
-                    + Integer.toHexString(this.hashCode());
-        }
+        User user = userService.transferToUser(authenticatedAccount, true);
+        return JsonUtil.getJSONString(user);
     }
 
     public Permission getUserPermission() {

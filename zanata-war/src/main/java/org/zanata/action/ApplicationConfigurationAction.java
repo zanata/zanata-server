@@ -80,10 +80,10 @@ public class ApplicationConfigurationAction {
 
     public String getLoginUrl(HttpServletRequest request) {
         if(applicationConfiguration.isKerberosAuth()) {
-            return "/account/klogin.seam?continue=" + urlUtil.getEncodedLocalUrl(request);
+            return "/account/klogin?continue=" + urlUtil.getEncodedLocalUrl(request);
         }
         if(isSingleOpenId()) {
-            return "/account/singleopenidlogin.seam";
+            return "/account/singleopenidlogin";
         }
         return "/account/sign_in?continue=" + urlUtil.getEncodedLocalUrl(request);
     }

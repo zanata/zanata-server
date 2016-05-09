@@ -87,7 +87,7 @@ public class LocaleDAO extends AbstractDAOImpl<HLocale, Long> {
         return q.list();
     }
 
-    public int searchByNameCount(String query) {
+    public int countByNameLike(String query) {
         return searchByName(query, -1, 0).size();
     }
 }

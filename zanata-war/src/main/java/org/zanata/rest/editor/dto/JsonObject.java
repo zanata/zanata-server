@@ -21,25 +21,18 @@
 
 package org.zanata.rest.editor.dto;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.zanata.util.JsonUtil;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-public abstract class JsonObject implements Serializable{
+public abstract class JsonObject implements Serializable {
 
     @JsonIgnore
     public String getJSON() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (IOException e) {
-            return this.getClass().getName() + "@"
-                + Integer.toHexString(this.hashCode());
-        }
+        return JsonUtil.getJSONString(this);
     }
 }

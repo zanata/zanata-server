@@ -124,6 +124,10 @@ public class UserService implements UserResource {
             userImageUrl, userLanguageTeams);
     }
 
+    /**
+     * Return user's permission for js module.
+     * ServiceImpl will do security check again upon execution of any action.
+     */
     public Permission getUserPermission() {
         Permission permission = new Permission();
         boolean canUpdate = false;

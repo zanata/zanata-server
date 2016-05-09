@@ -131,11 +131,6 @@ public class RawRestTestUtils {
     }
 
     public static String jsonMarshal(Object jsonObject) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(jsonObject);
-        } catch (IllegalStateException | IOException e) {
-            throw new AssertionError(e);
-        }
+        return JsonUtil.getJSONString(jsonObject);
     }
 }
