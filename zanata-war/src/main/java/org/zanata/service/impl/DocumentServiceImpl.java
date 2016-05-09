@@ -267,8 +267,9 @@ public class DocumentServiceImpl implements DocumentService {
 
                 for (Map.Entry<ContentState, Long> entry : event
                         .getWordDeltasByState().entrySet()) {
-                    oldStats.increment(entry.getKey(),
-                            entry.getValue().intValue());
+                    //casting Long to int for statistics calculation
+                    int count = entry.getValue().intValue();
+                    oldStats.increment(entry.getKey(), count);
                 }
 
                 boolean shouldPublish = hasContentStateReachedMilestone(oldStats, stats,
