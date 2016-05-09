@@ -1,8 +1,8 @@
 var variables = require('./src/constants/styles')
 
-function pxToRem (value, baseFontSize) {
+function pxToRem (pixels, baseFontSize) {
   baseFontSize = baseFontSize || '16'
-  return +(value / baseFontSize).toFixed(3) + 'rem'
+  return +(pixels / baseFontSize).toFixed(3) + 'rem'
 }
 
 function flatten (target) {
@@ -36,13 +36,13 @@ var customVars = flatten(
   Object.assign(
     {},
     {
-      zsans: "'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif", // eslint-disable-line
+      zsans: "'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif", // eslint-disable-line max-len
       zmono: "'Source Code Pro', Hack, Consolas, monaco, monospace"
     },
     variables
   )
 )
-/* eslint-disable */
+
 module.exports = {
   cssDest: './src/styles/atomic.css',
   configs: {
@@ -101,4 +101,3 @@ module.exports = {
     ]
   }
 }
-/* eslint-enable */

@@ -4,7 +4,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var _ = require('lodash')
 var defaultConfig = require('./webpack.prod.config.js')
 var bundleDest = __dirname
-
+/**
+ * This js file is used for all jsf pages that is not 100% reactjs yet.
+ */
 module.exports = _.merge({}, defaultConfig, {
   entry: './src/legacy',
   output: {

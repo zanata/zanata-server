@@ -13,7 +13,7 @@ component, which adds the props `theme` and `atomic`, which should be used for
 styling instead of className. For more detals on styling components, see
 [Styles](./styles.md).
 
-For each component should have:
+Each component should have:
 
 - A default export
 - propTypes (with documentation for each one)

@@ -1,6 +1,6 @@
 # ES Next
 
-ES6/ES2015 and increasingly ES7/ES2016 code can be (and is preferred)
+ES6/ES2015 and increasingly ES7/ES2016 code can be used (and is preferred)
 throughout the front-end. It is compiled using Babel during the build into
 browser compatible javascript.
 
