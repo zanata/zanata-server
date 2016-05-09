@@ -84,7 +84,9 @@ const contentViewContainerTheme = {
     w: 'W(100%)'
   }
 }
-
+/**
+ * Root component for Explore page
+ */
 class Explore extends Component {
   handleKeyDown (e) {
     if (e.key === 'Escape') {
@@ -125,7 +127,7 @@ class Explore extends Component {
             ? searchResults['Project'].results : []}
         title='Projects'
         totalCount={searchResults['Project']
-            ? searchResults['Project'].totalCount : 0}
+            ? parseInt(searchResults['Project'].totalCount) : 0}
         type='Project'
         key='Project'
         sizePerPage={SIZE_PER_PAGE}
@@ -138,7 +140,7 @@ class Explore extends Component {
             ? searchResults['Group'].results : []}
         title='Groups'
         totalCount={searchResults['Group']
-            ? searchResults['Group'].totalCount : 0}
+            ? parseInt(searchResults['Group'].totalCount) : 0}
         type='Group'
         key='Group'
         sizePerPage={SIZE_PER_PAGE}
@@ -152,7 +154,7 @@ class Explore extends Component {
             ? searchResults['Person'].results : []}
           title='People'
           totalCount={searchResults['Person']
-            ? searchResults['Person'].totalCount : 0}
+            ? parseInt(searchResults['Person'].totalCount) : 0}
           type='Person'
           key='Person'
           sizePerPage={SIZE_PER_PAGE}
@@ -166,7 +168,7 @@ class Explore extends Component {
             ? searchResults['LanguageTeam'].results : []}
           title='Language Teams'
           totalCount={searchResults['LanguageTeam']
-            ? searchResults['LanguageTeam'].totalCount : 0}
+            ? parseInt(searchResults['LanguageTeam'].totalCount) : 0}
           type='LanguageTeam'
           key='LanguageTeam'
           sizePerPage={SIZE_PER_PAGE}
@@ -221,10 +223,10 @@ const mapStateToProps = (state) => {
   return {
     location: state.routing.location,
     searchText: state.routing.location.query.q,
-    projectPage: state.routing.location.query.projectPage,
-    groupPage: state.routing.location.query.groupPage,
-    personPage: state.routing.location.query.personPage,
-    languageTeamPage: state.routing.location.query.languageTeamPage,
+    projectPage: parseInt(state.routing.location.query.projectPage),
+    groupPage: parseInt(state.routing.location.query.groupPage),
+    personPage: parseInt(state.routing.location.query.personPage),
+    languageTeamPage: parseInt(state.routing.location.query.languageTeamPage),
     searchResults: state.explore.results,
     searchError: state.explore.error,
     searchLoading: state.explore.loading

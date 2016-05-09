@@ -21,7 +21,7 @@ export const SEARCH_GROUP_REQUEST = 'SEARCH_GROUP_REQUEST'
 export const SEARCH_GROUP_SUCCESS = 'SEARCH_GROUP_SUCCESS'
 export const SEARCH_GROUP_FAILURE = 'SEARCH_GROUP_FAILURE'
 
-export const SIZE_PER_PAGE = 10
+export const SIZE_PER_PAGE = 2
 
 const getEndpoint = (type, page, searchText) => {
   return window.config.baseUrl + window.config.apiRoot + '/search/' +
@@ -67,7 +67,7 @@ const getSearchProjectResults = (dispatch, searchText, pages, callbacks) => {
 }
 
 const getSearchLanguageTeamResults = (dispatch, searchText, pages, callbacks) => {
-  const endpoint = getEndpoint('teams/language', pages.languagePage, searchText)
+  const endpoint = getEndpoint('teams/language', pages.languageTeamPage, searchText)
   const apiTypes = [
     SEARCH_LANG_TEAM_REQUEST,
     {

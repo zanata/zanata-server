@@ -25,7 +25,10 @@ const classes = {
     }
   }
 }
-
+/**
+ * A flexbox component that align all elements (property children) horizontally in a row.
+ * Can be used as standalone or as children of an element.
+ */
 const Row = ({
   align = 'center',
   children,

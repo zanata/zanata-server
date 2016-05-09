@@ -90,6 +90,27 @@ class Entry extends Component {
       <div className='LineClamp(1,24px) Px(rq)'>Loading…</div>
     )
 
+    let secondColumnContent
+    if (termsLoading) {
+      secondColumnContent = loadingDiv
+    } else if (transSelected) {
+      secondColumnContent =
+        <EditableText
+          title={transContent}
+          editable={transSelected && editable}
+          editing={selected}
+          onChange={(e) => handleTermFieldUpdate('locale', e)}
+          placeholder='Add a translation…'
+          emptyReadOnlyText='No translation'>
+          {transContent}
+        </EditableText>
+    } else {
+      secondColumnContent =
+        <div className='LineClamp(1,24px) Px(rq)'>
+          {entry.termsCount}
+        </div>
+    }
+
     return (
       <TableRow highlight
         className='editable'
@@ -107,22 +128,7 @@ class Entry extends Component {
           }
         </TableCell>
         <TableCell size={'3'} tight={transSelected}>
-          {termsLoading
-            ? loadingDiv
-            : transSelected
-              ? (<EditableText
-                title={transContent}
-                editable={transSelected && editable}
-                editing={selected}
-                onChange={(e) => handleTermFieldUpdate('locale', e)}
-                placeholder='Add a translation…'
-                emptyReadOnlyText='No translation'>
-                {transContent}
-              </EditableText>)
-              : (<div className='LineClamp(1,24px) Px(rq)'>
-                {entry.termsCount}
-              </div>)
-          }
+          {secondColumnContent}
         </TableCell>
         <TableCell hideSmall>
           {termsLoading

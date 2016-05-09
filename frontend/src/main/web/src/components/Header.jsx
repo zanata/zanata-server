@@ -60,7 +60,9 @@ const searchLinkTheme = {
     }
   }
 }
-
+/**
+ * Page top header with Zanata logo and search
+ */
 const Header = ({
   children,
   theme,

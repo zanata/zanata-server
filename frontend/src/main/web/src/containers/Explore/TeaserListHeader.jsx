@@ -1,4 +1,4 @@
-import React from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react' // eslint-disable-line
 import {
   Icon,
   ButtonLink,
@@ -7,8 +7,10 @@ import {
   View
 } from '../../components'
 
+/**
+ * Header with icon and paging for the TeaserList.
+ */
 const TeaserListHeader = ({
-  children,
   title,
   type,
   totalCount,
@@ -64,6 +66,18 @@ const TeaserListHeader = ({
         size='1' loading name='loader'/>}
     </View>
   )
+}
+
+TeaserListHeader.propTypes = {
+  title: PropTypes.string,
+  type: PropTypes.oneOf(
+    ['Project', 'LanguageTeam', 'Person', 'Group']
+  ),
+  totalCount: PropTypes.number,
+  sizePerPage: PropTypes.number,
+  page: PropTypes.number,
+  updatePage: PropTypes.func,
+  loading: PropTypes.bool
 }
 
 export default TeaserListHeader

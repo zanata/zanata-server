@@ -74,7 +74,7 @@ class DeleteEntryModal extends Component {
   }
 }
 
-DeleteEntryModal.propType = {
+DeleteEntryModal.propTypes = {
   className: React.PropTypes.string,
   entry: React.PropTypes.object,
   show: React.PropTypes.bool,

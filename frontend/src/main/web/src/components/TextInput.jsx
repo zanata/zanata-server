@@ -27,6 +27,9 @@ const classes = {
   }
 }
 
+/**
+ * TextInput component <input> or <textArea> depending on property 'multiline'.
+ */
 class TextInput extends Component {
   constructor () {
     super()
@@ -55,13 +58,15 @@ class TextInput extends Component {
   _onSelectionChange (e) {
     const { onSelectionChange } = this.props
     const { selectionDirection, selectionEnd, selectionStart } = e.target
-    const event = {
-      selectionDirection,
-      selectionEnd,
-      selectionStart,
-      nativeEvent: e.nativeEvent
+    if (onSelectionChange) {
+      const event = {
+        selectionDirection,
+        selectionEnd,
+        selectionStart,
+        nativeEvent: e.nativeEvent
+      }
+      onSelectionChange(event)
     }
-    if (onSelectionChange) onSelectionChange(event)
   }
 
   _onKeyDown (e) {
@@ -127,30 +132,28 @@ class TextInput extends Component {
       className: flattenThemeClasses(classes, theme),
       defaultValue,
       maxLength,
-      onBlur: onBlur && this._onBlur.bind(this),
-      onChange: (onChange || onChangeText) && this._onChange.bind(this),
-      onFocus: this._onFocus.bind(this),
-      onSelect: onSelectionChange && this._onSelectionChange.bind(this),
-      onKeyDown: (onKeyDown) && this._onKeyDown.bind(this),
+      onBlur: onBlur && ::this._onBlur,
+      onChange: (onChange || onChangeText) && ::this._onChange,
+      onFocus: ::this._onFocus,
+      onSelect: onSelectionChange && ::this._onSelectionChange,
+      onKeyDown: (onKeyDown) && ::this._onKeyDown,
       placeholder,
       readOnly: !editable,
       value
     }
 
-    const propsMultiline = {
-      ...propsCommon,
-      maxRows: maxNumberOfLines || numberOfLines,
-      minRows: numberOfLines
-    }
-
-    const propsSingleline = {
-      ...propsCommon,
-      type
-    }
-
     if (multiline) {
+      const propsMultiline = {
+        ...propsCommon,
+        maxRows: maxNumberOfLines || numberOfLines,
+        minRows: numberOfLines
+      }
       return <TextareaAutosize  {...propsMultiline} />
     } else {
+      const propsSingleline = {
+        ...propsCommon,
+        type
+      }
       return <input {...propsSingleline}/>
     }
   }
