@@ -55,22 +55,6 @@
               <npmVersion>${npm.version}</npmVersion>
             </configuration>
           </execution>
-          <!-- <execution>
-            <id>npm install</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>npm build</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <arguments>run build</arguments>
-            </configuration>
-          </execution> -->
         </executions>
       </plugin>
 
