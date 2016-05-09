@@ -271,6 +271,9 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
     @Override
     protected HProjectIteration loadInstance() {
         Session session = (Session) getEntityManager().getDelegate();
+        HProject project = (HProject) session.byNaturalId(HProject.class)
+           .using("slug", getProjectSlug()).load();
+        validateProjectState(project);
         if (versionId == null) {
             HProjectIteration iteration = (HProjectIteration) session
                     .byNaturalId(HProjectIteration.class)
@@ -294,6 +297,15 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             log.warn(
                     "Project version [id={}, slug={}], does not exist or is soft deleted: {}",
                     versionId, getSlug(), iteration);
+            throw new EntityNotFoundException();
+        }
+    }
+
+    private void validateProjectState(HProject project) {
+        if (project == null || project.getStatus() == EntityStatus.OBSOLETE) {
+            log.warn(
+                "Project [slug={}], does not exist or is soft deleted: {}",
+                getProjectSlug(), project);
             throw new EntityNotFoundException();
         }
     }
