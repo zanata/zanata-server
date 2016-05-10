@@ -36,6 +36,7 @@
 * [ZNTA-1068](https://zanata.atlassian.net/browse/ZNTA-1068) - Refresh page after adding language in project page
 * [ZNTA-1074](https://zanata.atlassian.net/browse/ZNTA-1074) - Hide notification details section
 * [ZNTA-1065](https://zanata.atlassian.net/browse/ZNTA-1065) - Drop-down user menu does not obscure the Glossary buttons
+* [ZNTA-1086](https://zanata.atlassian.net/browse/ZNTA-1086) - NullPointerException when uploading from client (tested with cs-CZ)
 
 
 <h5>Infrastructure Changes</h5>
