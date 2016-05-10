@@ -2,12 +2,12 @@
 
 ## Design Concepts
 
-There are some core concept that each Zanata and each component is designed
-around to keep a consistent look and feel.
+There are some core concepts that Zanata and each component are designed around 
+to keep a consistent look and feel.
 
 ### Color Palette
 
-To avoid using to many colors, stick to the colors used in
+To avoid using too many colors, stick to the colors used in
 [constants/styles.js](../src/constants/styles.js). For different shades of white
 or black, atomic.css has shortcut variables (i.e #fff.5, is 50% white).
 Most of the time `opacity` or `filter: brightness()` can be used to change the
@@ -74,10 +74,10 @@ to avoid repetition or inconsistencies. e.g. transitions, borders, etc.
 These are the default html styles. Styles here should be kept very minimal and
 should be the most common styles used in the application. E.g. don't set custom
 sizes for headings (h1, h2, etc) as the default size for a h2 is likely to
-change largely throughout the application, so it better be set explicitly in
+change a lot throughout the application, so it better be set explicitly in
 context. Favour "reseting" default elements as much as possible.
 
-This allow developers to use the correct html tags in each use case without
+This allow developers to use-case the correct html tags in each use case without
 the fear of having to "reset defaults" or just use a div.
 
 ### Atomic CSS
@@ -86,7 +86,7 @@ Most of Zanata's CSS should be in this file. **It is a generated file and
 should not be edited**. This file is added to by declaring classes in Javascript
 matching a [specific syntax](acss.io/guides/syntax.html).
 
-Each class is usually single purpose (i.e. Maps to a single CSS property).
+Each class is usually single-purpose (i.e. Maps to a single CSS property).
 The configuration and variables available to Atomic CSS are declared in
 [atomicCssConfig.js](../atomicCssConfig.js). For more information on how to
 use atomic CSS classes (including a reference of
@@ -98,13 +98,13 @@ use atomic CSS classes (including a reference of
 All custom components should be composed of the [Base](../src/components/Base.jsx)
 component, which adds `theme` and `atomic` props.  `theme` should be used when
 creating new components, as it allows other components to extend all the classes
-of the component it is composing. `atomic` is used mostly for specific in app
+of the component it is composing. `atomic` is used mostly for specific in-app
 overrides, as it takes precedence over any theme classes.
 
 Each component should declare a single `classes` variable, directly after it's
 imports. This classes variable can then be merged with it's own theme prop (to
-allow for external theming) and then any it can be merged again for any state
-based classes.
+allow for external theming) and then it can be merged again for any state-based 
+classes.
 
 The `classes` variable can contain classes for more than 1 element, if more than
 one element is declared, the root element should be called `root`. See the
@@ -151,7 +151,7 @@ is not available in atomic.css so add `Ap(n)` to extra.css.
 ## Icons
 
 Icons are handled by the [Icons](../src/components/Icons) and
-[Icon](../src/components/Icon) components. The source fro all icons is the
+[Icon](../src/components/Icon) components. The source for all icons is the
 [svgs folder](../src/components/Icons/svgs) in the Icons component.
 
 On build, there are scripts that will generate an Icon sprite and list all the
@@ -161,5 +161,5 @@ component, see the [Styleguide](./styleguide.md).
 ## Styleguide
 
 This CSS is specific to the [Styleguide](./styleguide.md) and is not used in
-production. It is used for styleguide specific overrides of it's included
+production. It is used for styleguide-specific overrides of its included
 classes.
