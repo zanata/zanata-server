@@ -14,10 +14,9 @@ function getSVG (cb) {
 
 function generateComponent (cb) {
   fs.readFile(componentFileSrc, 'utf8', function (err, data) {
-    var component
     if (err) return console.log(err)
     getSVG(function (svg) {
-      component = data.replace(/{{svgFile: 'icons.svg'}}/, '\'' + svg + '\'')
+      var component = data.replace(/{{svgFile: 'icons.svg'}}/, '\'' + svg + '\'')
       cb(component)
     })
   })

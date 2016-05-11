@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import warning from 'warning'
-import { merge } from 'lodash'
+import { merge, cloneDeep } from 'lodash'
 import { flattenThemeClasses } from '../../utils/styleUtils'
 
 const Base = ({
@@ -14,17 +14,18 @@ const Base = ({
   ...props
 }) => {
   const Component = tagName || 'div'
-  if (states && theme.states) {
-    const themeStates = theme.states
-    delete theme.states
+  const clonedTheme = cloneDeep(theme)
+  if (states && clonedTheme.states) {
+    const themeStates = clonedTheme.states
+    delete clonedTheme.states
     Object.keys(states).forEach((state) => {
-      theme.base = merge({},
-        theme.base,
+      clonedTheme.base = merge({},
+        clonedTheme.base,
         states[state] && themeStates[state]
       )
     })
   }
-  const classes = flattenThemeClasses(theme, atomic)
+  const classes = flattenThemeClasses(clonedTheme, atomic)
   warning(!className,
     'Please use `theme` instead of `className` to style `' +
     componentName || 'Undefined Component' + '` with `' + className + '`.')

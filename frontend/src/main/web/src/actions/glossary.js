@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { isEmpty, cloneDeep } from 'lodash'
+import { isEmpty, cloneDeep, includes } from 'lodash'
 import { normalize } from 'normalizr'
 import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -74,7 +74,11 @@ export const glossaryInvalidateResults =
 export const glossaryInvalidateStats =
   createAction(GLOSSARY_INVALIDATE_STATS)
 
-export const getGlossaryTerms = (state, newIndex) => {
+/**
+ * if newIndex is undefined, then current index will be used as offset index
+ * to retrieve next glossary list
+ */
+const getGlossaryTerms = (state, newIndex) => {
   const {
     src = DEFAULT_LOCALE.localeId,
     locale = '',
@@ -83,8 +87,7 @@ export const getGlossaryTerms = (state, newIndex) => {
     index = 0
   } = state.glossary
   const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
-  const srcQuery = src
-    ? `?srcLocale=${src}` : '?srcLocale=' + DEFAULT_LOCALE.localeId
+  const srcQuery = '?srcLocale=' + (src ? src : DEFAULT_LOCALE.localeId)
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
@@ -100,13 +103,10 @@ export const getGlossaryTerms = (state, newIndex) => {
       type: GLOSSARY_TERMS_SUCCESS,
       payload: (action, state, res) => {
         const contentType = res.headers.get('Content-Type')
-        if (contentType && ~contentType.indexOf('json')) {
+        if (contentType && includes(contentType, 'json')) {
           return res.json().then((json) => {
-              const normalized =
-                normalize(json, { results: GLOSSARY_TERM_ARRAY })
-              return normalized
-            }
-          )
+            return normalize(json, { results: GLOSSARY_TERM_ARRAY })
+          })
         }
       },
       meta: {
@@ -121,7 +121,7 @@ export const getGlossaryTerms = (state, newIndex) => {
   }
 }
 
-export const getGlossaryStats = (dispatch, resetTerms) => {
+const getGlossaryStats = (dispatch, resetTerms) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/info'
   const apiTypes = [
@@ -142,7 +142,7 @@ export const getGlossaryStats = (dispatch, resetTerms) => {
   }
 }
 
-export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
+const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot + '/glossary'
   let formData = new FormData()
   formData.append('file', data.file, data.file.name)
@@ -171,7 +171,7 @@ export const importGlossaryFile = (dispatch, data, srcLocaleId) => {
   }
 }
 
-export const createGlossaryTerm = (dispatch, term) => {
+const createGlossaryTerm = (dispatch, term) => {
   let headers = getJsonHeaders()
   headers['Content-Type'] = 'application/json'
   const endpoint = window.config.baseUrl + window.config.apiRoot +
@@ -200,7 +200,7 @@ export const createGlossaryTerm = (dispatch, term) => {
   }
 }
 
-export const updateGlossaryTerm = (dispatch, term, needRefresh) => {
+const updateGlossaryTerm = (dispatch, term, needRefresh) => {
   let headers = getJsonHeaders()
   headers['Content-Type'] = 'application/json'
 
@@ -219,7 +219,7 @@ export const updateGlossaryTerm = (dispatch, term, needRefresh) => {
       type: GLOSSARY_UPDATE_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          needRefresh === true && dispatch(getGlossaryStats(dispatch, false))
+          needRefresh && dispatch(getGlossaryStats(dispatch, false))
           return json
         })
       }
@@ -231,7 +231,7 @@ export const updateGlossaryTerm = (dispatch, term, needRefresh) => {
   }
 }
 
-export const deleteGlossaryTerm = (dispatch, id) => {
+const deleteGlossaryTerm = (dispatch, id) => {
   const endpoint = window.config.baseUrl + window.config.apiRoot +
     '/glossary/entries/' + id
   const apiTypes = [

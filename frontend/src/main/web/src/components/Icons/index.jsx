@@ -1,3 +1,6 @@
+/**
+ * This is generated files from icons.svg. It is needed to produce styelguide.
+ */
 import React, { Component } from 'react'
 
 class Icons extends Component {

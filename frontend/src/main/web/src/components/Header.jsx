@@ -101,6 +101,9 @@ const Header = ({
 Header.propTypes = {
   theme: PropTypes.object,
   title: PropTypes.string,
+  /**
+   * Extra react node (html element) which will be display in the header
+   */
   extraElements: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node]

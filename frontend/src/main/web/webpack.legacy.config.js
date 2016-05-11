@@ -6,6 +6,7 @@ var defaultConfig = require('./webpack.prod.config.js')
 var bundleDest = __dirname
 /**
  * This js file is used for all jsf pages that is not 100% reactjs yet.
+ * jsf page which only display side menu
  */
 module.exports = _.merge({}, defaultConfig, {
   entry: './src/legacy',

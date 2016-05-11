@@ -29,8 +29,11 @@ import Nav from './components/Nav'
 import './styles/base.css'
 import './styles/atomic.css'
 import './styles/extras.css'
-import StringUtils from './utils/StringUtils'
-
+import { isJsonString } from './utils/StringUtils'
+/**
+ * Root component that display only side menu bar.
+ * Used jsf page that only needs side menu bar from frontend.
+ */
 WebFont.load({
   google: {
     families: [
@@ -43,13 +46,8 @@ WebFont.load({
 
 let config = {}
 forEach(window.config, (value, key) => {
-  if (StringUtils.isJsonString(value)) {
-    config[key] = JSON.parse(value)
-  } else {
-    config[key] = value
-  }
+  config[key] = isJsonString(value) ? JSON.parse(value) : value
 })
-
 window.config = config
 
 const links = {
@@ -58,7 +56,7 @@ const links = {
   '/signup': config.links.registerUrl
 }
 
-let activePath = window.location.pathname
+const activePath = window.location.pathname
 
 render(
   <div className='H(100%)'>

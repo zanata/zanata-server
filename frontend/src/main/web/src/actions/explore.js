@@ -3,7 +3,7 @@ import { normalize } from 'normalizr'
 import { SEARCH_RESULTS } from '../schemas'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
 import { getJsonHeaders, buildAPIRequest } from './common'
-import { isEmpty } from 'lodash'
+import { isEmpty, includes, clamp } from 'lodash'
 
 export const SEARCH_PROJECT_REQUEST = 'SEARCH_PROJECT_REQUEST'
 export const SEARCH_PROJECT_SUCCESS = 'SEARCH_PROJECT_SUCCESS'
@@ -21,7 +21,7 @@ export const SEARCH_GROUP_REQUEST = 'SEARCH_GROUP_REQUEST'
 export const SEARCH_GROUP_SUCCESS = 'SEARCH_GROUP_SUCCESS'
 export const SEARCH_GROUP_FAILURE = 'SEARCH_GROUP_FAILURE'
 
-export const SIZE_PER_PAGE = 2
+export const SIZE_PER_PAGE = 20
 
 const getEndpoint = (type, page, searchText) => {
   return window.config.baseUrl + window.config.apiRoot + '/search/' +
@@ -47,7 +47,7 @@ const getSearchProjectResults = (dispatch, searchText, pages, callbacks) => {
       type: SEARCH_PROJECT_SUCCESS,
       payload: (action, state, res) => {
         const contentType = res.headers.get('Content-Type')
-        if (contentType && ~contentType.indexOf('json')) {
+        if (contentType && includes(contentType, 'json')) {
           return res.json().then((json) => {
             !isEmpty(callbacks) &&
             handleCallbacks(callbacks, dispatch, searchText, pages)
@@ -74,7 +74,7 @@ const getSearchLanguageTeamResults = (dispatch, searchText, pages, callbacks) =>
       type: SEARCH_LANG_TEAM_SUCCESS,
       payload: (action, state, res) => {
         const contentType = res.headers.get('Content-Type')
-        if (contentType && ~contentType.indexOf('json')) {
+        if (contentType && includes(contentType, 'json')) {
           return res.json().then((json) => {
             !isEmpty(callbacks) &&
             handleCallbacks(callbacks, dispatch, searchText, pages)
@@ -101,7 +101,7 @@ const getSearchPeopleResults = (dispatch, searchText, pages, callbacks) => {
       type: SEARCH_PEOPLE_SUCCESS,
       payload: (action, state, res) => {
         const contentType = res.headers.get('Content-Type')
-        if (contentType && ~contentType.indexOf('json')) {
+        if (contentType && includes(contentType, 'json')) {
           return res.json().then((json) => {
             !isEmpty(callbacks) &&
             handleCallbacks(callbacks, dispatch, searchText, pages)
@@ -128,7 +128,7 @@ const getSearchGroupResults = (dispatch, searchText, pages, callbacks) => {
       type: SEARCH_GROUP_SUCCESS,
       payload: (action, state, res) => {
         const contentType = res.headers.get('Content-Type')
-        if (contentType && ~contentType.indexOf('json')) {
+        if (contentType && includes(contentType, 'json')) {
           return res.json().then((json) => {
             !isEmpty(callbacks) &&
             handleCallbacks(callbacks, dispatch, searchText, pages)
@@ -189,22 +189,18 @@ export const searchTextChanged = (searchText) => {
 
 export const updateSearchPage = (type, currentPage, totalPage, next) => {
   const intCurrentPage = parseInt(currentPage)
-  const newPage = next
-    ? (intCurrentPage + 1) > totalPage ? totalPage : intCurrentPage + 1
-    : (intCurrentPage - 1) < 1 ? 1 : intCurrentPage - 1
+  const adjustment = next ? 1 : -1
+  const newPage = clamp(intCurrentPage + adjustment, 1, totalPage)
 
-  const typePage = queryPageType[type]
+  const pageType = queryPageType[type]
   return (dispatch, getState) => {
     let queryObj = {}
-    queryObj[typePage] = newPage
+    queryObj[pageType] = newPage
     replaceRouteQuery(getState().routing.location, queryObj)
-    const searchText = getState().routing.location.query.q
-
     const query = getState().routing.location.query
-    const projectPage = query.projectPage
-    const groupPage = query.groupPage
-    const personPage = query.personPage
-    const languageTeamPage = query.languageTeamPage
+
+    const searchText = query.q
+    const { projectPage, groupPage, personPage, languageTeamPage } = query
 
     switch (type) {
       case 'Project':
@@ -224,6 +220,7 @@ export const updateSearchPage = (type, currentPage, totalPage, next) => {
           {projectPage, groupPage, personPage, languageTeamPage: newPage}))
         break
       default:
+        console.error('Unsupported type in search query.', type)
         break
     }
   }
@@ -233,10 +230,7 @@ export const searchPageInitialLoad = () => {
   return (dispatch, getState) => {
     const query = getState().routing.location.query
     const searchText = query.q
-    const projectPage = query.projectPage
-    const groupPage = query.groupPage
-    const personPage = query.personPage
-    const languageTeamPage = query.languageTeamPage
+    const { projectPage, groupPage, personPage, languageTeamPage } = query
     search(dispatch, searchText, {projectPage,
       groupPage, personPage, languageTeamPage})
   }

@@ -118,6 +118,9 @@ class TextInput extends Component {
       case 'url':
         type = 'url'
         break
+      default:
+        console.error('Unsupported keyboardType.', keyboardType)
+        break
     }
 
     if (secureTextEntry) {

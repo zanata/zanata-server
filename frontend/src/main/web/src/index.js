@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { forEach } from 'lodash'
+import { forEach, map } from 'lodash'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import createLogger from 'redux-logger'
@@ -15,7 +15,7 @@ import './styles/base.css'
 import './styles/atomic.css'
 import './styles/animations.css'
 import './styles/extras.css'
-import StringUtils from './utils/StringUtils'
+import { isJsonString } from './utils/StringUtils'
 
 WebFont.load({
   google: {
@@ -41,7 +41,6 @@ const finalCreateStore = compose(
     routerMiddleware,
     logger
   )
-  // DevTools.instrument()
 )(createStore)
 
 // Call and assign the store with no initial state
@@ -59,13 +58,8 @@ const store = ((initialState) => {
 
 let config = {}
 forEach(window.config, (value, key) => {
-  if (StringUtils.isJsonString(value)) {
-    config[key] = JSON.parse(value)
-  } else {
-    config[key] = value
-  }
+  config[key] = isJsonString(value) ? JSON.parse(value) : value
 })
-
 window.config = config
 
 render(

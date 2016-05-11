@@ -128,7 +128,6 @@ const Nav = ({
   if (window.config.permission.isLoggedIn === true) {
     auth = window.config.permission.isAdmin === true ? 'admin' : 'loggedin'
   }
-  const authState = auth || 'loggedin'
   const admin = (auth === 'admin')
 
   const username = window.config.user ? window.config.user.username : ''
@@ -139,7 +138,7 @@ const Nav = ({
       name={username}
       className={flattenThemeClasses(classes)}>
       {items.map((item, itemId) => {
-        if (((item.auth === 'public') || (item.auth === authState) ||
+        if (((item.auth === 'public') || (item.auth === auth) ||
           (item.auth === 'loggedin' && admin)) && !item.more) {
 
           let link = null
