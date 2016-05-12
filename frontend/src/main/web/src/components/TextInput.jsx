@@ -106,6 +106,8 @@ class TextInput extends Component {
     let type
 
     switch (keyboardType) {
+      case 'default':
+        break
       case 'email-address':
         type = 'email'
         break

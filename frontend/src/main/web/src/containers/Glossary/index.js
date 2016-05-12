@@ -31,7 +31,9 @@ const loadingContainerTheme = {
     w: 'W(100%)'
   }
 }
-
+/**
+ * Root component for Glossary page
+ */
 class Glossary extends Component {
   constructor () {
     super()
@@ -39,6 +41,11 @@ class Glossary extends Component {
     // So it creates a new debounce for each instance
     this.onScroll = debounce(this.onScroll, 100)
   }
+
+  isTermLocaleSelected (term, selectedLocale) {
+    return term.transTerm && (term.transTerm.locale === selectedLocale)
+  }
+
   renderItem (index, key) {
     const {
       handleSelectTerm,
@@ -58,18 +65,16 @@ class Glossary extends Component {
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
     const isSaving = !isUndefined(saving[entryId])
-    let entry = null
+    let entry = undefined
     if (isSaving && entryId) {
       const savingTerm = saving[entryId]
-      if (savingTerm.transTerm &&
-        (savingTerm.transTerm.locale === selectedTransLocale)) {
+      if (this.isTermLocaleSelected(savingTerm, selectedTransLocale)) {
         entry = savingTerm
       } else {
         entry = savingTerm
       }
     } else if (selected) {
-      if(selectedTerm.transTerm &&
-        selectedTerm.transTerm.locale === selectedTransLocale) {
+      if (this.isTermLocaleSelected(selectedTerm, selectedTransLocale)) {
         entry = selectedTerm
       } else {
         entry = selectedTerm
@@ -80,23 +85,25 @@ class Glossary extends Component {
     const isDeleting = !isUndefined(deleting[entryId])
 
     return (
-      <Entry key={key}
-        entry={entry}
-        index={index}
-        selected={selected}
-        isDeleting={isDeleting}
-        isSaving={isSaving}
-        permission={permission}
-        selectedTransLocale={selectedTransLocale}
-        termsLoading={termsLoading}
-        handleSelectTerm={handleSelectTerm}
-        handleTermFieldUpdate={handleTermFieldUpdate}
-        handleDeleteTerm={handleDeleteTerm}
-        handleResetTerm={handleResetTerm}
-        handleUpdateTerm={handleUpdateTerm}
-      />
+      <Entry {...{
+        key,
+        entry,
+        index,
+        selected,
+        isDeleting,
+        isSaving,
+        permission,
+        selectedTransLocale,
+        termsLoading,
+        handleSelectTerm,
+        handleTermFieldUpdate,
+        handleDeleteTerm,
+        handleResetTerm,
+        handleUpdateTerm
+      }} />
     )
   }
+
   onScroll () {
     // Debounced by 100ms in super()
     if (!this.list) return
@@ -119,6 +126,7 @@ class Glossary extends Component {
     preIndex > 0 && dispatch(glossaryGetTermsIfNeeded(preIndex))
     dispatch(glossaryGetTermsIfNeeded(nextIndex))
   }
+
   render () {
     const {
       termsLoading,

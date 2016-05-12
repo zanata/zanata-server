@@ -16,7 +16,6 @@ function ms (value, unit) {
 
 // This will get flattend without parent keys.
 // So don't use the same name in separate nested objects
-/* eslint-disable max-len */
 module.exports = {
   types: [
     'default',
@@ -98,6 +97,7 @@ module.exports = {
   borderRadius: {
     rnd: '500px'
   },
+  /* eslint-disable max-len */
   shadows: {
     sh1: '0 1px 4px 0 rgba(0, 0, 0, 0.185)',
     sh2: '0 2px 2px 0 rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.15)',
@@ -120,6 +120,7 @@ module.exports = {
     aeib: 'all .3s cubic-bezier(0.6, -0.28, 0.735, 0.045)',
     aeob: 'all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
   },
+  /* eslint-enable max-len */
   animation: {
     anibd: 'bouncedelay'
   },
@@ -134,5 +135,3 @@ module.exports = {
     modal: 500
   }
 }
-
-/* eslint-enable max-len */
