@@ -112,7 +112,9 @@ export default handleActions({
       ...newState
     }
   }
-}, {
+},
+// default state
+{
   error: false,
   loading: {
     Project: false,

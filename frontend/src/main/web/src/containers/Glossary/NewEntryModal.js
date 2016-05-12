@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { cloneDeep } from 'lodash'
 
@@ -24,6 +24,7 @@ class NewEntryModal extends Component {
       entry: cloneDeep(props.entry)
     }
   }
+
   handleContentChanged (e) {
     const { entry } = this.state
     const { srcTerm } = entry
@@ -37,29 +38,36 @@ class NewEntryModal extends Component {
       }
     })
   }
+
   handlePosChanged (e) {
-    let entry = this.state.entry
-    entry.pos = e.target.value
+    const { entry } = this.state
     this.setState({
-      entry: entry
+      entry: {
+        ...entry,
+        pos: e.target.value
+      }
     })
   }
+
   handleDescChanged (e) {
-    let entry = this.state.entry
-    entry.description = e.target.value
+    const { entry } = this.state
     this.setState({
-      entry: entry
+      entry: {
+        ...entry,
+        description: e.target.value
+      }
     })
   }
+
   handleCancel () {
     this.resetFields()
     this.props.handleNewEntryDisplay(false)
   }
 
   resetFields () {
-    this.state = {
+    this.setState({
       entry: cloneDeep(this.props.entry)
-    }
+    })
   }
 
   render () {
@@ -139,7 +147,11 @@ class NewEntryModal extends Component {
   }
 }
 
-NewEntryModal.propTypes = {}
+NewEntryModal.propTypes = {
+  entry: PropTypes.object,
+  isSaving: PropTypes.bool,
+  show: PropTypes.bool
+}
 
 const mapStateToProps = (state) => {
   const { entry, isSaving, show } = state.glossary.newEntry

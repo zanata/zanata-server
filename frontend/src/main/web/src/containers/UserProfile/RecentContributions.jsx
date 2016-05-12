@@ -31,7 +31,9 @@ const classes = {
     mih: 'Mih(r4)'
   }
 }
-
+/**
+ * User profile statistics root page
+ */
 const RecentContributions = ({
   dateRange,
   matrixForAllDays,
@@ -39,8 +41,7 @@ const RecentContributions = ({
   wordCountsForSelectedDayFilteredByContentState,
   wordCountsForEachDayFilteredByContentState,
   contentStateOption,
-  selectedDay,
-  ...props
+  selectedDay
 }) => {
   return (
     <Base atomic={classes.root} id='profile-matrix'>

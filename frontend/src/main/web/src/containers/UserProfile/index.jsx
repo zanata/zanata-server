@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import { isEmpty } from 'lodash'
 import RecentContributions from './RecentContributions'
@@ -39,6 +39,9 @@ const classes = {
   }
 }
 
+/**
+ * Root component for user profile page
+ */
 var UserProfile = React.createClass({
   getMatrixState: function () {
     const username = this.props.params.username
@@ -142,5 +145,11 @@ var UserProfile = React.createClass({
     )
   }
 })
+
+UserProfile.propTypes = {
+  params: PropTypes.shape({
+    username: PropTypes.string
+  })
+}
 
 export default UserProfile

@@ -7,7 +7,7 @@
  * @param {function} functions to chain
  * @returns {function|null}
  */
-export default function createChainedFunction (...funcs) {
+export default function callWithSameArgs (...funcs) {
   return funcs
     .filter(f => f != null)
     .reduce((acc, f) => {

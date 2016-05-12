@@ -2,22 +2,9 @@ import React, { cloneElement, Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import contains from 'dom-helpers/query/contains'
 import warning from 'warning'
-import { pick } from 'lodash'
-import createChainedFunction from '../../utils/createChainedFunction'
+import { pick, hasIn } from 'lodash'
+import callWithSameArgs from '../../utils/callWithSameArgs'
 import Overlay from '../Overlay'
-/**
- * Check if value one is inside or equal to the of value
- *
- * @param {string} one
- * @param {string|array} of
- * @returns {boolean}
- */
-const isOrContains = (of, one) => {
-  if (Array.isArray(of)) {
-    return of.indexOf(one) >= 0
-  }
-  return one === of
-}
 
 class OverlayTrigger extends Component {
   state = {
@@ -47,6 +34,7 @@ class OverlayTrigger extends Component {
   /**
    * This is to preserve React context in "overlay" components
    * without resetting up all context.
+   * See https://github.com/react-component/dialog/issues/10
    */
   renderOverlay = () => {
     ReactDOM.unstable_renderSubtreeIntoContainer(
@@ -85,9 +73,9 @@ class OverlayTrigger extends Component {
     )
   }
   handleDelayedShow = () => {
-    if (this._hoverHideDelay !== undefined) {
-      clearTimeout(this._hoverHideDelay)
-      this._hoverHideDelay = undefined
+    if (this.hoverHideTimeoutHandle !== undefined) {
+      clearTimeout(this.hoverHideTimeoutHandle)
+      this.hoverHideTimeoutHandle = undefined
       return
     }
 
@@ -95,8 +83,8 @@ class OverlayTrigger extends Component {
       return
     }
 
-    const delay = this.props.delayShow != null
-      ? this.props.delayShow : this.props.delay
+    const delay = this.props.delayShow === null
+      ? this.props.delay : this.props.delayShow
 
     if (!delay) {
       this.show()
@@ -116,7 +104,7 @@ class OverlayTrigger extends Component {
       return
     }
 
-    if (!this.state.isOverlayShown || this._hoverHideDelay !== undefined) {
+    if (!this.state.isOverlayShown || this.hoverHideTimeoutHandle !== undefined) {
       return
     }
 
@@ -128,8 +116,8 @@ class OverlayTrigger extends Component {
       return
     }
 
-    this._hoverHideDelay = setTimeout(() => {
-      this._hoverHideDelay = undefined
+    this.hoverHideTimeoutHandle = setTimeout(() => {
+      this.hoverHideTimeoutHandle = undefined
       this.hide()
     }, delay)
   }
@@ -163,7 +151,7 @@ class OverlayTrigger extends Component {
     ReactDOM.unmountComponentAtNode(this._mountNode)
     this._mountNode = null
     clearTimeout(this._hoverShowDelay)
-    clearTimeout(this._hoverHideDelay)
+    clearTimeout(this.hoverHideTimeoutHandle)
   }
 
   componentDidUpdate () {
@@ -183,41 +171,41 @@ class OverlayTrigger extends Component {
     // create in render otherwise owner is lost...
     this._overlay = this.getOverlay()
 
-    props.onClick = createChainedFunction(
+    props.onClick = callWithSameArgs(
       triggerProps.onClick,
       this.props.onClick
     )
 
-    if (isOrContains(this.props.trigger, 'click')) {
-      props.onClick = createChainedFunction(this.toggle, props.onClick)
+    if (hasIn(this.props.triggers, 'click')) {
+      props.onClick = callWithSameArgs(this.toggle, props.onClick)
     }
 
-    if (isOrContains( this.props.trigger, 'hover')) {
-      warning(!(this.props.trigger === 'hover'),
+    if (hasIn(this.props.triggers, 'hover')) {
+      warning(!(this.props.triggers === 'hover'),
         `[zanata] Specifying only the "hover" trigger limits the
         visibilty of the overlay to just mouse users. Consider also including
         the "focus" trigger so that touch and keyboard only users can see
         the overlay as well.`)
 
-      props.onMouseOver = createChainedFunction(
+      props.onMouseOver = callWithSameArgs(
         this.handleMouseOver,
         this.props.onMouseOver,
         triggerProps.onMouseOver
       )
-      props.onMouseOut = createChainedFunction(
+      props.onMouseOut = callWithSameArgs(
         this.handleMouseOut,
         this.props.onMouseOut,
         triggerProps.onMouseOut
       )
     }
 
-    if (isOrContains(this.props.trigger, 'focus')) {
-      props.onFocus = createChainedFunction(
+    if (hasIn(this.props.triggers, 'focus')) {
+      props.onFocus = callWithSameArgs(
         this.handleDelayedShow,
         this.props.onFocus,
         triggerProps.onFocus
       )
-      props.onBlur = createChainedFunction(
+      props.onBlur = callWithSameArgs(
         this.handleDelayedHide,
         this.props.onBlur,
         triggerProps.onBlur
@@ -237,7 +225,7 @@ OverlayTrigger.propTypes = {
    /**
    * Specify which action or actions trigger Overlay visibility
    */
-  trigger: PropTypes.arrayOf(PropTypes.oneOf(['click', 'hover', 'focus'])),
+  triggers: PropTypes.arrayOf(PropTypes.oneOf(['click', 'hover', 'focus'])),
   /**
    * A millisecond delay amount to show and hide the Overlay once triggered
    */
@@ -300,7 +288,7 @@ OverlayTrigger.propTypes = {
 
 OverlayTrigger.defaultProps = {
   defaultOverlayShown: false,
-  trigger: ['hover', 'focus'],
+  triggers: ['hover', 'focus'],
   delay: 300
 }
 

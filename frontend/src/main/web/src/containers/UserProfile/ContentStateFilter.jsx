@@ -67,7 +67,10 @@ const classes = {
     }
   }
 }
-
+/**
+ * Component to filter statistics on content state
+ * (approved, translated, need work)
+ */
 var ContentStateFilter = React.createClass({
   mixins: [PureRenderMixin],
   propTypes: {

@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react'
 import { merge } from 'lodash'
 import {
   Base
@@ -80,12 +80,14 @@ Flex.propTypes = {
    * This defines the default behaviour for how flex items are laid out along
    * the cross axis on the current line. Think of it as the justify-content
    * version for the cross-axis (perpendicular to the main-axis).
+   * See http://acss.io/reference for more information on Flex box
    */
   align: PropTypes.oneOf(['fs', 'fe', 'c', 'b', 'st']),
   /**
    * This aligns a flex container's lines within when there is extra space in
    * the cross-axis, similar to how justify-content aligns individual items
    * within the main-axis.
+   * See http://acss.io/reference for more information on Flex box
    * **Note:** this property has no effect when there is only one line of flex
    * items.
    */
@@ -96,6 +98,7 @@ Flex.propTypes = {
    * placed in the flex container. Flexbox is (aside from optional wrapping) a
    * single-direction layout concept. Think of flex items as primarily laying
    * out either in horizontal rows or vertical columns.
+   * See http://acss.io/reference for more information on Flex box
    */
   dir: PropTypes.oneOf(['r', 'rr', 'c', 'cr']),
   /**
@@ -104,12 +107,14 @@ Flex.propTypes = {
    * inflexible, or are flexible but have reached their maximum size. It also
    * exerts some control over the alignment of items when they overflow
    * the line.
+   * See http://acss.io/reference for more information on Flex box
    */
   justify: PropTypes.oneOf(['fs', 'fe', 'c', 'sb', 'sa']),
   /**
    * By default, flex items will all try to fit onto one line. You can change
    * that and allow the items to wrap as needed with this property. Direction
    * also plays a role here, determining the direction new lines are stacked in.
+   * See http://acss.io/reference for more information on Flex box
    */
   wrap: PropTypes.oneOf(['nw', 'w', 'wr']),
   theme: PropTypes.object

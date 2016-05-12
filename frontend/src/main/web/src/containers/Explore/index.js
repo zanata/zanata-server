@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import Helmet from 'react-helmet'
 import { connect } from 'react-redux'
 import { isEmpty, debounce } from 'lodash'
@@ -217,6 +217,23 @@ class Explore extends Component {
       </Page>
     )
   }
+}
+
+Explore.propTypes = {
+  location: PropTypes.object,
+  searchText: PropTypes.string,
+  projectPage: PropTypes.number,
+  groupPage: PropTypes.number,
+  personPage: PropTypes.number,
+  languageTeamPage: PropTypes.number,
+  searchResults: PropTypes.object,
+  searchError: PropTypes.bool,
+  searchLoading: PropTypes.shape({
+    Project: PropTypes.bool,
+    LanguageTeam: PropTypes.bool,
+    Person: PropTypes.bool,
+    Group: PropTypes.bool
+  }),
 }
 
 const mapStateToProps = (state) => {

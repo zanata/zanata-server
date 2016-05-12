@@ -1,7 +1,6 @@
 import { handleActions } from 'redux-actions'
 import {
   CLEAR_MESSAGE,
-  SEVERITY,
   DEFAULT_LOCALE
 } from '../actions/common'
 
@@ -12,7 +11,9 @@ export default handleActions({
       notification: null
     }
   }
-}, {
+}, 
+// default state
+{
   locales: [],
   loading: false,
   selectedLocale: DEFAULT_LOCALE.localeId

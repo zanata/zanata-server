@@ -21,11 +21,7 @@ import StringUtils from '../../utils/StringUtils'
 
 class ImportModal extends Component {
   getUploadFileExtension (file) {
-    var extension = ''
-    if (file) {
-      extension = file.name.split('.').pop()
-    }
-    return extension
+    return file ? file.name.split('.').pop() : ''
   }
 
   isSupportedFile (extension) {
@@ -44,7 +40,7 @@ class ImportModal extends Component {
       handleImportFileChange,
       handleImportFileDisplay,
       handleImportFileLocaleChange
-      } = this.props
+    } = this.props
 
     const fileExtension = this.getUploadFileExtension(file)
     const isUploading = status !== -1

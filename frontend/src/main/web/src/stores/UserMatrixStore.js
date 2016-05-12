@@ -27,12 +27,12 @@ let _state = {
   }
 }
 
-const loadUserInfo = () => {
+const loadUserInfo = (username) => {
   _state.user.loading = true
   UserMatrixStore.emitChange()
 
   const url = window.config.baseUrl + window.config.apiRoot +
-    '/user/' + _state.user.username
+    '/user/' + username
   return new Promise(function (resolve, reject) {
     // we turn off cache because it seems like if server(maybe just node?)
     // returns 304 unmodified, it won't even reach the callback!
@@ -56,7 +56,7 @@ function loadFromServer () {
   var dateRange = utilsDate.getDateRangeFromOption(dateRangeOption)
   var url = statsAPIUrl() + dateRange.fromDate + '..' + dateRange.toDate
 
-  _state['dateRange'] = dateRange
+  _state.dateRange = dateRange
   return new Promise(function (resolve, reject) {
     // we turn off cache because it seems like if server(maybe just node?)
     // returns 304 unmodified, it won't even reach the callback!
@@ -103,7 +103,7 @@ function handleServerResponse (serverResponse) {
    *   number}[]}
  */
 function transformToTotalWordCountsForEachDay (listOfMatrices, dateRange) {
-  var datesOfThisPeriod = dateRange['dates']
+  var datesOfThisPeriod = dateRange.dates
   var result = []
   var index = 0
 
@@ -214,11 +214,17 @@ function filterByContentStateAndDay (listOfMatrices, selectedContentState,
   return filteredEntries
 }
 
+/**
+ * Stores that handle user profile page.
+ * See containers/UserProfile/index.jsx for usage.
+ *
+ * TODO: convert to redux format
+ */
 var UserMatrixStore = assign({}, EventEmitter.prototype, {
   getMatrixState: function (username) {
     if (_state.user && _state.user.username !== username) {
       _state.user.username = username
-      loadUserInfo().then(function (userInfo) {
+      loadUserInfo(username).then(function (userInfo) {
         _state.user = userInfo
         UserMatrixStore.emitChange()
       })
@@ -252,8 +258,6 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
     var action = payload.action
     switch (action.actionType) {
       case UserMatrixActionTypes.DATE_RANGE_UPDATE:
-        console.log('date range from %s -> %s',
-          _state.dateRangeOption, action.data)
         _state.dateRangeOption = action.data
         _state.selectedDay = null
         if (window.config.permission.isLoggedIn) {
@@ -269,8 +273,6 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
         }
         break
       case UserMatrixActionTypes.CONTENT_STATE_UPDATE:
-        console.log('content state from %s -> %s',
-          _state.contentStateOption, action.data)
         _state.contentStateOption = action.data
         _state.wordCountsForEachDayFilteredByContentState =
           mapTotalWordCountByContentState(_state.matrixForAllDays,
@@ -281,8 +283,6 @@ var UserMatrixStore = assign({}, EventEmitter.prototype, {
         UserMatrixStore.emitChange()
         break
       case UserMatrixActionTypes.DAY_SELECTED:
-        console.log('day selection from %s -> %s',
-          _state.selectedDay, action.data)
         _state.selectedDay = action.data
         _state.wordCountsForSelectedDayFilteredByContentState =
           filterByContentStateAndDay(_state.matrix,

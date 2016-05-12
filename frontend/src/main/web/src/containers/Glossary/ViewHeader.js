@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { debounce, isEmpty } from 'lodash'
 import {
@@ -22,6 +22,9 @@ import {
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
 
+/**
+ * Header for glossary page
+ */
 class ViewHeader extends Component {
 
   currentLocaleCount () {
@@ -34,13 +37,7 @@ class ViewHeader extends Component {
       return selectedTransLocaleObj ? selectedTransLocaleObj.count : 0
     }
   }
-  currentLocaleName () {
-    const selectedTransLocaleObj = this.props.transLocales
-      .find((locale) => locale.value === this.props.selectedTransLocale)
-    return selectedTransLocaleObj
-      ? selectedTransLocaleObj.label
-      : 'Translation'
-  }
+
   localeOptionsRenderer (op) {
     return (
       <span className='D(f) Ai(c) Jc(sb)'>
@@ -177,7 +174,7 @@ class ViewHeader extends Component {
                 <span className='C(muted)'>
                   {currentLocaleCount}
                 </span>
-              </Row>)
+               </Row>)
               }
             </TableCell>
             <TableCell hideSmall
@@ -186,8 +183,8 @@ class ViewHeader extends Component {
                 <Row>
                   {'part_of_speech' in sort
                     ? (sort.part_of_speech === true)
-                      ? <Icon name='chevron-down'/>
-                      : <Icon name='chevron-up'/>
+                      ? <Icon name='chevron-down' />
+                      : <Icon name='chevron-up' />
                     : ''}
                   <span className='LineClamp(1,24px) MStart(rq)'>
                     Part of Speech
@@ -204,9 +201,31 @@ class ViewHeader extends Component {
   }
 }
 
+ViewHeader.propTypes = {
+  termCount: PropTypes.number.isRequired,
+  statsLoading: PropTypes.bool,
+  transLocales: PropTypes.arrayOf(
+    PropTypes.shape({
+        count: PropTypes.number.isRequired,
+        label: PropTypes.string.isRequired,
+        value: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  filterText: PropTypes.string,
+  selectedTransLocale: PropTypes.object,
+  permission: PropTypes.shape({
+      canAddNewEntry: PropTypes.bool,
+      canUpdateEntry: PropTypes.bool,
+      canDeleteEntry: PropTypes.bool
+  }).isRequired,
+  sort: PropTypes.shape({
+    src_content: PropTypes.bool,
+    part_of_speech: PropTypes.bool
+  }).isRequired,
+}
+
 const mapStateToProps = (state) => {
   const {
-    page,
     stats,
     statsLoading,
     termCount,
@@ -215,10 +234,9 @@ const mapStateToProps = (state) => {
     sort
     } = state.glossary
   const query = state.routing.location.query
+  console.info(sort)
   return {
-    location: state.routing.location,
     termCount,
-    page,
     statsLoading,
     transLocales: stats.transLocales,
     filterText: filter,
@@ -233,7 +251,6 @@ const mapDispatchToProps = (dispatch) => {
     dispatch(glossaryFilterTextChanged(val)), 200)
 
   return {
-    dispatch,
     handleTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')

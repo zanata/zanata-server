@@ -1,3 +1,5 @@
+Note that Tooltip must only be used with an OverlayTrigger, as shown in these examples.
+
 ## Default
 
     const tooltip = (
