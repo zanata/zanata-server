@@ -45,7 +45,9 @@ const classes = {
     p: 'Py(re)'
   }
 }
-
+/**
+ * Clickable date and word count component for daily statistics
+ */
 var DayMatrix = React.createClass({
   mixins: [PureRenderMixin],
   propTypes: {
@@ -88,16 +90,16 @@ var DayMatrix = React.createClass({
       <Base tagName='td' theme={classes.root}>
         {date
         ? (<Button onClick={this.handleDayClick}
-          disabled={dateIsInFuture || !date}
-          theme={buttonTheme}
-          title={wordCount + ' words'}>
-          <Base atomic={classes.calDate}>
-            {date ? dateLabel : '\u00a0'}
-          </Base>
-          <Base atomic={classes.calInfo}>
-            {dateIsInFuture ? '\u00a0' : wordCount}
-          </Base>
-        </Button>)
+            disabled={dateIsInFuture || !date}
+            theme={buttonTheme}
+            title={wordCount + ' words'}>
+            <Base atomic={classes.calDate}>
+              {date ? dateLabel : '\u00a0'}
+            </Base>
+            <Base atomic={classes.calInfo}>
+              {dateIsInFuture ? '\u00a0' : wordCount}
+            </Base>
+          </Button>)
         : <Base atomic={{bgc: 'Bgc(#fff.85)', stretchedBox: 'StretchedBox'}} />}
       </Base>
     )

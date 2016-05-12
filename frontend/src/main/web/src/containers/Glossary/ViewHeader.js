@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { debounce, isEmpty } from 'lodash'
 import {
@@ -22,6 +22,9 @@ import {
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
 
+/**
+ * Header for glossary page
+ */
 class ViewHeader extends Component {
 
   currentLocaleCount () {
@@ -34,6 +37,7 @@ class ViewHeader extends Component {
       return selectedTransLocaleObj ? selectedTransLocaleObj.count : 0
     }
   }
+
   currentLocaleName () {
     const selectedTransLocaleObj = this.props.transLocales
       .find((locale) => locale.value === this.props.selectedTransLocale)
@@ -177,7 +181,7 @@ class ViewHeader extends Component {
                 <span className='C(muted)'>
                   {currentLocaleCount}
                 </span>
-              </Row>)
+               </Row>)
               }
             </TableCell>
             <TableCell hideSmall
@@ -186,8 +190,8 @@ class ViewHeader extends Component {
                 <Row>
                   {'part_of_speech' in sort
                     ? (sort.part_of_speech === true)
-                      ? <Icon name='chevron-down'/>
-                      : <Icon name='chevron-up'/>
+                      ? <Icon name='chevron-down' />
+                      : <Icon name='chevron-up' />
                     : ''}
                   <span className='LineClamp(1,24px) MStart(rq)'>
                     Part of Speech
@@ -202,6 +206,18 @@ class ViewHeader extends Component {
       </Header>
     )
   }
+}
+
+ViewHeader.propTypes = {
+  location: PropTypes.object,
+  termCount: PropTypes.number,
+  page: PropTypes.number,
+  statsLoading: PropTypes.bool,
+  transLocales: PropTypes.array,
+  filterText: PropTypes.string,
+  selectedTransLocale: PropTypes.object,
+  permission: PropTypes.object,
+  sort: PropTypes.object
 }
 
 const mapStateToProps = (state) => {
@@ -233,7 +249,6 @@ const mapDispatchToProps = (dispatch) => {
     dispatch(glossaryFilterTextChanged(val)), 200)
 
   return {
-    dispatch,
     handleTranslationLocaleChange: (selectedLocale) =>
       dispatch(
         glossaryChangeLocale(selectedLocale ? selectedLocale.value : '')

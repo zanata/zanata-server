@@ -22,7 +22,7 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { isUndefined, forEach } from 'lodash'
+import { isUndefined, forEach, mapValues } from 'lodash'
 import { Icons } from './components'
 import WebFont from 'webfontloader'
 import Nav from './components/Nav'
@@ -44,16 +44,13 @@ WebFont.load({
   timeout: 2000
 })
 
-let config = {}
-forEach(window.config, (value, key) => {
-  config[key] = isJsonString(value) ? JSON.parse(value) : value
-})
-window.config = config
+window.config = mapValues(window.config, (value) =>
+  isJsonString(value) ? JSON.parse(value) : value)
 
 const links = {
-  'context': config.baseUrl,
-  '/login': config.links.loginUrl,
-  '/signup': config.links.registerUrl
+  'context': window.config.baseUrl,
+  '/login': window.config.links.loginUrl,
+  '/signup': window.config.links.registerUrl
 }
 
 const activePath = window.location.pathname
@@ -61,7 +58,7 @@ const activePath = window.location.pathname
 render(
   <div className='H(100%)'>
     <Icons />
-    <Nav active={activePath} isJsfPage links={links}/>
+    <Nav active={activePath} isJsfPage links={links} />
   </div>
   ,
   document.getElementById('root')

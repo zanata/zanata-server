@@ -12,7 +12,9 @@ const viewTheme = {
     m: 'Mb(rh)'
   }
 }
-
+/**
+ * Entry of User search results
+ */
 const UserTeaser = ({
   name,
   details,

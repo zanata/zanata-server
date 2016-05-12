@@ -12,7 +12,9 @@ import {
 } from '../../components'
 import EntryModal from './EntryModal'
 import DeleteEntryModal from './DeleteEntryModal'
-
+/**
+ * Component to display a GlossaryEntry
+ */
 class Entry extends Component {
   constructor () {
     super()
@@ -22,15 +24,15 @@ class Entry extends Component {
     }
   }
 
-  handleEntryModalDisplay (display) {
+  setShowingEntryModal (showing) {
     this.setState({
-      showEntryModal: display
+      showEntryModal: showing
     })
   }
 
-  handleDeleteEntryDisplay (display) {
+  setShowingDeleteEntryModal (showing) {
     this.setState({
-      showDeleteModal: display
+      showDeleteModal: showing
     })
   }
 
@@ -146,7 +148,7 @@ class Entry extends Component {
         </TableCell>
         <TableCell size='2'>
           <ButtonLink atomic={{m: 'Mend(rq)'}}
-            onClick={() => this.handleEntryModalDisplay(true)}>
+            onClick={() => this.setShowingEntryModal(true)}>
             <Icon name='info'/>
           </ButtonLink>
           <EntryModal entry={entry}
@@ -155,7 +157,7 @@ class Entry extends Component {
             selectedTransLocale={selectedTransLocale}
             canUpdate={displayUpdateButton}
             handleEntryModalDisplay={(display) =>
-              this.handleEntryModalDisplay(display)}
+              this.setShowingEntryModal(display)}
             handleResetTerm={(entryId) => handleResetTerm(entryId)}
             handleTermFieldUpdate={(field, e) =>
               handleTermFieldUpdate(field, e)}
@@ -179,7 +181,7 @@ class Entry extends Component {
                 isDeleting={isDeleting}
                 show={this.state.showDeleteModal}
                 handleDeleteEntryDisplay={(display) =>
-                  this.handleDeleteEntryDisplay(display)}
+                  this.setShowingDeleteEntryModal(display)}
                 handleDeleteEntry={handleDeleteTerm}/>)
             }
           </div>

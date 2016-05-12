@@ -133,35 +133,43 @@ const glossary = handleActions({
     }
   }),
   [GLOSSARY_UPDATE_IMPORT_FILE]: (state, action) => {
-    let importFile = state.importFile
-    importFile.file = action.payload
+    const importFile = state.importFile
     return {
       ...state,
-      importFile: importFile
+      importFile: {
+        ...importFile,
+        file: action.payload
+      }
     }
   },
   [GLOSSARY_UPDATE_IMPORT_FILE_LOCALE]: (state, action) => {
-    let importFile = state.importFile
-    importFile.transLocale = action.payload
+    const importFile = state.importFile
     return {
       ...state,
-      importFile: importFile
+      importFile: {
+        ...importFile,
+        transLocale: action.payload
+      }
     }
   },
   [GLOSSARY_TOGGLE_IMPORT_DISPLAY]: (state, action) => {
-    let importFile = state.importFile
-    importFile.show = action.payload
+    const importFile = state.importFile
     return {
       ...state,
-      importFile: importFile
+      importFile: {
+        ...importFile,
+        show: action.payload
+      }
     }
   },
   [GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY]: (state, action) => {
-    let newEntry = state.newEntry
-    newEntry.show = action.payload
+    const newEntry = state.newEntry
     return {
       ...state,
-      newEntry: newEntry
+      newEntry: {
+        ...newEntry,
+        show: action.payload
+      }
     }
   },
   [GLOSSARY_RESET_TERM]: (state, action) => {
@@ -268,18 +276,20 @@ const glossary = handleActions({
           'Please refresh this page and try again.'
         }
       }
-    } else {
-      let deleting = state.deleting
-      const entryId = action.payload
-      deleting[entryId] = entryId
-      return {
-        ...state,
-        deleting: deleting
+    }
+
+    const entryId = action.payload
+    const deleting = state.deleting
+    return {
+      ...state,
+      deleting: {
+        ...deleting,
+        [entryId]: entryId
       }
     }
   },
   [GLOSSARY_DELETE_SUCCESS]: (state, action) => {
-    let deleting = state.deleting
+    let deleting = cloneDeep(state.deleting)
     const entryId = action.payload.id
     delete deleting[entryId]
     return {
@@ -321,7 +331,7 @@ const glossary = handleActions({
   [GLOSSARY_UPDATE_SUCCESS]: (state, action) => {
     let saving = cloneDeep(state.saving)
     let selectedTerm = state.selectedTerm
-    let terms = state.terms
+    let terms = cloneDeep(state.terms)
     forEach(action.payload.glossaryEntries, (rawEntry) => {
       const entry = GlossaryHelper.generateEntry(rawEntry, state.locale)
       terms[rawEntry.id] = entry
@@ -362,22 +372,26 @@ const glossary = handleActions({
         }
       }
     } else {
-      let newEntry = state.newEntry
-      newEntry.isSaving = true
+      const newEntry = state.newEntry
       return {
         ...state,
-        newEntry: newEntry
+        newEntry: {
+          ...newEntry,
+          isSaving: true
+        }
       }
     }
   },
   [GLOSSARY_CREATE_SUCCESS]: (state, action) => {
-    let newEntry = state.newEntry
-    newEntry.isSaving = false
-    newEntry.entry = GlossaryHelper.generateEmptyEntry(state.src)
-    newEntry.show = false
+    const newEntry = state.newEntry
     return {
       ...state,
-      newEntry: newEntry,
+      newEntry: {
+        ...newEntry,
+        isSaving: false,
+        entry: GlossaryHelper.generateEmptyEntry(state.src),
+        show: false
+      },
       notification: {
         severity: SEVERITY.INFO,
         message: 'Glossary term created.'
@@ -385,26 +399,26 @@ const glossary = handleActions({
     }
   },
   [GLOSSARY_CREATE_FAILURE]: (state, action) => {
-    let newEntry = state.newEntry
-    newEntry.isSaving = false
-    newEntry.entry = GlossaryHelper.generateEmptyEntry(state.src)
-    newEntry.show = false
+    const newEntry = state.newEntry
     return {
       ...state,
-      newEntry: newEntry,
+      newEntry: {
+        ...newEntry,
+        isSaving: false,
+        entry: GlossaryHelper.generateEmptyEntry(state.src),
+        show: false
+      },
       notification: {
         severity: SEVERITY.ERROR,
         message:
-          'We were unable save glossary entry. ' +
-          'Please refresh this page and try again.'
+        'We were unable save glossary entry. ' +
+        'Please refresh this page and try again.'
       }
     }
   },
   [GLOSSARY_TERMS_REQUEST]: (state, action) => {
     if (action.error) {
-      return {
-        ...state
-      }
+      return state
     } else {
       return {
         ...state,
@@ -419,7 +433,7 @@ const glossary = handleActions({
     const pagesLoaded = union(state.pagesLoaded, [page])
     let termIds = isEmpty(state.termIds)
       ? new Array(action.payload.result.totalCount)
-      : state.termIds
+      : cloneDeep(state.termIds)
 
     let entries = {}
     forEach(action.payload.entities.glossaryTerms, (entry) => {
@@ -459,7 +473,9 @@ const glossary = handleActions({
       selectedTerm: selectedTerm
     }
   }
-}, {
+},
+// default state
+{
   src: DEFAULT_LOCALE.localeId,
   locale: '',
   filter: '',

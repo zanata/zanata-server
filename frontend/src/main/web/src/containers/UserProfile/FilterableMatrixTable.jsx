@@ -11,7 +11,10 @@ import {
   DateRanges,
   ContentStates
 } from '../../constants/Options'
-
+/**
+ * Bottom section of contribution statistic page.
+ * See RecentContribution for main page.
+ */
 const FilterableMatrixTable = ({
   dateRangeOption,
   fromDate,

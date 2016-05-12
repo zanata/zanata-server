@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react' // eslint-disable-line
+import React, { Component, PropTypes } from 'react'
 import { Provider } from 'react-redux'
 import { Router, Route, Redirect } from 'react-router'
 import App from '../containers/App'
@@ -6,12 +6,8 @@ import Glossary from '../containers/Glossary'
 import Explore from '../containers/Explore'
 import UserProfile from '../containers/UserProfile'
 import View from '../components/View'
-import {
-  glossaryInitialLoad
-} from '../actions/glossary.js'
-import {
-  searchPageInitialLoad
-} from '../actions/explore.js'
+import { glossaryInitialLoad } from '../actions/glossary.js'
+import { searchPageInitialLoad } from '../actions/explore.js'
 
 export default class Root extends Component {
   render () {

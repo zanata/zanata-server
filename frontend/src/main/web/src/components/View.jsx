@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react'
 import { flattenThemeClasses } from '../utils/styleUtils'
 
 const classes = {

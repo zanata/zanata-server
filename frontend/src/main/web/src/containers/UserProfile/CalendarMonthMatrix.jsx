@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment'
-import { merge } from 'lodash'
+import { merge, range, map } from 'lodash'
 import DayMatrix from './DayMatrix'
 import Actions from '../../actions/userMatrix'
 import { ContentStates } from '../../constants/Options'
@@ -52,12 +52,12 @@ var CalendarMonthMatrix = React.createClass({
     // this is to make week days locale aware and making sure it align with
     // below display
     var now = moment()
-    var weekDays = []
     var weekDay
-    for (var i = 0; i < 7; i++) {
+    var weekDays = range(0, 7).map(i => {
       weekDay = now.weekday(i).format('ddd')
-      weekDays.push(<th key={weekDay}>{weekDay}</th>)
-    }
+      return <th key={weekDay}>{weekDay}</th>
+    })
+
     return {
       weekDays: weekDays
     }
@@ -124,12 +124,13 @@ var CalendarMonthMatrix = React.createClass({
             {this.props.dateRangeOption.label}'s Activity
           </h3>
         </div>
-        {selectedDay && (<div className='Mstart(a)'>
-          <ButtonLink
-            onClick={this.handleClearSelection}>
-            Clear selection
-          </ButtonLink>
-        </div>)}
+        {selectedDay &&
+          (<div className='Mstart(a)'>
+            <ButtonLink
+              onClick={this.handleClearSelection}>
+              Clear selection
+            </ButtonLink>
+          </div>)}
       </Flex>
     )
 
