@@ -852,11 +852,10 @@ public class TranslationServiceImpl implements TranslationService {
                 ContentState currentState = ContentState.New;
                 if (hTarget != null) {
                     currentState = hTarget.getState();
-                }
-
-                if (mergeType == MergeType.IMPORT) {
-                    removedTextFlowTargetIds.remove(hTarget.getId());
-                }
+ 		    if (mergeType == MergeType.IMPORT) {
+                        removedTextFlowTargetIds.remove(hTarget.getId());
+                    }
+                }              
 
                 TranslationMergeServiceFactory.MergeContext mergeContext =
                         new TranslationMergeServiceFactory.MergeContext(
