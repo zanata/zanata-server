@@ -89,7 +89,7 @@
     <zanata.assets.version>8.2</zanata.assets.version>
     <zanata.api.version>3.9.0</zanata.api.version>
     <!-- This should always be the previous version of the used api version above (but only 3.0.1 or later will work) -->
-    <zanata.api.compat.version>3.9.0</zanata.api.compat.version>
+    <zanata.api.compat.version>3.8.4</zanata.api.compat.version>
     <zanata.client.version>3.9.0</zanata.client.version>
     <zanata.common.version>3.9.0</zanata.common.version>
 
@@ -255,6 +255,14 @@
           <exclusion>
             <artifactId>jcip-annotations</artifactId>
             <groupId>net.jcip</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1131,34 +1139,6 @@
           <exclusion>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs</artifactId>
-        <version>${resteasy.version}</version>
-        <scope>${resteasy.scope}</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jcip-annotations</artifactId>
-            <groupId>net.jcip</groupId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
