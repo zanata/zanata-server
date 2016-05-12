@@ -1,4 +1,4 @@
-import React from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react'
 import { View } from '../../components'
 import TeaserListHeader from './TeaserListHeader'
 import ProjectTeaser from './ProjectTeaser'
@@ -6,6 +6,9 @@ import GroupTeaser from './GroupTeaser'
 import LanguageTeamTeaser from './LanguageTeamTeaser'
 import UserTeaser from './UserTeaser'
 
+/**
+ * A section of search results with TeaserListHeader and list of results (TeaserComponent)
+ */
 const TeaserList = ({
   children,
   title,
@@ -63,6 +66,22 @@ const TeaserList = ({
       </View>
     </View>
   )
+}
+
+TeaserList.propTypes = {
+  title: PropTypes.string,
+  totalCount: PropTypes.number,
+  /**
+   * See ProjectTeaser, LanguageTeamTeaser, GroupTeaser for object type
+   */
+  items: PropTypes.array,
+  type: PropTypes.oneOf(
+    ['Project', 'LanguageTeam', 'Person', 'Group']
+  ),
+  sizePerPage: PropTypes.number,
+  page: PropTypes.number,
+  updatePage: PropTypes.func,
+  loading: PropTypes.bool
 }
 
 export default TeaserList

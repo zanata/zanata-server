@@ -7,6 +7,12 @@ import { elementType } from 'react-prop-types'
  */
 const Overlay = ({
   children,
+  /**
+   * A react-overlays/lib/Transition component to use for
+   * the dialog and backdrop components.
+   * See http://react-bootstrap.github.io/react-overlays/examples/#transition
+   * for documentation.
+   */
   transition,
   ...props
 }) => {

@@ -10,6 +10,9 @@ import {
 } from '../../components'
 import { isEmptyOrNull } from '../../utils/StringUtils'
 
+/**
+ * Popup windows to display a glossary entry
+ */
 class EntryModal extends Component {
 
   render () {
