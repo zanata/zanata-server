@@ -473,7 +473,7 @@
         <artifactId>byteman-submit</artifactId>
         <version>${byteman.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.jboss.com.sun.httpserver</groupId>
         <artifactId>httpserver</artifactId>
