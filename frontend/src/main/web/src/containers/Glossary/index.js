@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import { debounce, isUndefined } from 'lodash'
@@ -31,7 +31,9 @@ const loadingContainerTheme = {
     w: 'W(100%)'
   }
 }
-
+/**
+ * Root component for Glossary page
+ */
 class Glossary extends Component {
   constructor () {
     super()
@@ -39,6 +41,11 @@ class Glossary extends Component {
     // So it creates a new debounce for each instance
     this.onScroll = debounce(this.onScroll, 100)
   }
+
+  isTermLocaleSelected (term, selectedLocale) {
+    return term.transTerm && (term.transTerm.locale === selectedLocale)
+  }
+
   renderItem (index, key) {
     const {
       handleSelectTerm,
@@ -58,51 +65,44 @@ class Glossary extends Component {
     const entryId = termIds[index]
     const selected = entryId === selectedTerm.id
     const isSaving = !isUndefined(saving[entryId])
-    let entry = null
+    let entry = undefined
     if (isSaving && entryId) {
       const savingTerm = saving[entryId]
-      if (savingTerm.transTerm &&
-        (savingTerm.transTerm.locale === selectedTransLocale)) {
-        entry = savingTerm
-      } else {
-        entry = savingTerm
-      }
+      entry = savingTerm
     } else if (selected) {
-      if(selectedTerm.transTerm &&
-        selectedTerm.transTerm.locale === selectedTransLocale) {
-        entry = selectedTerm
-      } else {
-        entry = selectedTerm
-      }
+      entry = selectedTerm
     } else if (entryId) {
       entry = terms[entryId]
     }
     const isDeleting = !isUndefined(deleting[entryId])
 
     return (
-      <Entry key={key}
-        entry={entry}
-        index={index}
-        selected={selected}
-        isDeleting={isDeleting}
-        isSaving={isSaving}
-        permission={permission}
-        selectedTransLocale={selectedTransLocale}
-        termsLoading={termsLoading}
-        handleSelectTerm={handleSelectTerm}
-        handleTermFieldUpdate={handleTermFieldUpdate}
-        handleDeleteTerm={handleDeleteTerm}
-        handleResetTerm={handleResetTerm}
-        handleUpdateTerm={handleUpdateTerm}
-      />
+      <Entry {...{
+        key,
+        entry,
+        index,
+        selected,
+        isDeleting,
+        isSaving,
+        permission,
+        selectedTransLocale,
+        termsLoading,
+        handleSelectTerm,
+        handleTermFieldUpdate,
+        handleDeleteTerm,
+        handleResetTerm,
+        handleUpdateTerm
+      }} />
     )
   }
+
   onScroll () {
     // Debounced by 100ms in super()
     if (!this.list) return
     const {
-      dispatch,
-      location
+      location,
+      handleUpdateIndex,
+      handleGetTermsIfNeeded
     } = this.props
     const loadingThreshold = 250
     const indexRange = this.list.getVisibleRange()
@@ -111,14 +111,15 @@ class Glossary extends Component {
     replaceRouteQuery(location, {
       index: newIndex
     })
-    dispatch(glossaryUpdateIndex(newIndex))
-    dispatch(glossaryGetTermsIfNeeded(newIndex))
+    handleUpdateIndex(newIndex)
+    handleGetTermsIfNeeded(newIndex)
     // If close enough, load the prev/next page too
     const preIndex = newIndex - loadingThreshold
     const nextIndex = newIndexEnd + loadingThreshold
-    preIndex > 0 && dispatch(glossaryGetTermsIfNeeded(preIndex))
-    dispatch(glossaryGetTermsIfNeeded(nextIndex))
+    preIndex > 0 && handleGetTermsIfNeeded(preIndex)
+    handleGetTermsIfNeeded(nextIndex)
   }
+
   render () {
     const {
       termsLoading,
@@ -132,34 +133,54 @@ class Glossary extends Component {
           ? (<Notification severity={notification.severity}
             message={notification.message}
             details={notification.details}
-            show={!!notification}/>
+            show={!!notification} />
           )
           : undefined
         }
-        <Helmet title='Glossary'/>
+        <Helmet title='Glossary' />
         <ScrollView onScroll={::this.onScroll}>
           <ViewHeader />
           <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
             {termsLoading && !termCount
               ? (<View theme={loadingContainerTheme}>
-                <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
-                  size='1'
-                  loading/>
-              </View>)
+                  <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
+                    size='1' loading />
+                  </View>)
               : (<ReactList
-                useTranslate3d
-                itemRenderer={::this.renderItem}
-                length={termCount}
-                type='uniform'
-                initialIndex={scrollIndex || -5}
-                ref={(c) => { this.list = c }}
-              />)
+                  useTranslate3d
+                  itemRenderer={::this.renderItem}
+                  length={termCount}
+                  type='uniform'
+                  initialIndex={scrollIndex || -5}
+                  ref={(c) => { this.list = c }}
+                />)
             }
           </View>
         </ScrollView>
       </Page>
     )
   }
+}
+
+Glossary.propTypes = {
+  /**
+   * Object of glossary id with term
+   */
+  terms: PropTypes.object,
+  termIds: PropTypes.array,
+  termCount: PropTypes.number,
+  termsLoading: PropTypes.bool,
+  transLocales: PropTypes.array,
+  srcLocale: PropTypes.object,
+  filterText: PropTypes.string,
+  selectedTerm: PropTypes.object,
+  selectedTransLocale: PropTypes.string,
+  scrollIndex: PropTypes.number,
+  permission: PropTypes.object,
+  location: PropTypes.object,
+  saving: PropTypes.object,
+  deleting: PropTypes.object,
+  notification: PropTypes.object
 }
 
 const mapStateToProps = (state) => {
@@ -198,7 +219,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatch,
     handleSelectTerm: (termId) => dispatch(glossarySelectTerm(termId)),
     handleTermFieldUpdate: (field, event) => {
       dispatch(glossaryUpdateField({ field, value: event.target.value || '' }))
@@ -206,7 +226,10 @@ const mapDispatchToProps = (dispatch) => {
     handleDeleteTerm: (termId) => dispatch(glossaryDeleteTerm(termId)),
     handleResetTerm: (termId) => dispatch(glossaryResetTerm(termId)),
     handleUpdateTerm: (term, needRefresh) =>
-      dispatch(glossaryUpdateTerm(term, needRefresh))
+      dispatch(glossaryUpdateTerm(term, needRefresh)),
+    handleUpdateIndex: (newIndex) => dispatch(glossaryUpdateIndex(newIndex)),
+    handleGetTermsIfNeeded: (newIndex) =>
+      dispatch(glossaryGetTermsIfNeeded(newIndex))
   }
 }
 

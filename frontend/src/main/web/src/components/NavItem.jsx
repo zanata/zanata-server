@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react' // eslint-disable-line
+import React, { PropTypes } from 'react'
 import { Link, NavIcon } from './'
 import { merge } from 'lodash'
 

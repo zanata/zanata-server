@@ -28,6 +28,12 @@ const Overlay = ({
 Overlay.propTypes = {
   ...BaseOverlay.propTypes,
   children: PropTypes.node,
+  /**
+   * A react-overlays/lib/Transition component to use for
+   * the dialog and backdrop components.
+   * See http://react-bootstrap.github.io/react-overlays/examples/#transition
+   * for documentation.
+   */
   transition: PropTypes.element,
   /**
    * Set the visibility of the Overlay

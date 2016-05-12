@@ -74,10 +74,10 @@ to avoid repetition or inconsistencies. e.g. transitions, borders, etc.
 These are the default html styles. Styles here should be kept very minimal and
 should be the most common styles used in the application. E.g. don't set custom
 sizes for headings (h1, h2, etc) as the default size for a h2 is likely to
-change a lot throughout the application, so is better be set explicitly in
+change a lot throughout the application, so is better to set explicitly in
 context. Favour "reseting" default elements as much as possible.
 
-This allow developers to use case the correct html tags in each use-case without
+This allows developers to use the correct html tags in each use-case without
 the fear of having to "reset defaults" or just use a div.
 
 ### Atomic CSS

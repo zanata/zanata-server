@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
-import { forEach, map } from 'lodash'
+import { forEach, mapValues } from 'lodash'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import createLogger from 'redux-logger'
@@ -56,11 +56,8 @@ const store = ((initialState) => {
   return store
 })()
 
-let config = {}
-forEach(window.config, (value, key) => {
-  config[key] = isJsonString(value) ? JSON.parse(value) : value
-})
-window.config = config
+window.config = mapValues(window.config, (value) =>
+  isJsonString(value) ? JSON.parse(value) : value)
 
 render(
   <Root store={store} history={hashHistory} />,
