@@ -1,14 +1,14 @@
 package org.zanata.exception;
 
 public class ProjectNotFoundException extends RuntimeException {
-    private static final long serialVersionUID = -7920694286L;
+    private static final long serialVersionUID = 1L;
+    private final String projectSlug;
 
-    public ProjectNotFoundException() {
-        super();
+    public ProjectNotFoundException(String projectSlug) {
+        this.projectSlug = projectSlug;
     }
 
-    public ProjectNotFoundException(String message) {
-        super(message);
+    public String getProjectSlug() {
+        return projectSlug;
     }
-
 }

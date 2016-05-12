@@ -32,7 +32,8 @@ import javax.faces.application.FacesMessage;
 @ExceptionHandler
 public class VersionNotFoundExceptionHandler extends AbstractExceptionHandler {
     public void handleException(@Handles ExceptionEvent<VersionNotFoundException> event) {
-        handle(event, LogLevel.Warn, urlUtil.genericWarningPage(), FacesMessage.SEVERITY_WARN,
-                "jsf.VersionNotFound");
+        VersionNotFoundException exception = event.getException();
+        handle(event, LogLevel.Warn, urlUtil.missingEntityPage(), FacesMessage.SEVERITY_WARN,
+                "jsf.VersionNotFound", exception.getProjectSlug(), exception.getVersionSlug());
     }
 }

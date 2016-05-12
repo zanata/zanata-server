@@ -299,7 +299,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             log.warn(
                     "Project version [id={}, slug={}], does not exist or is soft deleted: {}",
                     versionId, getSlug(), iteration);
-            throw new VersionNotFoundException();
+            throw new VersionNotFoundException(getProjectSlug(), getSlug());
         }
     }
 
@@ -308,7 +308,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
             log.warn(
                 "Project [slug={}], does not exist or is soft deleted: {}",
                 getProjectSlug(), project);
-            throw new VersionNotFoundException();
+            throw new ProjectNotFoundException(getProjectSlug());
         }
     }
 

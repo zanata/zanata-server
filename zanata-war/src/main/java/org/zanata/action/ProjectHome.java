@@ -689,7 +689,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             log.warn(
                     "Project [id={}, slug={}], does not exist or is soft deleted: {}",
                     projectId, getSlug(), project);
-            throw new ProjectNotFoundException();
+            throw new ProjectNotFoundException(getSlug());
         }
     }
 

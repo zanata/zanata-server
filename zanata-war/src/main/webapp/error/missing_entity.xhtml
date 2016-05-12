@@ -3,8 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  template="WEB-INF/template/template.xhtml">
+  template="../WEB-INF/template/template.xhtml">
 
   <ui:define name="page_title">#{msgs['jsf.Error']}</ui:define>
   <ui:param name="showGlobalMessages" value="false"/>
@@ -29,15 +28,9 @@
                 <ui:repeat
                   value="#{jsfMessages.globalMessagesList}"
                   var="message">
-                  <h:outputFormat
-                    value="#{message.summary}">
-                    <f:param
-                    value="#{projectHome.slug}"/>
-                    <f:param
-                      value="#{versionHome.projectSlug}"/>
-                    <f:param
-                      value="#{versionHome.slug}"/>
-                  </h:outputFormat>
+                  <h:outputText
+                    value="#{message.detail}">
+                  </h:outputText>
 
                 </ui:repeat>
               </ul>

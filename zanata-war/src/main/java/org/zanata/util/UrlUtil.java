@@ -287,10 +287,10 @@ public class UrlUtil implements Serializable {
     }
 
     /**
-     * Get warning url with dswid parameter
+     * Get missing entity page url with dswid parameter
      */
-    public String genericWarningPage() {
-        return contextPath + "/warn" + dswidQuery;
+    public String missingEntityPage() {
+        return contextPath + "/error/missing_entity" + dswidQuery;
     }
 
     /**

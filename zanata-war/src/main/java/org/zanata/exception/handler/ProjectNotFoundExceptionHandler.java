@@ -32,7 +32,7 @@ import javax.faces.application.FacesMessage;
 @ExceptionHandler
 public class ProjectNotFoundExceptionHandler extends AbstractExceptionHandler {
     public void handleException(@Handles ExceptionEvent<ProjectNotFoundException> event) {
-        handle(event, LogLevel.Warn, urlUtil.genericWarningPage(), FacesMessage.SEVERITY_WARN,
-                "jsf.ProjectNotFound");
+        handle(event, LogLevel.Warn, urlUtil.missingEntityPage(), FacesMessage.SEVERITY_WARN,
+                "jsf.ProjectNotFound", event.getException().getProjectSlug());
     }
 }
