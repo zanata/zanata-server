@@ -11,7 +11,7 @@ export default handleActions({
       notification: null
     }
   }
-}, 
+},
 // default state
 {
   locales: [],

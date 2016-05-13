@@ -2,7 +2,7 @@
 
 ## Design Concepts
 
-There are some core concepts that Zanata and each component are designed around 
+There are some core concepts that Zanata and each component are designed around
 to keep a consistent look and feel.
 
 ### Color Palette
@@ -103,7 +103,7 @@ overrides, as it takes precedence over any theme classes.
 
 Each component should declare a single `classes` variable, directly after it's
 imports. This classes variable can then be merged with it's own theme prop (to
-allow for external theming) and then it can be merged again for any state-based 
+allow for external theming) and then it can be merged again for any state-based
 classes.
 
 The `classes` variable can contain classes for more than 1 element, if more than

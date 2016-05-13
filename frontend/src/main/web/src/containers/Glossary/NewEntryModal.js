@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
 
 import {
   ButtonLink,
@@ -78,8 +78,7 @@ class NewEntryModal extends Component {
       handleNewEntryDisplay,
       handleNewEntryCreate
       } = this.props
-    const isAllowSave =
-      !StringUtils.isEmptyOrNull(this.state.entry.srcTerm.content)
+    const isAllowSave = !isEmpty(this.state.entry.srcTerm.content)
 
     return (
       <Modal
