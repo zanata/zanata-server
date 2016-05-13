@@ -2,13 +2,11 @@
 
 <h5>New feature</h5>
 * [ZNTA-746](https://zanata.atlassian.net/browse/ZNTA-746) - Add shorcut key for approve and reject translation
+* [ZNTA-938](https://zanata.atlassian.net/browse/ZNTA-938) - Webhook event for translation update by user.
 
 -----------------------
 
 ## 3.9
-<h5>New Features</h5>
-* [ZNTA-938](https://zanata.atlassian.net/browse/ZNTA-938) - Webhook event for translation update by user.
-
 <h5>Infrastructure Changes</h5>
 * [ZNTA-530](https://zanata.atlassian.net/browse/ZNTA-530) - Replace Seam 2 with CDI
   * In WildFly or EAP `standalone.xml`, please make sure the Weld
