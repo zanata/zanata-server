@@ -1,11 +1,10 @@
-import isEmpty from 'lodash/isEmpty'
+import { isEmpty } from 'lodash'
 
-export function isEmptyOrNull (str) { return isEmpty(str) }
 export function trimLeadingSpace (str) {
-  return isEmptyOrNull(str) ? str : str.replace(/^\s+/g, '')
+  return isEmpty(str) ? str : str.replace(/^\s+/g, '')
 }
 export function trim (str) {
-  return isEmptyOrNull(str) ? str : str.trim()
+  return isEmpty(str) ? str : str.trim()
 }
 
 export function isJsonString (str) {
@@ -18,7 +17,6 @@ export function isJsonString (str) {
 }
 
 export default {
-  isEmptyOrNull,
   trimLeadingSpace,
   trim,
   isJsonString

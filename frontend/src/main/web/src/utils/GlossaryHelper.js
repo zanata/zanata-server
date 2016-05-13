@@ -1,20 +1,21 @@
 import { isUndefined, filter, forOwn } from 'lodash'
-import { trim, isEmptyOrNull } from './StringUtils'
+import { trim } from './StringUtils'
+import { isEmpty } from 'lodash'
 import DateHelpers from './DateHelper'
 import defined from 'defined'
 
 var GlossaryHelper = {
   /**
    * Generate org.zanata.rest.dto.GlossaryTerm object
-   * returns null if data is undefined or locale is empty
+   * returns undefined if data is undefined or locale is empty
    *
    * @param data
    */
   generateTermDTO: function (data, trimContent) {
-    if (isUndefined(data) || isEmptyOrNull(data.locale)) {
+    if (isUndefined(data) || isEmpty(data.locale)) {
       return
     }
-    const comment = isEmptyOrNull(data.content) ? null : trim(data.comment)
+    const comment = isEmpty(data.content) ? undefined : trim(data.comment)
     return {
       content: trimContent ? trim(data.content) : data.content,
       locale: data.locale,
@@ -58,21 +59,21 @@ var GlossaryHelper = {
     }
   },
 
-  generateSrcTerm: function (localeId) {
+  generateEmptySrcTerm: function (localeId) {
     let term = this.generateEmptyTerm(localeId)
-    term['reference'] = ''
+    term.reference = ''
     return term
   },
 
   getTermByLocale: function (terms, localeId) {
     let term = filter(terms, ['locale', localeId])
-    return term.length ? term[0] : null
+    return term.length ? term[0] : undefined
   },
 
   generateEmptyEntry: function (srcLocaleId) {
     return {
-      description: null,
-      pos: null,
+      description: undefined,
+      pos: undefined,
       srcTerm: this.generateEmptyTerm(srcLocaleId)
     }
   },
@@ -81,7 +82,7 @@ var GlossaryHelper = {
     let srcTerm =
       this.getTermByLocale(entry.glossaryTerms, entry.srcLang)
     srcTerm.reference = entry.sourceReference
-    if (!isEmptyOrNull(srcTerm.lastModifiedDate)) {
+    if (!isEmpty(srcTerm.lastModifiedDate)) {
       srcTerm.lastModifiedDate =
         DateHelpers.shortDate(DateHelpers.getDate(srcTerm.lastModifiedDate))
     }
@@ -112,7 +113,7 @@ var GlossaryHelper = {
   },
 
   toEmptyString: (val) => {
-    return isEmptyOrNull(val) ? '' : val
+    return isEmpty(val) ? '' : val
   },
 
   getEntryStatus: function (entry, originalEntry) {
@@ -139,7 +140,7 @@ var GlossaryHelper = {
         (source !== ori_source)
       let isTransModified = (trans !== ori_trans) || (comment !== ori_comment)
 
-      let isSrcValid = !isEmptyOrNull(trim(source))
+      let isSrcValid = !isEmpty(trim(source))
 
       return {
         isSrcModified: isSrcModified,

@@ -212,7 +212,7 @@ ViewHeader.propTypes = {
     })
   ).isRequired,
   filterText: PropTypes.string,
-  selectedTransLocale: PropTypes.object,
+  selectedTransLocale: PropTypes.string,
   permission: PropTypes.shape({
       canAddNewEntry: PropTypes.bool,
       canUpdateEntry: PropTypes.bool,
@@ -234,7 +234,6 @@ const mapStateToProps = (state) => {
     sort
     } = state.glossary
   const query = state.routing.location.query
-  console.info(sort)
   return {
     termCount,
     statsLoading,

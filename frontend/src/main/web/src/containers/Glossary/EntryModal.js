@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import { isEmpty } from 'lodash'
 import {
   ButtonLink,
   ButtonRound,
@@ -8,7 +9,6 @@ import {
   Modal,
   Row
 } from '../../components'
-import { isEmptyOrNull } from '../../utils/StringUtils'
 
 /**
  * Popup windows to display a glossary entry
@@ -33,7 +33,7 @@ class EntryModal extends Component {
     const comment = entry.transTerm ? entry.transTerm.comment : ''
 
     const enableComment = transSelected &&
-      entry.transTerm && !isEmptyOrNull(transContent)
+      entry.transTerm && !isEmpty(transContent)
 
     return (
       <Modal show={show}

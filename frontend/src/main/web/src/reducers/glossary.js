@@ -40,7 +40,6 @@ import {
   DEFAULT_LOCALE
 } from '../actions/common'
 import GlossaryHelper from '../utils/GlossaryHelper'
-import { isEmptyOrNull } from '../utils/StringUtils'
 
 const glossary = handleActions({
   [CLEAR_MESSAGE]: (state, action) => {
@@ -133,41 +132,37 @@ const glossary = handleActions({
     }
   }),
   [GLOSSARY_UPDATE_IMPORT_FILE]: (state, action) => {
-    const importFile = state.importFile
     return {
       ...state,
       importFile: {
-        ...importFile,
+        ...state.importFile,
         file: action.payload
       }
     }
   },
   [GLOSSARY_UPDATE_IMPORT_FILE_LOCALE]: (state, action) => {
-    const importFile = state.importFile
     return {
       ...state,
       importFile: {
-        ...importFile,
+        ...state.importFile,
         transLocale: action.payload
       }
     }
   },
   [GLOSSARY_TOGGLE_IMPORT_DISPLAY]: (state, action) => {
-    const importFile = state.importFile
     return {
       ...state,
       importFile: {
-        ...importFile,
+        ...state.importFile,
         show: action.payload
       }
     }
   },
   [GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY]: (state, action) => {
-    const newEntry = state.newEntry
     return {
       ...state,
       newEntry: {
-        ...newEntry,
+        ...state.newEntry,
         show: action.payload
       }
     }
@@ -192,7 +187,7 @@ const glossary = handleActions({
             GlossaryHelper.generateEmptyTerm(state.locale)
           newSelectedTerm.transTerm.content = action.payload.value
         }
-        if (isEmptyOrNull(newSelectedTerm.transTerm.content)) {
+        if (isEmpty(newSelectedTerm.transTerm.content)) {
           newSelectedTerm.transTerm.comment = null
         }
         break
@@ -279,11 +274,10 @@ const glossary = handleActions({
     }
 
     const entryId = action.payload
-    const deleting = state.deleting
     return {
       ...state,
       deleting: {
-        ...deleting,
+        ...state.deleting,
         [entryId]: entryId
       }
     }

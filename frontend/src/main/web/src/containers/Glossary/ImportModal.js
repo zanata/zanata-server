@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { isEmpty } from 'lodash'
 
 import {
   ButtonLink,
@@ -51,7 +52,7 @@ class ImportModal extends Component {
 
     if (this.isSupportedFile(fileExtension) && !isUploading) {
       if (fileExtension === 'po') {
-        if (!StringUtils.isEmptyOrNull(transLocale)) {
+        if (!isEmpty(transLocale)) {
           disableUpload = false
         }
         langSelection = (<Select
