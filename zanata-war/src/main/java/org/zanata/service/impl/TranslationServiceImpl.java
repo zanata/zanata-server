@@ -195,8 +195,8 @@ public class TranslationServiceImpl implements TranslationService {
         validateReviewPermissionIfApplicable(translationRequests,
                 projectIteration, hLocale);
 
-        List<TextFlowTargetState> states = Lists.newArrayList();
-        Map<ContentState, Long> contentStates = Maps.newHashMap();
+        List<TextFlowTargetState> targetStates = Lists.newArrayList();
+        Map<ContentState, Long> contentStateDeltas = Maps.newHashMap();
 
         for (TransUnitUpdateRequest request : translationRequests) {
             HTextFlow hTextFlow =
@@ -258,9 +258,9 @@ public class TranslationServiceImpl implements TranslationService {
                                         hTextFlowTarget.getId(),
                                         hTextFlowTarget.getState(),
                                         currentState);
-                        states.add(state);
-                        contentStates = DocStatsEvent
-                            .updateContentState(contentStates,
+                        targetStates.add(state);
+                        contentStateDeltas = DocStatsEvent
+                            .updateContentStateDeltas(contentStateDeltas,
                                 state.getNewState(),
                                 state.getPreviousState(),
                                 hTextFlow.getWordCount());
@@ -287,7 +287,7 @@ public class TranslationServiceImpl implements TranslationService {
             result.translatedTextFlowTarget = hTextFlowTarget;
             results.add(result);
         }
-        if(!states.isEmpty()) {
+        if(!targetStates.isEmpty()) {
             DocumentLocaleKey documentLocaleKey =
                 new DocumentLocaleKey(
                     sampleHTextFlow.getDocument().getId(), hLocale.getLocaleId());
@@ -296,13 +296,13 @@ public class TranslationServiceImpl implements TranslationService {
                 new TextFlowTargetStateEvent(documentLocaleKey,
                     projectIteration.getId(),
                     authenticatedAccount.getPerson().getId(),
-                    ImmutableList.copyOf(states));
+                    ImmutableList.copyOf(targetStates));
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
 
             DocStatsEvent docEvent =
                     new DocStatsEvent(documentLocaleKey, projectIteration.getId(),
-                            contentStates,
-                            Iterables.getLast(states).getTextFlowTargetId());
+                            contentStateDeltas,
+                            Iterables.getLast(targetStates).getTextFlowTargetId());
 
             docStatsEvent.fire(docEvent);
         }
@@ -800,10 +800,10 @@ public class TranslationServiceImpl implements TranslationService {
                 }));
         final int numPlurals = resourceUtils.getNumPlurals(document, locale);
 
-        ImmutableList.Builder<TextFlowTargetState> states =
+        ImmutableList.Builder<TextFlowTargetState> targetStates =
                 ImmutableList.builder();
 
-        Map<ContentState, Long> contentStates = Maps.newHashMap();
+        Map<ContentState, Long> contentStateDeltas = Maps.newHashMap();
 
         for (TextFlowTarget incomingTarget : batch) {
             String resId = incomingTarget.getResId();
@@ -852,11 +852,10 @@ public class TranslationServiceImpl implements TranslationService {
                 ContentState currentState = ContentState.New;
                 if (hTarget != null) {
                     currentState = hTarget.getState();
- 		    if (mergeType == MergeType.IMPORT) {
+                    if (mergeType == MergeType.IMPORT) {
                         removedTextFlowTargetIds.remove(hTarget.getId());
                     }
-                }              
-
+                }
                 TranslationMergeServiceFactory.MergeContext mergeContext =
                         new TranslationMergeServiceFactory.MergeContext(
                                 mergeType, textFlow, locale, hTarget,
@@ -897,10 +896,10 @@ public class TranslationServiceImpl implements TranslationService {
                         new TextFlowTargetState(textFlow.getId(),
                             hTarget.getId(), hTarget.getState(), currentState);
 
-                    states.add(state);
+                    targetStates.add(state);
 
-                    contentStates = DocStatsEvent
-                        .updateContentState(contentStates, state.getNewState(),
+                    contentStateDeltas = DocStatsEvent
+                        .updateContentStateDeltas(contentStateDeltas, state.getNewState(),
                             state.getPreviousState(), textFlow.getWordCount());
                 }
             }
@@ -908,8 +907,8 @@ public class TranslationServiceImpl implements TranslationService {
                 handleOp.get().increaseProgress(1);
             }
         }
-        ImmutableList<TextFlowTargetState> list = states.build();
-        if (!list.isEmpty()) {
+        ImmutableList<TextFlowTargetState> tftStates = targetStates.build();
+        if (!tftStates.isEmpty()) {
             Long actorId =
                 assignCreditToUploader ? authenticatedAccount.getPerson().getId() :
                     null;
@@ -920,12 +919,12 @@ public class TranslationServiceImpl implements TranslationService {
 
             TextFlowTargetStateEvent tftUpdatedEvent =
                     new TextFlowTargetStateEvent(documentLocaleKey,
-                            projectIterationId, actorId, list);
+                            projectIterationId, actorId, tftStates);
             textFlowTargetStateEvent.fire(tftUpdatedEvent);
 
             DocStatsEvent docEvent =
                 new DocStatsEvent(documentLocaleKey, projectIterationId,
-                    contentStates,
+                    contentStateDeltas,
                     Iterables.getLast(tftUpdatedEvent.getStates()).getTextFlowTargetId());
 
             docStatsEvent.fire(docEvent);

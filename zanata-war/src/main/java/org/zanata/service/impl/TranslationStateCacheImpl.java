@@ -192,7 +192,6 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
      * This method contains all logic to be run immediately after a Text Flow
      * Target has been successfully translated.
      */
-    @Async
     @Override
     public void textFlowStateUpdated(
         @Observes(during = TransactionPhase.AFTER_SUCCESS)
@@ -204,7 +203,6 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         }
     }
 
-    @Async
     public void docStatsUpdated(
         @Observes(during = TransactionPhase.AFTER_SUCCESS)
             DocStatsEvent event) {

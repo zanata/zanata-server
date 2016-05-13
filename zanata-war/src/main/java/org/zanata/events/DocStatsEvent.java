@@ -30,7 +30,7 @@ public class DocStatsEvent {
 
     private final Long lastModifiedTargetId;
 
-    public static Map<ContentState, Long> updateContentState(
+    public static Map<ContentState, Long> updateContentStateDeltas(
             @Nullable Map<ContentState, Long> contentStates,
             ContentState newState,
             ContentState previousState, long wordCount) {
@@ -39,12 +39,12 @@ public class DocStatsEvent {
                 contentStates == null ? new HashMap<ContentState, Long>()
                         : contentStates;
 
-        Long previousStateCount =
+        long previousStateCount =
                 newContentStates.getOrDefault(previousState, 0L);
         previousStateCount -= wordCount;
         newContentStates.put(previousState, previousStateCount);
 
-        Long newStateCount = newContentStates.getOrDefault(newState, 0L);
+        long newStateCount = newContentStates.getOrDefault(newState, 0L);
         newStateCount += wordCount;
         newContentStates.put(newState, newStateCount);
 

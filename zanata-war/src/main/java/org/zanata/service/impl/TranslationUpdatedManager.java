@@ -12,7 +12,6 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
-import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
@@ -69,7 +68,8 @@ public class TranslationUpdatedManager {
         processWebHookEvent(event);
     }
 
-    void processWebHookEvent(DocStatsEvent event) {
+    @VisibleForTesting
+    protected void processWebHookEvent(DocStatsEvent event) {
         HTextFlowTarget target =
                 textFlowTargetDAO.findById(event.getLastModifiedTargetId());
         HPerson person = target.getLastModifiedBy();
@@ -86,7 +86,7 @@ public class TranslationUpdatedManager {
         String projectSlug = project.getSlug();
         LocaleId localeId = event.getKey().getLocaleId();
 
-        User user = userService.transferToUser(person.getAccount(),
+        User user = userService.getUserInfo(person.getAccount(),
             applicationConfiguration.isDisplayUserEmail());
 
         DocumentStatsEvent webhookEvent =
@@ -96,6 +96,7 @@ public class TranslationUpdatedManager {
         publishWebhookEvent(project.getWebHooks(), webhookEvent);
     }
 
+    @VisibleForTesting
     public void publishWebhookEvent(List<WebHook> webHooks,
             DocumentStatsEvent event) {
         for (WebHook webHook : webHooks) {

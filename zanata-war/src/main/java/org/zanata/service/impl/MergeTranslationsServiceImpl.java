@@ -29,7 +29,6 @@ import javax.annotation.Nonnull;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,7 +63,6 @@ import org.zanata.util.TranslationUtil;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
-import com.google.gwt.dom.client.Document;
 
 import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
 import static org.zanata.transaction.TransactionUtil.runInTransaction;
@@ -278,11 +276,11 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
                     lastUpdatedTargetId.put(key, updatedTarget.getId());
 
-                    Map<ContentState, Long> contentStates = DocStatsEvent
-                        .updateContentState(docStatsMap.get(key),
+                    Map<ContentState, Long> contentStateDeltas = DocStatsEvent
+                        .updateContentStateDeltas(docStatsMap.get(key),
                             updatedTarget.getState(),
                             entry.getValue(), targetTf.getWordCount());
-                    docStatsMap.put(key, contentStates);
+                    docStatsMap.put(key, contentStateDeltas);
                 }
             }
         }

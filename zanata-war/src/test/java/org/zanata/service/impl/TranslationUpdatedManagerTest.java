@@ -39,7 +39,6 @@ import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
-import org.zanata.events.TextFlowTargetStateEvent;
 import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
@@ -141,7 +140,7 @@ public class TranslationUpdatedManagerTest {
         when(project.getSlug()).thenReturn(projectSlug);
         when(project.getWebHooks()).thenReturn(webHooks);
         when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
-        when(userService.transferToUser(account, isDisplayUserEmail))
+        when(userService.getUserInfo(account, isDisplayUserEmail))
             .thenReturn(user);
         when(textFlowTargetDAO.findById(tftId)).thenReturn(target);
         when(target.getLastModifiedBy()).thenReturn(person);

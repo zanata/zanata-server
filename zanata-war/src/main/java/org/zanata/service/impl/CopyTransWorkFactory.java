@@ -56,7 +56,6 @@ import org.zanata.service.VersionStateCache;
 import org.zanata.util.TranslationUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 
-import com.beust.jcommander.internal.Maps;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
@@ -419,7 +418,7 @@ public class CopyTransWorkFactory {
             new DocumentLocaleKey(document.getId(), target.getLocaleId());
 
         Map<ContentState, Long> contentStates = DocStatsEvent
-            .updateContentState(null, target.getState(), previousState,
+            .updateContentStateDeltas(null, target.getState(), previousState,
                 wordCount);
 
         DocStatsEvent docEvent =

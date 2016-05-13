@@ -41,7 +41,7 @@ import org.zanata.rest.dto.User;
 @Getter
 @Setter
 @AllArgsConstructor
-@JsonPropertyOrder({"user", "project", "version", "docId", "locale", "contentStates", "type"})
+@JsonPropertyOrder({"user", "project", "version", "docId", "locale", "wordDeltasByState", "type"})
 @EqualsAndHashCode
 public class DocumentStatsEvent extends WebhookEventType {
 
@@ -80,7 +80,7 @@ public class DocumentStatsEvent extends WebhookEventType {
     /**
      * Updated content states with word counts
      */
-    private final Map<ContentState, Long> contentStates;
+    private final Map<ContentState, Long> wordDeltasByState;
 
     @Override
     public String getType() {
