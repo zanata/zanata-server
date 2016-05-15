@@ -134,8 +134,13 @@ public class LoginAction implements Serializable {
     }
 
     private String continueToPreviousUrl() {
-        FacesNavigationUtil.redirect(FacesContext.getCurrentInstance(),
-                userRedirect.getUrl());
+        try {
+            FacesNavigationUtil.redirect(FacesContext.getCurrentInstance(),
+                    userRedirect.getUrl());
+        }
+        catch (IOException e) {
+            return "dashboard";
+        }
         return "continue";
     }
 
