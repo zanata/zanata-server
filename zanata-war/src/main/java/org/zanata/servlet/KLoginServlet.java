@@ -93,6 +93,11 @@ public class KLoginServlet extends HttpServlet {
             case "redirect":
                 resp.sendRedirect(continueUrl);
                 break;
+
+            default:
+                throw new RuntimeException(
+                        "Unexpected authentication manager result: " +
+                                authRedirectResult);
         }
     }
 }
