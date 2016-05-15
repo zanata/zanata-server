@@ -137,8 +137,7 @@ public class LoginAction implements Serializable {
         try {
             FacesNavigationUtil.redirect(FacesContext.getCurrentInstance(),
                     userRedirect.getUrl());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return "dashboard";
         }
         return "continue";
