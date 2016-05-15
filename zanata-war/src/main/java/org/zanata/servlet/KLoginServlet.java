@@ -52,8 +52,9 @@ public class KLoginServlet extends HttpServlet {
             throws ServletException, IOException {
         // Set the continue parameter
         String continueUrl = req.getParameter("continue");
-        if(continueUrl != null)
+        if (continueUrl != null) {
             userRedirect.setEncodedUrl(continueUrl);
+        }
         // perform the authentication
         authenticationManager.kerberosLogin();
         performRedirection(resp, continueUrl);
