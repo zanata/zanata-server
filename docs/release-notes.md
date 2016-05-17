@@ -1,7 +1,7 @@
 ## 4.0
 
 <h5>Infrastructure Changes</h5>
-* Zanata has forgone all JNDI-based configuration and replaced it with system properties. Please see the following sections for how certain values are now configured:
+* Zanata has eliminated all JNDI-based configuration and replaced it with system properties. Please see the following sections for how certain values are now configured:
   * (/user-guide/system-admin/configuration/installation)
   * (/user-guide/system-admin/configuration/authentication)
   * (/user-guide/system-admin/configuration/document-storage-directory)

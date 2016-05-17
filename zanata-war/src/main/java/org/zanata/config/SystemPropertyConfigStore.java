@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -47,8 +46,8 @@ public class SystemPropertyConfigStore implements ConfigStore {
             "zanata.security.adminusers";
     private static final String KEY_DEFAULT_FROM_ADDRESS =
             "zanata.email.defaultfromaddress";
-    private static final String KEY_DOCUMENT_FILE_STORE =
-            "zanata.files.documentstorage.directory";
+    public static final String KEY_DOCUMENT_FILE_STORE =
+            "zanata.file.directory";
 
     private static final Logger log =
             LoggerFactory.getLogger(SystemPropertyConfigStore.class);
@@ -81,7 +80,8 @@ public class SystemPropertyConfigStore implements ConfigStore {
                 System.getProperties().stringPropertyNames().stream()
                         .filter(propName -> propName
                                 .startsWith(KEY_AUTH_POLICY));
-        return authPolicyKeys.map(k -> System.getProperty(k)).collect(toSet());
+        return authPolicyKeys.map(k -> k.replace(KEY_AUTH_POLICY, ""))
+                .collect(toSet());
     }
 
     public String getAuthPolicyName(String authType) {

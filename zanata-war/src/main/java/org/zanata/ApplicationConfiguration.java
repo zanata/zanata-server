@@ -150,10 +150,16 @@ public class ApplicationConfiguration implements Serializable {
     private void loadLoginModuleNames() {
         for (String policyName : sysPropConfigStore
                 .getEnabledAuthenticationPolicies()) {
-            AuthenticationType authType =
-                    AuthenticationType.valueOf(policyName.toUpperCase());
-            loginModuleNames.put(authType,
-                    sysPropConfigStore.getAuthPolicyName(policyName));
+            try {
+                AuthenticationType authType =
+                        AuthenticationType.valueOf(policyName.toUpperCase());
+                loginModuleNames.put(authType,
+                        sysPropConfigStore.getAuthPolicyName(policyName));
+            } catch (IllegalArgumentException e) {
+                log.warn(
+                        "Attempted to configure an unrecognized authentication policy: " +
+                                policyName);
+            }
         }
     }
 
