@@ -36,7 +36,6 @@ import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.zanata.common.DocumentType;
@@ -62,7 +61,7 @@ public class MigrateRawDocumentsToFileSystem implements CustomTaskChange {
     private static final String DELETE_OLD_CONTENT_SQL =
             "delete from HRawDocumentContent where fileId = ?";
 
-    private String basePathParam;
+    private String basePath;
 
     private File docsDirectory;
 
@@ -91,7 +90,14 @@ public class MigrateRawDocumentsToFileSystem implements CustomTaskChange {
     public void setUp() throws SetupException {
         resetCounts();
         createDocsDirectoryFromConfig();
-        basePathParam = System.getProperty(FILE_DIR_PROP_NAME);
+        basePath = System.getProperty(FILE_DIR_PROP_NAME);
+        if (Strings.isNullOrEmpty(basePath)) {
+            throw new SetupException(
+                    "No information for document storage directory. "
+                            + "System property \""
+                            + FILE_DIR_PROP_NAME + "\" needs to be provided. "
+                            + "Cannot migrate documents to file system.");
+        }
     }
 
     private void resetCounts() {
@@ -101,7 +107,6 @@ public class MigrateRawDocumentsToFileSystem implements CustomTaskChange {
     }
 
     private void createDocsDirectoryFromConfig() throws SetupException {
-        String basePath = getConfiguredBasePath();
         log.info("Raw documents will be migrated to: " + basePath);
         docsDirectory = new File(basePath, RAW_DOCUMENTS_SUBDIRECTORY);
         try {
@@ -109,31 +114,6 @@ public class MigrateRawDocumentsToFileSystem implements CustomTaskChange {
         } catch (SecurityException e) {
             throw new SetupException(e);
         }
-    }
-
-    private String getConfiguredBasePath() throws SetupException {
-        return tryGetFallbackBasePath();
-    }
-
-    private String tryGetFallbackBasePath()
-            throws SetupException {
-        if (!basePathParamIsSet()) {
-            throw new SetupException(
-                    "No information for document storage directory. "
-                            + "Fallback liquibase parameter \""
-                            + FILE_DIR_PROP_NAME + "\" not set. "
-                            + "Cannot migrate documents to file system.");
-        }
-        return basePathParam;
-    }
-
-    private boolean basePathParamIsSet() {
-        if (Strings.isNullOrEmpty(basePathParam)) {
-            return false;
-        }
-        boolean paramIsExpanded =
-                !basePathParam.equals("${" + FILE_DIR_PROP_NAME + "}");
-        return paramIsExpanded;
     }
 
     @Override

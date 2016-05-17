@@ -28,8 +28,6 @@
   </extensions>
   <system-properties>
     <property name="zanata.javaScriptTestHelper" value="true" />
-    <property name="document.storage.directory"
-      value="./target/documents" />
     <property name="jboss.as.management.blocking.timeout" value="1000"/>
     <property name="javamelody.storage-directory" value="${jboss.server.data.dir}/zanata/stats"/>
     <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/zanata/indexes"/>
@@ -38,7 +36,7 @@
     <property name="zanata.security.authpolicy.openid" value="zanata.openid"/>
     <property name="zanata.security.adminusers" value="admin"/>
     <property name="zanata.email.defaultfromaddress" value="no-reply@zanata.org"/>
-    <property name="zanata.file.directory" value="${jboss.server.data.dir}/zanata/documents"/>
+    <property name="zanata.file.directory" value="./target/documents"/>
   </system-properties>
   <management>
     <security-realms>
