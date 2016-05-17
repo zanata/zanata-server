@@ -12,6 +12,8 @@ import lombok.Getter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Maps;
+
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
@@ -31,13 +33,13 @@ public class DocStatsEvent {
     private final Long lastModifiedTargetId;
 
     public static Map<ContentState, Long> updateContentStateDeltas(
-            @Nullable Map<ContentState, Long> contentStates,
+            @Nonnull Map<ContentState, Long> contentStates,
             ContentState newState,
             ContentState previousState, long wordCount) {
 
         Map<ContentState, Long> newContentStates =
-                contentStates == null ? new HashMap<ContentState, Long>()
-                        : contentStates;
+                contentStates == null ? Maps.newHashMap()
+                        : Maps.newHashMap(contentStates);
 
         long previousStateCount =
                 newContentStates.getOrDefault(previousState, 0L);
