@@ -21,11 +21,15 @@
 package org.zanata.action;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.exception.AuthorizationException;
 import org.zanata.ApplicationConfiguration;
@@ -80,6 +84,30 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
             name = zanataOpenId.getAuthResult().getFullName();
             email = zanataOpenId.getAuthResult().getEmail();
         }
+    }
+
+    /**
+     * Make username readonly if
+     * - enforce by system property {@link ApplicationConfiguration#isEnforceUsername()}
+     * - username is not empty
+     * - username is not taken yet
+     * - username is valid {@link #getUsername()}
+     */
+    public boolean isReadOnlyUsername() {
+        return applicationConfiguration.isEnforceUsername() &&
+            StringUtils.isNotBlank(username) && isUsernameValid(username) &&
+            !isUsernameTaken(username);
+    }
+
+    /**
+     * Manual check if username is valid
+     * pattern = "^[a-z\\d_]{3,20}$"
+     *
+     * See {@link #getUsername()}
+     */
+    private boolean isUsernameValid(String username) {
+        Pattern p = Pattern.compile("^[a-z\\d_]{3,20}$");
+        return p.matcher(username).matches();
     }
 
     @Transactional
