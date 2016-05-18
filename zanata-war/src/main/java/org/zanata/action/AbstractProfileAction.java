@@ -52,13 +52,16 @@ public abstract class AbstractProfileAction {
     }
 
     protected void validateUsername(String username) {
-        HAccount account = accountDAO.getByUsername(username);
-
-        if (account != null && !account.equals(authenticatedAccount)) {
+        if (isUsernameTaken(username)) {
             valid = false;
             facesMessages.addToControl("username",
                     "This username is already taken");
         }
+    }
+
+    protected boolean isUsernameTaken(String username) {
+        HAccount account = accountDAO.getByUsername(username);
+        return account != null && !account.equals(authenticatedAccount);
     }
 
     @NotEmpty

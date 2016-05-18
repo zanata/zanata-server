@@ -12,6 +12,7 @@
 <h5>New feature</h5>
 * [ZNTA-746](https://zanata.atlassian.net/browse/ZNTA-746) - Add shorcut key for approve and reject translation
 * [ZNTA-1059](https://zanata.atlassian.net/browse/ZNTA-1059) - Language coordinator can contact team members
+* [ZNTA-855](https://zanata.atlassian.net/browse/ZNTA-855) - System property to enforce username for registration
 
 
 
