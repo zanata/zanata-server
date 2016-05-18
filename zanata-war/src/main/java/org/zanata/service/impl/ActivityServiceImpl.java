@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 import javax.enterprise.context.RequestScoped;
@@ -33,8 +32,6 @@ import javax.enterprise.event.TransactionPhase;
 import javax.persistence.EntityManager;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.time.DateUtils;
 import javax.inject.Inject;
 import javax.inject.Named;

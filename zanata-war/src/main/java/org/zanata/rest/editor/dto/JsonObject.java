@@ -24,7 +24,7 @@ package org.zanata.rest.editor.dto;
 import java.io.Serializable;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.zanata.util.JsonUtil;
+import org.zanata.rest.dto.DTOUtil;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -33,6 +33,6 @@ public abstract class JsonObject implements Serializable {
 
     @JsonIgnore
     public String getJSON() {
-        return JsonUtil.getJSONString(this);
+        return DTOUtil.toJSON(this);
     }
 }

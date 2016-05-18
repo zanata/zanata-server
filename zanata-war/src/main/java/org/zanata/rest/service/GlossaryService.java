@@ -2,6 +2,7 @@ package org.zanata.rest.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.DefaultValue;
@@ -9,7 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
@@ -288,7 +288,7 @@ public class GlossaryService implements GlossaryResource {
     public Optional<GlossaryTerm> getGlossaryTerm(HGlossaryEntry hGlossaryEntry,
         HLocale locale) {
         if (!hGlossaryEntry.getGlossaryTerms().containsKey(locale)) {
-            return Optional.absent();
+            return Optional.empty();
         }
         HGlossaryTerm hGlossaryTerm =
             hGlossaryEntry.getGlossaryTerms().get(locale);
