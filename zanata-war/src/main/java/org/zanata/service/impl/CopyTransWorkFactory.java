@@ -59,6 +59,7 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
@@ -417,9 +418,9 @@ public class CopyTransWorkFactory {
         DocumentLocaleKey key =
             new DocumentLocaleKey(document.getId(), target.getLocaleId());
 
-        Map<ContentState, Long> contentStates = DocStatsEvent
-            .updateContentStateDeltas(null, target.getState(), previousState,
-                wordCount);
+        Map<ContentState, Long> contentStates = Maps.newHashMap();
+        DocStatsEvent.updateContentStateDeltas(contentStates, target.getState(),
+                previousState, wordCount);
 
         DocStatsEvent docEvent =
                 new DocStatsEvent(key, document.getProjectIteration().getId(),

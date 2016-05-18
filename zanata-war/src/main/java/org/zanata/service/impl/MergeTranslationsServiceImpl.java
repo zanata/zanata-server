@@ -276,10 +276,14 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
                     lastUpdatedTargetId.put(key, updatedTarget.getId());
 
-                    Map<ContentState, Long> contentStateDeltas = DocStatsEvent
-                        .updateContentStateDeltas(docStatsMap.get(key),
-                            updatedTarget.getState(),
-                            entry.getValue(), targetTf.getWordCount());
+                    Map<ContentState, Long> contentStateDeltas =
+                            docStatsMap.get(key) == null ? Maps.newHashMap()
+                                    : docStatsMap.get(key);
+
+                    DocStatsEvent.updateContentStateDeltas(contentStateDeltas,
+                            updatedTarget.getState(), entry.getValue(),
+                            targetTf.getWordCount());
+
                     docStatsMap.put(key, contentStateDeltas);
                 }
             }

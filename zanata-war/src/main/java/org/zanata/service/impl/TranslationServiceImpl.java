@@ -253,9 +253,8 @@ public class TranslationServiceImpl implements TranslationService {
                         hTextFlowTarget.getVersionNum() == 0) {
                         HTextFlow textFlow = hTextFlowTarget.getTextFlow();
 
-                        contentStateDeltas = aggregateChanges(textFlow,
-                                hTextFlowTarget, currentState, targetStates,
-                                contentStateDeltas);
+                        aggregateChanges(textFlow, hTextFlowTarget,
+                                currentState, targetStates, contentStateDeltas);
                     }
                     result.isSuccess = true;
                 } catch (HibernateException e) {
@@ -882,8 +881,8 @@ public class TranslationServiceImpl implements TranslationService {
                     hTarget.setCopiedEntityId(null);
                     textFlowTargetDAO.makePersistent(hTarget);
 
-                    contentStateDeltas = aggregateChanges(textFlow, hTarget,
-                            currentState, targetStates, contentStateDeltas);
+                    aggregateChanges(textFlow, hTarget, currentState,
+                            targetStates, contentStateDeltas);
                 }
             }
             if (handleOp.isPresent()) {
@@ -916,19 +915,17 @@ public class TranslationServiceImpl implements TranslationService {
         return changed;
     }
 
-    private Map<ContentState, Long> aggregateChanges(HTextFlow textFlow,
-            HTextFlowTarget hTarget, ContentState currentState,
-            List<TextFlowTargetState> targetStates,
+    private void aggregateChanges(HTextFlow textFlow, HTextFlowTarget hTarget,
+            ContentState currentState, List<TextFlowTargetState> targetStates,
             Map<ContentState, Long> contentStateDeltas) {
         TextFlowTargetState state =
                 new TextFlowTargetState(textFlow.getId(),
                         hTarget.getId(), hTarget.getState(), currentState);
 
         targetStates.add(state);
-        return DocStatsEvent
-                .updateContentStateDeltas(contentStateDeltas,
-                        state.getNewState(),
-                        state.getPreviousState(), textFlow.getWordCount());
+        DocStatsEvent.updateContentStateDeltas(contentStateDeltas,
+                state.getNewState(), state.getPreviousState(),
+                textFlow.getWordCount());
     }
 
     public static class TranslationResultImpl implements TranslationResult {
