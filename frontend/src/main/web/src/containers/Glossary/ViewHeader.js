@@ -76,10 +76,11 @@ class ViewHeader extends Component {
       sort
       } = this.props
     const currentLocaleCount = this.currentLocaleCount()
-    const transSelected = !!selectedTransLocale
-
+    const isReadOnly = !(permission.canAddNewEntry || permission.canUpdateEntry || permission.canDeleteEntry)
+    const icon = isReadOnly ? 'locked' : undefined
+    const tooltip = isReadOnly ? 'read-only' : undefined
     return (
-      <Header title='Glossary'
+      <Header title='Glossary' icon={icon} tooltip={tooltip}
         extraElements={(
           <View theme={{base: { ai: 'Ai(c)', fld: '' }}}>
             <TextInput

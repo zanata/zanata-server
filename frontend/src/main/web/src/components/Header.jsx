@@ -67,6 +67,8 @@ const Header = ({
   children,
   theme,
   title,
+  icon,
+  tooltip,
   extraElements,
   ...props
 }) => {
@@ -77,8 +79,8 @@ const Header = ({
           <Link link='/' theme={logoLinkTheme}>
             <Icon name='zanata' size='3' />
           </Link>
-          <Heading level='1' theme={headingTheme}>
-            {title || 'Title'}
+          <Heading level='1' theme={headingTheme} title={tooltip}>
+            {icon && <Icon name={icon} />} {title || 'Title'}
           </Heading>
           <View theme={headerActionsTheme}>
             {extraElements}
@@ -101,6 +103,8 @@ const Header = ({
 Header.propTypes = {
   theme: PropTypes.object,
   title: PropTypes.string,
+  icon: PropTypes.string,
+  tooltip: PropTypes.string,
   /**
    * Extra react node (html element) which will be display in the header
    */
