@@ -128,19 +128,15 @@ public class ApplicationConfiguration implements Serializable {
      * This is to enforce username to match with username returned from
      * openId server when new user register.
      *
-     * User are only allow to input username themselves when:
-     * - If no username is available from response
-     * - If username is conflicting with existing username
-     *
      * Usage:
-     * server administrator can enable this in system property zanata.enforceUsername.
+     * server administrator can enable this in system property zanata.enforceMatchingUsernames.
      * In standalone.xml:
      * <pre>
-     *   {@code <property name="zanata.enforceUsername" value="true" />}
+     *   {@code <property name="zanata.enforceMatchingUsernames" value="true" />}
      * </pre>
      */
     @Getter
-    private boolean enforceUsername;
+    private boolean enforceMatchingUsernames;
 
     private Map<AuthenticationType, String> loginModuleNames = Maps
             .newHashMap();
@@ -158,8 +154,8 @@ public class ApplicationConfiguration implements Serializable {
         this.loadJaasConfig();
         authenticatedSessionTimeoutMinutes = sysPropConfigStore
                 .get("authenticatedSessionTimeoutMinutes", 180);
-        enforceUsername = Boolean
-            .parseBoolean(sysPropConfigStore.get("zanata.enforceUsername"));
+        enforceMatchingUsernames = Boolean
+            .parseBoolean(sysPropConfigStore.get("zanata.enforceMatchingUsernames"));
     }
 
     public void resetConfigValue(

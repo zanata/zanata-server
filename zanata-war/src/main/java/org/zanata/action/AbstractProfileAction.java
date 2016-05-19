@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.inject.Inject;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
+
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.model.HAccount;
@@ -19,6 +19,10 @@ import org.zanata.ui.faces.FacesMessages;
  *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public abstract class AbstractProfileAction {
+    protected final static String USERNAME_REGEX = "^[a-z\\d_]{3,20}$";
+    protected final static int USERNAME_MAX_LENGTH = 20;
+
+
     protected String name;
     protected String email;
     protected String username;
@@ -86,8 +90,8 @@ public abstract class AbstractProfileAction {
     }
 
     @NotEmpty
-    @Size(min = 3, max = 20)
-    @Pattern(regexp = "^[a-z\\d_]{3,20}$",
+    @Size(min = 3, max = USERNAME_MAX_LENGTH)
+    @Pattern(regexp = USERNAME_REGEX,
             message = "{validation.username.constraints}")
     public String getUsername() {
         return username;
@@ -108,5 +112,9 @@ public abstract class AbstractProfileAction {
 
     public boolean isValid() {
         return valid;
+    }
+
+    public int getUsernameMaxLength() {
+        return USERNAME_MAX_LENGTH;
     }
 }

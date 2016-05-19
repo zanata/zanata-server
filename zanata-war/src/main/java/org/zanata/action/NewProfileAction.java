@@ -21,7 +21,6 @@
 package org.zanata.action;
 
 import java.io.Serializable;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.exception.AuthorizationException;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.exception.ZanataServiceException;
 import org.zanata.i18n.Messages;
 import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataOpenId;
@@ -83,30 +83,39 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
             username = zanataOpenId.getAuthResult().getUsername();
             name = zanataOpenId.getAuthResult().getFullName();
             email = zanataOpenId.getAuthResult().getEmail();
+
+            //validate username if enforcing matching username is enabled
+            if (applicationConfiguration.isEnforceMatchingUsernames()) {
+                if (StringUtils.isBlank(username)) {
+                    throw new ZanataServiceException(
+                        "System is set to use username matched with openId response but no username is returned.");
+                } else if (isUsernameTaken(username)) {
+                    throw new ZanataServiceException(
+                        "System is set to use username matched with openId response but username is already taken in Zanata. Please fix the username in database-" +
+                            username);
+                } else if (!isUsernameValid(username)) {
+                    throw new ZanataServiceException(
+                        "System is set to use username matched with openId response but username is not in valid format." +
+                            username + ", valid pattern: " + USERNAME_REGEX);
+                }
+            }
         }
     }
 
     /**
      * Make username readonly if
-     * - enforce by system property {@link ApplicationConfiguration#isEnforceUsername()}
-     * - username is not empty
-     * - username is not taken yet
-     * - username is valid {@link #getUsername()}
+     * - enforce by system property {@link ApplicationConfiguration#isEnforceMatchingUsernames()}
      */
     public boolean isReadOnlyUsername() {
-        return applicationConfiguration.isEnforceUsername() &&
-            StringUtils.isNotBlank(username) && isUsernameValid(username) &&
-            !isUsernameTaken(username);
+        return applicationConfiguration.isEnforceMatchingUsernames();
     }
 
     /**
-     * Manual check if username is valid
-     * pattern = "^[a-z\\d_]{3,20}$"
-     *
-     * See {@link #getUsername()}
+     * Manual check if username is valid pattern
+     * {@link #USERNAME_REGEX}
      */
     private boolean isUsernameValid(String username) {
-        Pattern p = Pattern.compile("^[a-z\\d_]{3,20}$");
+        Pattern p = Pattern.compile(USERNAME_REGEX);
         return p.matcher(username).matches();
     }
 

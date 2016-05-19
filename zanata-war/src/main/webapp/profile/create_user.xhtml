@@ -57,7 +57,7 @@
             </h:outputLabel>
             <zanata:decorate id="username" componentId="usernameField">
               <ui:fragment rendered="#{not newProfileAction.readOnlyUsername}">
-                <h:inputText id="username" required="true" maxlength="20"
+                <h:inputText id="username" required="true" maxlength="#{newProfileAction.usernameMaxLength}"
                   value="#{newProfileAction.username}">
                   <a4j:ajax event="blur" render="usernameField" execute="@this"/>
                 </h:inputText>
