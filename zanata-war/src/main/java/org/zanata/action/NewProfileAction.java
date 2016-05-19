@@ -92,14 +92,14 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
             if (applicationConfiguration.isEnforceMatchingUsernames()) {
                 if (StringUtils.isBlank(username)) {
                     throw new ZanataServiceException(
-                        "System is set to use username matched with external authentication response but no username is returned.");
+                        "Server option enforceMatchingUsernames is set, but username from external authentication is missing.");
                 } else if (isUsernameTaken(username)) {
                     throw new ZanataServiceException(
-                        "System is set to use username matched with external authentication response but username is already taken in Zanata. Please fix the username in database-" +
+                        "Server option enforceMatchingUsernames is set, but username from external authentication is already in use. " +
                             username);
                 } else if (!isUsernameValid(username)) {
                     throw new ZanataServiceException(
-                        "System is set to use username matched with external authentication response but username is not in valid format." +
+                        "Server option enforceMatchingUsernames is set, but username from external authentication is not valid for Zanata. " +
                             username + ", valid pattern: " + USERNAME_REGEX);
                 }
             }
