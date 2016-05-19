@@ -9,7 +9,10 @@ import java.util.concurrent.ExecutionException;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.AccessLevel;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.events.ConfigurationChanged;
 import org.zanata.util.Introspectable;
@@ -47,6 +50,9 @@ public class RateLimitManager implements Introspectable {
     @VisibleForTesting
     private int maxActive;
 
+    @Inject
+    private ApplicationConfiguration appConfig;
+
     public static RateLimitManager getInstance() {
         return ServiceLocator.instance().getInstance(RateLimitManager.class);
     }
@@ -57,13 +63,11 @@ public class RateLimitManager implements Introspectable {
     }
 
     private void readRateLimitState() {
-        ApplicationConfiguration appConfig =
-                ServiceLocator.instance().getInstance(
-                        ApplicationConfiguration.class);
         maxConcurrent = appConfig.getMaxConcurrentRequestsPerApiKey();
         maxActive = appConfig.getMaxActiveRequestsPerApiKey();
     }
 
+    @Transactional
     public void configurationChanged(
             @Observes(during = TransactionPhase.AFTER_SUCCESS)
             ConfigurationChanged payload) {
