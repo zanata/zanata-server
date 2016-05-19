@@ -126,10 +126,10 @@ public class ApplicationConfiguration implements Serializable {
      * openId server when new user register.
      *
      * Usage:
-     * server administrator can enable this in system property zanata.enforceMatchingUsernames.
+     * server administrator can enable this in system property zanata.enforce.matchingusernames.
      * In standalone.xml:
      * <pre>
-     *   {@code <property name="zanata.enforceMatchingUsernames" value="true" />}
+     *   {@code <property name="zanata.enforce.matchingusernames" value="true" />}
      * </pre>
      */
     @Getter
@@ -152,7 +152,7 @@ public class ApplicationConfiguration implements Serializable {
         authenticatedSessionTimeoutMinutes = sysPropConfigStore
                 .get("authenticatedSessionTimeoutMinutes", 180);
         enforceMatchingUsernames = Boolean
-            .parseBoolean(sysPropConfigStore.get("zanata.enforceMatchingUsernames"));
+            .parseBoolean(sysPropConfigStore.get("zanata.enforce.matchingusernames"));
     }
 
     public void resetConfigValue(

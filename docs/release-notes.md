@@ -4,18 +4,24 @@
 * [ZNTA-846](https://zanata.atlassian.net/browse/ZNTA-846) - Group "request add project version" needs field limit
 * [ZNTA-872](https://zanata.atlassian.net/browse/ZNTA-872) - Redirect to home from cancel button in create user page
 
-<h5>Infrastructure Changes</h5>
+##### Infrastructure Changes
 * Zanata has eliminated all JNDI-based configuration and replaced it with system properties. Please see the following sections for how certain values are now configured:
   * (/user-guide/system-admin/configuration/installation)
   * (/user-guide/system-admin/configuration/authentication)
   * (/user-guide/system-admin/configuration/document-storage-directory)
-<h5>New feature</h5>
+  
+##### New feature
 * [ZNTA-746](https://zanata.atlassian.net/browse/ZNTA-746) - Add shorcut key for approve and reject translation
 * [ZNTA-1059](https://zanata.atlassian.net/browse/ZNTA-1059) - Language coordinator can contact team members
 * [ZNTA-855](https://zanata.atlassian.net/browse/ZNTA-855) - System property to enforce username for registration
 * [ZNTA-855](https://zanata.atlassian.net/browse/ZNTA-855) - Add system property to enforce username for registration
 
 
+
+-----------------------
+
+<h5>Infrastructure Changes</h5>
+* System admin can set system property `zanata.enforce.matchingusernames` to enforce matching username to be used for new user registration.
 
 -----------------------
 

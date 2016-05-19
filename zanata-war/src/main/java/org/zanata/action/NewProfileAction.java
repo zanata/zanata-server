@@ -41,6 +41,8 @@ import org.zanata.service.RegisterService;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.UrlUtil;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+
 /**
  * This action handles new user profile creation.
  *
@@ -90,17 +92,29 @@ public class NewProfileAction extends AbstractProfileAction implements Serializa
 
             //validate username if enforcing matching username is enabled
             if (applicationConfiguration.isEnforceMatchingUsernames()) {
-                if (StringUtils.isBlank(username)) {
-                    throw new ZanataServiceException(
-                        "Server option enforceMatchingUsernames is set, but username from external authentication is missing.");
-                } else if (isUsernameTaken(username)) {
-                    throw new ZanataServiceException(
-                        "Server option enforceMatchingUsernames is set, but username from external authentication is already in use. " +
-                            username);
-                } else if (!isUsernameValid(username)) {
-                    throw new ZanataServiceException(
-                        "Server option enforceMatchingUsernames is set, but username from external authentication is not valid for Zanata. " +
-                            username + ", valid pattern: " + USERNAME_REGEX);
+                if(StringUtils.isBlank(username) || isUsernameTaken(username) || !isUsernameValid(username)) {
+                    String message;
+                    String exceptionMessage;
+                    if (StringUtils.isBlank(username)) {
+                        message = msgs.get("jsf.enforce.username.isEmpty");
+                        exceptionMessage =
+                                "Server option zanata.enforce.matchingusernames is set, but username from external authentication is missing.";
+                    } else if (isUsernameTaken(username)) {
+                        message = msgs.format("jsf.enforce.username.isTaken",
+                                username);
+                        exceptionMessage =
+                                "Server option zanata.enforce.matchingusernames is set, but username from external authentication is already in use. "
+                                        + username;
+                    } else {
+                        message = msgs.format("jsf.enforce.username.isInvalid",
+                                username, USERNAME_REGEX);
+                        exceptionMessage =
+                                "Server option zanata.enforce.matchingusernames is set, but username from external authentication is not valid for Zanata. "
+                                        + username + ", valid pattern: "
+                                        + USERNAME_REGEX;
+                    }
+                    facesMessages.addGlobal(SEVERITY_ERROR, message);
+                    throw new ZanataServiceException(exceptionMessage);
                 }
             }
         }
