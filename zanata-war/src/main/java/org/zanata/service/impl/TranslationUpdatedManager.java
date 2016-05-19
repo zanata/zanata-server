@@ -77,12 +77,12 @@ public class TranslationUpdatedManager {
             return;
         }
         HDocument document = documentDAO.findById(event.getKey().getDocumentId());
-        String docId = document.getDocId();
-        String versionSlug = document.getProjectIteration().getSlug();
         HProject project = document.getProjectIteration().getProject();
         if (project.getWebHooks().isEmpty()) {
             return;
         }
+        String docId = document.getDocId();
+        String versionSlug = document.getProjectIteration().getSlug();
         String projectSlug = project.getSlug();
         LocaleId localeId = event.getKey().getLocaleId();
 

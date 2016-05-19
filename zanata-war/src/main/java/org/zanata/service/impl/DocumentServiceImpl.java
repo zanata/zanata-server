@@ -267,8 +267,7 @@ public class DocumentServiceImpl implements DocumentService {
 
                 for (Map.Entry<ContentState, Long> entry : event
                         .getWordDeltasByState().entrySet()) {
-                    //casting Long to int for statistics calculation
-                    int count = entry.getValue().intValue();
+                    int count = Math.toIntExact(entry.getValue());
                     oldStats.increment(entry.getKey(), count);
                 }
 

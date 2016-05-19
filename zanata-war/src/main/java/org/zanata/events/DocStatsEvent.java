@@ -33,16 +33,16 @@ public class DocStatsEvent {
     private final Long lastModifiedTargetId;
 
     public static void updateContentStateDeltas(
-            @Nonnull Map<ContentState, Long> contentStates,
+            @Nonnull Map<ContentState, Long> wordDeltasByState,
             ContentState newState, ContentState previousState, long wordCount) {
 
         long previousStateCount =
-                contentStates.getOrDefault(previousState, 0L);
+                wordDeltasByState.getOrDefault(previousState, 0L);
         previousStateCount -= wordCount;
-        contentStates.put(previousState, previousStateCount);
+        wordDeltasByState.put(previousState, previousStateCount);
 
-        long newStateCount = contentStates.getOrDefault(newState, 0L);
+        long newStateCount = wordDeltasByState.getOrDefault(newState, 0L);
         newStateCount += wordCount;
-        contentStates.put(newState, newStateCount);
+        wordDeltasByState.put(newState, newStateCount);
     }
 }
