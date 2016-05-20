@@ -67,7 +67,7 @@ public class WebHooksPublisher {
                         signWebhookHeader(data, secretKey.get(), callbackURL);
                 postBuilder.header(WEBHOOK_HEADER, sha);
             }
-            log.info("firing webhook: {}:{}", callbackURL, data);
+            log.debug("firing async webhook: {}:{}", callbackURL, data);
             postBuilder.async().post(Entity.entity(data, mediaType));
         } catch (Exception e) {
             log.error("Error on webhooks post {}, {}", callbackURL, e);

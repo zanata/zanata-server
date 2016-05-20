@@ -96,7 +96,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
+import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetStateChange;
 
 @Named("translationServiceImpl")
 @RequestScoped
@@ -195,7 +195,7 @@ public class TranslationServiceImpl implements TranslationService {
         validateReviewPermissionIfApplicable(translationRequests,
                 projectIteration, hLocale);
 
-        List<TextFlowTargetState> targetStates = Lists.newArrayList();
+        List<TextFlowTargetStateChange> targetStates = Lists.newArrayList();
         Map<ContentState, Long> contentStateDeltas = Maps.newHashMap();
 
         for (TransUnitUpdateRequest request : translationRequests) {
@@ -791,7 +791,7 @@ public class TranslationServiceImpl implements TranslationService {
                 }));
         final int numPlurals = resourceUtils.getNumPlurals(document, locale);
 
-        List<TextFlowTargetState> targetStates = Lists.newArrayList();
+        List<TextFlowTargetStateChange> targetStates = Lists.newArrayList();
         Map<ContentState, Long> contentStateDeltas = Maps.newHashMap();
 
         for (TextFlowTarget incomingTarget : batch) {
@@ -838,9 +838,9 @@ public class TranslationServiceImpl implements TranslationService {
                 int nPlurals = textFlow.isPlural() ? numPlurals : 1;
                 // we have eagerly loaded all targets upfront
                 HTextFlowTarget hTarget = textFlow.getTargets().get(locale.getId());
-                ContentState currentState = ContentState.New;
+                ContentState oldState = ContentState.New;
                 if (hTarget != null) {
-                    currentState = hTarget.getState();
+                    oldState = hTarget.getState();
                     if (mergeType == MergeType.IMPORT) {
                         removedTextFlowTargetIds.remove(hTarget.getId());
                     }
@@ -881,8 +881,8 @@ public class TranslationServiceImpl implements TranslationService {
                     hTarget.setCopiedEntityId(null);
                     textFlowTargetDAO.makePersistent(hTarget);
 
-                    aggregateChanges(textFlow, hTarget, currentState,
-                            targetStates, contentStateDeltas);
+                    aggregateChanges(textFlow, hTarget, oldState, targetStates,
+                        contentStateDeltas);
                 }
             }
             if (handleOp.isPresent()) {
@@ -916,11 +916,11 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     private void aggregateChanges(HTextFlow textFlow, HTextFlowTarget hTarget,
-            ContentState currentState, List<TextFlowTargetState> targetStates,
+            ContentState oldState, List<TextFlowTargetStateChange> targetStates,
             Map<ContentState, Long> contentStateDeltas) {
-        TextFlowTargetState state =
-                new TextFlowTargetState(textFlow.getId(),
-                        hTarget.getId(), hTarget.getState(), currentState);
+        TextFlowTargetStateChange state =
+                new TextFlowTargetStateChange(textFlow.getId(),
+                        hTarget.getId(), hTarget.getState(), oldState);
 
         targetStates.add(state);
         DocStatsEvent.updateContentStateDeltas(contentStateDeltas,

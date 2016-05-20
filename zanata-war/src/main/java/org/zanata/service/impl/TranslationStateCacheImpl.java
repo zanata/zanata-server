@@ -34,7 +34,6 @@ import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.zanata.async.Async;
 import org.zanata.cache.CacheWrapper;
 import org.zanata.cache.InfinispanCacheWrapper;
 import org.zanata.common.LocaleId;
@@ -196,7 +195,7 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
     public void textFlowStateUpdated(
         @Observes(during = TransactionPhase.AFTER_SUCCESS)
             TextFlowTargetStateEvent event) {
-        for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+        for (TextFlowTargetStateEvent.TextFlowTargetStateChange state : event
             .getStates()) {
             // invalidate target validation
             targetValidationCache.remove(state.getTextFlowTargetId());

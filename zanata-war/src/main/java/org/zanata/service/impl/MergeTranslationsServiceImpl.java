@@ -64,7 +64,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Maps;
 
-import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetState;
+import static org.zanata.events.TextFlowTargetStateEvent.TextFlowTargetStateChange;
 import static org.zanata.transaction.TransactionUtil.runInTransaction;
 
 /**
@@ -106,6 +106,13 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     @Inject @Authenticated
     private HAccount authenticatedAccount;
 
+    /**
+     * Batch size for process merging of translations.
+     *
+     * This will determine how many DocStatsEvent will be trigger as part of webhook event.
+     * The larger the number, the less DocStatsEvent will be triggered as it aggregates
+     * related translated states.
+     */
     private final static int TRANSLATION_BATCH_SIZE = 10;
 
     @Override
@@ -215,7 +222,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                         sourceVersionId, targetVersionId, batchStart,
                         batchLength);
 
-        Multimap<DocumentLocaleKey, TextFlowTargetState> eventMap =
+        Multimap<DocumentLocaleKey, TextFlowTargetStateChange> eventMap =
             HashMultimap.create();
 
         Map<DocumentLocaleKey, Map<ContentState, Long>> docStatsMap =
@@ -270,7 +277,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
                             targetTf.getDocument().getId(),
                             updatedTarget.getLocale().getLocaleId());
 
-                    eventMap.put(key, new TextFlowTargetState(targetTf.getId(),
+                    eventMap.put(key, new TextFlowTargetStateEvent.TextFlowTargetStateChange(targetTf.getId(),
                             updatedTarget.getId(), updatedTarget.getState(),
                             entry.getValue()));
 
@@ -289,7 +296,7 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
             }
         }
         Long actorId = authenticatedAccount.getPerson().getId();
-        for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetState>> entry : eventMap
+        for (Map.Entry<DocumentLocaleKey, Collection<TextFlowTargetStateChange>> entry : eventMap
             .asMap().entrySet()) {
             TextFlowTargetStateEvent tftUpdatedEvent =
                 new TextFlowTargetStateEvent(entry.getKey(), targetVersionId,
