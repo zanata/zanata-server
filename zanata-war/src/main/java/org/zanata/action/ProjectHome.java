@@ -1082,10 +1082,12 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Transactional
     public void addWebHook(String url, String secret, String typeAbbr) {
         identity.checkPermission(getInstance(), "update");
-        if (isValidUrl(url)) {
+
+        WebhookType type = WebhookType.getValueOf(typeAbbr);
+        if (isValidUrl(url, type)) {
             secret = StringUtils.isBlank(secret) ? null : secret;
-            WebHook webHook = new WebHook(this.getInstance(), url,
-                    WebhookType.getValueOf(typeAbbr), secret);
+            WebHook webHook =
+                    new WebHook(this.getInstance(), url, type, secret);
             getInstance().getWebHooks().add(webHook);
             update();
             facesMessages.addGlobal(
@@ -1105,16 +1107,20 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-    private boolean isValidUrl(String url) {
+    /**
+     * Check if url is valid and there is no duplication of url+type
+     */
+    private boolean isValidUrl(String url, WebhookType type) {
         if (!UrlUtil.isValidUrl(url)) {
             facesMessages.addGlobal(SEVERITY_ERROR,
                     msgs.format("jsf.project.InvalidUrl", url));
             return false;
         }
         for(WebHook webHook: getInstance().getWebHooks()) {
-            if(StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
+            if (StringUtils.equalsIgnoreCase(webHook.getUrl(), url)
+                    && type.equals(webHook.getWebhookType())) {
                 facesMessages.addGlobal(SEVERITY_ERROR,
-                        msgs.format("jsf.project.DuplicateUrl", url));
+                        msgs.get("jsf.project.DuplicateUrl"));
                 return false;
             }
         }

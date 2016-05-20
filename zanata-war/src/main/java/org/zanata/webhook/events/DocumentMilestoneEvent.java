@@ -29,6 +29,7 @@ import lombok.Setter;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.zanata.common.LocaleId;
 import org.zanata.events.WebhookEventType;
+import org.zanata.model.type.WebhookType;
 
 /**
  *
@@ -44,7 +45,8 @@ import org.zanata.events.WebhookEventType;
 @EqualsAndHashCode
 public class DocumentMilestoneEvent extends WebhookEventType {
 
-    private static final String EVENT_TYPE = "DocumentMilestoneEvent";
+    private static final String EVENT_TYPE =
+            WebhookType.DocumentMilestoneEvent.name();
 
     /**
      * Target project slug.

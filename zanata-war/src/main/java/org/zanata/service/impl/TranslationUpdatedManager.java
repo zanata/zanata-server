@@ -1,6 +1,7 @@
 package org.zanata.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -12,6 +13,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
+import org.zanata.model.type.WebhookType;
 import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
@@ -81,6 +83,17 @@ public class TranslationUpdatedManager {
         if (project.getWebHooks().isEmpty()) {
             return;
         }
+
+        List<WebHook> docStatsWebHooks =
+                project.getWebHooks().stream().filter(
+                        webHook -> webHook.getWebhookType()
+                                .equals(WebhookType.DocumentStatsEvent))
+                        .collect(Collectors.toList());
+
+        if (docStatsWebHooks.isEmpty()) {
+            return;
+        }
+
         String docId = document.getDocId();
         String versionSlug = document.getProjectIteration().getSlug();
         String projectSlug = project.getSlug();
@@ -93,7 +106,7 @@ public class TranslationUpdatedManager {
             new DocumentStatsEvent(user, projectSlug,
                 versionSlug, docId, localeId, event.getWordDeltasByState());
 
-        publishWebhookEvent(project.getWebHooks(), webhookEvent);
+        publishWebhookEvent(docStatsWebHooks, webhookEvent);
     }
 
     @VisibleForTesting
