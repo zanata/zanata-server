@@ -43,6 +43,7 @@ import javax.persistence.EntityNotFoundException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +70,7 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.WebHook;
+import org.zanata.model.type.WebhookType;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
@@ -1055,12 +1057,35 @@ public class ProjectHome extends SlugHome<HProject> implements
         return sortedList;
     }
 
+    @Getter
+    public class WebhookTypeItem {
+        private String display;
+        private String abbr;
+        private String description;
+
+        public WebhookTypeItem(WebhookType type, String desc) {
+            this.display = type.name();
+            this.abbr = type.getAbbr();
+            this.description = desc;
+        }
+    }
+
+    public List<WebhookTypeItem> getWebhookTypes() {
+        List<WebhookTypeItem> results = Lists.newArrayList();
+        results.add(new WebhookTypeItem(WebhookType.DocumentMilestoneEvent,
+                msgs.get("jsf.webhookType.DocumentMilestoneEvent.desc")));
+        results.add(new WebhookTypeItem(WebhookType.DocumentStatsEvent,
+                msgs.get("jsf.webhookType.DocumentStatsEvent.desc")));
+        return results;
+    }
+
     @Transactional
-    public void addWebHook(String url, String secret) {
+    public void addWebHook(String url, String secret, String typeAbbr) {
         identity.checkPermission(getInstance(), "update");
         if (isValidUrl(url)) {
             secret = StringUtils.isBlank(secret) ? null : secret;
-            WebHook webHook = new WebHook(this.getInstance(), url, secret);
+            WebHook webHook = new WebHook(this.getInstance(), url,
+                    WebhookType.getValueOf(typeAbbr), secret);
             getInstance().getWebHooks().add(webHook);
             update();
             facesMessages.addGlobal(

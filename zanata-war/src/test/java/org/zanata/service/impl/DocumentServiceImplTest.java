@@ -44,6 +44,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
+import org.zanata.model.type.WebhookType;
 import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HDocument;
@@ -114,8 +115,10 @@ public class DocumentServiceImplTest {
         HDocument document = Mockito.mock(HDocument.class);
 
         webHooks = Lists.newArrayList();
-        webHooks.add(new WebHook(project, "http://test.example.com", key));
-        webHooks.add(new WebHook(project, "http://test1.example.com", key));
+        webHooks.add(new WebHook(project, "http://test.example.com",
+                WebhookType.DocumentMilestoneEvent, key));
+        webHooks.add(new WebHook(project, "http://test1.example.com",
+                WebhookType.DocumentMilestoneEvent, key));
 
         when(projectIterationDAO.findById(versionId)).thenReturn(version);
         when(version.getProject()).thenReturn(project);

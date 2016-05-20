@@ -39,6 +39,7 @@ import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
+import org.zanata.model.type.WebhookType;
 import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
@@ -126,7 +127,9 @@ public class TranslationUpdatedManagerTest {
         HAccount account = Mockito.mock(HAccount.class);
         HTextFlowTarget target = Mockito.mock(HTextFlowTarget.class);
 
-        webHooks = Lists.newArrayList(new WebHook(project, "http://test.example.com", key));
+        webHooks = Lists
+                .newArrayList(new WebHook(project, "http://test.example.com",
+                        WebhookType.DocumentMilestoneEvent, key));
 
         when(personDAO.findById(personId)).thenReturn(person);
         when(person.getAccount()).thenReturn(account);
