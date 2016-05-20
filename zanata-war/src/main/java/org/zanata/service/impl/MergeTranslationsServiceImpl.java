@@ -107,13 +107,13 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
     private HAccount authenticatedAccount;
 
     /**
-     * Batch size for process merging of translations.
+     * Batch size for find matching HTextFlow to process merging of translations.
      *
      * This will determine how many DocStatsEvent will be trigger as part of webhook event.
      * The larger the number, the less DocStatsEvent will be triggered as it aggregates
      * related translated states.
      */
-    private final static int TRANSLATION_BATCH_SIZE = 10;
+    private final static int TRANSLATION_BATCH_SIZE = 20;
 
     @Override
     @Async

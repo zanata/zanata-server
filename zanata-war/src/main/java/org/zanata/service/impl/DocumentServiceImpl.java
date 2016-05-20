@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -44,6 +45,7 @@ import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentUploadedEvent;
+import org.zanata.model.type.WebhookType;
 import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.lock.Lock;
@@ -247,48 +249,58 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     private void processWebHookDocumentMilestoneEvent(
-            DocStatsEvent event,
-            Collection<ContentState> contentStates, String message,
-            int percentMilestone) {
+            DocStatsEvent event, Collection<ContentState> contentStates,
+            String message, int percentMilestone) {
 
         HProjectIteration version =
             projectIterationDAO.findById(event.getProjectVersionId());
         HProject project = version.getProject();
+        if (project.getWebHooks().isEmpty()) {
+            return;
+        }
+        List<WebHook> docMilestoneWebHooks =
+                project.getWebHooks().stream().filter(
+                        webHook -> webHook.getWebhookType()
+                                .equals(WebhookType.DocumentMilestoneEvent))
+                        .collect(Collectors.toList());
 
-        if (!project.getWebHooks().isEmpty()) {
-            Long docId = event.getKey().getDocumentId();
-            LocaleId localeId = event.getKey().getLocaleId();
-            WordStatistic stats =
-                    translationStateCacheImpl.getDocumentStatistics(docId,
-                            localeId);
+        if (docMilestoneWebHooks.isEmpty()) {
+            return;
+        }
 
-            WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
-            if(oldStats != null) {
+        Long docId = event.getKey().getDocumentId();
+        LocaleId localeId = event.getKey().getLocaleId();
+        WordStatistic stats =
+                translationStateCacheImpl.getDocumentStatistics(docId,
+                        localeId);
 
-                for (Map.Entry<ContentState, Long> entry : event
-                        .getWordDeltasByState().entrySet()) {
-                    int count = Math.toIntExact(entry.getValue());
-                    oldStats.increment(entry.getKey(), count);
-                }
+        WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
+        if(oldStats != null) {
 
-                boolean shouldPublish = hasContentStateReachedMilestone(oldStats, stats,
-                    contentStates, percentMilestone);
+            for (Map.Entry<ContentState, Long> entry : event
+                    .getWordDeltasByState().entrySet()) {
+                int count = Math.toIntExact(entry.getValue());
+                oldStats.increment(entry.getKey(), count);
+            }
 
-                if (shouldPublish) {
-                    HDocument document = documentDAO.getById(docId);
+            boolean shouldPublish =
+                    hasContentStateReachedMilestone(oldStats, stats,
+                            contentStates, percentMilestone);
 
-                    String editorUrl =
-                            urlUtil.fullEditorDocumentUrl(project.getSlug(),
-                                version.getSlug(), localeId,
-                                LocaleId.EN_US, document.getDocId());
+            if (shouldPublish) {
+                HDocument document = documentDAO.getById(docId);
 
-                    DocumentMilestoneEvent milestoneEvent =
-                            new DocumentMilestoneEvent(project.getSlug(),
-                                    version.getSlug(), document.getDocId(),
-                                    localeId, message, editorUrl);
-                    publishDocumentMilestoneEvent(project.getWebHooks(),
-                            milestoneEvent);
-                }
+                String editorUrl =
+                        urlUtil.fullEditorDocumentUrl(project.getSlug(),
+                            version.getSlug(), localeId,
+                            LocaleId.EN_US, document.getDocId());
+
+                DocumentMilestoneEvent milestoneEvent =
+                        new DocumentMilestoneEvent(project.getSlug(),
+                                version.getSlug(), document.getDocId(),
+                                localeId, message, editorUrl);
+                publishDocumentMilestoneEvent(docMilestoneWebHooks,
+                        milestoneEvent);
             }
         }
     }

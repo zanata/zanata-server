@@ -30,6 +30,7 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.events.WebhookEventType;
+import org.zanata.model.type.WebhookType;
 import org.zanata.rest.dto.User;
 
 /**
@@ -45,7 +46,8 @@ import org.zanata.rest.dto.User;
 @EqualsAndHashCode
 public class DocumentStatsEvent extends WebhookEventType {
 
-    private static final String EVENT_TYPE = "DocumentStatsEvent";
+    private static final String EVENT_TYPE =
+            WebhookType.DocumentStatsEvent.name();
 
     /**
      * User information
