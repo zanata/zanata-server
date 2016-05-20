@@ -1,5 +1,8 @@
 ## 4.0
 
+##### Bug Fixes
+* [ZNTA-872](https://zanata.atlassian.net/browse/ZNTA-872) - Redirect to home from cancel button in create user page
+
 <h5>Infrastructure Changes</h5>
 * Zanata has eliminated all JNDI-based configuration and replaced it with system properties. Please see the following sections for how certain values are now configured:
   * (/user-guide/system-admin/configuration/installation)
@@ -10,11 +13,8 @@
 
 -----------------------
 
-## 3.9
-
-<h5>Infrastructure Changes</h5>
 ## 3.9.0
-##### Infrastructure Changes
+<h5>Infrastructure Changes</h5>
 * Recommended platform: JBoss EAP 6 (6.4.6.GA or later).
 * Alternative platform: WildFly version 10.x.
 * [ZNTA-530](https://zanata.atlassian.net/browse/ZNTA-530) - Replace Seam 2 with CDI
