@@ -24,6 +24,8 @@ package org.zanata.action;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang.StringUtils;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleMemberDAO;
@@ -43,6 +45,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -91,6 +95,9 @@ public class ContactLanguageTeamMembersAction implements Serializable {
     private HLocale locale;
 
     public List<HLocaleMember> getMembers() {
+        if(StringUtils.isBlank(localeId)) {
+            return Lists.newArrayList();
+        }
         if (authenticatedAccount == null) {
             return localeMemberDAO.findAllActiveMembers(new LocaleId(localeId));
         }
@@ -134,6 +141,9 @@ public class ContactLanguageTeamMembersAction implements Serializable {
                         "Failed to send email: fromName '{}', fromLoginName '{}', replyEmail '{}', subject '{}', message '{}'. {}",
                         fromName, fromLoginName, replyEmail, subject, message, e);
                 facesMessages.addGlobal(sb.toString());
+            } finally {
+                message = null;
+                subject = null;
             }
         }
     }

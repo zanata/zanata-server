@@ -52,7 +52,7 @@
     <h:form styleClass="l--push-bottom-0">
       <a4j:jsFunction name="refreshMembersForm" action="#{languageAction.reset}"
         limitRender="true"
-        render="member-info, members-size, members-form, language-more-actions, membersSearch-page-info, membersSearchBottom-page-info"
+        render="member-info, members-size, members-form, language-more-actions, membersSearch-page-info, membersSearchBottom-page-info, contactMembersModalTitle"
         oncomplete="zanata.form.appendCheckboxes('#members-form')"/>
 
       <a4j:jsFunction name="refreshRequestsForm" action="#{languageJoinAction.clearMessage}"
@@ -321,7 +321,7 @@
         <ui:include src="/WEB-INF/layout/language/request_join_modal.xhtml"/>
       </ui:fragment>
       <h:panelGroup id="contactMembersModal" layout="block">
-        <ui:fragment rendered="#{!contactLanguageTeamMembersAction.getMembers().isEmpty() and identity.hasPermission(languageAction.locale, 'manage-language-team')}">
+        <ui:fragment rendered="#{identity.hasPermission(languageAction.locale, 'manage-language-team')}">
           <ui:include src="/WEB-INF/layout/language/contact_members_modal.xhtml"/>
         </ui:fragment>
       </h:panelGroup>
