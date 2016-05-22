@@ -66,7 +66,6 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
 
                 .addRule(Join.path("/error/").to("/error.xhtml"))
                 .addRule(Join.pathNonBinding("/error/{path}").to("/error/{path}.xhtml"))
-//                .addRule(Join.path("/error/missing_entity").to("/error/missing_entity.xhtml"))
                 .addRule(Join.path("/glossary/").to("/glossary/view.xhtml"))
                 .addRule(Join.path("/iteration/view/{projectSlug}/{iterationSlug}").to("/iteration/view.xhtml"))
 
