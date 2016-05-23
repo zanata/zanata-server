@@ -658,6 +658,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         update();
     }
 
+    @Transactional
     public void setInviteOnly(boolean inviteOnly) {
         identity.checkPermission(getInstance(), "update");
         getInstance().setAllowGlobalTranslation(!inviteOnly);
