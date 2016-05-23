@@ -206,7 +206,8 @@
     <ul class="list--slat list--highlight l--push-top-half">
       <ui:repeat value="#{projectHome.instance.webHooks}" var="webhook">
         <li class="list-item">
-          #{webhook.url}<span class="txt--meta l--push-left-quarter">#{webhook.webhookType.name()}</span>
+          <span name="url">#{webhook.url}</span>
+          <span class="txt--meta l--push-left-quarter" name="type">#{webhook.webhookType.name()}</span>
           <button id="remove-webhook-#{webhook.id}"
             class="loader button--link l--float-right txt--danger"
             onclick="removeWebhook(this.id, '#{webhook.id}')">
