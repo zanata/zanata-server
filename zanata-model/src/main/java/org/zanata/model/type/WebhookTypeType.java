@@ -40,7 +40,7 @@ public class WebhookTypeType extends AbstractSingleColumnStandardBasicType<Webho
 
     @Override
     public String toString(WebhookType value) {
-        return value.getAbbr();
+        return value.name();
     }
 
     @Override
@@ -59,10 +59,10 @@ public class WebhookTypeType extends AbstractSingleColumnStandardBasicType<Webho
             throw new MappingException(
                 "multiple or zero characters found parsing string");
         }
-        return WebhookType.getValueOf(xml);
+        return WebhookType.valueOf(xml);
     }
 
     public WebhookType fromStringValue(String xml) {
-        return WebhookType.getValueOf(xml);
+        return WebhookType.valueOf(xml);
     }
 }

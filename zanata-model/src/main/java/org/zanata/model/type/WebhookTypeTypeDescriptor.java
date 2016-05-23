@@ -42,13 +42,13 @@ public class WebhookTypeTypeDescriptor extends
         if (string == null) {
             return null;
         } else {
-            return WebhookType.getValueOf(string);
+            return WebhookType.valueOf(string);
         }
     }
 
     @Override
     public String toString(WebhookType value) {
-        return value.getAbbr();
+        return value.name();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class WebhookTypeTypeDescriptor extends
             return null;
         }
         if (String.class.isAssignableFrom(type)) {
-            return (X) String.valueOf(value.getAbbr());
+            return (X) String.valueOf(value.name());
         }
         throw unknownUnwrap(type);
     }
@@ -69,7 +69,7 @@ public class WebhookTypeTypeDescriptor extends
             return null;
         }
         if (String.class.isInstance(value)) {
-            return WebhookType.getValueOf((String) value);
+            return WebhookType.valueOf((String) value);
         }
         throw unknownWrap(value.getClass());
     }

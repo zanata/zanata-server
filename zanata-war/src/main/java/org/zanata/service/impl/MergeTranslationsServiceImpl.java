@@ -108,12 +108,13 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
 
     /**
      * Batch size for find matching HTextFlow to process merging of translations.
+     * Each TextFlow may lead to changes in multiple TextFlowTargets (up to one per locale)
      *
      * This will determine how many DocStatsEvent will be trigger as part of webhook event.
      * The larger the number, the less DocStatsEvent will be triggered as it aggregates
      * related translated states.
      */
-    private final static int TRANSLATION_BATCH_SIZE = 20;
+    private final static int TEXTFLOWS_PER_BATCH = 20;
 
     @Override
     @Async
@@ -176,12 +177,12 @@ public class MergeTranslationsServiceImpl implements MergeTranslationsService {
             int processedCount =
                     mergeTranslationBatch(sourceVersion, targetVersion,
                             supportedLocales, useNewerTranslation, startCount,
-                            TRANSLATION_BATCH_SIZE);
+                            TEXTFLOWS_PER_BATCH);
             if (taskHandleOpt.isPresent()) {
                 taskHandleOpt.get().increaseProgress(processedCount);
             }
 
-            startCount += TRANSLATION_BATCH_SIZE;
+            startCount += TEXTFLOWS_PER_BATCH;
             textFlowDAO.clear();
         }
         versionStateCacheImpl.clearVersionStatsCache(targetVersion.getId());
