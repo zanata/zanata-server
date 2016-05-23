@@ -31,12 +31,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.zanata.ApplicationConfiguration;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
-import org.zanata.dao.PersonDAO;
-import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
@@ -49,9 +46,6 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.WebHook;
-import org.zanata.rest.dto.User;
-import org.zanata.rest.editor.service.UserService;
-import org.zanata.service.TranslationStateCache;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
@@ -70,25 +64,10 @@ import static org.mockito.Mockito.when;
 public class TranslationUpdatedManagerTest {
 
     @Mock
-    private TranslationStateCache translationStateCache;
-
-    @Mock
-    private TextFlowDAO textFlowDAO;
-
-    @Mock
     private DocumentDAO documentDAO;
 
     @Mock
-    private PersonDAO personDAO;
-
-    @Mock
     private TextFlowTargetDAO textFlowTargetDAO;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private ApplicationConfiguration applicationConfiguration;
 
     TranslationUpdatedManager manager;
 
@@ -108,23 +87,13 @@ public class TranslationUpdatedManagerTest {
     private int wordCount = 10;
     private ContentState oldState = ContentState.New;
     private ContentState newState = ContentState.Translated;
-    private boolean isDisplayUserEmail = true;
-
     private String username = "username1";
-    private String name = "name1";
-    private String email = "test@test.com";
-    private String imageUrl = "";
-    private List<String> languageTeams = Lists.newArrayList("en-US");
-    private User user =
-            new User(username, name, email, imageUrl, languageTeams);
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         manager = new TranslationUpdatedManager();
-        manager.init(translationStateCache, documentDAO, personDAO,
-                textFlowTargetDAO,
-                userService, applicationConfiguration);
+        manager.init(documentDAO, textFlowTargetDAO);
 
         HProjectIteration version = Mockito.mock(HProjectIteration.class);
         HProject project = Mockito.mock(HProject.class);
@@ -139,10 +108,8 @@ public class TranslationUpdatedManagerTest {
                         new WebHook(project, "http://test.example.com",
                                 WebhookType.DocumentStatsEvent, key));
 
-        when(personDAO.findById(personId)).thenReturn(person);
         when(person.getAccount()).thenReturn(account);
-        when(applicationConfiguration.isDisplayUserEmail())
-                .thenReturn(isDisplayUserEmail);
+        when(account.getUsername()).thenReturn(username);
         when(documentDAO.findById(docId)).thenReturn(document);
         when(document.getDocId()).thenReturn(strDocId);
         when(document.getProjectIteration()).thenReturn(version);
@@ -150,9 +117,6 @@ public class TranslationUpdatedManagerTest {
         when(version.getProject()).thenReturn(project);
         when(project.getSlug()).thenReturn(projectSlug);
         when(project.getWebHooks()).thenReturn(webHooks);
-        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
-        when(userService.getUserInfo(account, isDisplayUserEmail))
-                .thenReturn(user);
         when(textFlowTargetDAO.findById(tftId)).thenReturn(target);
         when(target.getLastModifiedBy()).thenReturn(person);
     }
@@ -166,10 +130,6 @@ public class TranslationUpdatedManagerTest {
         oldStats.decrement(newState, wordCount);
         oldStats.increment(oldState, wordCount);
 
-        when(translationStateCache.getDocumentStatistics(docId, localeId))
-                .thenReturn(stats);
-        when(textFlowDAO.getWordCount(tfId)).thenReturn(wordCount);
-
         DocumentLocaleKey key =
                 new DocumentLocaleKey(docId, localeId);
 
@@ -182,7 +142,7 @@ public class TranslationUpdatedManagerTest {
                 new DocStatsEvent(key, versionId, contentStates, tftId);
 
         DocumentStatsEvent webhookEvent =
-                new DocumentStatsEvent(user, projectSlug,
+                new DocumentStatsEvent(username, projectSlug,
                         versionSlug, strDocId, event.getKey().getLocaleId(),
                         contentStates);
 

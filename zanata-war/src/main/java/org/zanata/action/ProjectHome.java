@@ -1059,13 +1059,11 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @Getter
     public class WebhookTypeItem {
-        private String display;
-        private String abbr;
+        private String name;
         private String description;
 
         public WebhookTypeItem(WebhookType type, String desc) {
-            this.display = type.name();
-            this.abbr = type.getAbbr();
+            this.name = type.name();
             this.description = desc;
         }
     }
@@ -1080,10 +1078,10 @@ public class ProjectHome extends SlugHome<HProject> implements
     }
 
     @Transactional
-    public void addWebHook(String url, String secret, String typeAbbr) {
+    public void addWebHook(String url, String secret, String strType) {
         identity.checkPermission(getInstance(), "update");
 
-        WebhookType type = WebhookType.getValueOf(typeAbbr);
+        WebhookType type = WebhookType.valueOf(strType);
         if (isValidUrl(url, type)) {
             secret = StringUtils.isBlank(secret) ? null : secret;
             WebHook webHook =

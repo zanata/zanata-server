@@ -6,11 +6,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.zanata.ApplicationConfiguration;
 import org.zanata.async.Async;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
-import org.zanata.dao.PersonDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.model.type.WebhookType;
@@ -20,9 +18,6 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.WebHook;
-import org.zanata.rest.dto.User;
-import org.zanata.rest.editor.service.UserService;
-import org.zanata.service.TranslationStateCache;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
@@ -46,22 +41,10 @@ import javax.enterprise.event.TransactionPhase;
 public class TranslationUpdatedManager {
 
     @Inject
-    private TranslationStateCache translationStateCacheImpl;
-
-    @Inject
     private TextFlowTargetDAO textFlowTargetDAO;
 
     @Inject
-    private PersonDAO personDAO;
-
-    @Inject
     private DocumentDAO documentDAO;
-
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private ApplicationConfiguration applicationConfiguration;
 
     @Async
     public void docStatsUpdated(
@@ -99,12 +82,10 @@ public class TranslationUpdatedManager {
         String projectSlug = project.getSlug();
         LocaleId localeId = event.getKey().getLocaleId();
 
-        User user = userService.getUserInfo(person.getAccount(),
-            applicationConfiguration.isDisplayUserEmail());
-
         DocumentStatsEvent webhookEvent =
-            new DocumentStatsEvent(user, projectSlug,
-                versionSlug, docId, localeId, event.getWordDeltasByState());
+                new DocumentStatsEvent(person.getAccount().getUsername(),
+                        projectSlug, versionSlug, docId, localeId,
+                        event.getWordDeltasByState());
 
         publishWebhookEvent(docStatsWebHooks, webhookEvent);
     }
@@ -119,16 +100,9 @@ public class TranslationUpdatedManager {
     }
 
     @VisibleForTesting
-    public void init(TranslationStateCache translationStateCacheImpl,
-            DocumentDAO documentDAO,
-            PersonDAO personDAO, TextFlowTargetDAO textFlowTargetDAO,
-            UserService userService,
-            ApplicationConfiguration applicationConfiguration) {
-        this.translationStateCacheImpl = translationStateCacheImpl;
+    public void init(DocumentDAO documentDAO,
+            TextFlowTargetDAO textFlowTargetDAO) {
         this.documentDAO = documentDAO;
-        this.personDAO = personDAO;
         this.textFlowTargetDAO = textFlowTargetDAO;
-        this.userService = userService;
-        this.applicationConfiguration = applicationConfiguration;
     }
 }

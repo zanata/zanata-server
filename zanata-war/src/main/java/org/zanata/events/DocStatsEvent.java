@@ -1,6 +1,5 @@
 package org.zanata.events;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.zanata.common.ContentState;
@@ -10,9 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>

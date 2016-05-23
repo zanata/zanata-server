@@ -232,7 +232,7 @@
           <label for="webhookType">#{msgs['jsf.project.WebhookType.label']}</label>
           <select id="webhookType">
             <ui:repeat value="#{projectHome.webhookTypes}" var="webhookType">
-              <option value="#{webhookType.abbr}">#{webhookType.display} - #{webhookType.description}</option>
+              <option value="#{webhookType.name}">#{webhookType.name} - #{webhookType.description}</option>
             </ui:repeat>
           </select>
         </div>

@@ -31,7 +31,6 @@ import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.events.WebhookEventType;
 import org.zanata.model.type.WebhookType;
-import org.zanata.rest.dto.User;
 
 /**
  *
@@ -42,7 +41,7 @@ import org.zanata.rest.dto.User;
 @Getter
 @Setter
 @AllArgsConstructor
-@JsonPropertyOrder({"user", "project", "version", "docId", "locale", "wordDeltasByState", "type"})
+@JsonPropertyOrder({"username", "project", "version", "docId", "locale", "wordDeltasByState", "type"})
 @EqualsAndHashCode
 public class DocumentStatsEvent extends WebhookEventType {
 
@@ -50,10 +49,9 @@ public class DocumentStatsEvent extends WebhookEventType {
             WebhookType.DocumentStatsEvent.name();
 
     /**
-     * User information
-     * {@link org.zanata.rest.dto.User}
+     * Username of the actor
      */
-    private final User user;
+    private final String username;
 
     /**
      * Target project slug.
