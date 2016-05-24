@@ -58,7 +58,7 @@ import javax.enterprise.event.TransactionPhase;
 public class VersionStateCacheImpl implements VersionStateCache {
     private static final String BASE = VersionStateCacheImpl.class.getName();
 
-    private static final String VERSION_STATISTIC_CACHE_NAME = BASE
+    public static final String VERSION_STATISTIC_CACHE_NAME = BASE
             + ".versionStatisticCache";
 
     private CacheWrapper<VersionLocaleKey, WordStatistic> versionStatisticCache;

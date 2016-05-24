@@ -1,0 +1,75 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:c="http://java.sun.com/jsp/jstl/core"
+  template="/WEB-INF/template/template.xhtml">
+
+  <script type="application/javascript">
+    function askConfirmation(cacheName){
+      if (cacheName){
+        confirm("Do you confirm the cleaning of the cache" +cacheName);
+      }
+      else {
+        confirm("Do you confirm the cleaning of the all cache");
+      }
+    }
+  </script>
+
+  <ui:define name="page_title">
+    #{msgs['jsf.Projects']} - #{projectHome.instance.name}
+  </ui:define>
+
+
+  <ui:define name="page_title">#{msgs['jsf.ManageRoles']}</ui:define>
+
+  <ui:define name="center_content">
+
+    <div class="centered">
+      <div class="g__item w--1-m w--1-2-l w--1-2 l--push-bottom-half">
+        <h:form>
+        <h:dataTable value="#{cacheAction.cacheList}" var="cacheName" border="1">
+
+          <f:facet name="header">
+            <h:outputText value="Statistics"/>
+          </f:facet>
+
+          <h:column>
+            <f:facet name="header">Cache Name</f:facet>
+            <h:outputText value="#{cacheName}"/>
+          </h:column>
+
+          <ui:param  name="stats" value="#{cacheAction.getStats(cacheName)}" />
+
+            <h:column>
+              <f:facet name="header">Cache getTimeSinceStart</f:facet>
+              <h:outputText value="#{stats.getTimeSinceStart()}"/>
+            </h:column>
+            <h:column>
+              <f:facet name="header">Cache getCurrentNumberOfEntries</f:facet>
+              <h:outputText value="#{stats.getCurrentNumberOfEntries()}"/>
+            </h:column>
+
+          <h:column>
+            <f:facet name="header">Clear The Cache</f:facet>
+            <h:commandButton value="Clear" action="#{cacheAction.clearCache(cacheName)}"
+            onclick="return confirm('Do you confirm the cleaning of the cache?')"/>
+          </h:column>
+
+          <f:facet name="footer">
+            <h:commandButton value="Clear All Caches" action="#{cacheAction.clearAllCaches}"
+            onclick="return askConfirmation()"/>
+          </f:facet>
+
+        </h:dataTable>
+        </h:form>
+
+      </div>
+    </div>
+  </ui:define>
+</ui:composition>
+
+
