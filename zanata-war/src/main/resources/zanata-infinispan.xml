@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<infinispan
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:infinispan:config:7.2 http://infinispan.org/schemas/infinispan-config-7.2.xsd"
+  xmlns="urn:infinispan:config:7.2">
+  <!--
+   Zanata multi-purpose caches.
+   -->
+  <cache-container name="zanata" default-cache="default" statistics="true" >
+    <local-cache name="default">
+      <transaction mode="NONE"/>
+      <eviction max-entries="10000" strategy="LRU"/>
+      <expiration max-idle="100000"/>
+    </local-cache>
+  </cache-container>
+
+</infinispan>
