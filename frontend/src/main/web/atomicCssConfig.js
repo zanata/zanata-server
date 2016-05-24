@@ -70,6 +70,7 @@ module.exports = {
       'Fz(msn1)!',
       'Fz(ms3)',
       'Fz(16px)',
+      'Fz(16px)!',
       'H(100%)',
       'H(msn2)',
       'H(msn1)',
