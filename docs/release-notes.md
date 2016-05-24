@@ -1,3 +1,9 @@
+## 4.0
+
+##### Infrastructure Changes
+
+* Zanata's cache configuration (Infinispan) is now controlled by `zanata-infinispan.xml`, not `standalone.xml`. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
+
 ## 3.9
 
 <h5>Infrastructure Changes</h5>

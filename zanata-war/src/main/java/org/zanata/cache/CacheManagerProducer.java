@@ -20,17 +20,16 @@
  */
 package org.zanata.cache;
 
-import lombok.extern.slf4j.Slf4j;
-import org.infinispan.manager.CacheContainer;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import java.io.IOException;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
 import javax.enterprise.inject.Produces;
-import org.zanata.util.ServiceLocator;
+
+import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.zanata.util.Zanata;
 
-import javax.naming.NamingException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Produces a cache container for injection.
@@ -38,21 +37,16 @@ import javax.naming.NamingException;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
-@Named("cacheContainer")
 @ApplicationScoped
 @Slf4j
-public class CacheContainerProducer {
-
-    private static final String CACHE_CONTAINER_NAME =
-            "java:jboss/infinispan/container/zanata";
-
-    @Resource(lookup = CACHE_CONTAINER_NAME)
-    private CacheContainer container;
+public class CacheManagerProducer {
+    private static final String CONFIG_PATH = System.getProperty("zanata.infinispan.cfg", "zanata-infinispan.xml");
 
     @Produces
     @ApplicationScoped
     @Zanata
-    public CacheContainer getCacheContainer() {
-        return container;
+    public EmbeddedCacheManager getCacheManager() throws IOException {
+        EmbeddedCacheManager manager = new DefaultCacheManager(CONFIG_PATH);
+        return manager;
     }
 }
