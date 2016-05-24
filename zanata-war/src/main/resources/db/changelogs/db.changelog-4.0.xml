@@ -35,9 +35,9 @@
   </changeSet>
 
   <changeSet id="2" author="aeng@redhat.com">
-    <comment>Migrate all WebHook to type DOC_MILESTONE</comment>
+    <comment>Migrate all WebHook to type DocumentMilestoneEvent</comment>
     <sql>
-      UPDATE WebHook set webhookType='DOC_MILESTONE'
+      UPDATE WebHook set webhookType='DocumentMilestoneEvent'
     </sql>
   </changeSet>
 

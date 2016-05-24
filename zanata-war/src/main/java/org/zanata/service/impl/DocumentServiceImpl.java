@@ -31,6 +31,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -44,6 +45,7 @@ import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.events.DocStatsEvent;
+import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.DocumentUploadedEvent;
 import org.zanata.model.type.WebhookType;
 import org.zanata.webhook.events.DocumentMilestoneEvent;
@@ -237,27 +239,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     // TODO [CDI] simulate async event (e.g. this event was fired asyncly in seam)
     public void documentStatisticUpdated(@Observes DocStatsEvent event) {
-        processWebHookDocumentMilestoneEvent(event,
-                ContentState.TRANSLATED_STATES,
-                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
-                        ContentState.Translated), DOC_EVENT_MILESTONE);
-
-        processWebHookDocumentMilestoneEvent(event,
-                Lists.newArrayList(ContentState.Approved),
-                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
-                        ContentState.Approved), DOC_EVENT_MILESTONE);
-    }
-
-    private void processWebHookDocumentMilestoneEvent(
-            DocStatsEvent event, Collection<ContentState> contentStates,
-            String message, int percentMilestone) {
-
         HProjectIteration version =
-            projectIterationDAO.findById(event.getProjectVersionId());
+                projectIterationDAO.findById(event.getProjectVersionId());
+
         HProject project = version.getProject();
         if (project.getWebHooks().isEmpty()) {
             return;
         }
+
         List<WebHook> docMilestoneWebHooks =
                 project.getWebHooks().stream().filter(
                         webHook -> webHook.getWebhookType()
@@ -270,38 +259,65 @@ public class DocumentServiceImpl implements DocumentService {
 
         Long docId = event.getKey().getDocumentId();
         LocaleId localeId = event.getKey().getLocaleId();
+
+        translationStateCacheImpl.clearDocumentStatistics(docId, localeId);
+
         WordStatistic stats =
                 translationStateCacheImpl.getDocumentStatistics(docId,
                         localeId);
 
         WordStatistic oldStats = StatisticsUtil.copyWordStatistic(stats);
-        if(oldStats != null) {
+        if (oldStats == null) {
+            return;
+        }
+        for (Map.Entry<ContentState, Long> entry : event
+                .getWordDeltasByState().entrySet()) {
+            int count = Math.toIntExact(entry.getValue());
+            oldStats.decrement(entry.getKey(), count);
+        }
 
-            for (Map.Entry<ContentState, Long> entry : event
-                    .getWordDeltasByState().entrySet()) {
-                int count = Math.toIntExact(entry.getValue());
-                oldStats.increment(entry.getKey(), count);
-            }
+        processWebHookDocumentMilestoneEvent(event.getKey(), stats, oldStats,
+                version.getSlug(), project.getSlug(),
+                ContentState.TRANSLATED_STATES, docMilestoneWebHooks,
+                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
+                        ContentState.Translated),
+                DOC_EVENT_MILESTONE);
 
-            boolean shouldPublish =
-                    hasContentStateReachedMilestone(oldStats, stats,
-                            contentStates, percentMilestone);
+        processWebHookDocumentMilestoneEvent(event.getKey(), stats, oldStats,
+                version.getSlug(), project.getSlug(),
+                Lists.newArrayList(ContentState.Approved), docMilestoneWebHooks,
+                msgs.format("jsf.webhook.response.state", DOC_EVENT_MILESTONE,
+                        ContentState.Approved),
+                DOC_EVENT_MILESTONE);
+    }
 
-            if (shouldPublish) {
-                HDocument document = documentDAO.getById(docId);
+    private void processWebHookDocumentMilestoneEvent(DocumentLocaleKey key,
+            WordStatistic stats, WordStatistic oldStats,
+            String versionSlug, String projectSlug,
+            Collection<ContentState> contentStates,
+            List<WebHook> docMilestoneWebHooks, String message,
+            int percentMilestone) {
 
-                String editorUrl =
-                        urlUtil.fullEditorDocumentUrl(project.getSlug(),
-                            version.getSlug(), localeId,
+        LocaleId localeId = key.getLocaleId();
+
+        boolean shouldPublish =
+                hasContentStateReachedMilestone(oldStats, stats,
+                        contentStates, percentMilestone);
+
+        if (shouldPublish) {
+            HDocument document = documentDAO.getById(key.getDocumentId());
+
+            String editorUrl =
+                    urlUtil.fullEditorDocumentUrl(projectSlug,
+                            versionSlug, localeId,
                             LocaleId.EN_US, document.getDocId());
 
-                DocumentMilestoneEvent milestoneEvent =
-                        new DocumentMilestoneEvent(project.getSlug(),
-                                version.getSlug(), document.getDocId(),
-                                localeId, message, editorUrl);
-                publishDocumentMilestoneEvent(docMilestoneWebHooks,
-                        milestoneEvent);
-            }
+            DocumentMilestoneEvent milestoneEvent =
+                    new DocumentMilestoneEvent(projectSlug,
+                            versionSlug, document.getDocId(),
+                            localeId, message, editorUrl);
+            publishDocumentMilestoneEvent(docMilestoneWebHooks,
+                    milestoneEvent);
         }
     }
 

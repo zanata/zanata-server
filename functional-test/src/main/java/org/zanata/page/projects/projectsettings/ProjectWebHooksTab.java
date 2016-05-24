@@ -99,7 +99,7 @@ public class ProjectWebHooksTab extends ProjectBasePage {
         }
         return new ProjectWebHooksTab(getDriver());
     }
-    
+
     @Getter
     @AllArgsConstructor
     public class WebhookItem {
