@@ -31,17 +31,15 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.inject.Inject;
-import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zanata.events.LanguageTeamPermissionChangedEvent;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import org.zanata.util.ScopeHelper;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static org.zanata.notification.NotificationManager.MessagePropertiesKey;
@@ -54,6 +52,7 @@ import static org.zanata.notification.NotificationManager.MessagePropertiesKey;
  *
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
+ * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 @MessageDriven(activationConfig = {
         @ActivationConfigProperty(
@@ -65,23 +64,30 @@ import static org.zanata.notification.NotificationManager.MessagePropertiesKey;
                 propertyValue = "jms/queue/MailsQueue"
         )
 })
-@Slf4j
-@NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailQueueMessageReceiver implements MessageListener {
+    private static final Logger log = LoggerFactory.getLogger(EmailQueueMessageReceiver.class);
 
     private static Map<String, JmsMessagePayloadHandler> handlers = Collections
             .emptyMap();
 
-    @Inject
     private LanguageTeamPermissionChangeJmsMessagePayloadHandler languageTeamHandler;
+
+    @SuppressWarnings("unused")
+    public EmailQueueMessageReceiver() {
+    }
+
+    public @Inject EmailQueueMessageReceiver(
+            LanguageTeamPermissionChangeJmsMessagePayloadHandler
+                    languageTeamHandler) {
+        this.languageTeamHandler = languageTeamHandler;
+    }
 
     @Override
     public void onMessage(Message message) {
         if (message instanceof ObjectMessage) {
             try {
-                String objectType =
-                        nullToEmpty(
+                ObjectMessage om = (ObjectMessage) message;
+                String objectType = nullToEmpty(
                         message.getStringProperty(
                                 MessagePropertiesKey.objectType.name()));
 
@@ -90,17 +96,15 @@ public class EmailQueueMessageReceiver implements MessageListener {
                 if (jmsMessagePayloadHandler != null) {
                     log.debug("found handler for message object type [{}]",
                             objectType);
-                    jmsMessagePayloadHandler.handle(((ObjectMessage) message)
-                            .getObject());
+                    ScopeHelper.withRequestScope(() ->
+                            jmsMessagePayloadHandler.handle(om.getObject()));
                 } else {
                     log.warn("can not find handler for message:{}", message);
                 }
 
-            } catch (JMSException e) {
+            } catch (Exception e) {
                 log.warn("error handling jms message: {}", message);
                 Throwables.propagate(e);
-            } catch (Throwable e) {
-                log.warn("error handling jms message: {}", message, e);
             }
         }
     }
@@ -110,12 +114,9 @@ public class EmailQueueMessageReceiver implements MessageListener {
             synchronized (this) {
                 if (handlers.isEmpty()) {
                     handlers =
-                            ImmutableMap
-                                    .<String, JmsMessagePayloadHandler> builder()
-                                    .put(LanguageTeamPermissionChangedEvent.class
-                                            .getCanonicalName(),
-                                            languageTeamHandler)
-                                    .build();
+                            ImmutableMap.of(
+                                    LanguageTeamPermissionChangedEvent.class.getCanonicalName(),
+                                    languageTeamHandler);
                 }
             }
             log.info("email queue payload handlers: {}", handlers);
@@ -123,7 +124,7 @@ public class EmailQueueMessageReceiver implements MessageListener {
         return handlers;
     }
 
-    public static interface JmsMessagePayloadHandler {
+    public interface JmsMessagePayloadHandler {
         void handle(Serializable data);
     }
 }

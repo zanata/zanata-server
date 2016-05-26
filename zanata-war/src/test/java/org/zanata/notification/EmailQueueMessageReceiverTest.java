@@ -7,17 +7,23 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
+import org.jglue.cdiunit.InRequestScope;
+import org.jglue.cdiunit.deltaspike.SupportDeltaspikeCore;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.zanata.events.LanguageTeamPermissionChangedEvent;
 
 import com.google.common.collect.Lists;
+import org.zanata.test.CdiUnitRunner;
 
 import static org.mockito.Mockito.*;
 
+@RunWith(CdiUnitRunner.class)
+@InRequestScope
+@SupportDeltaspikeCore
 public class EmailQueueMessageReceiverTest {
     private EmailQueueMessageReceiver receiver;
     @Mock
