@@ -64,7 +64,7 @@ public class UserService implements UserResource {
         if(authenticatedAccount == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        User user = transferToUser(authenticatedAccount, true);
+        User user = getUserInfo(authenticatedAccount, true);
         return Response.ok(user).build();
     }
 
@@ -90,7 +90,7 @@ public class UserService implements UserResource {
         if (account == null) {
             return null;
         }
-        return transferToUser(account,
+        return getUserInfo(account,
             applicationConfiguration.isDisplayUserEmail());
     }
 
@@ -100,7 +100,7 @@ public class UserService implements UserResource {
      * @param account - HAccount
      * @param includeEmail - Display user email
      */
-    public User transferToUser(HAccount account, boolean includeEmail) {
+    public User getUserInfo(HAccount account, boolean includeEmail) {
         if(account == null) {
             return new User();
         }

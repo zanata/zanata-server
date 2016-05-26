@@ -76,7 +76,7 @@ public class AuthenticatedAccountHome extends EntityHome<HAccount>
      * TODO: make caller to use UserService directly
      */
     public String getUser() {
-        User user = userService.transferToUser(authenticatedAccount, true);
+        User user = userService.getUserInfo(authenticatedAccount, true);
         return DTOUtil.toJSON(user);
     }
 

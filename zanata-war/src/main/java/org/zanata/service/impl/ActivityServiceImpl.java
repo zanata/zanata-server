@@ -201,7 +201,7 @@ public class ActivityServiceImpl implements ActivityService {
                     int totalReviewedWords = 0;
                     int totalTranslatedWords = 0;
 
-                    for (TextFlowTargetStateEvent.TextFlowTargetState state : event
+                    for (TextFlowTargetStateEvent.TextFlowTargetStateChange state : event
                         .getStates()) {
                         HTextFlowTarget target =
                             textFlowTargetDAO.findById(
