@@ -2,13 +2,13 @@
 
 This module contains: User profile page, Glossary page, and Zanata side menu bar.
 
-## To run in dev mode (need http://localhost:8080/zanata to run separately): 
+## To run in dev mode (need http://localhost:8080/zanata to run separately):
 
 Navigate to frontend/src/main/web and run
 
 ```npm install```
 
-to install all dependencies. To start 
+to install all dependencies. To start
 
 ```npm start```
 

@@ -15,7 +15,6 @@ import {
   glossaryToggleNewEntryModal,
   glossaryCreateNewEntry
 } from '../../actions/glossary'
-import StringUtils from '../../utils/StringUtils'
 
 class NewEntryModal extends Component {
   constructor (props) {
@@ -72,7 +71,6 @@ class NewEntryModal extends Component {
 
   render () {
     const {
-      entry,
       show,
       isSaving,
       handleNewEntryDisplay,
@@ -135,7 +133,7 @@ class NewEntryModal extends Component {
             <ButtonRound
               type='primary'
               disabled={!isAllowSave || isSaving}
-              onClick={() => { this.resetFields(); handleNewEntryCreate(entry) }}>
+              onClick={() => { handleNewEntryCreate(this.state.entry); this.resetFields() }}>
               <LoaderText loading={isSaving} loadingText='Saving'>
                 Save
               </LoaderText>

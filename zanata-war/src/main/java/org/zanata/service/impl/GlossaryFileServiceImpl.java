@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +51,6 @@ import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
@@ -62,7 +62,6 @@ import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -104,18 +103,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         }
     }
 
-    private String validateGlossaryEntry(GlossaryEntry entry) {
-        if (StringUtils.length(entry.getDescription()) > MAX_LENGTH_CHAR) {
-            return "Glossary description too long, maximum " + MAX_LENGTH_CHAR
-                    + " character";
-        }
-        if (StringUtils.length(entry.getPos()) > MAX_LENGTH_CHAR) {
-            return "Glossary part of speech too long, maximum "
-                    + MAX_LENGTH_CHAR + " character";
-        }
-        return null;
-    }
-
     @Override
     public GlossaryProcessed saveOrUpdateGlossary(
             List<GlossaryEntry> glossaryEntries) {
@@ -126,9 +113,9 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         for (int i = 0; i < glossaryEntries.size(); i++) {
             GlossaryEntry entry = glossaryEntries.get(i);
 
-            String message = validateGlossaryEntry(entry);
-            if(message != null) {
-                warnings.add(message);
+            Optional<String> message = validateGlossaryEntry(entry);
+            if(message.isPresent()) {
+                warnings.add(message.get());
                 counter++;
                 if (counter == BATCH_SIZE || i == glossaryEntries.size() - 1) {
                     executeCommit();
@@ -139,9 +126,9 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
             message = checkForDuplicateEntry(entry);
             boolean onlyTransferTransTerm = false;
-            if(message != null) {
+            if(message.isPresent()) {
                 //only update transTerm
-                warnings.add(message);
+                warnings.add(message.get());
                 onlyTransferTransTerm = true;
             }
             HGlossaryEntry hGlossaryEntry = transferGlossaryEntryAndSave(
@@ -154,6 +141,35 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
         }
         return new GlossaryProcessed(entries, warnings);
+    }
+
+    private Optional<String> validateGlossaryEntry(GlossaryEntry entry) {
+        if (StringUtils.length(entry.getDescription()) > MAX_LENGTH_CHAR) {
+            return Optional.of("Glossary description too long, maximum " +
+                MAX_LENGTH_CHAR + " character");
+        }
+        if (StringUtils.length(entry.getPos()) > MAX_LENGTH_CHAR) {
+            return Optional.of("Glossary part of speech too long, maximum "
+                + MAX_LENGTH_CHAR + " character");
+        }
+        Optional<GlossaryTerm> srcTerm = getSourceTerm(entry);
+        if (!srcTerm.isPresent()) {
+            return Optional.of("No source term (" + entry.getSrcLang() +
+                ") found in Glossary entry.");
+        }
+        if (StringUtils.isBlank(srcTerm.get().getContent())) {
+            return Optional.of("Source term content cannot be empty.");
+        }
+        return Optional.empty();
+    }
+
+    private Optional<GlossaryTerm> getSourceTerm(GlossaryEntry entry) {
+        for (GlossaryTerm term : entry.getGlossaryTerms()) {
+            if (term.getLocale().equals(entry.getSrcLang())) {
+                return Optional.of(term);
+            }
+        }
+        return Optional.empty();
     }
 
     @Getter
@@ -222,7 +238,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
      *
      * @param from
      */
-    private String checkForDuplicateEntry(GlossaryEntry from) {
+    private Optional<String> checkForDuplicateEntry(GlossaryEntry from) {
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
         LocaleId srcLocale = from.getSrcLang();
 
@@ -236,12 +252,12 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         }
         // Different entry with same source content, pos and description
         if (!sameHashEntry.getId().equals(from.getId())) {
-            return "Duplicate glossary entry in source locale '" + srcLocale
+            return Optional.of("Duplicate glossary entry in source locale '" + srcLocale
                 + "' ,source content '" + srcTerm.getContent() + "' ,pos '"
                 + from.getPos() + "' ,description '"
-                + from.getDescription() + "'";
+                + from.getDescription() + "'");
         }
-        return null;
+        return Optional.empty();
     }
 
     private String getContentHash(GlossaryEntry entry) {

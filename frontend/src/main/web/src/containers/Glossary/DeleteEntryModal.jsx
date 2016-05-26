@@ -14,7 +14,7 @@ class DeleteEntryModal extends Component {
   handleDeleteEntry (entryId) {
     this.props.handleDeleteEntry(entryId)
     setTimeout(() => {
-      this.props.setShowingDeleteEntryModal(false)
+      this.props.handleDeleteEntryDisplay(false)
     }, 200)
   }
 
