@@ -114,11 +114,10 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             GlossaryEntry entry = glossaryEntries.get(i);
 
             Optional<String> message = validateGlossaryEntry(entry);
-            if(message.isPresent()) {
+            if (message.isPresent()) {
                 warnings.add(message.get());
                 counter++;
-                if (counter == BATCH_SIZE || i == glossaryEntries.size() - 1) {
-                    executeCommit();
+                if (isExecuteCommit(counter, i, glossaryEntries.size())) {
                     counter = 0;
                 }
                 continue;
@@ -135,14 +134,33 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                     entry, onlyTransferTransTerm);
             entries.add(hGlossaryEntry);
             counter++;
-            if (counter == BATCH_SIZE || i == glossaryEntries.size() - 1) {
-                executeCommit();
+            if (isExecuteCommit(counter, i, glossaryEntries.size())) {
                 counter = 0;
             }
         }
         return new GlossaryProcessed(entries, warnings);
     }
 
+    /**
+     * Run {@link #executeCommit} when
+     * - counter equals to {@link BATCH_SIZE} or
+     * - currentIndex equals to totalSize (last record)
+     */
+    private boolean isExecuteCommit(int counter, int currentIndex,
+        int totalSize) {
+        if (counter == BATCH_SIZE || currentIndex == totalSize - 1) {
+            executeCommit();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Return error message when
+     * @param entry#description length not over {@link MAX_LENGTH_CHAR}
+     * @param entry#pos length not over {@link MAX_LENGTH_CHAR}
+     * Source term content not empty
+     */
     private Optional<String> validateGlossaryEntry(GlossaryEntry entry) {
         if (StringUtils.length(entry.getDescription()) > MAX_LENGTH_CHAR) {
             return Optional.of("Glossary description too long, maximum " +
@@ -203,7 +221,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
     }
 
     /**
-     * This force glossaryDAO to flush and commit every 50(BATCH_SIZE) records.
+     * This force glossaryDAO to flush and commit on every
+     * {@link BATCH_SIZE} records.
      */
     @Transactional
     private void executeCommit() {
@@ -236,7 +255,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
      * Check if request save/update entry have duplication with same source
      * content, pos, and description
      *
-     * @param from
      */
     private Optional<String> checkForDuplicateEntry(GlossaryEntry from) {
         GlossaryTerm srcTerm = getSrcGlossaryTerm(from);
@@ -248,7 +266,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
                 glossaryDAO.getEntryByContentHash(contentHash);
 
         if(sameHashEntry == null) {
-            return null;
+            return Optional.empty();
         }
         // Different entry with same source content, pos and description
         if (!sameHashEntry.getId().equals(from.getId())) {
@@ -290,7 +308,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             HLocale termHLocale = localeServiceImpl.getByLocaleId(glossaryTerm
                 .getLocale());
 
-            if(termHLocale != null) {
+            if (termHLocale != null) {
                 // check if there's existing term
                 HGlossaryTerm hGlossaryTerm =
                     getOrCreateGlossaryTerm(to, termHLocale, glossaryTerm);
