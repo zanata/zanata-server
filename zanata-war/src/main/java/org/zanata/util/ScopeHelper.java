@@ -30,6 +30,7 @@ import javax.enterprise.context.RequestScoped;
 import java.lang.annotation.Annotation;
 
 /**
+ * This class holds utility/helper functions relating to CDI scopes.
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  */
 public class ScopeHelper {
@@ -39,29 +40,34 @@ public class ScopeHelper {
      * Ensure that Request scope is active.
      * See http://stackoverflow.com/a/8720148/14379 and also
      * https://issues.jboss.org/browse/JBEAP-2526?focusedCommentId=13144080
-     * @param r code to execute with Request scope active
-     * @throws Exception
+     * @param runnable code to execute with Request scope active
+     * @throws Exception if runnable throws an exception
      */
-    public static void withRequestScope(RunnableEx r) throws Exception {
+    public static void withRequestScope(RunnableEx runnable) throws Exception {
         boolean active =
                 isScopeActive(RequestScoped.class);
         if (active) {
             log.debug("RequestScope already active");
-            r.run();
+            runnable.run();
         } else {
             log.debug("RequestScope not already active");
             ContextControl ctxCtrl =
                     ServiceLocator.instance().getInstance(ContextControl.class);
             ctxCtrl.startContext(RequestScoped.class);
             try {
-                r.run();
+                runnable.run();
             } finally {
                 ctxCtrl.stopContext(RequestScoped.class);
             }
         }
     }
 
-    private static boolean isScopeActive(Class<? extends Annotation> scopeClass) {
+    /**
+     * Check whether a specified CDI scope has been activated.
+     * @param scopeClass scope to be checked, eg RequestScoped.class
+     * @return true only if scope is active
+     */
+    public static boolean isScopeActive(Class<? extends Annotation> scopeClass) {
         try {
             return BeanManagerProvider.getInstance().getBeanManager().getContext(
                     scopeClass).isActive();
