@@ -41,7 +41,6 @@ import org.zanata.util.IServiceLocator;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static org.zanata.notification.NotificationManager.MessagePropertiesKey;
-import static org.zanata.util.ScopeHelper.withRequestScope;
 
 /**
  * JMS EmailsQueue consumer. It will base on
@@ -98,7 +97,7 @@ public class EmailQueueMessageReceiver implements MessageListener {
                 if (handler != null) {
                     log.debug("found handler for message object type [{}]",
                             objectType);
-                    withRequestScope(() -> handler.handle(om.getObject()));
+                    handler.handle(om.getObject());
                 } else {
                     log.warn("cannot find handler for message: {}", message);
                 }
