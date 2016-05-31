@@ -19,7 +19,7 @@ import org.zanata.ui.faces.FacesMessages;
  *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 public abstract class AbstractProfileAction {
-    public final static String USERNAME_REGEX = "^[a-z\\d_]{3,20}$";
+    public final static String USERNAME_REGEX = "^([a-z\\d][a-z\\d_]*){3,20}$";
     public final static int USERNAME_MAX_LENGTH = 20;
 
 
