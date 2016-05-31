@@ -47,21 +47,8 @@ const headerActionsTheme = {
     m: 'Mstart(a)'
   }
 }
-const searchLinkTheme = {
-  base: {
-    bd: '',
-    c: 'C(pri)',
-    d: 'D(n)--sm',
-    h: 'H(ms1)',
-    m: 'Mstart(rh)',
-    w: 'W(ms1)',
-    hover: {
-      bd: ''
-    }
-  }
-}
 /**
- * Page top header with Zanata logo and search
+ * Page top header with Zanata logo
  */
 const Header = ({
   children,
@@ -84,17 +71,13 @@ const Header = ({
           </Heading>
           <View theme={headerActionsTheme}>
             {extraElements}
-            <Link link='search' theme={searchLinkTheme}>
-              <span className='Hidden'>Search</span>
-              <Icon name='search' size='1' />
-            </Link>
           </View>
         </View>
-        {children ? (
+        {children && (
           <View theme={innerViewTheme}>
             {children}
           </View>
-        ) : undefined}
+        )}
       </div>
     </View>
   )

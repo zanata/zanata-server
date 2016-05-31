@@ -25,6 +25,7 @@ class DeleteEntryModal extends Component {
       show,
       isDeleting,
       handleDeleteEntryDisplay,
+      handleDeleteEntry
       } = this.props
     const info = entry.termsCount > 0 ? (
       <p>
@@ -52,7 +53,7 @@ class DeleteEntryModal extends Component {
               </ButtonLink>
               <ButtonRound type='danger' size='n1'
                 disabled={isDeleting}
-                onClick={() => this.handleDeleteEntry(entry.id)}>
+                onClick={() => handleDeleteEntry(entry.id)}>
                 <LoaderText loading={isDeleting} size='n1'
                   loadingText='Deleting'>
                   Delete all
@@ -79,7 +80,7 @@ DeleteEntryModal.propTypes = {
   entry: React.PropTypes.object,
   show: React.PropTypes.bool,
   isDeleting: React.PropTypes.bool,
-  handleDeleteEntryDisplay: PropTypes.func,
+  handleDeleteEntryDisplay: PropTypes.func.isRequired,
   handleDeleteEntry: React.PropTypes.func.isRequired
 }
 

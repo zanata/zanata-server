@@ -45,9 +45,14 @@ export const GLOSSARY_TOGGLE_IMPORT_DISPLAY = 'GLOSSARY_TOGGLE_IMPORT_DISPLAY'
 export const GLOSSARY_UPDATE_SORT = 'GLOSSARY_UPDATE_SORT'
 export const GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY =
   'GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY'
+export const GLOSSARY_TOGGLE_DELETE_ALL_ENTRY_DISPLAY =
+  'GLOSSARY_TOGGLE_DELETE_ALL_ENTRY_DISPLAY'
 export const GLOSSARY_CREATE_REQUEST = 'GLOSSARY_CREATE_REQUEST'
 export const GLOSSARY_CREATE_SUCCESS = 'GLOSSARY_CREATE_SUCCESS'
 export const GLOSSARY_CREATE_FAILURE = 'GLOSSARY_CREATE_FAILURE'
+export const GLOSSARY_DELETE_ALL_REQUEST = 'GLOSSARY_DELETE_ALL_REQUEST'
+export const GLOSSARY_DELETE_ALL_SUCCESS = 'GLOSSARY_DELETE_ALL_SUCCESS'
+export const GLOSSARY_DELETE_ALL_FAILURE = 'GLOSSARY_DELETE_ALL_FAILURE'
 
 export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
@@ -64,6 +69,8 @@ export const glossaryUpdateImportFileLocale =
 export const glossaryUpdateSort = createAction(GLOSSARY_UPDATE_SORT)
 export const glossaryToggleNewEntryModal =
   createAction(GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY)
+export const glossaryToggleDeleteAllEntryModal =
+  createAction(GLOSSARY_TOGGLE_DELETE_ALL_ENTRY_DISPLAY)
 
 const getPageNumber =
   (index) => Math.floor(index / GLOSSARY_PAGE_SIZE) + 1
@@ -152,7 +159,6 @@ const importGlossaryFile = (dispatch, data, srcLocaleId) => {
     formData.append('transLocale', data.transLocale.value)
   }
 
-
   const apiTypes = [
     GLOSSARY_UPLOAD_REQUEST,
     {
@@ -167,7 +173,8 @@ const importGlossaryFile = (dispatch, data, srcLocaleId) => {
     GLOSSARY_UPLOAD_FAILURE
   ]
   return {
-    [CALL_API]: buildAPIRequest(endpoint, 'POST', getJsonHeaders(), apiTypes, formData)
+    [CALL_API]: buildAPIRequest(endpoint, 'POST',
+      getJsonHeaders(), apiTypes, formData)
   }
 }
 
@@ -257,6 +264,28 @@ const deleteGlossaryTerm = (dispatch, id) => {
   }
 }
 
+const deleteAllGlossaryEntry = (dispatch) => {
+  const endpoint = window.config.baseUrl + window.config.apiRoot + '/glossary'
+  const apiTypes = [
+    {
+      type: GLOSSARY_DELETE_ALL_REQUEST,
+      payload: (action, state) => {
+        return ''
+      }
+    },
+    {
+      type: GLOSSARY_DELETE_ALL_SUCCESS,
+      payload: (action, state, res) => {
+        return dispatch(getGlossaryStats(dispatch, true))
+      }
+    },
+    GLOSSARY_DELETE_ALL_FAILURE
+  ]
+  return {
+    [CALL_API]: buildAPIRequest(endpoint, 'DELETE', getJsonHeaders(), apiTypes)
+  }
+}
+
 const shouldFetchTerms = (state, newIndex) => {
   const {
     pagesLoaded,
@@ -322,6 +351,12 @@ export const glossaryFilterTextChanged = (newFilter) => {
 export const glossaryDeleteTerm = (id) => {
   return (dispatch, getState) => {
     dispatch(deleteGlossaryTerm(dispatch, id))
+  }
+}
+
+export const glossaryDeleteAll = () => {
+  return (dispatch, getState) => {
+    dispatch(deleteAllGlossaryEntry(dispatch))
   }
 }
 

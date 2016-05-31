@@ -30,9 +30,13 @@ import {
   GLOSSARY_TOGGLE_IMPORT_DISPLAY,
   GLOSSARY_UPDATE_SORT,
   GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY,
+  GLOSSARY_TOGGLE_DELETE_ALL_ENTRY_DISPLAY,
   GLOSSARY_CREATE_REQUEST,
   GLOSSARY_CREATE_SUCCESS,
-  GLOSSARY_CREATE_FAILURE
+  GLOSSARY_CREATE_FAILURE,
+  GLOSSARY_DELETE_ALL_REQUEST,
+  GLOSSARY_DELETE_ALL_SUCCESS,
+  GLOSSARY_DELETE_ALL_FAILURE
 } from '../actions/glossary'
 import {
   CLEAR_MESSAGE,
@@ -163,6 +167,15 @@ const glossary = handleActions({
       ...state,
       newEntry: {
         ...state.newEntry,
+        show: action.payload
+      }
+    }
+  },
+  [GLOSSARY_TOGGLE_DELETE_ALL_ENTRY_DISPLAY]: (state, action) => {
+    return {
+      ...state,
+      deleteAll: {
+        ...state.deleteAll,
         show: action.payload
       }
     }
@@ -466,6 +479,43 @@ const glossary = handleActions({
       ...state,
       selectedTerm: selectedTerm
     }
+  },
+  [GLOSSARY_DELETE_ALL_REQUEST]: (state, action) => {
+    const deleteAll = state.deleteAll
+    return {
+      ...state,
+      deleteAll: {
+        ...deleteAll,
+        isDeleting: true
+      }
+    }
+  },
+  [GLOSSARY_DELETE_ALL_SUCCESS]: (state, action) => {
+    const deleteAll = state.deleteAll
+    return {
+      ...state,
+      deleteAll: {
+        ...deleteAll,
+        show: false,
+        isDeleting: false
+      }
+    }
+  },
+  [GLOSSARY_DELETE_ALL_FAILURE]: (state, action) => {
+    const deleteAll = state.deleteAll
+    return {
+      ...state,
+      deleteAll: {
+        ...deleteAll,
+        isDeleting: false
+      },
+      notification: {
+        severity: SEVERITY.ERROR,
+        message:
+        'We were unable to delete glossary entries. ' +
+        'Please refresh this page and try again.'
+      }
+    }
   }
 },
 // default state
@@ -507,6 +557,10 @@ const glossary = handleActions({
     show: false,
     isSaving: false,
     entry: GlossaryHelper.generateEmptyEntry(DEFAULT_LOCALE.localeId)
+  },
+  deleteAll: {
+    show: false,
+    isDeleting: false
   },
   statsError: false,
   statsLoading: true

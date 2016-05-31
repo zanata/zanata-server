@@ -17,16 +17,18 @@ import {
   glossaryFilterTextChanged,
   glossarySortColumn,
   glossaryToggleImportFileDisplay,
-  glossaryToggleNewEntryModal
+  glossaryToggleNewEntryModal,
+  glossaryToggleDeleteAllEntryModal,
+  glossaryDeleteAll
 } from '../../actions/glossary'
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
+import DeleteAllEntryModal from './DeleteAllEntryModal'
 
 /**
  * Header for glossary page
  */
 class ViewHeader extends Component {
-
   currentLocaleCount () {
     if (this.props.filterText && this.props.results) {
       return this.props.results
@@ -71,14 +73,18 @@ class ViewHeader extends Component {
       handleFilterFieldUpdate,
       handleImportFileDisplay,
       handleNewEntryDisplay,
+      handleDeleteAllEntryDisplay,
+      handleDeleteAllEntry,
       handleSortColumn,
       permission,
-      sort
+      sort,
+      deleteAll
       } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const isReadOnly = !(permission.canAddNewEntry || permission.canUpdateEntry || permission.canDeleteEntry)
     const icon = isReadOnly ? 'locked' : undefined
     const tooltip = isReadOnly ? 'read-only' : undefined
+    const showDeleteAll = permission.canDeleteEntry && termCount > 0
     return (
       <Header title='Glossary' icon={icon} tooltip={tooltip}
         extraElements={(
@@ -95,36 +101,42 @@ class ViewHeader extends Component {
               title='Cancel search'
               disabled={isEmpty(filterText)}
               onClick={(e) => { this.handleClearSearch() }}>
-              <Icon name='cross'/>
+              <Icon name='cross' />
             </ButtonLink>
 
-              {permission.canAddNewEntry ? (
-                <div className='Mstart(rq)'>
-                  <ButtonLink type='default'
-                    onClick={() => handleImportFileDisplay(true)}
-                    atomic={{m: 'Mstart(rh)'}}>
-                    <Row>
-                      <Icon name='import'
-                        atomic={{m: 'Mend(rq)'}}/>
-                      <span className='Hidden--lesm'>Import Glossary</span>
-                    </Row>
-                  </ButtonLink>
-                  <ImportModal/>
-                </div>) : ''}
+            {permission.canAddNewEntry && (
+              <div className='Mstart(rq)'>
+                <ButtonLink type='default'
+                  onClick={() => handleImportFileDisplay(true)}
+                  atomic={{m: 'Mstart(rq)'}}>
+                  <Row>
+                    <Icon name='import' atomic={{m: 'Mend(re)'}} />
+                    <span className='Hidden--lesm'>Import Glossary</span>
+                  </Row>
+                </ButtonLink>
+                <ImportModal />
+              </div>)}
 
-               {permission.canAddNewEntry ? (
-                 <div className='Mstart(rq)'>
-                    <ButtonLink atomic={{m: 'Mstart(rh)'}}
-                      onClick={() => handleNewEntryDisplay(true)}>
-                      <Row>
-                        <Icon name='plus'
-                          atomic={{m: 'Mend(rq)'}}/>
-                        <span className='Hidden--lesm'>New Term</span>
-                      </Row>
-                    </ButtonLink>
-                    <NewEntryModal/>
-                 </div>) : ''
-               }
+             {permission.canAddNewEntry && (
+               <div className='Mstart(rq)'>
+                 <ButtonLink atomic={{m: 'Mstart(rq)'}}
+                   onClick={() => handleNewEntryDisplay(true)}>
+                   <Row>
+                     <Icon name='plus' atomic={{m: 'Mend(re)'}} />
+                     <span className='Hidden--lesm'>New Term</span>
+                   </Row>
+                 </ButtonLink>
+                 <NewEntryModal />
+               </div>)}
+
+             {showDeleteAll && (
+               <div className='Mstart(rq)'>
+                 <DeleteAllEntryModal show={deleteAll.show}
+                   isDeleting={deleteAll.isDeleting}
+                   handleDeleteAllEntryDisplay={(display) =>
+                    handleDeleteAllEntryDisplay(display)}
+                   handleDeleteAllEntry={handleDeleteAllEntry} />
+               </div>)}
           </View>
         )}>
         <View theme={{
@@ -137,25 +149,25 @@ class ViewHeader extends Component {
             theme={{ base: { bd: '' } }}
             className='Flxg(1)'>
             <TableCell size='3'
-                       onClick={() => handleSortColumn('src_content')}>
+              onClick={() => handleSortColumn('src_content')}>
               <ButtonLink type='default'>
                 <Row>
                   {'src_content' in sort
                     ? (sort.src_content === true)
-                      ? <Icon name='chevron-down'/>
-                      : <Icon name='chevron-up'/>
+                      ? <Icon name='chevron-down' />
+                      : <Icon name='chevron-up' />
                     : ''}
                   <Icon name='glossary'
                     atomic={{c: 'C(neutral)', m: 'Mend(re) MStart(rq)'}} />
-                    <span className='LineClamp(1,24px)'>
-                      English (United States)
-                    </span>
+                  <span className='LineClamp(1,24px)'>
+                    English (United States)
+                  </span>
                   <span className='C(muted) Mstart(rq)'>{termCount}</span>
                 </Row>
               </ButtonLink>
             </TableCell>
             <TableCell tight size={'3'}
-                       theme={{base: {lineClamp: ''}}}>
+              theme={{base: {lineClamp: ''}}}>
               <Select
                 name='language-selection'
                 placeholder={statsLoading
@@ -175,8 +187,7 @@ class ViewHeader extends Component {
                 <span className='C(muted)'>
                   {currentLocaleCount}
                 </span>
-               </Row>)
-              }
+              </Row>)}
             </TableCell>
             <TableCell hideSmall
               onClick={() => handleSortColumn('part_of_speech')}>
@@ -232,7 +243,8 @@ const mapStateToProps = (state) => {
     termCount,
     filter,
     permission,
-    sort
+    sort,
+    deleteAll
     } = state.glossary
   const query = state.routing.location.query
   return {
@@ -242,7 +254,8 @@ const mapStateToProps = (state) => {
     filterText: filter,
     selectedTransLocale: query.locale,
     permission,
-    sort
+    sort,
+    deleteAll
   }
 }
 
@@ -265,7 +278,10 @@ const mapDispatchToProps = (dispatch) => {
     handleImportFileDisplay: (display) =>
       dispatch(glossaryToggleImportFileDisplay(display)),
     handleNewEntryDisplay: (display) =>
-      dispatch(glossaryToggleNewEntryModal(display))
+      dispatch(glossaryToggleNewEntryModal(display)),
+    handleDeleteAllEntryDisplay: (display) =>
+      dispatch(glossaryToggleDeleteAllEntryModal(display)),
+    handleDeleteAllEntry: () => dispatch(glossaryDeleteAll())
   }
 }
 
