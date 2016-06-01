@@ -69,17 +69,18 @@ public class GlossaryService implements GlossaryResource {
     private LocaleService localeServiceImpl;
 
     @Override
-    public Response getInfo() {
+    public Response getInfo(
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
         HLocale srcLocale = getSourceLocale();
 
         int entryCount =
-            glossaryDAO.getEntryCountBySourceLocales(srcLocale.getLocaleId());
+            glossaryDAO.getEntryCountBySourceLocales(srcLocale.getLocaleId(), qualifiedName);
 
         GlossaryLocaleInfo srcGlossaryLocale =
                 new GlossaryLocaleInfo(generateLocaleDetails(srcLocale), entryCount);
 
         Map<LocaleId, Integer> transMap =
-                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId());
+                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(), qualifiedName);
 
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
@@ -109,16 +110,17 @@ public class GlossaryService implements GlossaryResource {
             @DefaultValue("1") @QueryParam("page") int page,
             @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
             @QueryParam("filter") String filter,
-            @QueryParam("sort") String fields) {
+            @QueryParam("sort") String fields,
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
 
         int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
 
         List<HGlossaryEntry> hGlossaryEntries =
                 glossaryDAO.getEntriesByLocale(srcLocale, offset,
                         validatePageSize(sizePerPage),
-                        filter, convertToSortField(fields));
+                        filter, convertToSortField(fields), qualifiedName);
         int totalCount =
-            glossaryDAO.getEntriesCount(srcLocale, filter);
+            glossaryDAO.getEntriesCount(srcLocale, filter, qualifiedName);
 
         ResultList<GlossaryEntry> resultList = new ResultList<GlossaryEntry>();
         resultList.setTotalCount(totalCount);
@@ -137,7 +139,8 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response downloadFile(@DefaultValue("csv") String fileType,
-        String commaSeparatedLanguage) {
+            String commaSeparatedLanguage,
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
         if (!identity.isLoggedIn()) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -154,7 +157,7 @@ public class GlossaryService implements GlossaryResource {
         Set<LocaleId> transList;
         if (StringUtils.isEmpty(commaSeparatedLanguage)) {
             transList =
-                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId())
+                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(),qualifiedName)
                     .keySet();
         } else {
             transList = Sets.newHashSet();
@@ -172,7 +175,7 @@ public class GlossaryService implements GlossaryResource {
             .map(HLocale::getLocaleId).collect(Collectors.toList());
 
         List<GlossaryEntry> entries = Lists.newArrayList();
-        transferEntriesResource(glossaryDAO.getEntries(), entries);
+        transferEntriesResource(glossaryDAO.getEntries(qualifiedName), entries);
 
         try {
             GlossaryStreamingOutput output;
@@ -265,10 +268,11 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response deleteAllEntries() {
+    public Response deleteAllEntries(
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
         identity.checkPermission("", "glossary-delete");
 
-        int rowCount = glossaryDAO.deleteAllEntries();
+        int rowCount = glossaryDAO.deleteAllEntries(qualifiedName);
         log.info("Glossary delete all: " + rowCount);
 
         return Response.ok().build();

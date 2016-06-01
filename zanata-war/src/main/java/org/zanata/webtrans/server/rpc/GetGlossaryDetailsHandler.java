@@ -60,7 +60,7 @@ public class GetGlossaryDetailsHandler
 
         log.info("Fetching glossary details for entry{} in locale {}",
                 sourceIds, hLocale);
-        List<HGlossaryTerm> srcTerms = glossaryDAO.findByIdList(sourceIds);
+        List<HGlossaryTerm> srcTerms = glossaryDAO.findTermByIdList(sourceIds);
         ArrayList<GlossaryDetails> items =
                 new ArrayList<GlossaryDetails>(srcTerms.size());
 

@@ -45,6 +45,7 @@ import org.zanata.adapter.glossary.GlossaryPoReader;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.exception.ZanataServiceException;
+import org.zanata.model.Glossary;
 import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
@@ -143,7 +144,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     /**
      * Run {@link #executeCommit} when
-     * - counter equals to {@link BATCH_SIZE} or
+     * - counter equals to {@link #BATCH_SIZE} or
      * - currentIndex equals to totalSize (last record)
      */
     private boolean isExecuteCommit(int counter, int currentIndex,
@@ -157,8 +158,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     /**
      * Return error message when
-     * @param entry#description length not over {@link MAX_LENGTH_CHAR}
-     * @param entry#pos length not over {@link MAX_LENGTH_CHAR}
+     * @param entry#description length not over {@link #MAX_LENGTH_CHAR}
+     * @param entry#pos length not over {@link #MAX_LENGTH_CHAR}
      * Source term content not empty
      */
     private Optional<String> validateGlossaryEntry(GlossaryEntry entry) {
@@ -222,7 +223,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     /**
      * This force glossaryDAO to flush and commit on every
-     * {@link BATCH_SIZE} records.
+     * {@link #BATCH_SIZE} records.
      */
     // TODO does that mean the reads aren't in transactions?
     // TODO use Transactional at class level?
@@ -241,7 +242,9 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         if (id != null) {
             hGlossaryEntry = glossaryDAO.findById(id);
         } else {
-            hGlossaryEntry = glossaryDAO.getEntryByContentHash(contentHash);
+            hGlossaryEntry =
+                    glossaryDAO.getEntryByContentHash(contentHash,
+                            GlossaryUtil.GLOBAL_QUALIFIED_NAME);
         }
 
         if (hGlossaryEntry == null) {
@@ -265,7 +268,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         String contentHash = getContentHash(from);
 
         HGlossaryEntry sameHashEntry =
-                glossaryDAO.getEntryByContentHash(contentHash);
+                glossaryDAO.getEntryByContentHash(contentHash,
+                        GlossaryUtil.GLOBAL_QUALIFIED_NAME);
 
         if(sameHashEntry == null) {
             return Optional.empty();
@@ -296,6 +300,11 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         to.setSourceRef(from.getSourceReference());
         to.setPos(from.getPos());
         to.setDescription(from.getDescription());
+        String qualifiedName = GlossaryUtil.GLOBAL_QUALIFIED_NAME;
+        if (StringUtils.isNotBlank(from.getQualifiedName())) {
+            qualifiedName = from.getQualifiedName();
+        }
+        to.setGlossary(glossaryDAO.getGlossaryByQualifiedName(qualifiedName));
 
         TreeSet<String> warningMessage = Sets.newTreeSet();
         for (GlossaryTerm glossaryTerm : from.getGlossaryTerms()) {

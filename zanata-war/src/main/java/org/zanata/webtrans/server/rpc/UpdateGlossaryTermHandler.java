@@ -11,9 +11,7 @@ import org.zanata.exception.DuplicateGlossaryEntryException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
-import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.security.ZanataIdentity;
-import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
 import org.zanata.util.GlossaryUtil;
 import org.zanata.webtrans.server.ActionHandlerFor;
@@ -85,7 +83,7 @@ public class UpdateGlossaryTermHandler
                             entry.getPos(), entry.getDescription());
 
             HGlossaryEntry sameHashEntry =
-                glossaryDAO.getEntryByContentHash(contentHash);
+                glossaryDAO.getEntryByContentHash(contentHash, GlossaryUtil.GLOBAL_QUALIFIED_NAME);
 
             if (sameHashEntry != null && (sameHashEntry.getId() != entry.getId())) {
                 throw new DuplicateGlossaryEntryException(entry.getSrcLocale()

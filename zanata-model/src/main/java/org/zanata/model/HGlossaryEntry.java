@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -41,6 +42,7 @@ import lombok.ToString;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -74,6 +76,8 @@ public class HGlossaryEntry extends ModelEntityBase {
 
     private HLocale srcLocale;
 
+    private Glossary glossary;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "glossaryEntry",
             orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKey(name = "locale")
@@ -87,6 +91,13 @@ public class HGlossaryEntry extends ModelEntityBase {
     @javax.persistence.Lob
     public String getSourceRef() {
         return sourceRef;
+    }
+
+    @NaturalId
+    @ManyToOne
+    @JoinColumn(name = "glossaryId", nullable = false)
+    public Glossary getGlossary() {
+        return glossary;
     }
 
     //TODO: this should be many to one

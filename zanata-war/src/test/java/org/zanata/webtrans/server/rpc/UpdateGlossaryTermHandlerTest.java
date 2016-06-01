@@ -27,7 +27,6 @@ import net.customware.gwt.dispatch.shared.ActionException;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.mockito.Mockito.verify;
@@ -105,13 +104,13 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         "new comment", "new pos", "new description");
-        String resId =
+        String hash =
                 GlossaryUtil.generateHash(
                     selectedDetailEntry.getSrcLocale(),
                     selectedDetailEntry.getSource(),
                     selectedDetailEntry.getPos(),
                     selectedDetailEntry.getDescription());
-        when(glossaryDAO.getEntryByContentHash(resId)).thenReturn(hGlossaryEntry);
+        when(glossaryDAO.getEntryByContentHash(hash, GlossaryUtil.GLOBAL_QUALIFIED_NAME)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                         .getTargetLocale())).thenReturn(targetHLocale);
         when(glossaryDAO.makePersistent(hGlossaryEntry)).thenReturn(
@@ -130,13 +129,13 @@ public class UpdateGlossaryTermHandlerTest extends ZanataTest {
         UpdateGlossaryTermAction action =
                 new UpdateGlossaryTermAction(selectedDetailEntry, "new target",
                         "new comment", "new pos", "new description");
-        String resId =
+        String hash =
                 GlossaryUtil.generateHash(
                         selectedDetailEntry.getSrcLocale(),
                         selectedDetailEntry.getSource(),
                         selectedDetailEntry.getPos(),
                         selectedDetailEntry.getDescription());
-        when(glossaryDAO.getEntryByContentHash(resId)).thenReturn(hGlossaryEntry);
+        when(glossaryDAO.getEntryByContentHash(hash, GlossaryUtil.GLOBAL_QUALIFIED_NAME)).thenReturn(hGlossaryEntry);
         when(localeServiceImpl.getByLocaleId(selectedDetailEntry
                 .getTargetLocale())).thenReturn(targetHLocale);
         HGlossaryTerm targetTerm = new HGlossaryTerm("target");

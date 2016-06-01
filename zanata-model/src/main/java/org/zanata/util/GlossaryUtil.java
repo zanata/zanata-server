@@ -22,6 +22,7 @@
 package org.zanata.util;
 
 import org.zanata.common.LocaleId;
+import org.zanata.rest.service.GlossaryResource;
 
 /**
  * Generate contentHash for HGlossaryEntry
@@ -29,13 +30,20 @@ import org.zanata.common.LocaleId;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class GlossaryUtil {
-
+    
     private final static String SEPARATOR = "\u0000";
+    
+    public static String GLOBAL_QUALIFIED_NAME =
+            GlossaryResource.GLOBAL_QUALIFIED_NAME;
 
     public static String generateHash(LocaleId locale, String content, String pos,
         String description) {
         String hashBase = locale + SEPARATOR + content + SEPARATOR + pos +
             SEPARATOR + description;
         return HashUtil.generateHash(hashBase);
+    }
+
+    public static String generateQualifiedName(String namespace, String name) {
+        return namespace + "/" + name;
     }
 }

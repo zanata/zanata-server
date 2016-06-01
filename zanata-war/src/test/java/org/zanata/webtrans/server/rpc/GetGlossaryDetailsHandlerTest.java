@@ -80,7 +80,7 @@ public class GetGlossaryDetailsHandlerTest extends ZanataTest {
         HGlossaryTerm targetTerm = glossaryTerm("target term", srcLocale);
         sourceTerm.getGlossaryEntry().getGlossaryTerms()
                 .put(targetHLocale, targetTerm);
-        when(glossaryDAO.findByIdList(sourceIdList)).thenReturn(
+        when(glossaryDAO.findTermByIdList(sourceIdList)).thenReturn(
                 Lists.newArrayList(sourceTerm));
 
         GetGlossaryDetailsResult result = handler.execute(action, null);
