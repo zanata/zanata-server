@@ -18,12 +18,12 @@ import {
   glossarySortColumn,
   glossaryToggleImportFileDisplay,
   glossaryToggleNewEntryModal,
-  glossaryToggleDeleteAllEntryModal,
+  glossaryToggleDeleteAllEntriesModal,
   glossaryDeleteAll
 } from '../../actions/glossary'
 import ImportModal from './ImportModal'
 import NewEntryModal from './NewEntryModal'
-import DeleteAllEntryModal from './DeleteAllEntryModal'
+import DeleteAllEntriesModal from './DeleteAllEntriesModal'
 
 /**
  * Header for glossary page
@@ -73,8 +73,8 @@ class ViewHeader extends Component {
       handleFilterFieldUpdate,
       handleImportFileDisplay,
       handleNewEntryDisplay,
-      handleDeleteAllEntryDisplay,
-      handleDeleteAllEntry,
+      handleDeleteAllEntriesDisplay,
+      handleDeleteAllEntries,
       handleSortColumn,
       permission,
       sort,
@@ -105,10 +105,9 @@ class ViewHeader extends Component {
             </ButtonLink>
 
             {permission.canAddNewEntry && (
-              <div className='Mstart(rq)'>
+              <div className='Mstart(rh)--md Mstart(rq)'>
                 <ButtonLink type='default'
-                  onClick={() => handleImportFileDisplay(true)}
-                  atomic={{m: 'Mstart(rq)'}}>
+                  onClick={() => handleImportFileDisplay(true)}>
                   <Row>
                     <Icon name='import' atomic={{m: 'Mend(re)'}} />
                     <span className='Hidden--lesm'>Import Glossary</span>
@@ -118,9 +117,8 @@ class ViewHeader extends Component {
               </div>)}
 
              {permission.canAddNewEntry && (
-               <div className='Mstart(rq)'>
-                 <ButtonLink atomic={{m: 'Mstart(rq)'}}
-                   onClick={() => handleNewEntryDisplay(true)}>
+               <div className='Mstart(rh)--md Mstart(rq)'>
+                 <ButtonLink onClick={() => handleNewEntryDisplay(true)}>
                    <Row>
                      <Icon name='plus' atomic={{m: 'Mend(re)'}} />
                      <span className='Hidden--lesm'>New Term</span>
@@ -130,12 +128,12 @@ class ViewHeader extends Component {
                </div>)}
 
              {showDeleteAll && (
-               <div className='Mstart(rq)'>
-                 <DeleteAllEntryModal show={deleteAll.show}
+               <div className='Mstart(rh)--md Mstart(rq)'>
+                 <DeleteAllEntriesModal show={deleteAll.show}
                    isDeleting={deleteAll.isDeleting}
-                   handleDeleteAllEntryDisplay={(display) =>
-                    handleDeleteAllEntryDisplay(display)}
-                   handleDeleteAllEntry={handleDeleteAllEntry} />
+                   handleDeleteAllEntriesDisplay={(display) =>
+                    handleDeleteAllEntriesDisplay(display)}
+                   handleDeleteAllEntries={handleDeleteAllEntries} />
                </div>)}
           </View>
         )}>
@@ -279,9 +277,9 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(glossaryToggleImportFileDisplay(display)),
     handleNewEntryDisplay: (display) =>
       dispatch(glossaryToggleNewEntryModal(display)),
-    handleDeleteAllEntryDisplay: (display) =>
-      dispatch(glossaryToggleDeleteAllEntryModal(display)),
-    handleDeleteAllEntry: () => dispatch(glossaryDeleteAll())
+    handleDeleteAllEntriesDisplay: (display) =>
+      dispatch(glossaryToggleDeleteAllEntriesModal(display)),
+    handleDeleteAllEntries: () => dispatch(glossaryDeleteAll())
   }
 }
 

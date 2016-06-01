@@ -90,6 +90,8 @@ module.exports = {
       'Mih(100vh)',
       'Miw(r6)',
       'My(r2)',
+      'Or(1)',
+      'Or(0)--sm',
       'Ov(a)',
       'Ovx(h)',
       'Ovx(s)',

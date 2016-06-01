@@ -105,7 +105,7 @@ const classes = {
   base: {
     bgc: 'Bgc(pri)',
     bxsh: 'Bxsh(ish1)',
-    d: 'D(f)',
+    d: 'D(f)!',
     fld: 'Fld(c)--sm',
     flxs: 'Flxs(0)',
     h: 'H(100%)--sm',
