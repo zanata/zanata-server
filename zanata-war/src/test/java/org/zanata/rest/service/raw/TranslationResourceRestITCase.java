@@ -659,7 +659,7 @@ public class TranslationResourceRestITCase extends SourceAndTranslationResourceR
                 .findByType(PoTargetHeader.class).getEntries()) {
             if (entry.getKey().equals(HeaderFields.KEY_LastTranslator)
                     || entry.getKey().equals(HeaderFields.KEY_PoRevisionDate)) {
-                assertThat(entry.getValue().trim(), is(""));
+                assertThat(entry.getValue().trim(), not(isEmptyOrNullString()));
             }
         }
     }
