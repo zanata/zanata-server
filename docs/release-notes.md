@@ -6,7 +6,6 @@
 ##### Infrastructure Changes
 
 * Zanata's cache configuration (Infinispan) is now controlled by `zanata-infinispan.xml`, not `standalone.xml`. Please see the [Infinispan](user-guide/system-admin/configuration/infinispan) section for more information.
-* The system property zanata.cache.dir is now required, as well as ehcache.disk.store.dir. TODO: add it to pom.xml and standalone.xml
 
 ## 3.9
 
