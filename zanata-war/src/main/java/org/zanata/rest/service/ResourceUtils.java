@@ -704,8 +704,7 @@ public class ResourceUtils {
             final List<HTextFlowTarget> hTargets, final HLocale locale) {
         final Map<String, HeaderEntry> containedHeaders =
                 new LinkedHashMap<String, HeaderEntry>(headerEntries.size());
-        HTextFlowTarget lastTranslatedTarget =
-                this.getLastTranslatedTarget(hTargets);
+        HTextFlowTarget lastChangedTarget = getLastChangedTarget(hTargets);
 
         // Collect the existing header entries
         for (HeaderEntry entry : headerEntries) {
@@ -714,7 +713,7 @@ public class ResourceUtils {
 
         // Add / Replace headers
         Date revisionDate =
-                this.getRevisionDate(headerEntries, lastTranslatedTarget);
+                this.getRevisionDate(headerEntries, lastChangedTarget);
         HeaderEntry headerEntry = containedHeaders.get(PO_REVISION_DATE_HDR);
         if (headerEntry == null) {
             headerEntry =
@@ -726,6 +725,8 @@ public class ResourceUtils {
         }
 
         headerEntry = containedHeaders.get(LAST_TRANSLATOR_HDR);
+        HTextFlowTarget lastTranslatedTarget =
+                getLastTranslatedTarget(hTargets);
         if (headerEntry == null) {
             headerEntry =
                     new HeaderEntry(LAST_TRANSLATOR_HDR,
@@ -870,6 +871,24 @@ public class ResourceUtils {
         }
 
         return lastTranslated;
+    }
+
+    /**
+     * @param translations List of HTextFlowTarget
+     * @return Last changed/updated HTextFlowTarget from the list
+     */
+    private HTextFlowTarget getLastChangedTarget(
+        final List<HTextFlowTarget> translations) {
+        Date lastUpdate = new Date(Long.MIN_VALUE);
+        HTextFlowTarget lastChanged = null;
+
+        for (HTextFlowTarget tft : translations) {
+            if (tft.getLastChanged().after(lastUpdate)) {
+                lastChanged = tft;
+                lastUpdate = tft.getLastChanged();
+            }
+        }
+        return lastChanged;
     }
 
     /**
