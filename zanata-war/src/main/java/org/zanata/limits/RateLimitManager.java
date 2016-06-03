@@ -14,6 +14,7 @@ import javax.inject.Named;
 
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.async.Async;
 import org.zanata.events.ConfigurationChanged;
 import org.zanata.util.Introspectable;
 import com.google.common.base.Function;
@@ -67,6 +68,7 @@ public class RateLimitManager implements Introspectable {
         maxActive = appConfig.getMaxActiveRequestsPerApiKey();
     }
 
+    @Async
     @Transactional
     public void configurationChanged(
             @Observes(during = TransactionPhase.AFTER_SUCCESS)
