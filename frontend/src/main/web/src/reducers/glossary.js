@@ -28,6 +28,8 @@ import {
   GLOSSARY_UPDATE_IMPORT_FILE,
   GLOSSARY_UPDATE_IMPORT_FILE_LOCALE,
   GLOSSARY_TOGGLE_IMPORT_DISPLAY,
+  GLOSSARY_TOGGLE_EXPORT_DISPLAY,
+  GLOSSARY_UPDATE_EXPORT_TYPE,
   GLOSSARY_UPDATE_SORT,
   GLOSSARY_TOGGLE_NEW_ENTRY_DISPLAY,
   GLOSSARY_TOGGLE_DELETE_ALL_ENTRIES_DISPLAY,
@@ -36,7 +38,11 @@ import {
   GLOSSARY_CREATE_FAILURE,
   GLOSSARY_DELETE_ALL_REQUEST,
   GLOSSARY_DELETE_ALL_SUCCESS,
-  GLOSSARY_DELETE_ALL_FAILURE
+  GLOSSARY_DELETE_ALL_FAILURE,
+  GLOSSARY_EXPORT_REQUEST,
+  GLOSSARY_EXPORT_SUCCESS,
+  GLOSSARY_EXPORT_FAILURE,
+  FILE_TYPES
 } from '../actions/glossary'
 import {
   CLEAR_MESSAGE,
@@ -63,7 +69,8 @@ const glossary = handleActions({
       permission: {
         canAddNewEntry: window.config.permission.insertGlossary,
         canUpdateEntry: window.config.permission.updateGlossary,
-        canDeleteEntry: window.config.permission.deleteGlossary
+        canDeleteEntry: window.config.permission.deleteGlossary,
+        canDownload: window.config.permission.downloadGlossary
       }
     }
   },
@@ -159,6 +166,58 @@ const glossary = handleActions({
       importFile: {
         ...state.importFile,
         show: action.payload
+      }
+    }
+  },
+  [GLOSSARY_TOGGLE_EXPORT_DISPLAY]: (state, action) => {
+    return {
+      ...state,
+      exportFile: {
+        ...state.exportFile,
+        show: action.payload
+      }
+    }
+  },
+  [GLOSSARY_UPDATE_EXPORT_TYPE]: (state, action) => {
+    return {
+      ...state,
+      exportFile: {
+        ...state.exportFile,
+        type: action.payload
+      }
+    }
+  },
+  [GLOSSARY_EXPORT_REQUEST]: (state, action) => {
+    return {
+      ...state,
+      exportFile: {
+        ...state.exportFile,
+        status: 1
+      }
+    }
+  },
+  [GLOSSARY_EXPORT_SUCCESS]: (state, action) => {
+    return {
+      ...state,
+      exportFile: {
+        ...state.exportFile,
+        status: -1,
+        show: false
+      }
+    }
+  },
+  [GLOSSARY_EXPORT_FAILURE]: (state, action) => {
+    return {
+      ...state,
+      exportFile: {
+        ...state.exportFile,
+        status: -1,
+        show: false
+      },
+      notification: {
+        severity: SEVERITY.ERROR,
+        message: 'We are unable to export glossary entries from server. ' +
+        'Please refresh this page and try again.'
       }
     }
   },
@@ -552,6 +611,15 @@ const glossary = handleActions({
     status: -1,
     file: null,
     transLocale: null
+  },
+  exportFile: {
+    show: false,
+    type: {value: FILE_TYPES[0], label: FILE_TYPES[0]},
+    status: -1,
+    types: [
+      {value: FILE_TYPES[0], label: FILE_TYPES[0]},
+      {value: FILE_TYPES[1], label: FILE_TYPES[1]}
+    ]
   },
   newEntry: {
     show: false,
