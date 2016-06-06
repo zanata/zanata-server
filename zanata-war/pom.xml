@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>server</artifactId>
-    <version>3.9.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>zanata-war</artifactId>
   <packaging>war</packaging>
@@ -36,8 +36,6 @@
     <!--this will get set by maven dependency:properties goal and be used in gwt-maven-plugin-->
     <lombok.lib>${org.projectlombok:lombok:jar}</lombok.lib>
 
-    <!-- TODO check whether this is still used anywhere -->
-    <zanata.web.assets.version>7</zanata.web.assets.version>
     <jboss.as.standalone.version>7.5.0</jboss.as.standalone.version>
     <rpm.name>${project.build.finalName}</rpm.name>
 

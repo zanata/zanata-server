@@ -30,7 +30,6 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.enterprise.event.TransactionPhase;
 import javax.enterprise.inject.Produces;
 
 import com.google.common.base.Optional;
@@ -54,8 +53,6 @@ import org.zanata.util.ServiceLocator;
 import org.zanata.util.Synchronized;
 import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
-import org.zanata.config.JndiBackedConfig;
-import org.zanata.events.ConfigurationChanged;
 import org.zanata.events.LogoutEvent;
 import org.zanata.events.PostAuthenticateEvent;
 import org.zanata.i18n.Messages;
@@ -90,8 +87,6 @@ public class ApplicationConfiguration implements Serializable {
     @Inject
     private DatabaseBackedConfig databaseBackedConfig;
     @Inject
-    private JndiBackedConfig jndiBackedConfig;
-    @Inject
     private JaasConfig jaasConfig;
     @Inject @DefaultLocale
     private Messages msgs;
@@ -120,6 +115,24 @@ public class ApplicationConfiguration implements Serializable {
     @Getter
     private boolean copyTransEnabled = true;
 
+    /**
+     * To be used with single sign-up module with openId. Default is false
+     *
+     * When set to true:
+     *
+     * This is to enforce username to match with username returned from
+     * openId server when new user register.
+     *
+     * Usage:
+     * server administrator can enable this in system property zanata.enforce.matchingusernames.
+     * In standalone.xml:
+     * <pre>
+     *   {@code <property name="zanata.enforce.matchingusernames" value="true" />}
+     * </pre>
+     */
+    @Getter
+    private boolean enforceMatchingUsernames;
+
     private Map<AuthenticationType, String> loginModuleNames = Maps
             .newHashMap();
 
@@ -136,15 +149,8 @@ public class ApplicationConfiguration implements Serializable {
         this.loadJaasConfig();
         authenticatedSessionTimeoutMinutes = sysPropConfigStore
                 .get("authenticatedSessionTimeoutMinutes", 180);
-    }
-
-    public void resetConfigValue(
-            @Observes(during = TransactionPhase.AFTER_SUCCESS)
-            ConfigurationChanged configChange) {
-        String configName = configChange.getConfigKey();
-        // Remove the value from all stores
-        databaseBackedConfig.reset(configName);
-        jndiBackedConfig.reset(configName);
+        enforceMatchingUsernames = Boolean
+            .parseBoolean(sysPropConfigStore.get("zanata.enforce.matchingusernames"));
     }
 
     /**
@@ -152,12 +158,18 @@ public class ApplicationConfiguration implements Serializable {
      * configuration
      */
     private void loadLoginModuleNames() {
-        for (String policyName : jndiBackedConfig
+        for (String policyName : sysPropConfigStore
                 .getEnabledAuthenticationPolicies()) {
-            AuthenticationType authType =
-                    AuthenticationType.valueOf(policyName.toUpperCase());
-            loginModuleNames.put(authType,
-                    jndiBackedConfig.getAuthPolicyName(policyName));
+            try {
+                AuthenticationType authType =
+                        AuthenticationType.valueOf(policyName.toUpperCase());
+                loginModuleNames.put(authType,
+                        sysPropConfigStore.getAuthPolicyName(policyName));
+            } catch (IllegalArgumentException e) {
+                log.warn(
+                        "Attempted to configure an unrecognized authentication policy: " +
+                                policyName);
+            }
         }
     }
 
@@ -255,7 +267,7 @@ public class ApplicationConfiguration implements Serializable {
     }
 
     public String getDocumentFileStorageLocation() {
-        return jndiBackedConfig.getDocumentFileStorageLocation();
+        return sysPropConfigStore.getDocumentFileStorageLocation();
     }
 
     public String getDomainName() {
@@ -279,8 +291,8 @@ public class ApplicationConfiguration implements Serializable {
 
         // Look in the properties file next
         if (emailAddr == null
-                && jndiBackedConfig.getDefaultFromEmailAddress() != null) {
-            emailAddr = jndiBackedConfig.getDefaultFromEmailAddress();
+                && sysPropConfigStore.getDefaultFromEmailAddress() != null) {
+            emailAddr = sysPropConfigStore.getDefaultFromEmailAddress();
         }
 
         // Finally, just throw an Exception
@@ -333,7 +345,7 @@ public class ApplicationConfiguration implements Serializable {
 
     public Set<String> getAdminUsers() {
         String configValue =
-                Strings.nullToEmpty(jndiBackedConfig.getAdminUsersList());
+                Strings.nullToEmpty(sysPropConfigStore.getAdminUsersList());
         if (adminUsers == null) {
             adminUsers =
                     Sets.newHashSet(Splitter.on(",").omitEmptyStrings()
