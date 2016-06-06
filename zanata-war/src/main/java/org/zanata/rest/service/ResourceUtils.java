@@ -895,8 +895,8 @@ public class ResourceUtils {
             Date lastModifiedDate = lastTranslated.getLastChanged();
 
             if (lastTranslatedBy != null) {
-                if ((lastModifiedDate == null) || (lastModifiedDate != null
-                        && lastModifiedDate.after(headerRevisionDate))) {
+                if (lastModifiedDate == null
+                        || lastModifiedDate.after(headerRevisionDate)) {
                     /**
                      * Use translator details from last translated target if
                      * the lastModifiedDate is null or if lastModifiedDate is
