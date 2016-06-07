@@ -21,69 +21,81 @@
 
 package org.zanata.action;
 
-import org.infinispan.Cache;
-import org.infinispan.manager.CacheContainer;
+import com.google.common.base.Throwables;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stats.Stats;
-import org.zanata.service.impl.TranslationStateCacheImpl;
-import org.zanata.service.impl.VersionStateCacheImpl;
+import org.zanata.i18n.Messages;
 import org.zanata.util.Zanata;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.List;
-
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Armagan Ersoz <a href="mailto:aersoz@redhat.com">aersoz@redhat.com</a>
  */
 @Named("cacheAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Slf4j
 public class CacheAction implements Serializable {
-
-    private static final String[] cacheNames =
-        { TranslationStateCacheImpl.DOC_STATISTIC_CACHE_NAME,
-            TranslationStateCacheImpl.DOC_STATUS_CACHE_NAME,
-            TranslationStateCacheImpl.TFT_VALIDATION_CACHE_NAME,
-            VersionStateCacheImpl.VERSION_STATISTIC_CACHE_NAME};
-
-    @Inject
-    private TranslationStateCacheImpl translationStateCacheImpl;
 
     @Inject
     @Zanata
-    private CacheContainer cacheContainer;
+    private EmbeddedCacheManager cacheManager;
+
+    @Inject
+    private Messages msgs;
 
     public CacheAction() {
     }
 
-    public List<String> getCacheList(){
-        return translationStateCacheImpl.getCacheList(cacheNames);
-    }
-
     public Stats getStats(String cacheName) {
-        return translationStateCacheImpl.getStats(cacheName);
+        return cacheManager.getCache(cacheName).getAdvancedCache().getStats();
     }
 
-    public void clearCache(String cacheName){
-        translationStateCacheImpl.clearCache(cacheName);
+    public ArrayList<String> getCacheList() {
+        ArrayList<String> cacheNames = new ArrayList<>(cacheManager.getCacheNames());
+        Collections.sort(cacheNames);
+        return cacheNames;
+    }
+
+    public void clearCache(String cacheName) {
+        cacheManager.getCache(cacheName).clear();
+        getStats(cacheName).reset();
     }
 
     public void clearAllCaches(){
-        translationStateCacheImpl.clearAllCaches(cacheNames);
+        cacheManager.getCacheNames().forEach(this::clearCache);
     }
 
-    public Method[] getMethodList(){
-        return Stats.class.getMethods();
+    /*@Return the entire set of properties for which the specified bean provides a read method.
+    * In this case, the bean is a stats object. The returning value is the set of StatsImpl
+    * (org.infinispan.stats.impl) class's properties. This returning value is used for
+    * composing the cache statistics table at the admin site. */
+
+    public Map<String,String> getPropertyNamesAndValues(String cacheName) {
+          try {
+              Map<String, String> properties =
+                  BeanUtils.describe(getStats(cacheName));
+              properties.remove("class");
+              return properties;
+          }
+          catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+              throw Throwables.propagate(e);
+          }
     }
 
+    public String getNameOfProperty(String key) {
+        return msgs.get("jsf.cacheStats." + key + ".name");
+    }
 
-
-
-
-
-
-
-
-
+    public String getDescOfProperty(String key) {
+        return msgs.get("jsf.cacheStats." + key + ".description");
+    }
 }
