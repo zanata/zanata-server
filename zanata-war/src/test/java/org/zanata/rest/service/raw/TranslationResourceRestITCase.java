@@ -769,12 +769,14 @@ public class TranslationResourceRestITCase extends SourceAndTranslationResourceR
         // Make sure the header values are the same as the ones pushed with the
         // document
         for (HeaderEntry entry : header.getEntries()) {
+            String value = entry.getValue().trim();
             if (entry.getKey().equals(HeaderFields.KEY_LastTranslator)) {
-                assertThat(entry.getValue().trim(),
-                        is("Test User <test@zanata.org>"));
+                assertThat(value,
+                    containsString(ResourceUtils.COPIED_BY_ZANATA_NAME));
+                assertThat(value, containsString(
+                    ResourceUtils.COPIED_BY_ZANATA_NAME_EMAIL));
             } else if (entry.getKey().equals(HeaderFields.KEY_PoRevisionDate)) {
-                assertThat(entry.getValue().trim(),
-                        is(dateFormat.format(poRevDate.getTime())));
+                assertThat(value, is(dateFormat.format(poRevDate.getTime())));
             }
         }
     }
