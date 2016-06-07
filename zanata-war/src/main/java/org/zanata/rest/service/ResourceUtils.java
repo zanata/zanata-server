@@ -75,7 +75,6 @@ import org.zanata.rest.dto.resource.TranslationsResource;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.StringUtil;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -134,9 +133,6 @@ public class ResourceUtils {
 
     @Inject
     private LocaleDAO localeDAO;
-
-    @Inject
-    private ApplicationConfiguration applicationConfiguration;
 
     @PostConstruct
     public void create() {
