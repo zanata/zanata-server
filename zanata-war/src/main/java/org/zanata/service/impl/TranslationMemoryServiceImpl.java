@@ -617,8 +617,6 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         log.debug("Executing Lucene query: {}", textQuery.toString());
 
-        log.debug("Executing Lucene query: {}", textQuery.toString());
-
         FullTextQuery ftQuery =
                 entityManager.createFullTextQuery(textQuery, entities);
 
