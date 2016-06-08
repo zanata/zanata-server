@@ -299,8 +299,12 @@ const glossary = handleActions({
     let deleting = cloneDeep(state.deleting)
     const entryId = action.payload.id
     delete deleting[entryId]
+    let terms = cloneDeep(state.terms)
+    delete terms[entryId]
+
     return {
       ...state,
+      terms: terms,
       deleting: deleting
     }
   },
