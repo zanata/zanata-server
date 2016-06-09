@@ -31,7 +31,7 @@ class App extends Component {
     } = this.props
 
     const links = {
-      'context': config.baseUrl ? config.baseUrl : '',
+      'context': config.baseUrl || '',
       '/login': config.links.loginUrl,
       '/signup': config.links.registerUrl
     }
