@@ -27,6 +27,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stats.Stats;
 import org.zanata.i18n.Messages;
+import org.zanata.security.annotations.CheckRole;
 import org.zanata.util.Zanata;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -35,11 +36,13 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Armagan Ersoz <a href="mailto:aersoz@redhat.com">aersoz@redhat.com</a>
  */
+@CheckRole("admin")
 @Named("cacheAction")
 @ViewScoped
 @Slf4j
@@ -59,7 +62,7 @@ public class CacheAction implements Serializable {
         return cacheManager.getCache(cacheName).getAdvancedCache().getStats();
     }
 
-    public ArrayList<String> getCacheList() {
+    public List<String> getCacheList() {
         ArrayList<String> cacheNames = new ArrayList<>(cacheManager.getCacheNames());
         Collections.sort(cacheNames);
         return cacheNames;
@@ -67,6 +70,9 @@ public class CacheAction implements Serializable {
 
     public void clearCache(String cacheName) {
         cacheManager.getCache(cacheName).clear();
+    }
+
+    public void resetCacheStats(String cacheName) {
         getStats(cacheName).reset();
     }
 
@@ -76,10 +82,12 @@ public class CacheAction implements Serializable {
 
     /*@Return the entire set of properties for which the specified bean provides a read method.
     * In this case, the bean is a stats object. The returning value is the set of StatsImpl
-    * (org.infinispan.stats.impl) class's properties. This returning value is used for
-    * composing the cache statistics table at the admin site. */
+    * (org.infinispan.stats.impl) class's properties. The returning map's keys are plain properties'
+    * names (e.g. getCurrentNumberOfEntries) and the map's values are statistic values (casted Long
+    * values to String). This returning value is is used for composing the cache statistics table at
+    * the admin site. */
 
-    public Map<String, String> getPropertyNamesAndValues(String cacheName) {
+    public Map<String, String> getCacheStatsProperties(String cacheName) {
           try {
               Map<String, String> properties =
                   BeanUtils.describe(getStats(cacheName));

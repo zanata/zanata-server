@@ -31,7 +31,7 @@
                   value="#{msgs['jsf.cacheStats.cacheName']}"/>
               </th>
               <c:forEach
-                items="#{cacheAction.getPropertyNamesAndValues(cacheName)}"
+                items="#{cacheAction.getCacheStatsProperties(cacheName)}"
                 var="property">
                 <th class="l--pad-v-half" title="#{cacheAction.getDescOfProperty(property.key)}">
                   <h:outputText value="#{cacheAction.getNameOfProperty(property.key)}"/>
@@ -46,16 +46,23 @@
                   <h:outputText value="#{cacheName}"/>
                 </td>
                 <c:forEach
-                  items="#{cacheAction.getPropertyNamesAndValues(cacheName)}"
+                  items="#{cacheAction.getCacheStatsProperties(cacheName)}"
                   var="property">
                   <td class="l--pad-v-half">
                     <h:outputText value="#{property.value}"/>
                   </td>
                 </c:forEach>
                 <td>
-                  <h:commandButton value="Clear"
+                  <h:commandButton value="#{msgs['jsf.Clear']}"
                     action="#{cacheAction.clearCache(cacheName)}"
-                    onclick="return confirm('Do you confirm the cleaning of the cache?')"/>
+                    onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationCleaningCache']}&quot;)"/>
+                </td>
+
+                <td>
+                  <h:commandButton value="#{msgs['jsf.Reset']}"
+                    action="#{cacheAction.resetCacheStats(cacheName)}"
+                    onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationResettingCache']}&quot;)"/>
+                    />
                 </td>
               </tr>
             </c:forEach>
@@ -63,9 +70,9 @@
             <tfoot class="g__item">
             <tr>
               <td>
-                <h:commandButton value="Clear All Caches"
+                <h:commandButton value="#{msgs['jsf.ClearAllCache']}"
                   action="#{cacheAction.clearAllCaches}"
-                  onclick="return confirm('Do you confirm the cleaning of all caches?')"/>
+                  onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationCleaningAllCache']}&quot;)"/>
               </td>
             </tr>
             </tfoot>
