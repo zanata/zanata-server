@@ -9,7 +9,10 @@ import {
   Page,
   ScrollView,
   View,
-  Notification
+  Notification,
+  Row,
+  ButtonLink,
+  Icon
 } from '../../components'
 import {
   glossaryDeleteTerm,
@@ -18,7 +21,7 @@ import {
   glossarySelectTerm,
   glossaryUpdateField,
   glossaryUpdateIndex,
-  glossaryUpdateTerm
+  glossaryUpdateTerm,
 } from '../../actions/glossary'
 import ViewHeader from './ViewHeader'
 import Entry from './Entry'
@@ -100,6 +103,7 @@ class Glossary extends Component {
     if (!this.list) return
     const {
       location,
+      termCount,
       handleUpdateIndex,
       handleGetTermsIfNeeded
     } = this.props
@@ -124,22 +128,61 @@ class Glossary extends Component {
       termsLoading,
       termCount,
       scrollIndex,
-      notification
+      notification,
+      goPreviousPage,
+      goFirstPage,
+      goLastPage,
+      goNextPage,
+      page
     } = this.props
+
+    // const page = {current: 1, total: 10}
+
+    const displayPaging = page.total > 1
+    const listPadding = displayPaging ? 'Pb(r2)' : 'Pb(r2) Pt(r6)'
     return (
       <Page>
-        {notification
-          ? (<Notification severity={notification.severity}
+        {notification &&
+          (<Notification severity={notification.severity}
             message={notification.message}
             details={notification.details}
             show={!!notification} />
           )
-          : undefined
         }
         <Helmet title='Glossary' />
         <ScrollView onScroll={::this.onScroll}>
           <ViewHeader />
-          <View theme={{ base: {p: 'Pt(r6) Pb(r2)'} }}>
+          {displayPaging &&
+            <View theme={{ base: {p: 'Pt(r6)--sm Pt(r4)', fld: 'Fld(rr)'} }}>
+              <Row>
+                <ButtonLink disabled={page.current <= 1}
+                  onClick={() => { goFirstPage() }}>
+                  <Icon name='previous' size='1' />
+                </ButtonLink>
+                <ButtonLink disabled={page.current <= 1}
+                  onClick={() => { goPreviousPage() }}>
+                  <Icon name='chevron-left' size='1' />
+                </ButtonLink>
+                <span className='C(muted) Mx(re)'>
+                  {page.current} of {page.total}
+                </span>
+                <ButtonLink disabled={page.current === page.total}
+                  onClick={() => { goNextPage() }}>
+                  <Icon name='chevron-right' size='1' />
+                </ButtonLink>
+                <ButtonLink disabled={page.current === page.total}
+                  onClick={() => { goLastPage() }}>
+                  <Icon name='next' size='1' />
+                </ButtonLink>
+                <span className='Mx(rq) C(muted)'>
+                  <Row>
+                    <Icon name='glossary' size='1' /> {termCount}
+                  </Row>
+                </span>
+              </Row>
+            </View>
+          }
+          <View theme={{ base: {p: listPadding} }}>
             {termsLoading && !termCount
               ? (<View theme={loadingContainerTheme}>
                   <LoaderText theme={{ base: { fz: 'Fz(ms1)' } }}
@@ -179,7 +222,15 @@ Glossary.propTypes = {
   location: PropTypes.object,
   saving: PropTypes.object,
   deleting: PropTypes.object,
-  notification: PropTypes.object
+  notification: PropTypes.object,
+  goPreviousPage: PropTypes.func,
+  goFirstPage: PropTypes.func,
+  goLastPage: PropTypes.func,
+  goNextPage: PropTypes.func,
+  page: PropTypes.shape({
+    current: PropTypes.number,
+    total: PropTypes.number
+  })
 }
 
 const mapStateToProps = (state) => {
@@ -194,7 +245,8 @@ const mapStateToProps = (state) => {
     termCount,
     saving,
     deleting,
-    notification
+    notification,
+    page
   } = state.glossary
   const query = state.routing.location.query
   return {
@@ -212,7 +264,8 @@ const mapStateToProps = (state) => {
     location: state.routing.location,
     saving,
     deleting,
-    notification
+    notification,
+    page
   }
 }
 
@@ -228,7 +281,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(glossaryUpdateTerm(term, needRefresh)),
     handleUpdateIndex: (newIndex) => dispatch(glossaryUpdateIndex(newIndex)),
     handleGetTermsIfNeeded: (newIndex) =>
-      dispatch(glossaryGetTermsIfNeeded(newIndex))
+      dispatch(glossaryGetTermsIfNeeded(newIndex)),
+    gotoFirstPage: () => dispatch(),
+    gotoPreviousPage: () => dispatch(),
+    gotoNextPage: () => dispatch(),
+    gotoLastPage: () => dispatch()
   }
 }
 

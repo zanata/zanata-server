@@ -94,7 +94,7 @@ const getGlossaryTerms = (state, newIndex) => {
     index = 0
   } = state.glossary
   const page = newIndex ? getPageNumber(newIndex) : getPageNumber(index)
-  const srcQuery = '?srcLocale=' + (src ? src : DEFAULT_LOCALE.localeId)
+  const srcQuery = '?srcLocale=' + (src || DEFAULT_LOCALE.localeId)
   const localeQuery = locale ? `&transLocale=${locale}` : ''
   const pageQuery = `&page=${page}&sizePerPage=${GLOSSARY_PAGE_SIZE}`
   const filterQuery = filter ? `&filter=${filter}` : ''
