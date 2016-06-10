@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
-import { isEmpty } from 'lodash'
+import { isEmpty, toString } from 'lodash'
+import DateHelper from '../../utils/DateHelper'
 import {
   ButtonLink,
   ButtonRound,
@@ -14,6 +15,24 @@ import {
  * Popup windows to display a glossary entry
  */
 class EntryModal extends Component {
+
+  generateTermInfo(term) {
+    if (term &&
+      (!isEmpty(term.lastModifiedBy) || !isEmpty(term.lastModifiedDate))) {
+      const parts = ['Last updated'];
+      if (!isEmpty(term.lastModifiedBy)) {
+        parts.push('by:');
+        parts.push(term.lastModifiedBy);
+      }
+      if (!isEmpty(toString(term.lastModifiedDate))) {
+        parts.push(DateHelper.shortDate(DateHelper.getDate(term.lastModifiedDate)));
+      }
+      return parts.join(' ');
+    } else {
+      return undefined
+    }
+  }
+
 
   render () {
     const {
@@ -34,6 +53,10 @@ class EntryModal extends Component {
 
     const enableComment = transSelected &&
       entry.transTerm && !isEmpty(transContent)
+
+    const info = transSelected
+      ? this.generateTermInfo(entry.transTerm)
+      : this.generateTermInfo(entry.srcTerm)
 
     return (
       <Modal show={show}
@@ -118,6 +141,7 @@ class EntryModal extends Component {
               </EditableText>
             </div>
           ) : '' }
+          <div className='C(muted) Pt(rq)'>{info}</div>
         </Modal.Body>
         <Modal.Footer>
           <Row theme={{ base: {j: 'Jc(c)'} }}>
