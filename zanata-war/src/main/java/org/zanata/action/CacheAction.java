@@ -80,12 +80,13 @@ public class CacheAction implements Serializable {
         cacheManager.getCacheNames().forEach(this::clearCache);
     }
 
-    /*@Return the entire set of properties for which the specified bean provides a read method.
-    * In this case, the bean is a stats object. The returning value is the set of StatsImpl
-    * (org.infinispan.stats.impl) class's properties. The returning map's keys are plain properties'
-    * names (e.g. getCurrentNumberOfEntries) and the map's values are statistic values (casted Long
-    * values to String). This returning value is is used for composing the cache statistics table at
-    * the admin site. */
+    /**
+     * Return the entire set of properties for which the specified bean provides a read method.
+     * In this case, the bean is a stats object. The returning value is the set of StatsImpl
+     * (org.infinispan.stats.impl) class's properties. The returning map's keys are plain properties'
+     * names (e.g. currentNumberOfEntries) and the map's values are values from the Infinispan Stats
+     * object (converted to Strings if necessary). This returning value is used for composing the
+     * cache statistics table at the admin site.*/
 
     public Map<String, String> getCacheStatsProperties(String cacheName) {
           try {
