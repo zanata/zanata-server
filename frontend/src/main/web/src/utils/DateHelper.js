@@ -1,7 +1,7 @@
 import moment from 'moment'
 //this import MUST come after import for moment
 import 'moment-range'
-import { isEmpty } from 'lodash'
+import { isEmpty, isNil } from 'lodash'
 
 var DateHelper = {
   dateFormat: 'YYYY-MM-DD',
@@ -68,10 +68,7 @@ var DateHelper = {
   },
 
   getDate: function (milliseconds) {
-    if (!isEmpty(milliseconds)) {
-      return new Date(milliseconds)
-    }
-    return
+    return isNil(milliseconds) ? undefined : new Date(milliseconds)
   },
 
   shortDate: function (date) {
