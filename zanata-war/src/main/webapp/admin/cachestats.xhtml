@@ -55,14 +55,13 @@
                 <td>
                   <h:commandButton value="#{msgs['jsf.Clear']}"
                     action="#{cacheAction.clearCache(cacheName)}"
-                    onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationCleaningCache']}&quot;)"/>
+                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationCleaningCache']}')"/>
                 </td>
 
                 <td>
                   <h:commandButton value="#{msgs['jsf.Reset']}"
                     action="#{cacheAction.resetCacheStats(cacheName)}"
-                    onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationResettingCache']}&quot;)"/>
-                    />
+                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationResettingCache']}')"/>
                 </td>
               </tr>
             </c:forEach>
@@ -72,7 +71,7 @@
               <td>
                 <h:commandButton value="#{msgs['jsf.ClearAllCaches']}"
                   action="#{cacheAction.clearAllCaches}"
-                  onclick="return confirm(&quot;#{msgs['jsf.cacheStats.confirmationCleaningAllCache']}&quot;)"/>
+                  onclick="return confirm('#{msgs['jsf.cacheStats.confirmationCleaningAllCache']}')"/>
               </td>
             </tr>
             </tfoot>
