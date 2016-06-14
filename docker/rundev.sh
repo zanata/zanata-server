@@ -17,6 +17,7 @@ mkdir $ZANATA_DIR
 # make zanata directory accessible to docker containers (SELinux)
 chcon -Rt svirt_sandbox_file_t $ZANATA_DIR
 
+# runs zanata-server:latest docker image
 docker run --rm --name zanata --link zanatadb:db -p 8080:8080 -it \
     -v $ZANATA_WAR:/opt/jboss/wildfly/standalone/deployments/ROOT.war \
     -v $ZANATA_DIR:/opt/jboss/zanata \
