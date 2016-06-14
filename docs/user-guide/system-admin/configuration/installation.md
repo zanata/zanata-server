@@ -17,8 +17,8 @@ The following packages are optional, but recommended:
  1. Download and install MySQL 5.5 from the [MySQL download page](http://dev.mysql.com/downloads/mysql/).
  Zanata has been thoroughly tested against MySQL 5.5 and the Zanata team therefore recommends that you install and use this version with Zanata.
  
- 1. Create `zanata` user with the password `ChangeMe`
- `CREATE USER 'zanata'@'localhost' IDENTIFIED BY 'ChangeMe'`
+ 1. Create `zanata` user with the password `zanatapw`
+ `CREATE USER 'zanata'@'localhost' IDENTIFIED BY 'zanatapw'`
  
  1. Grant `zanata` user the permission
  `GRANT ALL ON zanata.* TO 'zanata'@'localhost'`
