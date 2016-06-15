@@ -72,13 +72,13 @@ import com.google.common.cache.CacheLoader;
 public class TranslationStateCacheImpl implements TranslationStateCache {
     private static final String BASE = TranslationStateCacheImpl.class.getName();
 
-    public static final String DOC_STATISTIC_CACHE_NAME = BASE
+    private static final String DOC_STATISTIC_CACHE_NAME = BASE
             + ".documentStatisticCache";
 
-    public static final String DOC_STATUS_CACHE_NAME = BASE
+    private static final String DOC_STATUS_CACHE_NAME = BASE
             + ".docStatusCache";
 
-    public static final String TFT_VALIDATION_CACHE_NAME = BASE
+    private static final String TFT_VALIDATION_CACHE_NAME = BASE
             + ".targetValidationCache";
 
     private CacheWrapper<DocumentLocaleKey, WordStatistic> documentStatisticCache;
