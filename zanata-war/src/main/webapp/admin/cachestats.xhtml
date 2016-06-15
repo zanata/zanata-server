@@ -30,6 +30,14 @@
                 <h:outputText
                   value="#{msgs['jsf.cacheStats.cacheName']}"/>
               </th>
+              <th class="l--pad-v-half" title="#{msgs['jsf.cacheStats.tooltipForClear']}">
+                <h:outputText
+                  value="#{msgs['jsf.Clear']}"/>
+              </th>
+              <th class="l--pad-v-half" title="#{msgs['jsf.cacheStats.tooltipForReset']}">
+                <h:outputText
+                  value="#{msgs['jsf.Reset']}"/>
+              </th>
               <c:forEach
                 items="#{cacheAction.getCacheStatsProperties(cacheName)}"
                 var="property">
@@ -45,6 +53,16 @@
                 <td class="l--pad-v-half">
                   <h:outputText value="#{cacheName}"/>
                 </td>
+                <td>
+                  <h:commandButton value="#{msgs['jsf.Clear']}"
+                    action="#{cacheAction.clearCache(cacheName)}"
+                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationClearingCache']}')"/>
+                </td>
+                <td>
+                  <h:commandButton value="#{msgs['jsf.Reset']}"
+                    action="#{cacheAction.resetCacheStats(cacheName)}"
+                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationResettingCache']}')"/>
+                </td>
                 <c:forEach
                   items="#{cacheAction.getCacheStatsProperties(cacheName)}"
                   var="property">
@@ -52,17 +70,6 @@
                     <h:outputText value="#{property.value}"/>
                   </td>
                 </c:forEach>
-                <td>
-                  <h:commandButton value="#{msgs['jsf.Clear']}"
-                    action="#{cacheAction.clearCache(cacheName)}"
-                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationCleaningCache']}')"/>
-                </td>
-
-                <td>
-                  <h:commandButton value="#{msgs['jsf.Reset']}"
-                    action="#{cacheAction.resetCacheStats(cacheName)}"
-                    onclick="return confirm('#{msgs['jsf.cacheStats.confirmationResettingCache']}')"/>
-                </td>
               </tr>
             </c:forEach>
             </tbody>
@@ -71,7 +78,7 @@
               <td>
                 <h:commandButton value="#{msgs['jsf.ClearAllCaches']}"
                   action="#{cacheAction.clearAllCaches}"
-                  onclick="return confirm('#{msgs['jsf.cacheStats.confirmationCleaningAllCache']}')"/>
+                  onclick="return confirm('#{msgs['jsf.cacheStats.confirmationClearingAllCache']}')"/>
               </td>
             </tr>
             </tfoot>
