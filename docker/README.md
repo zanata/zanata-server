@@ -6,15 +6,21 @@ This image has been tested with Docker 1.11
 
 ## Building
 
-To build this docker image, simply type the following command:
+To build this docker image as "latest", simply type the following command:
 
 ```sh
-$ docker build -t zanata/server:<zanata version> .
+$ docker build -t zanata/server .
 ```
 
-The `-t` parameter indicates a tag for the image and is optional. The version is also optional, if not given, the build will be tagged as 'latest'.
+If you want to build with a different tag, eg 3.8.4, use a command like this:
 
-_Also note the '.' at the end of the command_
+```sh
+$ docker build -t zanata/server:3.8.4 .
+```
+
+Be careful about overwriting existing versions.
+
+The `-t` parameter indicates the name and/or tag for the image.
 
 ## Running a Zanata server with Docker
 
@@ -36,7 +42,13 @@ The database can be accessed via tcp via the `mysql` command or by using any dat
 mysql --protocol=tcp -h localhost --port=<PORT> -uzanata -pzanatapw zanata
 ```
 
-The username and password above are the default given by the script. If you wish to change them, edit the script file with your preferred credentials.
+Alternatively, a docker container can be used to connect to the database using the mysql client like this:
+
+```sh
+$ docker exec -i zanatadb mysql -uzanata -pzanatapw zanata
+```
+
+The username and password above are the default given by the `rundb.sh` script. If you wish to change them, edit the script file with your preferred credentials.
 
 _Note: The server container will be called `zanatadb`. Once stopped, docker will prevent the `rundb.sh` script from running again until the stopped container is removed. To do this, just type:_
 
@@ -58,7 +70,7 @@ To start the Zanata server run:
 $ ./rundev.sh
 ```
 
-This script will start another docker container with the Zanata server, and will log the server output. Contrary to the database container, the server container will run in daemon mode.
+This script will start another docker container with the Zanata server, and will log the server output. Unlike the database container, the server container will run in daemon mode.
 
 The server will connect to the db server which was started in the previous step. It will also take the zanata.war from any war file in the `zanata-war/target` directory. This means a war file must be built beforehand (See `etc/scripts/quickbuild.sh`). You must make sure there is only one `zanata-*.war` file in this directory, otherwise this step will fail.
 
