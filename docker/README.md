@@ -1,7 +1,7 @@
 This is a docker image for the Zanata server. This image runs a wildfly server with Zanata running on top of it. It does not run a database server for the Zanata application
 
 ```
-This image has been tested with Docker 1.11
+This image has been tested with Docker 1.9
 ```
 
 ## Building
@@ -36,7 +36,7 @@ This script will start a docker container with the database. You can inspect the
 
 The container will map the mysql data directory to `$HOME/docker-volumes/zanata-mariadb`. This can be changed from the script file.
 
-The database can be accessed via tcp via the `mysql` command or by using any database administration tool. You need to get the actual mapped port on the host by typing `docker ps`. After you have the port, you can connect locally to the database with the following command:
+The database can be accessed via tcp via the `mysql` command or by using any database administration tool. You need to get the actual mapped port on the host by typing `docker ps`. After you have the port, you can connect locally to the database. The following is an example to accomplish this using a locally installed mysql client:
 
 ```sh
 mysql --protocol=tcp -h localhost --port=<PORT> -uzanata -pzanatapw zanata
