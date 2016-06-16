@@ -319,15 +319,16 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
 
             identity.setPreAuthenticated(true);
 
+            // TODO check authenticatedAccount != null only once
             if (authenticatedAccount != null
                     && authenticatedAccount.isEnabled()) {
                 credentials.setUsername(authenticatedAccount.getUsername());
                 ZanataIdentity.instance().acceptExternallyAuthenticatedPrincipal(
                         (new SimplePrincipal(result.getAuthenticatedId())));
                 this.loginImmediate();
-            } else if(authenticatedAccount != null) {
+            } else if (authenticatedAccount != null) {
                 credentials.setUsername(authenticatedAccount.getUsername());
-            }  else if (authenticatedAccount == null) {
+            }  else {
                 // If the user hasn't been registered yet
                 // this is the full open id
                 credentials.setUsername(result.getAuthenticatedId());
@@ -346,7 +347,7 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
 
     @Produces
     @RequestScoped
-    public OpenIdProvider getOpenIdProvider() {
+    public static OpenIdProvider getOpenIdProvider(ZanataCredentials credentials) {
         switch (credentials.getOpenIdProviderType()) {
             case Fedora:
                 return new FedoraOpenIdProvider();
@@ -364,7 +365,7 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
                 return new GenericOpenIdProvider();
 
             default:
-                return new GenericOpenIdProvider();
+                throw new RuntimeException("Unexpected OpenIdProviderType");
         }
     }
 }
