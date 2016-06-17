@@ -98,11 +98,11 @@
 	
 	var _Root2 = _interopRequireDefault(_Root);
 	
-	var _NeedSlugMessage = __webpack_require__(392);
+	var _NeedSlugMessage = __webpack_require__(391);
 	
 	var _NeedSlugMessage2 = _interopRequireDefault(_NeedSlugMessage);
 	
-	__webpack_require__(393);
+	__webpack_require__(392);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -43958,7 +43958,6 @@
 	});
 	exports.getSaveButtonStatus = getSaveButtonStatus;
 	exports.hasTranslationChanged = hasTranslationChanged;
-	exports.canUndo = canUndo;
 	exports.hasNoTranslation = hasNoTranslation;
 	exports.hasEmptyTranslation = hasEmptyTranslation;
 	
@@ -43989,10 +43988,6 @@
 	    return nullToEmpty(translation) === nullToEmpty(phrase.newTranslations[index]);
 	  });
 	  return !allSame;
-	}
-	
-	function canUndo(phrase) {
-	  return phrase.previousTranslations;
 	}
 	
 	function hasNoTranslation(phrase) {
@@ -44131,7 +44126,6 @@
 	      sources: plural ? source.contents : [source.content],
 	      translations: translations,
 	      newTranslations: [].concat(_toConsumableArray(translations)),
-	      previousTranslations: undefined,
 	      status: transUnitStatusToPhraseStatus(trans && trans.state),
 	      revision: trans && trans.revision ? parseInt(trans.revision, 10) : 0,
 	      wordCount: parseInt(source.wordCount, 10)
@@ -45895,11 +45889,9 @@
 	    case _phrases.SAVE_FINISHED:
 	      var phrase = state.detail[action.phraseId];
 	      var newTranslations = phrase.newTranslations;
-	      var translations = phrase.translations;
 	
 	      return updatePhrase(action.phraseId, {
 	        inProgressSave: { $set: undefined },
-	        previousTranslations: { $set: translations },
 	        translations: { $set: newTranslations },
 	        // TODO same as inProgressSave.status unless the server adjusted it
 	        status: { $set: action.status },
@@ -45935,9 +45927,7 @@
 	    case _phrases.UNDO_EDIT:
 	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
 	          return (0, _reactAddonsUpdate2.default)(phrase, {
-	            newTranslations: { $set: [].concat(_toConsumableArray(phrase.previousTranslations)) },
-	            translations: { $set: [].concat(_toConsumableArray(phrase.previousTranslations)) },
-	            previousTranslations: { $set: undefined }
+	            newTranslations: { $set: [].concat(_toConsumableArray(phrase.translations)) }
 	          });
 	        } });
 	
@@ -47246,15 +47236,15 @@
 	
 	var _EditorHeader2 = _interopRequireDefault(_EditorHeader);
 	
-	var _KeyShortcutCheatSheet = __webpack_require__(334);
+	var _KeyShortcutCheatSheet = __webpack_require__(333);
 	
 	var _KeyShortcutCheatSheet2 = _interopRequireDefault(_KeyShortcutCheatSheet);
 	
-	var _KeyShortcutDispatcher = __webpack_require__(336);
+	var _KeyShortcutDispatcher = __webpack_require__(335);
 	
 	var _KeyShortcutDispatcher2 = _interopRequireDefault(_KeyShortcutDispatcher);
 	
-	var _SuggestionsPanel = __webpack_require__(371);
+	var _SuggestionsPanel = __webpack_require__(370);
 	
 	var _SuggestionsPanel2 = _interopRequireDefault(_SuggestionsPanel);
 	
@@ -47264,7 +47254,7 @@
 	
 	var _suggestions = __webpack_require__(281);
 	
-	var _reactSplitPane = __webpack_require__(388);
+	var _reactSplitPane = __webpack_require__(387);
 	
 	var _reactSplitPane2 = _interopRequireDefault(_reactSplitPane);
 	
@@ -48996,7 +48986,7 @@
 	  },
 	
 	  render: function render() {
-	    var displayUndo = (0, _phrase.canUndo)(this.props.phrase);
+	    var displayUndo = (0, _phrase.hasTranslationChanged)(this.props.phrase);
 	    var button = displayUndo ? this.undoButtonElement() : this.closeButtonElement();
 	
 	    return _react2.default.createElement(
@@ -49448,7 +49438,7 @@
 	
 	var _NavHeader2 = _interopRequireDefault(_NavHeader);
 	
-	var _ProgressBar = __webpack_require__(331);
+	var _ProgressBar = __webpack_require__(330);
 	
 	var _ProgressBar2 = _interopRequireDefault(_ProgressBar);
 	
@@ -49458,7 +49448,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _ZanataLogoLoader = __webpack_require__(332);
+	var _ZanataLogoLoader = __webpack_require__(331);
 	
 	var _ZanataLogoLoader2 = _interopRequireDefault(_ZanataLogoLoader);
 	
@@ -50273,10 +50263,6 @@
 	
 	var _ProjectVersionLink2 = _interopRequireDefault(_ProjectVersionLink);
 	
-	var _UiLanguageDropdown = __webpack_require__(330);
-	
-	var _UiLanguageDropdown2 = _interopRequireDefault(_UiLanguageDropdown);
-	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -50289,6 +50275,9 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	/* Disabled UI locale changes until zanata-spa is internationalised
+	import UiLanguageDropdown from '../components/UiLanguageDropdown'
+	*/
 	var any = _react.PropTypes.any;
 	var arrayOf = _react.PropTypes.arrayOf;
 	var func = _react.PropTypes.func;
@@ -50363,13 +50352,14 @@
 	      toggleDropdown: props.actions.toggleDropdown(dropdowns.localeKey)
 	    };
 	
-	    var uiLangDropdownProps = {
+	    /* Disabled UI locale changes until zanata-spa is internationalised
+	    const uiLangDropdownProps = {
 	      changeUiLocale: props.actions.changeUiLocale,
 	      selectedUiLocale: props.ui.selectedUiLocale,
 	      uiLocales: props.ui.uiLocales,
 	      isOpen: dropdowns.openDropdownKey === dropdowns.uiLocaleKey,
 	      toggleDropdown: props.actions.toggleDropdown(dropdowns.uiLocaleKey)
-	    };
+	    }*/
 	
 	    return _react2.default.createElement(
 	      'nav',
@@ -50399,11 +50389,6 @@
 	      _react2.default.createElement(
 	        'ul',
 	        { className: 'u-listHorizontal u-posAbsoluteRight u-sMR-1-2' },
-	        _react2.default.createElement(
-	          'li',
-	          null,
-	          _react2.default.createElement(_UiLanguageDropdown2.default, uiLangDropdownProps)
-	        ),
 	        _react2.default.createElement(
 	          'li',
 	          null,
@@ -50933,105 +50918,6 @@
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _Dropdown = __webpack_require__(327);
-	
-	var _Dropdown2 = _interopRequireDefault(_Dropdown);
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	/**
-	 * Dropdown to select the language to display the user interface in.
-	 */
-	var UiLanguageDropdown = _react2.default.createClass({
-	  displayName: 'UiLanguageDropdown',
-	
-	
-	  propTypes: {
-	    changeUiLocale: _react.PropTypes.func.isRequired,
-	    selectedUiLocale: _react.PropTypes.string,
-	    uiLocales: _react.PropTypes.object.isRequired,
-	
-	    toggleDropdown: _react.PropTypes.func.isRequired,
-	    isOpen: _react.PropTypes.bool.isRequired
-	  },
-	
-	  changeUiLocale: function changeUiLocale(locale) {
-	    var _this = this;
-	
-	    // AppCtrl expects { localeId, name } rather than { id, name }
-	    return function () {
-	      return _this.props.changeUiLocale({
-	        localeId: locale.id,
-	        name: locale.name
-	      });
-	    };
-	  },
-	
-	  render: function render() {
-	    var _this2 = this;
-	
-	    var items = (0, _lodash.values)(this.props.uiLocales).map(function (locale) {
-	      return _react2.default.createElement(
-	        'li',
-	        { key: locale.id },
-	        _react2.default.createElement(
-	          'a',
-	          { onClick: _this2.changeUiLocale(locale),
-	            className: 'Dropdown-item' },
-	          locale.name
-	        )
-	      );
-	    });
-	
-	    var selectedLocaleId = this.props.selectedUiLocale;
-	    var selectedLocale = this.props.uiLocales[selectedLocaleId];
-	    var uiLocaleName = selectedLocale ? selectedLocale.name : selectedLocaleId;
-	
-	    return _react2.default.createElement(
-	      _Dropdown2.default,
-	      { onToggle: this.props.toggleDropdown,
-	        isOpen: this.props.isOpen,
-	        className: 'Dropdown--right u-sMV-1-2' },
-	      _react2.default.createElement(
-	        _Dropdown2.default.Button,
-	        null,
-	        _react2.default.createElement(
-	          'a',
-	          { className: 'Link--invert u-inlineBlock u-textNoWrap u-sPH-1-4' },
-	          uiLocaleName
-	        )
-	      ),
-	      _react2.default.createElement(
-	        _Dropdown2.default.Content,
-	        null,
-	        _react2.default.createElement(
-	          'ul',
-	          null,
-	          items
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	exports.default = UiLanguageDropdown;
-
-/***/ },
-/* 331 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _lodash = __webpack_require__(271);
-	
 	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
@@ -51142,7 +51028,7 @@
 	exports.default = ProgressBar;
 
 /***/ },
-/* 332 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51159,7 +51045,7 @@
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _LogoLoader = __webpack_require__(333);
+	var _LogoLoader = __webpack_require__(332);
 	
 	var _LogoLoader2 = _interopRequireDefault(_LogoLoader);
 	
@@ -51219,7 +51105,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(ZanataLogoLoader);
 
 /***/ },
-/* 333 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51307,7 +51193,7 @@
 	exports.default = LogoLoader;
 
 /***/ },
-/* 334 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51328,7 +51214,7 @@
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _KeyCombinations = __webpack_require__(335);
+	var _KeyCombinations = __webpack_require__(334);
 	
 	var _KeyCombinations2 = _interopRequireDefault(_KeyCombinations);
 	
@@ -51468,7 +51354,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KeyShortcutCheatSheet);
 
 /***/ },
-/* 335 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51547,7 +51433,7 @@
 	}
 
 /***/ },
-/* 336 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51558,11 +51444,11 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _combokeys = __webpack_require__(337);
+	var _combokeys = __webpack_require__(336);
 	
 	var _combokeys2 = _interopRequireDefault(_combokeys);
 	
-	var _globalBind = __webpack_require__(370);
+	var _globalBind = __webpack_require__(369);
 	
 	var _globalBind2 = _interopRequireDefault(_globalBind);
 	
@@ -51716,7 +51602,7 @@
 	exports.default = (0, _reactRedux.connect)(undefined, mapDispatchToProps)(KeyShortcutDispatcher);
 
 /***/ },
-/* 337 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -51785,27 +51671,27 @@
 	  return self
 	}
 	
-	module.exports.prototype.bind = __webpack_require__(338)
-	module.exports.prototype.bindMultiple = __webpack_require__(339)
-	module.exports.prototype.unbind = __webpack_require__(340)
-	module.exports.prototype.trigger = __webpack_require__(341)
-	module.exports.prototype.reset = __webpack_require__(342)
-	module.exports.prototype.stopCallback = __webpack_require__(343)
-	module.exports.prototype.handleKey = __webpack_require__(344)
-	module.exports.prototype.addEvents = __webpack_require__(346)
-	module.exports.prototype.bindSingle = __webpack_require__(353)
-	module.exports.prototype.getKeyInfo = __webpack_require__(354)
-	module.exports.prototype.pickBestAction = __webpack_require__(358)
-	module.exports.prototype.getReverseMap = __webpack_require__(359)
-	module.exports.prototype.getMatches = __webpack_require__(360)
-	module.exports.prototype.resetSequences = __webpack_require__(362)
-	module.exports.prototype.fireCallback = __webpack_require__(363)
-	module.exports.prototype.bindSequence = __webpack_require__(366)
-	module.exports.prototype.resetSequenceTimer = __webpack_require__(367)
-	module.exports.prototype.detach = __webpack_require__(368)
+	module.exports.prototype.bind = __webpack_require__(337)
+	module.exports.prototype.bindMultiple = __webpack_require__(338)
+	module.exports.prototype.unbind = __webpack_require__(339)
+	module.exports.prototype.trigger = __webpack_require__(340)
+	module.exports.prototype.reset = __webpack_require__(341)
+	module.exports.prototype.stopCallback = __webpack_require__(342)
+	module.exports.prototype.handleKey = __webpack_require__(343)
+	module.exports.prototype.addEvents = __webpack_require__(345)
+	module.exports.prototype.bindSingle = __webpack_require__(352)
+	module.exports.prototype.getKeyInfo = __webpack_require__(353)
+	module.exports.prototype.pickBestAction = __webpack_require__(357)
+	module.exports.prototype.getReverseMap = __webpack_require__(358)
+	module.exports.prototype.getMatches = __webpack_require__(359)
+	module.exports.prototype.resetSequences = __webpack_require__(361)
+	module.exports.prototype.fireCallback = __webpack_require__(362)
+	module.exports.prototype.bindSequence = __webpack_require__(365)
+	module.exports.prototype.resetSequenceTimer = __webpack_require__(366)
+	module.exports.prototype.detach = __webpack_require__(367)
 	
 	module.exports.instances = []
-	module.exports.reset = __webpack_require__(369)
+	module.exports.reset = __webpack_require__(368)
 	
 	/**
 	 * variable to store the flipped version of MAP from above
@@ -51818,7 +51704,7 @@
 
 
 /***/ },
-/* 338 */
+/* 337 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51847,7 +51733,7 @@
 
 
 /***/ },
-/* 339 */
+/* 338 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51871,7 +51757,7 @@
 
 
 /***/ },
-/* 340 */
+/* 339 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51901,7 +51787,7 @@
 
 
 /***/ },
-/* 341 */
+/* 340 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51923,7 +51809,7 @@
 
 
 /***/ },
-/* 342 */
+/* 341 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51945,7 +51831,7 @@
 
 
 /***/ },
-/* 343 */
+/* 342 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51972,7 +51858,7 @@
 
 
 /***/ },
-/* 344 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52061,7 +51947,7 @@
 	  // we ignore keypresses in a sequence that directly follow a keydown
 	  // for the same character
 	  ignoreThisKeypress = e.type === 'keypress' && self.ignoreNextKeypress
-	  isModifier = __webpack_require__(345)
+	  isModifier = __webpack_require__(344)
 	  if (e.type === self.nextExpectedAction && !isModifier(character) && !ignoreThisKeypress) {
 	    self.resetSequences(doNotReset)
 	  }
@@ -52071,7 +51957,7 @@
 
 
 /***/ },
-/* 345 */
+/* 344 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52089,17 +51975,17 @@
 
 
 /***/ },
-/* 346 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
 	'use strict'
 	module.exports = function () {
 	  var self = this
-	  var on = __webpack_require__(347)
+	  var on = __webpack_require__(346)
 	  var element = self.element
 	
-	  self.eventHandler = __webpack_require__(348).bind(self)
+	  self.eventHandler = __webpack_require__(347).bind(self)
 	
 	  on(element, 'keypress', self.eventHandler)
 	  on(element, 'keydown', self.eventHandler)
@@ -52108,7 +51994,7 @@
 
 
 /***/ },
-/* 347 */
+/* 346 */
 /***/ function(module, exports) {
 
 	module.exports = on
@@ -52129,7 +52015,7 @@
 
 
 /***/ },
-/* 348 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52151,7 +52037,7 @@
 	  if (typeof e.which !== 'number') {
 	    e.which = e.keyCode
 	  }
-	  characterFromEvent = __webpack_require__(349)
+	  characterFromEvent = __webpack_require__(348)
 	  var character = characterFromEvent(e)
 	
 	  // no character found then stop
@@ -52165,13 +52051,13 @@
 	    return
 	  }
 	
-	  eventModifiers = __webpack_require__(352)
+	  eventModifiers = __webpack_require__(351)
 	  self.handleKey(character, eventModifiers(e), e)
 	}
 
 
 /***/ },
-/* 349 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52186,8 +52072,8 @@
 	module.exports = function (e) {
 	  var SPECIAL_KEYS_MAP,
 	    SPECIAL_CHARACTERS_MAP
-	  SPECIAL_KEYS_MAP = __webpack_require__(350)
-	  SPECIAL_CHARACTERS_MAP = __webpack_require__(351)
+	  SPECIAL_KEYS_MAP = __webpack_require__(349)
+	  SPECIAL_CHARACTERS_MAP = __webpack_require__(350)
 	
 	  // for keypress events we should return the character as is
 	  if (e.type === 'keypress') {
@@ -52228,7 +52114,7 @@
 
 
 /***/ },
-/* 350 */
+/* 349 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52286,7 +52172,7 @@
 
 
 /***/ },
-/* 351 */
+/* 350 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52320,7 +52206,7 @@
 
 
 /***/ },
-/* 352 */
+/* 351 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52356,7 +52242,7 @@
 
 
 /***/ },
-/* 353 */
+/* 352 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52418,7 +52304,7 @@
 
 
 /***/ },
-/* 354 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52442,14 +52328,14 @@
 	  var SHIFT_MAP
 	  var isModifier
 	
-	  keysFromString = __webpack_require__(355)
+	  keysFromString = __webpack_require__(354)
 	  // take the keys from this pattern and figure out what the actual
 	  // pattern is all about
 	  keys = keysFromString(combination)
 	
-	  SPECIAL_ALIASES = __webpack_require__(356)
-	  SHIFT_MAP = __webpack_require__(357)
-	  isModifier = __webpack_require__(345)
+	  SPECIAL_ALIASES = __webpack_require__(355)
+	  SHIFT_MAP = __webpack_require__(356)
+	  isModifier = __webpack_require__(344)
 	  for (j = 0; j < keys.length; ++j) {
 	    key = keys[j]
 	
@@ -52485,7 +52371,7 @@
 
 
 /***/ },
-/* 355 */
+/* 354 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52507,7 +52393,7 @@
 
 
 /***/ },
-/* 356 */
+/* 355 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52528,7 +52414,7 @@
 
 
 /***/ },
-/* 357 */
+/* 356 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52567,7 +52453,7 @@
 
 
 /***/ },
-/* 358 */
+/* 357 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52600,7 +52486,7 @@
 
 
 /***/ },
-/* 359 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52619,7 +52505,7 @@
 	
 	  if (!constructor.REVERSE_MAP) {
 	    constructor.REVERSE_MAP = {}
-	    SPECIAL_KEYS_MAP = __webpack_require__(350)
+	    SPECIAL_KEYS_MAP = __webpack_require__(349)
 	    for (var key in SPECIAL_KEYS_MAP) {
 	      // pull out the numeric keypad from here cause keypress should
 	      // be able to detect the keys from the character
@@ -52637,7 +52523,7 @@
 
 
 /***/ },
-/* 360 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52678,7 +52564,7 @@
 	
 	  if (!self.callbacks[character]) { return matches }
 	
-	  isModifier = __webpack_require__(345)
+	  isModifier = __webpack_require__(344)
 	  // if a modifier key is coming up on its own we should allow it
 	  if (action === 'keyup' && isModifier(character)) {
 	    modifiers = [character]
@@ -52708,7 +52594,7 @@
 	    // chrome will not fire a keypress if meta or control is down
 	    // safari will fire a keypress if meta or meta+shift is down
 	    // firefox will fire a keypress if meta or control is down
-	    modifiersMatch = __webpack_require__(361)
+	    modifiersMatch = __webpack_require__(360)
 	    if ((action === 'keypress' && !e.metaKey && !e.ctrlKey) || modifiersMatch(modifiers, callback.modifiers)) {
 	      // when you bind a combination or sequence a second time it
 	      // should overwrite the first one.  if a sequenceName or
@@ -52730,7 +52616,7 @@
 
 
 /***/ },
-/* 361 */
+/* 360 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52749,7 +52635,7 @@
 
 
 /***/ },
-/* 362 */
+/* 361 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52784,7 +52670,7 @@
 
 
 /***/ },
-/* 363 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52811,16 +52697,16 @@
 	  }
 	
 	  if (callback(e, combo) === false) {
-	    preventDefault = __webpack_require__(364)
+	    preventDefault = __webpack_require__(363)
 	    preventDefault(e)
-	    stopPropagation = __webpack_require__(365)
+	    stopPropagation = __webpack_require__(364)
 	    stopPropagation(e)
 	  }
 	}
 
 
 /***/ },
-/* 364 */
+/* 363 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52843,7 +52729,7 @@
 
 
 /***/ },
-/* 365 */
+/* 364 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52866,7 +52752,7 @@
 
 
 /***/ },
-/* 366 */
+/* 365 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52918,7 +52804,7 @@
 	    // or keypress.  this is so if you finish a sequence and
 	    // release the key the final key will not trigger a keyup
 	    if (action !== 'keyup') {
-	      characterFromEvent = __webpack_require__(349)
+	      characterFromEvent = __webpack_require__(348)
 	      self.ignoreNextKeyup = characterFromEvent(e)
 	    }
 	
@@ -52950,7 +52836,7 @@
 
 
 /***/ },
-/* 367 */
+/* 366 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52977,10 +52863,10 @@
 
 
 /***/ },
-/* 368 */
+/* 367 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var off = __webpack_require__(347).off
+	var off = __webpack_require__(346).off
 	module.exports = function () {
 	  var self = this
 	  var element = self.element
@@ -52992,7 +52878,7 @@
 
 
 /***/ },
-/* 369 */
+/* 368 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -53008,7 +52894,7 @@
 
 
 /***/ },
-/* 370 */
+/* 369 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -53051,7 +52937,7 @@
 
 
 /***/ },
-/* 371 */
+/* 370 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53070,11 +52956,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionsHeader = __webpack_require__(372);
+	var _SuggestionsHeader = __webpack_require__(371);
 	
 	var _SuggestionsHeader2 = _interopRequireDefault(_SuggestionsHeader);
 	
-	var _SuggestionsBody = __webpack_require__(375);
+	var _SuggestionsBody = __webpack_require__(374);
 	
 	var _SuggestionsBody2 = _interopRequireDefault(_SuggestionsBody);
 	
@@ -53204,7 +53090,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SuggestionsPanel);
 
 /***/ },
-/* 372 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53229,11 +53115,11 @@
 	
 	var _IconButtonToggle2 = _interopRequireDefault(_IconButtonToggle);
 	
-	var _SuggestionSearchInput = __webpack_require__(373);
+	var _SuggestionSearchInput = __webpack_require__(372);
 	
 	var _SuggestionSearchInput2 = _interopRequireDefault(_SuggestionSearchInput);
 	
-	var _ToggleSwitch = __webpack_require__(374);
+	var _ToggleSwitch = __webpack_require__(373);
 	
 	var _ToggleSwitch2 = _interopRequireDefault(_ToggleSwitch);
 	
@@ -53362,7 +53248,7 @@
 	exports.default = SuggestionsHeader;
 
 /***/ },
-/* 373 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53532,7 +53418,7 @@
 	exports.default = SuggestionSearchInput;
 
 /***/ },
-/* 374 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53591,7 +53477,7 @@
 	exports.default = ToggleSwitch;
 
 /***/ },
-/* 375 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53604,11 +53490,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _NoSuggestionsPanel = __webpack_require__(376);
+	var _NoSuggestionsPanel = __webpack_require__(375);
 	
 	var _NoSuggestionsPanel2 = _interopRequireDefault(_NoSuggestionsPanel);
 	
-	var _SuggestionList = __webpack_require__(377);
+	var _SuggestionList = __webpack_require__(376);
 	
 	var _SuggestionList2 = _interopRequireDefault(_SuggestionList);
 	
@@ -53696,7 +53582,7 @@
 	exports.default = SuggestionsBody;
 
 /***/ },
-/* 376 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53748,7 +53634,7 @@
 	exports.default = NoSuggestionsPanel;
 
 /***/ },
-/* 377 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53763,7 +53649,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Suggestion = __webpack_require__(378);
+	var _Suggestion = __webpack_require__(377);
 	
 	var _Suggestion2 = _interopRequireDefault(_Suggestion);
 	
@@ -53821,7 +53707,7 @@
 	exports.default = SuggestionList;
 
 /***/ },
-/* 378 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53836,11 +53722,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionSources = __webpack_require__(379);
+	var _SuggestionSources = __webpack_require__(378);
 	
 	var _SuggestionSources2 = _interopRequireDefault(_SuggestionSources);
 	
-	var _SuggestionTranslations = __webpack_require__(384);
+	var _SuggestionTranslations = __webpack_require__(383);
 	
 	var _SuggestionTranslations2 = _interopRequireDefault(_SuggestionTranslations);
 	
@@ -53920,7 +53806,7 @@
 	exports.default = Suggestion;
 
 /***/ },
-/* 379 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53933,11 +53819,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionContents = __webpack_require__(380);
+	var _SuggestionContents = __webpack_require__(379);
 	
 	var _SuggestionContents2 = _interopRequireDefault(_SuggestionContents);
 	
-	var _SuggestionSourceDetails = __webpack_require__(383);
+	var _SuggestionSourceDetails = __webpack_require__(382);
 	
 	var _SuggestionSourceDetails2 = _interopRequireDefault(_SuggestionSourceDetails);
 	
@@ -53981,7 +53867,7 @@
 	exports.default = SuggestionSources;
 
 /***/ },
-/* 380 */
+/* 379 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53990,7 +53876,7 @@
 	  value: true
 	});
 	
-	var _TextDiff = __webpack_require__(381);
+	var _TextDiff = __webpack_require__(380);
 	
 	var _TextDiff2 = _interopRequireDefault(_TextDiff);
 	
@@ -54079,7 +53965,7 @@
 	exports.default = SuggestionContents;
 
 /***/ },
-/* 381 */
+/* 380 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -54090,7 +53976,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _textDiff = __webpack_require__(382);
+	var _textDiff = __webpack_require__(381);
 	
 	var _textDiff2 = _interopRequireDefault(_textDiff);
 	
@@ -54170,7 +54056,7 @@
 	});
 
 /***/ },
-/* 382 */
+/* 381 */
 /***/ function(module, exports) {
 
 	/**
@@ -55574,7 +55460,7 @@
 
 
 /***/ },
-/* 383 */
+/* 382 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55681,7 +55567,7 @@
 	exports.default = SuggestionSourceDetails;
 
 /***/ },
-/* 384 */
+/* 383 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55694,11 +55580,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionContents = __webpack_require__(380);
+	var _SuggestionContents = __webpack_require__(379);
 	
 	var _SuggestionContents2 = _interopRequireDefault(_SuggestionContents);
 	
-	var _SuggestionTranslationDetails = __webpack_require__(385);
+	var _SuggestionTranslationDetails = __webpack_require__(384);
 	
 	var _SuggestionTranslationDetails2 = _interopRequireDefault(_SuggestionTranslationDetails);
 	
@@ -55740,7 +55626,7 @@
 	exports.default = SuggestionTranslations;
 
 /***/ },
-/* 385 */
+/* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55757,11 +55643,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionMatchPercent = __webpack_require__(386);
+	var _SuggestionMatchPercent = __webpack_require__(385);
 	
 	var _SuggestionMatchPercent2 = _interopRequireDefault(_SuggestionMatchPercent);
 	
-	var _SuggestionUpdateMessage = __webpack_require__(387);
+	var _SuggestionUpdateMessage = __webpack_require__(386);
 	
 	var _SuggestionUpdateMessage2 = _interopRequireDefault(_SuggestionUpdateMessage);
 	
@@ -55857,7 +55743,7 @@
 	exports.default = SuggestionTranslationDetails;
 
 /***/ },
-/* 386 */
+/* 385 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55924,7 +55810,7 @@
 	exports.default = SuggestionMatchPercent;
 
 /***/ },
-/* 387 */
+/* 386 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56007,15 +55893,15 @@
 	exports.default = SuggestionUpdateMessage;
 
 /***/ },
-/* 388 */
+/* 387 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SplitPane = __webpack_require__(389);
+	var SplitPane = __webpack_require__(388);
 	
 	module.exports = SplitPane;
 
 /***/ },
-/* 389 */
+/* 388 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56036,11 +55922,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Pane = __webpack_require__(390);
+	var _Pane = __webpack_require__(389);
 	
 	var _Pane2 = _interopRequireDefault(_Pane);
 	
-	var _Resizer = __webpack_require__(391);
+	var _Resizer = __webpack_require__(390);
 	
 	var _Resizer2 = _interopRequireDefault(_Resizer);
 	
@@ -56298,7 +56184,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 390 */
+/* 389 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56382,7 +56268,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 391 */
+/* 390 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56453,7 +56339,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 392 */
+/* 391 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56544,7 +56430,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(NeedSlugMessage);
 
 /***/ },
-/* 393 */
+/* 392 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
