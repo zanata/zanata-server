@@ -74,35 +74,35 @@
 	
 	var _newContextFetch2 = _interopRequireDefault(_newContextFetch);
 	
-	var _selectedPhraseSuggestionSearch = __webpack_require__(275);
+	var _selectedPhraseSuggestionSearch = __webpack_require__(280);
 	
 	var _selectedPhraseSuggestionSearch2 = _interopRequireDefault(_selectedPhraseSuggestionSearch);
 	
-	var _getstateInActions = __webpack_require__(279);
+	var _getstateInActions = __webpack_require__(283);
 	
 	var _getstateInActions2 = _interopRequireDefault(_getstateInActions);
 	
-	var _reduxThunk = __webpack_require__(280);
+	var _reduxThunk = __webpack_require__(284);
 	
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 	
-	var _reduxLogger = __webpack_require__(281);
+	var _reduxLogger = __webpack_require__(285);
 	
 	var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
 	
-	var _reducers = __webpack_require__(282);
+	var _reducers = __webpack_require__(286);
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
-	var _Root = __webpack_require__(298);
+	var _Root = __webpack_require__(299);
 	
 	var _Root2 = _interopRequireDefault(_Root);
 	
-	var _NeedSlugMessage = __webpack_require__(391);
+	var _NeedSlugMessage = __webpack_require__(392);
 	
 	var _NeedSlugMessage2 = _interopRequireDefault(_NeedSlugMessage);
 	
-	__webpack_require__(392);
+	__webpack_require__(393);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -30537,6 +30537,8 @@
 	  value: true
 	});
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	var _stateChangeDispatch = __webpack_require__(264);
 	
 	var _stateChangeDispatch2 = _interopRequireDefault(_stateChangeDispatch);
@@ -30545,13 +30547,30 @@
 	
 	var _phrases = __webpack_require__(274);
 	
+	var _headerActions = __webpack_require__(275);
+	
+	var _controlsHeaderActions = __webpack_require__(277);
+	
+	var _lodash = __webpack_require__(271);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	/**
+	 * Get page query from url, and check is integer and >= 0
+	 * @param state
+	 * @returns {number}
+	 */
+	var getPageIndexFromQuery = function getPageIndexFromQuery(state) {
+	  return state.routing.location.query.page ? (0, _lodash.max)([parseInt(state.routing.location.query.page, 10) - 1, 0]) : 0;
+	};
 	
 	/**
 	 * Middleware to fetch new data when the context changes.
 	 *
 	 * e.g.
-	 *  - when selected doc ID changes, fetch its text flows
+	 *  - when selected doc ID changes, fetch text flow info and details
+	 *  - when selected locale changes, fetch text flow info and details
+	 *  - when page changes, fetch text flows details
 	 *  - when the project or version change, fetch a new document list
 	 */
 	var fetchDocsMiddleware = (0, _stateChangeDispatch2.default)(function (dispatch, oldState, newState) {
@@ -30562,20 +30581,40 @@
 	    dispatch((0, _actions.requestDocumentList)());
 	  }
 	}, function (dispatch, oldState, newState) {
-	  var needPhrases = oldState.context.docId !== newState.context.docId;
-	  if (needPhrases) {
+	  var updateDoc = oldState.context.docId !== newState.context.docId;
+	  var updateLocale = oldState.context.lang !== newState.context.lang;
+	
+	  var newPageIndex = getPageIndexFromQuery(newState);
+	  var oldPageIndex = getPageIndexFromQuery(oldState);
+	
+	  var updatePage = oldPageIndex !== newPageIndex;
+	  if (updateDoc || updateLocale) {
 	    var _newState$context = newState.context;
 	    var projectSlug = _newState$context.projectSlug;
 	    var versionSlug = _newState$context.versionSlug;
 	    var lang = _newState$context.lang;
 	    var docId = _newState$context.docId;
 	
-	    dispatch((0, _phrases.requestPhraseList)(projectSlug, versionSlug, lang, docId));
+	    var paging = _extends({}, newState.phrases.paging, {
+	      pageIndex: newPageIndex
+	    });
+	    if (updateDoc) {
+	      dispatch((0, _headerActions.selectDoc)(docId));
+	    }
+	    if (updateLocale) {
+	      dispatch((0, _headerActions.selectLocale)(lang));
+	    }
+	    dispatch({ type: _controlsHeaderActions.UPDATE_PAGE, page: newPageIndex });
+	    dispatch((0, _phrases.requestPhraseList)(projectSlug, versionSlug, lang, docId, paging));
+	  } else if (updatePage) {
+	    var phraseState = newState.phrases;
+	    var _paging = _extends({}, phraseState.paging, {
+	      pageIndex: newPageIndex
+	    });
+	    dispatch({ type: _controlsHeaderActions.UPDATE_PAGE, page: newPageIndex });
+	    dispatch((0, _phrases.fetchPhraseDetails)(phraseState.docStatus, newState.context.lang, _paging));
 	  }
-	}
-	// TODO add callback to fetchNewPhrasesIfNeeded (when docId changes)
-	// TODO add callback to fetchNewTranslationsIfNeeded (when lang changes)
-	);
+	});
 	
 	exports.default = fetchDocsMiddleware;
 
@@ -30761,7 +30800,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.baseRestUrl = exports.dashboardUrl = undefined;
+	exports.baseRestUrl = exports.dashboardUrl = exports.serviceUrl = undefined;
 	exports.fetchPhraseList = fetchPhraseList;
 	exports.fetchPhraseDetail = fetchPhraseDetail;
 	exports.fetchStatistics = fetchStatistics;
@@ -30791,7 +30830,7 @@
 	// https://www.npmjs.com/package/whatwg-fetch
 	// (it is just a wrapper around whatwg-fetch)
 	
-	var serviceUrl = getServiceUrl();
+	var serviceUrl = exports.serviceUrl = getServiceUrl();
 	var dashboardUrl = exports.dashboardUrl = serviceUrl + '/dashboard';
 	
 	var baseRestUrl = exports.baseRestUrl = serviceUrl + '/rest';
@@ -43919,6 +43958,7 @@
 	});
 	exports.getSaveButtonStatus = getSaveButtonStatus;
 	exports.hasTranslationChanged = hasTranslationChanged;
+	exports.canUndo = canUndo;
 	exports.hasNoTranslation = hasNoTranslation;
 	exports.hasEmptyTranslation = hasEmptyTranslation;
 	
@@ -43951,6 +43991,10 @@
 	  return !allSame;
 	}
 	
+	function canUndo(phrase) {
+	  return phrase.previousTranslations;
+	}
+	
 	function hasNoTranslation(phrase) {
 	  return (0, _lodash.isEmpty)((0, _lodash.compact)(phrase.newTranslations));
 	}
@@ -43973,6 +44017,7 @@
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	exports.requestPhraseList = requestPhraseList;
+	exports.fetchPhraseDetails = fetchPhraseDetails;
 	exports.phraseListFetched = phraseListFetched;
 	exports.phraseListFetchFailed = phraseListFetchFailed;
 	exports.requestPhraseDetail = requestPhraseDetail;
@@ -44000,8 +44045,8 @@
 	var FETCHING_PHRASE_LIST = exports.FETCHING_PHRASE_LIST = Symbol('FETCHING_PHRASE_LIST');
 	
 	// API lookup of the list of phrase id + phrase status for the current document
-	function requestPhraseList(projectSlug, versionSlug, lang, docId) {
-	  return function (dispatch) {
+	function requestPhraseList(projectSlug, versionSlug, lang, docId, paging) {
+	  return function (dispatch, getState) {
 	    dispatch({ type: FETCHING_PHRASE_LIST });
 	
 	    (0, _api.fetchPhraseList)(projectSlug, versionSlug, lang, docId).then(function (response) {
@@ -44014,27 +44059,35 @@
 	      return response.json();
 	    }).then(function (statusList) {
 	      // TODO statusList has status format from server, convert
-	      dispatch(phraseListFetched(docId, statusList.map(function (phrase) {
+	      dispatch(phraseListFetched(docId, statusList, statusList.map(function (phrase) {
 	        return _extends({}, phrase, {
 	          status: transUnitStatusToPhraseStatus(phrase.status)
 	        });
 	      })));
-	
-	      // TODO change so it only requests detail for current page.
-	      dispatch(requestPhraseDetail(lang, statusList.map(function (phrase) {
-	        return phrase.id;
-	      })));
+	      dispatch(fetchPhraseDetails(statusList, lang, paging));
 	    });
+	  };
+	}
+	
+	function fetchPhraseDetails(statusList, language, paging) {
+	  return function (dispatch) {
+	    var startIndex = paging.pageIndex * paging.countPerPage;
+	    var endIndex = paging.countPerPage + startIndex;
+	    var ids = (0, _lodash.slice)(statusList, startIndex, endIndex).map(function (phrase) {
+	      return phrase.id;
+	    });
+	    dispatch(requestPhraseDetail(language, ids));
 	  };
 	}
 	
 	// new phrase list has been fetched from API
 	var PHRASE_LIST_FETCHED = exports.PHRASE_LIST_FETCHED = Symbol('PHRASE_LIST_FETCHED');
-	function phraseListFetched(docId, phraseList) {
+	function phraseListFetched(docId, statusList, phraseList) {
 	  return {
 	    type: PHRASE_LIST_FETCHED,
 	    docId: docId,
-	    phraseList: phraseList
+	    phraseList: phraseList,
+	    statusList: statusList
 	  };
 	}
 	
@@ -44078,6 +44131,7 @@
 	      sources: plural ? source.contents : [source.content],
 	      translations: translations,
 	      newTranslations: [].concat(_toConsumableArray(translations)),
+	      previousTranslations: undefined,
 	      status: transUnitStatusToPhraseStatus(trans && trans.state),
 	      revision: trans && trans.revision ? parseInt(trans.revision, 10) : 0,
 	      wordCount: parseInt(source.wordCount, 10)
@@ -44314,12 +44368,488 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.HEADER_DATA_FETCHED = exports.STATS_FETCHED = exports.LOCALE_SELECTED = exports.DOCUMENT_SELECTED = exports.FETCHING = exports.CHANGE_UI_LOCALE = exports.UI_LOCALES_FETCHED = exports.FETCH_FAILED = exports.TOGGLE_KEY_SHORTCUTS = exports.TOGGLE_HEADER = undefined;
+	exports.toggleHeader = toggleHeader;
+	exports.toggleKeyboardShortcutsModal = toggleKeyboardShortcutsModal;
+	exports.uiLocaleFetched = uiLocaleFetched;
+	exports.fetchUiLocales = fetchUiLocales;
+	exports.changeUiLocale = changeUiLocale;
+	exports.selectDoc = selectDoc;
+	exports.selectLocale = selectLocale;
+	exports.statsFetched = statsFetched;
+	exports.headerDataFetched = headerDataFetched;
+	exports.fetchHeaderInfo = fetchHeaderInfo;
+	
+	var _api = __webpack_require__(266);
+	
+	var _lodash = __webpack_require__(271);
+	
+	var _stringUtils = __webpack_require__(276);
+	
+	var TOGGLE_HEADER = exports.TOGGLE_HEADER = Symbol('TOGGLE_HEADER');
+	
+	function toggleHeader() {
+	  return {
+	    type: TOGGLE_HEADER
+	  };
+	}
+	
+	var TOGGLE_KEY_SHORTCUTS = exports.TOGGLE_KEY_SHORTCUTS = Symbol('TOGGLE_KEY_SHORTCUTS');
+	function toggleKeyboardShortcutsModal() {
+	  return {
+	    type: TOGGLE_KEY_SHORTCUTS
+	  };
+	}
+	
+	var FETCH_FAILED = exports.FETCH_FAILED = Symbol('FETCH_FAILED');
+	
+	var fetchFailed = function fetchFailed(error) {
+	  return { type: FETCH_FAILED, error: error };
+	};
+	
+	var unwrapResponse = function unwrapResponse(dispatch, errorMsg, response) {
+	  if (response.status >= 400) {
+	    dispatch(fetchFailed(new Error(errorMsg)));
+	  }
+	  return response.json();
+	};
+	
+	var UI_LOCALES_FETCHED = exports.UI_LOCALES_FETCHED = Symbol('UI_LOCALES_FETCHED');
+	function uiLocaleFetched(uiLocales) {
+	  return {
+	    type: UI_LOCALES_FETCHED,
+	    data: uiLocales
+	  };
+	}
+	function fetchUiLocales() {
+	  return function (dispatch) {
+	    (0, _api.fetchLocales)().then((0, _lodash.curry)(unwrapResponse)(dispatch, 'fetch UI locales failed')).then(function (uiLocales) {
+	      return dispatch(uiLocaleFetched(uiLocales));
+	    }).catch(function (err) {
+	      console.error('Failed to fetch UI locales', err);
+	      return { type: FETCH_FAILED, error: err };
+	    });
+	  };
+	}
+	
+	var CHANGE_UI_LOCALE = exports.CHANGE_UI_LOCALE = Symbol('CHANGE_UI_LOCALE');
+	function changeUiLocale(locale) {
+	  return {
+	    type: CHANGE_UI_LOCALE,
+	    data: locale
+	  };
+	}
+	
+	// TODO check if this is needed
+	var FETCHING = exports.FETCHING = 'FETCHING';
+	
+	var decodeDocId = function decodeDocId(docId) {
+	  return docId ? docId.replace(/\,/g, '/') : docId;
+	};
+	
+	var hasCaseInsensitiveMatchingProp = function hasCaseInsensitiveMatchingProp(list, prop, matchedValue) {
+	  return (0, _lodash.any)(list, function (item) {
+	    return (0, _stringUtils.equals)(item[prop], matchedValue, true);
+	  });
+	};
+	
+	var containsDoc = function containsDoc(documents, docId) {
+	  return hasCaseInsensitiveMatchingProp(documents, 'name', docId);
+	};
+	
+	var containsLocale = function containsLocale(localeList, localeId) {
+	  return hasCaseInsensitiveMatchingProp(localeList, 'localeId', localeId);
+	};
+	
+	var DOCUMENT_SELECTED = exports.DOCUMENT_SELECTED = Symbol('DOCUMENT_SELECTED');
+	function selectDoc(docId) {
+	  return {
+	    type: DOCUMENT_SELECTED,
+	    data: {
+	      selectedDocId: docId
+	    }
+	  };
+	}
+	
+	var LOCALE_SELECTED = exports.LOCALE_SELECTED = Symbol('LOCALE_SELECTED');
+	function selectLocale(localeId) {
+	  return {
+	    type: LOCALE_SELECTED,
+	    data: {
+	      selectedLocaleId: localeId
+	    }
+	  };
+	}
+	
+	var STATS_FETCHED = exports.STATS_FETCHED = Symbol('STATS_FETCHED');
+	function statsFetched(stats) {
+	  return {
+	    type: STATS_FETCHED,
+	    data: stats
+	  };
+	}
+	
+	var HEADER_DATA_FETCHED = exports.HEADER_DATA_FETCHED = Symbol('HEADER_DATA_FETCHED');
+	function headerDataFetched(data) {
+	  return { type: HEADER_DATA_FETCHED, data: data };
+	}
+	
+	// this is a get all action that will wait until all promises are resovled
+	function fetchHeaderInfo(projectSlug, versionSlug, docId, localeId) {
+	  return function (dispatch, getState) {
+	    var checkResponse = (0, _lodash.curry)(unwrapResponse)(dispatch);
+	
+	    // FIXME make the checkResponse just reject with the error code
+	    //       no need to handle error messages or anything.
+	
+	    var docListPromise = (0, _api.fetchDocuments)(projectSlug, versionSlug).then(checkResponse('fetch document list failed')).catch(function (e) {
+	      e.message = 'document list fetch failed: ' + e.message;
+	      throw e;
+	    });
+	    var projectInfoPromise = (0, _api.fetchProjectInfo)(projectSlug).then(checkResponse('fetch project info failed')).catch(function (e) {
+	      e.message = 'project info fetch failed: ' + e.message;
+	      throw e;
+	    });
+	    var myInfoPromise = (0, _api.fetchMyInfo)().then(checkResponse('fetch my INFO failed')).catch(function (e) {
+	      e.message = 'version locales fetch failed: ' + e.message;
+	      throw e;
+	    });
+	    var versionLocalesPromise = (0, _api.fetchVersionLocales)(projectSlug, versionSlug).then(checkResponse('fetch version locales failed')).catch(function (e) {
+	      e.message = 'version locales fetch failed: ' + e.message;
+	      throw e;
+	    });
+	
+	    Promise.all([docListPromise, projectInfoPromise, myInfoPromise, versionLocalesPromise]).then(function (all) {
+	      var documents = all[0];
+	      var projectInfo = all[1];
+	      var myInfo = all[2];
+	      var locales = all[3];
+	
+	      if ((0, _lodash.isEmpty)(documents)) {
+	        // redirect if no documents in version
+	        // FIXME implement message Handler
+	        // MessageHandler.displayError('No documents in ' +
+	        //    editorCtrl.context.projectSlug + ' : ' +
+	        //    editorCtrl.context.versionSlug)
+	        console.error('No documents in ' + projectSlug + ':' + versionSlug);
+	        return;
+	      }
+	      if ((0, _lodash.isEmpty)(locales)) {
+	        // FIXME implement message Handler
+	        // redirect if no supported locale in version
+	        // MessageHandler.displayError('No supported locales in ' +
+	        //    editorCtrl.context.projectSlug + ' : ' +
+	        //    editorCtrl.context.versionSlug)
+	        console.error('No supported locales in ' + projectSlug + ':' + versionSlug);
+	        return;
+	      }
+	
+	      var data = {
+	        myInfo: myInfo,
+	        projectInfo: projectInfo,
+	        versionSlug: versionSlug,
+	        documents: documents,
+	        locales: locales
+	      };
+	
+	      dispatch(headerDataFetched(data));
+	
+	      return { documents: documents, locales: locales };
+	    }).then(function (docsAndLocales) {
+	      var documents = docsAndLocales.documents;
+	      var locales = docsAndLocales.locales;
+	      // if docId is not defined in url, set it to be the first doc
+	
+	      var selectedDocId = docId || documents[0].name;
+	      selectedDocId = decodeDocId(selectedDocId);
+	      if (!containsDoc(documents, selectedDocId)) {
+	        selectedDocId = documents[0].name;
+	      }
+	
+	      // if localeId is not defined in url, set to first from list
+	      var selectedLocaleId = localeId || locales[0].localeId;
+	      if (!containsLocale(locales, selectedLocaleId)) {
+	        selectedLocaleId = locales[0].localeId;
+	      }
+	      var context = getState().headerData.context;
+	
+	      if (context.selectedDoc.id !== selectedDocId || context.selectedLocale !== selectedLocaleId) {
+	        (0, _api.fetchStatistics)(projectSlug, versionSlug, selectedDocId, selectedLocaleId).then(checkResponse('fetch statistics failed')).then(function (stats) {
+	          return dispatch(statsFetched(stats));
+	        });
+	      }
+	
+	      // dispatching selected doc and locale must happen after we compare
+	      // previous state otherwise it will not fetch stats
+	      dispatch(selectDoc(selectedDocId));
+	      // TODO pahuang this is commented out. implement this
+	      // transitionToEditorSelectedView()
+	      dispatch(selectLocale(selectedLocaleId));
+	    }).catch(function (err) {
+	      console.error('Failed to fetch all header info', err);
+	      return { type: FETCH_FAILED, error: err };
+	    });
+	  };
+	}
+
+/***/ },
+/* 276 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.startsWith = startsWith;
+	exports.endsWith = endsWith;
+	exports.equals = equals;
+	exports.oneLiner = oneLiner;
+	function startsWith(str, prefix, ignoreCase) {
+	  if (ignoreCase && str && prefix) {
+	    str = str.toUpperCase();
+	    prefix = prefix.toUpperCase();
+	  }
+	  return str.lastIndexOf(prefix, 0) === 0;
+	}
+	
+	function endsWith(str, suffix, ignoreCase) {
+	  if (ignoreCase && str && suffix) {
+	    str = str.toUpperCase();
+	    suffix = suffix.toUpperCase();
+	  }
+	  return str.indexOf(suffix, str.length - suffix.length) !== -1;
+	}
+	
+	function equals(from, to, ignoreCase) {
+	  if (ignoreCase && from && to) {
+	    from = from.toUpperCase();
+	    to = to.toUpperCase();
+	  }
+	  return from === to;
+	}
+	
+	/**
+	 * Template tag function to allow single-line template strings to be wrapped.
+	 *
+	 * Removes all newlines and leading whitespace from the template string.
+	 */
+	function oneLiner(strings) {
+	  // interleave strings and vars
+	  var output = '';
+	
+	  for (var _len = arguments.length, vars = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	    vars[_key - 1] = arguments[_key];
+	  }
+	
+	  for (var i = 0; i < vars.length; i++) {
+	    output += strings[i] + vars[i];
+	  }
+	  output += strings[vars.length];
+	  var lines = output.split(/\n/);
+	  return lines.map(function (line) {
+	    return line.replace(/^\s+/gm, '');
+	  }).join(' ').trim();
+	}
+
+/***/ },
+/* 277 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.UPDATE_PAGE = exports.CLAMP_PAGE = exports.UPDATE_STATUS_FILTER = exports.RESET_STATUS_FILTERS = undefined;
+	exports.resetStatusFilter = resetStatusFilter;
+	exports.updateStatusFilter = updateStatusFilter;
+	exports.clampPage = clampPage;
+	exports.firstPage = firstPage;
+	exports.nextPage = nextPage;
+	exports.previousPage = previousPage;
+	exports.lastPage = lastPage;
+	
+	var _filterPagingUtil = __webpack_require__(278);
+	
+	var _RoutingHelpers = __webpack_require__(279);
+	
+	var RESET_STATUS_FILTERS = exports.RESET_STATUS_FILTERS = Symbol('RESET_STATUS_FILTERS');
+	function resetStatusFilter() {
+	  return { type: RESET_STATUS_FILTERS };
+	}
+	
+	var UPDATE_STATUS_FILTER = exports.UPDATE_STATUS_FILTER = Symbol('UPDATE_STATUS_FILTER');
+	function updateStatusFilter(status) {
+	  return function (dispatch) {
+	    dispatch({ type: UPDATE_STATUS_FILTER, status: status });
+	    // needed in case there is a different page count after filtering
+	    dispatch(clampPage());
+	  };
+	}
+	
+	/* Adjust the page number so it is in the valid range.
+	 * Dispatch after changing the filter.
+	 */
+	var CLAMP_PAGE = exports.CLAMP_PAGE = Symbol('CLAMP_PAGE');
+	function clampPage() {
+	  return { type: CLAMP_PAGE };
+	}
+	
+	var UPDATE_PAGE = exports.UPDATE_PAGE = Symbol('UPDATE_PAGE');
+	
+	function firstPage() {
+	  return function (dispatch, getState) {
+	    var pageIndex = 0;
+	    updatePage(dispatch, getState().routing.location, pageIndex);
+	  };
+	}
+	
+	function nextPage() {
+	  return function (dispatch, getState) {
+	    var currentPageIndex = getState().phrases.paging.pageIndex;
+	    var pageIndex = Math.min(currentPageIndex + 1, (0, _filterPagingUtil.calculateMaxPageIndexFromState)(getState()));
+	    updatePage(dispatch, getState().routing.location, pageIndex);
+	  };
+	}
+	
+	function previousPage() {
+	  return function (dispatch, getState) {
+	    var currentPageIndex = getState().phrases.paging.pageIndex;
+	    var pageIndex = Math.max(currentPageIndex - 1, 0);
+	    updatePage(dispatch, getState().routing.location, pageIndex);
+	  };
+	}
+	
+	function lastPage() {
+	  return function (dispatch, getState) {
+	    var pageIndex = (0, _filterPagingUtil.calculateMaxPageIndexFromState)(getState());
+	    updatePage(dispatch, getState().routing.location, pageIndex);
+	  };
+	}
+	
+	function updatePage(dispatch, location, pageIndex) {
+	  (0, _RoutingHelpers.replaceRouteQuery)(location, {
+	    page: pageIndex + 1
+	  });
+	  dispatch({ type: UPDATE_PAGE, page: pageIndex });
+	}
+
+/***/ },
+/* 278 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getCurrentPagePhrasesFromState = getCurrentPagePhrasesFromState;
+	exports.getFilteredPhrasesFromState = getFilteredPhrasesFromState;
+	exports.filterPhrases = filterPhrases;
+	exports.calculateMaxPageIndexFromState = calculateMaxPageIndexFromState;
+	exports.calculateMaxPageIndex = calculateMaxPageIndex;
+	exports.getSelectedDocPhrasesFromState = getSelectedDocPhrasesFromState;
+	/**
+	 * Utility functions for filtering and paging text flows
+	 */
+	
+	function getCurrentPagePhrasesFromState(state) {
+	  var _state$phrases$paging = state.phrases.paging;
+	  var pageIndex = _state$phrases$paging.pageIndex;
+	  var countPerPage = _state$phrases$paging.countPerPage;
+	
+	  var filtered = getFilteredPhrasesFromState(state);
+	  var startIndex = pageIndex * countPerPage;
+	  var stopIndex = startIndex + countPerPage;
+	  return filtered.slice(startIndex, stopIndex);
+	}
+	
+	function getFilteredPhrasesFromState(state) {
+	  return filterPhrases(state.ui.textFlowDisplay.filter, getSelectedDocPhrasesFromState(state));
+	}
+	
+	/**
+	 * Given phrase summary list (detail not needed), get
+	 * phrases that match the given filter.
+	 */
+	function filterPhrases(filter, phrases) {
+	  if (filter.all) {
+	    return phrases;
+	  }
+	  var filtered = phrases.filter(function (phrase) {
+	    return filter[phrase.status];
+	  });
+	  return filtered;
+	}
+	
+	function calculateMaxPageIndexFromState(state) {
+	  return calculateMaxPageIndex(getFilteredPhrasesFromState(state), state.phrases.paging.countPerPage);
+	}
+	
+	// -1 when there are no pages (i.e. no phrases)
+	function calculateMaxPageIndex(phrases, countPerPage) {
+	  var phraseCount = phrases.length;
+	
+	  var maxPageNumber = Math.ceil(phraseCount / countPerPage);
+	  return maxPageNumber - 1;
+	}
+	
+	function getSelectedDocPhrasesFromState(state) {
+	  // may be nothing if the phrases have not loaded yet
+	  return state.phrases.inDoc[state.context.docId] || [];
+	}
+
+/***/ },
+/* 279 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.replaceRouteQuery = exports.canGoBack = undefined;
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _reactRouter = __webpack_require__(203);
+	
+	var isChromium = window.chrome;
+	var vendorName = window.navigator.vendor;
+	var isOpera = window.navigator.userAgent.indexOf('OPR') > -1;
+	var isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
+	var isChrome = isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.' && isOpera === false && isIEedge === false;
+	
+	var canGoBack = exports.canGoBack = isChrome && window.history.length > 2 || !isChrome && window.history.length > 1;
+	
+	var replaceRouteQuery = exports.replaceRouteQuery = function replaceRouteQuery(location, paramsToReplace) {
+	  var newLocation = _extends({}, location, {
+	    query: _extends({}, location.query, paramsToReplace)
+	  });
+	  Object.keys(newLocation.query).forEach(function (key) {
+	    if (!newLocation.query[key]) {
+	      delete newLocation.query[key];
+	    }
+	  });
+	  _reactRouter.hashHistory.replace(_extends({}, newLocation));
+	};
+
+/***/ },
+/* 280 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
 	var _stateChangeDispatch = __webpack_require__(264);
 	
 	var _stateChangeDispatch2 = _interopRequireDefault(_stateChangeDispatch);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -44338,7 +44868,7 @@
 	exports.default = searchSelectedPhraseMiddleware;
 
 /***/ },
-/* 276 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44364,7 +44894,7 @@
 	exports.phraseSuggestionsUpdated = phraseSuggestionsUpdated;
 	exports.saveSuggestionPanelHeight = saveSuggestionPanelHeight;
 	
-	var _suggestions = __webpack_require__(277);
+	var _suggestions = __webpack_require__(282);
 	
 	var _lodash = __webpack_require__(271);
 	
@@ -44712,7 +45242,7 @@
 	}
 
 /***/ },
-/* 277 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44736,7 +45266,7 @@
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _stringUtils = __webpack_require__(278);
+	var _stringUtils = __webpack_require__(276);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -44876,67 +45406,7 @@
 	}
 
 /***/ },
-/* 278 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.startsWith = startsWith;
-	exports.endsWith = endsWith;
-	exports.equals = equals;
-	exports.oneLiner = oneLiner;
-	function startsWith(str, prefix, ignoreCase) {
-	  if (ignoreCase && str && prefix) {
-	    str = str.toUpperCase();
-	    prefix = prefix.toUpperCase();
-	  }
-	  return str.lastIndexOf(prefix, 0) === 0;
-	}
-	
-	function endsWith(str, suffix, ignoreCase) {
-	  if (ignoreCase && str && suffix) {
-	    str = str.toUpperCase();
-	    suffix = suffix.toUpperCase();
-	  }
-	  return str.indexOf(suffix, str.length - suffix.length) !== -1;
-	}
-	
-	function equals(from, to, ignoreCase) {
-	  if (ignoreCase && from && to) {
-	    from = from.toUpperCase();
-	    to = to.toUpperCase();
-	  }
-	  return from === to;
-	}
-	
-	/**
-	 * Template tag function to allow single-line template strings to be wrapped.
-	 *
-	 * Removes all newlines and leading whitespace from the template string.
-	 */
-	function oneLiner(strings) {
-	  // interleave strings and vars
-	  var output = '';
-	
-	  for (var _len = arguments.length, vars = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-	    vars[_key - 1] = arguments[_key];
-	  }
-	
-	  for (var i = 0; i < vars.length; i++) {
-	    output += strings[i] + vars[i];
-	  }
-	  output += strings[vars.length];
-	  var lines = output.split(/\n/);
-	  return lines.map(function (line) {
-	    return line.replace(/^\s+/gm, '');
-	  }).join(' ').trim();
-	}
-
-/***/ },
-/* 279 */
+/* 283 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -44979,7 +45449,7 @@
 	};
 
 /***/ },
-/* 280 */
+/* 284 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -44998,7 +45468,7 @@
 	module.exports = thunkMiddleware;
 
 /***/ },
-/* 281 */
+/* 285 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -45231,7 +45701,7 @@
 	module.exports = createLogger;
 
 /***/ },
-/* 282 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45244,27 +45714,27 @@
 	
 	var _reduxSimpleRouter = __webpack_require__(262);
 	
-	var _phrase = __webpack_require__(283);
+	var _phrase = __webpack_require__(287);
 	
 	var _phrase2 = _interopRequireDefault(_phrase);
 	
-	var _context = __webpack_require__(290);
+	var _context = __webpack_require__(292);
 	
 	var _context2 = _interopRequireDefault(_context);
 	
-	var _dropdown = __webpack_require__(295);
+	var _dropdown = __webpack_require__(296);
 	
 	var _dropdown2 = _interopRequireDefault(_dropdown);
 	
-	var _ui = __webpack_require__(291);
+	var _ui = __webpack_require__(293);
 	
 	var _ui2 = _interopRequireDefault(_ui);
 	
-	var _headerData = __webpack_require__(296);
+	var _headerData = __webpack_require__(297);
 	
 	var _headerData2 = _interopRequireDefault(_headerData);
 	
-	var _suggestions = __webpack_require__(297);
+	var _suggestions = __webpack_require__(298);
 	
 	var _suggestions2 = _interopRequireDefault(_suggestions);
 	
@@ -45285,7 +45755,7 @@
 	exports.default = rootReducer;
 
 /***/ },
-/* 283 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45294,25 +45764,21 @@
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-	
-	var _reactAddonsUpdate = __webpack_require__(284);
+	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 	
-	var _controlsHeaderActions = __webpack_require__(286);
+	var _controlsHeaderActions = __webpack_require__(277);
 	
 	var _phrases = __webpack_require__(274);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
-	var _filterPagingUtil = __webpack_require__(287);
+	var _filterPagingUtil = __webpack_require__(278);
 	
-	var _lodash = __webpack_require__(271);
+	var _editorShortcuts = __webpack_require__(290);
 	
-	var _editorShortcuts = __webpack_require__(288);
-	
-	var _phraseNavigation = __webpack_require__(289);
+	var _phraseNavigation = __webpack_require__(291);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -45345,199 +45811,147 @@
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? defaultState : arguments[0];
 	  var action = arguments[1];
 	
-	  var _ret = function () {
-	    switch (action.type) {
-	      case _controlsHeaderActions.CLAMP_PAGE:
-	        return {
-	          v: update({
-	            paging: {
-	              pageIndex: { $set: clamp(state.paging.pageIndex, 0, (0, _filterPagingUtil.calculateMaxPageIndexFromState)(action.getState())) }
-	            }
-	          })
-	        };
+	  switch (action.type) {
+	    case _controlsHeaderActions.CLAMP_PAGE:
+	      return update({
+	        paging: {
+	          pageIndex: { $set: clamp(state.paging.pageIndex, 0, (0, _filterPagingUtil.calculateMaxPageIndexFromState)(action.getState())) }
+	        }
+	      });
 	
-	      case _controlsHeaderActions.FIRST_PAGE:
-	        return {
-	          v: updatePageIndex(0)
-	        };
+	    case _controlsHeaderActions.UPDATE_PAGE:
+	      return updatePageIndex(action.page);
 	
-	      case _controlsHeaderActions.PREVIOUS_PAGE:
-	        return {
-	          v: updatePageIndex(Math.max(state.paging.pageIndex - 1, 0))
-	        };
+	    case _phrases.CANCEL_EDIT:
+	      // Discard any newTranslations that were entered.
+	      var currentTrans = state.detail[state.selectedPhraseId].translations;
+	      return update({
+	        selectedPhraseId: { $set: undefined },
+	        detail: _defineProperty({}, state.selectedPhraseId, {
+	          newTranslations: { $set: currentTrans }
+	        })
+	      });
 	
-	      case _controlsHeaderActions.NEXT_PAGE:
-	        return {
-	          v: updatePageIndex(Math.min(state.paging.pageIndex + 1, getMaxPageIndex()))
-	        };
+	    case _phrases.COPY_FROM_ALIGNED_SOURCE:
+	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	          return copyFromSource(phrase, phrase.selectedPluralIndex);
+	        } });
 	
-	      case _controlsHeaderActions.LAST_PAGE:
-	        return {
-	          v: updatePageIndex(getMaxPageIndex())
-	        };
+	    case _phrases.COPY_FROM_SOURCE:
+	      var phraseId = action.phraseId;
+	      var sourceIndex = action.sourceIndex;
 	
-	      case _phrases.CANCEL_EDIT:
-	        // Discard any newTranslations that were entered.
-	        return {
-	          v: update({
-	            selectedPhraseId: { $set: undefined },
-	            detail: { $merge: revertEnteredTranslationsToDefault(state.detail) }
-	          })
-	        };
+	      return updatePhrase(phraseId, { $apply: function $apply(phrase) {
+	          return copyFromSource(phrase, sourceIndex);
+	        } });
 	
-	      case _phrases.COPY_FROM_ALIGNED_SOURCE:
-	        return {
-	          v: updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
-	              return copyFromSource(phrase, phrase.selectedPluralIndex);
-	            } })
-	        };
+	    case _suggestions.COPY_SUGGESTION:
+	      var suggestion = action.suggestion;
 	
-	      case _phrases.COPY_FROM_SOURCE:
-	        var phraseId = action.phraseId;
-	        var sourceIndex = action.sourceIndex;
+	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	          return copyFromSuggestion(phrase, suggestion);
+	        } });
 	
-	        return {
-	          v: updatePhrase(phraseId, { $apply: function $apply(phrase) {
-	              return copyFromSource(phrase, sourceIndex);
-	            } })
-	        };
+	    case _phrases.FETCHING_PHRASE_DETAIL:
+	      return update({
+	        fetchingDetail: { $set: true }
+	      });
 	
-	      case _suggestions.COPY_SUGGESTION:
-	        var suggestion = action.suggestion;
+	    case _phrases.FETCHING_PHRASE_LIST:
+	      return update({
+	        fetchingList: { $set: true }
+	      });
 	
-	        return {
-	          v: updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
-	              return copyFromSuggestion(phrase, suggestion);
-	            } })
-	        };
+	    case _phrases.PENDING_SAVE_INITIATED:
+	      return updatePhrase(action.phraseId, {
+	        pendingSave: { $set: undefined }
+	      });
 	
-	      case _phrases.FETCHING_PHRASE_DETAIL:
-	        return {
-	          v: update({
-	            fetchingDetail: { $set: true }
-	          })
-	        };
+	    case _phrases.PHRASE_LIST_FETCHED:
+	      // select the first phrase if there is one
+	      var selectedPhraseId = action.phraseList.length && action.phraseList[0].id;
+	      return update({
+	        fetchingList: { $set: false },
+	        inDoc: _defineProperty({}, action.docId, { $set: action.phraseList }),
+	        selectedPhraseId: { $set: selectedPhraseId },
+	        docStatus: { $set: action.statusList }
 	
-	      case _phrases.FETCHING_PHRASE_LIST:
-	        return {
-	          v: update({
-	            fetchingList: { $set: true }
-	          })
-	        };
+	      });
 	
-	      case _phrases.PENDING_SAVE_INITIATED:
-	        return {
-	          v: updatePhrase(action.phraseId, {
-	            pendingSave: { $set: undefined }
-	          })
-	        };
+	    case _phrases.PHRASE_DETAIL_FETCHED:
+	      // TODO this shallow merge will lose data from other locales
+	      //      ideally replace source and locale that was looked up, leaving
+	      //      others unchanged (depending on caching policy)
+	      return update({
+	        fetchingDetail: { $set: false },
+	        detail: { $merge: action.phrases }
+	      });
 	
-	      case _phrases.PHRASE_LIST_FETCHED:
-	        // select the first phrase if there is one
-	        var selectedPhraseId = action.phraseList.length ? action.phraseList[0].id : undefined;
-	        return {
-	          v: update({
-	            fetchingList: { $set: false },
-	            inDoc: _defineProperty({}, action.docId, { $set: action.phraseList }),
-	            selectedPhraseId: { $set: selectedPhraseId },
-	            paging: {
-	              pageIndex: { $set: 0 }
-	            }
-	          })
-	        };
+	    case _phrases.QUEUE_SAVE:
+	      return updatePhrase(action.phraseId, {
+	        pendingSave: { $set: action.saveInfo }
+	      });
 	
-	      case _phrases.PHRASE_DETAIL_FETCHED:
-	        // TODO this shallow merge will lose data from other locales
-	        //      ideally replace source and locale that was looked up, leaving
-	        //      others unchanged (depending on caching policy)
-	        return {
-	          v: update({
-	            fetchingDetail: { $set: false },
-	            detail: { $merge: action.phrases }
-	          })
-	        };
+	    case _phrases.SAVE_FINISHED:
+	      var phrase = state.detail[action.phraseId];
+	      var newTranslations = phrase.newTranslations;
+	      var translations = phrase.translations;
 	
-	      case _phrases.QUEUE_SAVE:
-	        return {
-	          v: updatePhrase(action.phraseId, {
-	            pendingSave: { $set: action.saveInfo }
-	          })
-	        };
+	      return updatePhrase(action.phraseId, {
+	        inProgressSave: { $set: undefined },
+	        previousTranslations: { $set: translations },
+	        translations: { $set: newTranslations },
+	        // TODO same as inProgressSave.status unless the server adjusted it
+	        status: { $set: action.status },
+	        revision: { $set: action.revision }
+	      });
 	
-	      case _phrases.SAVE_FINISHED:
-	        var translations = state.detail[action.phraseId].translations;
+	    case _phrases.SAVE_INITIATED:
+	      return updatePhrase(action.phraseId, {
+	        inProgressSave: { $set: action.saveInfo }
+	      });
 	
-	        return {
-	          v: updatePhrase(action.phraseId, {
-	            inProgressSave: { $set: undefined },
-	            translations: { $set: translations },
-	            // TODO same as inProgressSave.status unless the server adjusted it
-	            status: { $set: action.status },
-	            revision: { $set: action.revision }
-	          })
-	        };
+	    case _phrases.SELECT_PHRASE:
+	      return selectPhrase(state, action.phraseId);
 	
-	      case _phrases.SAVE_INITIATED:
-	        return {
-	          v: updatePhrase(action.phraseId, {
-	            inProgressSave: { $set: action.saveInfo }
-	          })
-	        };
+	    case _phrases.SELECT_PHRASE_SPECIFIC_PLURAL:
+	      var withNewPluralIndex = updatePhrase(action.phraseId, {
+	        selectedPluralIndex: { $set: action.index }
+	      });
+	      return selectPhrase(withNewPluralIndex, action.phraseId);
 	
-	      case _phrases.SELECT_PHRASE:
-	        return {
-	          v: selectPhrase(state, action.phraseId)
-	        };
+	    case _editorShortcuts.SET_SAVE_AS_MODE:
+	      return update({
+	        saveAsMode: { $set: action.active }
+	      });
 	
-	      case _phrases.SELECT_PHRASE_SPECIFIC_PLURAL:
-	        var withNewPluralIndex = updatePhrase(action.phraseId, {
-	          selectedPluralIndex: { $set: action.index }
-	        });
-	        return {
-	          v: selectPhrase(withNewPluralIndex, action.phraseId)
-	        };
+	    case _phrases.TRANSLATION_TEXT_INPUT_CHANGED:
+	      return update({
+	        detail: _defineProperty({}, action.id, {
+	          newTranslations: _defineProperty({}, action.index, { $set: action.text })
+	        })
+	      });
 	
-	      case _editorShortcuts.SET_SAVE_AS_MODE:
-	        return {
-	          v: update({
-	            saveAsMode: { $set: action.active }
-	          })
-	        };
+	    case _phrases.UNDO_EDIT:
+	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	          return (0, _reactAddonsUpdate2.default)(phrase, {
+	            newTranslations: { $set: [].concat(_toConsumableArray(phrase.previousTranslations)) },
+	            translations: { $set: [].concat(_toConsumableArray(phrase.previousTranslations)) },
+	            previousTranslations: { $set: undefined }
+	          });
+	        } });
 	
-	      case _phrases.TRANSLATION_TEXT_INPUT_CHANGED:
-	        return {
-	          v: update({
-	            detail: _defineProperty({}, action.id, {
-	              newTranslations: _defineProperty({}, action.index, { $set: action.text })
-	            })
-	          })
-	        };
+	    case _phraseNavigation.MOVE_NEXT:
+	      return changeSelectedIndex(function (index) {
+	        return index + 1;
+	      });
 	
-	      case _phrases.UNDO_EDIT:
-	        // Discard any newTranslations that were entered.
-	        return {
-	          v: update({
-	            detail: { $merge: revertEnteredTranslationsToDefault(state.detail) }
-	          })
-	        };
+	    case _phraseNavigation.MOVE_PREVIOUS:
+	      return changeSelectedIndex(function (index) {
+	        return index - 1;
+	      });
+	  }
 	
-	      case _phraseNavigation.MOVE_NEXT:
-	        return {
-	          v: changeSelectedIndex(function (index) {
-	            return index + 1;
-	          })
-	        };
-	
-	      case _phraseNavigation.MOVE_PREVIOUS:
-	        return {
-	          v: changeSelectedIndex(function (index) {
-	            return index - 1;
-	          })
-	        };
-	    }
-	  }();
-	
-	  if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	  return state;
 	
 	  /**
@@ -45578,10 +45992,6 @@
 	      });
 	    }
 	    return state;
-	  }
-	
-	  function getMaxPageIndex() {
-	    return (0, _filterPagingUtil.calculateMaxPageIndexFromState)(action.getState());
 	  }
 	
 	  /**
@@ -45640,14 +46050,6 @@
 	  }
 	};
 	
-	function revertEnteredTranslationsToDefault(phraseDetails) {
-	  return (0, _lodash.mapValues)(phraseDetails, function (phrase) {
-	    return (0, _reactAddonsUpdate2.default)(phrase, {
-	      newTranslations: { $set: [].concat(_toConsumableArray(phrase.translations)) }
-	    });
-	  });
-	}
-	
 	function copyFromSource(phrase, sourceIndex) {
 	  var selectedPluralIndex = phrase.selectedPluralIndex;
 	  var sources = phrase.sources;
@@ -45695,13 +46097,13 @@
 	exports.default = phraseReducer;
 
 /***/ },
-/* 284 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(285);
+	module.exports = __webpack_require__(289);
 
 /***/ },
-/* 285 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45813,130 +46215,7 @@
 	module.exports = update;
 
 /***/ },
-/* 286 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.resetStatusFilter = resetStatusFilter;
-	exports.updateStatusFilter = updateStatusFilter;
-	exports.clampPage = clampPage;
-	exports.firstPage = firstPage;
-	exports.nextPage = nextPage;
-	exports.previousPage = previousPage;
-	exports.lastPage = lastPage;
-	var RESET_STATUS_FILTERS = exports.RESET_STATUS_FILTERS = Symbol('RESET_STATUS_FILTERS');
-	function resetStatusFilter() {
-	  return { type: RESET_STATUS_FILTERS };
-	}
-	
-	var UPDATE_STATUS_FILTER = exports.UPDATE_STATUS_FILTER = Symbol('UPDATE_STATUS_FILTER');
-	function updateStatusFilter(status) {
-	  return function (dispatch) {
-	    dispatch({ type: UPDATE_STATUS_FILTER, status: status });
-	    // needed in case there is a different page count after filtering
-	    dispatch(clampPage());
-	  };
-	}
-	
-	/* Adjust the page number so it is in the valid range.
-	 * Dispatch after changing the filter.
-	 */
-	var CLAMP_PAGE = exports.CLAMP_PAGE = Symbol('CLAMP_PAGE');
-	function clampPage() {
-	  return { type: CLAMP_PAGE };
-	}
-	
-	var FIRST_PAGE = exports.FIRST_PAGE = Symbol('FIRST_PAGE');
-	function firstPage() {
-	  return { type: FIRST_PAGE };
-	}
-	
-	var NEXT_PAGE = exports.NEXT_PAGE = Symbol('NEXT_PAGE');
-	function nextPage() {
-	  return { type: NEXT_PAGE };
-	}
-	
-	var PREVIOUS_PAGE = exports.PREVIOUS_PAGE = Symbol('PREVIOUS_PAGE');
-	function previousPage() {
-	  return { type: PREVIOUS_PAGE };
-	}
-	
-	var LAST_PAGE = exports.LAST_PAGE = Symbol('LAST_PAGE');
-	function lastPage() {
-	  return { type: LAST_PAGE };
-	}
-
-/***/ },
-/* 287 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.getCurrentPagePhrasesFromState = getCurrentPagePhrasesFromState;
-	exports.getFilteredPhrasesFromState = getFilteredPhrasesFromState;
-	exports.filterPhrases = filterPhrases;
-	exports.calculateMaxPageIndexFromState = calculateMaxPageIndexFromState;
-	exports.calculateMaxPageIndex = calculateMaxPageIndex;
-	exports.getSelectedDocPhrasesFromState = getSelectedDocPhrasesFromState;
-	/**
-	 * Utility functions for filtering and paging text flows
-	 */
-	
-	function getCurrentPagePhrasesFromState(state) {
-	  var _state$phrases$paging = state.phrases.paging;
-	  var pageIndex = _state$phrases$paging.pageIndex;
-	  var countPerPage = _state$phrases$paging.countPerPage;
-	
-	  var filtered = getFilteredPhrasesFromState(state);
-	  var startIndex = pageIndex * countPerPage;
-	  var stopIndex = startIndex + countPerPage;
-	  return filtered.slice(startIndex, stopIndex);
-	}
-	
-	function getFilteredPhrasesFromState(state) {
-	  return filterPhrases(state.ui.textFlowDisplay.filter, getSelectedDocPhrasesFromState(state));
-	}
-	
-	/**
-	 * Given phrase summary list (detail not needed), get
-	 * phrases that match the given filter.
-	 */
-	function filterPhrases(filter, phrases) {
-	  if (filter.all) {
-	    return phrases;
-	  }
-	  var filtered = phrases.filter(function (phrase) {
-	    return filter[phrase.status];
-	  });
-	  return filtered;
-	}
-	
-	function calculateMaxPageIndexFromState(state) {
-	  return calculateMaxPageIndex(getFilteredPhrasesFromState(state), state.phrases.paging.countPerPage);
-	}
-	
-	// -1 when there are no pages (i.e. no phrases)
-	function calculateMaxPageIndex(phrases, countPerPage) {
-	  var phraseCount = phrases.length;
-	
-	  var maxPageNumber = Math.ceil(phraseCount / countPerPage);
-	  return maxPageNumber - 1;
-	}
-	
-	function getSelectedDocPhrasesFromState(state) {
-	  // may be nothing if the phrases have not loaded yet
-	  return state.phrases.inDoc[state.context.docId] || [];
-	}
-
-/***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45952,9 +46231,9 @@
 	
 	var _phrases = __webpack_require__(274);
 	
-	var _phraseNavigation = __webpack_require__(289);
+	var _phraseNavigation = __webpack_require__(291);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
 	var _status = __webpack_require__(270);
 	
@@ -46194,7 +46473,7 @@
 	 */
 
 /***/ },
-/* 289 */
+/* 291 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -46215,7 +46494,7 @@
 	}
 
 /***/ },
-/* 290 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46228,7 +46507,7 @@
 	
 	var _actions = __webpack_require__(265);
 	
-	var _ui = __webpack_require__(291);
+	var _ui = __webpack_require__(293);
 	
 	var defaultState = {
 	  sourceLocale: _ui.DEFAULT_LOCALE
@@ -46249,7 +46528,7 @@
 	exports.default = routingParamsReducer;
 
 /***/ },
-/* 291 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46261,15 +46540,15 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
-	var _controlsHeaderActions = __webpack_require__(286);
+	var _controlsHeaderActions = __webpack_require__(277);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
-	var _Util = __webpack_require__(293);
+	var _Util = __webpack_require__(294);
 	
-	var _reactAddonsUpdate = __webpack_require__(284);
+	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 	
@@ -46452,240 +46731,7 @@
 	exports.default = ui;
 
 /***/ },
-/* 292 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.HEADER_DATA_FETCHED = exports.STATS_FETCHED = exports.LOCALE_SELECTED = exports.DOCUMENT_SELECTED = exports.FETCHING = exports.CHANGE_UI_LOCALE = exports.UI_LOCALES_FETCHED = exports.FETCH_FAILED = exports.TOGGLE_KEY_SHORTCUTS = exports.TOGGLE_HEADER = undefined;
-	exports.toggleHeader = toggleHeader;
-	exports.toggleKeyboardShortcutsModal = toggleKeyboardShortcutsModal;
-	exports.uiLocaleFetched = uiLocaleFetched;
-	exports.fetchUiLocales = fetchUiLocales;
-	exports.changeUiLocale = changeUiLocale;
-	exports.selectDoc = selectDoc;
-	exports.selectLocale = selectLocale;
-	exports.statsFetched = statsFetched;
-	exports.headerDataFetched = headerDataFetched;
-	exports.fetchHeaderInfo = fetchHeaderInfo;
-	
-	var _api = __webpack_require__(266);
-	
-	var _lodash = __webpack_require__(271);
-	
-	var _stringUtils = __webpack_require__(278);
-	
-	var TOGGLE_HEADER = exports.TOGGLE_HEADER = Symbol('TOGGLE_HEADER');
-	
-	function toggleHeader() {
-	  return {
-	    type: TOGGLE_HEADER
-	  };
-	}
-	
-	var TOGGLE_KEY_SHORTCUTS = exports.TOGGLE_KEY_SHORTCUTS = Symbol('TOGGLE_KEY_SHORTCUTS');
-	function toggleKeyboardShortcutsModal() {
-	  return {
-	    type: TOGGLE_KEY_SHORTCUTS
-	  };
-	}
-	
-	var FETCH_FAILED = exports.FETCH_FAILED = Symbol('FETCH_FAILED');
-	
-	var fetchFailed = function fetchFailed(error) {
-	  return { type: FETCH_FAILED, error: error };
-	};
-	
-	var unwrapResponse = function unwrapResponse(dispatch, errorMsg, response) {
-	  if (response.status >= 400) {
-	    dispatch(fetchFailed(new Error(errorMsg)));
-	  }
-	  return response.json();
-	};
-	
-	var UI_LOCALES_FETCHED = exports.UI_LOCALES_FETCHED = Symbol('UI_LOCALES_FETCHED');
-	function uiLocaleFetched(uiLocales) {
-	  return {
-	    type: UI_LOCALES_FETCHED,
-	    data: uiLocales
-	  };
-	}
-	function fetchUiLocales() {
-	  return function (dispatch) {
-	    (0, _api.fetchLocales)().then((0, _lodash.curry)(unwrapResponse)(dispatch, 'fetch UI locales failed')).then(function (uiLocales) {
-	      return dispatch(uiLocaleFetched(uiLocales));
-	    }).catch(function (err) {
-	      console.error('Failed to fetch UI locales', err);
-	      return { type: FETCH_FAILED, error: err };
-	    });
-	  };
-	}
-	
-	var CHANGE_UI_LOCALE = exports.CHANGE_UI_LOCALE = Symbol('CHANGE_UI_LOCALE');
-	function changeUiLocale(locale) {
-	  return {
-	    type: CHANGE_UI_LOCALE,
-	    data: locale
-	  };
-	}
-	
-	// TODO check if this is needed
-	var FETCHING = exports.FETCHING = 'FETCHING';
-	
-	var decodeDocId = function decodeDocId(docId) {
-	  return docId ? docId.replace(/\,/g, '/') : docId;
-	};
-	
-	var hasCaseInsensitiveMatchingProp = function hasCaseInsensitiveMatchingProp(list, prop, matchedValue) {
-	  return (0, _lodash.any)(list, function (item) {
-	    return (0, _stringUtils.equals)(item[prop], matchedValue, true);
-	  });
-	};
-	
-	var containsDoc = function containsDoc(documents, docId) {
-	  return hasCaseInsensitiveMatchingProp(documents, 'name', docId);
-	};
-	
-	var containsLocale = function containsLocale(localeList, localeId) {
-	  return hasCaseInsensitiveMatchingProp(localeList, 'localeId', localeId);
-	};
-	
-	var DOCUMENT_SELECTED = exports.DOCUMENT_SELECTED = Symbol('DOCUMENT_SELECTED');
-	function selectDoc(docId) {
-	  return {
-	    type: DOCUMENT_SELECTED,
-	    data: {
-	      selectedDocId: docId
-	    }
-	  };
-	}
-	
-	var LOCALE_SELECTED = exports.LOCALE_SELECTED = Symbol('LOCALE_SELECTED');
-	function selectLocale(localeId) {
-	  return {
-	    type: LOCALE_SELECTED,
-	    data: {
-	      selectedLocaleId: localeId
-	    }
-	  };
-	}
-	
-	var STATS_FETCHED = exports.STATS_FETCHED = Symbol('STATS_FETCHED');
-	function statsFetched(stats) {
-	  return {
-	    type: STATS_FETCHED,
-	    data: stats
-	  };
-	}
-	
-	var HEADER_DATA_FETCHED = exports.HEADER_DATA_FETCHED = Symbol('HEADER_DATA_FETCHED');
-	function headerDataFetched(data) {
-	  return { type: HEADER_DATA_FETCHED, data: data };
-	}
-	
-	// this is a get all action that will wait until all promises are resovled
-	function fetchHeaderInfo(projectSlug, versionSlug, docId, localeId) {
-	  return function (dispatch, getState) {
-	    var checkResponse = (0, _lodash.curry)(unwrapResponse)(dispatch);
-	
-	    // FIXME make the checkResponse just reject with the error code
-	    //       no need to handle error messages or anything.
-	
-	    var docListPromise = (0, _api.fetchDocuments)(projectSlug, versionSlug).then(checkResponse('fetch document list failed')).catch(function (e) {
-	      e.message = 'document list fetch failed: ' + e.message;
-	      throw e;
-	    });
-	    var projectInfoPromise = (0, _api.fetchProjectInfo)(projectSlug).then(checkResponse('fetch project info failed')).catch(function (e) {
-	      e.message = 'project info fetch failed: ' + e.message;
-	      throw e;
-	    });
-	    var myInfoPromise = (0, _api.fetchMyInfo)().then(checkResponse('fetch my INFO failed')).catch(function (e) {
-	      e.message = 'version locales fetch failed: ' + e.message;
-	      throw e;
-	    });
-	    var versionLocalesPromise = (0, _api.fetchVersionLocales)(projectSlug, versionSlug).then(checkResponse('fetch version locales failed')).catch(function (e) {
-	      e.message = 'version locales fetch failed: ' + e.message;
-	      throw e;
-	    });
-	
-	    Promise.all([docListPromise, projectInfoPromise, myInfoPromise, versionLocalesPromise]).then(function (all) {
-	      var documents = all[0];
-	      var projectInfo = all[1];
-	      var myInfo = all[2];
-	      var locales = all[3];
-	
-	      if ((0, _lodash.isEmpty)(documents)) {
-	        // redirect if no documents in version
-	        // FIXME implement message Handler
-	        // MessageHandler.displayError('No documents in ' +
-	        //    editorCtrl.context.projectSlug + ' : ' +
-	        //    editorCtrl.context.versionSlug)
-	        console.error('No documents in ' + projectSlug + ':' + versionSlug);
-	        return;
-	      }
-	      if ((0, _lodash.isEmpty)(locales)) {
-	        // FIXME implement message Handler
-	        // redirect if no supported locale in version
-	        // MessageHandler.displayError('No supported locales in ' +
-	        //    editorCtrl.context.projectSlug + ' : ' +
-	        //    editorCtrl.context.versionSlug)
-	        console.error('No supported locales in ' + projectSlug + ':' + versionSlug);
-	        return;
-	      }
-	
-	      var data = {
-	        myInfo: myInfo,
-	        projectInfo: projectInfo,
-	        versionSlug: versionSlug,
-	        documents: documents,
-	        locales: locales
-	      };
-	
-	      dispatch(headerDataFetched(data));
-	
-	      return { documents: documents, locales: locales };
-	    }).then(function (docsAndLocales) {
-	      var documents = docsAndLocales.documents;
-	      var locales = docsAndLocales.locales;
-	      // if docId is not defined in url, set it to be the first doc
-	
-	      var selectedDocId = docId || documents[0].name;
-	      selectedDocId = decodeDocId(selectedDocId);
-	      if (!containsDoc(documents, selectedDocId)) {
-	        selectedDocId = documents[0].name;
-	      }
-	
-	      // if localeId is not defined in url, set to first from list
-	      var selectedLocaleId = localeId || locales[0].localeId;
-	      if (!containsLocale(locales, selectedLocaleId)) {
-	        selectedLocaleId = locales[0].localeId;
-	      }
-	      var context = getState().headerData.context;
-	
-	      if (context.selectedDoc.id !== selectedDocId || context.selectedLocale !== selectedLocaleId) {
-	        (0, _api.fetchStatistics)(projectSlug, versionSlug, selectedDocId, selectedLocaleId).then(checkResponse('fetch statistics failed')).then(function (stats) {
-	          return dispatch(statsFetched(stats));
-	        });
-	      }
-	
-	      // dispatching selected doc and locale must happen after we compare
-	      // previous state otherwise it will not fetch stats
-	      dispatch(selectDoc(selectedDocId));
-	      // TODO pahuang this is commented out. implement this
-	      // transitionToEditorSelectedView()
-	      dispatch(selectLocale(selectedLocaleId));
-	    }).catch(function (err) {
-	      console.error('Failed to fetch all header info', err);
-	      return { type: FETCH_FAILED, error: err };
-	    });
-	  };
-	}
-
-/***/ },
-/* 293 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46699,7 +46745,7 @@
 	
 	var _lodash2 = _interopRequireDefault(_lodash);
 	
-	var _TransStatusService = __webpack_require__(294);
+	var _TransStatusService = __webpack_require__(295);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -46731,7 +46777,7 @@
 	};
 
 /***/ },
-/* 294 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46840,7 +46886,7 @@
 	}
 
 /***/ },
-/* 295 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46849,7 +46895,7 @@
 	  value: true
 	});
 	
-	var _reactAddonsUpdate = __webpack_require__(284);
+	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 	
@@ -46896,7 +46942,7 @@
 	exports.default = dropdownReducer;
 
 /***/ },
-/* 296 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46905,13 +46951,13 @@
 	  value: true
 	});
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
-	var _reactAddonsUpdate = __webpack_require__(284);
+	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 	
-	var _Util = __webpack_require__(293);
+	var _Util = __webpack_require__(294);
 	
 	var _api = __webpack_require__(266);
 	
@@ -46948,11 +46994,12 @@
 	  }
 	};
 	
-	// FIXME get this from the api module instead
 	var projectPage = function projectPage(projectSlug, versionSlug) {
-	  // TODO pahuang set server context path
-	  var serverContextPath = '';
-	  return serverContextPath + 'iteration/view/' + projectSlug + '/' + versionSlug;
+	  return _api.serviceUrl + '/iteration/view/' + projectSlug + '/' + versionSlug;
+	};
+	
+	var gravatarUrl = function gravatarUrl(hash, size) {
+	  return 'http://www.gravatar.com/avatar/' + hash + '?d=mm&ampr=g&amps=' + size;
 	};
 	
 	exports.default = function () {
@@ -46975,8 +47022,7 @@
 	            $set: name
 	          },
 	          gravatarUrl: {
-	            // FIXME put gravatar URL generation in its own module
-	            $set: 'http://www.gravatar.com/avatar/' + gravatarHash + '?d=mm&ampr=g&amps=' + 72 // eslint-disable-line max-len
+	            $set: gravatarUrl(gravatarHash, 72)
 	          },
 	          dashboardUrl: {
 	            $set: _api.dashboardUrl
@@ -47048,7 +47094,7 @@
 	};
 
 /***/ },
-/* 297 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47057,11 +47103,11 @@
 	  value: true
 	});
 	
-	var _reactAddonsUpdate = __webpack_require__(284);
+	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 	
-	var _suggestions5 = __webpack_require__(276);
+	var _suggestions5 = __webpack_require__(281);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -47169,7 +47215,7 @@
 	exports.default = suggestions;
 
 /***/ },
-/* 298 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47188,37 +47234,37 @@
 	
 	var _reactRedux = __webpack_require__(191);
 	
-	var _MainContent = __webpack_require__(299);
+	var _MainContent = __webpack_require__(300);
 	
 	var _MainContent2 = _interopRequireDefault(_MainContent);
 	
-	var _ParamPropDispatcher = __webpack_require__(315);
+	var _ParamPropDispatcher = __webpack_require__(316);
 	
 	var _ParamPropDispatcher2 = _interopRequireDefault(_ParamPropDispatcher);
 	
-	var _EditorHeader = __webpack_require__(316);
+	var _EditorHeader = __webpack_require__(317);
 	
 	var _EditorHeader2 = _interopRequireDefault(_EditorHeader);
 	
-	var _KeyShortcutCheatSheet = __webpack_require__(333);
+	var _KeyShortcutCheatSheet = __webpack_require__(334);
 	
 	var _KeyShortcutCheatSheet2 = _interopRequireDefault(_KeyShortcutCheatSheet);
 	
-	var _KeyShortcutDispatcher = __webpack_require__(335);
+	var _KeyShortcutDispatcher = __webpack_require__(336);
 	
 	var _KeyShortcutDispatcher2 = _interopRequireDefault(_KeyShortcutDispatcher);
 	
-	var _SuggestionsPanel = __webpack_require__(370);
+	var _SuggestionsPanel = __webpack_require__(371);
 	
 	var _SuggestionsPanel2 = _interopRequireDefault(_SuggestionsPanel);
 	
 	var _phrases = __webpack_require__(274);
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
-	var _reactSplitPane = __webpack_require__(387);
+	var _reactSplitPane = __webpack_require__(388);
 	
 	var _reactSplitPane2 = _interopRequireDefault(_reactSplitPane);
 	
@@ -47369,7 +47415,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Root);
 
 /***/ },
-/* 299 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47378,7 +47424,7 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -47386,17 +47432,17 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _TransUnit = __webpack_require__(302);
+	var _TransUnit = __webpack_require__(303);
 	
 	var _TransUnit2 = _interopRequireDefault(_TransUnit);
 	
 	var _reactRedux = __webpack_require__(191);
 	
-	var _filterPagingUtil = __webpack_require__(287);
+	var _filterPagingUtil = __webpack_require__(278);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -47443,8 +47489,8 @@
 	      // the phrase from state in mapDispatchToProps
 	      return _react2.default.createElement(
 	        'li',
-	        { key: index },
-	        _react2.default.createElement(_TransUnit2.default, { index: index, phrase: phrase })
+	        { key: phrase.id },
+	        _react2.default.createElement(_TransUnit2.default, { index: phrase.id, phrase: phrase })
 	      );
 	    });
 	
@@ -47477,7 +47523,6 @@
 	    return detail || phrase;
 	  });
 	  var maximised = !state.ui.panels.navHeader.visible;
-	
 	  return {
 	    context: state.context,
 	    maximised: maximised,
@@ -47488,7 +47533,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(MainContent);
 
 /***/ },
-/* 300 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -47542,7 +47587,7 @@
 
 
 /***/ },
-/* 301 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47551,7 +47596,7 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -47621,7 +47666,7 @@
 	exports.default = Icon;
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47636,19 +47681,19 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _TransUnitStatus = __webpack_require__(303);
+	var _TransUnitStatus = __webpack_require__(304);
 	
 	var _TransUnitStatus2 = _interopRequireDefault(_TransUnitStatus);
 	
-	var _TransUnitSourcePanel = __webpack_require__(304);
+	var _TransUnitSourcePanel = __webpack_require__(305);
 	
 	var _TransUnitSourcePanel2 = _interopRequireDefault(_TransUnitSourcePanel);
 	
-	var _TransUnitTranslationPanel = __webpack_require__(309);
+	var _TransUnitTranslationPanel = __webpack_require__(310);
 	
 	var _TransUnitTranslationPanel2 = _interopRequireDefault(_TransUnitTranslationPanel);
 	
@@ -47660,7 +47705,7 @@
 	
 	var _phrases = __webpack_require__(274);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -47805,7 +47850,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(TransUnit);
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47818,7 +47863,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -47909,7 +47954,7 @@
 	exports.default = TransUnitStatus;
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47922,15 +47967,15 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _TransUnitSourceHeader = __webpack_require__(305);
+	var _TransUnitSourceHeader = __webpack_require__(306);
 	
 	var _TransUnitSourceHeader2 = _interopRequireDefault(_TransUnitSourceHeader);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
@@ -48030,7 +48075,7 @@
 	exports.default = TransUnitSourcePanel;
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48043,11 +48088,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
-	var _TransUnitLocaleHeading = __webpack_require__(308);
+	var _TransUnitLocaleHeading = __webpack_require__(309);
 	
 	var _TransUnitLocaleHeading2 = _interopRequireDefault(_TransUnitLocaleHeading);
 	
@@ -48113,7 +48158,7 @@
 	exports.default = TransUnitSourceHeader;
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48122,15 +48167,15 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Button = __webpack_require__(307);
+	var _Button = __webpack_require__(308);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -48177,7 +48222,7 @@
 	exports.default = IconButton;
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48186,7 +48231,7 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48234,7 +48279,7 @@
 	exports.default = Button;
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -48283,7 +48328,7 @@
 	exports.default = TransUnitLocaleHeading;
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48296,19 +48341,19 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reactTextareaAutosize = __webpack_require__(310);
+	var _reactTextareaAutosize = __webpack_require__(311);
 	
 	var _reactTextareaAutosize2 = _interopRequireDefault(_reactTextareaAutosize);
 	
-	var _TransUnitTranslationHeader = __webpack_require__(312);
+	var _TransUnitTranslationHeader = __webpack_require__(313);
 	
 	var _TransUnitTranslationHeader2 = _interopRequireDefault(_TransUnitTranslationHeader);
 	
-	var _TransUnitTranslationFooter = __webpack_require__(313);
+	var _TransUnitTranslationFooter = __webpack_require__(314);
 	
 	var _TransUnitTranslationFooter2 = _interopRequireDefault(_TransUnitTranslationFooter);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -48475,7 +48520,7 @@
 	exports.default = TransUnitTranslationPanel;
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -48506,7 +48551,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _calculateNodeHeight = __webpack_require__(311);
+	var _calculateNodeHeight = __webpack_require__(312);
 	
 	var _calculateNodeHeight2 = _interopRequireDefault(_calculateNodeHeight);
 	
@@ -48762,7 +48807,7 @@
 
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports) {
 
 	/**
@@ -48880,7 +48925,7 @@
 
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48893,11 +48938,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
-	var _TransUnitLocaleHeading = __webpack_require__(308);
+	var _TransUnitLocaleHeading = __webpack_require__(309);
 	
 	var _TransUnitLocaleHeading2 = _interopRequireDefault(_TransUnitLocaleHeading);
 	
@@ -48951,8 +48996,8 @@
 	  },
 	
 	  render: function render() {
-	    var translationChanged = (0, _phrase.hasTranslationChanged)(this.props.phrase);
-	    var button = translationChanged ? this.undoButtonElement() : this.closeButtonElement();
+	    var displayUndo = (0, _phrase.canUndo)(this.props.phrase);
+	    var button = displayUndo ? this.undoButtonElement() : this.closeButtonElement();
 	
 	    return _react2.default.createElement(
 	      'div',
@@ -48971,7 +49016,7 @@
 	exports.default = TransUnitTranslationHeader;
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48984,19 +49029,19 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Button = __webpack_require__(307);
+	var _Button = __webpack_require__(308);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _SplitDropdown = __webpack_require__(314);
+	var _SplitDropdown = __webpack_require__(315);
 	
 	var _SplitDropdown2 = _interopRequireDefault(_SplitDropdown);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -49201,7 +49246,7 @@
 	exports.default = TransUnitTranslationFooter;
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49212,7 +49257,7 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49293,7 +49338,7 @@
 	exports.default = SplitDropdown;
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49382,7 +49427,7 @@
 	exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(ParamPropDispatcher);
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49391,19 +49436,19 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _ControlsHeader = __webpack_require__(317);
+	var _ControlsHeader = __webpack_require__(318);
 	
 	var _ControlsHeader2 = _interopRequireDefault(_ControlsHeader);
 	
-	var _NavHeader = __webpack_require__(323);
+	var _NavHeader = __webpack_require__(324);
 	
 	var _NavHeader2 = _interopRequireDefault(_NavHeader);
 	
-	var _ProgressBar = __webpack_require__(330);
+	var _ProgressBar = __webpack_require__(331);
 	
 	var _ProgressBar2 = _interopRequireDefault(_ProgressBar);
 	
@@ -49413,7 +49458,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _ZanataLogoLoader = __webpack_require__(331);
+	var _ZanataLogoLoader = __webpack_require__(332);
 	
 	var _ZanataLogoLoader2 = _interopRequireDefault(_ZanataLogoLoader);
 	
@@ -49469,7 +49514,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(EditorHeader);
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49480,23 +49525,23 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _IconButtonToggle = __webpack_require__(318);
+	var _IconButtonToggle = __webpack_require__(319);
 	
 	var _IconButtonToggle2 = _interopRequireDefault(_IconButtonToggle);
 	
-	var _Pager = __webpack_require__(319);
+	var _Pager = __webpack_require__(320);
 	
 	var _Pager2 = _interopRequireDefault(_Pager);
 	
-	var _TranslatingIndicator = __webpack_require__(320);
+	var _TranslatingIndicator = __webpack_require__(321);
 	
 	var _TranslatingIndicator2 = _interopRequireDefault(_TranslatingIndicator);
 	
-	var _TransUnitFilter = __webpack_require__(321);
+	var _TransUnitFilter = __webpack_require__(322);
 	
 	var _TransUnitFilter2 = _interopRequireDefault(_TransUnitFilter);
 	
@@ -49506,13 +49551,13 @@
 	
 	var _reactRedux = __webpack_require__(191);
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
-	var _controlsHeaderActions = __webpack_require__(286);
+	var _controlsHeaderActions = __webpack_require__(277);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
-	var _filterPagingUtil = __webpack_require__(287);
+	var _filterPagingUtil = __webpack_require__(278);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -49661,6 +49706,7 @@
 	
 	  var pageCount = (0, _filterPagingUtil.calculateMaxPageIndexFromState)(state) + 1;
 	  var pageNumber = Math.min(pageCount, phrases.paging.pageIndex + 1);
+	  console.info(phrases.paging);
 	
 	  return {
 	    actions: actions,
@@ -49712,7 +49758,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ControlsHeader);
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49723,11 +49769,11 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
@@ -49775,7 +49821,7 @@
 	exports.default = IconButtonToggle;
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49784,7 +49830,7 @@
 	  value: true
 	});
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -49802,17 +49848,23 @@
 	  displayName: 'PagerButton',
 	
 	  render: function render() {
+	    var icon = _react2.default.createElement(_Icon2.default, { name: this.props.icon,
+	      title: this.props.title,
+	      className: 'u-sizeWidth-1' });
 	    return _react2.default.createElement(
 	      'li',
 	      null,
-	      _react2.default.createElement(
+	      this.props.disabled ? _react2.default.createElement(
+	        'span',
+	        { className: 'u-textNeutral u-sizeHeight-1_1-2 u-textNoSelect',
+	          title: this.props.title },
+	        icon
+	      ) : _react2.default.createElement(
 	        'a',
 	        { className: 'Link--neutral u-sizeHeight-1_1-2 u-textNoSelect',
 	          title: this.props.title,
 	          onClick: this.props.action },
-	        _react2.default.createElement(_Icon2.default, { name: this.props.icon,
-	          title: this.props.title,
-	          className: 'u-sizeWidth-1' })
+	        icon
 	      )
 	    );
 	  }
@@ -49864,22 +49916,26 @@
 	      first: {
 	        icon: 'previous',
 	        title: gettextCatalog.getString('First page'),
-	        action: firstPage
+	        action: firstPage,
+	        disabled: pageNumber <= 1
 	      },
 	      prev: {
 	        icon: 'chevron-left',
 	        title: gettextCatalog.getString('Previous page'),
-	        action: previousPage
+	        action: previousPage,
+	        disabled: pageNumber <= 1
 	      },
 	      next: {
 	        icon: 'chevron-right',
 	        title: gettextCatalog.getString('Next page'),
-	        action: nextPage
+	        action: nextPage,
+	        disabled: pageNumber >= pageCount
 	      },
 	      last: {
 	        icon: 'next',
 	        title: gettextCatalog.getString('Last page'),
-	        action: lastPage
+	        action: lastPage,
+	        disabled: pageNumber >= pageCount
 	      }
 	    };
 	
@@ -49906,7 +49962,7 @@
 	exports.default = Pager;
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49915,7 +49971,7 @@
 	  value: true
 	});
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -49961,7 +50017,7 @@
 	exports.default = TranslatingIndicator;
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49970,7 +50026,7 @@
 	  value: true
 	});
 	
-	var _FilterToggle = __webpack_require__(322);
+	var _FilterToggle = __webpack_require__(323);
 	
 	var _FilterToggle2 = _interopRequireDefault(_FilterToggle);
 	
@@ -50105,7 +50161,7 @@
 	exports.default = TransUnitFilter;
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50114,11 +50170,11 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -50188,7 +50244,7 @@
 	exports.default = FilterToggle;
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50197,27 +50253,27 @@
 	  value: true
 	});
 	
-	var _DashboardLink = __webpack_require__(324);
+	var _DashboardLink = __webpack_require__(325);
 	
 	var _DashboardLink2 = _interopRequireDefault(_DashboardLink);
 	
-	var _DocsDropdown = __webpack_require__(325);
+	var _DocsDropdown = __webpack_require__(326);
 	
 	var _DocsDropdown2 = _interopRequireDefault(_DocsDropdown);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _LanguagesDropdown = __webpack_require__(327);
+	var _LanguagesDropdown = __webpack_require__(328);
 	
 	var _LanguagesDropdown2 = _interopRequireDefault(_LanguagesDropdown);
 	
-	var _ProjectVersionLink = __webpack_require__(328);
+	var _ProjectVersionLink = __webpack_require__(329);
 	
 	var _ProjectVersionLink2 = _interopRequireDefault(_ProjectVersionLink);
 	
-	var _UiLanguageDropdown = __webpack_require__(329);
+	var _UiLanguageDropdown = __webpack_require__(330);
 	
 	var _UiLanguageDropdown2 = _interopRequireDefault(_UiLanguageDropdown);
 	
@@ -50229,7 +50285,7 @@
 	
 	var _actions = __webpack_require__(265);
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -50390,7 +50446,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(NavHeader);
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50440,7 +50496,7 @@
 	exports.default = DashboardLink;
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50451,11 +50507,11 @@
 	
 	var _docId = __webpack_require__(269);
 	
-	var _Dropdown = __webpack_require__(326);
+	var _Dropdown = __webpack_require__(327);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -50551,7 +50607,7 @@
 	exports.default = DocsDropdown;
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50562,7 +50618,7 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -50676,7 +50732,7 @@
 	exports.default = Dropdown;
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50689,11 +50745,11 @@
 	
 	var _docId = __webpack_require__(269);
 	
-	var _Dropdown = __webpack_require__(326);
+	var _Dropdown = __webpack_require__(327);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -50792,7 +50848,7 @@
 	exports.default = LanguagesDropdown;
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50866,7 +50922,7 @@
 	exports.default = ProjectVersionLink;
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50877,7 +50933,7 @@
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _Dropdown = __webpack_require__(326);
+	var _Dropdown = __webpack_require__(327);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
@@ -50965,7 +51021,7 @@
 	exports.default = UiLanguageDropdown;
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50976,7 +51032,7 @@
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -51086,7 +51142,7 @@
 	exports.default = ProgressBar;
 
 /***/ },
-/* 331 */
+/* 332 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51097,13 +51153,13 @@
 	
 	var _api = __webpack_require__(266);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
 	var _lodash = __webpack_require__(271);
 	
-	var _LogoLoader = __webpack_require__(332);
+	var _LogoLoader = __webpack_require__(333);
 	
 	var _LogoLoader2 = _interopRequireDefault(_LogoLoader);
 	
@@ -51163,7 +51219,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(ZanataLogoLoader);
 
 /***/ },
-/* 332 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51176,7 +51232,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -51251,7 +51307,7 @@
 	exports.default = LogoLoader;
 
 /***/ },
-/* 333 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51264,15 +51320,15 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _KeyCombinations = __webpack_require__(334);
+	var _KeyCombinations = __webpack_require__(335);
 	
 	var _KeyCombinations2 = _interopRequireDefault(_KeyCombinations);
 	
@@ -51284,9 +51340,9 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _editorShortcuts = __webpack_require__(288);
+	var _editorShortcuts = __webpack_require__(290);
 	
-	var _headerActions = __webpack_require__(292);
+	var _headerActions = __webpack_require__(275);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -51412,7 +51468,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KeyShortcutCheatSheet);
 
 /***/ },
-/* 334 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51491,7 +51547,7 @@
 	}
 
 /***/ },
-/* 335 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51502,15 +51558,15 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _combokeys = __webpack_require__(336);
+	var _combokeys = __webpack_require__(337);
 	
 	var _combokeys2 = _interopRequireDefault(_combokeys);
 	
-	var _globalBind = __webpack_require__(369);
+	var _globalBind = __webpack_require__(370);
 	
 	var _globalBind2 = _interopRequireDefault(_globalBind);
 	
-	var _editorShortcuts = __webpack_require__(288);
+	var _editorShortcuts = __webpack_require__(290);
 	
 	var _react = __webpack_require__(1);
 	
@@ -51660,7 +51716,7 @@
 	exports.default = (0, _reactRedux.connect)(undefined, mapDispatchToProps)(KeyShortcutDispatcher);
 
 /***/ },
-/* 336 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -51729,27 +51785,27 @@
 	  return self
 	}
 	
-	module.exports.prototype.bind = __webpack_require__(337)
-	module.exports.prototype.bindMultiple = __webpack_require__(338)
-	module.exports.prototype.unbind = __webpack_require__(339)
-	module.exports.prototype.trigger = __webpack_require__(340)
-	module.exports.prototype.reset = __webpack_require__(341)
-	module.exports.prototype.stopCallback = __webpack_require__(342)
-	module.exports.prototype.handleKey = __webpack_require__(343)
-	module.exports.prototype.addEvents = __webpack_require__(345)
-	module.exports.prototype.bindSingle = __webpack_require__(352)
-	module.exports.prototype.getKeyInfo = __webpack_require__(353)
-	module.exports.prototype.pickBestAction = __webpack_require__(357)
-	module.exports.prototype.getReverseMap = __webpack_require__(358)
-	module.exports.prototype.getMatches = __webpack_require__(359)
-	module.exports.prototype.resetSequences = __webpack_require__(361)
-	module.exports.prototype.fireCallback = __webpack_require__(362)
-	module.exports.prototype.bindSequence = __webpack_require__(365)
-	module.exports.prototype.resetSequenceTimer = __webpack_require__(366)
-	module.exports.prototype.detach = __webpack_require__(367)
+	module.exports.prototype.bind = __webpack_require__(338)
+	module.exports.prototype.bindMultiple = __webpack_require__(339)
+	module.exports.prototype.unbind = __webpack_require__(340)
+	module.exports.prototype.trigger = __webpack_require__(341)
+	module.exports.prototype.reset = __webpack_require__(342)
+	module.exports.prototype.stopCallback = __webpack_require__(343)
+	module.exports.prototype.handleKey = __webpack_require__(344)
+	module.exports.prototype.addEvents = __webpack_require__(346)
+	module.exports.prototype.bindSingle = __webpack_require__(353)
+	module.exports.prototype.getKeyInfo = __webpack_require__(354)
+	module.exports.prototype.pickBestAction = __webpack_require__(358)
+	module.exports.prototype.getReverseMap = __webpack_require__(359)
+	module.exports.prototype.getMatches = __webpack_require__(360)
+	module.exports.prototype.resetSequences = __webpack_require__(362)
+	module.exports.prototype.fireCallback = __webpack_require__(363)
+	module.exports.prototype.bindSequence = __webpack_require__(366)
+	module.exports.prototype.resetSequenceTimer = __webpack_require__(367)
+	module.exports.prototype.detach = __webpack_require__(368)
 	
 	module.exports.instances = []
-	module.exports.reset = __webpack_require__(368)
+	module.exports.reset = __webpack_require__(369)
 	
 	/**
 	 * variable to store the flipped version of MAP from above
@@ -51762,7 +51818,7 @@
 
 
 /***/ },
-/* 337 */
+/* 338 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51791,7 +51847,7 @@
 
 
 /***/ },
-/* 338 */
+/* 339 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51815,7 +51871,7 @@
 
 
 /***/ },
-/* 339 */
+/* 340 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51845,7 +51901,7 @@
 
 
 /***/ },
-/* 340 */
+/* 341 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51867,7 +51923,7 @@
 
 
 /***/ },
-/* 341 */
+/* 342 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51889,7 +51945,7 @@
 
 
 /***/ },
-/* 342 */
+/* 343 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -51916,7 +51972,7 @@
 
 
 /***/ },
-/* 343 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52005,7 +52061,7 @@
 	  // we ignore keypresses in a sequence that directly follow a keydown
 	  // for the same character
 	  ignoreThisKeypress = e.type === 'keypress' && self.ignoreNextKeypress
-	  isModifier = __webpack_require__(344)
+	  isModifier = __webpack_require__(345)
 	  if (e.type === self.nextExpectedAction && !isModifier(character) && !ignoreThisKeypress) {
 	    self.resetSequences(doNotReset)
 	  }
@@ -52015,7 +52071,7 @@
 
 
 /***/ },
-/* 344 */
+/* 345 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52033,17 +52089,17 @@
 
 
 /***/ },
-/* 345 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
 	'use strict'
 	module.exports = function () {
 	  var self = this
-	  var on = __webpack_require__(346)
+	  var on = __webpack_require__(347)
 	  var element = self.element
 	
-	  self.eventHandler = __webpack_require__(347).bind(self)
+	  self.eventHandler = __webpack_require__(348).bind(self)
 	
 	  on(element, 'keypress', self.eventHandler)
 	  on(element, 'keydown', self.eventHandler)
@@ -52052,7 +52108,7 @@
 
 
 /***/ },
-/* 346 */
+/* 347 */
 /***/ function(module, exports) {
 
 	module.exports = on
@@ -52073,7 +52129,7 @@
 
 
 /***/ },
-/* 347 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52095,7 +52151,7 @@
 	  if (typeof e.which !== 'number') {
 	    e.which = e.keyCode
 	  }
-	  characterFromEvent = __webpack_require__(348)
+	  characterFromEvent = __webpack_require__(349)
 	  var character = characterFromEvent(e)
 	
 	  // no character found then stop
@@ -52109,13 +52165,13 @@
 	    return
 	  }
 	
-	  eventModifiers = __webpack_require__(351)
+	  eventModifiers = __webpack_require__(352)
 	  self.handleKey(character, eventModifiers(e), e)
 	}
 
 
 /***/ },
-/* 348 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52130,8 +52186,8 @@
 	module.exports = function (e) {
 	  var SPECIAL_KEYS_MAP,
 	    SPECIAL_CHARACTERS_MAP
-	  SPECIAL_KEYS_MAP = __webpack_require__(349)
-	  SPECIAL_CHARACTERS_MAP = __webpack_require__(350)
+	  SPECIAL_KEYS_MAP = __webpack_require__(350)
+	  SPECIAL_CHARACTERS_MAP = __webpack_require__(351)
 	
 	  // for keypress events we should return the character as is
 	  if (e.type === 'keypress') {
@@ -52172,7 +52228,7 @@
 
 
 /***/ },
-/* 349 */
+/* 350 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52230,7 +52286,7 @@
 
 
 /***/ },
-/* 350 */
+/* 351 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52264,7 +52320,7 @@
 
 
 /***/ },
-/* 351 */
+/* 352 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52300,7 +52356,7 @@
 
 
 /***/ },
-/* 352 */
+/* 353 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52362,7 +52418,7 @@
 
 
 /***/ },
-/* 353 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52386,14 +52442,14 @@
 	  var SHIFT_MAP
 	  var isModifier
 	
-	  keysFromString = __webpack_require__(354)
+	  keysFromString = __webpack_require__(355)
 	  // take the keys from this pattern and figure out what the actual
 	  // pattern is all about
 	  keys = keysFromString(combination)
 	
-	  SPECIAL_ALIASES = __webpack_require__(355)
-	  SHIFT_MAP = __webpack_require__(356)
-	  isModifier = __webpack_require__(344)
+	  SPECIAL_ALIASES = __webpack_require__(356)
+	  SHIFT_MAP = __webpack_require__(357)
+	  isModifier = __webpack_require__(345)
 	  for (j = 0; j < keys.length; ++j) {
 	    key = keys[j]
 	
@@ -52429,7 +52485,7 @@
 
 
 /***/ },
-/* 354 */
+/* 355 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52451,7 +52507,7 @@
 
 
 /***/ },
-/* 355 */
+/* 356 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52472,7 +52528,7 @@
 
 
 /***/ },
-/* 356 */
+/* 357 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52511,7 +52567,7 @@
 
 
 /***/ },
-/* 357 */
+/* 358 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52544,7 +52600,7 @@
 
 
 /***/ },
-/* 358 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52563,7 +52619,7 @@
 	
 	  if (!constructor.REVERSE_MAP) {
 	    constructor.REVERSE_MAP = {}
-	    SPECIAL_KEYS_MAP = __webpack_require__(349)
+	    SPECIAL_KEYS_MAP = __webpack_require__(350)
 	    for (var key in SPECIAL_KEYS_MAP) {
 	      // pull out the numeric keypad from here cause keypress should
 	      // be able to detect the keys from the character
@@ -52581,7 +52637,7 @@
 
 
 /***/ },
-/* 359 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52622,7 +52678,7 @@
 	
 	  if (!self.callbacks[character]) { return matches }
 	
-	  isModifier = __webpack_require__(344)
+	  isModifier = __webpack_require__(345)
 	  // if a modifier key is coming up on its own we should allow it
 	  if (action === 'keyup' && isModifier(character)) {
 	    modifiers = [character]
@@ -52652,7 +52708,7 @@
 	    // chrome will not fire a keypress if meta or control is down
 	    // safari will fire a keypress if meta or meta+shift is down
 	    // firefox will fire a keypress if meta or control is down
-	    modifiersMatch = __webpack_require__(360)
+	    modifiersMatch = __webpack_require__(361)
 	    if ((action === 'keypress' && !e.metaKey && !e.ctrlKey) || modifiersMatch(modifiers, callback.modifiers)) {
 	      // when you bind a combination or sequence a second time it
 	      // should overwrite the first one.  if a sequenceName or
@@ -52674,7 +52730,7 @@
 
 
 /***/ },
-/* 360 */
+/* 361 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52693,7 +52749,7 @@
 
 
 /***/ },
-/* 361 */
+/* 362 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52728,7 +52784,7 @@
 
 
 /***/ },
-/* 362 */
+/* 363 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52755,16 +52811,16 @@
 	  }
 	
 	  if (callback(e, combo) === false) {
-	    preventDefault = __webpack_require__(363)
+	    preventDefault = __webpack_require__(364)
 	    preventDefault(e)
-	    stopPropagation = __webpack_require__(364)
+	    stopPropagation = __webpack_require__(365)
 	    stopPropagation(e)
 	  }
 	}
 
 
 /***/ },
-/* 363 */
+/* 364 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52787,7 +52843,7 @@
 
 
 /***/ },
-/* 364 */
+/* 365 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52810,7 +52866,7 @@
 
 
 /***/ },
-/* 365 */
+/* 366 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-env node, browser */
@@ -52862,7 +52918,7 @@
 	    // or keypress.  this is so if you finish a sequence and
 	    // release the key the final key will not trigger a keyup
 	    if (action !== 'keyup') {
-	      characterFromEvent = __webpack_require__(348)
+	      characterFromEvent = __webpack_require__(349)
 	      self.ignoreNextKeyup = characterFromEvent(e)
 	    }
 	
@@ -52894,7 +52950,7 @@
 
 
 /***/ },
-/* 366 */
+/* 367 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52921,10 +52977,10 @@
 
 
 /***/ },
-/* 367 */
+/* 368 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var off = __webpack_require__(346).off
+	var off = __webpack_require__(347).off
 	module.exports = function () {
 	  var self = this
 	  var element = self.element
@@ -52936,7 +52992,7 @@
 
 
 /***/ },
-/* 368 */
+/* 369 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52952,7 +53008,7 @@
 
 
 /***/ },
-/* 369 */
+/* 370 */
 /***/ function(module, exports) {
 
 	/* eslint-env node, browser */
@@ -52995,7 +53051,7 @@
 
 
 /***/ },
-/* 370 */
+/* 371 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53006,7 +53062,7 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53014,11 +53070,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionsHeader = __webpack_require__(371);
+	var _SuggestionsHeader = __webpack_require__(372);
 	
 	var _SuggestionsHeader2 = _interopRequireDefault(_SuggestionsHeader);
 	
-	var _SuggestionsBody = __webpack_require__(374);
+	var _SuggestionsBody = __webpack_require__(375);
 	
 	var _SuggestionsBody2 = _interopRequireDefault(_SuggestionsBody);
 	
@@ -53026,7 +53082,7 @@
 	
 	var _reactRedux = __webpack_require__(191);
 	
-	var _suggestions = __webpack_require__(276);
+	var _suggestions = __webpack_require__(281);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -53148,7 +53204,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SuggestionsPanel);
 
 /***/ },
-/* 371 */
+/* 372 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53161,23 +53217,23 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
-	var _IconButtonToggle = __webpack_require__(318);
+	var _IconButtonToggle = __webpack_require__(319);
 	
 	var _IconButtonToggle2 = _interopRequireDefault(_IconButtonToggle);
 	
-	var _SuggestionSearchInput = __webpack_require__(372);
+	var _SuggestionSearchInput = __webpack_require__(373);
 	
 	var _SuggestionSearchInput2 = _interopRequireDefault(_SuggestionSearchInput);
 	
-	var _ToggleSwitch = __webpack_require__(373);
+	var _ToggleSwitch = __webpack_require__(374);
 	
 	var _ToggleSwitch2 = _interopRequireDefault(_ToggleSwitch);
 	
@@ -53306,7 +53362,7 @@
 	exports.default = SuggestionsHeader;
 
 /***/ },
-/* 372 */
+/* 373 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53315,15 +53371,15 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
-	var _IconButton = __webpack_require__(306);
+	var _IconButton = __webpack_require__(307);
 	
 	var _IconButton2 = _interopRequireDefault(_IconButton);
 	
@@ -53476,7 +53532,7 @@
 	exports.default = SuggestionSearchInput;
 
 /***/ },
-/* 373 */
+/* 374 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53485,7 +53541,7 @@
 	  value: true
 	});
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53535,7 +53591,7 @@
 	exports.default = ToggleSwitch;
 
 /***/ },
-/* 374 */
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53548,11 +53604,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _NoSuggestionsPanel = __webpack_require__(375);
+	var _NoSuggestionsPanel = __webpack_require__(376);
 	
 	var _NoSuggestionsPanel2 = _interopRequireDefault(_NoSuggestionsPanel);
 	
-	var _SuggestionList = __webpack_require__(376);
+	var _SuggestionList = __webpack_require__(377);
 	
 	var _SuggestionList2 = _interopRequireDefault(_SuggestionList);
 	
@@ -53640,7 +53696,7 @@
 	exports.default = SuggestionsBody;
 
 /***/ },
-/* 375 */
+/* 376 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53653,7 +53709,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -53692,7 +53748,7 @@
 	exports.default = NoSuggestionsPanel;
 
 /***/ },
-/* 376 */
+/* 377 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53707,7 +53763,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Suggestion = __webpack_require__(377);
+	var _Suggestion = __webpack_require__(378);
 	
 	var _Suggestion2 = _interopRequireDefault(_Suggestion);
 	
@@ -53765,7 +53821,7 @@
 	exports.default = SuggestionList;
 
 /***/ },
-/* 377 */
+/* 378 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53780,11 +53836,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionSources = __webpack_require__(378);
+	var _SuggestionSources = __webpack_require__(379);
 	
 	var _SuggestionSources2 = _interopRequireDefault(_SuggestionSources);
 	
-	var _SuggestionTranslations = __webpack_require__(383);
+	var _SuggestionTranslations = __webpack_require__(384);
 	
 	var _SuggestionTranslations2 = _interopRequireDefault(_SuggestionTranslations);
 	
@@ -53864,7 +53920,7 @@
 	exports.default = Suggestion;
 
 /***/ },
-/* 378 */
+/* 379 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53877,11 +53933,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionContents = __webpack_require__(379);
+	var _SuggestionContents = __webpack_require__(380);
 	
 	var _SuggestionContents2 = _interopRequireDefault(_SuggestionContents);
 	
-	var _SuggestionSourceDetails = __webpack_require__(382);
+	var _SuggestionSourceDetails = __webpack_require__(383);
 	
 	var _SuggestionSourceDetails2 = _interopRequireDefault(_SuggestionSourceDetails);
 	
@@ -53925,7 +53981,7 @@
 	exports.default = SuggestionSources;
 
 /***/ },
-/* 379 */
+/* 380 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -53934,7 +53990,7 @@
 	  value: true
 	});
 	
-	var _TextDiff = __webpack_require__(380);
+	var _TextDiff = __webpack_require__(381);
 	
 	var _TextDiff2 = _interopRequireDefault(_TextDiff);
 	
@@ -53942,7 +53998,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(300);
+	var _classnames = __webpack_require__(301);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -54023,7 +54079,7 @@
 	exports.default = SuggestionContents;
 
 /***/ },
-/* 380 */
+/* 381 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -54034,7 +54090,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _textDiff = __webpack_require__(381);
+	var _textDiff = __webpack_require__(382);
 	
 	var _textDiff2 = _interopRequireDefault(_textDiff);
 	
@@ -54114,7 +54170,7 @@
 	});
 
 /***/ },
-/* 381 */
+/* 382 */
 /***/ function(module, exports) {
 
 	/**
@@ -55518,7 +55574,7 @@
 
 
 /***/ },
-/* 382 */
+/* 383 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55531,7 +55587,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -55625,7 +55681,7 @@
 	exports.default = SuggestionSourceDetails;
 
 /***/ },
-/* 383 */
+/* 384 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55638,11 +55694,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionContents = __webpack_require__(379);
+	var _SuggestionContents = __webpack_require__(380);
 	
 	var _SuggestionContents2 = _interopRequireDefault(_SuggestionContents);
 	
-	var _SuggestionTranslationDetails = __webpack_require__(384);
+	var _SuggestionTranslationDetails = __webpack_require__(385);
 	
 	var _SuggestionTranslationDetails2 = _interopRequireDefault(_SuggestionTranslationDetails);
 	
@@ -55684,7 +55740,7 @@
 	exports.default = SuggestionTranslations;
 
 /***/ },
-/* 384 */
+/* 385 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55693,7 +55749,7 @@
 	  value: true
 	});
 	
-	var _Button = __webpack_require__(307);
+	var _Button = __webpack_require__(308);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
@@ -55701,11 +55757,11 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SuggestionMatchPercent = __webpack_require__(385);
+	var _SuggestionMatchPercent = __webpack_require__(386);
 	
 	var _SuggestionMatchPercent2 = _interopRequireDefault(_SuggestionMatchPercent);
 	
-	var _SuggestionUpdateMessage = __webpack_require__(386);
+	var _SuggestionUpdateMessage = __webpack_require__(387);
 	
 	var _SuggestionUpdateMessage2 = _interopRequireDefault(_SuggestionUpdateMessage);
 	
@@ -55801,7 +55857,7 @@
 	exports.default = SuggestionTranslationDetails;
 
 /***/ },
-/* 385 */
+/* 386 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55868,7 +55924,7 @@
 	exports.default = SuggestionMatchPercent;
 
 /***/ },
-/* 386 */
+/* 387 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55883,7 +55939,7 @@
 	
 	var _reactIntl = __webpack_require__(155);
 	
-	var _Icon = __webpack_require__(301);
+	var _Icon = __webpack_require__(302);
 	
 	var _Icon2 = _interopRequireDefault(_Icon);
 	
@@ -55951,15 +56007,15 @@
 	exports.default = SuggestionUpdateMessage;
 
 /***/ },
-/* 387 */
+/* 388 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SplitPane = __webpack_require__(388);
+	var SplitPane = __webpack_require__(389);
 	
 	module.exports = SplitPane;
 
 /***/ },
-/* 388 */
+/* 389 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -55980,11 +56036,11 @@
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Pane = __webpack_require__(389);
+	var _Pane = __webpack_require__(390);
 	
 	var _Pane2 = _interopRequireDefault(_Pane);
 	
-	var _Resizer = __webpack_require__(390);
+	var _Resizer = __webpack_require__(391);
 	
 	var _Resizer2 = _interopRequireDefault(_Resizer);
 	
@@ -56242,7 +56298,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 389 */
+/* 390 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56326,7 +56382,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 390 */
+/* 391 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56397,7 +56453,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 391 */
+/* 392 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56488,7 +56544,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(NeedSlugMessage);
 
 /***/ },
-/* 392 */
+/* 393 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
