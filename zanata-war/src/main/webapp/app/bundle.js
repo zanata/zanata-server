@@ -24993,11 +24993,19 @@
 	    arity: true
 	};
 	
-	module.exports = function hoistNonReactStatics(targetComponent, sourceComponent) {
+	var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === 'function';
+	
+	module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
 	    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
 	        var keys = Object.getOwnPropertyNames(sourceComponent);
-	        for (var i=0; i<keys.length; ++i) {
-	            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]]) {
+	
+	        /* istanbul ignore else */
+	        if (isGetOwnPropertySymbolsAvailable) {
+	            keys = keys.concat(Object.getOwnPropertySymbols(sourceComponent));
+	        }
+	
+	        for (var i = 0; i < keys.length; ++i) {
+	            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]] && (!customStatics || !customStatics[keys[i]])) {
 	                try {
 	                    targetComponent[keys[i]] = sourceComponent[keys[i]];
 	                } catch (error) {
@@ -30581,14 +30589,14 @@
 	    dispatch((0, _actions.requestDocumentList)());
 	  }
 	}, function (dispatch, oldState, newState) {
-	  var updateDoc = oldState.context.docId !== newState.context.docId;
-	  var updateLocale = oldState.context.lang !== newState.context.lang;
+	  var docChanged = oldState.context.docId !== newState.context.docId;
+	  var localeChanged = oldState.context.lang !== newState.context.lang;
 	
 	  var newPageIndex = getPageIndexFromQuery(newState);
 	  var oldPageIndex = getPageIndexFromQuery(oldState);
 	
 	  var updatePage = oldPageIndex !== newPageIndex;
-	  if (updateDoc || updateLocale) {
+	  if (docChanged || localeChanged) {
 	    var _newState$context = newState.context;
 	    var projectSlug = _newState$context.projectSlug;
 	    var versionSlug = _newState$context.versionSlug;
@@ -30598,10 +30606,10 @@
 	    var paging = _extends({}, newState.phrases.paging, {
 	      pageIndex: newPageIndex
 	    });
-	    if (updateDoc) {
+	    if (docChanged) {
 	      dispatch((0, _headerActions.selectDoc)(docId));
 	    }
-	    if (updateLocale) {
+	    if (localeChanged) {
 	      dispatch((0, _headerActions.selectLocale)(lang));
 	    }
 	    dispatch({ type: _controlsHeaderActions.UPDATE_PAGE, page: newPageIndex });
@@ -30691,10 +30699,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.DOCUMENT_LIST_FETCHED = exports.OPEN_DROPDOWN = exports.TOGGLE_DROPDOWN = exports.ROUTING_PARAMS_CHANGED = undefined;
+	exports.DOCUMENT_LIST_FETCHED = exports.CLOSE_DROPDOWN = exports.OPEN_DROPDOWN = exports.TOGGLE_DROPDOWN = exports.ROUTING_PARAMS_CHANGED = undefined;
 	exports.routingParamsChanged = routingParamsChanged;
 	exports.toggleDropdown = toggleDropdown;
 	exports.openDropdown = openDropdown;
+	exports.closeDropdown = closeDropdown;
 	exports.requestDocumentList = requestDocumentList;
 	exports.documentListFetched = documentListFetched;
 	
@@ -30723,6 +30732,11 @@
 	var OPEN_DROPDOWN = exports.OPEN_DROPDOWN = Symbol('OPEN_DROPDOWN');
 	function openDropdown(dropdownKey) {
 	  return { type: OPEN_DROPDOWN, key: dropdownKey };
+	}
+	
+	var CLOSE_DROPDOWN = exports.CLOSE_DROPDOWN = Symbol('CLOSE_DROPDOWN');
+	function closeDropdown() {
+	  return { type: CLOSE_DROPDOWN };
 	}
 	
 	/**
@@ -44035,6 +44049,8 @@
 	
 	var _status = __webpack_require__(270);
 	
+	var _phrase = __webpack_require__(273);
+	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	var FETCHING_PHRASE_LIST = exports.FETCHING_PHRASE_LIST = Symbol('FETCHING_PHRASE_LIST');
@@ -44224,7 +44240,10 @@
 	 */
 	var SELECT_PHRASE = exports.SELECT_PHRASE = Symbol('SELECT_PHRASE');
 	function selectPhrase(phraseId) {
-	  return { type: SELECT_PHRASE, phraseId: phraseId };
+	  return function (dispatch) {
+	    dispatch(savePreviousPhraseIfChanged(phraseId));
+	    dispatch({ type: SELECT_PHRASE, phraseId: phraseId });
+	  };
 	}
 	
 	/**
@@ -44235,7 +44254,22 @@
 	 */
 	var SELECT_PHRASE_SPECIFIC_PLURAL = exports.SELECT_PHRASE_SPECIFIC_PLURAL = Symbol('SELECT_PHRASE_SPECIFIC_PLURAL');
 	function selectPhrasePluralIndex(phraseId, index) {
-	  return { type: SELECT_PHRASE_SPECIFIC_PLURAL, phraseId: phraseId, index: index };
+	  return function (dispatch) {
+	    dispatch(savePreviousPhraseIfChanged(phraseId));
+	    dispatch({ type: SELECT_PHRASE_SPECIFIC_PLURAL, phraseId: phraseId, index: index });
+	  };
+	}
+	
+	function savePreviousPhraseIfChanged(phraseId) {
+	  return function (dispatch, getState) {
+	    var previousPhraseId = getState().phrases.selectedPhraseId;
+	    if (previousPhraseId && previousPhraseId !== phraseId) {
+	      var previousPhrase = getState().phrases.detail[previousPhraseId];
+	      if (previousPhrase && (0, _phrase.hasTranslationChanged)(previousPhrase)) {
+	        dispatch(savePhraseWithStatus(previousPhrase, (0, _status.defaultSaveStatus)(previousPhrase)));
+	      }
+	    }
+	  };
 	}
 	
 	// User has typed/pasted/etc. text for a translation (not saved yet)
@@ -44565,13 +44599,10 @@
 	      if (!containsLocale(locales, selectedLocaleId)) {
 	        selectedLocaleId = locales[0].localeId;
 	      }
-	      var context = getState().headerData.context;
 	
-	      if (context.selectedDoc.id !== selectedDocId || context.selectedLocale !== selectedLocaleId) {
-	        (0, _api.fetchStatistics)(projectSlug, versionSlug, selectedDocId, selectedLocaleId).then(checkResponse('fetch statistics failed')).then(function (stats) {
-	          return dispatch(statsFetched(stats));
-	        });
-	      }
+	      (0, _api.fetchStatistics)(projectSlug, versionSlug, selectedDocId, selectedLocaleId).then(checkResponse('fetch statistics failed')).then(function (stats) {
+	        return dispatch(statsFetched(stats));
+	      });
 	
 	      // dispatching selected doc and locale must happen after we compare
 	      // previous state otherwise it will not fetch stats
@@ -45758,6 +45789,8 @@
 	  value: true
 	});
 	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
 	var _reactAddonsUpdate = __webpack_require__(288);
 	
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
@@ -45805,143 +45838,188 @@
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? defaultState : arguments[0];
 	  var action = arguments[1];
 	
-	  switch (action.type) {
-	    case _controlsHeaderActions.CLAMP_PAGE:
-	      return update({
-	        paging: {
-	          pageIndex: { $set: clamp(state.paging.pageIndex, 0, (0, _filterPagingUtil.calculateMaxPageIndexFromState)(action.getState())) }
-	        }
-	      });
+	  var _ret = function () {
+	    switch (action.type) {
+	      case _controlsHeaderActions.CLAMP_PAGE:
+	        return {
+	          v: update({
+	            paging: {
+	              pageIndex: { $set: clamp(state.paging.pageIndex, 0, (0, _filterPagingUtil.calculateMaxPageIndexFromState)(action.getState())) }
+	            }
+	          })
+	        };
 	
-	    case _controlsHeaderActions.UPDATE_PAGE:
-	      return updatePageIndex(action.page);
+	      case _controlsHeaderActions.UPDATE_PAGE:
+	        return {
+	          v: updatePageIndex(action.page)
+	        };
 	
-	    case _phrases.CANCEL_EDIT:
-	      // Discard any newTranslations that were entered.
-	      var currentTrans = state.detail[state.selectedPhraseId].translations;
-	      return update({
-	        selectedPhraseId: { $set: undefined },
-	        detail: _defineProperty({}, state.selectedPhraseId, {
-	          newTranslations: { $set: currentTrans }
-	        })
-	      });
+	      case _phrases.CANCEL_EDIT:
+	        // Discard any newTranslations that were entered.
+	        var currentTrans = state.detail[state.selectedPhraseId].translations;
+	        return {
+	          v: update({
+	            selectedPhraseId: { $set: undefined },
+	            detail: _defineProperty({}, state.selectedPhraseId, {
+	              newTranslations: { $set: currentTrans }
+	            })
+	          })
+	        };
 	
-	    case _phrases.COPY_FROM_ALIGNED_SOURCE:
-	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
-	          return copyFromSource(phrase, phrase.selectedPluralIndex);
-	        } });
+	      case _phrases.COPY_FROM_ALIGNED_SOURCE:
+	        return {
+	          v: updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	              return copyFromSource(phrase, phrase.selectedPluralIndex);
+	            } })
+	        };
 	
-	    case _phrases.COPY_FROM_SOURCE:
-	      var phraseId = action.phraseId;
-	      var sourceIndex = action.sourceIndex;
+	      case _phrases.COPY_FROM_SOURCE:
+	        var phraseId = action.phraseId;
+	        var sourceIndex = action.sourceIndex;
 	
-	      return updatePhrase(phraseId, { $apply: function $apply(phrase) {
-	          return copyFromSource(phrase, sourceIndex);
-	        } });
+	        return {
+	          v: updatePhrase(phraseId, { $apply: function $apply(phrase) {
+	              return copyFromSource(phrase, sourceIndex);
+	            } })
+	        };
 	
-	    case _suggestions.COPY_SUGGESTION:
-	      var suggestion = action.suggestion;
+	      case _suggestions.COPY_SUGGESTION:
+	        var suggestion = action.suggestion;
 	
-	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
-	          return copyFromSuggestion(phrase, suggestion);
-	        } });
+	        return {
+	          v: updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	              return copyFromSuggestion(phrase, suggestion);
+	            } })
+	        };
 	
-	    case _phrases.FETCHING_PHRASE_DETAIL:
-	      return update({
-	        fetchingDetail: { $set: true }
-	      });
+	      case _phrases.FETCHING_PHRASE_DETAIL:
+	        return {
+	          v: update({
+	            fetchingDetail: { $set: true }
+	          })
+	        };
 	
-	    case _phrases.FETCHING_PHRASE_LIST:
-	      return update({
-	        fetchingList: { $set: true }
-	      });
+	      case _phrases.FETCHING_PHRASE_LIST:
+	        return {
+	          v: update({
+	            fetchingList: { $set: true }
+	          })
+	        };
 	
-	    case _phrases.PENDING_SAVE_INITIATED:
-	      return updatePhrase(action.phraseId, {
-	        pendingSave: { $set: undefined }
-	      });
+	      case _phrases.PENDING_SAVE_INITIATED:
+	        return {
+	          v: updatePhrase(action.phraseId, {
+	            pendingSave: { $set: undefined }
+	          })
+	        };
 	
-	    case _phrases.PHRASE_LIST_FETCHED:
-	      // select the first phrase if there is one
-	      var selectedPhraseId = action.phraseList.length && action.phraseList[0].id;
-	      return update({
-	        fetchingList: { $set: false },
-	        inDoc: _defineProperty({}, action.docId, { $set: action.phraseList }),
-	        selectedPhraseId: { $set: selectedPhraseId },
-	        docStatus: { $set: action.statusList }
+	      case _phrases.PHRASE_LIST_FETCHED:
+	        // select the first phrase if there is one
+	        var selectedPhraseId = action.phraseList.length && action.phraseList[0].id;
+	        return {
+	          v: update({
+	            fetchingList: { $set: false },
+	            inDoc: _defineProperty({}, action.docId, { $set: action.phraseList }),
+	            selectedPhraseId: { $set: selectedPhraseId },
+	            docStatus: { $set: action.statusList }
 	
-	      });
+	          })
+	        };
 	
-	    case _phrases.PHRASE_DETAIL_FETCHED:
-	      // TODO this shallow merge will lose data from other locales
-	      //      ideally replace source and locale that was looked up, leaving
-	      //      others unchanged (depending on caching policy)
-	      return update({
-	        fetchingDetail: { $set: false },
-	        detail: { $merge: action.phrases }
-	      });
+	      case _phrases.PHRASE_DETAIL_FETCHED:
+	        // TODO this shallow merge will lose data from other locales
+	        //      ideally replace source and locale that was looked up, leaving
+	        //      others unchanged (depending on caching policy)
+	        return {
+	          v: update({
+	            fetchingDetail: { $set: false },
+	            detail: { $merge: action.phrases }
+	          })
+	        };
 	
-	    case _phrases.QUEUE_SAVE:
-	      return updatePhrase(action.phraseId, {
-	        pendingSave: { $set: action.saveInfo }
-	      });
+	      case _phrases.QUEUE_SAVE:
+	        return {
+	          v: updatePhrase(action.phraseId, {
+	            pendingSave: { $set: action.saveInfo }
+	          })
+	        };
 	
-	    case _phrases.SAVE_FINISHED:
-	      var phrase = state.detail[action.phraseId];
-	      var newTranslations = phrase.newTranslations;
+	      case _phrases.SAVE_FINISHED:
+	        var phrase = state.detail[action.phraseId];
+	        var newTranslations = phrase.newTranslations;
 	
-	      return updatePhrase(action.phraseId, {
-	        inProgressSave: { $set: undefined },
-	        translations: { $set: newTranslations },
-	        // TODO same as inProgressSave.status unless the server adjusted it
-	        status: { $set: action.status },
-	        revision: { $set: action.revision }
-	      });
+	        return {
+	          v: updatePhrase(action.phraseId, {
+	            inProgressSave: { $set: undefined },
+	            translations: { $set: newTranslations },
+	            // TODO same as inProgressSave.status unless the server adjusted it
+	            status: { $set: action.status },
+	            revision: { $set: action.revision }
+	          })
+	        };
 	
-	    case _phrases.SAVE_INITIATED:
-	      return updatePhrase(action.phraseId, {
-	        inProgressSave: { $set: action.saveInfo }
-	      });
+	      case _phrases.SAVE_INITIATED:
+	        return {
+	          v: updatePhrase(action.phraseId, {
+	            inProgressSave: { $set: action.saveInfo }
+	          })
+	        };
 	
-	    case _phrases.SELECT_PHRASE:
-	      return selectPhrase(state, action.phraseId);
+	      case _phrases.SELECT_PHRASE:
+	        return {
+	          v: selectPhrase(state, action.phraseId)
+	        };
 	
-	    case _phrases.SELECT_PHRASE_SPECIFIC_PLURAL:
-	      var withNewPluralIndex = updatePhrase(action.phraseId, {
-	        selectedPluralIndex: { $set: action.index }
-	      });
-	      return selectPhrase(withNewPluralIndex, action.phraseId);
+	      case _phrases.SELECT_PHRASE_SPECIFIC_PLURAL:
+	        var withNewPluralIndex = updatePhrase(action.phraseId, {
+	          selectedPluralIndex: { $set: action.index }
+	        });
+	        return {
+	          v: selectPhrase(withNewPluralIndex, action.phraseId)
+	        };
 	
-	    case _editorShortcuts.SET_SAVE_AS_MODE:
-	      return update({
-	        saveAsMode: { $set: action.active }
-	      });
+	      case _editorShortcuts.SET_SAVE_AS_MODE:
+	        return {
+	          v: update({
+	            saveAsMode: { $set: action.active }
+	          })
+	        };
 	
-	    case _phrases.TRANSLATION_TEXT_INPUT_CHANGED:
-	      return update({
-	        detail: _defineProperty({}, action.id, {
-	          newTranslations: _defineProperty({}, action.index, { $set: action.text })
-	        })
-	      });
+	      case _phrases.TRANSLATION_TEXT_INPUT_CHANGED:
+	        return {
+	          v: update({
+	            detail: _defineProperty({}, action.id, {
+	              newTranslations: _defineProperty({}, action.index, { $set: action.text })
+	            })
+	          })
+	        };
 	
-	    case _phrases.UNDO_EDIT:
-	      return updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
-	          return (0, _reactAddonsUpdate2.default)(phrase, {
-	            newTranslations: { $set: [].concat(_toConsumableArray(phrase.translations)) }
-	          });
-	        } });
+	      case _phrases.UNDO_EDIT:
+	        return {
+	          v: updatePhrase(state.selectedPhraseId, { $apply: function $apply(phrase) {
+	              return (0, _reactAddonsUpdate2.default)(phrase, {
+	                newTranslations: { $set: [].concat(_toConsumableArray(phrase.translations)) }
+	              });
+	            } })
+	        };
 	
-	    case _phraseNavigation.MOVE_NEXT:
-	      return changeSelectedIndex(function (index) {
-	        return index + 1;
-	      });
+	      case _phraseNavigation.MOVE_NEXT:
+	        return {
+	          v: changeSelectedIndex(function (index) {
+	            return index + 1;
+	          })
+	        };
 	
-	    case _phraseNavigation.MOVE_PREVIOUS:
-	      return changeSelectedIndex(function (index) {
-	        return index - 1;
-	      });
-	  }
+	      case _phraseNavigation.MOVE_PREVIOUS:
+	        return {
+	          v: changeSelectedIndex(function (index) {
+	            return index - 1;
+	          })
+	        };
+	    }
+	  }();
 	
+	  if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	  return state;
 	
 	  /**
@@ -46914,6 +46992,11 @@
 	        openDropdownKey: { $set: action.key }
 	      });
 	
+	    case _actions.CLOSE_DROPDOWN:
+	      return update({
+	        openDropdownKey: { $set: undefined }
+	      });
+	
 	    case _actions.TOGGLE_DROPDOWN:
 	      var isOpen = action.key === state.openDropdownKey;
 	      return update({
@@ -47309,7 +47392,7 @@
 	      // the size prop will override the dragged size, but specifying size prop
 	      // stops drag resize from working.
 	      if (this.refs && this.refs.suggestionResizer) {
-	        var pixelHeight = this.props.percentHeight * window.innerHeight;
+	        var pixelHeight = this.props.showSuggestion ? this.props.percentHeight * window.innerHeight : 0;
 	        this.refs.suggestionResizer.setState({
 	          draggedSize: pixelHeight
 	        });
@@ -47322,7 +47405,7 @@
 	    value: function resizeFinished() {
 	      // draggedSize is defined as soon as any drag-resize happens,
 	      // so no need to save the height if it has not been set
-	      if (this.refs && this.refs.suggestionResizer && this.refs.suggestionResizer.state.draggedSize) {
+	      if (this.refs && this.refs.suggestionResizer && this.refs.suggestionResizer.state.draggedSize && this.props.showSuggestion) {
 	        var panelSize = this.refs.suggestionResizer.state.draggedSize;
 	        this.props.saveSuggestionPanelHeight(panelSize);
 	      }
@@ -47330,7 +47413,7 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var pixelHeight = this.props.percentHeight * window.innerHeight;
+	      var pixelHeight = this.props.showSuggestion ? this.props.percentHeight * window.innerHeight : 0;
 	
 	      // TODO adjust scrollbar width on div like Angular template editor.html
 	      return _react2.default.createElement(
@@ -47348,7 +47431,7 @@
 	              primary: 'second',
 	              onDragFinished: this.resizeFinished },
 	            _react2.default.createElement(_MainContent2.default, null),
-	            _react2.default.createElement(_SuggestionsPanel2.default, null)
+	            this.props.showSuggestion && _react2.default.createElement(_SuggestionsPanel2.default, null)
 	          ),
 	          _react2.default.createElement(_KeyShortcutCheatSheet2.default, null)
 	        )
@@ -47360,7 +47443,8 @@
 	}(_react.Component);
 	
 	Root.propTypes = {
-	  percentHeight: _react.PropTypes.number.isRequired
+	  percentHeight: _react.PropTypes.number.isRequired,
+	  showSuggestion: _react.PropTypes.bool
 	};
 	
 	function mapStateToProps(state, ownProps) {
@@ -47374,7 +47458,8 @@
 	  });
 	  return {
 	    phrases: withDetail,
-	    percentHeight: percentHeight
+	    percentHeight: percentHeight,
+	    showSuggestion: ui.panels.suggestions.visible
 	  };
 	}
 	
@@ -47807,6 +47892,7 @@
 	    cancelEdit: function cancelEdit(event) {
 	      event.stopPropagation();
 	      dispatch((0, _phrases.cancelEdit)());
+	      dispatch((0, _actions.closeDropdown)());
 	    },
 	    copyFromSource: function copyFromSource(sourceIndex) {
 	      dispatch((0, _phrases.copyFromSource)(ownProps.phrase.id, sourceIndex));
@@ -48443,6 +48529,13 @@
 	      footer = _react2.default.createElement(_TransUnitTranslationFooter2.default, footerProps);
 	    }
 	
+	    var _props3 = this.props;
+	    var openDropdown = _props3.openDropdown;
+	    var saveAsMode = _props3.saveAsMode;
+	    var saveDropdownKey = _props3.saveDropdownKey;
+	
+	    var dropdownIsOpen = openDropdown === saveDropdownKey || saveAsMode;
+	
 	    // TODO use dedicated phrase.isLoading variable when available
 	    var isLoading = !phrase.newTranslations;
 	    var selectedPluralIndex = phrase.selectedPluralIndex || 0;
@@ -48465,7 +48558,7 @@
 	        var highlightHeader = selected && index === selectedPluralIndex;
 	        var headerClass = highlightHeader ? 'u-textMini u-textPrimary' : 'u-textMeta';
 	
-	        var itemHeader = isPlural ? _react2.default.createElement(
+	        var itemHeader = isPlural && _react2.default.createElement(
 	          'div',
 	          { className: 'TransUnit-itemHeader' },
 	          _react2.default.createElement(
@@ -48473,7 +48566,7 @@
 	            { className: headerClass },
 	            headerLabel
 	          )
-	        ) : undefined;
+	        );
 	
 	        var onChange = _this.props.textChanged.bind(undefined, phrase.id, index);
 	
@@ -48488,6 +48581,7 @@
 	              return _this.textareas[index] = _ref;
 	            },
 	            className: 'TransUnit-text',
+	            disabled: dropdownIsOpen,
 	            rows: 1,
 	            value: translation,
 	            placeholder: 'Enter a translation…',
@@ -49693,10 +49787,8 @@
 	  var phrases = state.phrases;
 	  var ui = state.ui;
 	
-	
 	  var pageCount = (0, _filterPagingUtil.calculateMaxPageIndexFromState)(state) + 1;
 	  var pageNumber = Math.min(pageCount, phrases.paging.pageIndex + 1);
-	  console.info(phrases.paging);
 	
 	  return {
 	    actions: actions,
