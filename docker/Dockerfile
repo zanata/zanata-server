@@ -19,5 +19,4 @@ RUN wget --no-verbose https://dl.bintray.com/sflanigan/generic/wildfly-module-hi
 
 USER jboss
 
-# standalone.xml (not needed for dev)
-# ADD conf/standalone.xml /opt/jboss/wildfly/standalone/configuration/
+ADD conf/standalone.xml /opt/jboss/wildfly/standalone/configuration/
