@@ -159,9 +159,6 @@
 	_getstateInActions2.default, loggerMiddleware)(_redux.createStore);
 	
 	var store = createStoreWithMiddleware(_reducers2.default);
-	
-	// this is shown in the example, but listenForReplays is undefined here so
-	// I will leave it out for now
 	reduxRouterMiddleware.listenForReplays(store);
 	
 	var rootElement = document.getElementById('appRoot');
