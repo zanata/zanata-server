@@ -15,7 +15,7 @@ ZANATA_WAR=$(echo $PWD/zanata-war/target/zanata-*.war)
 # volume mapping for zanata server files
 ZANATA_DIR=$HOME/docker-volumes/zanata
 # create the data directory and set permissions (SELinux)
-mkdir $ZANATA_DIR && chcon -Rt svirt_sandbox_file_t "$ZANATA_DIR"
+mkdir -p $ZANATA_DIR && chcon -Rt svirt_sandbox_file_t "$ZANATA_DIR"
 # make zanata directory and standalone.xml file accessible to docker containers (SELinux)
 chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
 
