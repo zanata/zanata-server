@@ -47,7 +47,6 @@ import org.zanata.ui.AbstractListFilter;
 
 import lombok.Getter;
 import org.zanata.ui.faces.FacesMessages;
-import org.zanata.util.ServiceLocator;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
@@ -95,8 +94,6 @@ public class UserAction implements Serializable {
     @Getter
     private AbstractListFilter<String> userFilter =
             new AbstractListFilter<String>() {
-                AccountDAO accountDAO =
-                        ServiceLocator.instance().getInstance(AccountDAO.class);
 
                 @Override
                 protected List<String> fetchRecords(int start, int max,

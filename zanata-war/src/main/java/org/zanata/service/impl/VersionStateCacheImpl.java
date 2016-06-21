@@ -27,6 +27,7 @@ import java.util.Map;
 import com.google.common.annotations.VisibleForTesting;
 import org.infinispan.manager.CacheContainer;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.cache.CacheWrapper;
@@ -53,7 +54,7 @@ import javax.enterprise.event.TransactionPhase;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("versionStateCacheImpl")
-@javax.enterprise.context.ApplicationScoped
+@ApplicationScoped
 public class VersionStateCacheImpl implements VersionStateCache {
     private static final String BASE = VersionStateCacheImpl.class.getName();
 
@@ -68,6 +69,9 @@ public class VersionStateCacheImpl implements VersionStateCache {
 
     @Inject
     private IServiceLocator serviceLocator;
+
+    @Inject
+    private LocaleDAO localeDAO;
 
     // constructor for CDI
     public VersionStateCacheImpl() {
@@ -117,7 +121,6 @@ public class VersionStateCacheImpl implements VersionStateCache {
 
     @Override
     public void clearVersionStatsCache(Long versionId) {
-        LocaleDAO localeDAO = serviceLocator.getInstance(LocaleDAO.class);
         for (HLocale locale : localeDAO.findAll()) {
             VersionLocaleKey key =
                     new VersionLocaleKey(versionId, locale.getLocaleId());

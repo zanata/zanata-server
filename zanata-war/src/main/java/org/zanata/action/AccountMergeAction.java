@@ -42,7 +42,6 @@ import org.zanata.security.openid.OpenIdAuthenticationResult;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.RegisterService;
 import org.zanata.ui.faces.FacesMessages;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.Synchronized;
 
 /**
@@ -164,18 +163,22 @@ public class AccountMergeAction implements Serializable {
             OpenIdAuthCallback, Serializable {
         private static final long serialVersionUID = 1L;
 
+        @Inject
+        private AccountDAO accountDAO;
+
+        @Inject
+        private ObsoleteHolder obsoleteHolder;
+
         @Override
         public void afterOpenIdAuth(OpenIdAuthenticationResult result) {
             if (result.isAuthenticated()) {
-                AccountDAO accountDAO =
-                        ServiceLocator.instance().getInstance(AccountDAO.class);
                 HAccount account =
                         accountDAO.getByCredentialsId(result
                                 .getAuthenticatedId());
                 if (account == null) {
                     account = new HAccount(); // In case an account is not found
                 }
-                ServiceLocator.instance().getInstance(ObsoleteHolder.class).account = account;
+                obsoleteHolder.account = account;
             }
         }
 
