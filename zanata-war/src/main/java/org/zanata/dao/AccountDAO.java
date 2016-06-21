@@ -24,11 +24,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import org.zanata.model.HAccount;
 import org.zanata.util.PasswordUtil;
 
-@Named("accountDAO")
 @RequestScoped
 public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
     public AccountDAO() {
