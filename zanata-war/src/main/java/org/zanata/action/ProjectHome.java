@@ -1186,6 +1186,18 @@ public class ProjectHome extends SlugHome<HProject> implements
         @Inject
         private ProjectHome projectHome;
 
+        @Inject
+        private Messages msgs;
+
+        @Inject
+        private ZanataIdentity zanataIdentity;
+
+        @Inject
+        private PersonDAO personDAO;
+
+        @Inject
+        private FacesMessages facesMessages;
+
         private HProject getInstance() {
             return projectHome.getInstance();
         }
@@ -1207,11 +1219,8 @@ public class ProjectHome extends SlugHome<HProject> implements
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
-            ServiceLocator.instance().getInstance(ZanataIdentity.class)
-                    .checkPermission(getInstance(), "update");
-            HPerson maintainer =
-                    ServiceLocator.instance().getInstance(PersonDAO.class)
-                            .findByUsername(getSelectedItem());
+            zanataIdentity.checkPermission(getInstance(), "update");
+            HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
             ProjectHome projectHome = ServiceLocator.instance()
                     .getInstance(ProjectHome.class);
@@ -1219,13 +1228,9 @@ public class ProjectHome extends SlugHome<HProject> implements
             reset();
             projectHome.getMaintainerFilter().reset();
 
-            getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.project.MaintainerAdded",
                             maintainer.getName()));
-        }
-
-        private FacesMessages getFacesMessages() {
-            return ServiceLocator.instance().getInstance(FacesMessages.class);
         }
     }
 
