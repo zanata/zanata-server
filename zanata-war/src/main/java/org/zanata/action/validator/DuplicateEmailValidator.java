@@ -26,14 +26,18 @@ import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.zanata.dao.PersonDAO;
 
 public class DuplicateEmailValidator implements
         ConstraintValidator<NotDuplicateEmail, String>, Serializable {
-    @Inject
-    private PersonDAO personDAO;
 
     private static final long serialVersionUID = 1L;
+
+    @Inject
+    @Getter(AccessLevel.PROTECTED)
+    private PersonDAO personDAO;
 
     @Override
     public boolean isValid(String string, ConstraintValidatorContext context) {
@@ -43,7 +47,7 @@ public class DuplicateEmailValidator implements
         if (string.length() == 0) {
             return true;
         }
-        return personDAO.findByEmail(string) == null;
+        return getPersonDAO().findByEmail(string) == null;
     }
 
     @Override
