@@ -307,6 +307,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
         @Inject
         private ZanataIdentity identity;
 
+        @Inject
+        private Messages msgs;
+
         @Override
         protected List<HPerson> getMaintainers() {
             return versionGroupHome.getInstanceMaintainers();
@@ -351,6 +354,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
 
         @Inject
         private ZanataIdentity identity;
+
+        @Inject
+        private Messages msgs;
 
         private HIterationGroup getInstance() {
             return versionGroupHome.getInstance();
@@ -404,6 +410,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
 
         @Inject
         private ZanataIdentity identity;
+
+        @Inject
+        private Messages msgs;
 
         private HIterationGroup getInstance() {
             return versionGroupHome.getInstance();

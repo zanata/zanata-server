@@ -39,7 +39,7 @@ import javax.inject.Inject;
 public abstract class AbstractAutocomplete<T> implements Serializable {
 
     @Inject
-    Messages msgs;
+    protected Messages msgs;
 
     protected ConversationScopeMessages conversationScopeMessages =
             ConversationScopeMessages.instance();

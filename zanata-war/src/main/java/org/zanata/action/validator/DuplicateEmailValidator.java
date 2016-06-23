@@ -21,13 +21,9 @@
 package org.zanata.action.validator;
 
 import java.io.Serializable;
-
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.zanata.dao.PersonDAO;
 
 public class DuplicateEmailValidator implements
@@ -36,7 +32,6 @@ public class DuplicateEmailValidator implements
     private static final long serialVersionUID = 1L;
 
     @Inject
-    @Getter(AccessLevel.PROTECTED)
     private PersonDAO personDAO;
 
     @Override
@@ -47,7 +42,7 @@ public class DuplicateEmailValidator implements
         if (string.length() == 0) {
             return true;
         }
-        return getPersonDAO().findByEmail(string) == null;
+        return personDAO.findByEmail(string) == null;
     }
 
     @Override
