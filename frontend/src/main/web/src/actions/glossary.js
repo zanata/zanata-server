@@ -1,6 +1,7 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
 import { isEmpty, cloneDeep, includes, clamp, debounce } from 'lodash'
+import { saveAs } from 'file-saver'
 import { normalize } from 'normalizr'
 import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -58,7 +59,6 @@ export const GLOSSARY_DELETE_ALL_FAILURE = 'GLOSSARY_DELETE_ALL_FAILURE'
 export const GLOSSARY_EXPORT_REQUEST = 'GLOSSARY_EXPORT_REQUEST'
 export const GLOSSARY_EXPORT_SUCCESS = 'GLOSSARY_EXPORT_SUCCESS'
 export const GLOSSARY_EXPORT_FAILURE = 'GLOSSARY_EXPORT_FAILURE'
-export const glossaryUpdateIndex = createAction(GLOSSARY_UPDATE_INDEX)
 export const glossaryUpdateLocale = createAction(GLOSSARY_UPDATE_LOCALE)
 export const glossaryUpdateFilter = createAction(GLOSSARY_UPDATE_FILTER)
 export const glossaryUpdateField = createAction(GLOSSARY_UPDATE_FIELD)
