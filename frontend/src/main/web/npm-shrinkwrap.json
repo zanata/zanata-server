@@ -1549,11 +1549,6 @@
       "from": "eslint-config-standard-jsx@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/eslint-config-standard-jsx/-/eslint-config-standard-jsx-1.2.0.tgz"
     },
-    "espree": {
-      "version": "3.1.4",
-      "from": "espree@3.1.4",
-      "resolved": "https://registry.npmjs.org/espree/-/espree-3.1.4.tgz"
-    },
     "esprima-fb": {
       "version": "13001.1001.0-dev-harmony-fb",
       "from": "esprima-fb@13001.1001.0-dev-harmony-fb",
@@ -1868,11 +1863,6 @@
       "version": "0.0.1",
       "from": "flatten@0.0.1",
       "resolved": "https://registry.npmjs.org/flatten/-/flatten-0.0.1.tgz"
-    },
-    "flux": {
-      "version": "2.1.1",
-      "from": "flux@>=2.0.3 <3.0.0",
-      "resolved": "https://registry.npmjs.org/flux/-/flux-2.1.1.tgz"
     },
     "flux-standard-action": {
       "version": "0.6.1",
@@ -2467,7 +2457,8 @@
         },
         "esprima": {
           "version": "2.7.2",
-          "from": "esprima@>=2.7.0 <2.8.0"
+          "from": "esprima@2.7.2",
+          "resolved": "https://registry.npmjs.org/esprima/-/esprima-2.7.2.tgz"
         },
         "supports-color": {
           "version": "3.1.2",
@@ -3290,11 +3281,6 @@
       "version": "0.8.2",
       "from": "oauth-sign@>=0.8.1 <0.9.0",
       "resolved": "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.8.2.tgz"
-    },
-    "object-assign": {
-      "version": "2.1.1",
-      "from": "object-assign@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-2.1.1.tgz"
     },
     "object.omit": {
       "version": "2.0.0",
@@ -4913,11 +4899,6 @@
       "version": "1.0.4",
       "from": "strip-json-comments@>=1.0.1 <1.1.0",
       "resolved": "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-1.0.4.tgz"
-    },
-    "superagent": {
-      "version": "0.21.0",
-      "from": "superagent@>=0.21.0 <0.22.0",
-      "resolved": "https://registry.npmjs.org/superagent/-/superagent-0.21.0.tgz"
     },
     "supports-color": {
       "version": "2.0.0",
