@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { isEmpty, cloneDeep, includes, clamp, debounce } from 'lodash'
+import { cloneDeep, includes, debounce } from 'lodash'
 import { normalize } from 'normalizr'
 import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
 import { replaceRouteQuery } from '../utils/RoutingHelpers'
@@ -189,7 +189,8 @@ const createGlossaryTerm = (dispatch, term) => {
     GLOSSARY_CREATE_FAILURE
   ]
   return {
-    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes, JSON.stringify(entryDTO))
+    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes,
+      JSON.stringify(entryDTO))
   }
 }
 
@@ -220,7 +221,8 @@ const updateGlossaryTerm = (dispatch, term, needRefresh) => {
     GLOSSARY_UPDATE_FAILURE
   ]
   return {
-    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes, JSON.stringify(entryDTO))
+    [CALL_API]: buildAPIRequest(endpoint, 'POST', headers, apiTypes,
+      JSON.stringify(entryDTO))
   }
 }
 
@@ -369,7 +371,6 @@ export const glossarySortColumn = (col) => {
 const delayGetGlossaryTerm = debounce((dispatch, state) =>
   dispatch(getGlossaryTerms(state)), 160)
 
-
 export const glossaryGoFirstPage = (currentPage, totalPage) => {
   return (dispatch, getState) => {
     if (currentPage !== 1) {
@@ -407,5 +408,3 @@ export const glossaryGoLastPage = (currentPage, totalPage) => {
     }
   }
 }
-
-
