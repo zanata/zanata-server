@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import org.apache.deltaspike.core.api.exclude.Exclude;
 import org.apache.deltaspike.core.api.projectstage.ProjectStage;
@@ -11,14 +12,15 @@ import javax.inject.Named;
 import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.ui.ModelAction;
 
 /**
  * @author Patrick Huang
  *         <a href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
 @Named("zanataRoleAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 @CheckLoggedIn
 public class RoleAction implements Serializable {
     private static final long serialVersionUID = -3830647911484729768L;

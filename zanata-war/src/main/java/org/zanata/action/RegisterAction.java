@@ -41,6 +41,7 @@ import org.zanata.model.HPerson;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.EmailService;
 import org.zanata.service.RegisterService;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.UrlUtil;
 
@@ -48,6 +49,7 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Named("register")
 @GroupedConversationScoped
+@ModelAction
 @Slf4j
 public class RegisterAction implements Serializable {
 

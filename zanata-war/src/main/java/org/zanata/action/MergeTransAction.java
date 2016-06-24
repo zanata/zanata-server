@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
@@ -25,6 +27,7 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.CopyAction;
+import org.zanata.ui.ModelAction;
 import org.zanata.util.FacesNavigationUtil;
 import org.zanata.ui.faces.FacesMessages;
 
@@ -40,7 +43,8 @@ import org.zanata.ui.faces.FacesMessages;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("mergeTransAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 public class MergeTransAction extends CopyAction implements Serializable {
 
     @Getter

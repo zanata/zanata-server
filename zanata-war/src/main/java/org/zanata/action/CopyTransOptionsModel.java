@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 
 import javax.inject.Inject;
@@ -34,6 +35,7 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.zanata.ui.ModelAction;
 
 /**
  * Holds a {@link org.zanata.model.HCopyTransOptions} model object. This
@@ -45,8 +47,8 @@ import lombok.Setter;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("copyTransOptionsModel")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 public class CopyTransOptionsModel implements Serializable {
     private static final long serialVersionUID = 1L;
 

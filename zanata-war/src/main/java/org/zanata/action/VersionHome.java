@@ -64,6 +64,7 @@ import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
 import org.zanata.service.impl.LocaleServiceImpl;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.UrlUtil;
@@ -84,6 +85,7 @@ import java.util.ResourceBundle;
 
 @Named("versionHome")
 @ViewScoped
+@ModelAction
 @Slf4j
 public class VersionHome extends SlugHome<HProjectIteration> implements
     HasLanguageSettings, Serializable {

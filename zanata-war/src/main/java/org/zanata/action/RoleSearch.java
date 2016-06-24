@@ -11,6 +11,7 @@ import org.apache.deltaspike.core.api.projectstage.ProjectStage;
 import javax.inject.Named;
 import org.zanata.seam.security.IdentityManager;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.ui.ModelAction;
 import org.zanata.util.Synchronized;
 
 /**
@@ -20,6 +21,7 @@ import org.zanata.util.Synchronized;
 @Named("zanataRoleSearch")
 // TODO this should probably be ViewScoped or even RequestScoped (plus xhtml changes)
 @SessionScoped
+@ModelAction
 @Synchronized
 public class RoleSearch implements Serializable {
     private static final long serialVersionUID = 1734703030195353735L;

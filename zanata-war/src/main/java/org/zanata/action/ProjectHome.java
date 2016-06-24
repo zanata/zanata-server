@@ -77,6 +77,7 @@ import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.CommonMarkRenderer;
@@ -95,6 +96,7 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 @Named("projectHome")
 @Slf4j
 @ViewScoped
+@ModelAction
 public class ProjectHome extends SlugHome<HProject> implements
     HasLanguageSettings {
 

@@ -24,6 +24,7 @@ import java.io.Serializable;
 
 import lombok.extern.slf4j.Slf4j;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
@@ -34,6 +35,7 @@ import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataOpenId;
 import org.zanata.service.EmailService;
 import org.zanata.service.RegisterService;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
@@ -41,7 +43,8 @@ import org.zanata.ui.faces.FacesMessages;
  *
  */
 @Named("newProfileAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class NewProfileAction extends AbstractProfileAction implements Serializable {
     private static final long serialVersionUID = 1L;

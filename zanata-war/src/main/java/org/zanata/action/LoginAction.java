@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -42,6 +43,7 @@ import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.security.openid.YahooOpenIdProvider;
+import org.zanata.ui.ModelAction;
 import org.zanata.util.FacesNavigationUtil;
 
 /**
@@ -52,7 +54,8 @@ import org.zanata.util.FacesNavigationUtil;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("loginAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class LoginAction implements Serializable {
     private static final long serialVersionUID = 1L;

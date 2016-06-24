@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -31,14 +32,15 @@ import org.zanata.model.HAccount;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.service.ActivityService;
+import org.zanata.ui.ModelAction;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("activityAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
 @CheckLoggedIn
+@ModelAction
 public class ActivityAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

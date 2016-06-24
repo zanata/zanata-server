@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.ViewScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
@@ -46,6 +47,7 @@ import org.zanata.service.UserAccountService;
 import org.zanata.ui.AbstractListFilter;
 
 import lombok.Getter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 
@@ -59,7 +61,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("userAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 public class UserAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -22,14 +22,17 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.faces.bean.ViewScoped;
 import javax.faces.model.DataModel;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.dao.ProjectDAO;
+import org.zanata.ui.ModelAction;
 
 @Named("projectAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 public class ProjectAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

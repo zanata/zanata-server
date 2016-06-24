@@ -30,6 +30,8 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -50,6 +52,7 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 import org.zanata.service.impl.LocaleServiceImpl;
 import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 
@@ -66,7 +69,8 @@ import java.util.Map;
  * Template is person-permissions-modal.xhtml
  */
 @Named("projectPermissionDialog")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson>
         implements Serializable {

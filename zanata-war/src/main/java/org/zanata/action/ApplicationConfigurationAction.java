@@ -21,9 +21,12 @@
 package org.zanata.action;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.ApplicationConfiguration;
+import org.zanata.ui.ModelAction;
 
 /**
  * This class serves as a UI proxy for the application configuration bean.
@@ -34,7 +37,8 @@ import org.zanata.ApplicationConfiguration;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("applicationConfigurationAction")
-@javax.enterprise.context.Dependent
+@Dependent
+@ModelAction
 public class ApplicationConfigurationAction {
     @Inject
     private ApplicationConfiguration applicationConfiguration;

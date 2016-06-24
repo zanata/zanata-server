@@ -84,6 +84,7 @@ import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
@@ -109,6 +110,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Named("versionHomeAction")
 @ViewScoped
+@ModelAction
 @Slf4j
 public class VersionHomeAction extends AbstractSortAction implements
         Serializable {

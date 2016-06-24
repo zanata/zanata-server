@@ -23,11 +23,13 @@ package org.zanata.action;
 import java.io.Serializable;
 import lombok.extern.slf4j.Slf4j;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.model.HPerson;
 import org.zanata.service.impl.EmailChangeService;
+import org.zanata.ui.ModelAction;
 
 /**
  * This action only handles edit profile (existing user).
@@ -36,7 +38,8 @@ import org.zanata.service.impl.EmailChangeService;
  *
  */
 @Named("profileAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class ProfileAction extends AbstractProfileAction implements Serializable {
     private static final long serialVersionUID = 1L;

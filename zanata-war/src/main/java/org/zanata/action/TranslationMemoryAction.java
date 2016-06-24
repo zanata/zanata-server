@@ -33,6 +33,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -45,6 +46,7 @@ import org.zanata.exception.EntityMissingException;
 import org.zanata.model.tm.TransMemory;
 import org.zanata.rest.service.TranslationMemoryResourceService;
 
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import com.google.common.collect.Lists;
 
@@ -55,9 +57,9 @@ import com.google.common.collect.Lists;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("translationMemoryAction")
-
 @CheckRole("admin")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class TranslationMemoryAction implements Serializable {
     private static final long serialVersionUID = -6791743907133760028L;

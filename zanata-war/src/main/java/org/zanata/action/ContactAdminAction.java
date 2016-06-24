@@ -24,6 +24,7 @@ package org.zanata.action;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -42,6 +43,7 @@ import org.zanata.service.EmailService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.HttpUtil;
 
@@ -54,9 +56,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("contactAdminAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
-
 public class ContactAdminAction implements Serializable {
 
     @Inject

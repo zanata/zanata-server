@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -33,9 +34,11 @@ import javax.inject.Named;
 import org.zanata.servlet.annotations.HttpParam;
 import org.zanata.model.HLocale;
 import org.zanata.service.ConfigurationService;
+import org.zanata.ui.ModelAction;
 
 @Named("configurationAction")
-@javax.enterprise.context.RequestScoped
+@RequestScoped
+@ModelAction
 @Slf4j
 public class ConfigurationAction implements Serializable {
     private static final long serialVersionUID = 1L;

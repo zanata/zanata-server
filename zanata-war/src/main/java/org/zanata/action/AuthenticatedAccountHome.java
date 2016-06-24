@@ -30,6 +30,7 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.seam.framework.EntityHome;
 import org.zanata.security.annotations.Authenticated;
+import org.zanata.ui.ModelAction;
 
 import java.io.Serializable;
 
@@ -38,6 +39,7 @@ import java.io.Serializable;
  */
 @Named("authenticatedAccountHome")
 @RequestScoped
+@ModelAction
 @Slf4j
 public class AuthenticatedAccountHome extends EntityHome<HAccount>
         implements Serializable {

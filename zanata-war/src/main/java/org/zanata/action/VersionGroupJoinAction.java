@@ -31,6 +31,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -52,6 +54,7 @@ import org.zanata.service.EmailService;
 import org.zanata.service.VersionGroupService;
 
 import org.zanata.ui.AbstractAutocomplete;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.webtrans.shared.model.ProjectIterationId;
 
@@ -59,8 +62,8 @@ import com.google.common.collect.Lists;
 
 
 @Named("versionGroupJoinAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 @Slf4j
 public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         implements Serializable {

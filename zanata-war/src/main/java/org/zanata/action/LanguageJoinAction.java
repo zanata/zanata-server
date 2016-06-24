@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.bean.ViewScoped;
 import javax.validation.constraints.Size;
 
 import com.google.common.base.Joiner;
@@ -55,6 +56,7 @@ import org.zanata.service.EmailService;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
@@ -63,8 +65,8 @@ import org.zanata.ui.faces.FacesMessages;
 
 
 @Named("languageJoinAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 @Slf4j
 public class LanguageJoinAction implements Serializable {
     private static final long serialVersionUID = 1L;

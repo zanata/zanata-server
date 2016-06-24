@@ -15,9 +15,11 @@ import org.zanata.async.AsyncTaskHandleManager;
 import org.zanata.dao.ProjectIterationDAO;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.TranslationArchiveService;
+import org.zanata.ui.ModelAction;
 
 @Named("projectIterationZipFileAction")
 @GroupedConversationScoped
+@ModelAction
 public class ProjectIterationZipFileAction implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -42,6 +42,7 @@ import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.impl.CopyTransOptionFactory;
 import org.zanata.ui.CopyAction;
+import org.zanata.ui.ModelAction;
 import org.zanata.util.DateUtil;
 import com.google.common.base.Optional;
 
@@ -53,6 +54,7 @@ import com.google.common.base.Optional;
  */
 @Named("copyTransAction")
 @RequestScoped
+@ModelAction
 public class CopyTransAction extends CopyAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

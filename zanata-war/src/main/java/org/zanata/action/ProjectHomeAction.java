@@ -37,6 +37,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -66,6 +68,7 @@ import org.zanata.service.VersionStateCache;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.DateUtil;
@@ -92,7 +95,8 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("projectHomeAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 @Slf4j
 public class ProjectHomeAction extends AbstractSortAction implements
         Serializable {

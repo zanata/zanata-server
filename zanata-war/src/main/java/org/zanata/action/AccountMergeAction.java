@@ -30,6 +30,7 @@ import lombok.Setter;
 import javax.annotation.Nullable;
 import javax.enterprise.context.SessionScoped;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.dao.AccountDAO;
@@ -41,6 +42,7 @@ import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdAuthenticationResult;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.RegisterService;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.ServiceLocator;
 import org.zanata.util.Synchronized;
@@ -50,7 +52,8 @@ import org.zanata.util.Synchronized;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("accountMergeAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 public class AccountMergeAction implements Serializable {
 
     @SessionScoped

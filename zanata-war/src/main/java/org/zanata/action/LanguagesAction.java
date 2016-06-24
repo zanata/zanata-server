@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
@@ -41,6 +43,7 @@ import org.zanata.security.annotations.CheckRole;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 import com.google.common.base.Throwables;
@@ -51,7 +54,8 @@ import lombok.Getter;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Named("languagesAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@ModelAction
 public class LanguagesAction extends InMemoryListFilter<HLocale> implements
         Serializable {
     private static final long serialVersionUID = 1L;

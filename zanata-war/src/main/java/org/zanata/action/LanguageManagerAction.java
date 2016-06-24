@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 
 import lombok.AllArgsConstructor;
@@ -51,6 +52,7 @@ import org.zanata.rest.service.ResourceUtils;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.FilterUtil;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.autocomplete.LocaleAutocomplete;
 
 import com.google.common.base.Function;
@@ -60,8 +62,8 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.util.ULocale;
 
 @Named("languageManagerAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 public class LanguageManagerAction extends AbstractAutocomplete<HLocale>
         implements Serializable {
     private static final long serialVersionUID = 1L;

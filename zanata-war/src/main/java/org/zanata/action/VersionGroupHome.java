@@ -54,6 +54,7 @@ import org.zanata.service.VersionGroupService;
 import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.autocomplete.LocaleAutocomplete;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
@@ -69,6 +70,7 @@ import lombok.Getter;
  */
 @Named("versionGroupHome")
 @ViewScoped
+@ModelAction
 public class VersionGroupHome extends SlugHome<HIterationGroup>
         implements Serializable {
     private static final long serialVersionUID = 1L;

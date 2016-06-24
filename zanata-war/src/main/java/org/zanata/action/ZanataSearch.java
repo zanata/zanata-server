@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.common.EntityStatus;
@@ -25,6 +27,7 @@ import com.google.common.collect.Lists;
 import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.ModelAction;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
@@ -33,8 +36,8 @@ import org.zanata.util.ServiceLocator;
  * This will search both projects and people.
  */
 @Named("zanataSearch")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@ModelAction
 public class ZanataSearch implements Serializable {
 
     private static final long serialVersionUID = 1L;

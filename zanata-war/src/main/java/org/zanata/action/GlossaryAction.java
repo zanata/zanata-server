@@ -1,6 +1,8 @@
 package org.zanata.action;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -12,14 +14,16 @@ import org.zanata.rest.editor.service.UserService;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
+import org.zanata.ui.ModelAction;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 
 @Named("glossaryAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
 @CheckLoggedIn
+@ModelAction
 @Slf4j
 public class GlossaryAction implements Serializable {
     private static final long serialVersionUID = 1L;

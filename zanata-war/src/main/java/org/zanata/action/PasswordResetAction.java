@@ -23,10 +23,12 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.seam.security.IdentityManager;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 @Named("passwordReset")
 @GroupedConversationScoped
+@ModelAction
 public class PasswordResetAction implements Serializable {
 
     private static final long serialVersionUID = -3966625589007754411L;

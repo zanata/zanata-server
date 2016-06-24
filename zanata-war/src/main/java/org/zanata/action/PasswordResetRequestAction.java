@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.dao.AccountActivationKeyDAO;
@@ -17,6 +19,7 @@ import org.zanata.model.HAccountActivationKey;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.service.EmailService;
 import org.zanata.service.UserAccountService;
+import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 import java.io.Serializable;
@@ -24,7 +27,8 @@ import java.util.Date;
 
 @Named("passwordResetRequest")
 @NoArgsConstructor
-@javax.enterprise.context.RequestScoped
+@RequestScoped
+@ModelAction
 @Slf4j
 public class PasswordResetRequestAction implements Serializable {
     private static final long serialVersionUID = 1L;
