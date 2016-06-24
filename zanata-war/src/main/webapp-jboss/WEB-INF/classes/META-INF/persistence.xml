@@ -65,6 +65,8 @@
       <property name="jboss.entity.manager.factory.jndi.name"
         value="java:/zanataEntityManagerFactory" />
 
+      <property name="hibernate.connection.autocommit" value="true" />
+
       <!-- Automatic schema export and drop -->
       <property name="hibernate.hbm2ddl.auto"
         value="${env.hibernate.hbm2ddl.auto}" />

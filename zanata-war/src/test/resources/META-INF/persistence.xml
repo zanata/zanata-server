@@ -73,6 +73,9 @@
       <property name="hibernate.cache.region.factory_class"
         value="org.hibernate.testing.cache.CachingRegionFactory" />
       <!--<property name="hibernate.cache.use_second_level_cache" value="false" />-->
+
+      <property name="hibernate.connection.autocommit" value="true" />
+
       <!-- NB create/create-drop/update are only safe for testing! -->
       <property name="hibernate.hbm2ddl.auto" value="create-drop" />
 
