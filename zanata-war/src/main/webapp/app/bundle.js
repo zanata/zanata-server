@@ -44321,13 +44321,13 @@
 	          // FIXME make phraseSaveFailed exist
 	          // dispatch(phraseSaveFailed(currentPhrase, saveInfo))
 	        } else {
-	            response.json().then(function (_ref) {
-	              var revision = _ref.revision;
-	              var status = _ref.status;
+	          response.json().then(function (_ref) {
+	            var revision = _ref.revision;
+	            var status = _ref.status;
 	
-	              dispatch(saveFinished(phrase.id, status, revision));
-	            });
-	          }
+	            dispatch(saveFinished(phrase.id, status, revision));
+	          });
+	        }
 	        startPendingSaveIfPresent(currentPhrase);
 	      });
 	    }
