@@ -79,9 +79,6 @@
       <property name="hibernate.jdbc.batch_size" value="100" />
       <property name="hibernate.order_inserts" value="true" />
 
-      <property name="hibernate.connection.provider_class"
-        value="org.zanata.database.WrappedDriverManagerConnectionProvider" />
-
       <property name="hibernate.connection.driver_class"
         value="net.sf.log4jdbc.DriverSpy" />
       <!-- Configure the in-memory database to be shared, and so that it

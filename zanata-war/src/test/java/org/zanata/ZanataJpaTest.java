@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 
+import com.google.common.collect.ImmutableMap;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
@@ -18,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zanata.database.WrappedDriverManagerConnectionProvider;
 import org.zanata.util.ZanataEntities;
 
 // single threaded because of ehcache (perhaps other reasons too)
@@ -71,7 +73,9 @@ public abstract class ZanataJpaTest extends ZanataTest {
     }
 
     protected static Map<?, ?> createPropertiesMap() {
-        return null;
+        return ImmutableMap.of(
+                "hibernate.connection.provider_class",
+                WrappedDriverManagerConnectionProvider.class.getName());
     }
 
     @AfterClass
