@@ -92,9 +92,15 @@ class ExportModal extends Component {
 
 ExportModal.propTypes = {
   show: PropTypes.bool,
-  type: PropTypes.oneOf(FILE_TYPES),
+  type: PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string
+  }),
   status: PropTypes.number,
-  types: PropTypes.object,
+  types: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string
+  })),
   handleExportType: PropTypes.func,
   handleExportFileDisplay: PropTypes.func,
   handleExport: PropTypes.func
