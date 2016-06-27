@@ -508,7 +508,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
         if (softDeleted) {
             String url = urlUtil.projectUrl(getProjectSlug());
-            urlUtil.redirectTo(url);
+            urlUtil.redirectToInternal(url);
             return state;
         }
 
