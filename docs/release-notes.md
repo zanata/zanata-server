@@ -1,5 +1,9 @@
 ## 4.0
 
+##### Infrastructure Changes
+The WildFly module for Hibernate has been removed.  Zanata will now use the version of Hibernate provided by WildFly. The Zanata installer no longer installs any modules.
+
+
 ##### Bug Fixes
 * [ZNTA-846](https://zanata.atlassian.net/browse/ZNTA-846) - Group "request add project version" needs field limit
 * [ZNTA-872](https://zanata.atlassian.net/browse/ZNTA-872) - Redirect to home from cancel button in create user page
