@@ -1921,10 +1921,6 @@
       <artifactId>hibernate-commons-annotations</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-search-analyzers</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>

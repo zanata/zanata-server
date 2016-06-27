@@ -34,6 +34,8 @@ import org.hibernate.Session;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.hibernate.cache.internal.StandardQueryCacheFactory;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.AccountResetPasswordKeyDAO;
 import org.zanata.dao.RoleAssignmentRuleDAO;
@@ -140,7 +142,9 @@ public class UserAccountServiceImpl implements UserAccountService {
                         .setParameter("currentUsername", currentUsername);
         updateQuery.setComment("UserAccountServiceImpl.editUsername");
         updateQuery.executeUpdate();
-        session.getSessionFactory().evictQueries(); // Because a Natural Id was
+        // FIXME we might need a custom QueryCacheFactory
+        // TODO is this event the right cache to clear?
+//        session.getSessionFactory().evictQueries(); // Because a Natural Id was
                                                     // modified
     }
 }

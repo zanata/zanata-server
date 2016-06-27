@@ -105,32 +105,29 @@
     <!-- see http://community.jboss.org/wiki/HibernateCompatibilityMatrix?decorator=print -->
     <!-- see also the jboss7 profile below -->
     <hibernate.scope>provided</hibernate.scope>
-    <!--
-         NB: JBoss EAP 6.4.0 has 4.2.18.Final-redhat-2
-    -->
-    <hibernate.version>4.2.19.Final</hibernate.version>
+    <hibernate.version>5.0.7.Final</hibernate.version>
+
+    <!-- TODO try provided -->
     <hibernate.search.scope>compile</hibernate.search.scope>
-    <!-- Hibernate Search 4.4.x is for Hibernate Core 4.2.x:
-     http://in.relation.to/Bloggers/HibernateSearchWeekendReleasesFromBothMaintenanceBranches
-     -->
-    <!-- 4.4.5.Final is not in Central -->
-    <hibernate.search.version>4.4.6.Final</hibernate.search.version>
+    <hibernate.search.version>5.5.1.Final</hibernate.search.version>
     <hibernate.entitymanager.version>${hibernate.version}</hibernate.entitymanager.version>
     <war_bundles_jsf_impl>false</war_bundles_jsf_impl>
-    <hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
+    <hibernate.validator.version>5.2.3.Final</hibernate.validator.version>
 
     <!-- controls concordion output location-->
     <concordion.output.dir>${project.build.directory}/concordion</concordion.output.dir>
 
     <!-- JBoss version for Arquillian dependencies -->
+    <!-- TODO Update to WildFly 10 versions -->
     <jboss.as.version>7.2.0.Final</jboss.as.version>
 
     <jdbc.groupId>mysql</jdbc.groupId>
     <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
     <jdbc.version>5.1.26</jdbc.version>
 
+    <!-- TODO try provided -->
     <resteasy.scope>compile</resteasy.scope>
-    <resteasy.version>3.0.13.Final</resteasy.version>
+    <resteasy.version>3.0.14.Final</resteasy.version>
     <jaxrsapi.version>3.0.12.Final</jaxrsapi.version>
 
     <cargo.extract.dir>${project.build.directory}/cargo/installs</cargo.extract.dir>
@@ -1066,13 +1063,6 @@
             <artifactId>jboss-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-search-analyzers</artifactId>
-        <version>${hibernate.search.version}</version>
-        <scope>${hibernate.search.scope}</scope>
       </dependency>
 
       <dependency>
