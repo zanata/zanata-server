@@ -83,9 +83,6 @@
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.cache.region.factory_class"
         value="org.hibernate.testing.cache.CachingRegionFactory" />
-
-      <property name="hibernate.connection.autocommit" value="true" />
-
       <property name="hibernate.hbm2ddl.auto" value="create-drop" />
 
       <property name="hibernate.connection.provider_class"
