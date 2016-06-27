@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.validation.ConstraintViolationException;
@@ -42,6 +43,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
 import org.zanata.events.DocumentLocaleKey;
@@ -84,7 +87,6 @@ import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.CopyAction;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.DateUtil;
@@ -110,7 +112,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Named("versionHomeAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class VersionHomeAction extends AbstractSortAction implements
         Serializable {

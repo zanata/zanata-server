@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -33,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.AuthenticationType;
@@ -43,7 +46,6 @@ import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.security.openid.YahooOpenIdProvider;
-import org.zanata.ui.ModelAction;
 import org.zanata.util.FacesNavigationUtil;
 
 /**
@@ -55,7 +57,8 @@ import org.zanata.util.FacesNavigationUtil;
  */
 @Named("loginAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class LoginAction implements Serializable {
     private static final long serialVersionUID = 1L;

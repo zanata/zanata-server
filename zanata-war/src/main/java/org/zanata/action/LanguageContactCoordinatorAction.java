@@ -23,12 +23,14 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
@@ -42,7 +44,6 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.service.EmailService;
 import org.zanata.service.LocaleService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 import lombok.Getter;
@@ -55,7 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Named("languageContactCoordinatorAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class LanguageContactCoordinatorAction implements Serializable {
 

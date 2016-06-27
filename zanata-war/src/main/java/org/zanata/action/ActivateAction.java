@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -38,7 +39,6 @@ import org.zanata.exception.ActivationLinkExpiredException;
 import org.zanata.model.HAccountActivationKey;
 import org.zanata.seam.security.AbstractRunAsOperation;
 import org.zanata.seam.security.IdentityManager;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.UrlUtil;
 
@@ -47,7 +47,8 @@ import lombok.Setter;
 
 @Named("activate")
 @GroupedConversationScoped
-@ModelAction
+@Model
+@Transactional
 public class ActivateAction implements Serializable {
 
     private static final long serialVersionUID = -8079131168179421345L;

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Email;
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,12 +27,12 @@ import org.zanata.security.AuthenticationType;
 import org.zanata.security.ZanataCredentials;
 import org.zanata.security.ZanataOpenId;
 import org.zanata.service.EmailService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 @Named("inactiveAccountAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 public class InactiveAccountAction implements Serializable {
     @Inject
     private AccountDAO accountDAO;

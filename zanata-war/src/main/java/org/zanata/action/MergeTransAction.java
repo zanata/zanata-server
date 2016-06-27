@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 
 import com.google.common.collect.Lists;
@@ -15,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.common.EntityStatus;
@@ -27,7 +30,6 @@ import org.zanata.model.HProjectIteration;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.ui.CopyAction;
-import org.zanata.ui.ModelAction;
 import org.zanata.util.FacesNavigationUtil;
 import org.zanata.ui.faces.FacesMessages;
 
@@ -44,7 +46,8 @@ import org.zanata.ui.faces.FacesMessages;
  */
 @Named("mergeTransAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 public class MergeTransAction extends CopyAction implements Serializable {
 
     @Getter

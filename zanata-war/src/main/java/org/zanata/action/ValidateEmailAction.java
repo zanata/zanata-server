@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.security.auth.login.LoginException;
 
 import lombok.Getter;
@@ -42,7 +43,6 @@ import org.zanata.model.HPersonEmailValidationKey;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.service.impl.EmailChangeService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.UrlUtil;
 
@@ -51,7 +51,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 @Named("validateEmail")
 @Slf4j
 @RequestScoped
-@ModelAction
+@Model
+@Transactional
 public class ValidateEmailAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Model;
 import javax.validation.constraints.NotNull;
 
 import javax.inject.Inject;
@@ -43,7 +44,6 @@ import org.zanata.dao.RoleAssignmentRuleDAO;
 import org.zanata.model.HRoleAssignmentRule;
 import org.zanata.seam.framework.EntityHome;
 import org.zanata.security.AuthenticationType;
-import org.zanata.ui.ModelAction;
 
 /**
  * @author Carlos Munoz <a
@@ -51,7 +51,8 @@ import org.zanata.ui.ModelAction;
  */
 @Named("roleAssignmentRuleAction")
 @RequestScoped
-@ModelAction
+@Model
+@Transactional
 @CheckRole("admin")
 public class RoleAssignmentRuleAction extends EntityHome<HRoleAssignmentRule>
         implements Serializable {

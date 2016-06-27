@@ -25,14 +25,16 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
 import org.zanata.security.annotations.CheckRole;
 import org.zanata.async.AsyncTaskHandle;
 import org.zanata.async.AsyncTaskHandleManager;
-import org.zanata.ui.ModelAction;
 
 /**
  * @author Carlos Munoz <a
@@ -40,7 +42,8 @@ import org.zanata.ui.ModelAction;
  */
 @Named("processManagerAction")
 @RequestScoped
-@ModelAction
+@Model
+@Transactional
 @CheckRole("admin")
 public class ProcessManagerAction {
     @Inject

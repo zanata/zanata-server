@@ -29,9 +29,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.dao.ProjectMemberDAO;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
@@ -49,7 +52,6 @@ import org.zanata.service.VersionLocaleKey;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.StatisticsUtil;
@@ -65,7 +67,8 @@ import lombok.Setter;
 
 @Named("versionGroupHomeAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 public class VersionGroupHomeAction extends AbstractSortAction implements
         Serializable {
     private static final long serialVersionUID = 1L;

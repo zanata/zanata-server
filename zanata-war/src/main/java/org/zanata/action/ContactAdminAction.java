@@ -24,10 +24,12 @@ package org.zanata.action;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.security.annotations.CheckPermission;
@@ -43,7 +45,6 @@ import org.zanata.service.EmailService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.HttpUtil;
 
@@ -57,7 +58,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Named("contactAdminAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class ContactAdminAction implements Serializable {
 

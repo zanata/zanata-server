@@ -21,6 +21,7 @@
 package org.zanata.action;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,6 @@ import org.zanata.security.annotations.CheckRole;
 import org.zanata.model.tm.TransMemory;
 import org.zanata.seam.framework.EntityHome;
 import org.zanata.service.SlugEntityService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
@@ -45,7 +45,8 @@ import org.zanata.ui.faces.FacesMessages;
  */
 @Named("translationMemoryHome")
 @RequestScoped
-@ModelAction
+@Model
+@Transactional
 @CheckRole("admin")
 @Slf4j
 public class TranslationMemoryHome extends EntityHome<TransMemory> {

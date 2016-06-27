@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.validation.constraints.Pattern;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.deltaspike.core.api.scope.GroupedConversation;
 import org.apache.deltaspike.core.api.scope.GroupedConversationScoped;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import javax.inject.Inject;
@@ -41,7 +43,6 @@ import org.zanata.model.HPerson;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.EmailService;
 import org.zanata.service.RegisterService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.UrlUtil;
 
@@ -49,7 +50,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Named("register")
 @GroupedConversationScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class RegisterAction implements Serializable {
 

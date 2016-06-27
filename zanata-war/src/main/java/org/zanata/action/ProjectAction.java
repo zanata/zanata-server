@@ -22,17 +22,20 @@ package org.zanata.action;
 
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.DataModel;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.dao.ProjectDAO;
-import org.zanata.ui.ModelAction;
 
 @Named("projectAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 public class ProjectAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

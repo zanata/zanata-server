@@ -2,10 +2,12 @@ package org.zanata.action;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.zanata.model.HAccount;
 import org.zanata.rest.dto.User;
@@ -14,7 +16,6 @@ import org.zanata.rest.editor.service.UserService;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
-import org.zanata.ui.ModelAction;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,8 +24,8 @@ import java.io.Serializable;
 @Named("glossaryAction")
 @ViewScoped
 @CheckLoggedIn
-@ModelAction
-@Slf4j
+@Slf4j@Model
+@Transactional
 public class GlossaryAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

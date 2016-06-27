@@ -23,10 +23,12 @@ package org.zanata.action;
 import org.apache.commons.lang.StringUtils;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
-import org.zanata.ui.ModelAction;
 
 /**
  * This class serves as a UI proxy for the application configuration bean.
@@ -38,7 +40,8 @@ import org.zanata.ui.ModelAction;
  */
 @Named("applicationConfigurationAction")
 @Dependent
-@ModelAction
+@Model
+@Transactional
 public class ApplicationConfigurationAction {
     @Inject
     private ApplicationConfiguration applicationConfiguration;

@@ -22,6 +22,7 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 
@@ -54,7 +55,6 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.service.RequestService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 import javax.enterprise.event.Event;
 import org.zanata.ui.AbstractListFilter;
@@ -71,7 +71,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Named("languageAction")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class LanguageAction implements Serializable {
     private static final long serialVersionUID = 1L;

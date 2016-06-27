@@ -9,6 +9,7 @@ import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.dao.AccountActivationKeyDAO;
@@ -19,7 +20,6 @@ import org.zanata.model.HAccountActivationKey;
 import org.zanata.model.HAccountResetPasswordKey;
 import org.zanata.service.EmailService;
 import org.zanata.service.UserAccountService;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 import java.io.Serializable;
@@ -28,7 +28,8 @@ import java.util.Date;
 @Named("passwordResetRequest")
 @NoArgsConstructor
 @RequestScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class PasswordResetRequestAction implements Serializable {
     private static final long serialVersionUID = 1L;

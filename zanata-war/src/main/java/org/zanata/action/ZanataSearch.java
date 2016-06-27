@@ -11,8 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.apache.lucene.queryParser.ParseException;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,7 +29,6 @@ import com.google.common.collect.Lists;
 import org.zanata.ui.AbstractAutocomplete;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.ui.ModelAction;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.DateUtil;
 import org.zanata.util.ServiceLocator;
@@ -37,7 +38,8 @@ import org.zanata.util.ServiceLocator;
  */
 @Named("zanataSearch")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 public class ZanataSearch implements Serializable {
 
     private static final long serialVersionUID = 1L;

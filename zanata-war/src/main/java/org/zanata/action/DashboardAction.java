@@ -31,9 +31,12 @@ import com.google.common.collect.Collections2;
 import lombok.NonNull;
 import org.apache.commons.lang.StringUtils;
 
+import javax.enterprise.inject.Model;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
@@ -49,7 +52,6 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.ActivityService;
 import org.zanata.service.GravatarService;
 import org.zanata.ui.AbstractListFilter;
-import org.zanata.ui.ModelAction;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.util.DateUtil;
@@ -63,7 +65,8 @@ import lombok.Getter;
 @Named("dashboardAction")
 @ViewScoped
 @CheckLoggedIn
-@ModelAction
+@Model
+@Transactional
 public class DashboardAction implements Serializable {
     private static final long serialVersionUID = 1L;
 

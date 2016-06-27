@@ -23,6 +23,7 @@ package org.zanata.action;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import javax.inject.Named;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.rest.dto.User;
@@ -42,7 +44,6 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
-import org.zanata.ui.ModelAction;
 import org.zanata.ui.faces.FacesMessages;
 
 import com.google.common.base.Strings;
@@ -58,7 +59,8 @@ import static org.apache.commons.lang.StringUtils.abbreviate;
  */
 @Named("profileHome")
 @ViewScoped
-@ModelAction
+@Model
+@Transactional
 @Slf4j
 public class ProfileHome implements Serializable {
     private static final long serialVersionUID = 1L;
