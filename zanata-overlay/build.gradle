@@ -64,8 +64,6 @@ task 'package'(dependsOn: 'copyToLib') << {
                     to: "zanata.war")
             }
         }
-        // Download remote dependencies
-        downloadRemoteDeps(distro, distroDir)
         // Zip it up
         ant.zip(destfile: "$BUILD_DIR/${distroName}.zip", basedir: distroDir)
         // Cleanup
@@ -104,21 +102,6 @@ def replaceTemplates(String distroDir, String zanataVersion) {
     def template = engine.createTemplate(templateFile)
     def result = template.make(['version': zanataVersion])
     templateFile.newWriter() << result
-}
-
-def downloadRemoteDeps(String distro, String distroDir) {
-    def config = new groovy.util.ConfigSlurper().
-        parse(new File('config/remote-deps.groovy').toURL())
-    config."$distro"?.each { depName, value ->
-        def dep = config."$distro"."$depName"
-        def destFile = new File("$distroDir/${dep.toFile}")
-        download(dep.url, destFile)
-        if (dep.extract) {
-            ant.unzip(src: "${destFile.absolutePath}",
-                dest: "${destFile.parent}")
-            ant.delete(file: "${destFile.absolutePath}")
-        }
-    }
 }
 
 def download(String url, File destFile) {
