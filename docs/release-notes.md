@@ -4,6 +4,8 @@
 * [ZNTA-846](https://zanata.atlassian.net/browse/ZNTA-846) - Group "request add project version" needs field limit
 * [ZNTA-872](https://zanata.atlassian.net/browse/ZNTA-872) - Redirect to home from cancel button in create user page
 
+##### Infrastructure Changes
+
 ## 3.9.1
 ##### Changes
  * [ZNTA-1192](https://zanata.atlassian.net/browse/ZNTA-1192) - RFE: Scripts to build the Docker development images
@@ -15,6 +17,12 @@
  * [ZNTA-1145](https://zanata.atlassian.net/browse/ZNTA-1145) - PO-Revision-Date is empty if all translations in document is by copyTrans
 
 -----------------------
+The WildFly module for Hibernate 4.2 has been removed. Zanata will now use the version of Hibernate provided by
+WildFly. The Zanata installer no longer installs any modules for WildFly. If a previous version of the Zanata
+installer has put a Hibernate 4.2 module into your WildFly installation (in modules/org/hibernate/main) you should
+remove it.
+
+## 3.9
 
 ## 3.9.0
 ##### Infrastructure Changes
