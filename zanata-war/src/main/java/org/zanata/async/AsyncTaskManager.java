@@ -43,6 +43,7 @@ import org.zanata.model.HAccount;
 import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
+import org.zanata.security.annotations.AuthenticatedLiteral;
 import org.zanata.util.ServiceLocator;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -62,16 +63,6 @@ public class AsyncTaskManager {
 
     @Inject
     private AsyncConfig asyncConfig;
-
-    @Inject
-    @Authenticated
-    private HAccount authenticatedAccount;
-
-    @Inject
-    private ContextControl ctxCtrl;
-
-    @Inject
-    private AccountDAO accountDAO;
 
     @PostConstruct
     public void init() {
@@ -94,7 +85,8 @@ public class AsyncTaskManager {
      */
     public <V> ListenableFuture<V> startTask(
             final @Nonnull AsyncTask<Future<V>> task) {
-        HAccount taskOwner = authenticatedAccount;
+        HAccount taskOwner = ServiceLocator.instance()
+                .getInstance(HAccount.class, new AuthenticatedLiteral());
         ZanataIdentity ownerIdentity = ZanataIdentity.instance();
 
         // Extract security context from current thread
@@ -108,8 +100,13 @@ public class AsyncTaskManager {
 
         // The logic to run to setup all necessary contexts and specific logic
         final Runnable executableCommand = () -> {
+            ContextControl ctxCtrl = null;
+
             try {
                 // Start CDI contexts
+                ctxCtrl =
+                        ServiceLocator.instance().getInstance(
+                                ContextControl.class);
                 ctxCtrl.startContext(RequestScoped.class);
                 ctxCtrl.startContext(SessionScoped.class);
                 // Prepare the security context
