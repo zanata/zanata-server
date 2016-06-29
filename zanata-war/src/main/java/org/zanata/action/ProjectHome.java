@@ -44,7 +44,6 @@ import javax.persistence.EntityNotFoundException;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +84,6 @@ import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.CommonMarkRenderer;
 import org.zanata.util.ComparatorUtil;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
@@ -1222,8 +1220,6 @@ public class ProjectHome extends SlugHome<HProject> implements
             zanataIdentity.checkPermission(getInstance(), "update");
             HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
-            ProjectHome projectHome = ServiceLocator.instance()
-                    .getInstance(ProjectHome.class);
             projectHome.update();
             reset();
             projectHome.getMaintainerFilter().reset();
