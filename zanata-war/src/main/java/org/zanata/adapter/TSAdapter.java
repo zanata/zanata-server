@@ -38,6 +38,8 @@ import org.apache.commons.lang.StringUtils;
 import org.zanata.common.*;
 import org.zanata.exception.FileFormatAdapterException;
 import org.zanata.model.HDocument;
+import org.zanata.rest.dto.extensions.comment.SimpleComment;
+import org.zanata.rest.dto.extensions.gettext.PotEntryHeader;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.dto.resource.TextFlow;
 import org.zanata.rest.dto.resource.TextFlowTarget;
@@ -127,6 +129,10 @@ public class TSAdapter extends OkapiFilterAdapter {
                             TextFlow tf = processTextFlow(tu, context, content,
                                     subDocName, sourceLocale);
                             if (!addedResources.containsKey(tf.getId())) {
+                                PotEntryHeader potEntryHeader = new PotEntryHeader();
+                                potEntryHeader.setContext(context);
+                                tf.getExtensions(true).add(potEntryHeader);
+                                tf.getExtensions(true).add(new SimpleComment(getComment(tu)));
                                 addedResources.put(tf.getId(), tf);
                                 resources.add(tf);
                             }
@@ -140,6 +146,12 @@ public class TSAdapter extends OkapiFilterAdapter {
             filter.close();
         }
         return document;
+    }
+
+    private String getComment(TextUnit textUnit) {
+        Pattern commentPattern = Pattern.compile("<comment>(.+)</comment>");
+        Matcher matcher = commentPattern.matcher(textUnit.getSkeleton().toString());
+        return matcher.find() ? matcher.group(1) : "";
     }
 
     @Override
