@@ -51,15 +51,22 @@
             <c:forEach items="#{cacheAction.cacheList}" var="cacheName">
               <tr class="bg--higher--hover">
                 <td class="l--pad-v-half">
-                  <h:outputText value="#{cacheName}"/>
+                  <c:choose>
+                    <c:when test="#{cacheName==''}">
+                      <h:outputText value="(empty string)" style="font-style: italic"/>
+                    </c:when>
+                    <c:otherwise>
+                      <h:outputText value="#{cacheName}"/>
+                    </c:otherwise>
+                  </c:choose>
                 </td>
                 <td>
-                  <h:commandButton value="#{msgs['jsf.Clear']}"
+                  <h:commandButton value="#{msgs['jsf.Clear']}" title="#{msgs['jsf.cacheStats.tooltipForClear']}"
                     action="#{cacheAction.clearCache(cacheName)}"
                     onclick="return confirm('#{msgs['jsf.cacheStats.confirmationClearingCache']}')"/>
                 </td>
                 <td>
-                  <h:commandButton value="#{msgs['jsf.Reset']}"
+                  <h:commandButton value="#{msgs['jsf.Reset']}" title="#{msgs['jsf.cacheStats.tooltipForReset']}"
                     action="#{cacheAction.resetCacheStats(cacheName)}"
                     onclick="return confirm('#{msgs['jsf.cacheStats.confirmationResettingCache']}')"/>
                 </td>
