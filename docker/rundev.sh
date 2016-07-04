@@ -5,39 +5,39 @@ SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
     SOURCE="$(readlink "$SOURCE")"
-    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" 
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+source $DIR/function.sh
 
 # change to top of the git working directory
-cd $DIR/../
-ZANATA_WAR=$(echo $PWD/zanata-war/target/zanata-*.war)
+TOP_DIR="$DIR/../"
+
+if [ -r $TOP_DIR/zanata-war/target/zanata.war ];then
+    # use zanata.war if it exists
+    ZANATA_WAR=$TOP_DIR/zanata-war/target/zanata.war
+else
+    # Multiple war files handling
+    ZANATA_WAR_BUFFER=$(find $TOP_DIR/zanata-war/target -name "zanata*.war")
+    result=$(wc -l << $ZANATA_WAR_BUFFER)
+    if [ $(result) -gt 1 ];then
+	echo "[ERROR] Multiple war files found: $ZANATA_WAR_BUFFER" > /dev/stderr
+	exit 1
+    elif [ $(result) -lt 1 ];then
+	echo "[ERROR] No war files found" > /dev/stderr
+	exit 1
+    fi
+    ZANATA_WAR=$ZANATA_WAR_BUFFER
+fi
+file_setup_for_docker "$ZANATA_WAR"
+
 # volume mapping for zanata server files
 ZANATA_DIR=$HOME/docker-volumes/zanata
-
-# create the data directory
-mkdir -p $ZANATA_DIR
-
-case `uname` in
-    Darwin )
-        # mac OS has neighter SELinux nor chcon
-        ;;
-    Linux )
-        # non root SELinux confined user need sudo
-        SUDO=
-        if [ `id -u` -ne 0 ];then
-            if ! (id -Z | grep "unconfined_t");then
-                SUDO=sudo
-            fi
-        fi
-        # make zanata directory and standalone.xml file accessible to docker containers (SELinux)
-        $SUDO chcon -Rt svirt_sandbox_file_t "$ZANATA_DIR"
-        $SUDO chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
-        ;;
-esac
-
+dir_setup_for_docker "$ZANATA_DIR"
 
 # build the docker dev image
+cd $TOP_DIR
 docker build -t zanata/server-dev docker/
 
 # runs zanata/server-dev:latest docker image
