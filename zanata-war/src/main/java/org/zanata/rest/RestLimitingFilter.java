@@ -23,6 +23,7 @@ package org.zanata.rest;
 import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -32,7 +33,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.Provider;
 
 import com.google.common.base.Throwables;
 import org.apache.commons.lang.StringUtils;
@@ -44,10 +44,8 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 
 import org.zanata.security.SecurityFunctions;
-import org.zanata.security.annotations.AuthenticatedLiteral;
 import org.zanata.util.HttpUtil;
 import org.zanata.util.RunnableEx;
-import org.zanata.util.ServiceLocator;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -67,16 +65,21 @@ public class RestLimitingFilter implements Filter {
             "You must have a valid API key. You can create one by logging " +
                     "in to Zanata and visiting the settings page.";
     private final RateLimitingProcessor processor;
+    private final AccountDAO accountDAO;
+    private final HAccount authenticatedUser;
+
+    @Inject
+    public RestLimitingFilter(
+        RateLimitingProcessor processor,
+        AccountDAO accountDAO, HAccount authenticatedUser) {
+        this.processor = processor;
+        this.accountDAO = accountDAO;
+        this.authenticatedUser = authenticatedUser;
+    }
 
     public RestLimitingFilter() {
-        this(new RateLimitingProcessor());
+        this(null, null, null);
     }
-
-    @VisibleForTesting
-    RestLimitingFilter(RateLimitingProcessor processor) {
-        this.processor = processor;
-    }
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -158,12 +161,10 @@ public class RestLimitingFilter implements Filter {
 
     @VisibleForTesting
     protected HAccount getAuthenticatedUser() {
-        return ServiceLocator.instance().getInstance(
-                HAccount.class, new AuthenticatedLiteral());
+        return authenticatedUser;
     }
 
     private @Nullable HAccount getUser(@Nonnull String apiKey) {
-        return ServiceLocator.instance().getInstance(AccountDAO.class)
-                .getByApiKey(apiKey);
+        return accountDAO.getByApiKey(apiKey);
     }
 }
