@@ -2,6 +2,7 @@ package org.zanata.rest.service;
 
 import static org.zanata.common.EntityStatus.OBSOLETE;
 import static org.zanata.common.EntityStatus.READONLY;
+import static org.zanata.rest.service.GlossaryService.PROJECT_QUALIFIER_PREFIX;
 
 import java.net.URI;
 
@@ -167,7 +168,7 @@ public class ProjectService implements ProjectResource {
             }
         }
 
-        updateProject(project, hProject);
+        transfer(project, hProject);
 
         if (identity != null && hProject.getMaintainers().isEmpty()) {
             HAccount hAccount =
@@ -185,7 +186,16 @@ public class ProjectService implements ProjectResource {
 
     }
 
-    private static void updateProject(Project from, HProject to) {
+    @Override
+    public Response getGlossaryQualifiedName() {
+        return Response.ok(getGlossaryQualifiedName(projectSlug)).build();
+    }
+
+    public static String getGlossaryQualifiedName(String projectSlug) {
+        return PROJECT_QUALIFIER_PREFIX + projectSlug;
+    }
+
+    private static void transfer(Project from, HProject to) {
         to.setName(from.getName());
         to.setDescription(from.getDescription());
         if (from.getDefaultType() != null) {
@@ -212,7 +222,7 @@ public class ProjectService implements ProjectResource {
         }
     }
 
-    private static void getProjectDetails(HProject from, Project to) {
+    private static void transfer(HProject from, Project to) {
         to.setId(from.getSlug());
         to.setName(from.getName());
         to.setDescription(from.getDescription());
@@ -226,10 +236,10 @@ public class ProjectService implements ProjectResource {
 
     public static Project toResource(HProject hProject, MediaType mediaType) {
         Project project = new Project();
-        getProjectDetails(hProject, project);
+        transfer(hProject, project);
         for (HProjectIteration pIt : hProject.getProjectIterations()) {
             ProjectIteration iteration = new ProjectIteration();
-            ProjectVersionService.getProjectVersionDetails(pIt, iteration);
+            ProjectVersionService.transfer(pIt, iteration);
 
             iteration
                     .getLinks(true)

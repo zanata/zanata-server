@@ -82,10 +82,10 @@ class ViewHeader extends Component {
       permission,
       sort,
       deleteAll
-      } = this.props
+    } = this.props
     const currentLocaleCount = this.currentLocaleCount()
     const isReadOnly = !(permission.canAddNewEntry ||
-      permission.canUpdateEntry || permission.canDeleteEntry)
+    permission.canUpdateEntry || permission.canDeleteEntry)
     const icon = isReadOnly ? 'locked' : undefined
     const tooltip = isReadOnly ? 'read-only' : undefined
     const showDeleteAll = permission.canDeleteEntry && termCount > 0
@@ -169,8 +169,8 @@ class ViewHeader extends Component {
                 <Row>
                   {'src_content' in sort
                     ? (sort.src_content === true)
-                      ? <Icon name='chevron-down' />
-                      : <Icon name='chevron-up' />
+                    ? <Icon name='chevron-down' />
+                    : <Icon name='chevron-up' />
                     : ''}
                   <Icon name='glossary'
                     atomic={{c: 'C(neutral)', m: 'Mend(re) MStart(rq)'}} />
@@ -210,8 +210,8 @@ class ViewHeader extends Component {
                 <Row>
                   {'part_of_speech' in sort
                     ? (sort.part_of_speech === true)
-                      ? <Icon name='chevron-down' />
-                      : <Icon name='chevron-up' />
+                    ? <Icon name='chevron-down' />
+                    : <Icon name='chevron-up' />
                     : ''}
                   <span className='LineClamp(1,24px) MStart(rq)'>
                     Part of Speech
@@ -228,6 +228,7 @@ class ViewHeader extends Component {
 }
 
 ViewHeader.propTypes = {
+  results: PropTypes.object,
   termCount: PropTypes.number.isRequired,
   statsLoading: PropTypes.bool,
   transLocales: PropTypes.arrayOf(
@@ -269,7 +270,7 @@ const mapStateToProps = (state) => {
     permission,
     sort,
     deleteAll
-    } = state.glossary
+  } = state.glossary
   const query = state.routing.location.query
   return {
     termCount,

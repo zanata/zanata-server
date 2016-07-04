@@ -20,14 +20,11 @@
  */
 package org.zanata.webtrans.client.presenter;
 
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import net.customware.gwt.presenter.client.EventBus;
 
@@ -40,7 +37,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.zanata.common.LocaleId;
-import org.zanata.webtrans.client.events.NotificationEvent;
 import org.zanata.webtrans.client.resources.UiMessages;
 import org.zanata.webtrans.client.rpc.CachingDispatchAsync;
 import org.zanata.webtrans.client.view.GlossaryDetailsDisplay;
@@ -50,8 +46,6 @@ import org.zanata.webtrans.shared.model.GlossaryResultItem;
 import org.zanata.webtrans.shared.model.UserWorkspaceContext;
 import org.zanata.webtrans.shared.rpc.GetGlossaryDetailsAction;
 import org.zanata.webtrans.shared.rpc.GetGlossaryDetailsResult;
-import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermAction;
-import org.zanata.webtrans.shared.rpc.UpdateGlossaryTermResult;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -87,13 +81,7 @@ public class GlossaryDetailsPresenterTest {
     private HasText targetCommentText;
 
     @Captor
-    private ArgumentCaptor<UpdateGlossaryTermAction> updateGlossaryTermCaptor;
-
-    @Captor
     private ArgumentCaptor<GetGlossaryDetailsAction> getGlossaryDetailsCaptor;
-
-    @Captor
-    private ArgumentCaptor<AsyncCallback<UpdateGlossaryTermResult>> updateGlossarycallbackCaptor;
 
     @Captor
     private ArgumentCaptor<AsyncCallback<GetGlossaryDetailsResult>> getGlossarycallbackCaptor;
@@ -128,140 +116,11 @@ public class GlossaryDetailsPresenterTest {
         glossaryDetailsPresenter.bind();
 
         verify(display).setListener(glossaryDetailsPresenter);
-        verify(display).setHasUpdateAccess(hasAccess);
-    }
-
-    @Test
-    public void onSaveClick() {
-        String targetText = "target Text";
-        String newTargetText = "new target Text";
-        String targetComment = "new comment";
-
-        GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
-        when(
-            mockUserWorkspaceContext.getWorkspaceRestrictions()
-                .isHasGlossaryUpdateAccess()).thenReturn(true);
-        when(display.getTargetText()).thenReturn(this.targetText);
-        when(this.targetText.getText()).thenReturn(newTargetText);
-        when(glossaryDetails.getTarget()).thenReturn(targetText);
-        when(display.getTargetComment()).thenReturn(targetCommentText);
-        when(targetCommentText.getText()).thenReturn(targetComment);
-        when(display.getPos()).thenReturn(pos);
-        when(pos.getText()).thenReturn("new part of speech");
-
-        when(display.getDescription()).thenReturn(description);
-        when(description.getText()).thenReturn("new description");
-        glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-
-        glossaryDetailsPresenter.onSaveClick();
-
-        verify(display).showLoading(true);
-        verify(mockDispatcher).execute(updateGlossaryTermCaptor.capture(),
-            updateGlossarycallbackCaptor.capture());
-        UpdateGlossaryTermAction glossaryTermAction =
-                updateGlossaryTermCaptor.getValue();
-        assertThat(glossaryTermAction.getNewTargetComment(),
-            Matchers.equalTo(targetComment));
-        assertThat(glossaryTermAction.getNewTargetTerm(),
-            Matchers.equalTo(newTargetText));
-        assertThat(glossaryTermAction.getSelectedDetailEntry(),
-            Matchers.equalTo(glossaryDetails));
-    }
-
-    @Test
-    public void onSaveClickAndCallbackSuccess() {
-        GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
-        when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(true);
-        when(display.getTargetText()).thenReturn(targetText);
-        when(targetText.getText()).thenReturn("new target Text");
-
-        when(display.getTargetComment()).thenReturn(targetComment);
-        when(targetComment.getText()).thenReturn("new target comment");
-
-        when(display.getPos()).thenReturn(pos);
-        when(pos.getText()).thenReturn("new part of speech");
-
-        when(display.getDescription()).thenReturn(description);
-        when(description.getText()).thenReturn("new description");
-
-        when(glossaryDetails.getTarget()).thenReturn("target Text");
-        glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-
-        glossaryDetailsPresenter.onSaveClick();
-
-        verify(display).showLoading(true);
-        verify(mockDispatcher).execute(updateGlossaryTermCaptor.capture(),
-                updateGlossarycallbackCaptor.capture());
-        AsyncCallback<UpdateGlossaryTermResult> callback =
-                updateGlossarycallbackCaptor.getValue();
-        GlossaryDetails newDetails = mock(GlossaryDetails.class);
-        when(display.getSrcRef()).thenReturn(srcRef);
-        callback.onSuccess(new UpdateGlossaryTermResult(newDetails));
-
-        verify(glossaryListener).fireSearchEvent();
-        verify(srcRef).setText(newDetails.getSourceRef());
-        verify(display).setDescription(newDetails.getDescription());
-        verify(display).setPos(newDetails.getPos());
-        verify(display).setTargetComment(newDetails.getTargetComment());
-        verify(display).setLastModifiedDate(newDetails.getLastModifiedDate());
-        verify(display).showLoading(false);
-    }
-
-    @Test
-    public void onSaveClickAndCallbackFailure() {
-        GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
-        when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(true);
-        when(display.getTargetText()).thenReturn(targetText);
-        when(targetText.getText()).thenReturn("new target Text");
-        when(glossaryDetails.getTarget()).thenReturn("target Text");
-
-        when(display.getTargetComment()).thenReturn(targetComment);
-        when(targetComment.getText()).thenReturn("new target comment");
-
-        when(display.getPos()).thenReturn(pos);
-        when(pos.getText()).thenReturn("new part of speech");
-
-        when(display.getDescription()).thenReturn(description);
-        when(description.getText()).thenReturn("new description");
-
-        glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-
-        glossaryDetailsPresenter.onSaveClick();
-
-        verify(display).showLoading(true);
-        verify(mockDispatcher).execute(updateGlossaryTermCaptor.capture(),
-            updateGlossarycallbackCaptor.capture());
-        AsyncCallback<UpdateGlossaryTermResult> callback =
-                updateGlossarycallbackCaptor.getValue();
-        callback.onFailure(new RuntimeException());
-
-        verify(mockEventBus).fireEvent(isA(NotificationEvent.class));
-        verify(display).showLoading(false);
-    }
-
-    @Test
-    public void onSaveClickNoWriteAccess() {
-        GlossaryDetails glossaryDetails = mock(GlossaryDetails.class);
-        when(
-                mockUserWorkspaceContext.getWorkspaceRestrictions()
-                        .isHasGlossaryUpdateAccess()).thenReturn(false);
-        when(display.getTargetText()).thenReturn(targetText);
-        when(targetText.getText()).thenReturn("new target Text");
-        when(glossaryDetails.getTarget()).thenReturn("target Text");
-        glossaryDetailsPresenter.setStatesForTest(glossaryDetails);
-
-        glossaryDetailsPresenter.onSaveClick();
-
-        verifyZeroInteractions(mockDispatcher);
     }
 
     @Test
     public void show() {
-        GlossaryResultItem item = new GlossaryResultItem("", "", 0, 0);
+        GlossaryResultItem item = new GlossaryResultItem("qualifiedName", "", "", 0, 0);
         when(
                 mockUserWorkspaceContext.getWorkspaceRestrictions()
                         .isHasGlossaryUpdateAccess()).thenReturn(true);

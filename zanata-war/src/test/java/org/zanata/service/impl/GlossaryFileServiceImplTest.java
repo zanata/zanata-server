@@ -24,6 +24,8 @@ package org.zanata.service.impl;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.deltaspike.core.spi.scope.window.WindowContext;
@@ -46,6 +48,8 @@ import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 
 import com.google.common.collect.Lists;
+
+import org.zanata.rest.service.GlossaryResource;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.test.CdiUnitRunner;
 import org.zanata.util.UrlUtil;
@@ -107,7 +111,7 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         LocaleId transLocaleId = LocaleId.DE;
 
         glossaryFileService.parseGlossaryFile(is, fileName, srcLocaleId,
-                transLocaleId);
+                transLocaleId, GlossaryResource.GLOBAL_QUALIFIED_NAME);
     }
 
     @Test
@@ -126,14 +130,14 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         LocaleId srcLocaleId = LocaleId.EN_US;
         LocaleId transLocaleId = LocaleId.DE;
 
-        List<List<GlossaryEntry>> result =
+        Map<LocaleId, List<GlossaryEntry>> result =
                 glossaryFileService.parseGlossaryFile(stubInputStream,
                         fileName, srcLocaleId,
-                        transLocaleId);
+                        transLocaleId, GlossaryResource.GLOBAL_QUALIFIED_NAME);
 
         assertThat(result).hasSize(1);
 
-        List<GlossaryEntry> entries = result.get(0);
+        List<GlossaryEntry> entries = result.get(transLocaleId);
 
         assertThat(entries).hasSize(1);
 
@@ -179,7 +183,8 @@ public class GlossaryFileServiceImplTest extends ZanataDbunitJpaTest {
         entry.getGlossaryTerms().add(term2);
 
         GlossaryFileServiceImpl.GlossaryProcessed results =
-                glossaryFileService.saveOrUpdateGlossary(Lists.newArrayList(entry));
+                glossaryFileService.saveOrUpdateGlossary(
+                        Lists.newArrayList(entry), Optional.empty());
         List<HGlossaryEntry> hEntries = results.getGlossaryEntries();
         assertThat(hEntries.size()).isEqualTo(1);
 

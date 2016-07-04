@@ -153,9 +153,6 @@ public interface UiMessages extends Messages {
     @DefaultMessage("Dismiss")
     String dismiss();
 
-    @DefaultMessage("Save")
-    String save();
-
     @DefaultMessage("Last modified on {0}")
     String lastModifiedOn(String date);
 

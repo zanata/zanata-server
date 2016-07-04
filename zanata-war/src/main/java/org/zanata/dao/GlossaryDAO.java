@@ -28,8 +28,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.Version;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -41,6 +45,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.common.LocaleId;
+import org.zanata.hibernate.search.IndexFieldLabels;
 import org.zanata.jpa.FullText;
 import org.zanata.model.Glossary;
 import org.zanata.model.HGlossaryEntry;
@@ -59,6 +64,8 @@ import org.zanata.webtrans.shared.rpc.LuceneQuery;
 public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     @Inject @FullText
     private FullTextEntityManager entityManager;
+
+    private static final Version LUCENE_VERSION = Version.LUCENE_29;
 
     public GlossaryDAO() {
         super(HGlossaryEntry.class);
@@ -260,8 +267,8 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
      * Object[1] - HGlossaryTerm srcTerm
      */
     public List<Object[]> getSearchResult(String searchText,
-            SearchType searchType, LocaleId srcLocale, final int maxResult)
-            throws ParseException {
+            SearchType searchType, LocaleId srcLocale, final int maxResult,
+            String qualifiedName) throws ParseException {
         if (StringUtils.length(searchText) > LuceneQuery.QUERY_MAX_LENGTH) {
             throw new RuntimeException(
                 "Query string exceed max length: " + LuceneQuery.QUERY_MAX_LENGTH + "='" +
@@ -288,11 +295,20 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
             return Lists.newArrayList();
         }
         QueryParser parser =
-                new QueryParser(Version.LUCENE_29, "content",
-                        new StandardAnalyzer(Version.LUCENE_29));
+                new QueryParser(LUCENE_VERSION, "content",
+                        new StandardAnalyzer(LUCENE_VERSION));
         org.apache.lucene.search.Query textQuery = parser.parse(queryText);
+
+        TermQuery qualifiedNameQuery =
+                new TermQuery(new Term(IndexFieldLabels.GLOSSARY_QUALIFIED_NAME,
+                        qualifiedName));
+
+        BooleanQuery booleanQuery = new BooleanQuery();
+        booleanQuery.add(textQuery, BooleanClause.Occur.MUST);
+        booleanQuery.add(qualifiedNameQuery, BooleanClause.Occur.MUST);
+
         FullTextQuery ftQuery =
-                entityManager.createFullTextQuery(textQuery,
+                entityManager.createFullTextQuery(booleanQuery,
                         HGlossaryTerm.class);
         ftQuery.enableFullTextFilter("glossaryLocaleFilter").setParameter(
                 "locale", srcLocale);
@@ -320,12 +336,17 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
 
         return rowCount;
     }
-    
+
     public Glossary getGlossaryByQualifiedName(String qualifiedName) {
         Query query = getSession().createQuery(
                 "from Glossary where qualifiedName =:qualifiedName");
         query.setParameter("qualifiedName", qualifiedName)
                 .setComment("GlossaryDAO.getGlossaryByQualifiedName");
         return (Glossary) query.uniqueResult();
+    }
+
+    public Glossary persistGlossary(Glossary glossary) {
+        getSession().saveOrUpdate(glossary);
+        return glossary;
     }
 }

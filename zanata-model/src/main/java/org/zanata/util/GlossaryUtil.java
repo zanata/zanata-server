@@ -30,9 +30,9 @@ import org.zanata.rest.service.GlossaryResource;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 public class GlossaryUtil {
-    
+
     private final static String SEPARATOR = "\u0000";
-    
+
     public static String GLOBAL_QUALIFIED_NAME =
             GlossaryResource.GLOBAL_QUALIFIED_NAME;
 

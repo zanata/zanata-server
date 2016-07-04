@@ -35,17 +35,15 @@ import com.google.gwt.user.client.ui.HasText;
 public interface GlossaryDetailsDisplay extends WidgetDisplay {
     void setListener(Listener listener);
 
-    void setHasUpdateAccess(boolean hasGlossaryUpdateAccess);
-
     void setSourceText(String sourceText);
 
     HasText getTargetText();
 
+    HasText getSrcRef();
+
     HasText getSourceLabel();
 
     HasText getTargetLabel();
-
-    HasText getSrcRef();
 
     void clearEntries();
 
@@ -57,11 +55,15 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
 
     void setDescription(String description);
 
+    void setSrcRef(String srcRef);
+
     void setPos(String pos);
 
     void setTargetComment(String targetComment);
 
-    void showLoading(boolean visible);
+    void setSourceLabel(String label);
+
+    void setTargetLabel(String label);
 
     HasText getTargetComment();
 
@@ -71,8 +73,6 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
 
     interface Listener {
         void selectEntry(int selected);
-
-        void onSaveClick();
     }
 
     void setLastModifiedDate(Date lastModifiedDate);

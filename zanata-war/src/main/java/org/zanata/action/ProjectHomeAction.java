@@ -104,7 +104,7 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public static final Ordering<LocaleRole>
             LOCALE_ROLE_ORDERING = Ordering.explicit(LocaleRole.Translator,
-            LocaleRole.Reviewer, LocaleRole.Coordinator);
+            LocaleRole.Reviewer, LocaleRole.Coordinator, LocaleRole.Glossarist);
     private static final long serialVersionUID = -5163376385991003306L;
     @Inject
     private ActivityService activityServiceImpl;
@@ -726,6 +726,8 @@ public class ProjectHomeAction extends AbstractSortAction implements
                 return msgs.get("jsf.Reviewer");
             case Coordinator:
                 return msgs.get("jsf.Coordinator");
+            case Glossarist:
+                return msgs.get("jsf.Glossarist");
             default:
                 return "";
         }

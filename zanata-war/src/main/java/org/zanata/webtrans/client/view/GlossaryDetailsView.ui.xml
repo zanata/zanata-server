@@ -11,17 +11,6 @@
     .textArea[readonly] {
       background: lightgray;
     }
-
-    .newTargetCommentTextArea {
-      width: 260px;
-      height: 40px;
-      resize: none;
-    }
-
-    .newTargetCommentTextArea[readonly] {
-      background: lightgray;
-    }
-
     .container {
       height: 30em;
     }
@@ -33,44 +22,40 @@
       <span class="epsilon">Entries</span>
       <g:ListBox ui:field='entryListBox' />
 
-      <div class="l--push-top-half">
-        <g:InlineLabel ui:field="srcRef" styleName="txt--understated"/>
-        <div>
-          <label class="epsilon">Part of speech</label>
-          <g:TextBox ui:field="pos"/>
-        </div>
-      </div>
-
       <div class="g l--push-top-half">
+        <g:InlineLabel ui:field="srcRef" styleName="txt--understated"/>
+
         <div class="g__item w--1-2">
           <g:Label ui:field="sourceLabel" styleName="epsilon" />
-          <g:InlineLabel ui:field='sourceText'/>
-        </div>
-        <div class="g__item w--1-2">
-          <label class="epsilon">Description</label>
-          <g:TextArea ui:field='description'/>
-        </div>
-      </div>
+          <g:TextArea ui:field='sourceText' readOnly="true"/>
 
-      <div class="g l--push-top-half">
+          <div class="l--push-left-quarter l--pad-all-quarter bg--higher">
+            <label class="txt--understated">Description</label>
+            <g:TextArea ui:field='description' styleName="txt--understated"
+              readOnly="true" />
+          </div>
+
+          <div class="l--push-left-quarter l--pad-all-quarter bg--higher">
+            <label class="txt--understated">Part of speech</label>
+            <g:TextBox ui:field='pos' styleName="txt--understated"
+              readOnly="true" />
+          </div>
+        </div>
+
         <div class="g__item w--1-2">
           <g:Label ui:field="targetLabel" styleName="epsilon" />
-          <g:TextArea ui:field='targetText'/>
-        </div>
-        <div class="g__item w--1-2">
-          <label class="epsilon">Target comment</label>
-          <g:TextArea ui:field="targetComment"
-            styleName="{style.newTargetCommentTextArea}" />
+          <g:TextArea ui:field='targetText' readOnly="true"/>
+
+          <div class="l--push-left-quarter l--pad-all-quarter bg--higher">
+            <label class="txt--understated">Comment</label>
+            <g:TextArea ui:field='targetComment' styleName="txt--understated"
+              readOnly="true" />
+          </div>
         </div>
       </div>
 
       <div class="l--push-top-half txt--align-right">
         <g:InlineLabel ui:field='lastModified' styleName="txt--understated" />
-
-        <g:HTMLPanel>
-          <g:Image ui:field="loadingIcon" />
-          <g:Button ui:field='saveButton' styleName="button--primary"/>
-        </g:HTMLPanel>
       </div>
     </div>
   </g:HTMLPanel>

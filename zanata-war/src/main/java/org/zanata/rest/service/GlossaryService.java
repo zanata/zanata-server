@@ -33,10 +33,12 @@ import org.zanata.adapter.glossary.GlossaryPoWriter;
 import org.zanata.common.GlossarySortField;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
+import org.zanata.dao.ProjectDAO;
 import org.zanata.exception.ZanataServiceException;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.model.HProject;
 import org.zanata.rest.GlossaryFileUploadForm;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryInfo;
@@ -56,6 +58,8 @@ import org.zanata.service.impl.GlossaryFileServiceImpl;
 @Slf4j
 @Transactional
 public class GlossaryService implements GlossaryResource {
+    public static String PROJECT_QUALIFIER_PREFIX = "project/";
+
     @Inject
     private GlossaryDAO glossaryDAO;
 
@@ -68,19 +72,37 @@ public class GlossaryService implements GlossaryResource {
     @Inject
     private LocaleService localeServiceImpl;
 
+    @Inject
+    private ProjectDAO projectDAO;
+
+    @Override
+    public Response getQualifiedName() {
+        List<String> names = Lists.newArrayList(GLOBAL_QUALIFIED_NAME);
+        return Response.ok(names).build();
+    }
+
     @Override
     public Response getInfo(
-            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
+        @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName")
+            String qualifiedName) {
+
+        if (!identity.isLoggedIn()) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
         HLocale srcLocale = getSourceLocale();
 
         int entryCount =
-            glossaryDAO.getEntryCountBySourceLocales(srcLocale.getLocaleId(), qualifiedName);
+            glossaryDAO.getEntryCountBySourceLocales(srcLocale.getLocaleId(),
+                qualifiedName);
 
         GlossaryLocaleInfo srcGlossaryLocale =
-                new GlossaryLocaleInfo(generateLocaleDetails(srcLocale), entryCount);
+            new GlossaryLocaleInfo(generateLocaleDetails(srcLocale),
+                entryCount);
 
         Map<LocaleId, Integer> transMap =
-                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(), qualifiedName);
+            glossaryDAO
+                .getTranslationLocales(srcLocale.getLocaleId(), qualifiedName);
 
         List<HLocale> supportedLocales =
             localeServiceImpl.getSupportedLocales();
@@ -111,7 +133,12 @@ public class GlossaryService implements GlossaryResource {
             @DefaultValue("1000") @QueryParam("sizePerPage") int sizePerPage,
             @QueryParam("filter") String filter,
             @QueryParam("sort") String fields,
-            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName")
+            String qualifiedName) {
+
+        if (!identity.isLoggedIn()) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
 
         int offset = (validatePage(page) - 1) * validatePageSize(sizePerPage);
 
@@ -139,11 +166,15 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response downloadFile(@DefaultValue("csv") String fileType,
-            String commaSeparatedLanguage,
-            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
-        if (!identity.isLoggedIn()) {
-            return Response.status(Response.Status.FORBIDDEN).build();
+        String commaSeparatedLanguage,
+        @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName")
+            String qualifiedName) {
+        Response response =
+            checkGlossaryPermission(qualifiedName, "glossary-download");
+        if (response != null) {
+            return response;
         }
+
         if (!fileType.equalsIgnoreCase("csv") &&
             !fileType.equalsIgnoreCase("po")) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -157,8 +188,8 @@ public class GlossaryService implements GlossaryResource {
         Set<LocaleId> transList;
         if (StringUtils.isEmpty(commaSeparatedLanguage)) {
             transList =
-                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(),qualifiedName)
-                    .keySet();
+                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(),
+                    qualifiedName).keySet();
         } else {
             transList = Sets.newHashSet();
             for (String locale : commaSeparatedLanguage.split(",")) {
@@ -203,46 +234,75 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response post(List<GlossaryEntry> glossaryEntries) {
-        identity.checkPermission("", "glossary-insert");
+    public Response post(List<GlossaryEntry> glossaryEntries,
+            @QueryParam("locale") String locale,
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
 
-        GlossaryResults results = saveGlossaryEntries(glossaryEntries);
+        if (StringUtils.isBlank(locale)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Locale '" + locale + "' is required.").build();
+        }
+        LocaleId localeId = new LocaleId(locale);
+        if (!localeServiceImpl.localeExists(localeId)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Locale '" + locale + "' is not supported.")
+                    .build();
+        }
+
+        if (isProjectGlossary(qualifiedName)) {
+            HProject project = getProjectByQualifiedName(qualifiedName);
+            if (project == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid qualifiedName:" + qualifiedName).build();
+            }
+            identity.checkPermission("glossary-update", project,
+                    localeServiceImpl.getByLocaleId(localeId));
+        } else {
+            identity.checkPermission("", "glossary-insert");
+        }
+
+        GlossaryResults results = saveOrUpdateGlossaryEntries(glossaryEntries,
+            Optional.of(localeId));
         return Response.ok(results).build();
     }
 
     @Override
     public Response upload(@MultipartForm GlossaryFileUploadForm form) {
-        identity.checkPermission("", "glossary-insert");
-
-        final Response response;
+        String qualifiedName = form.getQualifiedName();
+        Response response =
+            checkGlossaryPermission(qualifiedName, "glossary-insert");
+        if (response != null) {
+            return response;
+        }
         try {
             LocaleId srcLocaleId = new LocaleId(form.getSrcLocale());
             LocaleId transLocaleId = null;
             if(!StringUtils.isEmpty(form.getTransLocale())) {
                 transLocaleId = new LocaleId(form.getTransLocale());
             }
-            List<List<GlossaryEntry>> glossaryEntries =
+            Map<LocaleId, List<GlossaryEntry>> entries =
                     glossaryFileServiceImpl
                             .parseGlossaryFile(form.getFileStream(),
                                     form.getFileName(), srcLocaleId,
-                                    transLocaleId);
+                                    transLocaleId, qualifiedName);
 
             GlossaryResults overallResult = new GlossaryResults();
-            for (List<GlossaryEntry> entries : glossaryEntries) {
-                GlossaryResults result = saveGlossaryEntries(entries);
+            for (Map.Entry<LocaleId, List<GlossaryEntry>> entry : entries
+                    .entrySet()) {
+                GlossaryResults result =
+                    saveOrUpdateGlossaryEntries(entry.getValue(),
+                        Optional.ofNullable(transLocaleId));
                 overallResult.getGlossaryEntries().addAll(
-                        result.getGlossaryEntries());
+                    result.getGlossaryEntries());
                 overallResult.getWarnings().addAll(result.getWarnings());
             }
 
-            response =
-                    Response.ok()
+            return Response.ok()
                             .header("Content-Disposition",
                                     "attachment; filename=\""
                                             + form.getFileName() + "\"")
                             .entity(overallResult)
                             .build();
-            return response;
         } catch (ZanataServiceException e) {
             log.error(e.toString(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -251,9 +311,13 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response deleteEntry(Long id) {
-        identity.checkPermission("", "glossary-delete");
-
+    public Response deleteEntry(Long id,
+            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
+        Response response =
+                checkGlossaryPermission(qualifiedName, "glossary-delete");
+        if (response != null) {
+            return response;
+        }
         HGlossaryEntry entry = glossaryDAO.findById(id);
         GlossaryEntry deletedEntry = generateGlossaryEntry(entry);
 
@@ -269,13 +333,53 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response deleteAllEntries(
-            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
-        identity.checkPermission("", "glossary-delete");
+        @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName")
+            String qualifiedName) {
+        Response response =
+                checkGlossaryPermission(qualifiedName, "glossary-delete");
+        if (response != null) {
+            return response;
+        }
 
         int rowCount = glossaryDAO.deleteAllEntries(qualifiedName);
         log.info("Glossary delete all: " + rowCount);
-
         return Response.ok().build();
+    }
+
+    private Response checkGlossaryPermission(String qualifiedName,
+            String action) {
+        if (isProjectGlossary(qualifiedName)) {
+            HProject project = getProjectByQualifiedName(qualifiedName);
+            if (project == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid qualifiedName:" + qualifiedName)
+                        .build();
+            }
+            identity.checkPermission(project, action);
+        } else {
+            identity.checkPermission("", action);
+        }
+        return null;
+    }
+
+    private boolean isProjectGlossary(String qualifiedName) {
+        return StringUtils.isNotBlank(qualifiedName)
+                && qualifiedName.startsWith(PROJECT_QUALIFIER_PREFIX);
+    }
+
+    /**
+     * Extract project slug from glossary qualifiedName by replace first
+     * occurrence of {@link #PROJECT_QUALIFIER_PREFIX} with empty string.
+     *
+     * e.g. project/zanata returns zanata
+     */
+    private HProject getProjectByQualifiedName(String qualifiedName) {
+        String projectSlug =
+                qualifiedName.replaceFirst(PROJECT_QUALIFIER_PREFIX, "");
+        if (StringUtils.isNotBlank(projectSlug)) {
+            return projectDAO.getBySlug(projectSlug);
+        }
+        return null;
     }
 
     private int validatePage(int page) {
@@ -321,17 +425,18 @@ public class GlossaryService implements GlossaryResource {
         return result;
     }
 
-    private GlossaryResults saveGlossaryEntries(
-        List<GlossaryEntry> glossaryEntries) {
+    private GlossaryResults saveOrUpdateGlossaryEntries(
+        List<GlossaryEntry> entries, Optional<LocaleId> transLocaleId) {
 
         GlossaryFileServiceImpl.GlossaryProcessed results =
-            glossaryFileServiceImpl.saveOrUpdateGlossary(glossaryEntries);
+                glossaryFileServiceImpl.saveOrUpdateGlossary(entries,
+                    transLocaleId);
 
         List<GlossaryEntry> glossaryEntriesDTO = Lists.newArrayList();
-        transferEntriesResource(results.getGlossaryEntries(), glossaryEntriesDTO);
+        transferEntriesResource(results.getGlossaryEntries(),
+                glossaryEntriesDTO);
 
-        return new GlossaryResults(
-            glossaryEntriesDTO, results.getWarnings());
+        return new GlossaryResults(glossaryEntriesDTO, results.getWarnings());
     }
 
     private void transferEntriesResource(List<HGlossaryEntry> hGlossaryEntries,

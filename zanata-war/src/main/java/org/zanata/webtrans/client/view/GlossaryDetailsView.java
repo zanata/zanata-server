@@ -39,35 +39,29 @@ public class GlossaryDetailsView extends DialogBox
             .create(GlossaryDetailsIUiBinder.class);
 
     @UiField
-    TextArea targetText, targetComment, description;
+    TextArea sourceText, targetText, targetComment, description;
 
     @UiField
     TextBox pos;
 
     @UiField
-    Label sourceLabel, targetLabel;
+    InlineLabel lastModified, srcRef;
 
     @UiField
-    InlineLabel lastModified, srcRef, sourceText;
+    Label sourceLabel, targetLabel;
 
     @UiField
     ListBox entryListBox;
 
-    @UiField
-    Button saveButton;
-
     @UiField(provided = true)
     DialogBoxCloseButton dismissButton;
-
-    @UiField
-    Image loadingIcon;
 
     private Listener listener;
 
     private final UiMessages messages;
 
     @Inject
-    public GlossaryDetailsView(UiMessages messages, Resources resources) {
+    public GlossaryDetailsView(UiMessages messages) {
         super(true, false);
         setGlassEnabled(true);
         this.messages = messages;
@@ -77,12 +71,7 @@ public class GlossaryDetailsView extends DialogBox
         HTMLPanel container = uiBinder.createAndBindUi(this);
         getCaption().setText(messages.glossaryDetails());
         setWidget(container);
-
         dismissButton.setText(messages.dismiss());
-        saveButton.setText(messages.save());
-
-        loadingIcon.setResource(resources.spinner());
-        loadingIcon.setVisible(false);
     }
 
     public void hide() {
@@ -95,6 +84,11 @@ public class GlossaryDetailsView extends DialogBox
     }
 
     @Override
+    public void setSrcRef(String srcRef) {
+        this.srcRef.setText(srcRef);
+    }
+
+    @Override
     public void setPos(String posText) {
         pos.setText(posText);
     }
@@ -102,6 +96,16 @@ public class GlossaryDetailsView extends DialogBox
     @Override
     public void setTargetComment(String targetCommentText) {
         targetComment.setText(targetCommentText);
+    }
+
+    @Override
+    public void setSourceLabel(String label) {
+        sourceLabel.setText(label);
+    }
+
+    @Override
+    public void setTargetLabel(String label) {
+        targetLabel.setText(label);
     }
 
     @Override
@@ -134,24 +138,9 @@ public class GlossaryDetailsView extends DialogBox
         return targetText;
     }
 
-    @UiHandler("entryListBox")
-    public void onEntryListBoxChange(ChangeEvent event) {
-        listener.selectEntry(entryListBox.getSelectedIndex());
-    }
-
-    @UiHandler("saveButton")
-    public void onSaveButtonClick(ClickEvent event) {
-        listener.onSaveClick();
-    }
-
     @Override
-    public void addEntry(String text) {
-        entryListBox.addItem(text);
-    }
-
-    @Override
-    public void clearEntries() {
-        entryListBox.clear();
+    public HasText getSrcRef() {
+        return srcRef;
     }
 
     @Override
@@ -164,24 +153,19 @@ public class GlossaryDetailsView extends DialogBox
         return targetLabel;
     }
 
-    @Override
-    public HasText getSrcRef() {
-        return srcRef;
+    @UiHandler("entryListBox")
+    public void onEntryListBoxChange(ChangeEvent event) {
+        listener.selectEntry(entryListBox.getSelectedIndex());
     }
 
     @Override
-    public void showLoading(boolean visible) {
-        loadingIcon.setVisible(visible);
+    public void addEntry(String text) {
+        entryListBox.addItem(text);
     }
 
     @Override
-    public void setHasUpdateAccess(boolean hasGlossaryUpdateAccess) {
-        saveButton.setEnabled(hasGlossaryUpdateAccess);
-        saveButton.setVisible(hasGlossaryUpdateAccess);
-        targetComment.setReadOnly(!hasGlossaryUpdateAccess);
-        targetText.setReadOnly(!hasGlossaryUpdateAccess);
-        pos.setReadOnly(!hasGlossaryUpdateAccess);
-        description.setReadOnly(!hasGlossaryUpdateAccess);
+    public void clearEntries() {
+        entryListBox.clear();
     }
 
     @Override

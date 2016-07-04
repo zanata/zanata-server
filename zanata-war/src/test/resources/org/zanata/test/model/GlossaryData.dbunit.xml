@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dataset>
-  <Glossary id="1" name="global/default" />
+  <Glossary id="1" qualifiedName="global/default" />
 
   <HGlossaryEntry id="1"
     contentHash="hash"

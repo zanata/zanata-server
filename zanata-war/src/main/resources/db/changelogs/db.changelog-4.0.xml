@@ -99,6 +99,10 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
+
+    <createIndex tableName="Glossary" indexName="Idx_qualifiedName" unique="true">
+      <column name="qualifiedName" type="varchar(50)"/>
+    </createIndex>
   </changeSet>
 
   <changeSet id="4" author="aeng@redhat.com">
@@ -110,13 +114,18 @@
     <comment>All glossaryId to HGlossaryEntry</comment>
     <addColumn tableName="HGlossaryEntry">
       <column name="glossaryId" type="bigint" defaultValue="1">
-        <constraints nullable="false" />
+        <constraints nullable="false"/>
       </column>
     </addColumn>
 
     <addForeignKeyConstraint baseTableName = "HGlossaryEntry"
       baseColumnNames = "glossaryId" constraintName = "FK_HGlossaryEntry_Glossary"
-      referencedTableName = "Glossary" referencedColumnNames = "id"/>
+      referencedTableName="Glossary" referencedColumnNames="id"/>
+
+    <dropUniqueConstraint tableName="HGlossaryEntry" constraintName="UK_glossaryEntry"/>
+
+    <addUniqueConstraint constraintName="UK_glossaryEntry"
+      tableName="HGlossaryEntry" columnNames="contentHash,glossaryId" />
   </changeSet>
 
   <changeSet id="6" author="aeng@redhat.com">
@@ -132,11 +141,11 @@
 
     <addForeignKeyConstraint baseTableName = "HProject_Glossary"
       baseColumnNames = "glossaryId" constraintName = "FK_HProject_Glossary_Glossary"
-      referencedTableName = "Glossary" referencedColumnNames = "id"/>
+      referencedTableName="Glossary" referencedColumnNames="id"/>
 
     <addForeignKeyConstraint baseTableName = "HProject_Glossary"
       baseColumnNames = "projectId" constraintName = "FK_HProject_Glossary_HProject"
-      referencedTableName = "HProject" referencedColumnNames = "id"/>
+      referencedTableName="HProject" referencedColumnNames="id"/>
 
     <addUniqueConstraint tableName="HProject_Glossary"
       columnNames="glossaryId,projectId"
