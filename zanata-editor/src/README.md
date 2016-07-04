@@ -1,6 +1,24 @@
-# Zanata (Single Page Application)
+# Zanata Alpha Editor
 
+This is a single-page React+Redux application that uses REST APIs on the Zanata
+server for all its data. It is meant to be packaged with zanata-war as a jar
+dependency.
 
+## Build jar
+
+To package the editor as a jar, use maven:
+
+```
+mvn package
+```
+
+## Development Builds
+
+All the build instructions below are for use when developing this editor on its
+own. They are not needed to make the final jar package. They just allow for
+faster builds and immediate feedback on code changes.
+
+Make sure you test changes against the current server before checking them in.
 
 ## Setup and Deployment
 

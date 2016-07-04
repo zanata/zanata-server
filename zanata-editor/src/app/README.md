@@ -2,16 +2,16 @@
 To start the webpack dev server (with fake-zanata-server):
 
 ```
-cd zanata-spa
+cd zanata-server/zanata-editor/src
 make watch-fakeserver
 ```
 
-The new redux app is in `zanata-spa/app`
+The new redux app is in `zanata-server/zanata-editor/src/app`
 
 
 # App code locations
 
-All code is within `zanata-spa/app`
+All code is within `zanata-server/zanata-editor/src/app`
 
 Entry point is `index.js` (where Redux store is instantiated and Root container
 render is started).
