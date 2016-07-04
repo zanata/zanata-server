@@ -28,6 +28,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stats.Stats;
 import org.zanata.i18n.Messages;
 import org.zanata.security.annotations.CheckRole;
+import org.zanata.util.HtmlUtil;
 import org.zanata.util.Zanata;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -58,14 +59,29 @@ public class CacheAction implements Serializable {
     public CacheAction() {
     }
 
-    public Stats getStats(String cacheName) {
-        return cacheManager.getCache(cacheName).getAdvancedCache().getStats();
-    }
-
     public List<String> getCacheList() {
         ArrayList<String> cacheNames = new ArrayList<>(cacheManager.getCacheNames());
         Collections.sort(cacheNames);
         return cacheNames;
+    }
+
+    public Stats getStats(String cacheName) {
+        return cacheManager.getCache(cacheName).getAdvancedCache().getStats();
+    }
+
+    /**
+     * Return some sanitised HTML for the display name of the cache
+     * @param cacheName
+     * @return
+     */
+    public String getDisplayName(String cacheName) {
+        String emptyString = msgs.get("jsf.cacheStats.emptyString");
+        if (cacheName.isEmpty()) {
+            return "<em>(" + emptyString + ")</em>";
+        } else {
+            // Escape cache name in case it includes user input in future
+            return HtmlUtil.SANITIZER.sanitize(cacheName);
+        }
     }
 
     public void clearCache(String cacheName) {
