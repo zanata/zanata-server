@@ -1,11 +1,11 @@
-#!/bin/bash -x
+#!/bin/bash -xeu
 
 # determine directory containing this script
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
@@ -14,10 +14,28 @@ cd $DIR/../
 ZANATA_WAR=$(echo $PWD/zanata-war/target/zanata-*.war)
 # volume mapping for zanata server files
 ZANATA_DIR=$HOME/docker-volumes/zanata
-# create the data directory and set permissions (SELinux)
-mkdir -p $ZANATA_DIR && chcon -Rt svirt_sandbox_file_t "$ZANATA_DIR"
-# make zanata directory and standalone.xml file accessible to docker containers (SELinux)
-chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
+
+# create the data directory
+mkdir -p $ZANATA_DIR
+
+case `uname` in
+    Darwin )
+        # mac OS has neighter SELinux nor chcon
+        ;;
+    Linux )
+        # non root SELinux confined user need sudo
+        SUDO=
+        if [ `id -u` -ne 0 ];then
+            if ! (id -Z | grep "unconfined_t");then
+                SUDO=sudo
+            fi
+        fi
+        # make zanata directory and standalone.xml file accessible to docker containers (SELinux)
+        $SUDO chcon -Rt svirt_sandbox_file_t "$ZANATA_DIR"
+        $SUDO chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
+        ;;
+esac
+
 
 # build the docker dev image
 docker build -t zanata/server-dev docker/
