@@ -2075,7 +2075,7 @@
       <id>build zanata-editor module</id>
       <activation>
         <property>
-          <name>!excludeEditor</name>
+          <name>!excludeAlphaEditor</name>
         </property>
       </activation>
       <properties>
