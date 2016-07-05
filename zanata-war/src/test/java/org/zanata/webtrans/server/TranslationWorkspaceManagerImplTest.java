@@ -3,14 +3,13 @@ package org.zanata.webtrans.server;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.hamcrest.Matchers;
+import org.jglue.cdiunit.ProducerConfig;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.zanata.ZanataTest;
 import org.zanata.common.EntityStatus;
 import org.zanata.common.LocaleId;
 import org.zanata.common.ProjectType;
@@ -37,8 +36,13 @@ import org.zanata.webtrans.shared.rpc.WorkspaceContextUpdate;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.isA;
@@ -53,8 +57,16 @@ import static org.mockito.Mockito.when;
  * @author Patrick Huang <a
  *         href="mailto:pahuang@redhat.com">pahuang@redhat.com</a>
  */
-@RunWith(Enclosed.class)
+@RunWith(CdiUnitRunner.class)
+@TranslationWorkspaceManagerImplTest.UseRealWorkspaceManagerFactory(true)
 public class TranslationWorkspaceManagerImplTest {
+
+    @Retention(RUNTIME)
+    @Target({METHOD, TYPE})
+    @ProducerConfig
+    public @interface UseRealWorkspaceManagerFactory {
+        boolean value();
+    }
 
     static HProjectIteration makeHProjectIteration(
             String projectSlugAndName, String iterationSlug) {
@@ -67,8 +79,7 @@ public class TranslationWorkspaceManagerImplTest {
         return projectIteration;
     }
 
-    @RunWith(CdiUnitRunner.class)
-    public static class RealWorkspaceFactoryTest extends ZanataTest {
+        // TODO fix indentation for this file (left as is to reduce conflicts)
         @Inject
         private TranslationWorkspaceManagerImpl manager;
 
@@ -90,7 +101,26 @@ public class TranslationWorkspaceManagerImplTest {
         private Optional<String> oldIterationSlug = Optional.absent();
         @Produces @Mock
         private EntityManager entityManager;
-//    @Produces @Mock TranslationWorkspaceFactory translationWorkspaceFactory;
+
+        // only used by some tests:
+        @Mock
+        private TranslationWorkspaceFactory mockWorkspaceFactory;
+        @Mock
+        private TranslationWorkspace mockWorkspaceMaster;
+        @Mock
+        private TranslationWorkspace mockWorkspace1;
+        @Mock
+        private TranslationWorkspace mockWorkspace2;
+
+
+        @Produces
+        private TranslationWorkspaceFactory getTranslationWorkspaceFactory(UseRealWorkspaceManagerFactory config) {
+            if (config.value()) {
+                return new TranslationWorkspaceFactory(projectIterationDAO, localeServiceImpl);
+            } else {
+                return mockWorkspaceFactory;
+            }
+        }
 
         @Before
         public void beforeMethod() throws Exception {
@@ -219,50 +249,9 @@ public class TranslationWorkspaceManagerImplTest {
 
             verifyZeroInteractions(accountDAO);
         }
-    }
-
-    @RunWith(CdiUnitRunner.class)
-    public static class MockWorkspaceFactoryTest {
-
-        @Inject
-        private TranslationWorkspaceManagerImpl manager;
-
-        @Produces
-        @Mock
-        private AccountDAO accountDAO;
-        @Produces
-        @Mock
-        private GravatarService gravatarServiceImpl;
-        @Produces
-        @Mock
-        private ProjectIterationDAO projectIterationDAO;
-        @Produces
-        @Mock
-        private LocaleService localeServiceImpl;
-        @Produces
-        @Mock
-        private ValidationService validationServiceImpl;
-        @Produces
-        @Mock
-        private TranslationWorkspace mockWorkspace;
-        @Mock
-        private TranslationWorkspace mockWorkspaceMaster;
-        @Mock
-        private TranslationWorkspace mockWorkspace1;
-        @Mock
-        private TranslationWorkspace mockWorkspace2;
-        @Captor
-        private ArgumentCaptor<ExitWorkspace> eventCaptor;
-        private Optional<String> oldProjectSlug = Optional.absent();
-        private Optional<String> oldIterationSlug = Optional.absent();
-        @Produces
-        @Mock
-        private EntityManager entityManager;
-        @Produces
-        @Mock
-        TranslationWorkspaceFactory translationWorkspaceFactory;
 
         @Test
+        @UseRealWorkspaceManagerFactory(false)
         public void testExitWorkspace() throws Exception {
             HProjectIteration projectIteration =
                     makeHProjectIteration("project", "master");
@@ -279,7 +268,7 @@ public class TranslationWorkspaceManagerImplTest {
             when(localeServiceImpl.getByLocaleId(workspaceId.getLocaleId()))
                     .thenReturn(hLocale);
             TranslationWorkspaceManagerImpl spy = spy(manager);
-            when(translationWorkspaceFactory.createWorkspace(workspaceId))
+            when(mockWorkspaceFactory.createWorkspace(workspaceId))
                     .thenReturn(mockWorkspace);
             ArrayList<EditorClientId> editorClientIds =
                     Lists.newArrayList(new EditorClientId("sessionId", 1L),
@@ -310,6 +299,7 @@ public class TranslationWorkspaceManagerImplTest {
         }
 
         @Test
+        @UseRealWorkspaceManagerFactory(false)
         public void testProjectIterationUpdate() throws Exception {
             HProjectIteration projectIteration =
                     makeHProjectIteration("project", "master");
@@ -333,7 +323,7 @@ public class TranslationWorkspaceManagerImplTest {
                     .thenReturn(new ArrayList<ValidationAction>());
 
             TranslationWorkspaceManagerImpl spy = spy(manager);
-            when(translationWorkspaceFactory.createWorkspace(workspaceId))
+            when(mockWorkspaceFactory.createWorkspace(workspaceId))
                     .thenReturn(mockWorkspace);
             spy.getOrRegisterWorkspace(workspaceId);
 
@@ -344,6 +334,7 @@ public class TranslationWorkspaceManagerImplTest {
         }
 
         @Test
+        @UseRealWorkspaceManagerFactory(false)
         public void testProjectUpdate() throws Exception {
             // Given: we have 3 iteration in the project
             HProjectIteration master = makeHProjectIteration("project", "master");
@@ -357,9 +348,9 @@ public class TranslationWorkspaceManagerImplTest {
 
             when(entityManager.find(HProject.class, project.getId()))
                     .thenReturn(project);
-            doReturn(mockWorkspaceMaster).when(translationWorkspaceFactory).createWorkspace(matchIteration("master"));
-            doReturn(mockWorkspace1).when(translationWorkspaceFactory).createWorkspace(matchIteration("1"));
-            doReturn(mockWorkspace2).when(translationWorkspaceFactory).createWorkspace(matchIteration("2"));
+            doReturn(mockWorkspaceMaster).when(mockWorkspaceFactory).createWorkspace(matchIteration("master"));
+            doReturn(mockWorkspace1).when(mockWorkspaceFactory).createWorkspace(matchIteration("1"));
+            doReturn(mockWorkspace2).when(mockWorkspaceFactory).createWorkspace(matchIteration("2"));
 
             manager.getOrRegisterWorkspace(new WorkspaceId(new ProjectIterationId("oldProject", "master",
                     ProjectType.File), LocaleId.EN_US));
@@ -388,4 +379,4 @@ public class TranslationWorkspaceManagerImplTest {
                             .getIterationSlug().equals(iterationSlug)));
         }
     }
-}
+
