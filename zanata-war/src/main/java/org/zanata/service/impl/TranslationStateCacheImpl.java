@@ -232,7 +232,7 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         return null;
     }
 
-    private static class DocumentStatisticLoader extends
+    public static class DocumentStatisticLoader extends
             CacheLoader<DocumentLocaleKey, WordStatistic> {
 
         @Inject
@@ -246,7 +246,7 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         }
     }
 
-    private static class HTextFlowTargetIdLoader extends
+    public static class HTextFlowTargetIdLoader extends
             CacheLoader<DocumentLocaleKey, DocumentStatus> {
 
         @Inject
@@ -264,7 +264,7 @@ public class TranslationStateCacheImpl implements TranslationStateCache {
         }
     }
 
-    private static class HTextFlowTargetValidationLoader extends
+    public static class HTextFlowTargetValidationLoader extends
             CacheLoader<Long, Map<ValidationId, Boolean>> {
         @Override
         public Map<ValidationId, Boolean> load(Long key) throws Exception {

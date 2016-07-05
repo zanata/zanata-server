@@ -126,7 +126,7 @@ public class VersionStateCacheImpl implements VersionStateCache {
         }
     }
 
-    private static class VersionStatisticLoader extends
+    public static class VersionStatisticLoader extends
             CacheLoader<VersionLocaleKey, WordStatistic> {
 
         @Inject
