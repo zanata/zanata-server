@@ -58,7 +58,7 @@ import org.zanata.exception.NotLoggedInException;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.model.HasUserFriendlyToString;
-import org.zanata.security.annotations.Authenticated;
+import org.zanata.security.annotations.AuthenticatedLiteral;
 import org.zanata.security.jaas.InternalLoginModule;
 import org.zanata.security.permission.CustomPermissionResolver;
 import org.zanata.security.permission.MultiTargetList;
@@ -130,9 +130,6 @@ public class ZanataIdentity implements Identity, Serializable {
     @Inject @SessionId
     private String sessionId;
 
-    @Inject
-    private @Authenticated HAccount authenticatedAccount;
-
     // The following fields store user details for use during preDestroy().
     // NB: they are not currently kept up to date if the user name changes.
     private @Nullable String cachedPersonEmail;
@@ -160,7 +157,6 @@ public class ZanataIdentity implements Identity, Serializable {
         return apiKey != null;
     }
 
-    // TODO : inject zanataIdentity to every possible place where the instance method is called.
     public static ZanataIdentity instance()  {
         return ServiceLocator.instance().getInstance(ZanataIdentity.class);
     }
@@ -668,6 +664,9 @@ public class ZanataIdentity implements Identity, Serializable {
      */
     @Nullable
     public String getAccountUsername() {
+        HAccount authenticatedAccount =
+                ServiceLocator.instance().getInstance(HAccount.class,
+                        new AuthenticatedLiteral());
         if (authenticatedAccount != null) {
             return authenticatedAccount.getUsername();
         }
