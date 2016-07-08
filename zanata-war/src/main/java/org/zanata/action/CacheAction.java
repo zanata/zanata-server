@@ -22,13 +22,13 @@
 package org.zanata.action;
 
 import com.google.common.base.Throwables;
+import com.google.common.html.HtmlEscapers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stats.Stats;
 import org.zanata.i18n.Messages;
 import org.zanata.security.annotations.CheckRole;
-import org.zanata.util.HtmlUtil;
 import org.zanata.util.Zanata;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
@@ -80,7 +80,7 @@ public class CacheAction implements Serializable {
             return "<em>(" + emptyString + ")</em>";
         } else {
             // Escape cache name in case it includes user input in future
-            return HtmlUtil.SANITIZER.sanitize(cacheName);
+            return HtmlEscapers.htmlEscaper().escape(cacheName);
         }
     }
 
