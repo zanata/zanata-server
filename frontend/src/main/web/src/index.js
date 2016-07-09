@@ -11,11 +11,8 @@ import WebFont from 'webfontloader'
 import { apiMiddleware } from 'redux-api-middleware'
 import rootReducer from './reducers'
 import Root from './containers/Root'
-import './styles/base.css'
-import './styles/atomic.css'
-import './styles/animations.css'
-import './styles/extras.css'
 import { isJsonString } from './utils/StringUtils'
+import './styles/atomic.css'
 
 WebFont.load({
   google: {

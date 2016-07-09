@@ -6,7 +6,7 @@ import {
 import {
   ButtonLink,
   Base
-} from '../../components'
+} from 'zanata-ui'
 
 const classes = {
   root: {

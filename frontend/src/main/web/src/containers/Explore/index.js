@@ -11,7 +11,7 @@ import {
   Icon,
   Button,
   TextInput
-} from '../../components'
+} from 'zanata-ui'
 import TeaserList from './TeaserList'
 import {
   searchTextChanged,

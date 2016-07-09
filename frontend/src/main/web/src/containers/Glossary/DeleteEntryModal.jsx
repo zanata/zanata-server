@@ -7,7 +7,7 @@ import {
   Icon,
   Tooltip,
   Overlay
-} from '../../components'
+} from 'zanata-ui'
 
 class DeleteEntryModal extends Component {
 

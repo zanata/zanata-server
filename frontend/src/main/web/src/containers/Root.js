@@ -5,7 +5,7 @@ import App from '../containers/App'
 import Glossary from '../containers/Glossary'
 import Explore from '../containers/Explore'
 import UserProfile from '../containers/UserProfile'
-import View from '../components/View'
+import { View } from 'zanata-ui'
 
 export default class Root extends Component {
   render () {

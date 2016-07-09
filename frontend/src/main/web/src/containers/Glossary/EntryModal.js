@@ -8,7 +8,7 @@ import {
   LoaderText,
   Modal,
   Row
-} from '../../components'
+} from 'zanata-ui'
 
 /**
  * Popup windows to display a glossary entry

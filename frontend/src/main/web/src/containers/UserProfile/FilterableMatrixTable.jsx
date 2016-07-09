@@ -6,7 +6,7 @@ import CategoryMatrixTable from './CategoryMatrixTable'
 import {
   Base,
   Flex
-} from '../../components'
+} from 'zanata-ui'
 import {
   DateRanges,
   ContentStates

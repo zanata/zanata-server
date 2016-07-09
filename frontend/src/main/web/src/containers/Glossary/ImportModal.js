@@ -9,7 +9,7 @@ import {
   Modal,
   Select,
   Row
-} from '../../components'
+} from 'zanata-ui'
 
 import {
   glossaryImportFile,

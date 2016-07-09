@@ -5,7 +5,7 @@ import {
   Loader,
   Heading,
   View
-} from '../../components'
+} from 'zanata-ui'
 
 /**
  * Header with icon and paging for the TeaserList.

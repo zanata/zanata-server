@@ -7,7 +7,7 @@ import {
   Base,
   ButtonLink,
   Flex
-} from '../../components'
+} from 'zanata-ui'
 
 const classes = {
   calendar: {

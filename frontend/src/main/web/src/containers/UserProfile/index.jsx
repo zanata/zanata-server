@@ -14,10 +14,11 @@ import {
   Flex,
   Icon,
   LoaderText,
-  Notification,
   Page,
   ScrollView
-} from '../../components'
+} from 'zanata-ui'
+
+import { Notification } from '../../components'
 
 const classes = {
   wrapper: {

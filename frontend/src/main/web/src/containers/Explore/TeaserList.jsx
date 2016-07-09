@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { View } from '../../components'
+import { View } from 'zanata-ui'
 import TeaserListHeader from './TeaserListHeader'
 import ProjectTeaser from './ProjectTeaser'
 import GroupTeaser from './GroupTeaser'

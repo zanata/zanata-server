@@ -23,12 +23,9 @@ import 'babel-polyfill'
 import React from 'react'
 import { render } from 'react-dom'
 import { mapValues } from 'lodash'
-import { Icons } from './components'
+import { Icons, Nav } from './components'
 import WebFont from 'webfontloader'
-import Nav from './components/Nav'
-import './styles/base.css'
 import './styles/atomic.css'
-import './styles/extras.css'
 import { isJsonString } from './utils/StringUtils'
 /**
  * Root component that display only side menu bar.

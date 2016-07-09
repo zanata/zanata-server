@@ -9,7 +9,7 @@ import {
   LoaderText,
   Modal,
   Row
-} from '../../components'
+} from 'zanata-ui'
 
 import {
   glossaryToggleNewEntryModal,

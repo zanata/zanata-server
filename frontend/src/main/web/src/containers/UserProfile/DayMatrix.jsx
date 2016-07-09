@@ -4,7 +4,7 @@ import dateUtil from '../../utils/DateHelper'
 import {
   Base,
   Button
-} from '../../components'
+} from 'zanata-ui'
 
 const classes = {
   root: {

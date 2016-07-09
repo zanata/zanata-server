@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { debounce, isEmpty } from 'lodash'
 import {
   ButtonLink,
-  Header,
   Icon,
   Row,
   Select,
@@ -11,7 +10,8 @@ import {
   TableRow,
   TextInput,
   View
-} from '../../components'
+} from 'zanata-ui'
+import Header from './Header'
 import {
   glossaryChangeLocale,
   glossaryFilterTextChanged,

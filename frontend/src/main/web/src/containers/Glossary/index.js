@@ -8,12 +8,12 @@ import {
   Page,
   ScrollView,
   View,
-  Notification,
   Row,
   ButtonLink,
   Icon,
   Select
-} from '../../components'
+} from 'zanata-ui'
+import { Notification } from '../../components'
 import {
   glossaryDeleteTerm,
   glossaryResetTerm,

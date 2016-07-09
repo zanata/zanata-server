@@ -6,10 +6,10 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
 import {
-  Nav,
   View,
   Icons
-} from '../components'
+} from 'zanata-ui'
+import { Nav } from '../components'
 
 /**
  * TODO: use react-ally to identify accessibility issue in dev mode

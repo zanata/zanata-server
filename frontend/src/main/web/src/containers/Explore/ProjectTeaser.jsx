@@ -3,7 +3,7 @@ import {
   Link,
   View,
   Icon
-} from '../../components'
+} from 'zanata-ui'
 const viewTheme = {
   base: {
     ai: 'Ai(c)',

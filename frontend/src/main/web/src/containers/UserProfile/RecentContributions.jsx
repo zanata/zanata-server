@@ -6,7 +6,7 @@ import {
   Base,
   Flex,
   Select
-} from '../../components'
+} from 'zanata-ui'
 
 const classes = {
   root: {

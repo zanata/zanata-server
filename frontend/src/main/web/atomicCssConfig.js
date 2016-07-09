@@ -1,4 +1,4 @@
-var variables = require('./src/constants/styles')
+var variables = require('zanata-ui/lib/constants/styles')
 
 function pxToRem (pixels, baseFontSize) {
   baseFontSize = baseFontSize || '16'

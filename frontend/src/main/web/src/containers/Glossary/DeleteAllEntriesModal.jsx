@@ -8,7 +8,7 @@ import {
   Tooltip,
   Overlay,
   Row
-} from '../../components'
+} from 'zanata-ui'
 
 /**
  * Confirmation modal dialog for delete all glossary entries

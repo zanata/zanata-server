@@ -10,7 +10,7 @@ import {
   TableCell,
   TableRow,
   Row
-} from '../../components'
+} from 'zanata-ui'
 import EntryModal from './EntryModal'
 import DeleteEntryModal from './DeleteEntryModal'
 /**

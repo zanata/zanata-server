@@ -1,6 +1,5 @@
 var webpack = require('webpack')
 var path = require('path')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var _ = require('lodash')
 var defaultConfig = require('./webpack.prod.config.js')
 var bundleDest = __dirname
