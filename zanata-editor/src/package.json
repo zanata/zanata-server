@@ -33,7 +33,7 @@
     "@kadira/storybook": "1.36.0",
     "autoprefixer": "6.3.6",
     "babel-core": "6.9.1",
-    "babel-eslint": "4.1.8",
+    "babel-eslint": "6.1.0",
     "babel-jest": "13.0.0",
     "babel-loader": "6.2.4",
     "babel-plugin-react-intl": "2.1.3",
