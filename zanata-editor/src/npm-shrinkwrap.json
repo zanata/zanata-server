@@ -5837,9 +5837,9 @@
       "resolved": "https://registry.npmjs.org/react-split-pane/-/react-split-pane-0.1.42.tgz"
     },
     "react-textarea-autosize": {
-      "version": "3.3.1",
-      "from": "react-textarea-autosize@3.3.1",
-      "resolved": "https://registry.npmjs.org/react-textarea-autosize/-/react-textarea-autosize-3.3.1.tgz"
+      "version": "4.0.3",
+      "from": "react-textarea-autosize@4.0.3",
+      "resolved": "https://registry.npmjs.org/react-textarea-autosize/-/react-textarea-autosize-4.0.3.tgz"
     },
     "read-all-stream": {
       "version": "3.1.0",
