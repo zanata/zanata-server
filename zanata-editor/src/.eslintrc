@@ -1,2 +1,53 @@
 
 extends: zanata/react
+
+rules:
+  # Specify the type of quotes that are acceptable to use in JSX attributes.
+  # Standard enforces single-quotes, but we discussed this in our team and
+  # decided that it makes more sense to be consistent with other markup by using
+  # double-quotes for attributes.
+  jsx-quotes:
+    - 2              # Error to enforce compliance.
+    - prefer-double  # Use double quotes unless the string contains a literal
+                     # double-quote character.
+
+  # FIXME TEMPORARILY DISABLED RULES SO THAT ALL THE LINTING CHANGES CAN BE DONE TOGETHER
+  # These rules should all be turned on and the linting errors fixed after the
+  # other changes have been reviewed.
+
+  # FIXME enable rule and fix code style
+  react/jsx-indent: [0]
+
+  # FIXME enable rule and fix code style
+  react/jsx-indent-props: [0]
+
+  # FIXME enable rule and fix code style
+  react/jsx-space-before-closing: [0]
+
+  # FIXME enable rule and fix code style
+  react/jsx-boolean-value: [0]
+
+  # FIXME enable rule and fix code style
+  react/prop-types: [0]
+
+  # FIXME enable rule and fix code style
+  no-return-assign: [0]
+
+  # FIXME enable rule and fix code style
+  # for fix advice, see https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md
+  react/jsx-no-bind: [0]
+
+  # FIXME enable rule and fix code style
+  react/self-closing-comp: [0]
+
+  # FIXME enable rule and fix code style
+  no-useless-escape: [0]
+
+  # FIXME enable rule and fix code style
+  no-duplicate-imports: [0]
+
+  # FIXME enable rule and fix code style
+  react/no-unknown-property: [0]
+
+  # FIXME enable rule and fix code style
+  react/jsx-no-undef: [0]
