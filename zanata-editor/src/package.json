@@ -77,7 +77,7 @@
     "react-redux": "4.4.5",
     "react-router": "2.4.0",
     "react-split-pane": "0.1.42",
-    "react-textarea-autosize": "3.3.1",
+    "react-textarea-autosize": "4.0.3",
     "redux": "3.5.2",
     "redux-logger": "2.6.1",
     "redux-simple-router": "2.0.4",
