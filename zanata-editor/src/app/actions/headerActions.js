@@ -6,7 +6,7 @@ import {
   fetchDocuments,
   fetchVersionLocales
 } from '../api'
-import { any, curry, isEmpty } from 'lodash'
+import { some, curry, isEmpty } from 'lodash'
 import { equals } from '../utils/string-utils'
 
 export const TOGGLE_HEADER = Symbol('TOGGLE_HEADER')
@@ -72,7 +72,7 @@ const decodeDocId = (docId) => {
 }
 
 const hasCaseInsensitiveMatchingProp = (list, prop, matchedValue) => {
-  return any(list, (item) => {
+  return some(list, (item) => {
     return equals(item[prop], matchedValue, true)
   })
 }
