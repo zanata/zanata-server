@@ -2039,12 +2039,6 @@
             <scope>test</scope>
           </dependency>
           <dependency>
-            <groupId>org.jboss.marshalling</groupId>
-            <artifactId>jboss-marshalling</artifactId>
-            <version>1.4.6.Final</version>
-            <scope>test</scope>
-          </dependency>
-          <dependency>
             <groupId>org.jboss.modules</groupId>
             <artifactId>jboss-modules</artifactId>
             <version>1.3.3.Final</version>
