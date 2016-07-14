@@ -29,7 +29,7 @@ const TransUnitStatus = React.createClass({
     const comments = phrase.comments
       ? (
       <li className="TransUnit-metaDataItem TransUnit-metaDataComments">
-        <button tabindex="-1"
+        <button tabIndex="-1"
           className="TransUnit-metaDataButton"
           title={phrase.comments + ' comments'}>
           <Icon name="comment" title="Comments" />
@@ -43,7 +43,7 @@ const TransUnitStatus = React.createClass({
     const errors = phrase.errors
       ? (
       <li className="TransUnit-metaDataItem TransUnit-metaDataErrors">
-        <button tabindex="-1"
+        <button tabIndex="-1"
           className="TransUnit-metaDataButton"
           title="1 Error">
           <Icon name="dot"
