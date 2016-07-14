@@ -16,6 +16,7 @@ package org.zanata.dao;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -23,9 +24,12 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.enterprise.context.RequestScoped;
 import org.zanata.model.HAccount;
 import org.zanata.util.PasswordUtil;
+import com.google.common.base.Strings;
 
 @RequestScoped
 public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
@@ -42,6 +46,10 @@ public class AccountDAO extends AbstractDAOImpl<HAccount, Long> {
         cr.add(Restrictions.eq("username", username));
         cr.setCacheable(true).setComment("AccountDAO.getByUsername");
         return (HAccount) cr.uniqueResult();
+    }
+
+    public Optional<HAccount> tryGetByUsername(@Nonnull String username) {
+        return Optional.ofNullable(getByUsername(username));
     }
 
     public HAccount getByEmail(String email) {

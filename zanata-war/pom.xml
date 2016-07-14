@@ -1494,7 +1494,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20090211</version>
+      <version>20140107</version>
     </dependency>
 
     <dependency>
@@ -1816,6 +1816,12 @@
       <groupId>org.ocpsoft.rewrite</groupId>
       <artifactId>rewrite-servlet</artifactId>
       <version>${rewrite.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ocpsoft.logging</groupId>
+      <artifactId>logging-adapter-jboss</artifactId>
+      <version>1.0.3.Final</version>
     </dependency>
 
     <dependency>
@@ -2311,6 +2317,17 @@
       <groupId>org.apache.deltaspike.modules</groupId>
       <artifactId>deltaspike-scheduler-module-impl</artifactId>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.resourceserver</artifactId>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
