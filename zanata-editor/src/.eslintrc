@@ -16,9 +16,6 @@ rules:
   # other changes have been reviewed.
 
   # FIXME enable rule and fix code style
-  react/jsx-indent-props: [0]
-
-  # FIXME enable rule and fix code style
   react/jsx-space-before-closing: [0]
 
   # FIXME enable rule and fix code style

@@ -16,8 +16,7 @@ const SuggestionUpdateMessage = React.createClass({
   },
 
   message: function () {
-    const date = <FormattedDate value={this.props.lastChanged}
-                              format="medium"/>
+    const date = <FormattedDate value={this.props.lastChanged} format="medium"/>
 
     switch (this.props.matchType) {
       case 'imported':

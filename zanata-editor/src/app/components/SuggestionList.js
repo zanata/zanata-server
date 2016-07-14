@@ -37,8 +37,8 @@ const SuggestionList = React.createClass({
         copySuggestion: this.props.copySuggestion.bind(undefined, index)
       }
       return <Suggestion key={index}
-               suggestion={suggestionWithCopy}
-               {...sharedProps}/>
+        suggestion={suggestionWithCopy}
+        {...sharedProps}/>
     })
 
     return (

@@ -43,10 +43,10 @@ const Dropdown = React.createClass({
           ? { onClick: this.toggleDropdown } : {}
         return (
           <div ref={ref => this.buttonDiv = ref}
-               className="Dropdown-toggle"
-               aria-haspopup={true}
-               aria-expanded={this.props.isOpen}
-               {...onClick}>
+            className="Dropdown-toggle"
+            aria-haspopup={true}
+            aria-expanded={this.props.isOpen}
+            {...onClick}>
             {child}
           </div>
         )

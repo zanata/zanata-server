@@ -24,7 +24,7 @@ const MainContent = React.createClass({
       return (
         <div className="u-posCenterCenter u-textEmpty u-textCenter">
           <Icon name="translate"
-                className="Icon--lg Icon--circle u-sMB-1-4"/>
+            className="Icon--lg Icon--circle u-sMB-1-4"/>
           <p>No content</p>
         </div>
       )

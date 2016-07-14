@@ -134,13 +134,13 @@ const TransUnitTranslationFooter = React.createClass({
 
     const dropdownToggleButton = otherStatuses.length > 0
       ? <Button
-          className={cx('Button Button--snug u-sizeHeight-1_1-4',
-                        'Dropdown-toggle',
-                        this.buttonClassByStatus[selectedButtonStatus])}
-          title="Save as…">
+        className={cx('Button Button--snug u-sizeHeight-1_1-4',
+                      'Dropdown-toggle',
+                      this.buttonClassByStatus[selectedButtonStatus])}
+        title="Save as…">
         <Icon name="chevron-down"
-              title="Save as…"
-              className="Icon--sm Dropdown-toggleIcon"/>
+          title="Save as…"
+          className="Icon--sm Dropdown-toggleIcon"/>
       </Button>
       : undefined
 
