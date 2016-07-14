@@ -115,8 +115,8 @@ const TransUnitTranslationPanel = React.createClass({
 
     if (isLoading) {
       translations = <span className="u-textMeta">
-                       <Icon name="loader"/>
-                     </span>
+        <Icon name="loader"/>
+      </span>
     } else {
       const newTranslations = phrase.newTranslations
       ? phrase.newTranslations

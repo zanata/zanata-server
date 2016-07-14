@@ -56,15 +56,15 @@ const SuggestionsHeader = React.createClass({
     const showSearch = textSearchSelected || !this.props.phraseSelected
     const searchInput = showSearch
       ? <div className="Editor-suggestionsSearch u-sPB-1-4">
-          <SuggestionSearchInput
-            ref={ref => this.searchInput = ref}
-            text={this.props.search.input.text}
-            loading={this.props.search.loading}
-            hasSearch={this.props.search.searchStrings.length !== 0}
-            resultCount={this.props.search.suggestions.length}
-            clearSearch={this.props.search.clear}
-            onTextChange={this.props.search.changeText}/>
-        </div>
+        <SuggestionSearchInput
+          ref={ref => this.searchInput = ref}
+          text={this.props.search.input.text}
+          loading={this.props.search.loading}
+          hasSearch={this.props.search.searchStrings.length !== 0}
+          resultCount={this.props.search.suggestions.length}
+          clearSearch={this.props.search.clear}
+          onTextChange={this.props.search.changeText}/>
+      </div>
       : undefined
 
     return (
