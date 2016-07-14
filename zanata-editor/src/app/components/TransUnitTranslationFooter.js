@@ -177,8 +177,7 @@ const TransUnitTranslationFooter = React.createClass({
             isOpen={dropdownIsOpen}
             actionButton={actionButton}
             toggleButton={dropdownToggleButton}
-            content={otherActionButtonList}>
-          </SplitDropdown>
+            content={otherActionButtonList} />
         </div>
       </div>
     )
