@@ -16,9 +16,6 @@ rules:
   # other changes have been reviewed.
 
   # FIXME enable rule and fix code style
-  react/jsx-space-before-closing: [0]
-
-  # FIXME enable rule and fix code style
   react/jsx-boolean-value: [0]
 
   # FIXME enable rule and fix code style

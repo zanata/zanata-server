@@ -63,7 +63,7 @@ const SuggestionsHeader = React.createClass({
           hasSearch={this.props.search.searchStrings.length !== 0}
           resultCount={this.props.search.suggestions.length}
           clearSearch={this.props.search.clear}
-          onTextChange={this.props.search.changeText}/>
+          onTextChange={this.props.search.changeText} />
       </div>
       : undefined
 
@@ -71,7 +71,7 @@ const SuggestionsHeader = React.createClass({
       <nav className="Editor-suggestionsHeader u-bgHighest u-sPH-3-4">
         <h2 className="Heading--panel u-sPV-1-4 u-floatLeft u-sizeHeight-1_1-2">
           <Icon name="suggestions"
-            className="Icon--sm u-textMuted"/>
+            className="Icon--sm u-textMuted" />
             Suggestions
         </h2>
         <div className="u-floatRight">
@@ -90,7 +90,7 @@ const SuggestionsHeader = React.createClass({
                 id="difference-toggle"
                 label="Difference"
                 isChecked={this.props.showDiff}
-                onChange={this.props.onDiffChange}/>
+                onChange={this.props.onDiffChange} />
             </li>
             <li className="u-sM-1-8">
 
@@ -99,7 +99,7 @@ const SuggestionsHeader = React.createClass({
                 title="Search suggestions"
                 onClick={this.props.search.toggle}
                 active={showSearch}
-                disabled={!this.props.phraseSelected}/>
+                disabled={!this.props.phraseSelected} />
             </li>
             <li>
               <IconButton

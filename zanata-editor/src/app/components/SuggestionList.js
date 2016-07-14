@@ -38,7 +38,7 @@ const SuggestionList = React.createClass({
       }
       return <Suggestion key={index}
         suggestion={suggestionWithCopy}
-        {...sharedProps}/>
+        {...sharedProps} />
     })
 
     return (

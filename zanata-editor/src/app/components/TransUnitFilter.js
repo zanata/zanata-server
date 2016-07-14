@@ -74,7 +74,7 @@ const TransUnitFilter = React.createClass({
             onChange={resetFilter}
             title={gettextCatalog.getString('Total Phrases')}
             count={this.props.counts.total}
-            withDot={false}/>
+            withDot={false} />
         </li>
         <li className="u-ltemd-hidden u-sMV-1-4">
           <FilterToggle
@@ -83,7 +83,7 @@ const TransUnitFilter = React.createClass({
             isChecked={this.props.filter.approved}
             onChange={onFilterChange.bind(undefined, STATUS_APPROVED)}
             title={gettextCatalog.getString('Approved')}
-            count={this.props.counts.approved}/>
+            count={this.props.counts.approved} />
         </li>
         <li className="u-ltemd-hidden u-sMV-1-4">
           <FilterToggle
@@ -92,7 +92,7 @@ const TransUnitFilter = React.createClass({
             isChecked={this.props.filter.translated}
             onChange={onFilterChange.bind(undefined, STATUS_TRANSLATED)}
             title={gettextCatalog.getString('Translated')}
-            count={this.props.counts.translated}/>
+            count={this.props.counts.translated} />
         </li>
         <li className="u-ltemd-hidden u-sMV-1-4">
           <FilterToggle
@@ -101,7 +101,7 @@ const TransUnitFilter = React.createClass({
             isChecked={this.props.filter.needswork}
             onChange={onFilterChange.bind(undefined, STATUS_NEEDS_WORK)}
             title={gettextCatalog.getString('Needs Work')}
-            count={this.props.counts.needswork}/>
+            count={this.props.counts.needswork} />
         </li>
         <li className="u-ltemd-hidden u-sMV-1-4">
           <FilterToggle
@@ -110,7 +110,7 @@ const TransUnitFilter = React.createClass({
             isChecked={this.props.filter.untranslated}
             onChange={onFilterChange.bind(undefined, STATUS_UNTRANSLATED)}
             title={gettextCatalog.getString('Untranslated')}
-            count={this.props.counts.untranslated}/>
+            count={this.props.counts.untranslated} />
         </li>
   {/* A couple of parts of the Angular template that were not being used yet
         <li ng-show="appCtrl.PRODUCTION" class="u-sML-1-4">

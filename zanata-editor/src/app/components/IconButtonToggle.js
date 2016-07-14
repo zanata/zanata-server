@@ -35,7 +35,7 @@ const IconButtonToggle = React.createClass({
       <IconButton
         {...this.props}
         iconClass={this.props.className}
-        buttonClass={buttonClass}/>
+        buttonClass={buttonClass} />
     )
   }
 })

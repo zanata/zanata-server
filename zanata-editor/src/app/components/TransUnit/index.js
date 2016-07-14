@@ -97,10 +97,10 @@ const TransUnit = React.createClass({
       <div className={className}
         onClick={this.props.selectPhrase.bind(undefined,
                       this.props.phrase.id)}>
-        <TransUnitStatus phrase={this.props.phrase}/>
-        <TransUnitSourcePanel {...phraseSourcePanelProps}/>
+        <TransUnitStatus phrase={this.props.phrase} />
+        <TransUnitSourcePanel {...phraseSourcePanelProps} />
         <TransUnitTranslationPanel {...phraseTranslationPanelProps}
-          saveDropdownKey={this.props.phrase.id}/>
+          saveDropdownKey={this.props.phrase.id} />
       </div>
     )
   }

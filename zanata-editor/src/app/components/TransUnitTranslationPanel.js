@@ -87,7 +87,7 @@ const TransUnitTranslationPanel = React.createClass({
         'translationLocale',
         'undoEdit'
       ])
-      header = <TransUnitTranslationHeader {...headerProps}/>
+      header = <TransUnitTranslationHeader {...headerProps} />
 
       const footerProps = pick(this.props, [
         'openDropdown',
@@ -101,7 +101,7 @@ const TransUnitTranslationPanel = React.createClass({
         'toggleDropdown',
         'toggleSuggestionPanel'
       ])
-      footer = <TransUnitTranslationFooter {...footerProps}/>
+      footer = <TransUnitTranslationFooter {...footerProps} />
     }
 
     const { openDropdown, saveAsMode, saveDropdownKey } = this.props
@@ -115,7 +115,7 @@ const TransUnitTranslationPanel = React.createClass({
 
     if (isLoading) {
       translations = <span className="u-textMeta">
-        <Icon name="loader"/>
+        <Icon name="loader" />
       </span>
     } else {
       const newTranslations = phrase.newTranslations
@@ -160,7 +160,7 @@ const TransUnitTranslationPanel = React.createClass({
                 value={translation}
                 placeholder="Enter a translation…"
                 onFocus={setFocusedPlural}
-                onChange={onChange}/>
+                onChange={onChange} />
             </div>
           )
         })

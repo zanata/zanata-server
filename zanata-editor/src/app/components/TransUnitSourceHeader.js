@@ -32,7 +32,7 @@ const TransUnitSourceHeader = React.createClass({
           title={'Copy ' + this.props.sourceLocale.name +
                  ' (' + this.props.sourceLocale.id + ')'}
           onClick={this.props.copyFromSource.bind(undefined, 0)}
-          buttonClass={buttonClass}/>
+          buttonClass={buttonClass} />
       </li>
       )
 
@@ -44,13 +44,13 @@ const TransUnitSourceHeader = React.createClass({
           icon="cross"
           title="Cancel edit"
           onClick={this.props.cancelEdit}
-          buttonClass={buttonClass}/>
+          buttonClass={buttonClass} />
       </li>
       )
 
     return (
       <div className="TransUnit-panelHeader TransUnit-panelHeader--source">
-        <TransUnitLocaleHeading {...this.props.sourceLocale}/>
+        <TransUnitLocaleHeading {...this.props.sourceLocale} />
         <ul className="u-floatRight u-listHorizontal">
           {/* <li ng-show="appCtrl.PRODUCTION">
             <button class="Link Link--neutral u-sizeHeight-1_1-2

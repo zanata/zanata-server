@@ -62,7 +62,7 @@ const LanguagesDropdown = React.createClass({
           <button className="Link--invert">
             {localeName}
             <Icon name="chevron-down"
-              className="Icon--sm Dropdown-toggleIcon u-sML-1-8"/>
+              className="Icon--sm Dropdown-toggleIcon u-sML-1-8" />
           </button>
         </Dropdown.Button>
         <Dropdown.Content>

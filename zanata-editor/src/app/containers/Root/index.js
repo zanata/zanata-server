@@ -71,16 +71,16 @@ class Root extends Component {
     return (
       <ParamPropDispatcher {...this.props}>
         <KeyShortcutDispatcher className="Editor is-suggestions-active">
-          <EditorHeader/>
+          <EditorHeader />
           <SplitPane ref="suggestionResizer"
             split="horizontal"
             defaultSize={pixelHeight}
             primary="second"
             onDragFinished={this.resizeFinished}>
-            <MainContent/>
+            <MainContent />
             {this.props.showSuggestion && <SuggestionsPanel />}
           </SplitPane>
-          <KeyShortcutCheatSheet/>
+          <KeyShortcutCheatSheet />
         </KeyShortcutDispatcher>
       </ParamPropDispatcher>
     )

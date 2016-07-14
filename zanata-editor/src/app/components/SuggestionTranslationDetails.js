@@ -52,14 +52,14 @@ const SuggestionTranslationDetails = React.createClass({
           <SuggestionUpdateMessage
             matchType={matchType}
             user={user}
-            lastChanged={lastChanged}/>
+            lastChanged={lastChanged} />
         </div>
         <div className="u-floatRight u-sm-floatNone">
           <ul className="u-listInline u-sizeLineHeight-1">
             <li>
               <SuggestionMatchPercent
                 matchType={matchType}
-                percent={this.props.suggestion.similarityPercent}/>
+                percent={this.props.suggestion.similarityPercent} />
             </li>
             <li>
               <Button

@@ -29,7 +29,7 @@ const IconButton = React.createClass({
         <Icon
           name={this.props.icon}
           title={this.props.title}
-          className={iconClass}/>
+          className={iconClass} />
       </Button>
     )
   }

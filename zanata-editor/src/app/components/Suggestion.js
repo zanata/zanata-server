@@ -67,10 +67,10 @@ const Suggestion = React.createClass({
     return (
       <div
         className={className}>
-        <div className="TransUnit-status"/>
-        <SuggestionSources {...props}/>
+        <div className="TransUnit-status" />
+        <SuggestionSources {...props} />
         <SuggestionTranslations
-          suggestion={suggestion}/>
+          suggestion={suggestion} />
       </div>
     )
   }

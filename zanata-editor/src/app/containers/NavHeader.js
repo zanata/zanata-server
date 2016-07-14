@@ -90,16 +90,16 @@ const NavHeader = React.createClass({
       <nav role="navigation"
         className="Editor-mainNav u-posRelative u-textCenter">
         <div className="u-posAbsoluteLeft">
-          <ProjectVersionLink {...ctx.projectVersion}/>
+          <ProjectVersionLink {...ctx.projectVersion} />
           <Icon name="chevron-right"
             className="Icon--sm u-sMH-1-4 u-textInvert
-                        u-textMuted u-sm-hidden"/>
+                        u-textMuted u-sm-hidden" />
           <ul className="u-listInline u-inlineBlock">
             <li>
-              <DocsDropdown {...docsDropdownProps}/>
+              <DocsDropdown {...docsDropdownProps} />
             </li>
             <li>
-              <LanguagesDropdown {...langsDropdownProps}/>
+              <LanguagesDropdown {...langsDropdownProps} />
             </li>
           </ul>
         </div>
@@ -124,7 +124,7 @@ const NavHeader = React.createClass({
           </li>
           */}
           <li>
-            <DashboardLink {...this.props.data.user}/>
+            <DashboardLink {...this.props.data.user} />
           </li>
         </ul>
       </nav>
