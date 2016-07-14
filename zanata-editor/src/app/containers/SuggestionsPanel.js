@@ -4,13 +4,13 @@ import SuggestionsHeader from './SuggestionsHeader'
 import SuggestionsBody from './SuggestionsBody'
 import { pick } from 'lodash'
 import { connect } from 'react-redux'
-import { toggleSuggestions } from '../actions/suggestions'
-import { copySuggestionN } from '../actions/suggestions'
 import {
+  copySuggestionN,
   clearSearch,
   changeSearchText,
   diffSettingChanged,
-  toggleSearchType
+  toggleSearchType,
+  toggleSuggestions
 } from '../actions/suggestions'
 
 const DO_NOT_RENDER = null
