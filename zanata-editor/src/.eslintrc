@@ -33,6 +33,3 @@ rules:
 
   # FIXME enable rule and fix code style
   no-duplicate-imports: [0]
-
-  # FIXME enable rule and fix code style
-  react/no-unknown-property: [0]
