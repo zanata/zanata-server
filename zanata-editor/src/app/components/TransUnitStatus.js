@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import Icon from './Icon'
 import cx from 'classnames'
 
 /**
