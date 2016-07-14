@@ -68,7 +68,7 @@ export function changeUiLocale (locale) {
 export const FETCHING = 'FETCHING'
 
 const decodeDocId = (docId) => {
-  return docId ? docId.replace(/\,/g, '/') : docId
+  return docId ? docId.replace(/,/g, '/') : docId
 }
 
 const hasCaseInsensitiveMatchingProp = (list, prop, matchedValue) => {
