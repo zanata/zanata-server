@@ -111,7 +111,7 @@ const SuggestionSearchInput = React.createClass({
         <IconButton icon="cross"
           title="Clear search"
           iconClass="Icon--xsm"
-          onClick={this.clearSearch}/>
+          onClick={this.clearSearch} />
       </span>
     )
   },
@@ -124,7 +124,7 @@ const SuggestionSearchInput = React.createClass({
           onClick={this.focusInput}>
           <Icon name="search"
             title="Search suggestions"
-            className="Icon--xsm"/>
+            className="Icon--xsm" />
         </span>
         <input ref="input"
           type="search"
@@ -132,7 +132,7 @@ const SuggestionSearchInput = React.createClass({
           maxLength="1000"
           value={this.props.text}
           onChange={this.props.onTextChange}
-          className="InputGroup-input u-sizeLineHeight-1_1-4"/>
+          className="InputGroup-input u-sizeLineHeight-1_1-4" />
         {this.resultsElement()}
         {this.clearButtonElement()}
       </div>

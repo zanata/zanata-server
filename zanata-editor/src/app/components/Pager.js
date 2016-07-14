@@ -10,7 +10,7 @@ const PagerButton = React.createClass({
     const icon =
       <Icon name={this.props.icon}
         title={this.props.title}
-        className="u-sizeWidth-1"/>
+        className="u-sizeWidth-1" />
     return (
       <li>
         {this.props.disabled
@@ -90,15 +90,15 @@ const Pager = React.createClass({
 
     return (
       <ul className="u-listHorizontal u-textCenter">
-        <PagerButton {...buttons.first}/>
-        <PagerButton {...buttons.prev}/>
+        <PagerButton {...buttons.first} />
+        <PagerButton {...buttons.prev} />
         <li className="u-sizeHeight-1 u-sPH-1-4">
           <span className="u-textNeutral">
             {pageXofY}
           </span>
         </li>
-        <PagerButton {...buttons.next}/>
-        <PagerButton {...buttons.last}/>
+        <PagerButton {...buttons.next} />
+        <PagerButton {...buttons.last} />
       </ul>
     )
   }

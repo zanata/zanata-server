@@ -33,7 +33,7 @@ const Icon = React.createClass({
    * Render an animated loader
    */
   loaderIcon: function () {
-    const dot = <span className="Icon--loader-dot"/>
+    const dot = <span className="Icon--loader-dot" />
     return (
       <span className="Icon-item"
         title={this.props.title}>

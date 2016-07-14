@@ -55,7 +55,7 @@ const DocsDropdown = React.createClass({
           <button className="Link--invert">
             {selectedDoc}
             <Icon name="chevron-down"
-              className="Icon--sm Dropdown-toggleIcon u-sML-1-8"/>
+              className="Icon--sm Dropdown-toggleIcon u-sML-1-8" />
           </button>
         </Dropdown.Button>
         <Dropdown.Content>

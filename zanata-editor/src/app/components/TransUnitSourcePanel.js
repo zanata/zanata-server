@@ -23,14 +23,14 @@ const TransUnitSourcePanel = React.createClass({
     const isPlural = this.props.phrase.plural
 
     const header = this.props.selected
-      ? <TransUnitSourceHeader {...this.props}/>
+      ? <TransUnitSourceHeader {...this.props} />
       : undefined
 
     const isLoading = !this.props.phrase.sources
 
     const sources = isLoading
       ? <span className="u-textMeta">
-        <Icon name="loader"/>
+        <Icon name="loader" />
       </span>
       : this.props.phrase.sources.map(
         (source, index) => {
@@ -50,7 +50,7 @@ const TransUnitSourcePanel = React.createClass({
                     ' (' + this.props.sourceLocale.id + ')'}
                   onClick={copySource}
                   buttonClass="u-floatRight Link Link--neutral u-sizeHeight-1
-                    u-sizeWidth-1 u-textCenter"/>
+                    u-sizeWidth-1 u-textCenter" />
               </li>
             </ul>
             : undefined

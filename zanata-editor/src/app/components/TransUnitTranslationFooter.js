@@ -94,7 +94,7 @@ const TransUnitTranslationFooter = React.createClass({
             className={iconClasses}
             title="Suggestions available"
             onClick={toggleSuggestionPanel}>
-            <Icon name="suggestions"/>
+            <Icon name="suggestions" />
             <span className="u-textMini">
               {suggestionCount}
             </span>
@@ -140,7 +140,7 @@ const TransUnitTranslationFooter = React.createClass({
         title="Save as…">
         <Icon name="chevron-down"
           title="Save as…"
-          className="Icon--sm Dropdown-toggleIcon"/>
+          className="Icon--sm Dropdown-toggleIcon" />
       </Button>
       : undefined
 

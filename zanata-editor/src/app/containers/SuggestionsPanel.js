@@ -52,8 +52,8 @@ const SuggestionsPanel = React.createClass({
       <aside
         id="editor-suggestions"
         className={className}>
-        <SuggestionsHeader {...headerProps}/>
-        <SuggestionsBody {...bodyProps}/>
+        <SuggestionsHeader {...headerProps} />
+        <SuggestionsBody {...bodyProps} />
       </aside>
     )
   }

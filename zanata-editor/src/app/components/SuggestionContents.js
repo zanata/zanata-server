@@ -49,7 +49,7 @@ const SuggestionContents = React.createClass({
       ? <TextDiff
         className={className}
         text1={index >= compareTo.length ? '' : compareTo[index]}
-        text2={content}/>
+        text2={content} />
       : <div className={className}>
           {content}
       </div>
