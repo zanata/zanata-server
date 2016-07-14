@@ -44,7 +44,7 @@ const Dropdown = React.createClass({
         return (
           <div ref={ref => this.buttonDiv = ref}
             className="Dropdown-toggle"
-            aria-haspopup={true}
+            aria-haspopup
             aria-expanded={this.props.isOpen}
             {...onClick}>
             {child}
