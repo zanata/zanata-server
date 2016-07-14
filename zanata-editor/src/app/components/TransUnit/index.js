@@ -95,7 +95,7 @@ const TransUnit = React.createClass({
 
     return (
       <div className={className}
-           onClick={this.props.selectPhrase.bind(undefined,
+        onClick={this.props.selectPhrase.bind(undefined,
                       this.props.phrase.id)}>
         <TransUnitStatus phrase={this.props.phrase}/>
         <TransUnitSourcePanel {...phraseSourcePanelProps}/>

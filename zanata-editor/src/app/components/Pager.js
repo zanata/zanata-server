@@ -9,19 +9,19 @@ const PagerButton = React.createClass({
   render: function () {
     const icon =
       <Icon name={this.props.icon}
-            title={this.props.title}
-            className="u-sizeWidth-1"/>
+        title={this.props.title}
+        className="u-sizeWidth-1"/>
     return (
       <li>
         {this.props.disabled
           ? <span className="u-textNeutral u-sizeHeight-1_1-2 u-textNoSelect"
-                title={this.props.title}>
-              {icon}
+            title={this.props.title}>
+            {icon}
           </span>
           : <a className="Link--neutral u-sizeHeight-1_1-2 u-textNoSelect"
-             title={this.props.title}
-             onClick={this.props.action}>
-              {icon}
+            title={this.props.title}
+            onClick={this.props.action}>
+            {icon}
           </a>
         }
       </li>

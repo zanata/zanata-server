@@ -26,7 +26,7 @@ const Icon = React.createClass({
                     '"/>' + titleMarkup
 
     return <svg className="Icon-item"
-             dangerouslySetInnerHTML={{__html: innerHtml}} />
+      dangerouslySetInnerHTML={{__html: innerHtml}} />
   },
 
   /**
@@ -36,7 +36,7 @@ const Icon = React.createClass({
     const dot = <span className="Icon--loader-dot"/>
     return (
       <span className="Icon-item"
-            title={this.props.title}>
+        title={this.props.title}>
         {dot}{dot}{dot}
       </span>
     )

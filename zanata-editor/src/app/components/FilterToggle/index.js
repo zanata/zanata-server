@@ -37,14 +37,14 @@ const FilterToggle = React.createClass({
     return (
       <div className={className}>
         <input className="Toggle-checkbox"
-               type="checkbox"
-               id={this.props.id}
-               checked={this.props.isChecked}
-               onChange={this.props.onChange}/>
+          type="checkbox"
+          id={this.props.id}
+          checked={this.props.isChecked}
+          onChange={this.props.onChange}/>
         <span className="Toggle-fakeCheckbox"/>
         <label className="Toggle-label"
-               htmlFor={this.props.id}
-               title={this.props.title}>
+          htmlFor={this.props.id}
+          title={this.props.title}>
           {dot}
           {this.props.count}
           <span className="u-hiddenVisually">{this.props.title}</span>

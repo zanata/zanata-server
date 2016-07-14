@@ -88,11 +88,11 @@ const NavHeader = React.createClass({
 
     return (
       <nav role="navigation"
-           className="Editor-mainNav u-posRelative u-textCenter">
+        className="Editor-mainNav u-posRelative u-textCenter">
         <div className="u-posAbsoluteLeft">
           <ProjectVersionLink {...ctx.projectVersion}/>
           <Icon name="chevron-right"
-             className="Icon--sm u-sMH-1-4 u-textInvert
+            className="Icon--sm u-sMH-1-4 u-textInvert
                         u-textMuted u-sm-hidden"/>
           <ul className="u-listInline u-inlineBlock">
             <li>
