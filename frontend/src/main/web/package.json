@@ -69,7 +69,7 @@
     "redux-logger": "2.6.1",
     "redux-thunk": "1.0.3",
     "webfontloader": "1.6.24",
-    "zanata-ui": "3.0.0"
+    "zanata-ui": "3.0.1"
   },
   "jest": {
     "scriptPreprocessor": "./node_modules/babel-jest",
