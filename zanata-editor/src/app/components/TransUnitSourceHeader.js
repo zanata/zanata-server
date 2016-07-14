@@ -26,27 +26,27 @@ const TransUnitSourceHeader = React.createClass({
     const copyButtonItem = this.props.phrase.plural
       ? undefined
       : (
-          <li>
-            <IconButton
-              icon="copy"
-              title={'Copy ' + this.props.sourceLocale.name +
-                     ' (' + this.props.sourceLocale.id + ')'}
-              onClick={this.props.copyFromSource.bind(undefined, 0)}
-              buttonClass={buttonClass}/>
-          </li>
-        )
+      <li>
+        <IconButton
+          icon="copy"
+          title={'Copy ' + this.props.sourceLocale.name +
+                 ' (' + this.props.sourceLocale.id + ')'}
+          onClick={this.props.copyFromSource.bind(undefined, 0)}
+          buttonClass={buttonClass}/>
+      </li>
+      )
 
     const closeButtonItem = hasTranslationChanged(this.props.phrase)
       ? undefined
       : (
-          <li className="u-gtemd-hidden">
-            <IconButton
-              icon="cross"
-              title="Cancel edit"
-              onClick={this.props.cancelEdit}
-              buttonClass={buttonClass}/>
-          </li>
-        )
+      <li className="u-gtemd-hidden">
+        <IconButton
+          icon="cross"
+          title="Cancel edit"
+          onClick={this.props.cancelEdit}
+          buttonClass={buttonClass}/>
+      </li>
+      )
 
     return (
       <div className="TransUnit-panelHeader TransUnit-panelHeader--source">

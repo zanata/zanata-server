@@ -52,7 +52,7 @@ const SuggestionContents = React.createClass({
           text2={content}/>
       : <div className={className}>
           {content}
-        </div>
+      </div>
   },
 
   render: function () {

@@ -113,14 +113,14 @@ const TransUnitTranslationFooter = React.createClass({
     const actionButtonKeyShortcut =
       saveAsMode && this.statusShortcutKeys[selectedButtonStatus]
     const actionButton = (
-        <Button
-          className={cx('Button u-sizeHeight-1_1-4 u-textCapitalize',
-                        this.buttonClassByStatus[selectedButtonStatus])}
-          disabled={isSaving || !translationHasChanged}
-          title={selectedButtonTitle}
-          onClick={saveCallback}>
-          {selectedButtonTitle}{actionButtonKeyShortcut}
-        </Button>
+      <Button
+        className={cx('Button u-sizeHeight-1_1-4 u-textCapitalize',
+                      this.buttonClassByStatus[selectedButtonStatus])}
+        disabled={isSaving || !translationHasChanged}
+        title={selectedButtonTitle}
+        onClick={saveCallback}>
+        {selectedButtonTitle}{actionButtonKeyShortcut}
+      </Button>
     )
 
     const otherStatuses = nonDefaultValidSaveStatuses(phrase)
@@ -138,10 +138,10 @@ const TransUnitTranslationFooter = React.createClass({
                         'Dropdown-toggle',
                         this.buttonClassByStatus[selectedButtonStatus])}
           title="Save as…">
-          <Icon name="chevron-down"
-                title="Save as…"
-                className="Icon--sm Dropdown-toggleIcon"/>
-        </Button>
+        <Icon name="chevron-down"
+              title="Save as…"
+              className="Icon--sm Dropdown-toggleIcon"/>
+      </Button>
       : undefined
 
     const otherActionButtonList = (
