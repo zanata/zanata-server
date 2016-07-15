@@ -17,6 +17,3 @@ rules:
 
   # FIXME enable rule and fix code style
   react/prop-types: [0]
-
-  # FIXME enable rule and fix code style
-  no-return-assign: [0]
