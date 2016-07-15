@@ -22,6 +22,9 @@ const SEARCH_TYPE_TEXT = 'text'
  */
 const SuggestionsPanel = React.createClass({
   propTypes: {
+    searchToggle: PropTypes.func.isRequired,
+    clearSearch: PropTypes.func.isRequired,
+    changeSearchText: PropTypes.func.isRequired,
     // likely want to move this switching to a higher level
     showPanel: PropTypes.bool.isRequired,
     searchType: PropTypes.oneOf(

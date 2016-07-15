@@ -10,10 +10,3 @@ rules:
     - 2              # Error to enforce compliance.
     - prefer-double  # Use double quotes unless the string contains a literal
                      # double-quote character.
-
-  # FIXME TEMPORARILY DISABLED RULES SO THAT ALL THE LINTING CHANGES CAN BE DONE TOGETHER
-  # These rules should all be turned on and the linting errors fixed after the
-  # other changes have been reviewed.
-
-  # FIXME enable rule and fix code style
-  react/prop-types: [0]

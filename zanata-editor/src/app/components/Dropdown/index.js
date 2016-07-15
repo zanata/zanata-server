@@ -93,6 +93,9 @@ Dropdown.Button = React.createClass({
 })
 
 Dropdown.Content = React.createClass({
+  propTypes: {
+    children: PropTypes.node.isRequired
+  },
   render: function () {
     return (
       <div className="Dropdown-content Dropdown-content--bordered">

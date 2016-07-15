@@ -13,7 +13,23 @@ const KeyShortcutDispatcher = React.createClass({
   combokeys: undefined,
 
   propTypes: {
-    className: PropTypes.string
+    className: PropTypes.string,
+    cancelSaveAs: PropTypes.func.isRequired,
+    shortcutInfoList: PropTypes.arrayOf(PropTypes.shape({
+      keyConfig: PropTypes.shape({
+        sequenceKeys: PropTypes.arrayOf(PropTypes.shape({
+          // Note: these are nested ShortcutInfos, but specifying infinite
+          //       recursion with PropTypes is too much bother (i.e. I don't
+          //       think it is possible). - damason
+          keyConfig: PropTypes.object,
+          handler: PropTypes.func.isRequired
+        })),
+        keys: PropTypes.arrayOf(PropTypes.string).isRequired,
+        eventType: PropTypes.string
+      }),
+      handler: PropTypes.func.isRequired
+    })),
+    children: PropTypes.node
   },
 
   /**

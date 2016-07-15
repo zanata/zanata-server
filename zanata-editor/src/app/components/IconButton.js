@@ -13,7 +13,9 @@ const IconButton = React.createClass({
     title: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
+    // className to apply to the icon only
     iconClass: PropTypes.string,
+    // className to apply to the entire button
     buttonClass: PropTypes.string
   },
 

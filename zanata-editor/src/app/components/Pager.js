@@ -6,6 +6,17 @@ import React, { PropTypes } from 'react'
  */
 
 const PagerButton = React.createClass({
+  propTypes: {
+    // name of the icon type to use
+    icon: PropTypes.string.isRequired,
+    // text to display on mouseover
+    title: PropTypes.string.isRequired,
+    // when true, appears faded and action is not bound
+    disabled: PropTypes.bool.isRequired,
+    // action to perform on click/tap
+    action: PropTypes.func.isRequired
+  },
+
   render: function () {
     const icon =
       <Icon name={this.props.icon}

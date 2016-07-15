@@ -7,6 +7,7 @@ import SuggestionList from '../components/SuggestionList'
  */
 const SuggestionsBody = React.createClass({
   propTypes: {
+    copySuggestion: PropTypes.func.isRequired,
     searchType: PropTypes.oneOf(['phrase', 'text']).isRequired,
     search: PropTypes.shape({
       searchStrings: PropTypes.arrayOf(PropTypes.string),
