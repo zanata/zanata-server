@@ -25,7 +25,9 @@ const SuggestionsHeader = React.createClass({
       changeText: PropTypes.func.isRequired,
       input: PropTypes.shape({
         text: PropTypes.string.isRequired
-      }).isRequired
+      }).isRequired,
+      searchStrings: PropTypes.arrayOf(PropTypes.string).isRequired,
+      suggestions: PropTypes.array.isRequired
     }).isRequired
   },
 

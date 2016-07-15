@@ -11,6 +11,11 @@ import { pick } from 'lodash'
 const TransUnitTranslationPanel = React.createClass({
 
   propTypes: {
+    // the key of the currently open dropdown (may be undefined if none is open)
+    openDropdown: PropTypes.any,
+    // the key for the save dropdown for this translation panel. Can be compared
+    // with openDropdown to see whether this dropdown is open.
+    saveDropdownKey: PropTypes.any.isRequired,
     selected: PropTypes.bool.isRequired,
     // FIXME use PropTypes.shape and include all used properties
     phrase: PropTypes.object.isRequired,
@@ -160,7 +165,7 @@ const TransUnitTranslationPanel = React.createClass({
 })
 
 const TranslationItem = React.createClass({
-  PropTypes: {
+  propTypes: {
     dropdownIsOpen: PropTypes.bool.isRequired,
     index: PropTypes.number.isRequired,
     isPlural: PropTypes.bool.isRequired,
@@ -175,7 +180,7 @@ const TranslationItem = React.createClass({
      */
     setTextArea: PropTypes.func.isRequired,
     textChanged: PropTypes.func.isRequired,
-    translation: PropTypes.string.isRequired
+    translation: PropTypes.string
   },
 
   setTextArea: function (ref) {

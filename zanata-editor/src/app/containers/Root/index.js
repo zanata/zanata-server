@@ -89,7 +89,10 @@ class Root extends Component {
 
 Root.propTypes = {
   percentHeight: PropTypes.number.isRequired,
-  showSuggestion: PropTypes.bool
+  showSuggestion: PropTypes.bool,
+  requestUiLocales: PropTypes.func.isRequired,
+  requestHeaderInfo: PropTypes.func.isRequired,
+  saveSuggestionPanelHeight: PropTypes.func.isRequired
 }
 
 function mapStateToProps (state, ownProps) {

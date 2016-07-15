@@ -31,13 +31,14 @@ const TransUnit = React.createClass({
     translationLocale: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired
-    }).isRequired
+    }).isRequired,
     // savingStatusId: PropTypes.oneOf([
     //   'untranslated',
     //   'needswork',
     //   'translated',
     //   'approved'
     // ])
+    selected: PropTypes.bool.isRequired
   },
 
   getInitialState: () => {

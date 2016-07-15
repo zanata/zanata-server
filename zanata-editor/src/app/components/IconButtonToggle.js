@@ -17,7 +17,10 @@ const IconButtonToggle = React.createClass({
     onClick: PropTypes.func.isRequired,
     active: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
-    className: PropTypes.string
+    // className to apply to the icon only
+    className: PropTypes.string,
+    // className to apply to the entire button
+    buttonClass: PropTypes.string
   },
 
   getDefaultProps: () => {

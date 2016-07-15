@@ -8,10 +8,11 @@ import SuggestionTranslations from './SuggestionTranslations'
 const Suggestion = React.createClass({
 
   propTypes: {
-    // true when the translation has just been copied
+    copySuggestion: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
     suggestion: PropTypes.shape({
+      // true when the translation has just been copied
       copying: PropTypes.bool.isRequired,
-      copySuggestion: PropTypes.func.isRequired,
       matchDetails: PropTypes.arrayOf(PropTypes.shape({
         type: PropTypes.oneOf(
           ['IMPORTED_TM', 'LOCAL_PROJECT']).isRequired,
@@ -52,6 +53,10 @@ const Suggestion = React.createClass({
     approved: 'TransUnit--highlight'
   },
 
+  copySuggestion () {
+    this.props.copySuggestion(this.props.index)
+  },
+
   render: function () {
     const matchType = this.matchType(this.props.suggestion)
     const className = 'TransUnit TransUnit--suggestion ' +
@@ -70,6 +75,7 @@ const Suggestion = React.createClass({
         <div className="TransUnit-status" />
         <SuggestionSources {...props} />
         <SuggestionTranslations
+          copySuggestion={this.copySuggestion}
           suggestion={suggestion} />
       </div>
     )

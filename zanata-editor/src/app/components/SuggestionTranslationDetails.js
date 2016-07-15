@@ -8,9 +8,9 @@ import SuggestionUpdateMessage from './SuggestionUpdateMessage'
  */
 const SuggestionTranslationDetails = React.createClass({
   propTypes: {
+    copySuggestion: PropTypes.func.isRequired,
     suggestion: PropTypes.shape({
       copying: PropTypes.bool.isRequired,
-      copySuggestion: PropTypes.func.isRequired,
       matchType: PropTypes.string.isRequired,
       matchDetails: PropTypes.arrayOf(PropTypes.shape({
         type: PropTypes.string.isRequired,
@@ -38,9 +38,9 @@ const SuggestionTranslationDetails = React.createClass({
   },
 
   render: function () {
-    const suggestion = this.props.suggestion
-    const label = suggestion.copying ? 'Copied' : 'Copy Translation'
-    const matchType = suggestion.matchType
+    const { copySuggestion, suggestion } = this.props
+    const { copying, matchType, similarityPercent } = suggestion
+    const label = copying ? 'Copied' : 'Copy Translation'
     const user = this.user(suggestion)
     // TODO convert these to Date in the api module instead
     //      (so new date instances are not created every render)
@@ -59,14 +59,14 @@ const SuggestionTranslationDetails = React.createClass({
             <li>
               <SuggestionMatchPercent
                 matchType={matchType}
-                percent={this.props.suggestion.similarityPercent} />
+                percent={similarityPercent} />
             </li>
             <li>
               <Button
                 className="Button Button--small u-rounded Button--primary
                            u-sizeWidth-6"
-                disabled={suggestion.copying}
-                onClick={suggestion.copySuggestion}
+                disabled={copying}
+                onClick={copySuggestion}
                 title={label}>
                 {label}
               </Button>

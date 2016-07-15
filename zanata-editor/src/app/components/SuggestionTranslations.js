@@ -7,9 +7,9 @@ import SuggestionTranslationDetails from './SuggestionTranslationDetails'
  */
 const SuggestionTranslations = React.createClass({
   propTypes: {
+    copySuggestion: PropTypes.func.isRequired,
     suggestion: PropTypes.shape({
       copying: PropTypes.bool.isRequired,
-      copySuggestion: PropTypes.func.isRequired,
       matchType: PropTypes.string.isRequired,
       matchDetails: PropTypes.arrayOf(PropTypes.shape({
         type: PropTypes.string.isRequired,
