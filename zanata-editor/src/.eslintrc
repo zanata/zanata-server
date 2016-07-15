@@ -20,7 +20,3 @@ rules:
 
   # FIXME enable rule and fix code style
   no-return-assign: [0]
-
-  # FIXME enable rule and fix code style
-  # for fix advice, see https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-no-bind.md
-  react/jsx-no-bind: [0]

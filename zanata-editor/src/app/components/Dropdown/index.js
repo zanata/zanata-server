@@ -21,6 +21,10 @@ const Dropdown = React.createClass({
     }
   },
 
+  setButtonDiv: function (buttonDiv) {
+    this.buttonDiv = buttonDiv
+  },
+
   toggleDropdown: function () {
     const node = this.buttonDiv
     this.props.onToggle(node)
@@ -42,7 +46,7 @@ const Dropdown = React.createClass({
         const onClick = this.props.enabled
           ? { onClick: this.toggleDropdown } : {}
         return (
-          <div ref={ref => this.buttonDiv = ref}
+          <div ref={this.setButtonDiv}
             className="Dropdown-toggle"
             aria-haspopup
             aria-expanded={this.props.isOpen}
