@@ -86,12 +86,16 @@ const KeyShortcutDispatcher = React.createClass({
     }
   },
 
+  setShortcutContainer (ref) {
+    this.shortcutContainer = ref
+  },
+
   render: function () {
     // tabIndex is to make it focusable.
     return (
       <div tabIndex="0"
         className={this.props.className}
-        ref={(c) => this.shortcutContainer = c}>
+        ref={this.setShortcutContainer}>
         {this.props.children}
       </div>
     )

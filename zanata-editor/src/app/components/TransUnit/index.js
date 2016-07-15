@@ -53,6 +53,11 @@ const TransUnit = React.createClass({
     approved: 'TransUnit--highlight'
   },
 
+  selectPhrase () {
+    const { phrase, selectPhrase } = this.props
+    selectPhrase(phrase.id)
+  },
+
   render: function () {
     // TODO different display if isLoading (need to add or infer isLoading)
 
@@ -95,8 +100,7 @@ const TransUnit = React.createClass({
 
     return (
       <div className={className}
-        onClick={this.props.selectPhrase.bind(undefined,
-                      this.props.phrase.id)}>
+        onClick={this.selectPhrase}>
         <TransUnitStatus phrase={this.props.phrase} />
         <TransUnitSourcePanel {...phraseSourcePanelProps} />
         <TransUnitTranslationPanel {...phraseTranslationPanelProps}

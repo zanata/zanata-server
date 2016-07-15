@@ -18,6 +18,10 @@ const TransUnitSourceHeader = React.createClass({
     }).isRequired
   },
 
+  componentWillMount: function () {
+    this.copyFromSource = this.props.copyFromSource.bind(undefined, 0)
+  },
+
   render: function () {
     // TODO remove duplication of this between source and translation headers
     const buttonClass =
@@ -31,7 +35,7 @@ const TransUnitSourceHeader = React.createClass({
           icon="copy"
           title={'Copy ' + this.props.sourceLocale.name +
                  ' (' + this.props.sourceLocale.id + ')'}
-          onClick={this.props.copyFromSource.bind(undefined, 0)}
+          onClick={this.copyFromSource}
           buttonClass={buttonClass} />
       </li>
       )

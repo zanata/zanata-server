@@ -37,6 +37,10 @@ const SuggestionsHeader = React.createClass({
     }
   },
 
+  setSearchInput (ref) {
+    this.searchInput = ref
+  },
+
   /**
    * Need to access refs to focus after the clear is complete
    */
@@ -57,7 +61,7 @@ const SuggestionsHeader = React.createClass({
     const searchInput = showSearch
       ? <div className="Editor-suggestionsSearch u-sPB-1-4">
         <SuggestionSearchInput
-          ref={ref => this.searchInput = ref}
+          ref={this.setSearchInput}
           text={this.props.search.input.text}
           loading={this.props.search.loading}
           hasSearch={this.props.search.searchStrings.length !== 0}

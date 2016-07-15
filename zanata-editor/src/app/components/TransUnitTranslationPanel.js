@@ -12,6 +12,7 @@ const TransUnitTranslationPanel = React.createClass({
 
   propTypes: {
     selected: PropTypes.bool.isRequired,
+    // FIXME use PropTypes.shape and include all used properties
     phrase: PropTypes.object.isRequired,
     savePhraseWithStatus: PropTypes.func.isRequired,
     cancelEdit: PropTypes.func.isRequired,
@@ -75,10 +76,14 @@ const TransUnitTranslationPanel = React.createClass({
     }
   },
 
+  setTextArea (index, ref) {
+    this.textareas[index] = ref
+  },
+
   render: function () {
-    const { phrase, selected } = this.props
+    const { phrase, selected, selectPhrasePluralIndex } = this.props
     var header, footer
-    const isPlural = this.props.phrase.plural
+    const isPlural = phrase.plural
 
     if (selected) {
       const headerProps = pick(this.props, [
@@ -104,7 +109,11 @@ const TransUnitTranslationPanel = React.createClass({
       footer = <TransUnitTranslationFooter {...footerProps} />
     }
 
-    const { openDropdown, saveAsMode, saveDropdownKey } = this.props
+    const {
+      openDropdown,
+      saveAsMode,
+      saveDropdownKey,
+      textChanged } = this.props
     const dropdownIsOpen = openDropdown === saveDropdownKey || saveAsMode
 
     // TODO use dedicated phrase.isLoading variable when available
@@ -124,44 +133,18 @@ const TransUnitTranslationPanel = React.createClass({
 
       translations = newTranslations.map(
         (translation, index) => {
-          // TODO make this translatable
-          const headerLabel = index === 0
-           ? 'Singular Form'
-           : 'Plural Form'
-
-          const highlightHeader = selected && index === selectedPluralIndex
-          const headerClass = highlightHeader
-            ? 'u-textMini u-textPrimary'
-            : 'u-textMeta'
-
-          const itemHeader = isPlural &&
-            <div className="TransUnit-itemHeader">
-              <span className={headerClass}>
-                {headerLabel}
-              </span>
-            </div>
-
-          const onChange = this.props.textChanged
-            .bind(undefined, phrase.id, index)
-
-          const setFocusedPlural = this.props.selectPhrasePluralIndex
-            .bind(undefined, phrase.id, index)
-
           return (
-            <div className="TransUnit-item" key={index}>
-              {itemHeader}
-              {/* TODO check that this does not trim strings */}
-              {/* TODO translate "Enter a translation..." */}
-              <Textarea
-                ref={(ref) => this.textareas[index] = ref}
-                className="TransUnit-text"
-                disabled={dropdownIsOpen}
-                rows={1}
-                value={translation}
-                placeholder="Enter a translation…"
-                onFocus={setFocusedPlural}
-                onChange={onChange} />
-            </div>
+            <TranslationItem key={index}
+              dropdownIsOpen={dropdownIsOpen}
+              index={index}
+              isPlural={isPlural}
+              phrase={phrase}
+              selected={selected}
+              selectedPluralIndex={selectedPluralIndex}
+              selectPhrasePluralIndex={selectPhrasePluralIndex}
+              setTextArea={this.setTextArea}
+              textChanged={textChanged}
+              translation={translation} />
           )
         })
     }
@@ -171,6 +154,85 @@ const TransUnitTranslationPanel = React.createClass({
         {header}
         {translations}
         {footer}
+      </div>
+    )
+  }
+})
+
+const TranslationItem = React.createClass({
+  PropTypes: {
+    dropdownIsOpen: PropTypes.bool.isRequired,
+    index: PropTypes.number.isRequired,
+    isPlural: PropTypes.bool.isRequired,
+    phrase: PropTypes.shape({
+      id: PropTypes.any.isRequired
+    }).isRequired,
+    selected: PropTypes.bool.isRequired,
+    selectedPluralIndex: PropTypes.number.isRequired,
+    selectPhrasePluralIndex: PropTypes.func.isRequired,
+    /* Set a reference to the textarea component, for use with focus
+     * setTextArea(index, ref)
+     */
+    setTextArea: PropTypes.func.isRequired,
+    textChanged: PropTypes.func.isRequired,
+    translation: PropTypes.string.isRequired
+  },
+
+  setTextArea: function (ref) {
+    this.props.setTextArea(this.props.index, ref)
+  },
+
+  _onChange: function (event) {
+    const { index, phrase, textChanged } = this.props
+    textChanged(phrase.id, index, event)
+  },
+
+  setFocusedPlural: function () {
+    const { index, phrase, selectPhrasePluralIndex } = this.props
+    selectPhrasePluralIndex(phrase.id, index)
+  },
+
+  render: function () {
+    const {
+      dropdownIsOpen,
+      index,
+      isPlural,
+      selected,
+      selectedPluralIndex,
+      translation
+    } = this.props
+
+    // TODO make this translatable
+    const headerLabel = index === 0
+     ? 'Singular Form'
+     : 'Plural Form'
+
+    const highlightHeader = selected && index === selectedPluralIndex
+    const headerClass = highlightHeader
+      ? 'u-textMini u-textPrimary'
+      : 'u-textMeta'
+
+    const itemHeader = isPlural &&
+      <div className="TransUnit-itemHeader">
+        <span className={headerClass}>
+          {headerLabel}
+        </span>
+      </div>
+
+    return (
+      <div className="TransUnit-item" key={index}>
+        {itemHeader}
+        {/* TODO check that this does not trim strings */}
+        {/* TODO translate "Enter a translation..." */}
+        <Textarea
+          ref={this.setTextArea}
+          className="TransUnit-text"
+          disabled={dropdownIsOpen}
+          rows={1}
+          value={translation}
+          placeholder="Enter a translation…"
+          onFocus={this.setFocusedPlural}
+          onChange={this._onChange} />
       </div>
     )
   }
