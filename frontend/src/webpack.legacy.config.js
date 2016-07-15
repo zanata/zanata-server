@@ -8,7 +8,7 @@ var bundleDest = __dirname
  * jsf page which only display side menu
  */
 module.exports = _.merge({}, defaultConfig, {
-  entry: './src/legacy',
+  entry: './main/legacy',
   output: {
     path: bundleDest,
     filename: 'frontend.legacy.min.js'

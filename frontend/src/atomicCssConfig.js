@@ -44,7 +44,7 @@ var customVars = flatten(
 )
 
 module.exports = {
-  cssDest: './src/styles/atomic.css',
+  cssDest: './main/styles/atomic.css',
   configs: {
     breakPoints: {
       oxsm: '@media screen and (max-width: ' + pxToRem(469) + ')',
