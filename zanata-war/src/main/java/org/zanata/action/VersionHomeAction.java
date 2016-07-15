@@ -256,7 +256,8 @@ public class VersionHomeAction extends AbstractSortAction implements
             new DocumentFilter();
 
     @Getter
-    private CopyVersionHandler copyVersionHandler = new CopyVersionHandler();
+    @Inject
+    private CopyVersionHandler copyVersionHandler;
 
     @Getter
     private final AbstractListFilter<HIterationGroup> groupFilter =
@@ -325,8 +326,9 @@ public class VersionHomeAction extends AbstractSortAction implements
                 msgs.format("jsf.copyVersion.Cancelled", versionSlug));
     }
 
+    // TODO Serializable only because it's a dependent bean
     @NoArgsConstructor
-    public static class CopyVersionHandler extends CopyAction {
+    public static class CopyVersionHandler extends CopyAction implements Serializable {
 
         @Setter
         private String projectSlug;
