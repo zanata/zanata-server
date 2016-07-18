@@ -32,7 +32,7 @@ const TransUnitSourceHeader = React.createClass({
               title={'Copy ' + this.props.sourceLocale.name +
                      ' (' + this.props.sourceLocale.id + ')'}
               onClick={this.props.copyFromSource.bind(undefined, 0)}
-              buttonClass={buttonClass}/>
+              className={buttonClass}/>
           </li>
         )
 
@@ -44,7 +44,7 @@ const TransUnitSourceHeader = React.createClass({
               icon="cross"
               title="Cancel edit"
               onClick={this.props.cancelEdit}
-              buttonClass={buttonClass}/>
+              className={buttonClass}/>
           </li>
         )
 

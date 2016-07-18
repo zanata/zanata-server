@@ -27,15 +27,14 @@ const IconButtonToggle = React.createClass({
   },
 
   render: function () {
-    const buttonClass = cx(this.props.buttonClass,
+    const className = cx(this.props.className,
       'Button Button--snug u-roundish Button--invisible',
       { 'is-active': this.props.active })
 
     return (
       <IconButton
         {...this.props}
-        iconClass={this.props.className}
-        buttonClass={buttonClass}/>
+        className={className}/>
     )
   }
 })

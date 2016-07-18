@@ -1,6 +1,5 @@
-import cx from 'classnames'
 import Button from './Button'
-import Icon from './Icon'
+import { Icon } from 'zanata-ui'
 import React, { PropTypes } from 'react'
 
 /**
@@ -13,23 +12,21 @@ const IconButton = React.createClass({
     title: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
-    iconClass: PropTypes.string,
-    buttonClass: PropTypes.string
+    iconSize: PropTypes.string,
+    className: PropTypes.string
   },
 
   render: function () {
-    const iconClass = cx('Icon--sm', this.props.iconClass)
-
     return (
       <Button
-        className={this.props.buttonClass}
+        className={this.props.className}
         disabled={this.props.disabled}
         onClick={this.props.onClick}
         title={this.props.title}>
         <Icon
+          size={this.props.iconSize || '1'}
           name={this.props.icon}
-          title={this.props.title}
-          className={iconClass}/>
+          title={this.props.title} />
       </Button>
     )
   }

@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import Icon from '../Icon'
+import { Icon, Row } from 'zanata-ui'
 import React, { PropTypes } from 'react'
 
 /**
@@ -31,8 +31,7 @@ const FilterToggle = React.createClass({
 
   render: function () {
     const className = cx('Toggle u-round', this.props.className)
-    const dot = this.props.withDot
-      ? <Icon name="dot" className="Icon--xsm"/> : undefined
+    const dot = this.props.withDot && <Icon name="dot" size="n1"/>
 
     return (
       <div className={className}>
@@ -45,9 +44,11 @@ const FilterToggle = React.createClass({
         <label className="Toggle-label"
                htmlFor={this.props.id}
                title={this.props.title}>
-          {dot}
-          {this.props.count}
-          <span className="u-hiddenVisually">{this.props.title}</span>
+          <Row>
+            {dot}
+            {this.props.count}
+            <span className="u-hiddenVisually">{this.props.title}</span>
+          </Row>
         </label>
       </div>
     )

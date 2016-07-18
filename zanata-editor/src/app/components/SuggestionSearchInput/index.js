@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import Icon from '../Icon'
+import { Icon } from 'zanata-ui'
 import IconButton from '../IconButton'
 import React, { PropTypes } from 'react'
 
@@ -104,13 +104,11 @@ const SuggestionSearchInput = React.createClass({
     if (!this.props.hasSearch) {
       return undefined
     }
-    // FIXME need to not use Icon--sm style for this one
-    //       maybe use a size property with default of small
     return (
       <span className="InputGroup-addon">
         <IconButton icon="cross"
                     title="Clear search"
-                    iconClass="Icon--xsm"
+                    iconSize="n1"
                     onClick={this.clearSearch}/>
       </span>
     )
@@ -124,7 +122,7 @@ const SuggestionSearchInput = React.createClass({
               onClick={this.focusInput}>
           <Icon name="search"
                 title="Search suggestions"
-                className="Icon--xsm"/>
+                size="n1"/>
         </span>
         <input ref="input"
                type="search"
