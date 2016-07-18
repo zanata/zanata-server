@@ -61,6 +61,7 @@
     -->
     <!-- NB: When changing this, be sure to update the rpm's spec file to match -->
     <required.jvm>1.8</required.jvm>
+    <maven.compiler.source>${required.java}</maven.compiler.source>
     <!--
       Version of Java used for API compatibility checking. Should
       correspond with required.jvm.
@@ -1676,6 +1677,15 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>takari-lifecycle-plugin</artifactId>
+        <version>1.12.1</version>
+        <extensions>true</extensions>
+        <configuration>
+          <proc>proc</proc>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
