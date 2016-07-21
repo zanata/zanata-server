@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.util.Version;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -237,6 +238,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
             SearchType searchType, LocaleId srcLocale, final int maxResult)
             throws ParseException {
         String queryText;
+
         switch (searchType) {
         case RAW:
             queryText = searchText;
