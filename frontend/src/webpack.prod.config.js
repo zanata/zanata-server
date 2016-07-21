@@ -34,7 +34,7 @@ module.exports = _.merge({}, defaultConfig, {
     ]
   },
   plugins: defaultConfig.plugins.concat([
-    new ExtractTextPlugin('bundle.css'),
+    new ExtractTextPlugin('frontend.css'),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
