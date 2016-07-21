@@ -147,6 +147,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             IndexFieldLabels.CONTENT_STATE_FIELD,
             ContentState.Rejected.toString()));
 
+    private final int QUERY_MAX_LENGTH = 2048;
+
     @Override
     public TransMemoryDetails
             getTransMemoryDetail(HLocale hLocale, HTextFlow tf) {
@@ -554,6 +556,15 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         }
     }
 
+    // limit length of search query
+    private String getLimitLengthQuery(String query) {
+        if (StringUtils.isNotBlank(query) &&
+            query.length() > QUERY_MAX_LENGTH) {
+            return query.substring(0, QUERY_MAX_LENGTH);
+        }
+        return query;
+    }
+
     private List<Object[]> getSearchResult(TransMemoryQuery query,
             LocaleId sourceLocale, LocaleId targetLocale, int maxResult,
             Optional<Long> textFlowTargetId,
@@ -564,7 +575,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         switch (query.getSearchType()) {
         // 'Lucene' in the editor
         case RAW:
-            queryText = query.getQueries().get(0);
+            queryText = getLimitLengthQuery(query.getQueries().get(0));
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -572,7 +583,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         // 'Fuzzy' in the editor
         case FUZZY:
-            queryText = QueryParser.escape(query.getQueries().get(0));
+            queryText = getLimitLengthQuery(query.getQueries().get(0));
+            queryText = QueryParser.escape(queryText);
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -580,8 +592,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         // 'Phrase' in the editor
         case EXACT:
+            queryText = getLimitLengthQuery(query.getQueries().get(0));
             queryText =
-                    "\"" + QueryParser.escape(query.getQueries().get(0)) + "\"";
+                    "\"" + QueryParser.escape(queryText) + "\"";
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -591,8 +604,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         case FUZZY_PLURAL:
             multiQueryText = new String[query.getQueries().size()];
             for (int i = 0; i < query.getQueries().size(); i++) {
-                multiQueryText[i] =
-                        QueryParser.escape(query.getQueries().get(i));
+                String queryString =
+                    getLimitLengthQuery(query.getQueries().get(i));
+                multiQueryText[i] = QueryParser.escape(queryString);
                 if (StringUtils.isBlank(multiQueryText[i])) {
                     return Lists.newArrayList();
                 }
@@ -600,7 +614,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             break;
         // Used by copyTrans for 100% match with source string
         case CONTENT_HASH:
-            queryText = query.getQueries().get(0);
+            queryText = getLimitLengthQuery(query.getQueries().get(0));
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }

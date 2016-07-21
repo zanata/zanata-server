@@ -102,6 +102,8 @@ public class TransMemoryView extends Composite implements
     private final static int SIMILARITY_COL = 4;
     private final static int ORIGIN_COL = 5;
 
+    private final int QUERY_MAX_LENGTH = 2048;
+
     @Inject
     public TransMemoryView(SearchTypeRenderer searchTypeRenderer,
             final DiffColorLegendPanel diffLegendPanel) {
@@ -163,6 +165,8 @@ public class TransMemoryView extends Composite implements
 
         diffModeDiff.setText(messages.diffModeAsDiff());
         diffModeHighlight.setText(messages.diffModeAsHighlight());
+
+        tmTextBox.setMaxLength(QUERY_MAX_LENGTH);
     }
 
     @UiHandler("tmTextBox")

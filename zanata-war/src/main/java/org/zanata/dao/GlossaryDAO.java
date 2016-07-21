@@ -60,6 +60,8 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     @Inject @FullText
     private FullTextEntityManager entityManager;
 
+    private final int QUERY_MAX_LENGTH = 2048;
+
     public GlossaryDAO() {
         super(HGlossaryEntry.class);
     }
@@ -236,7 +238,13 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     public List<Object[]> getSearchResult(String searchText,
             SearchType searchType, LocaleId srcLocale, final int maxResult)
             throws ParseException {
+        if (StringUtils.isNotBlank(searchText) &&
+            searchText.length() > QUERY_MAX_LENGTH) {
+            searchText = searchText.substring(0, QUERY_MAX_LENGTH);
+        }
+
         String queryText;
+
         switch (searchType) {
         case RAW:
             queryText = searchText;
