@@ -76,4 +76,7 @@ public interface TranslationMemoryDisplay extends WidgetDisplay {
 
         void onDiffModeChanged();
     }
+
+    // limit to 16384 char
+    final int QUERY_MAX_LENGTH = 16384;
 }

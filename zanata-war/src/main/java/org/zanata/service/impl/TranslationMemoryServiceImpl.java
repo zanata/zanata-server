@@ -60,7 +60,6 @@ import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.tm.TransMemoryUnit;
-import org.zanata.model.tm.TransMemoryUnitVariant;
 import org.zanata.rest.editor.dto.suggestion.Suggestion;
 import org.zanata.rest.editor.dto.suggestion.SuggestionDetail;
 import org.zanata.rest.editor.dto.suggestion.TextFlowSuggestionDetail;
@@ -74,6 +73,7 @@ import org.zanata.webtrans.shared.model.TransMemoryQuery;
 import org.zanata.webtrans.shared.model.TransMemoryResultItem;
 import org.zanata.webtrans.shared.rpc.HasSearchType;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -124,6 +124,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 //            SysProperties.TM_BOOST_PROJITERSLUG, 1.5f);
 
     private static final double MINIMUM_SIMILARITY = 1.0;
+
+    private static final String LUCENE_KEY_WORDS = "(\\s*)(AND|OR|NOT)(\\s+)";
 
     @Inject @FullText
     private FullTextEntityManager entityManager;
@@ -192,10 +194,10 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         Collection<Object[]> matches =
                 findMatchingTranslation(targetLocaleId, sourceLocaleId, query,
-                        0, Optional.<Long>absent(), HTextFlowTarget.class);
+                        0, Optional.absent(), HTextFlowTarget.class);
 
         if (matches.isEmpty()) {
-            return Optional.<HTextFlowTarget> absent();
+            return Optional.absent();
         }
 
         return Optional.of((HTextFlowTarget) matches.iterator().next()[1]);
@@ -232,9 +234,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                         thresholdPercent));
 
         if (aboveThreshold.isEmpty()) {
-            return Optional.<TransMemoryResultItem> absent();
+            return Optional.absent();
         }
-        return Optional.of((TransMemoryResultItem) aboveThreshold.iterator()
+        return Optional.of(aboveThreshold.iterator()
                 .next());
     }
 
@@ -334,12 +336,21 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                     new ValidTargetFilterPredicate(targetLocaleId));
 
         } catch (ParseException e) {
-            if (transMemoryQuery.getSearchType() == HasSearchType.SearchType.RAW) {
-                // TODO tell the user
-                log.info("Can't parse raw query {}", transMemoryQuery);
+            if (e.getCause() instanceof BooleanQuery.TooManyClauses) {
+                log.warn(
+                    "BooleanQuery.TooManyClauses, query too long to parse '" +
+                        StringUtils
+                            .left(transMemoryQuery.getQueries().get(0), 80) +
+                        "...'");
             } else {
-                // escaping failed!
-                log.error("Can't parse query " + transMemoryQuery, e);
+                if (transMemoryQuery.getSearchType() ==
+                    HasSearchType.SearchType.RAW) {
+                    // TODO tell the user
+                    log.info("Can't parse raw query {}", transMemoryQuery);
+                } else {
+                    // escaping failed!
+                    log.error("Can't parse query " + transMemoryQuery, e);
+                }
             }
         } catch (RuntimeException e) {
             log.error("Runtime exception:" + e.getMessage());
@@ -554,6 +565,14 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         }
     }
 
+    private void validateQueryLength(String query) {
+        if (StringUtils.length(query) > QUERY_MAX_LENGTH) {
+            throw new RuntimeException(
+                "Query string exceed max length: " + QUERY_MAX_LENGTH + "='" +
+                    StringUtils.left(query, 80) + "'");
+        }
+    }
+
     private List<Object[]> getSearchResult(TransMemoryQuery query,
             LocaleId sourceLocale, LocaleId targetLocale, int maxResult,
             Optional<Long> textFlowTargetId,
@@ -565,6 +584,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         // 'Lucene' in the editor
         case RAW:
             queryText = query.getQueries().get(0);
+            validateQueryLength(queryText);
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -572,7 +592,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         // 'Fuzzy' in the editor
         case FUZZY:
-            queryText = QueryParser.escape(query.getQueries().get(0));
+            validateQueryLength(query.getQueries().get(0));
+            queryText = escape(query.getQueries().get(0));
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -580,8 +601,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
 
         // 'Phrase' in the editor
         case EXACT:
+            validateQueryLength(query.getQueries().get(0));
             queryText =
-                    "\"" + QueryParser.escape(query.getQueries().get(0)) + "\"";
+                    "\"" + escape(query.getQueries().get(0)) + "\"";
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -592,7 +614,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             multiQueryText = new String[query.getQueries().size()];
             for (int i = 0; i < query.getQueries().size(); i++) {
                 multiQueryText[i] =
-                        QueryParser.escape(query.getQueries().get(i));
+                        escape(query.getQueries().get(i));
                 if (StringUtils.isBlank(multiQueryText[i])) {
                     return Lists.newArrayList();
                 }
@@ -601,6 +623,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         // Used by copyTrans for 100% match with source string
         case CONTENT_HASH:
             queryText = query.getQueries().get(0);
+            validateQueryLength(queryText);
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -638,6 +661,11 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             logQueryResults(resultList);
         }
         return resultList;
+    }
+
+    @VisibleForTesting
+    protected static String escape(String string) {
+        return QueryParser.escape(string).replaceAll(LUCENE_KEY_WORDS, "$1\"$2\"$3");
     }
 
     private void logQueryResults(List<Object[]> resultList) {
@@ -972,11 +1000,15 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                         "Query results include null entity. You may need to re-index.");
                 return false;
             } else {
-                log.error(
-                        "Unexpected query result of type {}: {}. You may need to re-index.",
-                        entity.getClass().getName(), entity);
-                return false;
+                try {
+                    log.warn("Unexpected query result of type {}: {}. You may need to re-index.",
+                            entity.getClass().getName(), entity);
+                } catch (NullPointerException npe) {
+                    log.warn("Encountered entity with null attributes");
+                }
             }
+            return true;
+
         }
     }
 

@@ -49,6 +49,8 @@ import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
+import static org.zanata.service.TranslationMemoryService.QUERY_MAX_LENGTH;
+
 /**
  *
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -236,7 +238,14 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     public List<Object[]> getSearchResult(String searchText,
             SearchType searchType, LocaleId srcLocale, final int maxResult)
             throws ParseException {
+        if (StringUtils.length(searchText) > QUERY_MAX_LENGTH) {
+            throw new RuntimeException(
+                "Query string exceed max length: " + QUERY_MAX_LENGTH + "='" +
+                    StringUtils.left(searchText, 80) + "'");
+        }
+
         String queryText;
+
         switch (searchType) {
         case RAW:
             queryText = searchText;
