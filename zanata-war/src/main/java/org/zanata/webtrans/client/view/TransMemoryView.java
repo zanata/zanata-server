@@ -163,6 +163,8 @@ public class TransMemoryView extends Composite implements
 
         diffModeDiff.setText(messages.diffModeAsDiff());
         diffModeHighlight.setText(messages.diffModeAsHighlight());
+
+        tmTextBox.setMaxLength(QUERY_MAX_LENGTH);
     }
 
     @UiHandler("tmTextBox")
