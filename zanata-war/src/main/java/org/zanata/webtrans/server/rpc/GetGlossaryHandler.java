@@ -32,6 +32,8 @@ import org.apache.lucene.queryParser.ParseException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.lucene.search.BooleanQuery;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.GlossaryDAO;
 import org.zanata.model.HGlossaryTerm;
@@ -79,7 +81,8 @@ public class GetGlossaryHandler extends
                 abbrev);
 
         LocaleId localeID = action.getLocaleId();
-        ArrayList<GlossaryResultItem> results;
+        ArrayList<GlossaryResultItem> results =
+            new ArrayList<GlossaryResultItem>(0);
 
         try {
             List<Object[]> matches =
@@ -109,13 +112,16 @@ public class GetGlossaryHandler extends
             }
             results = new ArrayList<GlossaryResultItem>(matchesMap.values());
         } catch (ParseException e) {
-            if (searchType == SearchType.FUZZY) {
-                log.warn("Can't parse fuzzy query '" + searchText + "'");
+            if (e.getCause() instanceof BooleanQuery.TooManyClauses) {
+                log.error("BooleanQuery.TooManyClauses, query too long to parse.");
             } else {
-                // escaping failed!
-                log.error("Can't parse query '" + searchText + "'", e);
+                if (searchType == SearchType.FUZZY) {
+                    log.warn("Can't parse fuzzy query '" + searchText + "'");
+                } else {
+                    // escaping failed!
+                    log.error("Can't parse query '" + searchText + "'", e);
+                }
             }
-            results = new ArrayList<GlossaryResultItem>(0);
         }
 
         Collections.sort(results, COMPARATOR);

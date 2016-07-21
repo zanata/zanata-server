@@ -62,4 +62,7 @@ public interface TranslationMemoryService extends TranslationFinder {
     List<Suggestion> searchTransMemoryWithDetails(
             LocaleId targetLocaleId, LocaleId sourceLocaleId,
             TransMemoryQuery transMemoryQuery, Optional<Long> textFlowTargetId);
+
+    // limit to 8kb
+    final int QUERY_MAX_LENGTH = 8192;
 }

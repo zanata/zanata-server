@@ -147,7 +147,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             IndexFieldLabels.CONTENT_STATE_FIELD,
             ContentState.Rejected.toString()));
 
-    @Override
+        @Override
     public TransMemoryDetails
             getTransMemoryDetail(HLocale hLocale, HTextFlow tf) {
         HTextFlowTarget tft = tf.getTargets().get(hLocale.getId());
@@ -332,14 +332,18 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             // TODO returning a filtered collection might be overkill
             return Collections2.filter(matches,
                     new ValidTargetFilterPredicate(targetLocaleId));
-
         } catch (ParseException e) {
-            if (transMemoryQuery.getSearchType() == HasSearchType.SearchType.RAW) {
-                // TODO tell the user
-                log.info("Can't parse raw query {}", transMemoryQuery);
+            if (e.getCause() instanceof BooleanQuery.TooManyClauses) {
+                log.error("BooleanQuery.TooManyClauses, query too long to parse.");
             } else {
-                // escaping failed!
-                log.error("Can't parse query " + transMemoryQuery, e);
+                if (transMemoryQuery.getSearchType() ==
+                    HasSearchType.SearchType.RAW) {
+                    // TODO tell the user
+                    log.info("Can't parse raw query {}", transMemoryQuery);
+                } else {
+                    // escaping failed!
+                    log.error("Can't parse query " + transMemoryQuery, e);
+                }
             }
         } catch (RuntimeException e) {
             log.error("Runtime exception:" + e.getMessage());
@@ -564,24 +568,29 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         switch (query.getSearchType()) {
         // 'Lucene' in the editor
         case RAW:
-            queryText = query.getQueries().get(0);
-            if (StringUtils.isBlank(queryText)) {
-                return Lists.newArrayList();
-            }
-            break;
-
-        // 'Fuzzy' in the editor
-        case FUZZY:
-            queryText = QueryParser.escape(query.getQueries().get(0));
-            if (StringUtils.isBlank(queryText)) {
-                return Lists.newArrayList();
-            }
-            break;
-
-        // 'Phrase' in the editor
-        case EXACT:
             queryText =
-                    "\"" + QueryParser.escape(query.getQueries().get(0)) + "\"";
+                StringUtils.left(query.getQueries().get(0), QUERY_MAX_LENGTH);
+            if (StringUtils.isBlank(queryText)) {
+                return Lists.newArrayList();
+            }
+            break;
+
+            // 'Fuzzy' in the editor
+            case FUZZY:
+                queryText = StringUtils
+                    .left(query.getQueries().get(0), QUERY_MAX_LENGTH);
+                queryText = QueryParser.escape(queryText);
+                if (StringUtils.isBlank(queryText)) {
+                    return Lists.newArrayList();
+                }
+                break;
+
+            // 'Phrase' in the editor
+            case EXACT:
+                queryText = StringUtils
+                    .left(query.getQueries().get(0), QUERY_MAX_LENGTH);
+            queryText =
+                    "\"" + QueryParser.escape(queryText) + "\"";
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }
@@ -591,8 +600,10 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
         case FUZZY_PLURAL:
             multiQueryText = new String[query.getQueries().size()];
             for (int i = 0; i < query.getQueries().size(); i++) {
-                multiQueryText[i] =
-                        QueryParser.escape(query.getQueries().get(i));
+                String queryString =
+                    StringUtils
+                        .left(query.getQueries().get(i), QUERY_MAX_LENGTH);
+                multiQueryText[i] = QueryParser.escape(queryString);
                 if (StringUtils.isBlank(multiQueryText[i])) {
                     return Lists.newArrayList();
                 }
@@ -600,7 +611,8 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
             break;
         // Used by copyTrans for 100% match with source string
         case CONTENT_HASH:
-            queryText = query.getQueries().get(0);
+            queryText = StringUtils
+                .left(query.getQueries().get(0), QUERY_MAX_LENGTH);
             if (StringUtils.isBlank(queryText)) {
                 return Lists.newArrayList();
             }

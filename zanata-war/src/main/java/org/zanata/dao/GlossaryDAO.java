@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.util.Version;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -48,6 +49,8 @@ import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
+
+import static org.zanata.service.TranslationMemoryService.QUERY_MAX_LENGTH;
 
 /**
  *
@@ -236,7 +239,9 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     public List<Object[]> getSearchResult(String searchText,
             SearchType searchType, LocaleId srcLocale, final int maxResult)
             throws ParseException {
+        searchText = StringUtils.left(searchText, QUERY_MAX_LENGTH);
         String queryText;
+
         switch (searchType) {
         case RAW:
             queryText = searchText;
