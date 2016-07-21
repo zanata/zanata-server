@@ -66,6 +66,8 @@ public class GlossaryView extends Composite implements GlossaryDisplay {
     private final static int ACTION_COL = 2;
     private final static int DETAILS_COL = 3;
 
+    private final int QUERY_MAX_LENGTH = 2048;
+
     @Inject
     public GlossaryView(SearchTypeRenderer searchTypeRenderer) {
         searchType =
@@ -107,6 +109,8 @@ public class GlossaryView extends Composite implements GlossaryDisplay {
         clearButton.ensureDebugId("glossaryClearButton");
         resultTable.ensureDebugId("glossaryResultTable");
         noResultFoundLabel.ensureDebugId("glossaryNoResult");
+
+        glossaryTextBox.setMaxLength(QUERY_MAX_LENGTH);
     }
 
     @UiHandler("glossaryTextBox")
