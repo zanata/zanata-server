@@ -6,6 +6,12 @@ const dswid = window.dswh && window.dswh.windowId
   ? '?dswid=' + window.dswh.windowId
   : ''
 
+/**
+ * URL path for frontend
+ * e.g. http://localhost:8080/app/#explore
+ */
+const prefixPath = '/app/'
+
 const items = [
   {
     icon: 'zanata',
@@ -17,7 +23,7 @@ const items = [
   },
   {
     icon: 'search',
-    link: '/a/' + dswid + '#explore',
+    link: prefixPath + dswid + '#explore',
     internalLink: '/explore',
     title: 'Explore',
     auth: 'public',
@@ -50,7 +56,7 @@ const items = [
   {
     small: true,
     icon: 'user',
-    link: '/a/' + dswid + '#profile',
+    link: prefixPath + dswid + '#profile',
     internalLink: '/profile',
     title: 'Profile',
     auth: 'loggedin',
@@ -58,7 +64,7 @@ const items = [
   },
   {
     icon: 'glossary',
-    link: '/a/' + dswid + '#glossary',
+    link: prefixPath + dswid + '#glossary',
     internalLink: '/glossary',
     title: 'Glossary',
     auth: 'loggedin',
@@ -95,7 +101,7 @@ const items = [
   {
     small: true,
     icon: 'ellipsis',
-    link: '/a/more',
+    link: prefixPath + 'more',
     title: 'More',
     auth: 'public',
     id: 'nav_more'
@@ -148,7 +154,7 @@ const Nav = ({
               ? (links.context + links[item.link])
               : (links.context + item.link)
           } else {
-            // react pages, /a/index.xhtml
+            // react pages, /app/index.xhtml
             link = item.internalLink
               ? item.internalLink
               : (links[item.link]
