@@ -28,8 +28,8 @@
 
     <!-- Path within the jar to put the built artifacts.
          Note: META-INF/resources/* is served as static content, so this puts
-               the editor at http://<server>/app -->
-    <bundle.destination>${project.build.outputDirectory}/META-INF/resources/app</bundle.destination>
+               the editor at http://<server>/app/editor -->
+    <bundle.destination>${project.build.outputDirectory}/META-INF/resources/app/editor</bundle.destination>
   </properties>
 
   <dependencies>
@@ -63,10 +63,27 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <executions>
-          <!-- Will execute npm install before any other process. See exec-maven-plugin in server.pom -->
-          <!-- Inject a spritesheet into index.html based on all the icon sprite files. -->
+          <!-- editor: Run npm install -->
           <execution>
-            <id>npm run processhtml (${project.artifactId})</id>
+            <id>execute npm install for: editor</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>install</argument>
+                <argument>--cache-min</argument>
+                <argument>${npm.cache.min}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- editor: copy index.html to build directory. -->
+          <execution>
+            <id>npm run processhtml: editor</id>
             <phase>process-resources</phase>
             <goals>
               <goal>exec</goal>
@@ -81,7 +98,7 @@
             </configuration>
           </execution>
 
-          <!-- Transpile and bundle all the javascript and css. -->
+          <!-- editor: Transpile and bundle all the javascript and css. -->
           <execution>
             <id>npm run build (${project.artifactId})</id>
             <phase>compile</phase>
@@ -94,6 +111,23 @@
                 <argument>${npm.executable}</argument>
                 <argument>run</argument>
                 <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- editor: Run npm test in test phase -->
+          <execution>
+            <id>execute npm test for: editor</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <workingDirectory>${build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>test</argument>
               </arguments>
             </configuration>
           </execution>
