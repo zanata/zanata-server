@@ -19,6 +19,9 @@
          dependencies to this location then running the build. -->
     <build.directory>${project.build.directory}/src</build.directory>
 
+    <!-- Directory for frontend build -->
+    <frontend.build.directory>${build.directory}/frontend</frontend.build.directory>
+
     <!-- Path within the jar to put the built artifacts.
          Note: META-INF/resources/* is served as static content, so this serves
          the built files at the root of the website -->
@@ -57,20 +60,54 @@
         <artifactId>exec-maven-plugin</artifactId>
 
         <executions>
-          <!-- Will execute npm install before any other process. See exec-maven-plugin in server.pom -->
-          <!-- Transpile and bundle all the javascript and css. -->
+          <!-- frontend: Run npm install -->
           <execution>
-            <id>execute npm run build for: ${project.artifactId}</id>
+            <id>execute npm install for: frontend</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${frontend.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>install</argument>
+                <argument>--cache-min</argument>
+                <argument>${npm.cache.min}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- frontend: Transpile and bundle all the javascript and css -->
+          <execution>
+            <id>execute npm run build for: frontend</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <workingDirectory>${build.directory}</workingDirectory>
+              <workingDirectory>${frontend.build.directory}</workingDirectory>
               <arguments>
                 <argument>${npm.executable}</argument>
                 <argument>run</argument>
                 <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- frontend: Run npm test in test phase -->
+          <execution>
+            <id>execute npm test for: frontend</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <workingDirectory>${frontend.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>test</argument>
               </arguments>
             </configuration>
           </execution>
@@ -99,8 +136,8 @@
               <resources>
                 <resource>
                   <directory>${build.directory}</directory>
-                  <include>frontend.*.min.js</include>
-                  <include>frontend.css</include>
+                  <include>**/frontend.*.min.js</include>
+                  <include>**/frontend.css</include>
                 </resource>
               </resources>
             </configuration>

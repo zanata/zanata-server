@@ -72,13 +72,14 @@
     "zanata-ui": "3.0.3"
   },
   "jest": {
+    "scriptPreprocessor": "./node_modules/babel-jest",
     "unmockedModulePathPatterns": [
-      "./node_modules/react",
-      "./node_modules/react-dom",
-      "./node_modules/react-addons-test-utils",
-      "./node_modules/fbjs",
-      "./node_modules/lodash",
-      "./src"
+      "/node_modules",
+      "/main"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
     ]
   }
 }
