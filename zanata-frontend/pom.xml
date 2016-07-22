@@ -6,9 +6,9 @@
     <artifactId>server</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>frontend</artifactId>
-  <name>frontend</name>
-  <url>http://maven.apache.org</url>
+  <artifactId>zanata-frontend</artifactId>
+  <name>Zanata Frontend</name>
+  <url>https://github.com/zanata/zanata-server/tree/master/zanata-frontend</url>
 
   <!-- Referenced later in the document with ${tagname}. -->
   <properties>
