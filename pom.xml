@@ -649,7 +649,7 @@
 
       <dependency>
         <groupId>org.zanata</groupId>
-        <artifactId>frontend</artifactId>
+        <artifactId>zanata-frontend</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -2195,7 +2195,7 @@
         <required.maven>3.1.0</required.maven>
       </properties>
       <modules>
-        <module>frontend</module>
+        <module>zanata-frontend</module>
       </modules>
     </profile>
 

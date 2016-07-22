@@ -1427,7 +1427,7 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
-      <artifactId>frontend</artifactId>
+      <artifactId>zanata-frontend</artifactId>
     </dependency>
 
     <dependency>
