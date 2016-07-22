@@ -2,9 +2,9 @@ var webpack = require('webpack')
 var path = require('path')
 
 module.exports = {
-  entry: './main/index',
+  entry: './app/index',
   output: {
-    path: __dirname,
+    path: path.join(__dirname, 'dist'),
     filename: 'bundle.js'
   },
   module: {
@@ -19,7 +19,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        include: path.join(__dirname, 'main'),
+        include: path.join(__dirname, 'app'),
         loader: 'atomic-loader?configPath=' + __dirname +
           '/atomicCssConfig.js' +
           '!babel?presets[]=react,presets[]=stage-0,presets[]=es2015'
