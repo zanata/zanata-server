@@ -24,10 +24,12 @@ package org.zanata.database;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +61,8 @@ class ConnectionWrapper implements InvocationHandler {
     private @Nullable Throwable streamingResultSetOpened;
     private @Nullable Throwable firstExecuted;
     private boolean autoCommit = true;
-    private boolean transactionActive = false;
+    @VisibleForTesting
+    boolean transactionActive = false;
 
     public static Connection wrap(Connection conn) {
         // avoid double-wrapping:
@@ -69,6 +72,11 @@ class ConnectionWrapper implements InvocationHandler {
         }
         return ProxyUtil
                 .newProxy(conn, new ConnectionWrapper(conn));
+    }
+
+    @VisibleForTesting
+    static ConnectionWrapper getConnectionWrapper(Connection connectionProxy) {
+        return (ConnectionWrapper) getInvocationHandler(connectionProxy);
     }
 
     @Override
@@ -136,6 +144,7 @@ class ConnectionWrapper implements InvocationHandler {
      */
     public void afterStatementExecute() throws StreamingResultSetSQLException {
         if (!autoCommit) {
+            // TODO it might be a little better to do this in beforeStatementExecute
             // If we read/write the database with autoCommit off, but we
             // later forget to commit/rollback before close, we want to know
             // about it, so we track the first execute() in the transaction.

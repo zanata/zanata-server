@@ -73,8 +73,7 @@ class StatementWrapper implements InvocationHandler {
             if (result instanceof ResultSet) {
                 ResultSet resultSet = (ResultSet) result;
                 ConnectionWrapper connectionWrapper =
-                        (ConnectionWrapper) Proxy
-                                .getInvocationHandler(connectionProxy);
+                        ConnectionWrapper.getConnectionWrapper(connectionProxy);
                 ResultSet rsProxy =
                         ResultSetWrapper.wrap(resultSet, (Statement) proxy,
                                 connectionProxy, makeStreamingResultSet);
@@ -98,8 +97,7 @@ class StatementWrapper implements InvocationHandler {
 
     private void afterExecute() throws StreamingResultSetSQLException {
         ConnectionWrapper connectionWrapper =
-                (ConnectionWrapper) Proxy
-                        .getInvocationHandler(connectionProxy);
+                ConnectionWrapper.getConnectionWrapper(connectionProxy);
         connectionWrapper.afterStatementExecute();
     }
 
