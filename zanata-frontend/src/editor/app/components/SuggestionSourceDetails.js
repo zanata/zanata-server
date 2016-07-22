@@ -28,7 +28,7 @@ const SuggestionSourceDetails = React.createClass({
     const projectIcon = isTextFlow && (
       <li title={topMatch.projectId}>
         <Row>
-          <Icon name="project" size="n1"/> {topMatch.projectName}
+          <Icon name="project" size="n1" /> {topMatch.projectName}
         </Row>
       </li>
     )
@@ -36,7 +36,7 @@ const SuggestionSourceDetails = React.createClass({
     const versionIcon = isTextFlow && (
       <li>
         <Row>
-          <Icon name="version" size="n1"/> {topMatch.version}
+          <Icon name="version" size="n1" /> {topMatch.version}
         </Row>
       </li>
     )
@@ -47,7 +47,7 @@ const SuggestionSourceDetails = React.createClass({
     const documentIcon = isTextFlow && (
       <li title={documentPath + topMatch.documentName}>
         <Row>
-          <Icon name="document" size="n1"/> {topMatch.documentName}
+          <Icon name="document" size="n1" /> {topMatch.documentName}
         </Row>
       </li>
     )
@@ -55,7 +55,7 @@ const SuggestionSourceDetails = React.createClass({
     const importIcon = isTextFlow ? undefined : (
       <li>
         <Row>
-          <Icon name="import" size="n1"/> {topMatch.transMemorySlug}
+          <Icon name="import" size="n1" /> {topMatch.transMemorySlug}
         </Row>
       </li>
     )

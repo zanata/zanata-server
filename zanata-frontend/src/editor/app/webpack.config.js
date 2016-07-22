@@ -12,7 +12,7 @@ var reworkSuitConformance = require('rework-suit-conformance')
 module.exports = {
   entry: './index.js',
   output: {
-    path: join(__dirname, 'build'),
+    path: join(__dirname, 'dist'),
     filename: 'bundle.js'
   },
   module: {

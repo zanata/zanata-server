@@ -7,25 +7,45 @@
     <version>4.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>zanata-frontend</artifactId>
-  <name>Zanata Frontend</name>
+  <name>Zanata frontend</name>
+  <packaging>jar</packaging>
   <url>https://github.com/zanata/zanata-server/tree/master/zanata-frontend</url>
+
+  <!-- Should be the same as zanata-server/pom.xml -->
+  <scm>
+    <connection>scm:git:git://github.com/zanata/zanata.git</connection>
+    <developerConnection>scm:git:git@github.com:zanata/zanata.git</developerConnection>
+    <url>https://github.com/zanata/zanata</url>
+    <tag>HEAD</tag>
+  </scm>
+
 
   <!-- Referenced later in the document with ${tagname}. -->
   <properties>
     <!-- Specified to ensure build is consistent cross-platform. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Directory to run the build from. Source is copied here before installing
-         dependencies to this location then running the build. -->
-    <build.directory>${project.build.directory}/src</build.directory>
-
     <!-- Directory for frontend build -->
-    <frontend.build.directory>${build.directory}/frontend</frontend.build.directory>
+    <frontend.build.directory>${project.build.directory}/src/frontend</frontend.build.directory>
+
+    <!-- Directory for editor build -->
+    <editor.build.directory>${project.build.directory}/src/editor</editor.build.directory>
 
     <!-- Path within the jar to put the built artifacts.
          Note: META-INF/resources/* is served as static content, so this serves
          the built files at the root of the website -->
     <bundle.dest>${project.build.outputDirectory}/META-INF/resources</bundle.dest>
+
+    <!-- Path within the jar to put the built artifacts.
+        Note: META-INF/resources/* is served as static content, so this puts
+              the editor at http://<server>/app/editor -->
+    <editor.bundle.destination>${bundle.dest}/app/editor</editor.bundle.destination>
+
+    <!-- Directory that contains the actual built frontend app (index, script and styles) -->
+    <frontend.built.artifact.directory>${frontend.build.directory}/dist</frontend.built.artifact.directory>
+
+    <!-- Directory that contains the actual built editor app (index, script and styles) -->
+    <editor.built.artifact.directory>${editor.build.directory}/app/dist</editor.built.artifact.directory>
   </properties>
 
   <dependencies>
@@ -45,7 +65,7 @@
         <!-- Path from pom to the source files that will be used. -->
         <directory>src</directory>
         <!-- Location to copy source files to. -->
-        <targetPath>${build.directory}</targetPath>
+        <targetPath>${project.build.directory}/src</targetPath>
       </resource>
     </resources>
     <plugins>
@@ -62,7 +82,7 @@
         <executions>
           <!-- frontend: Run npm install -->
           <execution>
-            <id>execute npm install for: frontend</id>
+            <id>frontend: execute npm install</id>
             <phase>process-resources</phase>
             <goals>
               <goal>exec</goal>
@@ -78,9 +98,44 @@
             </configuration>
           </execution>
 
+          <!-- editor: Run npm install -->
+          <execution>
+            <id>editor: execute npm install</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${editor.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>install</argument>
+                <argument>--cache-min</argument>
+                <argument>${npm.cache.min}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- editor: copy index.html to build directory. -->
+          <execution>
+            <id>editor: npm run processhtml</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${editor.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>run</argument>
+                <argument>processhtml</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
           <!-- frontend: Transpile and bundle all the javascript and css -->
           <execution>
-            <id>execute npm run build for: frontend</id>
+            <id>frontend: execute npm run build</id>
             <phase>compile</phase>
             <goals>
               <goal>exec</goal>
@@ -95,9 +150,26 @@
             </configuration>
           </execution>
 
+          <!-- editor: Transpile and bundle all the javascript and css. -->
+          <execution>
+            <id>editor: execute npm run build</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <workingDirectory>${editor.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>run</argument>
+                <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
           <!-- frontend: Run npm test in test phase -->
           <execution>
-            <id>execute npm test for: frontend</id>
+            <id>frontend: execute npm test</id>
             <phase>test</phase>
             <goals>
               <goal>exec</goal>
@@ -105,6 +177,23 @@
             <configuration>
               <skip>${skipTests}</skip>
               <workingDirectory>${frontend.build.directory}</workingDirectory>
+              <arguments>
+                <argument>${npm.executable}</argument>
+                <argument>test</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <!-- editor: Run npm test in test phase -->
+          <execution>
+            <id>editor: execute npm test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <workingDirectory>${editor.build.directory}</workingDirectory>
               <arguments>
                 <argument>${npm.executable}</argument>
                 <argument>test</argument>
@@ -122,12 +211,13 @@
         </configuration>
       </plugin>
 
-      <!-- Copy the built bundle files to the META-INF/resources directory. -->
+      <!-- Copy bundle files to the META-INF/resources directory. -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
             <phase>prepare-package</phase>
+            <id>frontend copy-resources</id>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -135,9 +225,30 @@
               <outputDirectory>${bundle.dest}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${build.directory}</directory>
-                  <include>**/frontend.*.min.js</include>
-                  <include>**/frontend.css</include>
+                  <directory>${frontend.built.artifact.directory}</directory>
+                  <include>frontend.*.min.js</include>
+                  <include>frontend.css</include>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+
+          <execution>
+            <phase>prepare-package</phase>
+            <id>editor copy-resources</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${editor.bundle.destination}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${editor.built.artifact.directory}</directory>
+                  <include>index.html</include>
+                  <include>bundle.js</include>
+                  <include>bundle.js.map</include>
+                  <include>bundle.css</include>
+                  <include>bundle.css.map</include>
                 </resource>
               </resources>
             </configuration>

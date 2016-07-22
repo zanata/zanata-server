@@ -75,7 +75,7 @@
     "scriptPreprocessor": "./node_modules/babel-jest",
     "unmockedModulePathPatterns": [
       "/node_modules",
-      "/main"
+      "/app"
     ],
     "moduleFileExtensions": [
       "js",
