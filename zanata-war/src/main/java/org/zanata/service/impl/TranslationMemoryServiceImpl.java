@@ -79,6 +79,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import org.zanata.webtrans.shared.rpc.LuceneQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -566,9 +567,9 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
     }
 
     private void validateQueryLength(String query) {
-        if (StringUtils.length(query) > QUERY_MAX_LENGTH) {
+        if (StringUtils.length(query) > LuceneQuery.QUERY_MAX_LENGTH) {
             throw new RuntimeException(
-                "Query string exceed max length: " + QUERY_MAX_LENGTH + "='" +
+                "Query string exceed max length: " + LuceneQuery.QUERY_MAX_LENGTH + "='" +
                     StringUtils.left(query, 80) + "'");
         }
     }
@@ -1000,10 +1001,7 @@ public class TranslationMemoryServiceImpl implements TranslationMemoryService {
                         "Query results include null entity. You may need to re-index.");
                 return false;
             } else {
-                String name = entity.toString();
-                if (entity.getClass() != null) {
-                    name = entity.getClass().getName();
-                }
+                String name = entity.getClass().getName();
                 log.warn("Unexpected query result of type {}: {}. You may need to re-index.",
                     name, entity);
             }
