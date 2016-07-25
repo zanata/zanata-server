@@ -22,6 +22,18 @@
 
   <!-- Referenced later in the document with ${tagname}. -->
   <properties>
+    <!-- Node and NPM versions that will be downloaded and used for this build. -->
+    <node.version>v5.6.0</node.version>
+    <npm.version>3.6.0</npm.version>
+    <!-- Keep cached npm modules for 6 hours (21600 seconds) before re-checking for an updated one. -->
+    <npm.cache.min>21600</npm.cache.min>
+    <!--<npm.cache.min>10</npm.cache.min>-->
+    <!-- The location to download the correct version of Node and NPM to.
+        ${download.dir} comes from zanata-server/pom.xml -->
+    <node.install.directory>${download.dir}/zanata/node-${node.version}-npm-${npm.version}</node.install.directory>
+    <!-- NPM executable to use to run builds -->
+    <npm.executable>${node.install.directory}/node/node_modules/npm/bin/npm-cli.js</npm.executable>
+
     <!-- Specified to ensure build is consistent cross-platform. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -70,15 +82,42 @@
     </resources>
     <plugins>
       <plugin>
-        <!-- Installs correct version of node and npm locally. -->
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+          <workingDirectory>${node.install.directory}</workingDirectory>
+        </configuration>
+        <executions>
+          <!-- Installs correct version of node and npm locally. -->
+          <execution>
+            <id>install node and npm</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>${node.version}</nodeVersion>
+              <npmVersion>${npm.version}</npmVersion>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-
+        <version>1.4.0</version>
+        <configuration>
+          <environmentVariables>
+            <!-- Ensure that the locally installed (by frontend-maven-plugin) node
+                 and npm are at the start of PATH, so they will be used for any
+                 node/npm call. -->
+            <PATH>${node.install.directory}/node:${node.install.directory}/node/node_modules/npm/bin:${env.PATH}</PATH>
+          </environmentVariables>
+          <!-- Use the downloaded version of node to run all the commands. -->
+          <executable>${node.install.directory}/node/node</executable>
+        </configuration>
         <executions>
           <!-- frontend: Run npm install -->
           <execution>
@@ -255,7 +294,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 
