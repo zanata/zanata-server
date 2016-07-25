@@ -72,14 +72,9 @@
     "zanata-ui": "3.0.3"
   },
   "jest": {
-    "scriptPreprocessor": "./node_modules/babel-jest",
     "unmockedModulePathPatterns": [
       "/node_modules",
       "/app"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "jsx"
     ]
   }
 }
