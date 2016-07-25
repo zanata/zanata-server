@@ -11,21 +11,13 @@
   <packaging>jar</packaging>
   <url>https://github.com/zanata/zanata-server/tree/master/zanata-frontend</url>
 
-  <!-- Should be the same as zanata-server/pom.xml -->
-  <scm>
-    <connection>scm:git:git://github.com/zanata/zanata.git</connection>
-    <developerConnection>scm:git:git@github.com:zanata/zanata.git</developerConnection>
-    <url>https://github.com/zanata/zanata</url>
-    <tag>HEAD</tag>
-  </scm>
-
-
   <!-- Referenced later in the document with ${tagname}. -->
   <properties>
-    <!-- Node and NPM versions that will be downloaded and used for this build. -->
+    <!-- Node and NPM versions that will be downloaded and used for zanata-frontend. -->
     <node.version>v5.6.0</node.version>
     <npm.version>3.6.0</npm.version>
     <!-- Keep cached npm modules for 6 hours (21600 seconds) before re-checking for an updated one. -->
+    <!-- To avoid slow builds due to excessive network activity to npm -->
     <npm.cache.min>21600</npm.cache.min>
     <!--<npm.cache.min>10</npm.cache.min>-->
     <!-- The location to download the correct version of Node and NPM to.
@@ -37,18 +29,20 @@
     <!-- Specified to ensure build is consistent cross-platform. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Directory for frontend build -->
+    <!-- Directory for frontend to run the build from. Source is copied here before installing
+     dependencies to this location then running the build. -->
     <frontend.build.directory>${project.build.directory}/src/frontend</frontend.build.directory>
 
-    <!-- Directory for editor build -->
+    <!-- Directory for editor to run the build from. Source is copied here before installing
+     dependencies to this location then running the build. -->
     <editor.build.directory>${project.build.directory}/src/editor</editor.build.directory>
 
-    <!-- Path within the jar to put the built artifacts.
+    <!-- Root path within the jar to put the built artifacts.
          Note: META-INF/resources/* is served as static content, so this serves
          the built files at the root of the website -->
     <bundle.dest>${project.build.outputDirectory}/META-INF/resources</bundle.dest>
 
-    <!-- Path within the jar to put the built artifacts.
+    <!-- Editor path within the jar to put the built artifacts.
         Note: META-INF/resources/* is served as static content, so this puts
               the editor at http://<server>/app/editor -->
     <editor.bundle.destination>${bundle.dest}/app/editor</editor.bundle.destination>
@@ -81,6 +75,7 @@
       </resource>
     </resources>
     <plugins>
+      <!-- Installs correct version of node and npm locally. -->
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -89,7 +84,6 @@
           <workingDirectory>${node.install.directory}</workingDirectory>
         </configuration>
         <executions>
-          <!-- Installs correct version of node and npm locally. -->
           <execution>
             <id>install node and npm</id>
             <phase>initialize</phase>
@@ -119,7 +113,7 @@
           <executable>${node.install.directory}/node/node</executable>
         </configuration>
         <executions>
-          <!-- frontend: Run npm install -->
+          <!-- frontend: download and install npm modules -->
           <execution>
             <id>frontend: execute npm install</id>
             <phase>process-resources</phase>
@@ -137,7 +131,7 @@
             </configuration>
           </execution>
 
-          <!-- editor: Run npm install -->
+          <!-- editor: download and install npm modules -->
           <execution>
             <id>editor: execute npm install</id>
             <phase>process-resources</phase>
@@ -206,7 +200,7 @@
             </configuration>
           </execution>
 
-          <!-- frontend: Run npm test in test phase -->
+          <!-- Run javascript tests for frontend -->
           <execution>
             <id>frontend: execute npm test</id>
             <phase>test</phase>
@@ -223,7 +217,7 @@
             </configuration>
           </execution>
 
-          <!-- editor: Run npm test in test phase -->
+          <!-- Run javascript tests for editor -->
           <execution>
             <id>editor: execute npm test</id>
             <phase>test</phase>
@@ -250,10 +244,11 @@
         </configuration>
       </plugin>
 
-      <!-- Copy bundle files to the META-INF/resources directory. -->
+      <!-- Copy the built files to their position in the jar file. -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
+          <!-- Copy the built frontend files to their position in the jar file. -->
           <execution>
             <phase>prepare-package</phase>
             <id>frontend copy-resources</id>
@@ -272,6 +267,7 @@
             </configuration>
           </execution>
 
+          <!-- Copy the built editor files to their position in the jar file. -->
           <execution>
             <phase>prepare-package</phase>
             <id>editor copy-resources</id>
