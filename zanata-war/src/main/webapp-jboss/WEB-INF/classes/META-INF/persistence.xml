@@ -52,6 +52,7 @@
     <class>org.zanata.model.tm.TransMemoryUnitVariant</class>
     <class>org.zanata.model.tm.TransMemory</class>
     <class>org.zanata.model.WebHook</class>
+    <class>org.zanata.model.AllowedApp</class>
 
     <!-- TODO This may be removed once the class files are packaged in the zanata-model jar as intended
      Otherwise, hibernate will scan the whole war file and dependency jars -->
@@ -68,6 +69,10 @@
       <!-- Automatic schema export and drop -->
       <property name="hibernate.hbm2ddl.auto"
         value="${env.hibernate.hbm2ddl.auto}" />
+
+      <!-- TODO this won't work with Hibernate 4.3 or later -->
+      <property name="hibernate.connection.provider_class"
+        value="org.zanata.database.WrappedDatasourceConnectionProvider" />
 
       <!--<property name="hibernate.dialect"-->
         <!--value="org.hibernate.dialect.MySQL5InnoDBDialect"/>-->

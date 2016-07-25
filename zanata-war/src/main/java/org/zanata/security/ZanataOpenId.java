@@ -76,7 +76,10 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ZanataOpenId.class);
 
+    @Inject
     private ZanataIdentity identity;
+
+    @Inject
     private ApplicationConfiguration applicationConfiguration;
 
     @Inject
@@ -186,6 +189,9 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
     @Transactional
     public String verifyResponse(HttpServletRequest httpReq) {
         try {
+            // clear any previous messages which might have been generated
+            // before the openId authentication took place
+            facesMessages.clear();
             // extract the parameters from the authentication response
             // (which comes in as a HTTP request from the OpenID providerType)
             ParameterList respParams =
@@ -257,12 +263,6 @@ public class ZanataOpenId implements OpenIdAuthCallback, Serializable {
         discovered = null;
         id = null;
         authResult = new OpenIdAuthenticationResult();
-        // TODO inject these
-        identity =
-                ServiceLocator.instance().getInstance(ZanataIdentity.class);
-        applicationConfiguration =
-                ServiceLocator.instance().getInstance(
-                        ApplicationConfiguration.class);
     }
 
     private void loginImmediate() {

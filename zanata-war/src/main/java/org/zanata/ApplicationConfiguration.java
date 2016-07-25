@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 
@@ -45,11 +46,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
+import org.zanata.config.OAuthTokenExpiryInSeconds;
+import org.zanata.config.SupportOAuth;
 import org.zanata.config.SystemPropertyConfigStore;
 import org.zanata.servlet.HttpRequestAndSessionHolder;
 import org.zanata.servlet.annotations.ServerPath;
 import org.zanata.util.DefaultLocale;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.Synchronized;
 import org.zanata.config.DatabaseBackedConfig;
 import org.zanata.config.JaasConfig;
@@ -83,6 +85,8 @@ public class ApplicationConfiguration implements Serializable {
 
     @Getter
     private static final int defaultAnonymousSessionTimeoutMinutes = 30;
+    public static final String ACCESS_TOKEN_EXPIRES_IN_SECONDS =
+            "accessTokenExpiresInSeconds";
 
     @Inject
     private DatabaseBackedConfig databaseBackedConfig;
@@ -115,6 +119,10 @@ public class ApplicationConfiguration implements Serializable {
     @Getter
     private boolean copyTransEnabled = true;
 
+    @Inject
+    @DeltaSpike
+    private HttpSession session;
+
     /**
      * To be used with single sign-up module with openId. Default is false
      *
@@ -139,6 +147,7 @@ public class ApplicationConfiguration implements Serializable {
     private Set<String> adminUsers;
 
     private Optional<String> openIdProvider; // Cache the OpenId provider
+    private long tokenExpiresInSeconds;
 
     @PostConstruct
     public void load() {
@@ -151,6 +160,8 @@ public class ApplicationConfiguration implements Serializable {
                 .get("authenticatedSessionTimeoutMinutes", 180);
         enforceMatchingUsernames = Boolean
             .parseBoolean(sysPropConfigStore.get("zanata.enforce.matchingusernames"));
+        tokenExpiresInSeconds =
+                sysPropConfigStore.getLong(ACCESS_TOKEN_EXPIRES_IN_SECONDS, 3600);
     }
 
     /**
@@ -323,6 +334,20 @@ public class ApplicationConfiguration implements Serializable {
         return openIdProvider.isPresent();
     }
 
+    @Produces
+    @Dependent
+    protected AuthenticationType authenticationType() {
+        if (isInternalAuth()) {
+            return AuthenticationType.INTERNAL;
+        } else if (isJaasAuth()) {
+            return AuthenticationType.JAAS;
+        } else if (isKerberosAuth()) {
+            return AuthenticationType.KERBEROS;
+        }
+        throw new RuntimeException(
+                "only supports internal, jaas, or kerberos authentication");
+    }
+
     public String getOpenIdProviderUrl() {
         return openIdProvider.orNull();
     }
@@ -419,10 +444,6 @@ public class ApplicationConfiguration implements Serializable {
 
     public void setAuthenticatedSessionTimeout(
             @Observes PostAuthenticateEvent payload) {
-        HttpSession session =
-                ServiceLocator.instance().getInstance(HttpSession.class,
-                        new AnnotationLiteral<DeltaSpike>() {
-                        });
         if (session != null) {
             int timeoutInSecs = max(authenticatedSessionTimeoutMinutes * 60,
                     defaultAnonymousSessionTimeoutMinutes * 60);
@@ -445,5 +466,17 @@ public class ApplicationConfiguration implements Serializable {
 
     public boolean isDisplayUserEmail() {
         return databaseBackedConfig.isDisplayUserEmail();
+    }
+
+    @Produces
+    @OAuthTokenExpiryInSeconds
+    protected long getTokenExpiresInSeconds() {
+        return tokenExpiresInSeconds;
+    }
+
+    @Produces
+    @SupportOAuth
+    protected boolean isOAuthSupported() {
+        return sysPropConfigStore.isOAuthEnabled();
     }
 }

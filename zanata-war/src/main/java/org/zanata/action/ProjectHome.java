@@ -41,10 +41,10 @@ import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -79,14 +79,15 @@ import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
+import org.zanata.service.impl.WebHooksPublisher;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.CommonMarkRenderer;
 import org.zanata.util.ComparatorUtil;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
+import org.zanata.webhook.events.TestEvent;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
@@ -95,6 +96,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 
 @Named("projectHome")
 @Slf4j
@@ -797,6 +799,10 @@ public class ProjectHome extends SlugHome<HProject> implements
             urlUtil.redirectToInternal(url);
             return result;
         }
+
+        facesMessages
+            .addGlobal(SEVERITY_INFO, msgs.get("jsf.project.settings.updated"));
+
         if (!getSlug().equals(getInstance().getSlug())) {
             projectSlug.setValue(getInstance().getSlug());
             return "project-slug-updated";
@@ -1110,6 +1116,17 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
+    public void testWebhook(String url, String secret, String strType) {
+        identity.checkPermission(getInstance(), "update");
+        WebhookType type = WebhookType.valueOf(strType);
+        if (isValidUrl(url, type)) {
+            TestEvent event =
+                new TestEvent(identity.getAccountUsername(), getSlug());
+            WebHooksPublisher
+                .publish(url, event, Optional.fromNullable(secret));
+        }
+    }
+
     /**
      * Check if url is valid and there is no duplication of url+type
      */
@@ -1186,6 +1203,18 @@ public class ProjectHome extends SlugHome<HProject> implements
         @Inject
         private ProjectHome projectHome;
 
+        @Inject
+        private Messages msgs;
+
+        @Inject
+        private ZanataIdentity zanataIdentity;
+
+        @Inject
+        private PersonDAO personDAO;
+
+        @Inject
+        private FacesMessages facesMessages;
+
         private HProject getInstance() {
             return projectHome.getInstance();
         }
@@ -1207,25 +1236,16 @@ public class ProjectHome extends SlugHome<HProject> implements
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
-            ServiceLocator.instance().getInstance(ZanataIdentity.class)
-                    .checkPermission(getInstance(), "update");
-            HPerson maintainer =
-                    ServiceLocator.instance().getInstance(PersonDAO.class)
-                            .findByUsername(getSelectedItem());
+            zanataIdentity.checkPermission(getInstance(), "update");
+            HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
-            ProjectHome projectHome = ServiceLocator.instance()
-                    .getInstance(ProjectHome.class);
             projectHome.update();
             reset();
             projectHome.getMaintainerFilter().reset();
 
-            getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.project.MaintainerAdded",
                             maintainer.getName()));
-        }
-
-        private FacesMessages getFacesMessages() {
-            return ServiceLocator.instance().getInstance(FacesMessages.class);
         }
     }
 

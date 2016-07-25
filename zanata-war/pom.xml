@@ -489,7 +489,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
-        <!-- zanata war is too big to deploy, especially with five variants -->
+        <!-- zanata war is too big to deploy to Maven repos -->
         <configuration>
           <!-- MEAD builds must deploy all artifacts, so we run them with -Dallow.deploy.skip=false -->
           <skip>${allow.deploy.skip}</skip>
@@ -1206,6 +1206,11 @@
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
+              <execution>
+                <id>install-wildfly-modules</id>
+                <phase>package</phase>
+              </execution>
+
               <!-- Install arquillian-customised version of standalone.xml -->
               <execution>
                 <id>prepare-arquillian-container</id>
@@ -1427,6 +1432,11 @@
 
     <dependency>
       <groupId>org.zanata</groupId>
+      <artifactId>zanata-editor</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.zanata</groupId>
       <artifactId>zanata-common-util</artifactId>
     </dependency>
 
@@ -1484,7 +1494,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20090211</version>
+      <version>20140107</version>
     </dependency>
 
     <dependency>
@@ -1809,6 +1819,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.ocpsoft.logging</groupId>
+      <artifactId>logging-adapter-jboss</artifactId>
+      <version>1.0.3.Final</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
     </dependency>
@@ -1948,6 +1964,7 @@
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
       <version>${infinispan.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- These two are being explicitly added as jboss-as-parent
@@ -2301,6 +2318,17 @@
       <groupId>org.apache.deltaspike.modules</groupId>
       <artifactId>deltaspike-scheduler-module-impl</artifactId>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.resourceserver</artifactId>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
