@@ -1,11 +1,6 @@
-/* eslint-disable no-undef */
-jest.unmock('../GlossaryHelper')
-jest.unmock('../StringUtils')
-jest.unmock('../DateHelper')
-jest.unmock('defined')
+jest.disableAutomock()
 
-import GlossaryHelper from '../GlossaryHelper'
-import _ from 'lodash'
+import GlossaryHelper from '../../app/utils/GlossaryHelper'
 
 describe('GlossaryHelperTest', function () {
   // var GlossaryHelper

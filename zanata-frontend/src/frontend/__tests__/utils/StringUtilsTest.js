@@ -1,6 +1,6 @@
-/* eslint-disable no-undef */
-jest.unmock('../StringUtils')
-import StringUtils from '../StringUtils'
+jest.disableAutomock()
+
+import StringUtils from '../../app/utils/StringUtils'
 
 describe('StringUtilsTest', function () {
   it('test trim leading space', function () {
