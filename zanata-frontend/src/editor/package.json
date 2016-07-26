@@ -18,6 +18,7 @@
     "storybook": "start-storybook -p 9001 -s ./app/build",
     "build-storybook": "build-storybook -s ./app/build",
     "processhtml": "gulp processhtml",
+    "processhtml-dev": "gulp processhtml-dev",
     "storybook-spritesheet": "gulp storybook-icons"
   },
   "repository": {

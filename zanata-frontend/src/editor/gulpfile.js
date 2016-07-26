@@ -30,8 +30,16 @@ function notifyError(err) {
 
 }
 
-// Copy index.html into /build
+// Copy index.html into /dist
 gulp.task('processhtml', function () {
+
+  return gulp.src(paths.app + '/index.html')
+    .pipe(gulp.dest(paths.app + '/dist'))
+    .pipe(gulp.dest(paths.app + '/build'));
+});
+
+// Copy index.html into /build
+gulp.task('processhtml-dev', function () {
 
   return gulp.src(paths.app + '/index.html')
     .pipe(gulp.dest(paths.app + '/build'));

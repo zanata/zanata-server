@@ -45,7 +45,7 @@
     <!-- Editor path within the jar to put the built artifacts.
         Note: META-INF/resources/* is served as static content, so this puts
               the editor at http://<server>/app/editor -->
-    <editor.bundle.destination>${bundle.dest}/app/editor</editor.bundle.destination>
+    <editor.bundle.destination>${bundle.dest}/app</editor.bundle.destination>
 
     <!-- Directory that contains the actual built frontend app (index, script and styles) -->
     <frontend.built.artifact.directory>${frontend.build.directory}/dist</frontend.built.artifact.directory>
@@ -113,7 +113,7 @@
           <executable>${node.install.directory}/node/node</executable>
         </configuration>
         <executions>
-          <!-- frontend: download and install npm modules -->
+          <!-- Download all dependency modules from npm (or mirror). -->
           <execution>
             <id>frontend: execute npm install</id>
             <phase>process-resources</phase>
@@ -131,7 +131,7 @@
             </configuration>
           </execution>
 
-          <!-- editor: download and install npm modules -->
+          <!-- Download all dependency modules from npm (or mirror). -->
           <execution>
             <id>editor: execute npm install</id>
             <phase>process-resources</phase>
@@ -244,7 +244,9 @@
         </configuration>
       </plugin>
 
-      <!-- Copy the built files to their position in the jar file. -->
+      <!-- Copy the built files into META-INF/resources (or nested directories).
+            Files in this location will be built in the JAR file and served relative to the root path of the web app.
+            e.g. META-INF/resources/app/index.html will be served at example.org/app/index.html -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
