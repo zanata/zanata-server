@@ -22,11 +22,11 @@ watch: processhtml-dev
 watch-fakeserver:
 	${MAKE} -j2 watch fakeserver
 
-// Copy index.html into /dist
+# Copy index.html into /dist
 processhtml:
 	npm run processhtml
 
-// Copy index.html into /build
+# Copy index.html into /build
 processhtml-dev:
 	npm run processhtml-dev
 
