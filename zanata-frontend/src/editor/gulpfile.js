@@ -6,12 +6,9 @@
 
 var env = process.env.NODE_ENV || 'development',
     gulp = require('gulp'),
-    imagemin = require('gulp-imagemin'),
-    inject = require('gulp-inject'),
+    gulpif = require('gulp-if'),
     notify = require('gulp-notify'),
     paths = require('./gulpfile.paths.js'),
-    plumber = require('gulp-plumber'),
-    rename = require('gulp-rename'),
     replace = require('gulp-replace-task'),
     webserver = require('gulp-webserver');
 
@@ -58,7 +55,3 @@ gulp.task('webserver', ['build'], function() {
 });
 
 gulp.task('serve', ['webserver']);
-
-gulp.task('watch', ['serve'], function(){
-  gulp.watch(paths.app + '/index.html');
-});
