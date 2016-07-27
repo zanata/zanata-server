@@ -54,6 +54,7 @@ public class TranslationMemoryPage extends BasePage {
     private By listDeleteButton = By.linkText("Delete");
     private By deleteConfirmation = By.id("deleteTMModal");
     private By clearConfirmation = By.id("clearTMModal");
+    private By uploadNotification = By.id("uploadTMNotification");
     private By okConfirmation = By.id("confirm-ok-button");
     private By cancelConfirmation = By.id("confirm-cancel-button");
 
@@ -91,14 +92,9 @@ public class TranslationMemoryPage extends BasePage {
     public TranslationMemoryPage clickUploadButtonAndAcknowledge() {
         log.info("Click and accept Upload button");
         clickElement(uploadButton);
-        switchToAlert().accept();
+        clickElement(
+            readyElement(uploadNotification).findElement(okConfirmation));
         return new TranslationMemoryPage(getDriver());
-    }
-
-    public Alert expectFailedUpload() {
-        log.info("Click Upload");
-        clickElement(uploadButton);
-        return switchToAlert();
     }
 
     public boolean isImportButtonEnabled() {
@@ -141,7 +137,8 @@ public class TranslationMemoryPage extends BasePage {
 
     public TranslationMemoryPage dismissError() {
         log.info("Dismiss error dialog");
-        switchToAlert().accept();
+        clickElement(
+            readyElement(uploadNotification).findElement(okConfirmation));
         return new TranslationMemoryPage(getDriver());
     }
 
