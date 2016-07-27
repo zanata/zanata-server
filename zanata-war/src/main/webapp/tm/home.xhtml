@@ -55,6 +55,15 @@
       zanata.modal.hide(modalId);
     }
 
+    function onUploadNotification(ok) {
+      zanata.modal.hide('#uploadTMNotification');
+    }
+
+    function updateAndShowUploadMessage(message) {
+      jQuery('#uploadTMNotification #confirm-message').html(message);
+      zanata.modal.show('#uploadTMNotification');
+    }
+
     function submitUpload() {
       disableUploadDialog();
       var uploadForm = jQuery("#uploadFileForm");
@@ -75,13 +84,13 @@
           return;
         }
         if (req.status == 503) {
-          alert("There was an error uploading the file: " + req.responseText +
+          updateAndShowUploadMessage("There was an error uploading the file: " + req.responseText +
             " (" + req.status + ")");
         } else if (req.status != 200) {
-          alert("There was an error uploading the file: " + req.statusText +
+          updateAndShowUploadMessage("There was an error uploading the file: " + req.statusText +
             " (" + req.status + ")");
         } else {
-          alert("Successfully imported the file");
+          updateAndShowUploadMessage("Successfully imported the file");
         }
         resetUploadDialog();
         refreshDataTable();
@@ -111,6 +120,11 @@
 </ui:define>
 
 <ui:define name="center_content">
+  <zanata:confirm-modal id="uploadTMNotification"
+    title="#{msgs['jsf.transmemory.upload.notification']}"
+    message=""
+    onresponse="onUploadNotification" type="alert"/>
+
   <zanata:confirm-modal id="clearTMModal"
     title="#{msgs['jsf.transmemory.Clear.Title']}"
     message="#{msgs['jsf.transmemory.ConfirmClearTM']}"
