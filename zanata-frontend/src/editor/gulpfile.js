@@ -6,7 +6,6 @@
 
 var env = process.env.NODE_ENV || 'development',
     gulp = require('gulp'),
-    gulpif = require('gulp-if'),
     imagemin = require('gulp-imagemin'),
     inject = require('gulp-inject'),
     notify = require('gulp-notify'),
@@ -14,7 +13,6 @@ var env = process.env.NODE_ENV || 'development',
     plumber = require('gulp-plumber'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace-task'),
-    svgSprite = require('gulp-svg-sprite'),
     webserver = require('gulp-webserver');
 
 function notifyError(err) {
@@ -34,46 +32,10 @@ function notifyError(err) {
 gulp.task('processhtml', function () {
 
   return gulp.src(paths.app + '/index.html')
-    .pipe(gulp.dest(paths.app + '/dist'))
-    .pipe(gulp.dest(paths.app + '/build'));
+    .pipe(gulp.dest(paths.app + '/dist'));
 });
 
-// Copy index.html into /build
-gulp.task('processhtml-dev', function () {
-
-  return gulp.src(paths.app + '/index.html')
-    .pipe(gulp.dest(paths.app + '/build'));
-});
-
-// similar to 'icons' but makes a static icons file for use in the storybook
-// since there is no access to inject them into its index file.
-// ( See .storybook/README.md )
-gulp.task('storybook-icons', function () {
-  return gulp.src(paths.icons.app)
-    .pipe(plumber({errorHandler: notifyError}))
-    .pipe(svgSprite({
-      mode: {
-        symbol: {
-          inline: false
-        }
-      }
-    }))
-    .pipe(rename('icons.svg'))
-    .pipe(gulp.dest(paths.app + '/build'));
-});
-
-gulp.task('images', function(){
-  return gulp.src(paths.images.app)
-    .pipe(plumber({errorHandler: notifyError}))
-    // TODO Clean build first
-    .pipe(imagemin({ optimizationLevel: 5,
-      progressive: true, interlaced: true }))
-    .pipe(rename(function(path) {
-      path.dirname = path.dirname.replace('components/', '');
-    }))
-    .pipe(gulp.dest(paths.build + '/images'));
-});
-
+// configure config.json for dev or prod build
 gulp.task('config', function() {
   var regex = new RegExp('\"baseUrl\".*,');
   gulp.src(paths.config)
@@ -85,15 +47,6 @@ gulp.task('config', function() {
     })))
     .pipe(gulp.dest(paths.build));
 });
-
-gulp.task('copyIndex', ['icons']);
-
-gulp.task('build',
-  [
-    'icons',
-    'images',
-    'config'
-  ]);
 
 gulp.task('webserver', ['build'], function() {
   gulp.src('build')
@@ -107,8 +60,5 @@ gulp.task('webserver', ['build'], function() {
 gulp.task('serve', ['webserver']);
 
 gulp.task('watch', ['serve'], function(){
-  gulp.watch(paths.images.app, ['images']);
-  gulp.watch(paths.app + '/index.html', ['copyIndex']);
+  gulp.watch(paths.app + '/index.html');
 });
-
-gulp.task('default', ['build']);

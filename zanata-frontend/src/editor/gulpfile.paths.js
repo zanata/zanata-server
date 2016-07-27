@@ -9,15 +9,7 @@
 var paths = {};
 
 paths.app = './app';
-paths.build = './build';
+paths.build = './dist';
 paths.config = paths.app + '/config.json';
-paths.images = {
-  app: [
-    paths.app + '/**/*.svg',
-    paths.app + '/**/*.jpg',
-    paths.app + '/**/*.png',
-    paths.app + '/**/*.gif'
-  ]
-};
 
 module.exports = paths;

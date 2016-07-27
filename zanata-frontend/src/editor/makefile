@@ -15,7 +15,7 @@ fakeserver:
 
 # Run the app on a local development server, automatically rebuild and refresh
 # when the code changes (sprites are only built at the beginning).
-watch: processhtml-dev
+watch: processhtml
 	npm run watch
 
 # Run a local development server backed by a fake Zanata server
@@ -26,17 +26,8 @@ watch-fakeserver:
 processhtml:
 	npm run processhtml
 
-# Copy index.html into /build
-processhtml-dev:
-	npm run processhtml-dev
-
-# Like spritesheet, but makes a static file that can be used in the storybook
-# rather than injecting the spritesheet into the index file.
-storybook-spritesheet:
-	npm run storybook-spritesheet
-
 # Run react-storybook server for development and testing of React components.
-storybook: storybook-spritesheet
+storybook:
 	npm run storybook
 
 # Build a static version of the React component storybook
@@ -45,7 +36,7 @@ storybook: storybook-spritesheet
 #  - includes everything from /app/build even though it does not need
 #    it all (only needs icons.svg at this point). Not worth the extra complexity
 #    to prevent that.
-storybook-static: storybook-spritesheet
+storybook-static:
 	npm run build-storybook
 
 # Build the css and javascript bundles using webpack.
