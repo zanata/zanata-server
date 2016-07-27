@@ -52,6 +52,10 @@ public class TranslationMemoryPage extends BasePage {
     private By listExportButton = By.linkText("Export");
     private By listClearButton = By.linkText("Clear");
     private By listDeleteButton = By.linkText("Delete");
+    private By deleteConfirmation = By.id("deleteTMModal");
+    private By clearConfirmation = By.id("clearTMModal");
+    private By okConfirmation = By.id("confirm-ok-button");
+    private By cancelConfirmation = By.id("confirm-cancel-button");
 
     public TranslationMemoryPage(WebDriver driver) {
         super(driver);
@@ -105,28 +109,33 @@ public class TranslationMemoryPage extends BasePage {
     public TranslationMemoryPage clickClearTMAndAccept(String tmName) {
         log.info("Click and accept Clear {}", tmName);
         clickElement(readyElement(findRowByTMName(tmName), listClearButton));
-        switchToAlert().accept();
+        clickElement(
+            readyElement(clearConfirmation).findElement(okConfirmation));
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickClearTMAndCancel(String tmName) {
         log.info("Click and Cancel Clear {}", tmName);
         clickElement(readyElement(findRowByTMName(tmName), listClearButton));
-        switchToAlert().dismiss();
+        clickElement(
+            readyElement(clearConfirmation).findElement(cancelConfirmation));
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickDeleteTmAndAccept(String tmName) {
         log.info("Click and accept Delete {}", tmName);
         clickElement(readyElement(findRowByTMName(tmName), listDeleteButton));
-        switchToAlert().accept();
+        slightPause();
+        clickElement(
+                readyElement(deleteConfirmation).findElement(okConfirmation));
         return new TranslationMemoryPage(getDriver());
     }
 
     public TranslationMemoryPage clickDeleteTmAndCancel(String tmName) {
         log.info("Click and cancel Delete {}", tmName);
         clickElement(readyElement(findRowByTMName(tmName), listDeleteButton));
-        switchToAlert().dismiss();
+        clickElement(
+            readyElement(deleteConfirmation).findElement(cancelConfirmation));
         return new TranslationMemoryPage(getDriver());
     }
 
