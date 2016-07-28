@@ -1735,6 +1735,16 @@
     </dependency>
     <dependency>
       <groupId>net.sf.okapi.filters</groupId>
+      <artifactId>okapi-filter-json</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.okapi.filters</groupId>
       <artifactId>okapi-filter-idml</artifactId>
       <exclusions>
         <exclusion>
