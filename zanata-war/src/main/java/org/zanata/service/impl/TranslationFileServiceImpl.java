@@ -33,18 +33,7 @@ import javax.inject.Named;
 
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.xml.sax.InputSource;
-import org.zanata.adapter.DTDAdapter;
-import org.zanata.adapter.FileFormatAdapter;
-import org.zanata.adapter.GettextAdapter;
-import org.zanata.adapter.HTMLAdapter;
-import org.zanata.adapter.IDMLAdapter;
-import org.zanata.adapter.OpenOfficeAdapter;
-import org.zanata.adapter.PlainTextAdapter;
-import org.zanata.adapter.PropertiesLatinOneAdapter;
-import org.zanata.adapter.PropertiesUTF8Adapter;
-import org.zanata.adapter.SubtitleAdapter;
-import org.zanata.adapter.TSAdapter;
-import org.zanata.adapter.XliffAdapter;
+import org.zanata.adapter.*;
 import org.zanata.adapter.po.PoReader2;
 import org.zanata.common.DocumentType;
 import org.zanata.common.LocaleId;
@@ -71,20 +60,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.zanata.common.DocumentType.GETTEXT;
-import static org.zanata.common.DocumentType.HTML;
-import static org.zanata.common.DocumentType.IDML;
-import static org.zanata.common.DocumentType.OPEN_DOCUMENT_GRAPHICS;
-import static org.zanata.common.DocumentType.OPEN_DOCUMENT_PRESENTATION;
-import static org.zanata.common.DocumentType.OPEN_DOCUMENT_SPREADSHEET;
-import static org.zanata.common.DocumentType.OPEN_DOCUMENT_TEXT;
-import static org.zanata.common.DocumentType.PLAIN_TEXT;
-import static org.zanata.common.DocumentType.PROPERTIES;
-import static org.zanata.common.DocumentType.PROPERTIES_UTF8;
-import static org.zanata.common.DocumentType.SUBTITLE;
-import static org.zanata.common.DocumentType.TS;
-import static org.zanata.common.DocumentType.XLIFF;
-import static org.zanata.common.DocumentType.XML_DOCUMENT_TYPE_DEFINITION;
+import static org.zanata.common.DocumentType.*;
 
 /**
  * Default implementation of the TranslationFileService interface.
@@ -111,6 +87,7 @@ public class TranslationFileServiceImpl implements TranslationFileService {
         DOCTYPEMAP.put(XML_DOCUMENT_TYPE_DEFINITION, DTDAdapter.class);
         DOCTYPEMAP.put(IDML, IDMLAdapter.class);
         DOCTYPEMAP.put(HTML, HTMLAdapter.class);
+        DOCTYPEMAP.put(JSON, JsonAdapter.class);
         DOCTYPEMAP.put(SUBTITLE, SubtitleAdapter.class);
         DOCTYPEMAP.put(PROPERTIES, PropertiesLatinOneAdapter.class);
         DOCTYPEMAP.put(PROPERTIES_UTF8, PropertiesUTF8Adapter.class);
