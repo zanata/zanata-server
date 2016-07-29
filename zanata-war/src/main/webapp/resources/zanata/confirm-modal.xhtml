@@ -27,7 +27,7 @@
       aria-labelledby="confirmModal" aria-hidden="true">
       <div class="modal__dialog l--constrain-small txt--mini">
         <header class="modal__header">
-          <h2 class="modal__title">#{cc.attrs.title}</h2>
+          <h2 class="modal__title" name="title">#{cc.attrs.title}</h2>
           <ui:fragment rendered="#{cc.attrs.type ne 'alert'}">
             <button type="button"
               class="modal__close button--link"
@@ -38,7 +38,7 @@
         </header>
 
         <div class="modal__content l--pad-all-1">
-          <div class="l--pad-v-quarter" id="confirm-message">
+          <div class="l--pad-v-quarter" name="confirm-message">
             <h:outputFormat escape="false" value="#{cc.attrs.message}" />
           </div>
         </div>
