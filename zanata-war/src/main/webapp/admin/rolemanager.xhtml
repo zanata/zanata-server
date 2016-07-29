@@ -7,7 +7,7 @@
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata"
   xmlns:a4j="http://richfaces.org/a4j">
 
-<ui:composition template="../WEB-INF/template/template.xhtml">
+<ui:composition template="/WEB-INF/template/template.xhtml">
   <f:metadata>
     <f:event type="preRenderView" listener="#{zanataRoleSearch.loadRoles}"/>
     <f:event type="preRenderView" listener="#{identity.checkRole('admin')}"/>
@@ -21,20 +21,20 @@
       message="#{msgs['jsf.AreYouSureYouWishToDeleteThisRoleThisActionCannotBeUndone']}"
       onresponse="onDeleteRoleResponse" />
 
-    <a4j:jsFunction name="deleteRole" action="#{identityManager.deleteRole(selectedRoleId)}" render="roles-form">
-      <a4j:param name="val1" assignTo="#{selectedRoleId}"/>
+    <a4j:jsFunction name="deleteRole" action="#{identityManager.deleteRole(role)}" render="roles-form">
+      <a4j:param name="val1" assignTo="#{role}"/>
     </a4j:jsFunction>
 
     <script type="text/javascript">
-      var selectedRoleId;
-      function setSelectedRole(id) {
-        selectedRoleId = id;
+      var selectedRole;
+      function setSelectedRole(role) {
+        selectedRole = role;
       }
       function onDeleteRoleResponse(del) {
         if (del) {
-          deleteRole(selectedRoleId);
+          deleteRole(selectedRole);
         } else {
-          selectedRoleId = null;
+          selectedRole = null;
         }
         zanata.modal.hide('#deleteRoleModal');
       }
@@ -88,7 +88,7 @@
                         <ui:fragment
                           rendered="#{identity.hasPermission('seam.role', 'delete') and accountRoleDAO.findByName(role).roleType.toString() ne 'AUTO'}">
                           <li>
-                            <a href="#" class="i__item--right txt--danger" onclick="setSelectedRole('#{role.id}')"
+                            <a href="#" class="i__item--right txt--danger" onclick="setSelectedRole('#{role}')"
                               data-toggle="modal" data-target="#deleteRoleModal">
                               #{msgs['jsf.Delete']}
                               <i class="i i--remove i__item__icon"></i>
