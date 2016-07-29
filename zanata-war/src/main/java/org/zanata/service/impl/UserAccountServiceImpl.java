@@ -142,9 +142,7 @@ public class UserAccountServiceImpl implements UserAccountService {
                         .setParameter("currentUsername", currentUsername);
         updateQuery.setComment("UserAccountServiceImpl.editUsername");
         updateQuery.executeUpdate();
-        // FIXME we might need a custom QueryCacheFactory
-        // TODO is this event the right cache to clear?
-//        session.getSessionFactory().evictQueries(); // Because a Natural Id was
-                                                    // modified
+        // Because a Natural Id was modified:
+        session.getSessionFactory().getCache().evictQueryRegion(AccountDAO.REGION);
     }
 }

@@ -160,8 +160,6 @@
             <!-- Used for different content analyzers based on langugage for search. -->
             <usedDependency>org.apache.solr:solr-core</usedDependency>
             <usedDependency>org.apache.solr:solr-solrj</usedDependency>
-            <!-- Used by hibernate -->
-            <usedDependency>org.hibernate:hibernate-search-analyzers</usedDependency>
             <!-- used for arquillian deployment (org.zanata.Deployments) -->
             <usedDependency>org.hibernate:hibernate-testing</usedDependency>
             <usedDependency>org.jboss.arquillian.junit:arquillian-junit-container</usedDependency>
@@ -194,14 +192,15 @@
           <ignoredResourcePatterns>
             <!-- many, many jars -->
             <ignoredResourcePattern>META-INF/.*</ignoredResourcePattern>
+            <ignoredResourcePattern>VERSION\.properties</ignoredResourcePattern>
             <!-- iText and JavaMelody -->
-            <ignoredResourcePattern>com/lowagie/text/pdf/fonts/cmap_info.txt</ignoredResourcePattern>
+            <ignoredResourcePattern>com/lowagie/text/pdf/fonts/cmap_info\.txt</ignoredResourcePattern>
             <!-- drools and quartz -->
-            <ignoredResourcePattern>build.properties</ignoredResourcePattern>
+            <ignoredResourcePattern>build\.properties</ignoredResourcePattern>
             <!-- jboss-metadata-common and zanata-adapter-xliff -->
-            <ignoredResourcePattern>schema/xml.xsd</ignoredResourcePattern>
+            <ignoredResourcePattern>schema/xml\.xsd</ignoredResourcePattern>
             <!-- infinispan-core/common -->
-            <ignoredResourcePattern>features.xml</ignoredResourcePattern>
+            <ignoredResourcePattern>features\.xml</ignoredResourcePattern>
           </ignoredResourcePatterns>
         </configuration>
       </plugin>
@@ -1546,7 +1545,7 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.transaction</groupId>
-      <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -1864,6 +1863,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
       <version>3.2.1</version>
@@ -1880,16 +1885,6 @@
     <dependency>
       <groupId>org.apache.solr</groupId>
       <artifactId>solr-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-io</artifactId>
-        </exclusion>
-        <exclusion>
-          <artifactId>servlet-api</artifactId>
-          <groupId>javax.servlet</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.solr</groupId>
@@ -1919,7 +1914,7 @@
 
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -1927,8 +1922,8 @@
       <artifactId>hibernate-search-engine</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-search-infinispan</artifactId>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-directory-provider</artifactId>
     </dependency>
 
     <dependency>
@@ -1936,6 +1931,16 @@
       <artifactId>infinispan-core</artifactId>
       <version>${infinispan.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.marshalling</groupId>
+          <artifactId>jboss-marshalling-osgi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.transaction</groupId>
+          <artifactId>jboss-transaction-api_1.1_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- These two are being explicitly added as jboss-as-parent
@@ -1943,12 +1948,10 @@
     <dependency>
       <groupId>org.jboss.marshalling</groupId>
       <artifactId>jboss-marshalling</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.marshalling</groupId>
       <artifactId>jboss-marshalling-river</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -2224,7 +2227,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
-      <version>1.1</version>
+      <version>1.3</version>
     </dependency>
 
     <!-- See https://issues.jboss.org/browse/WFK2-674

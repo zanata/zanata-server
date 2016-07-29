@@ -38,8 +38,8 @@
     <cdi.runtime>runtime</cdi.runtime>
     <cdi.compile>compile</cdi.compile>
     <picketlink.version>2.5.4.SP4</picketlink.version>
-    <!-- This is the EAP 6.4.8 version: -->
-    <infinispan.version>5.2.18.Final</infinispan.version>
+    <!-- This is the WildFly 10 version: -->
+    <infinispan.version>8.1.0.Final</infinispan.version>
     <lombok.version>1.16.6</lombok.version>
     <weld.version>1.1.31.Final</weld.version>
     <weld.se.version>${weld.version}</weld.se.version>
@@ -48,7 +48,7 @@
     <gwt.version>2.7.0</gwt.version>
     <icu4j.version>56.1</icu4j.version>
     <lombok.source.dir>${project.build.sourceDirectory}/org/zanata</lombok.source.dir>
-    <lucene.version>3.6.2</lucene.version>
+    <lucene.version>5.3.1</lucene.version>
     <org.mock-server.version>3.9.17</org.mock-server.version>
     <rewrite.version>3.0.0.Alpha10</rewrite.version>
 
@@ -335,6 +335,18 @@
       </dependency>
 
       <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>5.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-commons</artifactId>
+        <version>5.1</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.richfaces</groupId>
         <artifactId>richfaces</artifactId>
         <version>${richfaces.version}</version>
@@ -415,7 +427,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.4</version>
+        <version>4.4.1</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -427,7 +439,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4</version>
+        <version>4.4.1</version>
       </dependency>
 
       <dependency>
@@ -552,6 +564,13 @@
       </dependency>
 
       <dependency>
+        <groupId>org.jboss.spec.javax.transaction</groupId>
+        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+        <version>1.0.0.Final</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
         <groupId>org.jboss.xnio</groupId>
         <artifactId>xnio-api</artifactId>
         <version>3.2.3.Final</version>
@@ -566,14 +585,14 @@
       <dependency>
         <groupId>org.jboss.marshalling</groupId>
         <artifactId>jboss-marshalling</artifactId>
-        <version>1.4.6.Final</version>
+        <version>1.4.10.Final</version>
         <scope>test</scope>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.marshalling</groupId>
         <artifactId>jboss-marshalling-river</artifactId>
-        <version>1.4.6.Final</version>
+        <version>1.4.10.Final</version>
         <scope>test</scope>
       </dependency>
 
@@ -648,6 +667,10 @@
         <artifactId>zanata-common-api</artifactId>
         <version>${zanata.api.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>javax.annotation</groupId>
             <artifactId>jsr250-api</artifactId>
@@ -803,6 +826,30 @@
       </dependency>
 
       <dependency>
+        <groupId>com.github.huangp</groupId>
+        <artifactId>entityunit</artifactId>
+        <version>0.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
@@ -841,7 +888,7 @@
       <dependency>
           <groupId>com.google.protobuf</groupId>
           <artifactId>protobuf-java</artifactId>
-          <version>2.4.1</version>
+          <version>2.5.0</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -1050,6 +1097,12 @@
         <artifactId>hibernate-search-orm</artifactId>
         <version>${hibernate.search.version}</version>
         <scope>${hibernate.search.scope}</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -1066,23 +1119,16 @@
       </dependency>
 
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-search-infinispan</artifactId>
-        <version>${hibernate.search.version}</version>
-        <scope>${hibernate.search.scope}</scope>
-        <exclusions>
-          <!-- Slightly older version provided by the app server -->
-          <exclusion>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-core</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-directory-provider</artifactId>
+        <version>${infinispan.version}</version>
+        <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>org.hibernate.common</groupId>
         <artifactId>hibernate-commons-annotations</artifactId>
-        <version>4.0.4.Final</version>
+        <version>5.0.1.Final</version>
         <exclusions>
           <exclusion>
             <groupId>org.jboss.logging</groupId>
@@ -1097,8 +1143,16 @@
         <version>${hibernate.version}</version>
         <exclusions>
           <exclusion>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
         <!--<version>${hibernate.version}</version>-->
@@ -1113,7 +1167,17 @@
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+          </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.1-api</artifactId>
+        <version>1.0.0.Final</version>
       </dependency>
 
       <dependency>
@@ -1142,6 +1206,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-testing</artifactId>
         <version>${hibernate.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -1159,7 +1229,7 @@
         </exclusions>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
-        <version>3.1.4.GA</version>
+        <version>3.3.0.Final</version>
       </dependency>
 
       <dependency>
@@ -1273,12 +1343,6 @@
 
       <dependency>
         <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-facet</artifactId>
         <version>${lucene.version}</version>
       </dependency>
@@ -1308,33 +1372,66 @@
         <version>${solr.version}</version>
         <exclusions>
           <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
           </exclusion>
           <exclusion>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-solrj</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>woodstox</groupId>
-            <artifactId>wstx-asl</artifactId>
-          </exclusion>
-          <exclusion>
             <groupId>net.java.dev.stax-utils</groupId>
             <artifactId>stax-utils</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
           </exclusion>
-          <!-- NB: https://hibernate.onjira.com/browse/HSEARCH-380 -->
+          <exclusion>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+
+          <exclusion>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-lucene-analyzers</artifactId>
+          </exclusion>
+          <!-- NB: https://hibernate.atlassian.net/browse/HSEARCH-380 -->
           <exclusion>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-lucene-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1616,6 +1713,16 @@
 
                 <!-- use jdk and javax.xml.stream:stax-api -->
                 <exclude>javax.xml.bind:jsr173_api</exclude>
+
+                <!-- use org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec -->
+                <exclude>org.apache.geronimo.specs:geronimo-jta_1.1_spec</exclude>
+                <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.1_spec</exclude>
+
+                <!-- Use jpa 2.1 -->
+                <exclude>org.hibernate.javax.persistence:hibernate-jpa-2.0-api</exclude>
+
+                <!-- Use org.jboss.marshalling:jboss-marshalling and -river -->
+                <exclude>org.jboss.marshalling:jboss-marshalling-osgi</exclude>
 
                 <!-- Use org.jboss.resteasy:jaxrs-api (since we package resteasy) -->
                 <exclude>org.jboss.spec.javax.ws.rs:jboss-jaxrs-api_1.1_spec</exclude>
@@ -1899,7 +2006,7 @@
       </activation>
       <properties>
         <cargo.container>jboss72x</cargo.container>
-        <cargo.installation>${env.EAP6_URL}</cargo.installation>
+        <cargo.installation>${env.EAP7_URL}</cargo.installation>
       </properties>
     </profile>
 
@@ -1922,10 +2029,6 @@
         <!-- In case this profile was activated by default: -->
         <appserver>wildfly8</appserver>
         <cargo.installation>https://repository.jboss.org/nexus/content/groups/developer/org/wildfly/wildfly-dist/${wildfly.version}/wildfly-dist-${wildfly.version}.zip</cargo.installation>
-
-        <hibernate.module.version>4.2.20.Final</hibernate.module.version>
-        <hibernate.module.filename>wildfly-module-hibernate-main-${hibernate.module.version}.zip</hibernate.module.filename>
-        <hibernate.module.url>https://bintray.com/artifact/download/sflanigan/generic/${hibernate.module.filename}</hibernate.module.url>
       </properties>
 
       <!-- These override the older versions forced by jboss-as-parent 7.2.0 -->
@@ -1955,7 +2058,7 @@
           <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jandex</artifactId>
-            <version>1.1.0.Final</version>
+            <version>2.0.0.Final</version>
             <scope>test</scope>
           </dependency>
           <dependency>
@@ -2009,7 +2112,7 @@
           <dependency>
             <groupId>org.jboss.msc</groupId>
             <artifactId>jboss-msc</artifactId>
-            <version>1.2.2.Final</version>
+            <version>1.2.6.Final</version>
             <scope>test</scope>
           </dependency>
           <dependency>
