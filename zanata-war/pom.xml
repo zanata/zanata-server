@@ -388,7 +388,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Dconcordion.output.dir=${concordion.output.dir} -XX:MaxPermSize=256m</argLine>
+          <argLine>-Dconcordion.output.dir=${concordion.output.dir}</argLine>
           <testNGArtifactName>none:none</testNGArtifactName>
           <!-- TODO ensure that stateful tests (eg using Hibernate Search)
                are isolated, or rename them to ITCase (Arquillian), and
@@ -2047,7 +2047,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.3.176</version>
+      <version>1.4.192</version>
       <scope>provided</scope>
     </dependency>
 
