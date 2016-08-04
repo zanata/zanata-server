@@ -1888,7 +1888,7 @@
                 <echo message="appserver.home=${appserver.home}" />
                 <echo message="DISPLAY=${env.DISPLAY}" />
                 <echo message="WARNING: 'appserver' property must be set unless skipping integration tests" unless:set="appserver" />
-                <echo message="WARNING: 'cargo.installation' property is null. You might need to set the env var EAP6_URL" unless:set="cargo.installation" />
+                <echo message="WARNING: 'cargo.installation' property is null. You might need to set the env var EAP7_URL" unless:set="cargo.installation" />
               </target>
             </configuration>
           </execution>
@@ -2123,7 +2123,7 @@
         </property>
       </activation>
       <properties>
-        <cargo.container>jboss72x</cargo.container>
+        <cargo.container>wildfly8x</cargo.container>
         <cargo.installation>${env.EAP7_URL}</cargo.installation>
       </properties>
     </profile>
