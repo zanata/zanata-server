@@ -1068,26 +1068,26 @@
           <value>jbosseap6</value>
         </property>
       </activation>
-      <!--<build>-->
-        <!--<plugins>-->
-          <!--<plugin>-->
-            <!--<artifactId>maven-antrun-plugin</artifactId>-->
-            <!--<executions>-->
-              <!--&lt;!&ndash; Install arquillian-customised version of standalone.xml &ndash;&gt;-->
-              <!--<execution>-->
-                <!--<id>prepare-arquillian-container</id>-->
-                <!--<phase>package</phase>-->
-                <!--<goals>-->
-                  <!--<goal>run</goal>-->
-                <!--</goals>-->
-                <!--<configuration>-->
-                  <!--<target unless="skipArqTests">-->
-                    <!--<copy overwrite="true" file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian.xml" tofile="${appserver.home}/standalone/configuration/standalone-arquillian.xml" />-->
-                  <!--</target>-->
-                <!--</configuration>-->
-              <!--</execution>-->
-            <!--</executions>-->
-          <!--</plugin>-->
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <!-- Install arquillian-customised version of standalone.xml -->
+              <execution>
+                <id>prepare-arquillian-container</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target unless="skipArqTests">
+                    <copy overwrite="true" file="${project.basedir}/src/test/resources/arquillian/standalone-arquillian.xml" tofile="${appserver.home}/standalone/configuration/standalone-arquillian.xml" />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
 
           <!--<plugin>-->
             <!--<artifactId>maven-dependency-plugin</artifactId>-->
@@ -1102,18 +1102,18 @@
             <!--</configuration>-->
           <!--</plugin>-->
 
-          <!--<plugin>-->
-            <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-            <!--<configuration>-->
-              <!--<systemPropertyVariables>-->
-                <!--&lt;!&ndash; NB this is a container qualifier in arquillian.xml &ndash;&gt;-->
-                <!--<arquillian.launch>jbossas-managed</arquillian.launch>-->
-              <!--</systemPropertyVariables>-->
-            <!--</configuration>-->
-          <!--</plugin>-->
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <!-- NB this is a container qualifier in arquillian.xml -->
+                <arquillian.launch>jbossas-managed</arquillian.launch>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
 
-        <!--</plugins>-->
-      <!--</build>-->
+        </plugins>
+      </build>
 
       <!--<dependencies>-->
         <!--<dependency>-->
