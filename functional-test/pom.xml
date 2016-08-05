@@ -89,12 +89,6 @@
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-core</artifactId>
         <version>1.19</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -396,11 +390,6 @@
       <artifactId>jersey-client</artifactId>
       <version>1.19</version>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
     </dependency>
 
     <dependency>
@@ -984,6 +973,10 @@
                 <!-- use xalan:xalan -->
                 <exclude>jakarta-regexp:jakarta-regexp</exclude>
               </excludes>
+              <includes>
+                <!-- zanata-rest-client currently uses jersey-client, so we use its preferred API classes -->
+                <include>javax.ws.rs:jsr311-api</include>
+              </includes>
               <searchTransitive>true</searchTransitive>
             </bannedDependencies>
           </rules>
