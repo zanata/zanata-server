@@ -24,7 +24,7 @@ Make sure you test changes against the current server before checking them in.
 
 1. Make sure [node and npm](http://nodejs.org/) are installed. Version v5.4.1
 2. Setup dependencies: `make setup`.
-3. Build compressed files: `make build`, files will be in /app/build
+3. Build compressed files: `make build`, files will be in /app/dist
 
 
 ### Run with live reload

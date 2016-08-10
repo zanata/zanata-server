@@ -9,19 +9,6 @@ fontLink.setAttribute('type', 'text/css')
 fontLink.setAttribute('async', '')
 document.getElementsByTagName('head')[0].appendChild(fontLink)
 
-// icon spritesheet is included inline in the app index.html
-// this simulates including icons inline, without needing access to the index
-// (don't care for storybook if it takes a moment for icons to load)
-var iconXHR = new XMLHttpRequest()
-iconXHR.open('GET', 'icons.svg', true)
-iconXHR.send()
-iconXHR.onload = function (e) {
-  var div = document.createElement('div')
-  div.setAttribute('style', 'width:0;height:0;overflow:hidden')
-  div.innerHTML = iconXHR.responseText
-  document.body.insertBefore(div, document.body.childNodes[0])
-}
-
 function loadStories () {
   require('../app/components/stories.js')
 }
