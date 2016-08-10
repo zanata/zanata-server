@@ -19,7 +19,6 @@
     <!-- Keep cached npm modules for 6 hours (21600 seconds) before re-checking for an updated one. -->
     <!-- To avoid slow builds due to excessive network activity to npm -->
     <npm.cache.min>21600</npm.cache.min>
-    <!--<npm.cache.min>10</npm.cache.min>-->
     <!-- The location to download the correct version of Node and NPM to.
         ${download.dir} comes from zanata-server/pom.xml -->
     <node.install.directory>${download.dir}/zanata/node-${node.version}-npm-${npm.version}</node.install.directory>
@@ -44,7 +43,7 @@
 
     <!-- Editor path within the jar to put the built artifacts.
         Note: META-INF/resources/* is served as static content, so this puts
-              the editor at http://<server>/app/editor -->
+              the editor at http://<server>/app -->
     <editor.bundle.destination>${bundle.dest}/app</editor.bundle.destination>
 
     <!-- Directory that contains the actual built frontend app (index, script and styles) -->
