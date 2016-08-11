@@ -4,7 +4,7 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import DocsDropdown from '../../app/components/DocsDropdown'
 import Dropdown from '../../app/components/Dropdown'
-import { Icon } from 'zanata-ui'
+import { Icon, Row } from 'zanata-ui'
 
 describe('DocsDropdownTest', () => {
   it('DocsDropdown markup', () => {
@@ -37,10 +37,12 @@ describe('DocsDropdownTest', () => {
                 isOpen={true}>
         <Dropdown.Button>
           <button className="Link--invert">
-            gastropod.txt
-            <div className="u-sML-1-8 Dropdown-toggleIcon">
-              <Icon name="chevron-down" size="1" />
-            </div>
+            <Row>
+              gastropod.txt
+              <div className="u-sML-1-8 Dropdown-toggleIcon">
+                <Icon name="chevron-down" size="1" />
+              </div>
+            </Row>
           </button>
         </Dropdown.Button>
         <Dropdown.Content>

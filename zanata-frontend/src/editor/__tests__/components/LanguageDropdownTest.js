@@ -4,7 +4,7 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import LanguagesDropdown from '../../app/components/LanguagesDropdown'
 import Dropdown from '../../app/components/Dropdown'
-import { Icon } from 'zanata-ui'
+import { Icon, Row } from 'zanata-ui'
 
 describe('LanguageDropdownTest', () => {
   it('LanguagesDropdown markup', () => {
@@ -50,10 +50,12 @@ describe('LanguageDropdownTest', () => {
                 isOpen={true}>
         <Dropdown.Button>
           <button className="Link--invert">
-            Khuzdul
-            <div className="u-sML-1-8 Dropdown-toggleIcon">
-              <Icon name="chevron-down" size="1" />
-            </div>
+            <Row>
+              Khuzdul
+              <div className="u-sML-1-8 Dropdown-toggleIcon">
+                <Icon name="chevron-down" size="1" />
+              </div>
+            </Row>
           </button>
         </Dropdown.Button>
         <Dropdown.Content>
