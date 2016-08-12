@@ -633,7 +633,7 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     public void deleteDocument(String docId) {
         checkDocumentRemovalAllowed();
-        HDocument doc = documentDAO.getById(new Long(docId));
+        HDocument doc = documentDAO.getById(Long.valueOf(docId));
         documentServiceImpl.makeObsolete(doc);
         resetPageData();
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
