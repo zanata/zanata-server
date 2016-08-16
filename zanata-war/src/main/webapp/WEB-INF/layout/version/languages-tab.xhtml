@@ -72,16 +72,17 @@
     <ui:fragment
       rendered="#{versionHomeAction.zipFileDownloadAllowed}">
       <zanata:confirm-modal id="exportTMXModal"
-        title="#{msgs['jsf.transmemory.Export.Title']}"
+        title="#{msgs['jsf.iteration.ExportTMXIter']}"
         message="#{msgs['jsf.ConfirmExportTMXIter']}"
         onresponse="onExportTMXResponse" />
 
       <script type="application/javascript">
         var localeId;
-        function setSelectedLanguage(id, title) {
+        function setSelectedLanguage(id, message) {
           localeId = id;
-          jQuery("#exportTMXModal [name='title']").html(title)
+          jQuery("#exportTMXModal [name='confirm-message']").html(message)
         }
+
         function onExportTMXResponse(exp) {
           if(exp) {
             window.open('#{request.contextPath}/rest/tm/projects/#{versionHomeAction.projectSlug}/iterations/#{versionHomeAction.versionSlug}?locale=' + localeId)
@@ -218,10 +219,10 @@
             </ui:fragment>
 
             <li>
-              <ui:param name="title" value="#{msgs.format('jsf.iteration.ExportTMX.Language', versionHomeAction.selectedLocale.retrieveDisplayName())}" />
-              <a href="#" class="i__item--right" onclick="setSelectedLanguage('#{versionHomeAction.selectedLocale.localeId.id}', '#{title}')"
+              <ui:param name="message" value="#{msgs.format('jsf.ConfirmExportTMXIterLanguage', versionHomeAction.selectedLocale.retrieveDisplayName())}" />
+              <a href="#" class="i__item--right" onclick="setSelectedLanguage('#{versionHomeAction.selectedLocale.localeId.id}', '#{message}')"
                 data-toggle="modal" data-target="#exportTMXModal">
-                #{title}
+                #{msgs.format('jsf.iteration.ExportTMX.Language', versionHomeAction.selectedLocale.retrieveDisplayName())}
                 <i class="i i--export i__item__icon"></i>
               </a>
             </li>

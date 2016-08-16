@@ -39,7 +39,7 @@
         rendered="#{cc.attrs.actionBean.inProgress}">
 
         <zanata:confirm-modal id="#{cc.clientId}-cancelCopyModal"
-          title="#{msgs['cc.attrs.cancelTooltip']}"
+          title="#{cc.attrs.cancelTooltip}"
           message="#{msgs['jsf.copyVersion.cancel.confirm']}"
           onresponse="#{cc.clientId}OnCancelCopyResponse"/>
 
