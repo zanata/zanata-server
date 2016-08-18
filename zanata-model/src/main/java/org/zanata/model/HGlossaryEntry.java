@@ -46,6 +46,7 @@ import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.zanata.hibernate.search.LocaleIdBridge;
 import org.zanata.util.GlossaryUtil;
 
@@ -94,6 +95,7 @@ public class HGlossaryEntry extends ModelEntityBase {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "glossaryId", nullable = false)
+    @IndexedEmbedded
     public Glossary getGlossary() {
         return glossary;
     }

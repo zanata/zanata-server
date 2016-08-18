@@ -75,11 +75,11 @@ public class HGlossaryEntryJPATest extends ZanataDbunitJpaTest {
 
     @Test
     public void testDeleteGlossaries() {
-        List<HGlossaryEntry> entryList = glossaryDAO.getEntriesByLocale(
-            LocaleId.EN_US, 0, 200, null, null, GlossaryUtil.GLOBAL_QUALIFIED_NAME);
-
         glossaryDAO.deleteAllEntries(GlossaryUtil.GLOBAL_QUALIFIED_NAME);
         glossaryDAO.flush();
+
+        List<HGlossaryEntry> entryList = glossaryDAO.getEntriesByLocale(
+            LocaleId.EN_US, 0, 200, null, null, GlossaryUtil.GLOBAL_QUALIFIED_NAME);
 
         assertThat(entryList.size(), is(0));
     }

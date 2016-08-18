@@ -1,6 +1,9 @@
 import { handleActions } from 'redux-actions'
 import { isEmpty, cloneDeep, forEach, size } from 'lodash'
 import {
+  GLOSSARY_PERMISSION_REQUEST,
+  GLOSSARY_PERMISSION_SUCCESS,
+  GLOSSARY_PERMISSION_FAILURE,
   GLOSSARY_UPDATE_LOCALE,
   GLOSSARY_UPDATE_FILTER,
   GLOSSARY_INIT_STATE_FROM_URL,
@@ -40,6 +43,9 @@ import {
   GLOSSARY_EXPORT_REQUEST,
   GLOSSARY_EXPORT_SUCCESS,
   GLOSSARY_EXPORT_FAILURE,
+  GLOSSARY_GET_QUALIFIED_NAME_REQUEST,
+  GLOSSARY_GET_QUALIFIED_NAME_SUCCESS,
+  GLOSSARY_GET_QUALIFIED_NAME_FAILURE,
   FILE_TYPES
 } from '../actions/glossary'
 import {
@@ -57,20 +63,64 @@ const glossary = handleActions({
     }
   },
   [GLOSSARY_INIT_STATE_FROM_URL]: (state, action) => {
+    const query = action.payload.query
+    const projectSlug = action.payload.projectSlug
     return {
       ...state,
-      src: action.payload.src || DEFAULT_LOCALE.localeId,
-      locale: action.payload.locale || '',
-      filter: action.payload.filter || '',
-      sort: GlossaryHelper.convertSortToObject(action.payload.sort),
-      permission: {
-        canAddNewEntry: window.config.permission.insertGlossary,
-        canUpdateEntry: window.config.permission.updateGlossary,
-        canDeleteEntry: window.config.permission.deleteGlossary,
-        canDownload: window.config.permission.downloadGlossary
+      src: query.src || DEFAULT_LOCALE.localeId,
+      locale: query.locale || '',
+      filter: query.filter || '',
+      sort: GlossaryHelper.convertSortToObject(query.sort),
+      projectSlug: projectSlug
+    }
+  },
+  [GLOSSARY_PERMISSION_REQUEST]: (state, action) => ({
+    ...state,
+    permission: {
+      canAddNewEntry: false,
+      canUpdateEntry: false,
+      canDeleteEntry: false,
+      canDownload: false
+    }
+  }),
+  [GLOSSARY_PERMISSION_SUCCESS]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message:
+          'We are unable to get information from server.' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      return {
+        ...state,
+        permission: {
+          canAddNewEntry: action.payload.insertGlossary,
+          canUpdateEntry: action.payload.updateGlossary,
+          canDeleteEntry: action.payload.deleteGlossary,
+          canDownload: action.payload.downloadGlossary
+        }
       }
     }
   },
+  [GLOSSARY_PERMISSION_FAILURE]: (state, action) => ({
+    ...state,
+    permission: {
+      canAddNewEntry: false,
+      canUpdateEntry: false,
+      canDeleteEntry: false,
+      canDownload: false
+    },
+    notification: {
+      severity: SEVERITY.ERROR,
+      message:
+      'We are unable to get information from server.' +
+      'Please refresh this page and try again.'
+    }
+  }),
   [GLOSSARY_UPDATE_LOCALE]: (state, action) => ({
     ...state,
     selectedTerm: {},
@@ -558,6 +608,47 @@ const glossary = handleActions({
         'Please refresh this page and try again.'
       }
     }
+  },
+  [GLOSSARY_GET_QUALIFIED_NAME_REQUEST]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message: 'We are unable to get glossary information from server. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      return state
+    }
+  },
+  [GLOSSARY_GET_QUALIFIED_NAME_SUCCESS]: (state, action) => {
+    if (action.error) {
+      return {
+        ...state,
+        notification: {
+          severity: SEVERITY.ERROR,
+          message: 'We are unable to get glossary information from server. ' +
+          'Please refresh this page and try again.'
+        }
+      }
+    } else {
+      return {
+        ...state,
+        qualifiedName: action.payload
+      }
+    }
+  },
+  [GLOSSARY_GET_QUALIFIED_NAME_FAILURE]: (state, action) => {
+    return {
+      ...state,
+      notification: {
+        severity: SEVERITY.ERROR,
+        message: 'We are unable to get glossary information from server. ' +
+        'Please refresh this page and try again.'
+      }
+    }
   }
 },
 // default state
@@ -572,7 +663,8 @@ const glossary = handleActions({
     permission: {
       canAddNewEntry: false,
       canUpdateEntry: false,
-      canDeleteEntry: false
+      canDeleteEntry: false,
+      canDownload: false
     },
     terms: {},
     termIds: [],

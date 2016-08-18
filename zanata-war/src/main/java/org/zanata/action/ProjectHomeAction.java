@@ -46,6 +46,8 @@ import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
+import org.zanata.common.LocaleId;
+import org.zanata.dao.GlossaryDAO;
 import org.zanata.dao.LocaleMemberDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.ProjectDAO;
@@ -61,6 +63,7 @@ import org.zanata.model.HProjectLocaleMember;
 import org.zanata.model.HProjectMember;
 import org.zanata.model.LocaleRole;
 import org.zanata.model.ProjectRole;
+import org.zanata.rest.service.GlossaryService;
 import org.zanata.seam.scope.ConversationScopeMessages;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
@@ -73,6 +76,7 @@ import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.DateUtil;
+import org.zanata.util.GlossaryUtil;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -146,6 +150,9 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     @Inject
     private ConversationScopeMessages conversationScopeMessages;
+
+    @Inject
+    private GlossaryDAO glossaryDAO;
 
     @Getter
     private SortingType VersionSortingList = new SortingType(
@@ -731,6 +738,12 @@ public class ProjectHomeAction extends AbstractSortAction implements
             default:
                 return "";
         }
+    }
+
+    public int getGlossarySize() {
+        String qualifiedName = GlossaryUtil.generateQualifiedName(
+                GlossaryService.PROJECT_QUALIFIER_PREFIX, getSlug());
+        return glossaryDAO.getEntriesCount(LocaleId.EN_US, null, qualifiedName);
     }
 
     /**

@@ -23,7 +23,6 @@ package org.zanata.webtrans.server.rpc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,9 +48,8 @@ import org.zanata.webtrans.shared.rpc.GetGlossary;
 import org.zanata.webtrans.shared.rpc.GetGlossaryResult;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
 
-import com.beust.jcommander.internal.Maps;
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import lombok.extern.slf4j.Slf4j;
 import net.customware.gwt.dispatch.server.ExecutionContext;

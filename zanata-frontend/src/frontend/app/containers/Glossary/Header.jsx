@@ -57,6 +57,7 @@ const Header = ({
   icon,
   tooltip,
   extraElements,
+  extraHeadingElements,
   ...props
 }) => {
   return (
@@ -68,6 +69,7 @@ const Header = ({
           </Link>
           <Heading level='1' theme={headingTheme} title={tooltip}>
             {icon && <Icon name={icon} />} {title || 'Title'}
+            {extraHeadingElements}
           </Heading>
           <View theme={headerActionsTheme}>
             {extraElements}
@@ -95,7 +97,8 @@ Header.propTypes = {
   extraElements: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node]
-  )
+  ),
+  extraHeadingElements: PropTypes.object
 }
 
 export default Header

@@ -3,11 +3,13 @@ package org.zanata.webtrans.client.view;
 import java.util.Date;
 
 import org.zanata.ui.input.TextInput;
+import org.zanata.webtrans.client.Application;
 import org.zanata.webtrans.client.resources.Resources;
 import org.zanata.webtrans.client.resources.UiMessages;
 import org.zanata.webtrans.client.ui.DialogBoxCloseButton;
 import org.zanata.webtrans.client.util.DateUtil;
 
+import com.google.common.base.Strings;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -15,11 +17,13 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -39,10 +43,10 @@ public class GlossaryDetailsView extends DialogBox
             .create(GlossaryDetailsIUiBinder.class);
 
     @UiField
-    TextArea sourceText, targetText, targetComment, description;
+    TextArea sourceText, targetText;
 
     @UiField
-    TextBox pos;
+    InlineHTML description, pos, targetComment;
 
     @UiField
     InlineLabel lastModified, srcRef;
@@ -55,6 +59,9 @@ public class GlossaryDetailsView extends DialogBox
 
     @UiField(provided = true)
     DialogBoxCloseButton dismissButton;
+
+    @UiField
+    Anchor link;
 
     private Listener listener;
 
@@ -79,8 +86,13 @@ public class GlossaryDetailsView extends DialogBox
     }
 
     @Override
+    public void setUrl(String url) {
+        link.setHref(url);
+    }
+
+    @Override
     public void setDescription(String descriptionText) {
-        description.setText(descriptionText);
+        setText(description, descriptionText);
     }
 
     @Override
@@ -90,12 +102,22 @@ public class GlossaryDetailsView extends DialogBox
 
     @Override
     public void setPos(String posText) {
-        pos.setText(posText);
+        setText(pos, posText);
     }
 
     @Override
     public void setTargetComment(String targetCommentText) {
-        targetComment.setText(targetCommentText);
+        setText(targetComment, targetCommentText);
+    }
+
+    private void setText(InlineHTML field, String text) {
+        if (Strings.isNullOrEmpty(text)) {
+            field.setText(messages.noContent());
+            field.addStyleName("txt--meta");
+        } else {
+            field.setText(text);
+            field.removeStyleName("txt--meta");
+        }
     }
 
     @Override
@@ -136,21 +158,6 @@ public class GlossaryDetailsView extends DialogBox
     @Override
     public HasText getTargetText() {
         return targetText;
-    }
-
-    @Override
-    public HasText getSrcRef() {
-        return srcRef;
-    }
-
-    @Override
-    public HasText getSourceLabel() {
-        return sourceLabel;
-    }
-
-    @Override
-    public HasText getTargetLabel() {
-        return targetLabel;
     }
 
     @UiHandler("entryListBox")

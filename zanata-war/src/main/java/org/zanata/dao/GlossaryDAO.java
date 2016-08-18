@@ -83,7 +83,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         StringBuilder queryString = new StringBuilder();
         queryString.append("select term.glossaryEntry from HGlossaryTerm as term ")
             .append("where term.locale.localeId = term.glossaryEntry.srcLocale.localeId ")
-            .append("and term.glossaryEntry.glossary.qualifiedName =: qualifiedName ")
+            .append("and term.glossaryEntry.glossary.qualifiedName =:qualifiedName ")
             .append("order by term.content");
         Query query = getSession().createQuery(queryString.toString());
         query.setParameter("qualifiedName", qualifiedName)
@@ -319,17 +319,23 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return matches;
     }
 
+    @NativeQuery
     public int deleteAllEntries(String qualifiedName) {
+
+        /**
+         * DELETE FROM HGlossaryTerm where glossaryEntryId in (select e.id from HGlossaryEntry e INNER JOIN Glossary g on e.glossaryId = g.id where g.qualifiedName =: qualifiedName)
+         */
+
         String deleteTermQuery =
-                "Delete HGlossaryTerm where glossaryEntry.glossary.qualifiedName =:qualifiedName";
-        Query query = getSession().createQuery(deleteTermQuery);
+                "DELETE FROM HGlossaryTerm WHERE glossaryEntryId IN (SELECT e.id FROM HGlossaryEntry e INNER JOIN Glossary g ON e.glossaryId = g.id WHERE g.qualifiedName =:qualifiedName)";
+        Query query = getSession().createSQLQuery(deleteTermQuery);
         query.setParameter("qualifiedName", qualifiedName)
                 .setComment("GlossaryDAO.deleteAllEntries-terms");
         int rowCount = query.executeUpdate();
 
         String deleteEntryQuery =
-                "Delete HGlossaryEntry where glossary.qualifiedName =:qualifiedName";
-        Query query2 = getSession().createQuery(deleteEntryQuery);
+                "DELETE FROM HGlossaryEntry where glossaryId IN (SELECT id FROM Glossary WHERE qualifiedName =:qualifiedName)";
+        Query query2 = getSession().createSQLQuery(deleteEntryQuery);
         query2.setParameter("qualifiedName", qualifiedName)
                 .setComment("GlossaryDAO.deleteAllEntries-entries");
         query2.executeUpdate();

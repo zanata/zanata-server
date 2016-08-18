@@ -39,12 +39,6 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
 
     HasText getTargetText();
 
-    HasText getSrcRef();
-
-    HasText getSourceLabel();
-
-    HasText getTargetLabel();
-
     void clearEntries();
 
     void addEntry(String entriesLabel);
@@ -52,6 +46,8 @@ public interface GlossaryDetailsDisplay extends WidgetDisplay {
     void center();
 
     void hide();
+
+    void setUrl(String url);
 
     void setDescription(String description);
 

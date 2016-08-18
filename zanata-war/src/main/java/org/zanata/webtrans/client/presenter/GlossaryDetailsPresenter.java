@@ -91,6 +91,7 @@ public class GlossaryDetailsPresenter extends
         display.setPos(selectedDetailEntry.getPos());
         display.setTargetComment(selectedDetailEntry.getTargetComment());
         display.setLastModifiedDate(selectedDetailEntry.getLastModifiedDate());
+        display.setUrl(selectedDetailEntry.getUrl());
     }
 
     @Override

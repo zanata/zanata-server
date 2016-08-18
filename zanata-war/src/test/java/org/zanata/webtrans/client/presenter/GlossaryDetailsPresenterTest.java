@@ -22,6 +22,7 @@ package org.zanata.webtrans.client.presenter;
 
 
 import static org.hamcrest.MatcherAssert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -87,14 +88,6 @@ public class GlossaryDetailsPresenterTest {
     private ArgumentCaptor<AsyncCallback<GetGlossaryDetailsResult>> getGlossarycallbackCaptor;
     @Mock
     private GlossaryDisplay.Listener glossaryListener;
-    @Mock
-    private HasText srcRef;
-    @Mock
-    private HasText lastModified;
-    @Mock
-    private HasText sourceLabel;
-    @Mock
-    private HasText targetLabel;
 
     @Before
     public void beforeMethod() {
@@ -141,10 +134,7 @@ public class GlossaryDetailsPresenterTest {
         when(glossaryDetails.getSrcLocale()).thenReturn(new LocaleId("en-US"));
         when(glossaryDetails.getTargetLocale()).thenReturn(new LocaleId("zh"));
         when(glossaryDetails.getTarget()).thenReturn("source text");
-        when(display.getSrcRef()).thenReturn(srcRef);
         when(display.getTargetText()).thenReturn(targetText);
-        when(display.getSourceLabel()).thenReturn(sourceLabel);
-        when(display.getTargetLabel()).thenReturn(targetLabel);
         when(messages.entriesLabel(1)).thenReturn("1");
 
         callback.onSuccess(new GetGlossaryDetailsResult(Lists
@@ -154,8 +144,11 @@ public class GlossaryDetailsPresenterTest {
         verify(targetText).setText(item.getSource());
         verify(display).clearEntries();
         verify(display).setSourceText(anyString());
-        verify(targetLabel).setText(anyString());
+        verify(display).setSourceLabel(anyString());
+        verify(display).setTargetLabel(anyString());
+        verify(display).setUrl(anyString());
         verify(display).addEntry("1");
         verify(display).center();
+        verify(display).setLastModifiedDate(any());
     }
 }

@@ -46,6 +46,7 @@ import org.zanata.rest.dto.GlossaryLocaleInfo;
 import org.zanata.rest.dto.GlossaryResults;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.rest.dto.LocaleDetails;
+import org.zanata.rest.dto.QualifiedName;
 import org.zanata.rest.dto.ResultList;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.service.GlossaryFileService;
@@ -77,7 +78,8 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response getQualifiedName() {
-        List<String> names = Lists.newArrayList(GLOBAL_QUALIFIED_NAME);
+        List<QualifiedName> names =
+                Lists.newArrayList(new QualifiedName(GLOBAL_QUALIFIED_NAME));
         return Response.ok(names).build();
     }
 
@@ -181,15 +183,16 @@ public class GlossaryService implements GlossaryResource {
                 .entity("Not supported file type-" + fileType)
                 .build();
         }
-        HLocale srcLocale = getSourceLocale();
+        LocaleId srcLocaleId = getSourceLocale().getLocaleId();
 
         // use commaSeparatedLanguage is exist,
         // otherwise use all translations available for all glossary entry
         Set<LocaleId> transList;
         if (StringUtils.isEmpty(commaSeparatedLanguage)) {
             transList =
-                glossaryDAO.getTranslationLocales(srcLocale.getLocaleId(),
-                    qualifiedName).keySet();
+                    glossaryDAO
+                            .getTranslationLocales(srcLocaleId, qualifiedName)
+                            .keySet();
         } else {
             transList = Sets.newHashSet();
             for (String locale : commaSeparatedLanguage.split(",")) {
@@ -209,17 +212,12 @@ public class GlossaryService implements GlossaryResource {
         transferEntriesResource(glossaryDAO.getEntries(qualifiedName), entries);
 
         try {
-            GlossaryStreamingOutput output;
-            String filename;
-            if (fileType.equalsIgnoreCase("csv")) {
-                filename = "glossary.csv";
-                output = new CSVStreamingOutput(entries,
-                        srcLocale.getLocaleId(), transLocales);
-            } else {
-                filename = "glossary.zip";
-                output = new PotStreamingOutput(entries,
-                        srcLocale.getLocaleId(), transLocales);
-            }
+            GlossaryStreamingOutput output = fileType.equalsIgnoreCase("csv")
+                    ? new CSVStreamingOutput(entries, srcLocaleId, transLocales)
+                    : new PotStreamingOutput(entries, srcLocaleId,
+                            transLocales);
+            String filename = getFileName(qualifiedName, fileType);
+
             return Response
                     .ok()
                     .header("Content-Disposition",
@@ -231,6 +229,24 @@ public class GlossaryService implements GlossaryResource {
                 .entity("Error while generating glossary file. Please try again")
                 .build();
         }
+    }
+
+    /**
+     * Generate file name by qualifiedName and type
+     * e.g.
+     * - project/zanata,
+     *   - csv, returns zanata_glossary.csv
+     *   - po, returns zanata_glossary.zip
+     * - global/default,
+     *   - csv, returns glossary.csv
+     *   - po, returns glossary.zip
+     */
+    private String getFileName(String qualifiedName, String type) {
+        String filePrefix = isProjectGlossary(qualifiedName)
+                ? getProjectSlug(qualifiedName) + "_" : "";
+
+        return type.equalsIgnoreCase("csv") ? filePrefix + "glossary.csv"
+                : filePrefix + "glossary.zip";
     }
 
     @Override
@@ -277,7 +293,7 @@ public class GlossaryService implements GlossaryResource {
         try {
             LocaleId srcLocaleId = new LocaleId(form.getSrcLocale());
             LocaleId transLocaleId = null;
-            if(!StringUtils.isEmpty(form.getTransLocale())) {
+            if(StringUtils.isNotEmpty(form.getTransLocale())) {
                 transLocaleId = new LocaleId(form.getTransLocale());
             }
             Map<LocaleId, List<GlossaryEntry>> entries =
@@ -311,10 +327,9 @@ public class GlossaryService implements GlossaryResource {
     }
 
     @Override
-    public Response deleteEntry(Long id,
-            @DefaultValue(GLOBAL_QUALIFIED_NAME) @QueryParam("qualifiedName") String qualifiedName) {
+    public Response deleteEntry(Long id) {
         Response response =
-                checkGlossaryPermission(qualifiedName, "glossary-delete");
+                checkGlossaryPermission("", "glossary-delete");
         if (response != null) {
             return response;
         }
@@ -362,9 +377,13 @@ public class GlossaryService implements GlossaryResource {
         return null;
     }
 
-    private boolean isProjectGlossary(String qualifiedName) {
+    public static boolean isProjectGlossary(String qualifiedName) {
         return StringUtils.isNotBlank(qualifiedName)
                 && qualifiedName.startsWith(PROJECT_QUALIFIER_PREFIX);
+    }
+
+    public static String getProjectSlug(String qualifiedName) {
+        return qualifiedName.replaceFirst(PROJECT_QUALIFIER_PREFIX, "");
     }
 
     /**
@@ -374,8 +393,7 @@ public class GlossaryService implements GlossaryResource {
      * e.g. project/zanata returns zanata
      */
     private HProject getProjectByQualifiedName(String qualifiedName) {
-        String projectSlug =
-                qualifiedName.replaceFirst(PROJECT_QUALIFIER_PREFIX, "");
+        String projectSlug = getProjectSlug(qualifiedName);
         if (StringUtils.isNotBlank(projectSlug)) {
             return projectDAO.getBySlug(projectSlug);
         }
@@ -493,6 +511,8 @@ public class GlossaryService implements GlossaryResource {
         glossaryEntry.setSourceReference(hGlossaryEntry.getSourceRef());
         glossaryEntry.setPos(hGlossaryEntry.getPos());
         glossaryEntry.setDescription(hGlossaryEntry.getDescription());
+        glossaryEntry.setQualifiedName(new QualifiedName(
+                hGlossaryEntry.getGlossary().getQualifiedName()));
         glossaryEntry.setTermsCount(hGlossaryEntry.getGlossaryTerms().size());
         return glossaryEntry;
     }

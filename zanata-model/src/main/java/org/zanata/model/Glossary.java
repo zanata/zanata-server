@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
@@ -22,7 +23,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Access(AccessType.FIELD)
 @Getter
-@Indexed
 public class Glossary implements Serializable {
     public Glossary(String qualifiedName) {
         this.qualifiedName = qualifiedName;
@@ -38,6 +38,6 @@ public class Glossary implements Serializable {
      * e.g. project/{project slug}, global/default
      */
     @NotNull
-    @Field
+    @Field(analyze = Analyze.NO)
     private String qualifiedName;
 }

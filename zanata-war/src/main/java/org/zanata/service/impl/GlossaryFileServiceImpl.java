@@ -53,6 +53,7 @@ import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
+import org.zanata.rest.dto.QualifiedName;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.GlossaryFileService;
 import org.zanata.service.LocaleService;
@@ -107,20 +108,19 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
     @Override
     public GlossaryProcessed saveOrUpdateGlossary(
-            List<GlossaryEntry> glossaryEntries,
-            Optional<LocaleId> transLocaleId) {
+            List<GlossaryEntry> dtoEntries, Optional<LocaleId> transLocaleId) {
 
         int counter = 0;
         List<HGlossaryEntry> entries = Lists.newArrayList();
         List<String> warnings = Lists.newArrayList();
-        for (int i = 0; i < glossaryEntries.size(); i++) {
-            GlossaryEntry entry = glossaryEntries.get(i);
+        for (int i = 0; i < dtoEntries.size(); i++) {
+            GlossaryEntry entry = dtoEntries.get(i);
 
             Optional<String> message = validateGlossaryEntry(entry);
             if (message.isPresent()) {
                 warnings.add(message.get());
                 counter++;
-                if (isExecuteCommit(counter, i, glossaryEntries.size())) {
+                if (isExecuteCommit(counter, i, dtoEntries.size())) {
                     counter = 0;
                 }
                 continue;
@@ -135,9 +135,12 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
             HGlossaryEntry hGlossaryEntry = transferGlossaryEntryAndSave(
                     entry, transLocaleId, onlyTransferTransTerm);
+            if(hGlossaryEntry.getContentHash().startsWith("3d8c541a")) {
+                System.out.println(hGlossaryEntry.getGlossary().getQualifiedName());
+            }
             entries.add(hGlossaryEntry);
             counter++;
-            if (isExecuteCommit(counter, i, glossaryEntries.size())) {
+            if (isExecuteCommit(counter, i, dtoEntries.size())) {
                 counter = 0;
             }
         }
@@ -245,9 +248,8 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         if (id != null) {
             hGlossaryEntry = glossaryDAO.findById(id);
         } else {
-            hGlossaryEntry =
-                    glossaryDAO.getEntryByContentHash(contentHash,
-                            GlossaryUtil.GLOBAL_QUALIFIED_NAME);
+            hGlossaryEntry = glossaryDAO.getEntryByContentHash(contentHash,
+                    from.getQualifiedName().getName());
         }
 
         if (hGlossaryEntry == null) {
@@ -272,7 +274,7 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
 
         HGlossaryEntry sameHashEntry =
                 glossaryDAO.getEntryByContentHash(contentHash,
-                        GlossaryUtil.GLOBAL_QUALIFIED_NAME);
+                    from.getQualifiedName().getName());
 
         if(sameHashEntry == null) {
             return Optional.empty();
@@ -304,14 +306,16 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         to.setPos(from.getPos());
         to.setDescription(from.getDescription());
         String qualifiedName = GlossaryUtil.GLOBAL_QUALIFIED_NAME;
-        if (StringUtils.isNotBlank(from.getQualifiedName())) {
-            qualifiedName = from.getQualifiedName();
+        if (from.getQualifiedName() != null
+                && StringUtils.isNotBlank(from.getQualifiedName().getName())) {
+            qualifiedName = from.getQualifiedName().getName();
         }
         Glossary glossary =
                 glossaryDAO.getGlossaryByQualifiedName(qualifiedName);
         if (glossary == null) {
             glossary = new Glossary(qualifiedName);
             glossaryDAO.persistGlossary(glossary);
+            executeCommit();
         }
 
         to.setGlossary(glossary);

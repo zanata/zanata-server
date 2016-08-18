@@ -63,6 +63,12 @@ public interface UiMessages extends Messages {
     @DefaultMessage("Target Term")
     String targetTermLabel();
 
+    @DefaultMessage("Project glossary")
+    String glossaryProjectTypeTitle();
+
+    @DefaultMessage("Glossary")
+    String glossaryGlobalTypeTitle();
+
     @DefaultMessage("Translation Memory")
     String translationMemoryHeading();
 
@@ -200,4 +206,7 @@ public interface UiMessages extends Messages {
 
     @DefaultMessage("None")
     String chooseRefLang();
+
+    @DefaultMessage("No content")
+    String noContent();
 }

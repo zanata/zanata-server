@@ -37,7 +37,9 @@ import org.zanata.rest.NoSuchEntityException;
 import org.zanata.rest.dto.Link;
 import org.zanata.rest.dto.Project;
 import org.zanata.rest.dto.ProjectIteration;
+import org.zanata.rest.dto.QualifiedName;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.util.GlossaryUtil;
 
 import com.google.common.base.Objects;
 
@@ -188,11 +190,24 @@ public class ProjectService implements ProjectResource {
 
     @Override
     public Response getGlossaryQualifiedName() {
-        return Response.ok(getGlossaryQualifiedName(projectSlug)).build();
+        try {
+            EntityTag etag = eTagUtils.generateTagForProject(getProjectSlug());
+            ResponseBuilder response = request.evaluatePreconditions(etag);
+            if (response != null) {
+                return response.build();
+            }
+
+            QualifiedName qualifiedName =
+                    new QualifiedName(getGlossaryQualifiedName(projectSlug));
+            return Response.ok(qualifiedName).tag(etag).build();
+        } catch (NoSuchEntityException e) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
     }
 
     public static String getGlossaryQualifiedName(String projectSlug) {
-        return PROJECT_QUALIFIER_PREFIX + projectSlug;
+        return GlossaryUtil.generateQualifiedName(PROJECT_QUALIFIER_PREFIX,
+                projectSlug);
     }
 
     private static void transfer(Project from, HProject to) {
