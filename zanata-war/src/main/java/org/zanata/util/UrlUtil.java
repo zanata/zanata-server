@@ -259,7 +259,11 @@ public class UrlUtil implements Serializable {
             String urlWithWindowId = addWindowId(url);
             FacesContext.getCurrentInstance().getExternalContext().redirect(urlWithWindowId);
         } catch (IOException e) {
-            log.error("failed to redirect to {}", url, e);
+            log.warn("I/O error redirecting to url: {}, {}", url,
+                e.toString());
+            throw Throwables.propagate(e);
+        } catch (IllegalStateException e) {
+            log.error("error redirecting to url:" + url, e);
             throw Throwables.propagate(e);
         }
     }

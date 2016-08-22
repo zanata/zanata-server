@@ -110,7 +110,11 @@
       <to-view-id>/account/login.xhtml</to-view-id>
       <redirect/>
     </navigation-case>
-
+    <navigation-case>
+      <if>#{identity.loggedIn and userRedirect.isRedirect()}</if>
+      <to-view-id>#{userRedirect.continueToPreviousUrl()}</to-view-id>
+      <redirect/>
+    </navigation-case>
     <navigation-case>
       <!-- Default redirection after a log in is to the dashboard -->
       <if>#{identity.loggedIn}</if>

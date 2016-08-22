@@ -205,4 +205,12 @@ public class UserRedirectBean implements Serializable {
         setUrl(urlUtil.getLocalUrl(request));
     }
 
+    public String continueToPreviousUrl() {
+        try {
+            urlUtil.redirectToInternal(getUrl());
+        } catch (Exception e) {
+            // already logged by urlUtil.redirectToInternal.
+        }
+        return "continue";
+    }
 }
