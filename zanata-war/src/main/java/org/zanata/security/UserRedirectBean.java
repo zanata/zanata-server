@@ -20,6 +20,7 @@
  */
 package org.zanata.security;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -36,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zanata.events.NotLoggedInEvent;
 import org.zanata.servlet.annotations.ContextPath;
+import org.zanata.util.FacesNavigationUtil;
 import org.zanata.util.Synchronized;
 import org.zanata.util.UrlUtil;
 
@@ -205,4 +207,12 @@ public class UserRedirectBean implements Serializable {
         setUrl(urlUtil.getLocalUrl(request));
     }
 
+    public String redirect() {
+        try {
+            FacesNavigationUtil.redirect(FacesContext.getCurrentInstance(), getUrl());
+        } catch (IOException e) {
+            return "continue";
+        }
+        return "continue";
+    }
 }
