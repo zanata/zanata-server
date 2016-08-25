@@ -52,6 +52,10 @@
   background-color: var(--Progressbar-unsure);
 }
 
+.Progressbar-rejected {
+  background-color: var(--Progressbar-warning)
+}
+
 .Progressbar-untranslated {
   background-color: var(--Progressbar-neutral);
 }
