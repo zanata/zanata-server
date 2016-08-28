@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -501,6 +502,7 @@ public class StatisticsServiceImpl implements StatisticsResource {
     public List<TranslationMatrix> getUserWorkMatrix(
             @PathParam("username") final String username,
             @PathParam("dateRangeParam") String dateRangeParam,
+            @QueryParam("includeAutomatedEntry") @DefaultValue("false") boolean automatedEntry,
             @QueryParam("userTimeZone") String userTimeZoneID) {
         HPerson person =
                 findPersonOrExceptionOnNotFound(username);
@@ -525,8 +527,10 @@ public class StatisticsServiceImpl implements StatisticsResource {
 
         List<TranslationMatrix> translationMatrixList =
                 textFlowTargetHistoryDAO.getUserTranslationMatrix(person,
-                        fromDate, toDate, userZoneOpt, systemZone,
-                        new UserMatrixResultTransformer(entityManager, dateFormatter));
+                        fromDate, toDate, automatedEntry, userZoneOpt,
+                        systemZone,
+                        new UserMatrixResultTransformer(entityManager,
+                                dateFormatter));
 
         return translationMatrixList;
     }
