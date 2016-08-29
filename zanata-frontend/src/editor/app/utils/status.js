@@ -31,6 +31,8 @@ export function defaultSaveStatus (phrase) {
     // TODO may also need to handle 'approved' and 'rejected'
     //      when user is a reviewer and in review mode.
     return STATUS_TRANSLATED
+  } else if (phrase.status === STATUS_REJECTED) {
+    return STATUS_NEEDS_WORK
   } else {
     // TODO when phrase status is a simple value,
     //      change to just return the simple value
