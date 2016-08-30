@@ -23,7 +23,9 @@ chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
 docker build -t zanata/server-dev docker/
 
 # runs zanata/server-dev:latest docker image
-docker run --rm --name zanata --link zanatadb:db \
+docker run --rm \
+    -e JAVA_OPTS='-Xmx2g' \
+    --name zanata --link zanatadb:db \
     -p 8080:8080 -p 8787:8787 -it \
     -v $ZANATA_WAR:/opt/jboss/wildfly/standalone/deployments/ROOT.war \
     -v $ZANATA_DIR:/opt/jboss/zanata \
