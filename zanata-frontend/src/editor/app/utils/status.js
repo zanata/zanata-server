@@ -31,8 +31,6 @@ export function defaultSaveStatus (phrase) {
     // TODO may also need to handle 'approved' and 'rejected'
     //      when user is a reviewer and in review mode.
     return STATUS_TRANSLATED
-  } else if (phrase.status === STATUS_REJECTED) {
-    return STATUS_NEEDS_WORK
   } else {
     // TODO when phrase status is a simple value,
     //      change to just return the simple value
@@ -56,6 +54,11 @@ function allValidSaveStatuses (phrase) {
     return [STATUS_UNTRANSLATED]
   } else if (hasEmptyTranslation(phrase)) {
     return [STATUS_NEEDS_WORK]
+  } else if
+    (phrase.status === STATUS_REJECTED && !hasTranslationChanged(phrase)) {
+    // rejected state cannot be saved in this editor yet, but should display
+    // as a disabled button until the text is changed.
+    return [STATUS_REJECTED, STATUS_TRANSLATED, STATUS_NEEDS_WORK]
   } else {
     // TODO also need to handle 'approved' and 'rejected'
     //      when user is a reviewer and in review mode
