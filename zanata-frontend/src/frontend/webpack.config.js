@@ -8,13 +8,6 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
-    preLoaders: [
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'eslint'
-      }
-    ],
     loaders: [
       {
         test: /\.jsx?$/,
@@ -27,7 +20,12 @@ module.exports = {
       {
         test: /\.css$/,
         loader: 'style!css!autoprefixer?browsers=last 2 versions'
-      }
+      },
+      {
+        test: /\.less$/,
+        exclude: /node_modules/,
+        loader: "style!css!autoprefixer!less"
+      },
     ]
   },
   plugins: [
@@ -36,7 +34,7 @@ module.exports = {
     new webpack.NoErrorsPlugin()
   ],
   resolve: {
-    extensions: ['', '.js', '.jsx', '.json', '.css']
+    extensions: ['', '.js', '.jsx', '.json', '.css', '.less']
   },
   node: {
     __dirname: true
