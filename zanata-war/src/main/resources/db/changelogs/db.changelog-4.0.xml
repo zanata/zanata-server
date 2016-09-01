@@ -89,4 +89,36 @@
     </createIndex>
   </changeSet>
 
+  <changeSet id="3" author="aeng@redhat.com">
+    <comment>Add table WebHook_WebHookType</comment>
+    <createTable tableName="WebHook_WebHookType">
+      <column name="webhookId" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="varchar(50)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint
+      baseTableName = "WebHook_WebHookType"
+      baseColumnNames = "webhookId"
+      constraintName = "FK_WebHookType_WebHook"
+      referencedTableName = "WebHook"
+      referencedColumnNames = "id"/>
+    <addPrimaryKey tableName="WebHook_WebHookType" columnNames="webhookId,type" />
+  </changeSet>
+
+  <changeSet id="4" author="aeng@redhat.com">
+    <comment>Migrate all WebHookType from WebHook to WebHook_WebHookType</comment>
+    <sql>
+      INSERT INTO WebHook_WebHookType (webhookId, type) SELECT id, webhookType FROM WebHook
+    </sql>
+  </changeSet>
+
+  <changeSet id="5" author="aeng@redhat.com">
+    <comment>Drop webhookType in WebHook</comment>
+    <dropColumn tableName="WebHook" columnName="webhookType" />
+  </changeSet>
+
 </databaseChangeLog>

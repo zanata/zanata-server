@@ -22,26 +22,30 @@
 package org.zanata.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
+import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 import org.zanata.model.type.WebhookType;
-import org.zanata.model.type.WebhookTypeType;
 import org.zanata.model.validator.Url;
 
 /**
@@ -51,9 +55,6 @@ import org.zanata.model.validator.Url;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
-@TypeDefs({
-    @TypeDef(name = "webhookType", typeClass = WebhookTypeType.class)
-})
 public class WebHook implements Serializable {
 
     private Long id;
@@ -63,7 +64,7 @@ public class WebHook implements Serializable {
     @Url
     private String url;
 
-    private WebhookType webhookType;
+    private Set<WebhookType> types = Sets.newHashSet();
 
     /**
      * Secret key used to generate webhook header in hmac-sha1 encryption.
@@ -72,10 +73,11 @@ public class WebHook implements Serializable {
     @Column(nullable = true)
     private String secret;
 
-    public WebHook(HProject project, String url, WebhookType webhookType, String secret) {
+    public WebHook(HProject project, String url, Set<WebhookType> types,
+        String secret) {
         this.project = project;
         this.url = url;
-        this.webhookType = webhookType;
+        this.types = types;
         this.secret = secret;
     }
 
@@ -85,15 +87,32 @@ public class WebHook implements Serializable {
         return id;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+            CascadeType.REFRESH })
     @JoinColumn(name = "projectId", nullable = false)
     public HProject getProject() {
         return project;
     }
 
-    @Type(type = "webhookType")
-    public WebhookType getWebhookType() {
-        return webhookType;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @JoinTable(name = "WebHook_WebHookType",
+        joinColumns = @JoinColumn(name = "webhookId"))
+    @Column(name = "type", nullable = false)
+    public Set<WebhookType> getTypes() {
+        return types;
     }
 
+    @Transient
+    public void update(String url, Set<WebhookType> newTypes, String secret) {
+        this.url = url;
+        this.secret = secret;
+        this.types.addAll(newTypes);
+        Set<WebhookType> currentTypes = Sets.newHashSet(this.types);
+        for (WebhookType type: currentTypes) {
+            if (!newTypes.contains(type)) {
+                this.types.remove(type);
+            }
+        }
+    }
 }

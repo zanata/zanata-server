@@ -50,8 +50,10 @@ import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.StatisticsUtil;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 
 import static org.mockito.Matchers.eq;
@@ -103,10 +105,10 @@ public class TranslationUpdatedManagerTest {
         HTextFlowTarget target = Mockito.mock(HTextFlowTarget.class);
 
         webHooks = Lists
-                .newArrayList(new WebHook(project, "http://test.example.com",
-                        WebhookType.DocumentMilestoneEvent, key),
-                        new WebHook(project, "http://test.example.com",
-                                WebhookType.DocumentStatsEvent, key));
+            .newArrayList(new WebHook(project, "http://test.example.com",
+                    Sets.newHashSet(WebhookType.DocumentMilestoneEvent), key),
+                new WebHook(project, "http://test.example.com",
+                    Sets.newHashSet(WebhookType.DocumentStatsEvent), key));
 
         when(person.getAccount()).thenReturn(account);
         when(account.getUsername()).thenReturn(username);
@@ -153,7 +155,7 @@ public class TranslationUpdatedManagerTest {
         verify(spyManager).publishWebhookEvent(captor.capture(),
                 eq(webhookEvent));
         assertThat(captor.getValue().size(), is(1));
-        assertThat(((WebHook) captor.getValue().get(0)).getWebhookType(),
-                is(WebhookType.DocumentStatsEvent));
+        assertThat(((WebHook) captor.getValue().get(0)).getTypes(),
+                contains(WebhookType.DocumentStatsEvent));
     }
 }

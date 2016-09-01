@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ProjectWebHooksTab extends ProjectBasePage {
 
     private By webHooksForm = By.id("settings-webhooks-form");
-    private By saveWebhookButton = By.id("add-webhook-button");
+    private By saveWebhookButton = By.id("addWebhookBtn");
     private By urlInputField = By.id("payloadUrlInput");
     private By secretInputField = By.id("secretInput");
 

@@ -6,6 +6,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.common.collect.Lists;
 import org.zanata.async.Async;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
@@ -69,10 +70,10 @@ public class TranslationUpdatedManager {
         }
 
         List<WebHook> docStatsWebHooks =
-                project.getWebHooks().stream().filter(
-                        webHook -> webHook.getWebhookType()
-                                .equals(WebhookType.DocumentStatsEvent))
-                        .collect(Collectors.toList());
+            project.getWebHooks().stream().filter(
+                webHook -> webHook.getTypes()
+                    .contains(WebhookType.DocumentStatsEvent))
+                .collect(Collectors.toList());
 
         if (docStatsWebHooks.isEmpty()) {
             return;
