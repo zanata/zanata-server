@@ -152,7 +152,8 @@ public class HProject extends SlugEntityBase implements Serializable,
     @Column(name = "alias", nullable = false)
     private Map<LocaleId, String> localeAliases = Maps.newHashMap();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project",
+        orphanRemoval = true)
     private List<WebHook> webHooks = Lists.newArrayList();
 
     @Enumerated(EnumType.STRING)

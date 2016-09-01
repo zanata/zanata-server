@@ -74,6 +74,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import javax.enterprise.event.Event;
 import org.zanata.util.UrlUtil;
+import org.zanata.webhook.events.SourceDocumentChangedEvent;
 
 import javax.enterprise.event.Observes;
 
@@ -124,6 +125,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Inject @Authenticated
     private HAccount authenticatedAccount;
+
+    @Inject
+    private WebhookServiceImpl webhookServiceImpl;
 
     @Inject
     private Messages msgs;
@@ -187,6 +191,7 @@ public class DocumentServiceImpl implements DocumentService {
                         .validateSourceLocale(sourceDoc.getLang());
 
         boolean changed = false;
+        boolean isCreateOperation = false;
         int nextDocRev;
         if (document == null) { // must be a create operation
             nextDocRev = 1;
@@ -198,12 +203,14 @@ public class DocumentServiceImpl implements DocumentService {
             document.setProjectIteration(hProjectIteration);
             hProjectIteration.getDocuments().put(docId, document);
             document = documentDAO.makePersistent(document);
+            isCreateOperation = true;
         } else if (document.isObsolete()) { // must also be a create operation
             nextDocRev = document.getRevision() + 1;
             changed = true;
             document.setObsolete(false);
             // not sure if this is needed
             hProjectIteration.getDocuments().put(docId, document);
+            isCreateOperation = true;
         } else { // must be an update operation
             nextDocRev = document.getRevision() + 1;
         }
@@ -218,6 +225,13 @@ public class DocumentServiceImpl implements DocumentService {
             documentUploadedEvent.fire(new DocumentUploadedEvent(
                     actorId, document.getId(), true, hLocale.getLocaleId()));
             clearStatsCacheForUpdatedDocument(document);
+
+            if (isCreateOperation) {
+                webhookServiceImpl.processWebhookSourceDocumentChanged(
+                        projectSlug, iterationSlug, document.getDocId(),
+                        hProjectIteration.getProject().getWebHooks(),
+                        SourceDocumentChangedEvent.ChangeType.ADDED);
+            }
         }
 
         if (copyTrans && nextDocRev == 1) {
@@ -236,6 +250,13 @@ public class DocumentServiceImpl implements DocumentService {
         documentDAO.makePersistent(document);
         documentDAO.flush();
         clearStatsCacheForUpdatedDocument(document);
+
+        HProjectIteration version = document.getProjectIteration();
+        HProject proj = version.getProject();
+        webhookServiceImpl.processWebhookSourceDocumentChanged(
+                proj.getSlug(), version.getSlug(), document.getDocId(),
+                proj.getWebHooks(),
+                SourceDocumentChangedEvent.ChangeType.REMOVED);
     }
 
     // TODO [CDI] simulate async event (e.g. this event was fired asyncly in seam)
@@ -249,10 +270,10 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         List<WebHook> docMilestoneWebHooks =
-                project.getWebHooks().stream().filter(
-                        webHook -> webHook.getWebhookType()
-                                .equals(WebhookType.DocumentMilestoneEvent))
-                        .collect(Collectors.toList());
+            project.getWebHooks().stream().filter(
+                webHook -> webHook.getTypes()
+                    .contains(WebhookType.DocumentMilestoneEvent))
+                .collect(Collectors.toList());
 
         if (docMilestoneWebHooks.isEmpty()) {
             return;

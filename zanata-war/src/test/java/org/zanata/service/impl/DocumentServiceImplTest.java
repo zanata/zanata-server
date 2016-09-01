@@ -22,6 +22,7 @@
 package org.zanata.service.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +62,8 @@ import org.zanata.service.TranslationStateCache;
 import org.zanata.ui.model.statistic.WordStatistic;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import org.zanata.util.UrlUtil;
 
 /**
@@ -119,12 +123,14 @@ public class DocumentServiceImplTest {
         HDocument document = Mockito.mock(HDocument.class);
 
         webHooks = Lists.newArrayList();
+        Set<WebhookType> types =
+            Sets.newHashSet(WebhookType.DocumentMilestoneEvent);
         webHooks.add(new WebHook(project, "http://test.example.com",
-                WebhookType.DocumentMilestoneEvent, key));
+            types, key));
         webHooks.add(new WebHook(project, "http://test1.example.com",
-                WebhookType.DocumentMilestoneEvent, key));
+            types, key));
         webHooks.add(new WebHook(project, "http://test1.example.com",
-            WebhookType.DocumentStatsEvent, key));
+            Sets.newHashSet(WebhookType.DocumentStatsEvent), key));
 
         when(projectIterationDAO.findById(versionId)).thenReturn(version);
         when(version.getProject()).thenReturn(project);
@@ -159,10 +165,10 @@ public class DocumentServiceImplTest {
         verify(spyService).publishDocumentMilestoneEvent(captor.capture(),
                 eq(milestoneEvent));
         assertThat(captor.getValue().size(), is(2));
-        assertThat(((WebHook) captor.getValue().get(0)).getWebhookType(),
-            is(WebhookType.DocumentMilestoneEvent));
-        assertThat(((WebHook) captor.getValue().get(1)).getWebhookType(),
-            is(WebhookType.DocumentMilestoneEvent));
+        assertThat(((WebHook) captor.getValue().get(0)).getTypes(),
+            contains(WebhookType.DocumentMilestoneEvent));
+        assertThat(((WebHook) captor.getValue().get(1)).getTypes(),
+            contains(WebhookType.DocumentMilestoneEvent));
     }
 
     @Test
@@ -203,10 +209,10 @@ public class DocumentServiceImplTest {
         verify(spyService).publishDocumentMilestoneEvent(captor.capture(),
                 eq(milestoneEvent));
         assertThat(captor.getValue().size(), is(2));
-        assertThat(((WebHook) captor.getValue().get(0)).getWebhookType(),
-            is(WebhookType.DocumentMilestoneEvent));
-        assertThat(((WebHook) captor.getValue().get(1)).getWebhookType(),
-            is(WebhookType.DocumentMilestoneEvent));
+        assertThat(((WebHook) captor.getValue().get(0)).getTypes(),
+            contains(WebhookType.DocumentMilestoneEvent));
+        assertThat(((WebHook) captor.getValue().get(1)).getTypes(),
+            contains(WebhookType.DocumentMilestoneEvent));
     }
 
     @Test
