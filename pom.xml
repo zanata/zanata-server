@@ -687,6 +687,12 @@
         <artifactId>zanata-common-api</artifactId>
         <classifier>sources</classifier>
         <version>${zanata.api.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
