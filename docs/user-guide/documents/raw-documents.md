@@ -6,16 +6,22 @@ This feature provides the ability to upload and download documents using the web
 
 Supported formats include:
 
-* plain-text (*.txt)
-* Document Type Definition (*.dtd)
+* Plain-text (.txt)
+* Web (.html, .htm)
+* Subtitles (.srt, .vtt, .sub, .sbv)
+* Qt Linguist (.ts)
+* Document Type Definition (.dtd)
+* XLIFF (.xlf)
 * Open Document Format (LibreOffice):
-    * Open Document Text (*.odt)
-    * Open Document Presentation (*.odp)
-    * Open Document Spreadsheet (*.ods)
-    * Open Document Graphics (*.odg)
-* InDesign Markup Language (*.idml)
+    * Open Document Text (.odt)
+    * Open Document Presentation (.odp)
+    * Open Document Spreadsheet (.ods)
+    * Open Document Graphics (.odg)
+* InDesign Markup Language (.idml)
+* JSON (.json)
 
 _Open Document Formula (*.odf) and Open Document Database (*.odb) are not supported._
+_JSON localisation (i18next) type is not supported. JSON files will be treated as raw documents._
 
 ## Known Issues
 
