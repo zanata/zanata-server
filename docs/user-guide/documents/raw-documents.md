@@ -11,7 +11,7 @@ Supported formats include:
 * Subtitles (.srt, .vtt, .sub, .sbv)
 * Qt Linguist (.ts)
 * Document Type Definition (.dtd)
-* XLIFF (.xlf)
+* XLIFF (.xlf) - limited support
 * Open Document Format (LibreOffice):
     * Open Document Text (.odt)
     * Open Document Presentation (.odp)
@@ -21,7 +21,7 @@ Supported formats include:
 * JSON (.json)
 
 _Open Document Formula (*.odf) and Open Document Database (*.odb) are not supported._
-_JSON localisation (i18next) type is not supported. JSON files will be treated as raw documents._
+_JSON dedicated localisation formats (eg i18next) are not supported. JSON files will be treated as raw documents._
 
 ## Known Issues
 
