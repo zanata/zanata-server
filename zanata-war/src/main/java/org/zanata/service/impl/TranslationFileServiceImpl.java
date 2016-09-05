@@ -33,7 +33,18 @@ import javax.inject.Named;
 
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.xml.sax.InputSource;
-import org.zanata.adapter.*;
+import org.zanata.adapter.FileFormatAdapter;
+import org.zanata.adapter.GettextAdapter;
+import org.zanata.adapter.HTMLAdapter;
+import org.zanata.adapter.IDMLAdapter;
+import org.zanata.adapter.JsonAdapter;
+import org.zanata.adapter.OpenOfficeAdapter;
+import org.zanata.adapter.PlainTextAdapter;
+import org.zanata.adapter.PropertiesLatinOneAdapter;
+import org.zanata.adapter.PropertiesUTF8Adapter;
+import org.zanata.adapter.SubtitleAdapter;
+import org.zanata.adapter.TSAdapter;
+import org.zanata.adapter.XliffAdapter;
 import org.zanata.adapter.po.PoReader2;
 import org.zanata.common.DocumentType;
 import org.zanata.common.LocaleId;
@@ -60,7 +71,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.zanata.common.DocumentType.*;
+import static org.zanata.common.DocumentType.HTML;
+import static org.zanata.common.DocumentType.IDML;
+import static org.zanata.common.DocumentType.JSON;
+import static org.zanata.common.DocumentType.OPEN_DOCUMENT_GRAPHICS;
+import static org.zanata.common.DocumentType.OPEN_DOCUMENT_PRESENTATION;
+import static org.zanata.common.DocumentType.OPEN_DOCUMENT_SPREADSHEET;
+import static org.zanata.common.DocumentType.OPEN_DOCUMENT_TEXT;
+import static org.zanata.common.DocumentType.PLAIN_TEXT;
+import static org.zanata.common.DocumentType.PROPERTIES;
+import static org.zanata.common.DocumentType.PROPERTIES_UTF8;
+import static org.zanata.common.DocumentType.SUBTITLE;
+import static org.zanata.common.DocumentType.TS;
+import static org.zanata.common.DocumentType.XLIFF;
+import static org.zanata.common.DocumentType.XML_DOCUMENT_TYPE_DEFINITION;
 
 /**
  * Default implementation of the TranslationFileService interface.
