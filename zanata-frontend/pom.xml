@@ -51,6 +51,9 @@
 
     <!-- Directory that contains the actual built editor app (index, script and styles) -->
     <editor.built.artifact.directory>${editor.build.directory}/app/dist</editor.built.artifact.directory>
+
+    <!-- Do not run checkstyle (eslint is used instead for this module) -->
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>
@@ -147,23 +150,6 @@
                 <argument>install</argument>
                 <argument>--cache-min</argument>
                 <argument>${npm.cache.min}</argument>
-              </arguments>
-            </configuration>
-          </execution>
-
-          <!-- editor: copy index.html to build directory. -->
-          <execution>
-            <id>editor: npm run processhtml</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <workingDirectory>${editor.build.directory}</workingDirectory>
-              <arguments>
-                <argument>${npm.executable}</argument>
-                <argument>run</argument>
-                <argument>processhtml</argument>
               </arguments>
             </configuration>
           </execution>
