@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +53,8 @@ import org.zanata.model.HAccount;
 import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
+import org.zanata.model.WebHook;
+import org.zanata.model.type.WebhookType;
 import org.zanata.rest.dto.GlossaryEntry;
 import org.zanata.rest.dto.GlossaryTerm;
 import org.zanata.rest.dto.QualifiedName;
@@ -135,9 +139,6 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
             }
             HGlossaryEntry hGlossaryEntry = transferGlossaryEntryAndSave(
                     entry, transLocaleId, onlyTransferTransTerm);
-            if(hGlossaryEntry.getContentHash().startsWith("3d8c541a")) {
-                System.out.println(hGlossaryEntry.getGlossary().getQualifiedName());
-            }
             entries.add(hGlossaryEntry);
             counter++;
             if (isExecuteCommit(counter, i, dtoEntries.size())) {
@@ -321,18 +322,24 @@ public class GlossaryFileServiceImpl implements GlossaryFileService {
         to.setGlossary(glossary);
 
         TreeSet<String> warningMessage = Sets.newTreeSet();
-        for (GlossaryTerm term : from.getGlossaryTerms()) {
-            if (term == null || term.getLocale() == null) {
-                continue;
-            }
-            if (onlyTransferTransTerm
-                    && term.getLocale().equals(from.getSrcLang())) {
-                continue;
-            }
-            if (onlyTransferTransTerm && transLocaleId.isPresent()
-                    && !term.getLocale().equals(transLocaleId.get())) {
-                continue;
-            }
+
+        List<GlossaryTerm> filteredTerms =
+                from.getGlossaryTerms().stream().filter(term -> {
+                    if (term == null || term.getLocale() == null) {
+                        return false;
+                    }
+                    if (onlyTransferTransTerm
+                            && term.getLocale().equals(from.getSrcLang())) {
+                        return false;
+                    }
+                    if (onlyTransferTransTerm && transLocaleId.isPresent()
+                            && !term.getLocale().equals(transLocaleId.get())) {
+                        return false;
+                    }
+                    return true;
+                }).collect(Collectors.toList());
+
+        for (GlossaryTerm term : filteredTerms) {
             HLocale termHLocale =
                     localeServiceImpl.getByLocaleId(term.getLocale());
 

@@ -55,6 +55,9 @@ import {
 } from '../actions/common'
 import GlossaryHelper from '../utils/GlossaryHelper'
 
+const ERROR_MSG = 'We are unable to get glossary information from server.' +
+  'Please refresh this page and try again.'
+
 const glossary = handleActions({
   [CLEAR_MESSAGE]: (state, action) => {
     return {
@@ -89,9 +92,7 @@ const glossary = handleActions({
         ...state,
         notification: {
           severity: SEVERITY.ERROR,
-          message:
-          'We are unable to get information from server.' +
-          'Please refresh this page and try again.'
+          message: ERROR_MSG
         }
       }
     } else {
@@ -116,9 +117,7 @@ const glossary = handleActions({
     },
     notification: {
       severity: SEVERITY.ERROR,
-      message:
-      'We are unable to get information from server.' +
-      'Please refresh this page and try again.'
+      message: ERROR_MSG
     }
   }),
   [GLOSSARY_UPDATE_LOCALE]: (state, action) => ({
@@ -334,8 +333,7 @@ const glossary = handleActions({
         ...state,
         notification: {
           severity: SEVERITY.ERROR,
-          message: 'We are unable to get information from server. ' +
-          'Please refresh this page and try again.'
+          message: ERROR_MSG
         }
       }
     } else {
@@ -370,8 +368,7 @@ const glossary = handleActions({
     statsLoading: false,
     notification: {
       severity: SEVERITY.ERROR,
-      message: 'We are unable to get information from server. ' +
-      'Please refresh this page and try again.'
+      message: ERROR_MSG
     }
   }),
   [GLOSSARY_TERMS_INVALIDATE]: (state, action) => ({
@@ -615,8 +612,7 @@ const glossary = handleActions({
         ...state,
         notification: {
           severity: SEVERITY.ERROR,
-          message: 'We are unable to get glossary information from server. ' +
-          'Please refresh this page and try again.'
+          message: ERROR_MSG
         }
       }
     } else {
@@ -629,8 +625,7 @@ const glossary = handleActions({
         ...state,
         notification: {
           severity: SEVERITY.ERROR,
-          message: 'We are unable to get glossary information from server. ' +
-          'Please refresh this page and try again.'
+          message: ERROR_MSG
         }
       }
     } else {
@@ -645,8 +640,7 @@ const glossary = handleActions({
       ...state,
       notification: {
         severity: SEVERITY.ERROR,
-        message: 'We are unable to get glossary information from server. ' +
-        'Please refresh this page and try again.'
+        message: ERROR_MSG
       }
     }
   }

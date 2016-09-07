@@ -242,7 +242,7 @@ public class ProjectVersionService implements ProjectVersionResource {
         }
 
         ProjectIteration it = new ProjectIteration();
-        transfer(hProjectIteration, it);
+        getProjectVersionDetails(hProjectIteration, it);
 
         return Response.ok(it).tag(etag).build();
     }
@@ -429,7 +429,7 @@ public class ProjectVersionService implements ProjectVersionResource {
         }
     }
 
-    public static void transfer(HProjectIteration from, ProjectIteration to) {
+    public static void getProjectVersionDetails(HProjectIteration from, ProjectIteration to) {
         to.setId(from.getSlug());
         to.setStatus(from.getStatus());
         if (from.getProjectType() != null) {
