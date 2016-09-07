@@ -29,12 +29,11 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.util.Version;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -64,8 +63,6 @@ import org.zanata.webtrans.shared.rpc.LuceneQuery;
 public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
     @Inject @FullText
     private FullTextEntityManager entityManager;
-
-    private static final Version LUCENE_VERSION = Version.LUCENE_29;
 
     public GlossaryDAO() {
         super(HGlossaryEntry.class);
@@ -294,9 +291,7 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         if (StringUtils.isEmpty(queryText)) {
             return Lists.newArrayList();
         }
-        QueryParser parser =
-                new QueryParser(LUCENE_VERSION, "content",
-                        new StandardAnalyzer(LUCENE_VERSION));
+        QueryParser parser = new QueryParser("content", new StandardAnalyzer());
         org.apache.lucene.search.Query textQuery = parser.parse(queryText);
 
         TermQuery qualifiedNameQuery =

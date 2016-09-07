@@ -265,7 +265,6 @@ public class UrlUtil implements Serializable {
             String urlWithWindowId = addWindowId(url);
             FacesContext.getCurrentInstance().getExternalContext().redirect(urlWithWindowId);
         } catch (IOException e) {
-            log.error("failed to redirect to {}", url, e);
             throw Throwables.propagate(e);
         }
     }
@@ -327,6 +326,14 @@ public class UrlUtil implements Serializable {
      */
     public String home() {
         return contextPath + "/" + dswidQuery;
+    }
+
+    public String createUserPage() {
+        return contextPath + "/profile/create" + dswidQuery;
+    }
+
+    public String inactiveAccountPage() {
+        return contextPath + "/account/inactive" + dswidQuery;
     }
 
     /**
