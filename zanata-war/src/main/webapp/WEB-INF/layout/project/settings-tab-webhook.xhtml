@@ -94,7 +94,7 @@
             <li class="list-item l--pad-h-quarter">
               <span name="url">#{webhook.url}</span>
               <span class="txt--meta l--push-left-quarter" name="type">#{webhookServiceImpl.getDisplayNames(webhook.types)}</span>
-              <button class="button button--small l--float-right" onclick="jQuery('##{webhook.id}').toggle(50)">
+              <button class="button button--small l--float-right" name="editBtn" onclick="jQuery('##{webhook.id}').toggle(50)">
                 #{msgs['jsf.Edit']}
               </button>
               <div id="#{webhook.id}" class="panel l--pad-all-half l--push-top-quarter" style="display:none">

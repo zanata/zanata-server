@@ -23,11 +23,7 @@ package org.zanata.model;
 import static org.zanata.security.EntityAction.DELETE;
 import static org.zanata.security.EntityAction.INSERT;
 import static org.zanata.security.EntityAction.UPDATE;
-import static org.zanata.model.LocaleRole.Coordinator;
-import static org.zanata.model.LocaleRole.Reviewer;
-import static org.zanata.model.LocaleRole.Translator;
 import static org.zanata.model.ProjectRole.Maintainer;
-import static org.zanata.model.ProjectRole.TranslationMaintainer;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -221,7 +217,7 @@ public class HProject extends SlugEntityBase implements Serializable,
      * @see {@link #getMaintainers}
      */
     public void addMaintainer(HPerson maintainer) {
-        getMembers().add(asMember(maintainer, Maintainer));
+        getMembers().add(new HProjectMember(this, maintainer, Maintainer));
     }
 
     /**
@@ -236,86 +232,8 @@ public class HProject extends SlugEntityBase implements Serializable,
         // there is only one maintainer then removal of any other person would
         // do nothing anyway.
         if (getMaintainers().size() > 1) {
-            getMembers().remove(asMember(maintainer, Maintainer));
-        }
-    }
-
-    /**
-     * Update all security settings for a person.
-     *
-     * The HPerson and HLocale entities in memberships must be attached to avoid
-     * persistence problems with Hibernate.
-     */
-    public void updateProjectPermissions(PersonProjectMemberships memberships) {
-        HPerson person = memberships.getPerson();
-
-        boolean wasMaintainer = getMaintainers().contains(memberships.getPerson());
-        boolean isLastMaintainer = wasMaintainer && getMaintainers().size() <= 1;
-        // business rule: every project must have at least one maintainer
-        boolean isMaintainer = isLastMaintainer || memberships.isMaintainer();
-
-        ensureMembership(isMaintainer, asMember(person, Maintainer));
-
-        // business rule: if someone is a Maintainer, they must also be a TranslationMaintainer
-        boolean isTranslationMaintainer = memberships.isMaintainer() ||
-                memberships.isTranslationMaintainer();
-
-        ensureMembership(isTranslationMaintainer, asMember(person, TranslationMaintainer));
-    }
-
-    public void updateLocalePermissions(PersonProjectMemberships memberships) {
-        HPerson person = memberships.getPerson();
-
-        for (PersonProjectMemberships.LocaleRoles localeRoles
-                : memberships.getLocaleRoles()) {
-            HLocale locale = localeRoles.getLocale();
-            ensureMembership(localeRoles.isTranslator(), asMember(locale, person, Translator));
-            ensureMembership(localeRoles.isReviewer(), asMember(locale, person, Reviewer));
-            ensureMembership(localeRoles.isCoordinator(), asMember(locale, person, Coordinator));
-        }
-    }
-
-    /**
-     * Get a person as a member object in this project for a role.
-     */
-    private HProjectMember asMember(HPerson person, ProjectRole role) {
-        return new HProjectMember(this, person, role);
-    }
-
-    /**
-     * Get a person as a member object in this project for a locale-specific role.
-     */
-    private HProjectLocaleMember asMember(HLocale locale, HPerson person, LocaleRole role) {
-        return new HProjectLocaleMember(this, locale, person, role);
-    }
-
-    /**
-     * Ensure the given membership is present or absent.
-     */
-    private void ensureMembership(boolean shouldBePresent, HProjectMember membership) {
-        final Set<HProjectMember> members = getMembers();
-        final boolean isPresent = members.contains(membership);
-        if (isPresent != shouldBePresent) {
-            if (shouldBePresent) {
-                members.add(membership);
-            } else {
-                members.remove(membership);
-            }
-        }
-    }
-
-    /**
-     * Ensure the given locale membership is present or absent.
-     */
-    private void ensureMembership(boolean shouldBePresent, HProjectLocaleMember membership) {
-        final Set<HProjectLocaleMember> members = getLocaleMembers();
-        final boolean isPresent = members.contains(membership);
-        if (isPresent != shouldBePresent) {
-            if (shouldBePresent) {
-                members.add(membership);
-            } else {
-                members.remove(membership);
-            }
+            getMembers()
+                .remove(new HProjectMember(this, maintainer, Maintainer));
         }
     }
 
