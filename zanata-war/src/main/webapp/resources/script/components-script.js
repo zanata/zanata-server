@@ -489,7 +489,7 @@ function onTestWebhook(formId, callback) {
   var form = jQuery('#' + formId);
   var url = form.find('[name="payloadUrlInput"]').val();
   var secret = form.find('[name="secretInput"]').val();
-  callback(url, secret, types, formId);
+  callback(url, secret, formId);
 }
 
 function onAddWebhook(formId, callback) {

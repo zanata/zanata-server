@@ -5,18 +5,17 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:zanata="http://java.sun.com/jsf/composite/zanata">
   <h:form>
-    <a4j:jsFunction name="testWebhook"
-      onbegin="zanata.loader.activate('##{formId} [name=\'testWebhookBtn\']');"
-      oncomplete="zanata.loader.deactivate('##{formId} [name=\'testWebhookBtn\']')"
+    <a4j:jsFunction name="a4jTestWebhook"
+      oncomplete="zanata.loader.deactivate('##{formId} [name=testWebhookBtn]')"
       action="#{projectHome.testWebhook(url, secret)}">
       <a4j:param name="val1" assignTo="#{url}"/>
       <a4j:param name="val2" assignTo="#{secret}"/>
       <a4j:param name="val3" assignTo="#{formId}"/>
     </a4j:jsFunction>
 
-    <a4j:jsFunction name="addWebhook"
-      onbegin="zanata.loader.activate('##{formId} [name=\'addWebhookBtn\']');jQuery('##{formId} [name=\'addWebhookBtn\']').removeClass('button--primary')"
-      oncomplete="zanata.loader.deactivate('##{formId} [name=\'addWebhookBtn\']');jQuery('##{formId} [name=\'addWebhookBtn\']').addClass('button--primary');clearWebhookForm('#{formId}');toggleNewWebhookForm('new-webhook-form', 'toggle-new-webhook');zanata.form.appendCheckboxes(jQuery('#settings-webhooks-form').element);"
+    <a4j:jsFunction name="a4jAddWebhook"
+      onbegin="jQuery('##{formId} [name=addWebhookBtn]').removeClass('button--primary')"
+      oncomplete="zanata.loader.deactivate('##{formId} [name=addWebhookBtn]');jQuery('##{formId} [name=addWebhookBtn]').addClass('button--primary');clearWebhookForm('#{formId}');toggleNewWebhookForm('new-webhook-form', 'toggle-new-webhook');zanata.form.appendCheckboxes(jQuery('#settings-webhooks-form').element);"
       action="#{projectHome.addWebHook(url, secret, types)}"
       render="settings-webhooks-list">
       <a4j:param name="val1" assignTo="#{url}"/>
@@ -25,17 +24,15 @@
       <a4j:param name="val4" assignTo="#{formId}"/>
     </a4j:jsFunction>
 
-    <a4j:jsFunction name="deleteWebhook"
-      onbegin="zanata.loader.activate('##{id} [name=\'deleteWebhookBtn\']');"
+    <a4j:jsFunction name="a4jDeleteWebhook"
       action="#{projectHome.removeWebHook(id)}"
       render="settings-webhooks-list"
       oncomplete="zanata.form.appendCheckboxes(jQuery('#settings-webhooks-form').element);">
       <a4j:param name="val1" assignTo="#{id}"/>
     </a4j:jsFunction>
 
-    <a4j:jsFunction name="updateWebhook"
-      onbegin="zanata.loader.activate('##{formId} [name=\'updateWebhookBtn\']');"
-      oncomplete="zanata.loader.deactivate('##{formId} [name=\'updateWebhookBtn\']')"
+    <a4j:jsFunction name="a4jUpdateWebhook"
+      oncomplete="zanata.loader.deactivate('##{formId} [name=updateWebhookBtn]');zanata.form.appendCheckboxes(jQuery('##{formId}').element);"
       action="#{projectHome.updateWebhook(id, url, secret, types)}"
       render="settings-webhooks-list">
       <a4j:param name="val1" assignTo="#{id}"/>
@@ -45,7 +42,7 @@
       <a4j:param name="val5" assignTo="#{formId}"/>
     </a4j:jsFunction>
 
-    <a4j:jsFunction name="reRenderWebhookForm" render="#{formId}"
+    <a4j:jsFunction name="a4JReRenderWebhookForm" render="#{formId}"
       oncomplete="zanata.form.appendCheckboxes(jQuery('##{componentId}').element);">
       <a4j:param name="val1" assignTo="#{formId}"/>
       <a4j:param name="val2" assignTo="#{componentId}"/>
@@ -86,8 +83,8 @@
     <div id="new-webhook-form" class="panel l--pad-all-half l--push-bottom-half" style="#{projectHome.instance.webHooks.isEmpty() ? '' : 'display: none'}">
       <h3 class="heading--secondary">#{msgs['jsf.project.NewWebhook']}</h3>
       <zanata:webbook-form name="newWebhook"
-        onAddWebhook="addWebhook"
-        onTestWebhook="testWebhook"/>
+        onAddWebhook="a4jAddWebhook"
+        onTestWebhook="a4jTestWebhook"/>
     </div>
 
     <h:panelGroup layout="block" id="settings-webhooks-list">
@@ -104,9 +101,9 @@
                 <h:panelGroup layout="block" id="webhookForm">
                   <zanata:webbook-form name="webhook#{webhook.id}"
                     webhook="#{webhook}"
-                    onDeleteWebhook="deleteWebhook('#{webhook.id}')"
-                    onUpdateWebhook="updateWebhook"
-                    onCancelEditWebhook="jQuery('##{webhook.id}').hide(50);reRenderWebhookForm('#{rich:clientId('webhookForm')}', '#{webhook.id}')" />
+                    onDeleteWebhook="a4jDeleteWebhook('#{webhook.id}')"
+                    onUpdateWebhook="a4jUpdateWebhook"
+                    onCancelEditWebhook="jQuery('##{webhook.id}').hide(50);a4jReRenderWebhookForm('#{rich:clientId('webhookForm')}', '#{webhook.id}')" />
                 </h:panelGroup>
               </div>
             </li>
