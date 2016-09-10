@@ -36,7 +36,7 @@ const CalendarMonthMatrix = ({
   matrixData,
   selectedDay,
   selectedContentState,
-  dateRangeOption,
+  dateRange,
   handleSelectedDayChanged,
   ...props
 }) => {
@@ -77,7 +77,7 @@ const CalendarMonthMatrix = ({
     const dayColumns = days.splice(0, 7)
     result.push(
       <tr
-        key={dateRangeOption.value + '-week' + result.length}>
+        key={dateRange.label + '-week' + result.length}>
         {dayColumns}
       </tr>
     )
@@ -97,7 +97,7 @@ const CalendarMonthMatrix = ({
       <Flex atomic={{m: 'Mb(rh)'}}>
         <div>
           <h3 className='Fw(600) Tt(u)'>
-            {dateRangeOption.label}'s Activity
+            {dateRange.label}'s Activity
           </h3>
         </div>
         {selectedDay &&
@@ -128,8 +128,8 @@ CalendarMonthMatrix.propTypes = {
   ).isRequired,
   selectedDay: PropTypes.string,
   selectedContentState: PropTypes.oneOf(ContentStates).isRequired,
-  dateRangeOption: PropTypes.object.isRequired,
-  handleSelectedDayChanged: PropTypes.func
+  dateRange: PropTypes.object.isRequired,
+  handleSelectedDayChanged: PropTypes.func.isRequired
 }
 
 export default CalendarMonthMatrix

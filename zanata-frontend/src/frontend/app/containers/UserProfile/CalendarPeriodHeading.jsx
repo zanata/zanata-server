@@ -4,8 +4,6 @@ import dateUtils from '../../utils/DateHelper'
 
 const CalendarPeriodHeading = ({
   selectedDay,
-  fromDate,
-  toDate,
   dateRange,
   ...props
 }) => {
@@ -15,10 +13,9 @@ const CalendarPeriodHeading = ({
 
   const period = selectedDay
     ? moment(selectedDay, stdFmt).format(dateDisplayFmt)
-    : moment(fromDate, stdFmt).format(dateRangeDisplayFmt) +
+    : moment(dateRange.startDate, stdFmt).format(dateRangeDisplayFmt) +
       ' … ' +
-      moment(toDate, stdFmt).format(dateRangeDisplayFmt) +
-      ' (' + dateRange + ')'
+      moment(dateRange.endDate, stdFmt).format(dateRangeDisplayFmt)
 
   return (
     <div className='Mb(rh)'>
@@ -30,9 +27,7 @@ const CalendarPeriodHeading = ({
 
 CalendarPeriodHeading.propTypes = {
   selectedDay: PropTypes.string,
-  fromDate: PropTypes.string,
-  toDate: PropTypes.string,
-  dateRange: PropTypes.string
+  dateRange: PropTypes.object
 }
 
 export default CalendarPeriodHeading
