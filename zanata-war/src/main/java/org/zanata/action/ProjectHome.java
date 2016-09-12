@@ -228,9 +228,6 @@ public class ProjectHome extends SlugHome<HProject> implements
     @Setter
     private Boolean selectedCheckbox = Boolean.TRUE;
 
-//    private Map<Long, List<WebhookType>> webhookUrlMapToType = null;
-//    private Map<String, List<WebHook>> webhookUrlMapToWebHook = null;
-
     private List<HLocale> disabledLocales;
 
     public ProjectHome() {
@@ -1091,7 +1088,12 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void addWebHook(String url, String secret, String strTypes) {
         identity.checkPermission(getInstance(), "update");
         Set<WebhookType> types = getTypesFromString(strTypes);
-        if (isValidUrl(url, true) && !types.isEmpty()) {
+        if(types.isEmpty()) {
+            facesMessages.addGlobal(
+                msgs.get("jsf.project.webhookType.empty"));
+            return;
+        }
+        if (isValidUrl(url, true)) {
             secret = StringUtils.isBlank(secret) ? null : secret;
             WebHook webHook =
                 new WebHook(this.getInstance(), url, types, secret);
@@ -1121,11 +1123,16 @@ public class ProjectHome extends SlugHome<HProject> implements
         identity.checkPermission(getInstance(), "update");
         WebHook webHook = webHookDAO.findById(new Long(id));
         Set<WebhookType> types = getTypesFromString(strTypes);
-        if (webHook != null && isValidUrl(url, false) && !types.isEmpty()) {
-            getInstance().getWebHooks().remove(webHook);
+        if(types.isEmpty()) {
+            facesMessages.addGlobal(
+                msgs.get("jsf.project.webhookType.empty"));
+            return;
+        }
+        if (webHook != null && isValidUrl(url, false)) {
+//            getInstance().getWebHooks().remove(webHook);
             secret = StringUtils.isBlank(secret) ? null : secret;
             webHook.update(url, types, secret);
-            getInstance().getWebHooks().add(webHook);
+//            getInstance().getWebHooks().add(webHook);
             webHookDAO.makePersistent(webHook);
             facesMessages.addGlobal(
                 msgs.format("jsf.project.UpdateWebhook", url));

@@ -46,6 +46,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.zanata.model.type.WebhookType;
+import org.zanata.model.validator.Unique;
 import org.zanata.model.validator.Url;
 
 /**
@@ -55,6 +56,7 @@ import org.zanata.model.validator.Url;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
+@Unique(properties = { "url" })
 public class WebHook implements Serializable {
 
     private Long id;
@@ -103,10 +105,22 @@ public class WebHook implements Serializable {
         return types;
     }
 
+    /**
+     * This will replace all properties with given ones.
+     *
+     * @param url - new url
+     * @param newTypes - new types
+     * @param secret - new secret key
+     */
     @Transient
     public void update(String url, Set<WebhookType> newTypes, String secret) {
         this.url = url;
         this.secret = secret;
+
+        /**
+         * Copy all newTypes into currentTypes and remove those that are not
+         * in the newTypes
+         */
         this.types.addAll(newTypes);
         Set<WebhookType> currentTypes = Sets.newHashSet(this.types);
         for (WebhookType type: currentTypes) {
