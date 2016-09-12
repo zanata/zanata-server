@@ -26,8 +26,8 @@ public class SourceDocumentChangedEvent extends WebhookEventType {
             WebhookType.SourceDocumentChangedEvent.name();
 
     public static enum ChangeType {
-        ADDED,
-        REMOVED
+        ADD,
+        REMOVE
     }
 
     /**

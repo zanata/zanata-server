@@ -3,25 +3,35 @@ package org.zanata.service.impl;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.ocpsoft.common.util.Strings;
+import org.zanata.async.Async;
+import org.zanata.common.ContentState;
+import org.zanata.common.LocaleId;
+import org.zanata.events.WebhookEvent;
 import org.zanata.events.WebhookEventType;
 import org.zanata.i18n.Messages;
 import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.type.WebhookType;
+import org.zanata.webhook.events.DocumentMilestoneEvent;
+import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.webhook.events.ProjectMaintainerChangedEvent;
 import org.zanata.webhook.events.SourceDocumentChangedEvent;
 import org.zanata.webhook.events.TestEvent;
 import org.zanata.webhook.events.VersionChangedEvent;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +47,24 @@ public class WebhookServiceImpl implements Serializable {
     @Inject
     private Messages msgs;
 
+    @Inject
+    private Event<WebhookEvent> webhookEventEvent;
+
+    @Async
+    public void onPublishWebhook(@Observes(
+        during = TransactionPhase.AFTER_SUCCESS) WebhookEvent event) {
+        WebHooksPublisher
+            .publish(event.getUrl(), event.getType(),
+                Optional.ofNullable(event.getSecret()));
+    }
+
     /**
      * Process TestEvent
      */
     public void processTestEvent(String username, String projectSlug,
             String url, String secret) {
         TestEvent event = new TestEvent(username, projectSlug);
-        WebHooksPublisher
-                .publish(url, event, Optional.fromNullable(secret));
+        webhookEventEvent.fire(new WebhookEvent(url, secret, event));
     }
 
     /**
@@ -59,7 +79,7 @@ public class WebhookServiceImpl implements Serializable {
             return;
         }
         VersionChangedEvent event =
-            new VersionChangedEvent(projectSlug, versionSlug, changeType);
+                new VersionChangedEvent(projectSlug, versionSlug, changeType);
         publishWebhooks(versionWebhooks, event);
     }
 
@@ -99,6 +119,30 @@ public class WebhookServiceImpl implements Serializable {
                 project, version, docId, changeType);
 
         publishWebhooks(eventWebhooks, event);
+    }
+
+    /**
+     * Process DocumentMilestoneEvent
+     */
+    public void processDocumentMilestone(String projectSlug,
+            String versionSlug, String docId, LocaleId localeId, String message,
+            String editorUrl, List<WebHook> webHooks) {
+        DocumentMilestoneEvent milestoneEvent =
+                new DocumentMilestoneEvent(projectSlug, versionSlug, docId,
+                        localeId, message, editorUrl);
+        publishWebhooks(webHooks, milestoneEvent);
+    }
+
+    /**
+     * Process DocumentStatsEvent
+     */
+    public void processDocumentStats(String username, String projectSlug,
+            String versionSlug, String docId, LocaleId localeId,
+            Map<ContentState, Long> wordDeltasByState, List<WebHook> webHooks) {
+        DocumentStatsEvent statsEvent =
+                new DocumentStatsEvent(username, projectSlug, versionSlug,
+                        docId, localeId, wordDeltasByState);
+        publishWebhooks(webHooks, statsEvent);
     }
 
     public List<WebhookTypeItem> getAvailableWebhookTypes() {
@@ -170,10 +214,10 @@ public class WebhookServiceImpl implements Serializable {
     }
 
     private void publishWebhooks(List<WebHook> webHooks,
-        WebhookEventType event) {
+            WebhookEventType event) {
         for (WebHook webhook : webHooks) {
-            WebHooksPublisher.publish(webhook.getUrl(), event,
-                Optional.fromNullable(webhook.getSecret()));
+            webhookEventEvent.fire(new WebhookEvent(webhook.getUrl(),
+                    webhook.getSecret(), event));
         }
     }
 

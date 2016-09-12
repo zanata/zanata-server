@@ -6,14 +6,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.google.common.collect.Lists;
 import org.zanata.async.Async;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.model.type.WebhookType;
-import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
@@ -21,7 +19,6 @@ import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.WebHook;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.event.Observes;
@@ -47,6 +44,9 @@ public class TranslationUpdatedManager {
 
     @Inject
     private DocumentDAO documentDAO;
+
+    @Inject
+    private WebhookServiceImpl webhookServiceImpl;
 
     @Async
     public void docStatsUpdated(
@@ -84,27 +84,18 @@ public class TranslationUpdatedManager {
         String projectSlug = project.getSlug();
         LocaleId localeId = event.getKey().getLocaleId();
 
-        DocumentStatsEvent webhookEvent =
-                new DocumentStatsEvent(person.getAccount().getUsername(),
-                        projectSlug, versionSlug, docId, localeId,
-                        event.getWordDeltasByState());
-
-        publishWebhookEvent(docStatsWebHooks, webhookEvent);
+        webhookServiceImpl.processDocumentStats(
+                person.getAccount().getUsername(),
+                projectSlug, versionSlug, docId, localeId,
+                event.getWordDeltasByState(), docStatsWebHooks);
     }
 
     @VisibleForTesting
-    public void publishWebhookEvent(List<WebHook> webHooks,
-            DocumentStatsEvent event) {
-        for (WebHook webHook : webHooks) {
-            WebHooksPublisher.publish(webHook.getUrl(), event,
-                    Optional.fromNullable(webHook.getSecret()));
-        }
-    }
-
-    @VisibleForTesting
-    public void init(DocumentDAO documentDAO,
-            TextFlowTargetDAO textFlowTargetDAO) {
+    protected void init(DocumentDAO documentDAO,
+            TextFlowTargetDAO textFlowTargetDAO,
+            WebhookServiceImpl webhookService) {
         this.documentDAO = documentDAO;
         this.textFlowTargetDAO = textFlowTargetDAO;
+        this.webhookServiceImpl = webhookService;
     }
 }

@@ -38,7 +38,6 @@ import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.model.type.WebhookType;
-import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.model.HAccount;
 import org.zanata.model.HDocument;
 import org.zanata.model.HPerson;
@@ -71,6 +70,9 @@ public class TranslationUpdatedManagerTest {
     @Mock
     private TextFlowTargetDAO textFlowTargetDAO;
 
+    @Mock
+    private WebhookServiceImpl webhookService;
+
     TranslationUpdatedManager manager;
 
     List<WebHook> webHooks = Lists.newArrayList();
@@ -79,10 +81,8 @@ public class TranslationUpdatedManagerTest {
 
     private String strDocId = "doc/test.txt";
     private Long docId = 1L;
-    private Long tfId = 1L;
     private Long tftId = 1L;
     private Long versionId = 1L;
-    private Long personId = 1L;
     private LocaleId localeId = LocaleId.DE;
     private String versionSlug = "versionSlug";
     private String projectSlug = "projectSlug";
@@ -95,7 +95,7 @@ public class TranslationUpdatedManagerTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         manager = new TranslationUpdatedManager();
-        manager.init(documentDAO, textFlowTargetDAO);
+        manager.init(documentDAO, textFlowTargetDAO, webhookService);
 
         HProjectIteration version = Mockito.mock(HProjectIteration.class);
         HProject project = Mockito.mock(HProject.class);
@@ -143,17 +143,12 @@ public class TranslationUpdatedManagerTest {
         DocStatsEvent event =
                 new DocStatsEvent(key, versionId, contentStates, tftId);
 
-        DocumentStatsEvent webhookEvent =
-                new DocumentStatsEvent(username, projectSlug,
-                        versionSlug, strDocId, event.getKey().getLocaleId(),
-                        contentStates);
-
         spyManager.docStatsUpdated(event);
-
         verify(spyManager).processWebHookEvent(event);
         ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(spyManager).publishWebhookEvent(captor.capture(),
-                eq(webhookEvent));
+        verify(webhookService).processDocumentStats(eq(username),
+                eq(projectSlug), eq(versionSlug), eq(strDocId), eq(localeId),
+                eq(contentStates), captor.capture());
         assertThat(captor.getValue().size(), is(1));
         assertThat(((WebHook) captor.getValue().get(0)).getTypes(),
                 contains(WebhookType.DocumentStatsEvent));

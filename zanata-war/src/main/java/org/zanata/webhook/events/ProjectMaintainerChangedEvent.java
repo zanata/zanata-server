@@ -26,8 +26,8 @@ public class ProjectMaintainerChangedEvent extends WebhookEventType {
             WebhookType.ProjectMaintainerChangedEvent.name();
 
     public static enum ChangeType {
-        ADDED,
-        REMOVED
+        ADD,
+        REMOVE
     }
 
     /**

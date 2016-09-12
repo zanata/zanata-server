@@ -27,11 +27,9 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -48,7 +46,6 @@ import org.zanata.events.DocStatsEvent;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.events.DocumentUploadedEvent;
 import org.zanata.model.type.WebhookType;
-import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.i18n.Messages;
 import org.zanata.lock.Lock;
 import org.zanata.model.HAccount;
@@ -334,20 +331,9 @@ public class DocumentServiceImpl implements DocumentService {
                             versionSlug, localeId,
                             LocaleId.EN_US, document.getDocId());
 
-            DocumentMilestoneEvent milestoneEvent =
-                    new DocumentMilestoneEvent(projectSlug,
-                            versionSlug, document.getDocId(),
-                            localeId, message, editorUrl);
-            publishDocumentMilestoneEvent(docMilestoneWebHooks,
-                    milestoneEvent);
-        }
-    }
-
-    public void publishDocumentMilestoneEvent(List<WebHook> webHooks,
-            DocumentMilestoneEvent event) {
-        for (WebHook webHook : webHooks) {
-            WebHooksPublisher.publish(webHook.getUrl(), event,
-                    Optional.fromNullable(webHook.getSecret()));
+            webhookServiceImpl.processDocumentMilestone(projectSlug,
+                    versionSlug, document.getDocId(), localeId, message,
+                    editorUrl, docMilestoneWebHooks);
         }
     }
 
@@ -400,12 +386,14 @@ public class DocumentServiceImpl implements DocumentService {
     public void init(ProjectIterationDAO projectIterationDAO,
             DocumentDAO documentDAO,
             TranslationStateCache translationStateCacheImpl, UrlUtil urlUtil,
-            ApplicationConfiguration applicationConfiguration, Messages msgs) {
+            ApplicationConfiguration applicationConfiguration, Messages msgs,
+            WebhookServiceImpl webhookService) {
         this.projectIterationDAO = projectIterationDAO;
         this.documentDAO = documentDAO;
         this.translationStateCacheImpl = translationStateCacheImpl;
         this.urlUtil = urlUtil;
         this.applicationConfiguration = applicationConfiguration;
         this.msgs = msgs;
+        this.webhookServiceImpl = webhookService;
     }
 }

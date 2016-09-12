@@ -51,8 +51,8 @@ public class VersionChangedEvent extends WebhookEventType {
             WebhookType.VersionChangedEvent.name();
 
     public static enum ChangeType {
-        CREATED,
-        DELETED
+        CREATE,
+        DELETE
     }
 
     /**
