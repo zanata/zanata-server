@@ -90,9 +90,11 @@ class ViewHeader extends Component {
     const isEmptyTerms = termCount <= 0
     const currentLocaleCount = this.currentLocaleCount()
     const isReadOnly = !(permission.canAddNewEntry ||
-    permission.canUpdateEntry || permission.canDeleteEntry)
-    const icon = isReadOnly ? 'locked' : undefined
-    const tooltip = isReadOnly ? 'read-only' : undefined
+      permission.canUpdateEntry || permission.canDeleteEntry)
+    const icon = isReadOnly && (
+      <span title='read-only'>
+        <Icon name='locked' atomic={{m: 'Mend(re)', c: 'C(warning)'}} />
+      </span>)
     const showDeleteAll = permission.canDeleteEntry && !isEmptyTerms
 
     const projectUrl = projectSlug && getProjectUrl(projectSlug)
@@ -110,7 +112,7 @@ class ViewHeader extends Component {
 
     /* eslint-disable react/jsx-no-bind, no-return-assign */
     return (
-      <Header title={title} icon={icon} tooltip={tooltip}
+      <Header title={title} icon={icon}
         extraHeadingElements={projectLink}
         extraElements={(
           <View theme={{base: { ai: 'Ai(c)', fld: '' }}}>

@@ -244,7 +244,7 @@ const createGlossaryTerm = (dispatch, qualifiedName, term) => {
   let headers = getJsonHeaders()
   headers['Content-Type'] = 'application/json'
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/glossary/entries'
+    '/glossary/entries?locale=' + term.srcTerm.locale
   const entryDTO = GlossaryHelper.convertToDTO(term, qualifiedName)
   const apiTypes = [
     {
@@ -270,12 +270,13 @@ const createGlossaryTerm = (dispatch, qualifiedName, term) => {
   }
 }
 
-const updateGlossaryTerm = (dispatch, qualifiedName, term, needRefresh) => {
+const updateGlossaryTerm = (dispatch, qualifiedName, term, localeId,
+    needRefresh) => {
   let headers = getJsonHeaders()
   headers['Content-Type'] = 'application/json'
 
   const endpoint = window.config.baseUrl + window.config.apiRoot +
-    '/glossary/entries'
+    '/glossary/entries?locale=' + localeId
   const entryDTO = GlossaryHelper.convertToDTO(term, qualifiedName)
 
   const apiTypes = [
@@ -437,9 +438,10 @@ export const glossaryDeleteAll = () => {
 
 export const glossaryUpdateTerm = (term, needRefresh) => {
   return (dispatch, getState) => {
+    const targetLocale = getState().glossary.locale || DEFAULT_LOCALE.localeId
     // do cloning to prevent changes in selectedTerm
     dispatch(updateGlossaryTerm(dispatch, getState().glossary.qualifiedName,
-      cloneDeep(term), needRefresh))
+      cloneDeep(term), targetLocale, needRefresh))
   }
 }
 
