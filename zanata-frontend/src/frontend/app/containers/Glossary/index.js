@@ -52,6 +52,16 @@ class Glossary extends Component {
     this.props.handleInitLoad(projectSlug)
   }
 
+  /**
+   * Force component to update when changes between project glossary to glossary
+   */
+  componentDidUpdate (prevProps, prevState) {
+    const projectSlug = this.props.params.projectSlug
+    if (prevProps.params.projectSlug !== projectSlug) {
+      this.props.handleInitLoad(projectSlug)
+    }
+  }
+
   renderItem (index, key) {
     const {
       handleSelectTerm,
