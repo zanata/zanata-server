@@ -21,7 +21,6 @@
 package org.zanata.jpa;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Disposes;
@@ -93,7 +92,9 @@ public class EntityManagerProducer {
 
     @Produces
     @Default
-    @Dependent
+    @RequestScoped
+    @Deprecated
+    // TODO deprecate injection of hibernate session directly (it will be a CDI proxy and hibernate tend to cast it to some other interfaces internally)
     protected Session getSession(EntityManager entityManager) {
         return entityManager.unwrap(Session.class);
     }

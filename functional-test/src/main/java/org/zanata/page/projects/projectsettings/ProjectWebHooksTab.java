@@ -20,15 +20,18 @@
  */
 package org.zanata.page.projects.projectsettings;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.zanata.page.projects.ProjectBasePage;
-import org.zanata.util.WebElementUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class ProjectWebHooksTab extends ProjectBasePage {
 
-    private By webHooksList = By.id("settings-webhooks-list");
+    private By webHooksForm = By.id("settings-webhooks-form");
     private By saveWebhookButton = By.id("add-webhook-button");
     private By urlInputField = By.id("payloadUrlInput");
     private By secretInputField = By.id("secretInput");
@@ -54,28 +57,31 @@ public class ProjectWebHooksTab extends ProjectBasePage {
         return new ProjectWebHooksTab(getDriver());
     }
 
-    public List<String> getWebHooks() {
-        return WebElementUtil.elementsToText(readyElement(webHooksList)
-                .findElement(By.className("list--slat"))
-                .findElements(By.className("list-item")));
+    public List<WebhookItem> getWebHooks() {
+        List<WebElement> list = getWebhookList();
+        if (list.isEmpty()) {
+            return Lists.newArrayList();
+        }
+
+        return list.stream().map(element -> new WebhookItem(
+            element.findElement(By.name("url")).getText(),
+            element.findElement(By.name("type")).getText()))
+            .collect(Collectors.toList());
     }
 
     public ProjectWebHooksTab expectWebHooksContains(final String url) {
         waitForPageSilence();
-        assertThat(getWebHooks()).contains(url);
-        return new ProjectWebHooksTab(getDriver());
-    }
-
-    public ProjectWebHooksTab expectWebHooksNotContains(final String url) {
-        waitForPageSilence();
-        assertThat(getWebHooks()).doesNotContain(url);
+        assertThat(getWebHooks()).extracting("url").contains(url);
         return new ProjectWebHooksTab(getDriver());
     }
 
     public ProjectWebHooksTab clickRemoveOn(String url) {
-        List<WebElement> listItems = readyElement(webHooksList)
-                .findElement(By.className("list--slat"))
-                .findElements(By.className("list-item"));
+        List<WebElement> listItems = getWebhookList();
+        if (listItems.isEmpty()) {
+            log.info("Did not find item {}", url);
+            return new ProjectWebHooksTab(getDriver());
+        }
+
         boolean clicked = false;
         for (WebElement listItem : listItems) {
             if (listItem.getText().contains(url)) {
@@ -88,5 +94,21 @@ public class ProjectWebHooksTab extends ProjectBasePage {
             log.info("Did not find item {}", url);
         }
         return new ProjectWebHooksTab(getDriver());
+    }
+
+    private List<WebElement> getWebhookList() {
+        List<WebElement> listWrapper = readyElement(webHooksForm)
+            .findElements(By.className("list--slat"));
+        if (listWrapper == null || listWrapper.isEmpty()) {
+            return Lists.newArrayList();
+        }
+        return listWrapper.get(0).findElements(By.className("list-item"));
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public class WebhookItem {
+        private String url;
+        private String type;
     }
 }

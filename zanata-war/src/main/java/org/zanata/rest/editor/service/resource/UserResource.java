@@ -20,7 +20,7 @@ import org.zanata.rest.service.RestResource;
 @Consumes({ MediaType.APPLICATION_JSON })
 public interface UserResource extends RestResource {
 
-    public static final String SERVICE_PATH = "/user";
+    String SERVICE_PATH = "/user";
 
     /**
      * Retrieves user information of current authenticated user
@@ -35,7 +35,7 @@ public interface UserResource extends RestResource {
     @GET
     @Produces({ MediaTypes.APPLICATION_ZANATA_USER_JSON,
             MediaType.APPLICATION_JSON })
-    public Response getMyInfo();
+    Response getMyInfo();
 
     /**
      * Retrieves user information
@@ -53,6 +53,21 @@ public interface UserResource extends RestResource {
     @Produces({ MediaTypes.APPLICATION_ZANATA_USER_JSON,
             MediaType.APPLICATION_JSON })
     @Path("/{username:[a-z\\d_]{3,20}}")
-    public Response getUserInfo(@PathParam("username") String username);
+    Response getUserInfo(@PathParam("username") String username);
+
+
+    /**
+     * Retrieves account information of current authenticated user.
+     *
+     * @return The following response status codes will be returned from this
+     *         operation:<br>
+     *         OK(200) - Response containing account information {@link org.zanata.rest.dto.Account}<br>
+     *         FORBIDDEN(403) - If no authenticated user found. <br>
+     *         INTERNAL SERVER ERROR(500) - If there is an unexpected error in
+     *         the server while performing this operation.
+     */
+    @Path("/myaccount")
+    @GET
+    Response getAccountDetails();
 }
 

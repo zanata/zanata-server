@@ -21,27 +21,58 @@
 
 package org.zanata.events;
 
-import javax.annotation.Nullable;
+import java.io.Serializable;
 
-import lombok.Value;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.zanata.common.ContentState;
-import org.zanata.common.LocaleId;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Sean Flanigan <a
  *         href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
  *
  */
-@Value
 public final class TextFlowTargetStateEvent {
-    // this may be null in the case of document uploads
-    private final @Nullable
-    Long actorId;
+    @Getter
+    private final DocumentLocaleKey key;
+
+    @Getter
     private final Long projectIterationId;
-    private final Long documentId;
-    private final Long textFlowId;
-    private final LocaleId localeId;
-    private final Long textFlowTargetId;
-    private final ContentState newState;
-    private final ContentState previousState;
+
+    @Getter
+    // this may be null in the case of document uploads
+    private final @Nullable Long actorId;
+
+    @Getter
+    private final ImmutableList<TextFlowTargetStateChange> states;
+
+    public TextFlowTargetStateEvent(DocumentLocaleKey key,
+            Long projectIterationId, Long actorId,
+            ImmutableList<TextFlowTargetStateChange> states) {
+        this.key = key;
+        this.projectIterationId = projectIterationId;
+        this.actorId = actorId;
+        this.states = states;
+        Preconditions.checkArgument(!states.isEmpty(), "states is empty");
+    }
+
+    public TextFlowTargetStateEvent(DocumentLocaleKey key,
+        Long projectIterationId, Long actorId, TextFlowTargetStateChange state) {
+        this(key, projectIterationId, actorId, ImmutableList.of(state));
+    }
+
+    @Getter
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    public static final class TextFlowTargetStateChange implements Serializable {
+        private final Long textFlowId;
+        private final Long textFlowTargetId;
+        private final ContentState newState;
+        private final ContentState previousState;
+    }
 }

@@ -20,7 +20,6 @@
  */
 package org.zanata.security;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +39,6 @@ import org.zanata.security.openid.OpenIdAuthCallback;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.UserAccountService;
 import org.zanata.ui.faces.FacesMessages;
-import org.zanata.util.ServiceLocator;
 
 import javax.enterprise.event.Observes;
 
@@ -92,6 +90,9 @@ public class AuthenticationManager {
 
     @Inject
     private Messages msgs;
+
+    @Inject
+    private SpNegoIdentity spNegoIdentity;
 
     /**
      * Logs in a user using a specified authentication type.
@@ -159,8 +160,6 @@ public class AuthenticationManager {
      */
     public void kerberosLogin() {
         if (applicationConfiguration.isKerberosAuth()) {
-            SpNegoIdentity spNegoIdentity =
-                    ServiceLocator.instance().getInstance(SpNegoIdentity.class);
             spNegoIdentity.authenticate();
             if (!isNewUser() && !isAuthenticatedAccountWaitingForActivation()
                     && isAccountEnabledAndActivated()) {
@@ -233,7 +232,7 @@ public class AuthenticationManager {
         volatileCreds.setUsername(openId);
         volatileCreds.setAuthType(AuthenticationType.OPENID);
         volatileCreds.setOpenIdProviderType(openIdProviderType);
-        zanataOpenId.login(volatileCreds, callback);
+        zanataOpenId.authenticate(volatileCreds, callback);
     }
 
     /**
@@ -332,7 +331,7 @@ public class AuthenticationManager {
         if (credentials.getAuthType() == AuthenticationType.INTERNAL
                 && applicationConfiguration.isInternalAuth()) {
             userIsAuthenticated =
-                    identityStore.authenticateEvenIfDisabled(
+                    identityStore.checkPasswordIgnoringActivation(
                             credentials.getUsername(),
                             credentials.getPassword());
         }

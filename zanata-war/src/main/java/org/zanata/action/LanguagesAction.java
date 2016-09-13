@@ -27,21 +27,36 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
+import org.hibernate.exception.ConstraintViolationException;
 import org.zanata.common.LocaleId;
+import org.zanata.i18n.Messages;
 import org.zanata.model.HLocale;
 import org.zanata.security.ZanataIdentity;
+import org.zanata.security.annotations.CheckRole;
 import org.zanata.service.LanguageTeamService;
 import org.zanata.service.LocaleService;
 import org.zanata.ui.InMemoryListFilter;
+import org.zanata.ui.faces.FacesMessages;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+
 @Named("languagesAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Model
+@Transactional
 public class LanguagesAction extends InMemoryListFilter<HLocale> implements
         Serializable {
     private static final long serialVersionUID = 1L;
@@ -53,6 +68,12 @@ public class LanguagesAction extends InMemoryListFilter<HLocale> implements
 
     @Inject
     private ZanataIdentity identity;
+
+    @Inject
+    private FacesMessages facesMessages;
+
+    @Inject
+    private Messages msgs;
 
     private List<HLocale> allLanguages;
 
@@ -143,6 +164,24 @@ public class LanguagesAction extends InMemoryListFilter<HLocale> implements
             } else {
                 return getMemberSize(o1.getLocaleId()) - getMemberSize(o2.getLocaleId());
             }
+        }
+    }
+
+    @CheckRole("admin")
+    @Transactional
+    public void deleteLanguage(String localeId) {
+        if(StringUtils.isEmpty(localeId)) {
+            return;
+        }
+        LocaleId locale = new LocaleId(localeId);
+        try {
+            localeServiceImpl.delete(locale);
+            allLanguages = null;
+            this.reset();
+            facesMessages.addGlobal(msgs.format("jsf.language.deleted", localeId));
+        } catch (ConstraintViolationException e) {
+            facesMessages.addGlobal(SEVERITY_ERROR,
+                    msgs.format("jsf.language.delete.failed", localeId));
         }
     }
 }

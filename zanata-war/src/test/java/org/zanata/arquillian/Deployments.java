@@ -28,12 +28,14 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.common.base.Joiner;
 import org.apache.deltaspike.core.api.projectstage.ProjectStage;
 import org.apache.deltaspike.core.util.ProjectStageProducer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -88,8 +90,13 @@ public class Deployments {
                 // google-collections gets pulled in by arquillian and
                 // conflict with guava.
                 new RejectDependenciesStrategy(false,
+                        "com.google.collections:google-collections",
                         "net.bull.javamelody:javamelody-core",
-                        "com.google.collections:google-collections"))
+                        // org.zanata dependencies should be on classpath, provided by Maven
+                        "org.zanata:zanata-liquibase",
+                        "org.zanata:zanata-model"
+                        // and any other org.zanata dependencies in future...
+                        ))
                 .asFile();
     }
 
@@ -97,24 +104,13 @@ public class Deployments {
     public static Archive<?> createDeployment() {
         WebArchive archive =
                 ShrinkWrap.create(WebArchive.class, DEPLOYMENT_NAME + ".war");
+        // TODO add org.zanata packages on classpath first, exclude any libraries with colliding classes
         archive.addAsLibraries(runtimeAndTestDependenciesFromPom());
 
         // Local packages
-        Filter<ArchivePath> archivePathFilter = object -> {
-            // Avoid the model package (for some reason it's being included
-            // as a class file)
-            return !object.get().startsWith("/org/zanata/model/") &&
-                    !object.get().startsWith("/org/zanata/util/RequestContextValueStore") &&
-                    !object.get().startsWith("/org/zanata/seam/AutowireContexts") &&
-                    !object.get().startsWith("/org/zanata/seam/AutowireInstance") &&
-                    !object.get().startsWith("/org/zanata/seam/AutowireTransaction") &&
-                    !object.get().startsWith("/org/zanata/seam/FieldComponentAccessor") &&
-                    !object.get().startsWith("/org/zanata/seam/MethodComponentAccessor") &&
-                    !object.get().startsWith("/org/zanata/seam/SeamAutowire") &&
-                    !object.get().startsWith("/org/zanata/seam/test") &&
-                    notUnusedGwtClientCode(object) &&
-                    notUnitTest(object);
-        };
+        Filter<ArchivePath> archivePathFilter = object ->
+                notUnusedGwtClientCode(object) &&
+                notUnitTest(object);
         archive.addPackages(true, archivePathFilter, "org.zanata");
 
         // Resources (descriptors, etc)
@@ -143,10 +139,16 @@ public class Deployments {
 
         addRemoteHelpers(archive);
 
-        // Export (to actually see what is being deployed)
-//         archive.as(ZipExporter.class).exportTo(new
-//         File("/home/pahuang/temp/archive.war"), true);
+        // uncomment to see what will be in the war
+//        ArrayList<ArchivePath> paths =
+//                new ArrayList<>(archive.getContent().keySet());
+//        Collections.sort(paths);
+//        String contents = "  " + Joiner.on("\n  ").join(paths);
+//        System.out.println(contents);
 
+        // Export (to actually see what is being deployed)
+//        archive.as(ZipExporter.class).exportTo(
+//                 new File("/tmp/zanata-arquillian.war"), true);
         return archive;
     }
 
@@ -200,7 +202,10 @@ public class Deployments {
                 || context.contains("RestTest")
                 || context.contains("TestAsyncBean")
                 || context.contains("ResourceTestObjectFactory")
-                || !context.matches(".+Test.*");
+                // unit test classes
+                || !(context.matches(".+Test(s)?\\.class$") ||
+                // inner classes of unit test classes
+                context.matches(".+Test(s)?\\$.*\\.class$"));
     }
 
     private static boolean notUnusedGwtClientCode(ArchivePath object) {

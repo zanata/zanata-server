@@ -23,6 +23,8 @@ package org.zanata.action;
 import java.io.IOException;
 import java.io.Serializable;
 
+import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -32,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.security.AuthenticationManager;
 import org.zanata.security.AuthenticationType;
@@ -42,6 +46,7 @@ import org.zanata.security.openid.FedoraOpenIdProvider;
 import org.zanata.security.openid.GoogleOpenIdProvider;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.security.openid.YahooOpenIdProvider;
+import org.zanata.util.FacesNavigationUtil;
 
 /**
  * This action takes care of logging a user into the system. It contains logic
@@ -51,7 +56,9 @@ import org.zanata.security.openid.YahooOpenIdProvider;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("loginAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Model
+@Transactional
 @Slf4j
 public class LoginAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -83,16 +90,13 @@ public class LoginAction implements Serializable {
     @Inject
     private UserRedirectBean userRedirect;
 
+    @Inject
+    private AuthenticationType authenticationType;
+
     public String login() {
         credentials.setUsername(username);
         credentials.setPassword(password);
-        if (applicationConfiguration.isInternalAuth()) {
-            credentials.setAuthType(AuthenticationType.INTERNAL);
-        } else if (applicationConfiguration.isJaasAuth()) {
-            credentials.setAuthType(AuthenticationType.JAAS);
-        } else if (applicationConfiguration.isKerberosAuth()) {
-            credentials.setAuthType(AuthenticationType.KERBEROS);
-        }
+        credentials.setAuthType(authenticationType);
 
         String loginResult;
 
@@ -133,14 +137,13 @@ public class LoginAction implements Serializable {
     }
 
     private String continueToPreviousUrl() {
-        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
         try {
-            ec.redirect(userRedirect.getUrl());
-            return "continue";
+            FacesNavigationUtil.redirect(FacesContext.getCurrentInstance(),
+                    userRedirect.getUrl());
         } catch (IOException e) {
-            log.warn("error redirecting user to previous url: {}", userRedirect.getUrl(), e);
             return "dashboard";
         }
+        return "continue";
     }
 
     /**

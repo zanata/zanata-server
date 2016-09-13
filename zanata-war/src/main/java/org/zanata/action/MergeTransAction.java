@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 
 import com.google.common.collect.Lists;
@@ -11,9 +13,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.async.handle.MergeTranslationsTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.ProjectDAO;
@@ -40,7 +45,9 @@ import org.zanata.ui.faces.FacesMessages;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("mergeTransAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Model
+@Transactional
 public class MergeTransAction extends CopyAction implements Serializable {
 
     @Getter
@@ -112,7 +119,7 @@ public class MergeTransAction extends CopyAction implements Serializable {
             this.sourceProjectSlug = sourceProjectSlug;
             refreshSourceProject();
             this.sourceVersionSlug = null;
-            if (!getSourceProject().getProjectIterations().isEmpty()) {
+            if (getSourceProject() != null && !getSourceProject().getProjectIterations().isEmpty()) {
                 this.sourceVersionSlug =
                     getSourceProject().getProjectIterations().get(0).getSlug();
             }
@@ -133,7 +140,7 @@ public class MergeTransAction extends CopyAction implements Serializable {
         return targetVersion;
     }
 
-    public HProject getSourceProject() {
+    public @Nullable HProject getSourceProject() {
         if(sourceProject == null && StringUtils.isNotEmpty(sourceProjectSlug)) {
             sourceProject = projectDAO.getBySlug(sourceProjectSlug);
         }
@@ -174,7 +181,7 @@ public class MergeTransAction extends CopyAction implements Serializable {
                     .getProject(), "merge-trans");
         if (canMergeFromAllProjects) {
             return projectDAO
-                    .getOffsetListOrderByName(0, Integer.MAX_VALUE, false,
+                    .getOffsetList(0, Integer.MAX_VALUE, false,
                         true, true);
         }
         return Lists.newArrayList();

@@ -24,17 +24,20 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
+
+import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
+import org.zanata.i18n.Messages;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.common.EntityStatus;
@@ -59,8 +62,9 @@ import com.google.common.collect.Lists;
 
 
 @Named("versionGroupJoinAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@Model
+@Transactional
 @Slf4j
 public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
         implements Serializable {
@@ -101,6 +105,9 @@ public class VersionGroupJoinAction extends AbstractAutocomplete<HProject>
 
     @Inject
     private FacesMessages facesMessages;
+
+    @Inject
+    private Messages msgs;
 
     public boolean hasSelectedVersion() {
         if(projectVersions.isEmpty()) {

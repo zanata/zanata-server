@@ -27,12 +27,15 @@ import javax.annotation.Nonnull;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.hibernate.cache.internal.StandardQueryCacheFactory;
 import org.zanata.dao.AccountDAO;
 import org.zanata.dao.AccountResetPasswordKeyDAO;
 import org.zanata.dao.RoleAssignmentRuleDAO;
@@ -50,6 +53,7 @@ import org.zanata.util.HashUtil;
 @Named("userAccountServiceImpl")
 @RequestScoped
 @Slf4j
+@Transactional
 public class UserAccountServiceImpl implements UserAccountService {
     @Inject
     private Session session;
@@ -138,7 +142,7 @@ public class UserAccountServiceImpl implements UserAccountService {
                         .setParameter("currentUsername", currentUsername);
         updateQuery.setComment("UserAccountServiceImpl.editUsername");
         updateQuery.executeUpdate();
-        session.getSessionFactory().evictQueries(); // Because a Natural Id was
-                                                    // modified
+        // Because a Natural Id was modified:
+        session.getSessionFactory().getCache().evictQueryRegion(AccountDAO.REGION);
     }
 }

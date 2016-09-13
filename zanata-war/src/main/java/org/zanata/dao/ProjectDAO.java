@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
@@ -41,7 +41,6 @@ import org.hibernate.search.jpa.FullTextQuery;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.zanata.common.EntityStatus;
 import org.zanata.hibernate.search.CaseInsensitiveWhitespaceAnalyzer;
 import org.zanata.hibernate.search.IndexFieldLabels;
@@ -52,7 +51,6 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.ProjectRole;
 
-@Named("projectDAO")
 @RequestScoped
 public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
     @Inject @FullText
@@ -76,19 +74,23 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<HProject>
-            getOffsetListOrderByName(int offset, int count,
+    public List<HProject> getOffsetList(int offset, int count,
                     boolean filterOutActive, boolean filterOutReadOnly,
                     boolean filterOutObsolete) {
+
         String condition =
                 constructFilterCondition(filterOutActive, filterOutReadOnly,
                     filterOutObsolete);
-        Query q =
-                getSession().createQuery(
-                        "from HProject p " + condition
-                                + "order by UPPER(p.name)");
-        q.setMaxResults(count).setFirstResult(offset);
-        q.setCacheable(true).setComment("ProjectDAO.getOffsetListOrderByName");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Select distinct p from HProject p ")
+            .append(condition)
+            .append("order by UPPER(p.name) asc");
+        Query q = getSession().createQuery(sb.toString())
+            .setMaxResults(count)
+            .setFirstResult(offset)
+            .setCacheable(true)
+            .setComment("ProjectDAO.getOffsetList");
         return q.list();
     }
 
@@ -274,11 +276,12 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
 
     private FullTextQuery buildSearchQuery(@Nonnull String searchQuery,
         boolean includeObsolete) throws ParseException {
+        String queryText = QueryParser.escape(searchQuery);
 
         BooleanQuery booleanQuery = new BooleanQuery();
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "slug"), BooleanClause.Occur.SHOULD);
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "name"), BooleanClause.Occur.SHOULD);
-        booleanQuery.add(buildSearchFieldQuery(searchQuery, "description"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "slug"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "name"), BooleanClause.Occur.SHOULD);
+        booleanQuery.add(buildSearchFieldQuery(queryText, "description"), BooleanClause.Occur.SHOULD);
 
         if (!includeObsolete) {
             TermQuery obsoleteStateQuery =
@@ -308,9 +311,8 @@ public class ProjectDAO extends AbstractDAOImpl<HProject, Long> {
         searchQuery = QueryParser.escape(searchQuery);
 
         for(String searchString: searchQuery.split("\\s+")) {
-            QueryParser parser = new QueryParser(Version.LUCENE_29, field,
-                    new CaseInsensitiveWhitespaceAnalyzer(Version.LUCENE_29));
-
+            QueryParser parser = new QueryParser(field,
+                    new CaseInsensitiveWhitespaceAnalyzer());
             query.add(parser.parse(searchString + "*"), BooleanClause.Occur.MUST);
         }
         return query;

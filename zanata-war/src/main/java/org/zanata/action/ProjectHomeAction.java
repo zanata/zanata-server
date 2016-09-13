@@ -31,15 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.async.handle.CopyVersionTaskHandle;
 import org.zanata.common.EntityStatus;
 import org.zanata.dao.LocaleMemberDAO;
@@ -69,7 +73,6 @@ import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.ComparatorUtil;
 import org.zanata.util.DateUtil;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.StatisticsUtil;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -92,7 +95,9 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
 @Named("projectHomeAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Model
+@Transactional
 @Slf4j
 public class ProjectHomeAction extends AbstractSortAction implements
         Serializable {
@@ -437,8 +442,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
     public List<HProjectIteration> getProjectVersions() {
         // Local DAO reference as this method is used from a dependent object
         // that may be out of bean scope.
-        ProjectDAO projectDAO =
-                ServiceLocator.instance().getInstance(ProjectDAO.class);
         if (projectVersions == null) {
             projectVersions = projectDAO.getActiveIterations(slug);
             projectVersions.addAll(projectDAO.getReadOnlyIterations(slug));
@@ -451,8 +454,6 @@ public class ProjectHomeAction extends AbstractSortAction implements
 
     public HProject getProject() {
         if (project == null) {
-            ProjectDAO projectDAO =
-                    ServiceLocator.instance().getInstance(ProjectDAO.class);
             project = projectDAO.getBySlug(slug);
         }
         return project;

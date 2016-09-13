@@ -56,10 +56,10 @@ public class EditWebHooksTest extends ZanataTestCase {
                 .goToProjectByName("about fedora")
                 .gotoSettingsTab()
                 .gotoSettingsWebHooksTab()
-                .enterUrl(testUrl, key)
-                .expectWebHooksContains(testUrl);
+                .enterUrl(testUrl, key);
 
         assertThat(projectWebHooksTab.getWebHooks())
+                .extracting("url")
                 .contains(testUrl)
                 .as("The web hook was added");
     }
@@ -76,10 +76,10 @@ public class EditWebHooksTest extends ZanataTestCase {
                 .gotoSettingsWebHooksTab()
                 .enterUrl(testUrl, key)
                 .expectWebHooksContains(testUrl)
-                .clickRemoveOn(testUrl)
-                .expectWebHooksNotContains(testUrl);
+                .clickRemoveOn(testUrl);
 
         assertThat(projectWebHooksTab.getWebHooks())
+                .extracting("url")
                 .doesNotContain(testUrl)
                 .as("The web hook was removed");
     }

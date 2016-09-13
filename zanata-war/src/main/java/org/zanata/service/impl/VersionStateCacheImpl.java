@@ -22,25 +22,25 @@
 
 package org.zanata.service.impl;
 
+import java.util.Map;
+
 import com.google.common.annotations.VisibleForTesting;
 import org.infinispan.manager.CacheContainer;
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.zanata.cache.CacheWrapper;
 import org.zanata.cache.InfinispanCacheWrapper;
+import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.ProjectIterationDAO;
-import org.zanata.dao.TextFlowDAO;
-import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.events.DocStatsEvent;
 import org.zanata.model.HLocale;
-import org.zanata.model.HTextFlow;
 import org.zanata.service.VersionLocaleKey;
 import org.zanata.service.VersionStateCache;
 import org.zanata.ui.model.statistic.WordStatistic;
 import org.zanata.util.IServiceLocator;
-import org.zanata.util.ServiceLocator;
 
 import com.google.common.cache.CacheLoader;
 import org.zanata.util.Zanata;
@@ -51,58 +51,61 @@ import javax.enterprise.event.TransactionPhase;
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
  */
-@Named("versionStateCacheImpl")
-@javax.enterprise.context.ApplicationScoped
+@ApplicationScoped
+// TODO look at using @Transactional
 public class VersionStateCacheImpl implements VersionStateCache {
     private static final String BASE = VersionStateCacheImpl.class.getName();
 
     private static final String VERSION_STATISTIC_CACHE_NAME = BASE
             + ".versionStatisticCache";
 
-    private CacheWrapper<VersionLocaleKey, WordStatistic> versionStatisticCache;
-    private CacheLoader<VersionLocaleKey, WordStatistic> versionStatisticLoader;
+    private  CacheWrapper<VersionLocaleKey, WordStatistic> versionStatisticCache;
+    private final CacheLoader<VersionLocaleKey, WordStatistic> versionStatisticLoader;
 
-    @Inject @Zanata
+    @Zanata
     private CacheContainer cacheContainer;
-
-    @Inject
-    private IServiceLocator serviceLocator;
+    private final IServiceLocator serviceLocator;
+    private final LocaleDAO localeDAO;
 
     // constructor for CDI
     public VersionStateCacheImpl() {
+        this(null, null, null, null);
     }
 
     // Constructor for testing
-    @VisibleForTesting
+    @Inject
     public VersionStateCacheImpl(
-            CacheLoader<VersionLocaleKey, WordStatistic> versionStatisticLoader) {
+            CacheLoader<VersionLocaleKey, WordStatistic> versionStatisticLoader,
+            @Zanata CacheContainer cacheContainer,
+            IServiceLocator serviceLocator,
+            LocaleDAO localeDAO) {
         this.versionStatisticLoader = versionStatisticLoader;
+        this.cacheContainer = cacheContainer;
+        this.serviceLocator = serviceLocator;
+        this.localeDAO = localeDAO;
     }
 
     @PostConstruct
     public void create() {
-        if (versionStatisticLoader == null) {
-            versionStatisticLoader = new VersionStatisticLoader();
-        }
         versionStatisticCache =
                 InfinispanCacheWrapper.create(VERSION_STATISTIC_CACHE_NAME,
                         cacheContainer, versionStatisticLoader);
     }
 
     @Override
-    public void textFlowStateUpdated(@Observes(during = TransactionPhase.AFTER_SUCCESS) TextFlowTargetStateEvent event) {
+    public void docStatsUpdated(
+        @Observes(during = TransactionPhase.AFTER_SUCCESS)
+        DocStatsEvent event) {
         VersionLocaleKey key =
-                new VersionLocaleKey(event.getProjectIterationId(),
-                        event.getLocaleId());
+            new VersionLocaleKey(event.getProjectVersionId(),
+                event.getKey().getLocaleId());
         WordStatistic stats = versionStatisticCache.get(key);
         if (stats != null) {
-            TextFlowDAO textFlowDAO = serviceLocator.getInstance(TextFlowDAO.class);
-            HTextFlow textFlow = textFlowDAO.findById(event.getTextFlowId());
-
-            stats.decrement(event.getPreviousState(),
-                    textFlow.getWordCount().intValue());
-            stats.increment(event.getNewState(),
-                    textFlow.getWordCount().intValue());
+            for (Map.Entry<ContentState, Long> entry : event
+                    .getWordDeltasByState().entrySet()) {
+                stats.increment(entry.getKey(),
+                        Math.toIntExact(entry.getValue()));
+            }
             versionStatisticCache.put(key, stats);
         }
     }
@@ -116,7 +119,6 @@ public class VersionStateCacheImpl implements VersionStateCache {
 
     @Override
     public void clearVersionStatsCache(Long versionId) {
-        LocaleDAO localeDAO = serviceLocator.getInstance(LocaleDAO.class);
         for (HLocale locale : localeDAO.findAll()) {
             VersionLocaleKey key =
                     new VersionLocaleKey(versionId, locale.getLocaleId());
@@ -124,24 +126,17 @@ public class VersionStateCacheImpl implements VersionStateCache {
         }
     }
 
-    @VisibleForTesting
-    public void setCacheContainer(CacheContainer cacheContainer) {
-        this.cacheContainer = cacheContainer;
-    }
-
-    private static class VersionStatisticLoader extends
+    public static class VersionStatisticLoader extends
             CacheLoader<VersionLocaleKey, WordStatistic> {
 
-        ProjectIterationDAO getProjectIterationDAO() {
-            return ServiceLocator.instance().getInstance(
-                    ProjectIterationDAO.class);
-        }
+        @Inject
+        private ProjectIterationDAO projectIterationDAO;
 
         @Override
         public WordStatistic load(VersionLocaleKey key) throws Exception {
 
             WordStatistic wordStatistic =
-                    getProjectIterationDAO().getWordStatistics(
+                projectIterationDAO.getWordStatistics(
                         key.getProjectIterationId(), key.getLocaleId());
 
             return wordStatistic;

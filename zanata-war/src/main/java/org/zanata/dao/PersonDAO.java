@@ -28,13 +28,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 
-@Named("personDAO")
 @RequestScoped
 public class PersonDAO extends AbstractDAOImpl<HPerson, Long> {
 
@@ -105,17 +103,29 @@ public class PersonDAO extends AbstractDAOImpl<HPerson, Long> {
 
     }
 
-    @SuppressWarnings("unchecked")
+    public int findAllContainingNameSize(String name) {
+        return findAllContainingName(name).size();
+    }
+
     public List<HPerson> findAllContainingName(String name) {
+        return findAllContainingName(name, -1, 0);
+    }
+
+    public List<HPerson> findAllContainingName(String name, int maxResult,
+        int firstResult) {
         if (!StringUtils.isEmpty(name)) {
             Query query =
-                    getSession()
-                            .createQuery(
-                                    "from HPerson as p " +
-                                    "where lower(p.account.username) like :name " +
-                                    "or lower(p.name) like :name");
+                getSession()
+                    .createQuery(
+                        "from HPerson as p " +
+                            "where lower(p.account.username) like :name " +
+                            "or lower(p.name) like :name");
             query.setParameter("name", "%" + name.toLowerCase() + "%");
             query.setCacheable(false);
+            query.setFirstResult(firstResult);
+            if(maxResult != -1) {
+                query.setMaxResults(maxResult);
+            }
             query.setComment("PersonDAO.findAllContainingName");
             return query.list();
         }

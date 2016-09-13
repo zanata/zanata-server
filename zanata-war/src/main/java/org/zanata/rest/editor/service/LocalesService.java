@@ -22,6 +22,7 @@ package org.zanata.rest.editor.service;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.Path;
@@ -33,7 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.model.HLocale;
-import org.zanata.rest.editor.dto.Locale;
+import org.zanata.rest.dto.LocaleDetails;
 import org.zanata.rest.editor.service.resource.LocalesResource;
 import org.zanata.service.LocaleService;
 
@@ -45,7 +46,7 @@ import com.google.common.collect.Lists;
 @RequestScoped
 @Named("editor.localesService")
 @Path(LocalesResource.SERVICE_PATH)
-@Transactional
+@Transactional(readOnly = true)
 public class LocalesService implements LocalesResource {
 
     @Inject
@@ -55,19 +56,17 @@ public class LocalesService implements LocalesResource {
     public Response get() {
         List<HLocale> locales = localeServiceImpl.getAllLocales();
 
-        List<Locale> localesRefs =
-                Lists.newArrayListWithExpectedSize(locales.size());
+        List<LocaleDetails> localesRefs =
+            Lists.newArrayListWithExpectedSize(locales.size());
 
-        for (HLocale hLocale : locales) {
-            localesRefs.add(new Locale(hLocale.getLocaleId(),
-                    hLocale.retrieveDisplayName()));
-        }
+        localesRefs.addAll(
+            locales.stream().map(hLocale -> new LocaleDetails(hLocale.getLocaleId(),
+                hLocale.retrieveDisplayName(), "")).collect(Collectors.toList()));
 
-        Type genericType = new GenericType<List<Locale>>() {
+        Type genericType = new GenericType<List<LocaleDetails>>() {
         }.getGenericType();
         Object entity =
-                new GenericEntity<List<Locale>>(localesRefs, genericType);
+            new GenericEntity<List<LocaleDetails>>(localesRefs, genericType);
         return Response.ok(entity).build();
     }
-
 }

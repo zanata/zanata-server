@@ -30,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.ApplicationConfiguration;
 import org.zanata.action.VersionGroupJoinAction;
 import org.zanata.common.LocaleId;
@@ -56,6 +58,7 @@ import javax.mail.internet.InternetAddress;
 import com.google.common.collect.Lists;
 
 import static org.zanata.email.Addresses.getAddresses;
+import static org.zanata.email.Addresses.getLocaleMemberAddresses;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -64,6 +67,7 @@ import static org.zanata.email.Addresses.getAddresses;
 @Named("emailServiceImpl")
 @RequestScoped
 @Slf4j
+@Transactional
 public class EmailServiceImpl implements EmailService {
 
     @Inject
@@ -249,5 +253,20 @@ public class EmailServiceImpl implements EmailService {
             InternetAddress to = Addresses.getAddress(person);
             emailBuilder.sendMessage(strategy, null, to);
         }
+    }
+
+    @Override
+    public String sendToLanguageTeamMembers(LocaleId localeId,
+        EmailStrategy strategy, List<HLocaleMember> members) {
+        if (!members.isEmpty()) {
+            String receivedReason = msgs.format(
+                "jsf.email.language.members.ReceivedReason", localeId);
+            emailBuilder.sendMessage(strategy,
+                Lists.newArrayList(receivedReason),
+                getLocaleMemberAddresses(members));
+            return msgs.format("jsf.email.language.members.SentNotification",
+               localeId);
+        }
+        return msgs.format("jsf.email.language.members.EmptyMembersNotification", localeId);
     }
 }

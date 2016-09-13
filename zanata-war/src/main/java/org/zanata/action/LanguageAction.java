@@ -22,6 +22,8 @@ package org.zanata.action;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 
 import com.google.common.base.Joiner;
@@ -57,8 +59,6 @@ import org.zanata.ui.faces.FacesMessages;
 import javax.enterprise.event.Event;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
-import org.zanata.util.IServiceLocator;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
 
 import lombok.Getter;
@@ -68,8 +68,9 @@ import lombok.extern.slf4j.Slf4j;
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 @Named("languageAction")
-@javax.faces.bean.ViewScoped
-
+@ViewScoped
+@Model
+@Transactional
 @Slf4j
 public class LanguageAction implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -138,10 +139,6 @@ public class LanguageAction implements Serializable {
             new InMemoryListFilter<HLocaleMember>() {
                 @Override
                 protected List<HLocaleMember> fetchAll() {
-                    IServiceLocator serviceLocator = ServiceLocator.instance();
-                    LocaleMemberDAO localeMemberDAO =
-                            serviceLocator.getInstance(LocaleMemberDAO.class);
-
                     return localeMemberDAO.findAllByLocale(
                             new LocaleId(language));
                 }
@@ -276,7 +273,7 @@ public class LanguageAction implements Serializable {
          * to access the 'members' collection from inside the security
          * listener's postLoad method to evaluate rules.
          */
-        if(locale == null) {
+        if(locale == null && StringUtils.isNotBlank(language)) {
             locale = localeServiceImpl.getByLocaleId(new LocaleId(language));
             locale.getMembers();
         }
@@ -302,7 +299,7 @@ public class LanguageAction implements Serializable {
     private void redirectToLanguageHome() {
         facesMessages.addGlobal(msgs.format(
                 "jsf.language.validation.NotSupport", language));
-        urlUtil.redirectTo(urlUtil.languageHome());
+        urlUtil.redirectToInternal(urlUtil.languageHome());
     }
 
 

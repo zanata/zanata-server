@@ -25,14 +25,15 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import javax.annotation.Nullable;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+
 import org.zanata.common.LocaleId;
 import org.zanata.model.HLocale;
 import org.zanata.model.HLocaleMember;
 import org.zanata.model.HLocaleMember.HLocaleMemberPk;
+import org.zanata.model.HPerson;
 
-@Named("localeMemberDAO")
 @RequestScoped
 public class LocaleMemberDAO extends
         AbstractDAOImpl<HLocaleMember, HLocaleMemberPk> {
@@ -54,6 +55,32 @@ public class LocaleMemberDAO extends
         query.setParameter("localeId", localeId);
         query.setComment("LocaleMemberDAO.findAllByLocale");
         return query.list();
+    }
+
+    public List<HLocaleMember> findActiveMembers(LocaleId localeId,
+        @Nullable HPerson excludePerson) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("from HLocaleMember ")
+            .append("where id.supportedLanguage.localeId = :localeId ");
+        if (excludePerson != null) {
+            sb.append("and id.person.id <> :excludePerson ");
+        }
+        sb.append("and (isTranslator = true ")
+            .append("or isReviewer = true ")
+            .append("or isCoordinator = true) ")
+            .append("order by lower(id.person.name)");
+        Query query = getSession().createQuery(sb.toString());
+        query.setParameter("localeId", localeId);
+        if (excludePerson != null) {
+            query.setParameter("excludePerson", excludePerson.getId());
+        }
+        query.setCacheable(true);
+        query.setComment("LocaleMemberDAO.findActiveMembers");
+        return query.list();
+    }
+
+    public List<HLocaleMember> findAllActiveMembers(LocaleId localeId) {
+        return findActiveMembers(localeId, null);
     }
 
     /**

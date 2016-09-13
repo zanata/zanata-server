@@ -48,7 +48,6 @@ import org.zanata.arquillian.RemoteAfter;
 import org.zanata.arquillian.RemoteBefore;
 import org.zanata.provider.DBUnitProvider;
 import org.zanata.rest.ResourceRequestEnvironment;
-import org.zanata.seam.SeamAutowire;
 import org.zanata.util.ServiceLocator;
 
 import com.google.common.collect.Lists;
@@ -151,8 +150,7 @@ public abstract class RestTest {
     public void signalBeforeTest() {
         ClientRequest clientRequest =
                 new ClientRequest(getRestEndpointUrl() + "test/remote/signal/before");
-        clientRequest.header("X-Auth-User", ADMIN);
-        clientRequest.header("X-Auth-Token", ADMIN_KEY);
+        // test resources allow anonymous access
         try {
             clientRequest
                     .queryParameter("c", this.getClass().getName())
@@ -167,8 +165,7 @@ public abstract class RestTest {
     public void signalAfterTest() {
         ClientRequest clientRequest =
                 new ClientRequest(getRestEndpointUrl() + "test/remote/signal/after");
-        clientRequest.header("X-Auth-User", ADMIN);
-        clientRequest.header("X-Auth-Token", ADMIN_KEY);
+        // test resources allow anonymous access
         try {
             clientRequest
                     .queryParameter("c", this.getClass().getName())

@@ -29,6 +29,7 @@ import static org.zanata.model.HCopyTransOptions.ConditionRuleAction.REJECT;
 import static org.zanata.transaction.TransactionUtil.runInTransaction;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +39,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.zanata.common.ContentState;
 import org.zanata.dao.TextFlowTargetDAO;
-import org.zanata.events.TextFlowTargetStateEvent;
+import org.zanata.events.DocStatsEvent;
+import org.zanata.events.DocumentLocaleKey;
+import org.zanata.model.HAccount;
 import org.zanata.model.HCopyTransOptions;
 import org.zanata.model.HDocument;
 import org.zanata.model.HLocale;
@@ -47,6 +50,7 @@ import org.zanata.model.HSimpleComment;
 import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.type.TranslationSourceType;
+import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.ValidationService;
 import org.zanata.service.VersionStateCache;
 import org.zanata.util.TranslationUtil;
@@ -55,6 +59,7 @@ import org.zanata.webtrans.shared.model.ValidationAction;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 /**
  * @author Sean Flanigan <a href="mailto:sflaniga@redhat.com">sflaniga@redhat.com</a>
@@ -77,6 +82,9 @@ public class CopyTransWorkFactory {
 
     @Inject
     private VersionStateCache versionStateCacheImpl;
+
+    @Inject @Authenticated
+    private HAccount authenticatedAccount;
 
     public Integer runCopyTransInNewTx(HLocale targetLocale,
             HCopyTransOptions options, HDocument document,
@@ -104,6 +112,7 @@ public class CopyTransWorkFactory {
             checkContext = true;
         }
 
+        Long actorId = authenticatedAccount.getPerson().getId();
         for (HTextFlow textFlow : copyTargets) {
             if (shouldFindMatch(textFlow, targetLocale,
                     requireTranslationReview)) {
@@ -116,8 +125,8 @@ public class CopyTransWorkFactory {
                 if (bestMatch.isPresent()) {
                     numCopied++;
 
-                    saveCopyTransMatch(bestMatch.get(), textFlow, options,
-                            requireTranslationReview);
+                    saveCopyTransMatch(actorId, bestMatch.get(), textFlow,
+                        options, requireTranslationReview);
 
                 }
             }
@@ -220,9 +229,10 @@ public class CopyTransWorkFactory {
                 requireTranslationReview, matchingTargetState);
     }
 
-    private void saveCopyTransMatch(final HTextFlowTarget matchingTarget,
-            final HTextFlow originalTf, final HCopyTransOptions options,
-            final boolean requireTranslationReview) {
+    private void saveCopyTransMatch(Long actorId,
+        final HTextFlowTarget matchingTarget,
+        final HTextFlow originalTf, final HCopyTransOptions options,
+        final boolean requireTranslationReview) {
         final HProjectIteration matchingTargetProjectIteration =
                 matchingTarget.getTextFlow().getDocument()
                         .getProjectIteration();
@@ -306,7 +316,8 @@ public class CopyTransWorkFactory {
 
             // TODO Maybe we should think about registering a Hibernate
             // integrator for these updates
-            signalCopiedTranslation(hTarget, prevState);
+            signalCopiedTranslation(hTarget, prevState,
+                originalTf.getWordCount());
         }
     }
 
@@ -332,7 +343,8 @@ public class CopyTransWorkFactory {
      */
     private boolean shouldFindMatch(HTextFlow textFlow, HLocale locale,
             boolean requireTranslationReview) {
-        // TODO getTargets will fill up ehcache for large textflows and locales. Check which one is more efficient
+        // TODO getTargets will fill up Hibernate cache for large textflows
+        // and locales. Check which one is more efficient
         HTextFlowTarget targetForLocale =
                 textFlow.getTargets().get(locale.getId());
 //        HTextFlowTarget targetForLocale = textFlowTargetDAO.getTextFlowTarget(
@@ -393,7 +405,7 @@ public class CopyTransWorkFactory {
     }
 
     private void signalCopiedTranslation(HTextFlowTarget target,
-            ContentState previousState) {
+            ContentState previousState, Long wordCount) {
         /*
          * Using a direct method call instead of an event because it's easier to
          * read. Since these events are being called synchronously (as opposed
@@ -403,12 +415,19 @@ public class CopyTransWorkFactory {
         // TODO how was this not causing duplicate events?  Is this bypassing TranslationServiceImpl?
         // FIXME other observers may not be notified
         HDocument document = target.getTextFlow().getDocument();
-        TextFlowTargetStateEvent updateEvent =
-                new TextFlowTargetStateEvent(null, document
-                        .getProjectIteration().getId(), document.getId(),
-                        target.getTextFlow().getId(), target.getLocaleId(),
-                        target.getId(), target.getState(), previousState);
-        versionStateCacheImpl.textFlowStateUpdated(updateEvent);
+
+        DocumentLocaleKey key =
+            new DocumentLocaleKey(document.getId(), target.getLocaleId());
+
+        Map<ContentState, Long> contentStates = Maps.newHashMap();
+        DocStatsEvent.updateContentStateDeltas(contentStates, target.getState(),
+                previousState, wordCount);
+
+        DocStatsEvent docEvent =
+                new DocStatsEvent(key, document.getProjectIteration().getId(),
+                        contentStates, target.getId());
+
+        versionStateCacheImpl.docStatsUpdated(docEvent);
     }
 
     /**

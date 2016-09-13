@@ -252,9 +252,18 @@ public class UrlUtil implements Serializable {
     }
 
     /**
-     * Redirect to url, adding dswid parameter if missing
+     * Redirect to a Zanata url, adding dswid parameter if missing. Do not use for external URLs!
      */
-    public void redirectTo(String url) {
+    public void redirectToInternal(String url) {
+        try {
+            String urlWithWindowId = addWindowId(url);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(urlWithWindowId);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public String addWindowId(String url) {
         try {
             // to fix https://zanata.atlassian.net/browse/ZNTA-887
             String windowId = windowContext.getCurrentWindowId();
@@ -265,9 +274,8 @@ public class UrlUtil implements Serializable {
                 URI uri = new URIBuilder(url).setParameter("dswid", windowId).build();
                 urlWithWindowId = uri.toString();
             }
-            FacesContext.getCurrentInstance().getExternalContext().redirect(urlWithWindowId);
-        } catch (Exception e) {
-            log.error("failed to redirect to {}", url, e);
+            return urlWithWindowId;
+        } catch (URISyntaxException e) {
             throw Throwables.propagate(e);
         }
     }
@@ -284,6 +292,13 @@ public class UrlUtil implements Serializable {
      */
     public String genericErrorPage() {
         return contextPath + "/error" + dswidQuery;
+    }
+
+    /**
+     * Get missing entity page url with dswid parameter
+     */
+    public String missingEntityPage() {
+        return contextPath + "/error/missing_entity" + dswidQuery;
     }
 
     /**
@@ -305,5 +320,13 @@ public class UrlUtil implements Serializable {
      */
     public String home() {
         return contextPath + "/" + dswidQuery;
+    }
+
+    public String createUserPage() {
+        return contextPath + "/profile/create" + dswidQuery;
+    }
+
+    public String inactiveAccountPage() {
+        return contextPath + "/account/inactive" + dswidQuery;
     }
 }

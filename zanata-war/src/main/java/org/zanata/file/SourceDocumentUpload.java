@@ -26,13 +26,13 @@ import static org.zanata.file.DocumentUploadUtil.isSinglePart;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Collections;
 
 import javax.annotation.Nonnull;
 import javax.enterprise.context.Dependent;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.FilenameUtils;
@@ -58,6 +58,7 @@ import org.zanata.rest.StringSet;
 import org.zanata.rest.dto.ChunkUploadResponse;
 import org.zanata.rest.dto.extensions.ExtensionType;
 import org.zanata.rest.dto.extensions.comment.SimpleComment;
+import org.zanata.rest.dto.extensions.gettext.PotEntryHeader;
 import org.zanata.rest.dto.resource.Resource;
 import org.zanata.rest.service.VirusScanner;
 import org.zanata.security.ZanataIdentity;
@@ -168,7 +169,7 @@ public class SourceDocumentUpload {
                 processAdapterFile(tempFile.get(), id, uploadForm);
             } else if (DocumentType.getByName(uploadForm.getFileType()) == DocumentType.GETTEXT) {
                 InputStream potStream = getInputStream(tempFile, uploadForm);
-                parsePotFile(potStream, id, uploadForm);
+                parsePotFile(potStream, id);
             } else {
                 throw new ZanataServiceException("Unsupported source file: "
                     + id.getDocId());
@@ -297,7 +298,7 @@ public class SourceDocumentUpload {
             document =
                     documentServiceImpl.saveDocument(id.getProjectSlug(),
                             id.getVersionSlug(), doc,
-                            Collections.<String> emptySet(), false);
+                            Sets.newHashSet(PotEntryHeader.ID, SimpleComment.ID), false);
         } catch (SecurityException e) {
             throw new ChunkUploadException(Status.INTERNAL_SERVER_ERROR,
                     e.getMessage(), e);
@@ -333,13 +334,19 @@ public class SourceDocumentUpload {
         documentDAO.flush();
     }
 
-    private void parsePotFile(InputStream potStream, GlobalDocumentId id,
-            DocumentFileUploadForm uploadForm) {
-        // real upload filename not available, but the service only cares about
-        // the suffix.
+    /**
+     * This method should only process gettext project type
+     * @param potStream
+     * @param id
+     */
+    private void parsePotFile(InputStream potStream, GlobalDocumentId id) {
+        //remove .pot extension from docId as per zanata-cli
+        String docIdWithoutExtension =
+            FilenameUtils.removeExtension(id.getDocId());
+
         Resource doc = translationFileServiceImpl.parseUpdatedPotFile(potStream,
-                        id.getDocId(), ".pot",
-                        useOfflinePo(id));
+                docIdWithoutExtension, ".pot",
+                useOfflinePo(id));
         doc.setLang(LocaleId.EN_US);
         // TODO Copy Trans values
 

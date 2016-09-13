@@ -16,12 +16,17 @@ import org.zanata.dao.PersonDAO;
 import org.zanata.model.HAccount;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
+import org.zanata.rest.dto.Account;
 import org.zanata.rest.dto.User;
+import org.zanata.rest.editor.dto.Permission;
 import org.zanata.rest.editor.service.resource.UserResource;
+import org.zanata.rest.service.AccountService;
+import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.annotations.CheckLoggedIn;
 import org.zanata.service.GravatarService;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -32,7 +37,7 @@ import lombok.NoArgsConstructor;
 @RequestScoped
 @Named("editor.userService")
 @Path(UserResource.SERVICE_PATH)
-@Transactional
+@Transactional(readOnly = true)
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserService implements UserResource {
@@ -51,6 +56,9 @@ public class UserService implements UserResource {
     private PersonDAO personDAO;
 
     @Inject
+    private ZanataIdentity identity;
+
+    @Inject
     private ApplicationConfiguration applicationConfiguration;
 
     @Override
@@ -59,7 +67,7 @@ public class UserService implements UserResource {
         if(authenticatedAccount == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        User user = transferToUser(authenticatedAccount, true);
+        User user = getUserInfo(authenticatedAccount, true);
         return Response.ok(user).build();
     }
 
@@ -70,6 +78,22 @@ public class UserService implements UserResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(user).build();
+    }
+
+    @Override
+    public Response getAccountDetails() {
+        if(authenticatedAccount == null) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        HAccount account = accountDAO.getByUsername(authenticatedAccount.getUsername());
+        // we may not need to return apiKey (and generating it
+        // without asking) anymore once client switched to OAuth
+        if (Strings.isNullOrEmpty(authenticatedAccount.getApiKey())) {
+            accountDAO.createApiKey(account);
+        }
+        Account dto = new Account();
+        AccountService.getAccountDetails(account, dto);
+        return Response.ok(dto).build();
     }
 
     /**
@@ -85,16 +109,17 @@ public class UserService implements UserResource {
         if (account == null) {
             return null;
         }
-        return transferToUser(account,
+        return getUserInfo(account,
             applicationConfiguration.isDisplayUserEmail());
     }
 
     /**
      * Generate {@link org.zanata.rest.dto.User} object from HAccount
      *
-     * @param username - username in HPerson
+     * @param account - HAccount
+     * @param includeEmail - Display user email
      */
-    public User transferToUser(HAccount account, boolean includeEmail) {
+    public User getUserInfo(HAccount account, boolean includeEmail) {
         if(account == null) {
             return new User();
         }
@@ -116,5 +141,36 @@ public class UserService implements UserResource {
         }
         return new User(account.getUsername(), email, person.getName(),
             userImageUrl, userLanguageTeams);
+    }
+
+    /**
+     * Return user's permission for js module.
+     * ServiceImpl will do security check again upon execution of any action.
+     */
+    public Permission getUserPermission() {
+        Permission permission = new Permission();
+        boolean canUpdate = false;
+        boolean canInsert = false;
+        boolean canDelete = false;
+        boolean canDownload = false;
+        boolean isAdmin = false;
+        boolean isLoggedIn = authenticatedAccount != null;
+
+        if(authenticatedAccount != null) {
+            canUpdate = identity.hasPermission("", "glossary-update");
+            canInsert = identity.hasPermission("", "glossary-insert");
+            canDelete = identity.hasPermission("", "glossary-delete");
+            canDownload = identity.hasPermission("", "glossary-download");
+            isAdmin = identity.hasRole("admin");
+        }
+
+        permission.put("updateGlossary", canUpdate);
+        permission.put("insertGlossary", canInsert);
+        permission.put("deleteGlossary", canDelete);
+        permission.put("downloadGlossary", canDownload);
+        permission.put("isAdmin", isAdmin);
+        permission.put("isLoggedIn", isLoggedIn);
+
+        return permission;
     }
 }

@@ -5,7 +5,6 @@
   <extensions>
     <extension module="org.jboss.as.clustering.infinispan"/>
     <extension module="org.jboss.as.connector"/>
-    <extension module="org.jboss.as.deployment-scanner"/>
     <extension module="org.jboss.as.ee"/>
     <extension module="org.jboss.as.ejb3"/>
     <extension module="org.jboss.as.jaxrs"/>
@@ -36,11 +35,16 @@
   <system-properties>
     <property name="zanata.javaScriptTestHelper" value="true" />
     <property name="document.storage.directory"
-      value="./target/documents" />
+      value="./target/data/zanata/documents" />
     <property name="jboss.as.management.blocking.timeout" value="1000"/>
-    <property name="javamelody.storage-directory" value="${jboss.server.data.dir}/zanata/stats"/>
-    <property name="hibernate.search.default.indexBase" value="${jboss.server.data.dir}/zanata/indexes"/>
-    <property name="ehcache.disk.store.dir" value="${jboss.server.data.dir}/zanata/ehcache"/>
+    <property name="javamelody.storage-directory" value="./target/data/zanata/stats"/>
+    <property name="hibernate.search.default.indexBase" value="./target/data/zanata/indexes"/>
+    <property name="ehcache.disk.store.dir" value="./target/data/zanata/ehcache"/>
+    <property name="zanata.security.authpolicy.internal" value="zanata.internal"/>
+    <property name="zanata.security.authpolicy.openid" value="zanata.openid"/>
+    <property name="zanata.security.adminusers" value="admin"/>
+    <property name="zanata.email.defaultfromaddress" value="no-reply@zanata.org"/>
+    <property name="zanata.file.directory" value="./target/data/zanata/documents"/>
   </system-properties>
 
 
@@ -165,10 +169,10 @@
         </handlers>
       </root-logger>
       <formatter name="PATTERN">
-        <pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
+        <pattern-formatter pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
       </formatter>
       <formatter name="COLOR-PATTERN">
-        <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
+        <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
       </formatter>
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:batch-jberet:1.0">
@@ -194,6 +198,12 @@
           <security>
             <user-name>root</user-name>
           </security>
+          <validation>
+            <validate-on-match>false</validate-on-match>
+            <background-validation>false</background-validation>
+            <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.novendor.JDBC4ValidConnectionChecker"></valid-connection-checker>
+            <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.novendor.NullExceptionSorter"></exception-sorter>
+          </validation>
         </datasource>
         <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
           <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
@@ -209,9 +219,6 @@
           </driver>
         </drivers>
       </datasources>
-    </subsystem>
-    <subsystem xmlns="urn:jboss:domain:deployment-scanner:2.0">
-      <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000" runtime-failure-causes-rollback="${jboss.deployment.scanner.rollback.on.failure:false}"/>
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:ee:4.0">
       <spec-descriptor-property-replacement>false</spec-descriptor-property-replacement>
@@ -395,17 +402,6 @@
     </subsystem>
     <subsystem xmlns="urn:jboss:domain:naming:2.0">
       <bindings>
-        <simple name="java:global/zanata/security/auth-policy-names/internal" value="zanata.internal"/>
-        <simple name="java:global/zanata/security/auth-policy-names/openid"
-          value="zanata.openid" />
-        <simple name="java:global/zanata/security/admin-users" value="admin"/>
-        <simple name="java:global/zanata/email/default-from-address"
-          value="no-reply@zanata.org" />
-        <simple name="java:global/zanata/smtp/port" value="${smtp.port,env.SMTP_PORT:2552}" />
-        <simple name="java:global/zanata/files/document-storage-directory"
-          value="${jboss.server.data.dir}/zanata/documents"/>
-        <lookup name="java:jboss/exported/zanata/files/document-storage-directory"
-          lookup="java:global/zanata/files/document-storage-directory"/>
       </bindings>
       <remote-naming/>
     </subsystem>

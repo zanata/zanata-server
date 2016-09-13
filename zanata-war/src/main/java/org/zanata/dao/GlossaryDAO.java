@@ -21,7 +21,6 @@
 package org.zanata.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +29,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -48,6 +46,7 @@ import org.zanata.model.HGlossaryEntry;
 import org.zanata.model.HGlossaryTerm;
 import org.zanata.model.HLocale;
 import org.zanata.webtrans.shared.rpc.HasSearchType.SearchType;
+import org.zanata.webtrans.shared.rpc.LuceneQuery;
 
 /**
  *
@@ -174,7 +173,11 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
 
     @SuppressWarnings("unchecked")
     public List<HGlossaryEntry> getEntries() {
-        Query query = getSession().createQuery("from HGlossaryEntry");
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("select term.glossaryEntry from HGlossaryTerm as term ")
+            .append("where term.locale.localeId = term.glossaryEntry.srcLocale.localeId ")
+            .append("order by term.content");
+        Query query = getSession().createQuery(queryString.toString());
         query.setComment("GlossaryDAO.getEntries");
         return query.list();
     }
@@ -223,20 +226,17 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return query.list();
     }
 
-    public String getLastModifiedName(Long termId) {
-        Query query =
-                getSession()
-                        .createQuery(
-                            "Select term.lastModifiedBy.name FROM HGlossaryTerm term WHERE term.id =:termId");
-        query.setLong("termId", termId).setCacheable(true)
-                .setComment("GlossaryDAO.getLastModifiedName");
-        return (String) query.uniqueResult();
-    }
-
     public List<Object[]> getSearchResult(String searchText,
             SearchType searchType, LocaleId srcLocale, final int maxResult)
             throws ParseException {
+        if (StringUtils.length(searchText) > LuceneQuery.QUERY_MAX_LENGTH) {
+            throw new RuntimeException(
+                "Query string exceed max length: " + LuceneQuery.QUERY_MAX_LENGTH + "='" +
+                    StringUtils.left(searchText, 80) + "'");
+        }
+
         String queryText;
+
         switch (searchType) {
         case RAW:
             queryText = searchText;
@@ -260,8 +260,8 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         }
 
         QueryParser parser =
-                new QueryParser(Version.LUCENE_29, "content",
-                        new StandardAnalyzer(Version.LUCENE_29));
+                new QueryParser("content",
+                        new StandardAnalyzer());
         org.apache.lucene.search.Query textQuery = parser.parse(queryText);
         FullTextQuery ftQuery =
                 entityManager.createFullTextQuery(textQuery,
@@ -275,28 +275,6 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
         return matches;
     }
 
-    public Map<HLocale, Integer> getGlossaryTermCountByLocale() {
-        Map<HLocale, Integer> result = new HashMap<HLocale, Integer>();
-
-        Query query =
-                getSession()
-                        .createQuery(
-                                "select term.locale, count(*) from HGlossaryTerm term GROUP BY term.locale.localeId");
-        query.setComment("GlossaryDAO.getGlossaryTermCountByLocale");
-
-        @SuppressWarnings("unchecked")
-        List<Object[]> list = query.list();
-
-        for (Object[] obj : list) {
-            HLocale locale = (HLocale) obj[0];
-            Long count = (Long) obj[1];
-            int countInt = count == null ? 0 : count.intValue();
-            result.put(locale, countInt);
-        }
-
-        return result;
-    }
-
     public int deleteAllEntries() {
         Query query2 = getSession().createQuery("Delete HGlossaryTerm");
         query2.setComment("GlossaryDAO.deleteAllEntries-terms");
@@ -304,25 +282,6 @@ public class GlossaryDAO extends AbstractDAOImpl<HGlossaryEntry, Long> {
 
         Query query3 = getSession().createQuery("Delete HGlossaryEntry");
         query3.setComment("GlossaryDAO.deleteAllEntries-entries");
-        query3.executeUpdate();
-
-        return rowCount;
-    }
-
-    public int deleteAllEntries(LocaleId targetLocale) {
-        Query query2 =
-                getSession()
-                        .createQuery(
-                                "Delete HGlossaryTerm t WHERE t.locale IN (SELECT l FROM HLocale l WHERE localeId= :locale)");
-        query2.setParameter("locale", targetLocale);
-        query2.setComment("GlossaryDAO.deleteLocaleEntries-terms");
-        int rowCount = query2.executeUpdate();
-
-        Query query3 =
-                getSession()
-                        .createQuery(
-                                "Delete HGlossaryEntry e WHERE size(e.glossaryTerms) = 0");
-        query3.setComment("GlossaryDAO.deleteLocaleEntries-entries");
         query3.executeUpdate();
 
         return rowCount;

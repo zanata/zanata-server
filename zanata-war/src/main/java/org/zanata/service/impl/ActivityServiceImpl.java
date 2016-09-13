@@ -184,23 +184,54 @@ public class ActivityServiceImpl implements ActivityService {
     public void logTextFlowStateUpdate(@Observes(during = TransactionPhase.AFTER_SUCCESS) TextFlowTargetStateEvent event_) {
         // workaround for https://issues.jboss.org/browse/WELD-2019
         final TextFlowTargetStateEvent event = event_;
+
         Long actorId = event.getActorId();
+
         if (actorId != null) {
             Lock lock = activityLockManager.getLock(actorId);
             lock.lock();
             try {
                 transactionUtil.run(() -> {
-                    HTextFlowTarget target =
-                            textFlowTargetDAO.findById(event.getTextFlowTargetId(),
-                                    false);
-                    HDocument document = documentDAO.getById(event.getDocumentId());
-                    ActivityType activityType =
-                            event.getNewState().isReviewed() ? ActivityType.REVIEWED_TRANSLATION
-                                    : ActivityType.UPDATE_TRANSLATION;
+                    HDocument document =
+                        documentDAO.getById(event.getKey().getDocumentId());
 
-                    logActivityAlreadyLocked(actorId,
-                            document.getProjectIteration(), target, activityType,
-                            target.getTextFlow().getWordCount().intValue());
+                    HTextFlowTarget lastReviewedTarget = null;
+                    HTextFlowTarget lastTranslatedTarget = null;
+
+                    int totalReviewedWords = 0;
+                    int totalTranslatedWords = 0;
+
+                    for (TextFlowTargetStateEvent.TextFlowTargetStateChange state : event
+                        .getStates()) {
+                        HTextFlowTarget target =
+                            textFlowTargetDAO.findById(
+                                state.getTextFlowTargetId(), false);
+                        if (state.getNewState().isReviewed()) {
+                            lastReviewedTarget = target;
+                            totalReviewedWords +=
+                                target.getTextFlow().getWordCount()
+                                    .intValue();
+                        } else {
+                            lastTranslatedTarget = target;
+                            totalTranslatedWords +=
+                                target.getTextFlow().getWordCount()
+                                    .intValue();
+                        }
+                    }
+                    if (lastReviewedTarget != null) {
+                        logActivityAlreadyLocked(actorId,
+                            document.getProjectIteration(), lastReviewedTarget,
+                            ActivityType.REVIEWED_TRANSLATION,
+                            totalReviewedWords);
+                    }
+
+                    if (lastTranslatedTarget != null) {
+                        logActivityAlreadyLocked(actorId,
+                            document.getProjectIteration(),
+                            lastTranslatedTarget,
+                            ActivityType.UPDATE_TRANSLATION,
+                            totalTranslatedWords);
+                    }
                 });
             } catch (Exception e) {
                 Throwables.propagate(e);

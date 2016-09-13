@@ -22,18 +22,18 @@ package org.zanata.security;
 
 import java.io.IOException;
 import java.io.Serializable;
+import javax.enterprise.context.SessionScoped;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.deltaspike.core.api.exclude.Exclude;
-import org.apache.deltaspike.core.api.projectstage.ProjectStage;
 import javax.inject.Named;
 import org.zanata.security.openid.OpenIdProviderType;
 
 import lombok.extern.slf4j.Slf4j;
+import org.zanata.util.Synchronized;
 
 /**
  * Overrides the default Seam credentials. Adds app-specific security concepts
@@ -43,8 +43,9 @@ import lombok.extern.slf4j.Slf4j;
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("credentials")
-@javax.enterprise.context.SessionScoped
+@SessionScoped
 @Slf4j
+@Synchronized
 public class ZanataCredentials implements Serializable {
     private static final long serialVersionUID = 5520824011655916917L;
     private String username;
@@ -77,7 +78,7 @@ public class ZanataCredentials implements Serializable {
 
     public void clear() {
         username = null;
-        password = null;
+        clearPassword();
         authType = null;
         openIdProviderType = null;
     }
@@ -99,6 +100,10 @@ public class ZanataCredentials implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void clearPassword() {
+        setPassword(null);
     }
 
     public boolean isInitialized() {

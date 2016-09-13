@@ -27,23 +27,32 @@ import static org.junit.Assert.assertNull;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
 import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.Session;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.infinispan.manager.CacheContainer;
+import org.jglue.cdiunit.AdditionalClasses;
+import org.jglue.cdiunit.ContextController;
+import org.jglue.cdiunit.deltaspike.SupportDeltaspikeCore;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.zanata.ZanataDbunitJpaTest;
 import org.zanata.cache.InfinispanTestCacheContainer;
 import org.zanata.common.ContentState;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.PersonDAO;
+import org.zanata.dao.TextFlowDAO;
 import org.zanata.dao.TextFlowTargetDAO;
 import org.zanata.exception.InvalidDateParamException;
+import org.zanata.jpa.FullText;
 import org.zanata.model.HPerson;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.rest.NoSuchEntityException;
@@ -52,9 +61,14 @@ import org.zanata.rest.dto.stats.TranslationStatistics;
 import org.zanata.rest.dto.stats.contribution.BaseContributionStatistic;
 import org.zanata.rest.dto.stats.contribution.ContributionStatistics;
 import org.zanata.rest.dto.stats.contribution.LocaleStatistics;
-import org.zanata.seam.SeamAutowire;
 import org.zanata.service.ValidationService;
 import org.zanata.service.impl.TranslationStateCacheImpl;
+import org.zanata.service.impl.TranslationStateCacheImpl.DocumentStatisticLoader;
+import org.zanata.service.impl.TranslationStateCacheImpl.HTextFlowTargetIdLoader;
+import org.zanata.service.impl.TranslationStateCacheImpl.HTextFlowTargetValidationLoader;
+import org.zanata.service.impl.VersionStateCacheImpl.VersionStatisticLoader;
+import org.zanata.test.CdiUnitRunner;
+import org.zanata.util.Zanata;
 
 import com.google.common.collect.Lists;
 
@@ -62,15 +76,47 @@ import com.google.common.collect.Lists;
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
+@RunWith(CdiUnitRunner.class)
+@AdditionalClasses({ TranslationStateCacheImpl.class,
+        DocumentStatisticLoader.class, HTextFlowTargetIdLoader.class,
+        HTextFlowTargetValidationLoader.class, VersionStatisticLoader.class })
+@SupportDeltaspikeCore
 public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
-    private SeamAutowire seam = SeamAutowire.instance();
 
-    @Mock
-    private ValidationService validationServiceImpl;
-
+    @Inject
     private StatisticsServiceImpl statisticsService;
 
+    @Inject
     private TextFlowTargetDAO textFlowTargetDAO;
+
+    @Inject
+    private PersonDAO personDAO;
+
+    @Inject
+    private ContextController contextController;
+
+    @Produces @Mock ValidationService validationService;
+    @Produces @Mock @FullText FullTextEntityManager fullTextEntityManager;
+
+    @Override
+    @Produces
+    protected Session getSession() {
+        return super.getSession();
+    }
+
+    @Override
+    @Produces
+    protected EntityManager getEm() {
+        return super.getEm();
+    }
+
+    @Produces @Zanata
+    CacheContainer getCacheContainer() {
+        return new InfinispanTestCacheContainer();
+    }
+
+    @Produces @Mock
+    private TextFlowDAO textFlowDAO;
 
     private final SimpleDateFormat formatter =
             new SimpleDateFormat(StatisticsResource.DATE_FORMAT);
@@ -97,20 +143,9 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
     }
 
     @Before
-    public void initializeSeam() {
-        MockitoAnnotations.initMocks(this);
-        // @formatter:off
-        seam.reset()
-            .use("entityManager", getEm())
-            .use("session", getSession())
-            .use("validationServiceImpl", validationServiceImpl)
-            .use("cacheContainer", new InfinispanTestCacheContainer())
-            .useImpl(TranslationStateCacheImpl.class)
-            .ignoreNonResolvable();
-        // @formatter:on
-
-        statisticsService = seam.autowire(StatisticsServiceImpl.class);
-        textFlowTargetDAO = seam.autowire(TextFlowTargetDAO.class);
+    public void initializeRequestScope() {
+        // NB: This is easier than adding @InRequestScope to all test methods
+        contextController.openRequest();
     }
 
     @Test
@@ -310,8 +345,6 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     public void getContribStatsSingleTarget() {
-        PersonDAO personDAO = seam.autowire(PersonDAO.class);
-
         // Initial state = needReview
         HTextFlowTarget target = textFlowTargetDAO.findById(2L);
 
@@ -360,7 +393,6 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     public void getContribStatsSameLocaleMultiTargets() {
-        PersonDAO personDAO = seam.autowire(PersonDAO.class);
         String username = "demo";
         HPerson demoPerson = personDAO.findByUsername(username);
 
@@ -416,7 +448,6 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     public void getContributionStatisticsMultiLocale() {
-        PersonDAO personDAO = seam.autowire(PersonDAO.class);
         String username = "demo";
         HPerson demoPerson = personDAO.findByUsername(username);
 
@@ -475,8 +506,6 @@ public class StatisticsServiceImplTest extends ZanataDbunitJpaTest {
 
     @Test
     public void getContribStatsDiffUser() {
-        PersonDAO personDAO = seam.autowire(PersonDAO.class);
-
         String username1 = "demo";
         String username2 = "admin";
         HPerson person1 = personDAO.findByUsername(username1);

@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Model;
 import javax.validation.constraints.NotNull;
 
 import javax.inject.Inject;
@@ -50,6 +51,8 @@ import org.zanata.security.AuthenticationType;
  */
 @Named("roleAssignmentRuleAction")
 @RequestScoped
+@Model
+@Transactional
 @CheckRole("admin")
 public class RoleAssignmentRuleAction extends EntityHome<HRoleAssignmentRule>
         implements Serializable {
@@ -92,8 +95,12 @@ public class RoleAssignmentRuleAction extends EntityHome<HRoleAssignmentRule>
         return roleAssignmentRuleDAO.findAll();
     }
 
-    public void remove(HRoleAssignmentRule rule) {
-        roleAssignmentRuleDAO.makeTransient(rule);
+    public void remove(String id) {
+        HRoleAssignmentRule rule = roleAssignmentRuleDAO.findById(new Long(id));
+        if (rule != null) {
+            roleAssignmentRuleDAO.makeTransient(rule);
+            roleAssignmentRuleDAO.flush();
+        }
     }
 
     public void setRoleToAssign(String roleName) {

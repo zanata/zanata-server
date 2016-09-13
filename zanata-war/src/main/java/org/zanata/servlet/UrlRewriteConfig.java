@@ -1,17 +1,28 @@
 package org.zanata.servlet;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.ocpsoft.rewrite.annotation.RewriteConfiguration;
 import org.ocpsoft.rewrite.config.Configuration;
 import org.ocpsoft.rewrite.config.ConfigurationBuilder;
 import org.ocpsoft.rewrite.config.Direction;
+import org.ocpsoft.rewrite.context.EvaluationContext;
 import org.ocpsoft.rewrite.servlet.config.Forward;
 import org.ocpsoft.rewrite.servlet.config.HttpConfigurationProvider;
+import org.ocpsoft.rewrite.servlet.config.HttpOperation;
 import org.ocpsoft.rewrite.servlet.config.Path;
+import org.ocpsoft.rewrite.servlet.config.Query;
 import org.ocpsoft.rewrite.servlet.config.Redirect;
-import org.ocpsoft.rewrite.servlet.config.bind.RequestBinding;
 import org.ocpsoft.rewrite.servlet.config.rule.Join;
+import org.ocpsoft.rewrite.servlet.http.event.HttpInboundServletRewrite;
+import org.ocpsoft.rewrite.servlet.http.event.HttpServletRewrite;
+import org.ocpsoft.urlbuilder.Address;
+import org.ocpsoft.urlbuilder.AddressBuilder;
 
 import javax.servlet.ServletContext;
+import java.util.List;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /*
  * This class replaces urlrewrite.xml, with simpler bidirectional mappings for external/internal URLs.
@@ -25,8 +36,14 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
         // NB: inbound rules are processed in order, outbound rules in reverse order (as of Rewrite 3.0.0.Alpha1)
         return ConfigurationBuilder.begin()
 
+                // strip cid params to avoid NonexistentConversationException
                 .addRule()
-                .when(Direction.isInbound().and(Path.matches("/seam/resource/restv1/{path}")))
+                .when(Query.parameterExists("cid"))
+                .perform(new RedirectWithoutParam("cid"))
+
+                .addRule()
+                .when(Direction.isInbound()
+                    .and(Path.matches("/seam/resource/restv1/{path}")))
                 .perform(Forward.to("/rest/{path}"))
                 .where("path").matches(".*")
 
@@ -38,21 +55,26 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
                 .where("path").matches(".*")
 
                 .addRule()
-                .when(Direction.isInbound().and(Path.matches("/iteration/files/{projectSlug}/{iterationSlug}")))
-                .perform(Redirect.permanent(contextPath + "/iteration/view/{projectSlug}/{iterationSlug}/documents"))
+                .when(Direction.isInbound().and(Path.matches(
+                    "/iteration/files/{projectSlug}/{iterationSlug}")))
+                .perform(Redirect.permanent(contextPath +
+                    "/iteration/view/{projectSlug}/{iterationSlug}/documents"))
 
                 .addRule()
-                .when(Direction.isInbound().and(Path.matches("/iteration/source_files/{projectSlug}/{iterationSlug}")))
-                .perform(Redirect.permanent(contextPath + "/iteration/view/{projectSlug}/{iterationSlug}/documents"))
+                .when(Direction.isInbound().and(Path.matches(
+                    "/iteration/source_files/{projectSlug}/{iterationSlug}")))
+                .perform(Redirect.permanent(contextPath +
+                    "/iteration/view/{projectSlug}/{iterationSlug}/documents"))
 
 
                 .addRule(Join.path("/").to("/home.xhtml"))
+                .addRule(Join.path("/a/").to("/a/index.xhtml"))
+                .addRule(Join.path("/a/more").to("/a/more.xhtml"))
                 .addRule(Join.path("/account/activate/{key}").to("/account/activate.xhtml"))
                 .addRule(Join.path("/account/google_password_reset_request").to("/account/google_password_reset_request.xhtml"))
                 .addRule(Join.path("/account/password_reset/{key}").to("/account/password_reset.xhtml"))
                 .addRule(Join.path("/account/password_reset_request").to("/account/password_reset_request.xhtml"))
                 .addRule(Join.path("/account/inactive").to("/account/inactive_account.xhtml"))
-                .addRule(Join.path("/account/klogin").to("/account/klogin.xhtml"))
                 .addRule(Join.path("/account/sign_in").to("/account/login.xhtml"))
                 .addRule(Join.path("/account/register").to("/account/register.xhtml"))
                 .addRule(Join.path("/account/sign_out").to("/account/logout.xhtml"))
@@ -115,13 +137,17 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
                 .addRule(Join.path("/tm/create").to("/tm/create.xhtml"))
                 .addRule(Join.path("/version-group/create").to("/version-group/create_version_group.xhtml"))
                 .addRule(Join.path("/version-group/list").to("/version-group/home.xhtml"))
-                .addRule(Join.path("/version-group/view/{versionGroupSlug}").to("/version-group/version_group.xhtml"))
+                .addRule(Join.path("/version-group/view/{slug}").to("/version-group/version_group.xhtml"))
 
-                .addRule(Join.path("/version-group/view/{versionGroupSlug}/{section}").to("/version-group/version_group.xhtml"))
+                .addRule(Join.path("/version-group/view/{slug}/{section}").to("/version-group/version_group.xhtml"))
                 .where("section").matches(".*")
 
                 .addRule(Join.path("/webtrans/Application.html").to("/webtrans/Application.xhtml")).when(Direction.isInbound())
                 .addRule(Join.path("/webtrans/translate").to("/webtrans/Application.xhtml"))
+
+                .addRule(Join.path("/404").to("/404.xhtml"))
+                // OAuth authorization
+                .addRule(Join.path("/oauth/").to("/oauth/home.xhtml"))
                 ;
     }
 
@@ -129,4 +155,32 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
     public int priority() {
         return 0;
     }
+
+    static class RedirectWithoutParam extends HttpOperation {
+        private final String paramName;
+
+        RedirectWithoutParam(String paramName) {
+            this.paramName = paramName;
+        }
+
+        @Override
+        public void performHttp(HttpServletRewrite event,
+                EvaluationContext context) {
+            // Remove param from address query
+            Address address = event.getAddress();
+            String query = address.getQuery();
+            List<NameValuePair> nameValuePairs =
+                    URLEncodedUtils.parse(query, UTF_8);
+            nameValuePairs.removeIf(nvp -> nvp.getName().equals(paramName));
+
+            String newAddress;
+            if (nameValuePairs.isEmpty()) {
+                newAddress = address.getPath();
+            } else {
+                newAddress = address.getPath() + "?" + URLEncodedUtils.format(nameValuePairs, UTF_8);
+            }
+            ((HttpInboundServletRewrite) event).redirectTemporary(AddressBuilder.create(newAddress).toString());
+        }
+    }
+
 }

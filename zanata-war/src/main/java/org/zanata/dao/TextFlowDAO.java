@@ -46,7 +46,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
-@Named("textFlowDAO")
 @RequestScoped
 @Slf4j
 public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
@@ -303,6 +302,10 @@ public class TextFlowDAO extends AbstractDAOImpl<HTextFlow, Long> {
     /**
      * Return text flows that have matching document id and content, resId
      * between the given source and target version
+     *
+     * Each array in the result list will contain two text flows:
+     * [0] the text flow from the source version
+     * [1] the text flow from the target version
      *
      * @param sourceVersionId
      * @param targetVersionId

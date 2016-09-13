@@ -29,6 +29,7 @@ import javax.enterprise.event.Observes;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.apache.deltaspike.core.util.ContextUtils;
 import org.zanata.events.AlreadyLoggedInEvent;
@@ -39,10 +40,16 @@ import org.zanata.events.UserCreatedEvent;
 import org.zanata.ui.faces.FacesMessages;
 
 /**
- * Some of the event observers are migrated from org.jboss.seam.security.FacesSecurityEvents
+ * Some of the event observers are migrated from org.jboss.seam.security.FacesSecurityEvents.
+ * Most of these events are fired by ZanataIdentity.
+ * @see org.zanata.security.ZanataIdentity
+ * @see org.zanata.security.SpNegoIdentity
+ * @see org.zanata.exception.handler.AccessDeniedExceptionHandler
+ * @see org.zanata.exception.handler.NotLoggedInExceptionHandler
  */
 @Dependent
 @Slf4j
+// TODO get these event observers working again
 public class AuthenticationEvents implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -55,10 +62,12 @@ public class AuthenticationEvents implements Serializable {
     }
 
     public void loginInSuccessful(@Observes LoginSuccessfulEvent event) {
-        log.debug("Account logged in successfully");
-        if (ContextUtils.isContextActive(WindowScoped.class)) {
-            facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO,
-                    "authentication.loginSuccessful", event.getName());
+        if (StringUtils.isNotBlank(event.getName())) {
+            log.debug("Account logged in successfully");
+            if (ContextUtils.isContextActive(WindowScoped.class)) {
+                facesMessages.addFromResourceBundle(FacesMessage.SEVERITY_INFO,
+                        "authentication.loginSuccessful", event.getName());
+            }
         }
     }
 

@@ -30,8 +30,12 @@ import lombok.Setter;
 import javax.annotation.Nullable;
 import javax.enterprise.context.SessionScoped;
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Model;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.dao.AccountDAO;
 import org.zanata.model.HAccount;
 import org.zanata.security.AuthenticationManager;
@@ -42,17 +46,20 @@ import org.zanata.security.openid.OpenIdAuthenticationResult;
 import org.zanata.security.openid.OpenIdProviderType;
 import org.zanata.service.RegisterService;
 import org.zanata.ui.faces.FacesMessages;
-import org.zanata.util.ServiceLocator;
+import org.zanata.util.Synchronized;
 
 /**
  * @author Carlos Munoz <a
  *         href="mailto:camunoz@redhat.com">camunoz@redhat.com</a>
  */
 @Named("accountMergeAction")
-@javax.faces.bean.ViewScoped
+@ViewScoped
+@Model
+@Transactional
 public class AccountMergeAction implements Serializable {
 
     @SessionScoped
+    @Synchronized
     static class ObsoleteHolder implements Serializable {
         private static final long serialVersionUID = 1L;
         @Nullable HAccount account;
@@ -162,18 +169,22 @@ public class AccountMergeAction implements Serializable {
             OpenIdAuthCallback, Serializable {
         private static final long serialVersionUID = 1L;
 
+        @Inject
+        private AccountDAO accountDAO;
+
+        @Inject
+        private ObsoleteHolder obsoleteHolder;
+
         @Override
         public void afterOpenIdAuth(OpenIdAuthenticationResult result) {
             if (result.isAuthenticated()) {
-                AccountDAO accountDAO =
-                        ServiceLocator.instance().getInstance(AccountDAO.class);
                 HAccount account =
                         accountDAO.getByCredentialsId(result
                                 .getAuthenticatedId());
                 if (account == null) {
                     account = new HAccount(); // In case an account is not found
                 }
-                ServiceLocator.instance().getInstance(ObsoleteHolder.class).account = account;
+                obsoleteHolder.account = account;
             }
         }
 

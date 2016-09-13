@@ -34,12 +34,14 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
@@ -61,6 +63,7 @@ import org.zanata.dao.AccountRoleDAO;
 import org.zanata.dao.LocaleDAO;
 import org.zanata.dao.PersonDAO;
 import org.zanata.dao.WebHookDAO;
+import org.zanata.exception.ProjectNotFoundException;
 import org.zanata.i18n.Messages;
 import org.zanata.model.HAccount;
 import org.zanata.model.HAccountRole;
@@ -69,20 +72,22 @@ import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.WebHook;
+import org.zanata.model.type.WebhookType;
 import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.LocaleService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
+import org.zanata.service.impl.WebHooksPublisher;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.InMemoryListFilter;
 import org.zanata.ui.autocomplete.MaintainerAutocomplete;
 import org.zanata.ui.faces.FacesMessages;
 import org.zanata.util.CommonMarkRenderer;
 import org.zanata.util.ComparatorUtil;
-import org.zanata.util.ServiceLocator;
 import org.zanata.util.UrlUtil;
+import org.zanata.webhook.events.TestEvent;
 import org.zanata.webtrans.shared.model.ValidationAction;
 import org.zanata.webtrans.shared.model.ValidationId;
 import org.zanata.webtrans.shared.validation.ValidationFactory;
@@ -91,10 +96,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 
 @Named("projectHome")
 @Slf4j
 @ViewScoped
+@Model
+@Transactional
 public class ProjectHome extends SlugHome<HProject> implements
     HasLanguageSettings {
 
@@ -656,6 +664,7 @@ public class ProjectHome extends SlugHome<HProject> implements
         update();
     }
 
+    @Transactional
     public void setInviteOnly(boolean inviteOnly) {
         identity.checkPermission(getInstance(), "update");
         getInstance().setAllowGlobalTranslation(!inviteOnly);
@@ -688,7 +697,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             log.warn(
                     "Project [id={}, slug={}], does not exist or is soft deleted: {}",
                     projectId, getSlug(), project);
-            throw new EntityNotFoundException();
+            throw new ProjectNotFoundException(getSlug());
         }
     }
 
@@ -787,9 +796,13 @@ public class ProjectHome extends SlugHome<HProject> implements
 
         if (softDeleted) {
             String url = urlUtil.dashboardUrl();
-            urlUtil.redirectTo(url);
+            urlUtil.redirectToInternal(url);
             return result;
         }
+
+        facesMessages
+            .addGlobal(SEVERITY_INFO, msgs.get("jsf.project.settings.updated"));
+
         if (!getSlug().equals(getInstance().getSlug())) {
             projectSlug.setValue(getInstance().getSlug());
             return "project-slug-updated";
@@ -870,7 +883,7 @@ public class ProjectHome extends SlugHome<HProject> implements
                 msgs.format("jsf.project.MaintainerRemoved",
                     person.getName()));
             if (person.equals(authenticatedAccount.getPerson())) {
-                urlUtil.redirectTo(urlUtil.projectUrl(getSlug()));
+                urlUtil.redirectToInternal(urlUtil.projectUrl(getSlug()));
             }
         }
         return "";
@@ -918,9 +931,14 @@ public class ProjectHome extends SlugHome<HProject> implements
             }
         }
         update();
-        facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
-            msgs.format("jsf.project.status.updated",
-                EntityStatus.valueOf(initial)));
+        EntityStatus status = EntityStatus.valueOf(initial);
+        if (status.equals(EntityStatus.OBSOLETE)) {
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.project.notification.deleted", getSlug()));
+        } else {
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
+                msgs.format("jsf.project.status.updated", status));
+        }
     }
 
     @Transactional
@@ -1050,12 +1068,35 @@ public class ProjectHome extends SlugHome<HProject> implements
         return sortedList;
     }
 
+    @Getter
+    public class WebhookTypeItem {
+        private String name;
+        private String description;
+
+        public WebhookTypeItem(WebhookType type, String desc) {
+            this.name = type.name();
+            this.description = desc;
+        }
+    }
+
+    public List<WebhookTypeItem> getWebhookTypes() {
+        List<WebhookTypeItem> results = Lists.newArrayList();
+        results.add(new WebhookTypeItem(WebhookType.DocumentMilestoneEvent,
+                msgs.get("jsf.webhookType.DocumentMilestoneEvent.desc")));
+        results.add(new WebhookTypeItem(WebhookType.DocumentStatsEvent,
+                msgs.get("jsf.webhookType.DocumentStatsEvent.desc")));
+        return results;
+    }
+
     @Transactional
-    public void addWebHook(String url, String secret) {
+    public void addWebHook(String url, String secret, String strType) {
         identity.checkPermission(getInstance(), "update");
-        if (isValidUrl(url)) {
+
+        WebhookType type = WebhookType.valueOf(strType);
+        if (isValidUrl(url, type)) {
             secret = StringUtils.isBlank(secret) ? null : secret;
-            WebHook webHook = new WebHook(this.getInstance(), url, secret);
+            WebHook webHook =
+                    new WebHook(this.getInstance(), url, type, secret);
             getInstance().getWebHooks().add(webHook);
             update();
             facesMessages.addGlobal(
@@ -1075,16 +1116,31 @@ public class ProjectHome extends SlugHome<HProject> implements
         }
     }
 
-    private boolean isValidUrl(String url) {
+    public void testWebhook(String url, String secret, String strType) {
+        identity.checkPermission(getInstance(), "update");
+        WebhookType type = WebhookType.valueOf(strType);
+        if (isValidUrl(url, type)) {
+            TestEvent event =
+                new TestEvent(identity.getAccountUsername(), getSlug());
+            WebHooksPublisher
+                .publish(url, event, Optional.fromNullable(secret));
+        }
+    }
+
+    /**
+     * Check if url is valid and there is no duplication of url+type
+     */
+    private boolean isValidUrl(String url, WebhookType type) {
         if (!UrlUtil.isValidUrl(url)) {
             facesMessages.addGlobal(SEVERITY_ERROR,
                     msgs.format("jsf.project.InvalidUrl", url));
             return false;
         }
         for(WebHook webHook: getInstance().getWebHooks()) {
-            if(StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
+            if (StringUtils.equalsIgnoreCase(webHook.getUrl(), url)
+                    && type.equals(webHook.getWebhookType())) {
                 facesMessages.addGlobal(SEVERITY_ERROR,
-                        msgs.format("jsf.project.DuplicateUrl", url));
+                        msgs.get("jsf.project.DuplicateUrl"));
                 return false;
             }
         }
@@ -1147,6 +1203,18 @@ public class ProjectHome extends SlugHome<HProject> implements
         @Inject
         private ProjectHome projectHome;
 
+        @Inject
+        private Messages msgs;
+
+        @Inject
+        private ZanataIdentity zanataIdentity;
+
+        @Inject
+        private PersonDAO personDAO;
+
+        @Inject
+        private FacesMessages facesMessages;
+
         private HProject getInstance() {
             return projectHome.getInstance();
         }
@@ -1168,25 +1236,16 @@ public class ProjectHome extends SlugHome<HProject> implements
             if (StringUtils.isEmpty(getSelectedItem())) {
                 return;
             }
-            ServiceLocator.instance().getInstance(ZanataIdentity.class)
-                    .checkPermission(getInstance(), "update");
-            HPerson maintainer =
-                    ServiceLocator.instance().getInstance(PersonDAO.class)
-                            .findByUsername(getSelectedItem());
+            zanataIdentity.checkPermission(getInstance(), "update");
+            HPerson maintainer = personDAO.findByUsername(getSelectedItem());
             getInstance().addMaintainer(maintainer);
-            ProjectHome projectHome = ServiceLocator.instance()
-                    .getInstance(ProjectHome.class);
             projectHome.update();
             reset();
             projectHome.getMaintainerFilter().reset();
 
-            getFacesMessages().addGlobal(FacesMessage.SEVERITY_INFO,
+            facesMessages.addGlobal(FacesMessage.SEVERITY_INFO,
                     msgs.format("jsf.project.MaintainerAdded",
                             maintainer.getName()));
-        }
-
-        private FacesMessages getFacesMessages() {
-            return ServiceLocator.instance().getInstance(FacesMessages.class);
         }
     }
 

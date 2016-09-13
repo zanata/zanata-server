@@ -14,23 +14,19 @@ import org.jboss.resteasy.client.core.executors.InMemoryClientExecutor;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
 import org.jboss.resteasy.spi.ResourceFactory;
-import org.zanata.seam.security.ZanataJpaIdentityStore;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.zanata.config.JndiBackedConfig;
+import org.zanata.config.SystemPropertyConfigStore;
 import org.zanata.model.HAccount;
 import org.zanata.model.HPerson;
 import org.zanata.rest.AuthorizationExceptionMapper;
 import org.zanata.rest.HibernateExceptionMapper;
-import org.zanata.rest.HibernateValidationInterceptor;
 import org.zanata.rest.ConstraintViolationExceptionMapper;
 import org.zanata.rest.NoSuchEntityExceptionMapper;
 import org.zanata.rest.NotLoggedInExceptionMapper;
 import org.zanata.rest.ZanataServiceExceptionMapper;
-import org.zanata.seam.SeamAutowire;
 import org.zanata.security.AuthenticationType;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -41,22 +37,21 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
     protected static final URI MOCK_BASE_URI = URI.create("http://mockhost");
 
     private ClientRequestFactory clientRequestFactory;
-    private static final SeamAutowire seamAutowire = SeamAutowire.instance();
     protected final Set<Class<? extends ExceptionMapper<? extends Throwable>>> exceptionMappers =
             newHashSet();
     protected final Set<Object> resources = newHashSet();
     protected final Set<Class<?>> providers = newHashSet();
     protected final Set<Object> providerInstances = newHashSet();
     @Mock
-    private JndiBackedConfig jndiBackedConfig;
+    private SystemPropertyConfigStore systemPropertyConfigStore;
 
     @Before
     public final void prepareRestEasyFramework() {
         MockitoAnnotations.initMocks(this);
-        when(jndiBackedConfig.getEnabledAuthenticationPolicies()).thenReturn(
-                newHashSet(AuthenticationType.INTERNAL.name()));
+        when(systemPropertyConfigStore.getEnabledAuthenticationPolicies())
+                .thenReturn(
+                        newHashSet(AuthenticationType.INTERNAL.name()));
         Dispatcher dispatcher = MockDispatcherFactory.createDispatcher();
-        prepareSeamAutowire();
         prepareAccount();
         prepareResources();
         prepareExceptionMappers();
@@ -106,7 +101,6 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
             account.setPerson(person);
             account = (HAccount) session.merge(account);
         }
-        seamAutowire.use(ZanataJpaIdentityStore.AUTHENTICATED_USER, account);
     }
 
     @After
@@ -144,19 +138,6 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
     protected void prepareProviders() {
         ValidatorFactory validatorFactory =
                 Validation.buildDefaultValidatorFactory();
-        seamAutowire.use("validatorFactory", validatorFactory).use("validator",
-                validatorFactory.getValidator());
-        providerInstances.add(seamAutowire
-                .autowire(HibernateValidationInterceptor.class));
-    }
-
-    /**
-     * Override this method to add custom Seam autowire preparations.
-     */
-    protected void prepareSeamAutowire() {
-        seamAutowire
-                .reset()
-                .ignoreNonResolvable();
     }
 
     /**
@@ -179,14 +160,5 @@ public abstract class ZanataRestTest extends ZanataDbunitJpaTest {
      */
     protected final URI createBaseURI(String resourcePath) {
         return MOCK_BASE_URI.resolve(resourcePath);
-    }
-
-    /**
-     * Returns this tests SeamAutowire instance.
-     *
-     * @return This test's SeamAutowire instance to be used in tests.
-     */
-    protected SeamAutowire getSeamAutowire() {
-        return seamAutowire;
     }
 }

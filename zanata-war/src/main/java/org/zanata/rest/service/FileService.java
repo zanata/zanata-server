@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.enterprise.context.RequestScoped;
@@ -43,8 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.jboss.resteasy.util.GenericType;
 
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +54,7 @@ import org.zanata.adapter.FileFormatAdapter;
 import org.zanata.adapter.po.PoWriter2;
 import org.zanata.common.ContentState;
 import org.zanata.common.DocumentType;
+import org.zanata.common.FileTypeInfo;
 import org.zanata.common.LocaleId;
 import org.zanata.dao.DocumentDAO;
 import org.zanata.file.FilePersistService;
@@ -82,6 +83,7 @@ import com.google.common.io.ByteStreams;
 @Named("fileService")
 @Path(FileResource.SERVICE_PATH)
 @Slf4j
+@Transactional
 public class FileService implements FileResource {
     private static final String FILE_TYPE_OFFLINE_PO = "offlinepo";
     private static final String FILE_TYPE_OFFLINE_PO_TEMPLATE = "offlinepot";
@@ -115,7 +117,7 @@ public class FileService implements FileResource {
 
     /**
      * Deprecated.
-     * @see #acceptedFileTypeList
+     * @see #fileTypeInfoList
      */
     @Override
     @Deprecated
@@ -126,7 +128,12 @@ public class FileService implements FileResource {
         return Response.ok(acceptedTypes.toString()).build();
     }
 
+    /**
+     * Deprecated.
+     * @see #fileTypeInfoList
+     */
     @Override
+    @Deprecated
     public Response acceptedFileTypeList() {
         Type genericType = new GenericType<List<DocumentType>>() {
         }.getGenericType();
@@ -134,6 +141,21 @@ public class FileService implements FileResource {
         Object entity =
             new GenericEntity<List<DocumentType>>(Lists.newArrayList(translationFileServiceImpl
                 .getSupportedDocumentTypes()), genericType);
+        return Response.ok(entity).build();
+    }
+
+    @Override
+    public Response fileTypeInfoList() {
+        Type genericType = new GenericType<List<FileTypeInfo>>() {
+        }.getGenericType();
+
+        Set<DocumentType> supportedDocumentTypes = translationFileServiceImpl.
+                getSupportedDocumentTypes();
+        List<FileTypeInfo> docTypes = supportedDocumentTypes.stream()
+                .sorted((a, b) -> a.toString().compareTo(b.toString()))
+                .map(DocumentType::toFileTypeInfo)
+                .collect(Collectors.toList());
+        Object entity = new GenericEntity<>(docTypes, genericType);
         return Response.ok(entity).build();
     }
 
@@ -314,12 +336,12 @@ public class FileService implements FileResource {
             StreamingOutput output =
                     new FormatAdapterStreamingOutput(uri, res, transRes,
                         locale, adapter, params);
-
+            String translationFilename = adapter.generateTranslationFilename(document, locale);
             response =
                     Response.ok()
                             .header("Content-Disposition",
                                     "attachment; filename=\""
-                                            + generateTranslationFileName(document) + "\"")
+                                            + translationFilename + "\"")
                             .entity(output).build();
          // TODO damason: remove more immediately, but make sure response has
             // finished with the file
@@ -329,25 +351,6 @@ public class FileService implements FileResource {
             response = Response.status(Status.UNSUPPORTED_MEDIA_TYPE).build();
         }
         return response;
-    }
-
-    /**
-     * Generate translation file with translation extension from DocumentType
-     *
-     * Source file name will be used if translation extension cannot be found
-     * in HRawDocument#DocumentType
-     *
-     * @param document
-     */
-    private String generateTranslationFileName(HDocument document) {
-        String srcExt = FilenameUtils.getExtension(document.getName());
-        DocumentType documentType = document.getRawDocument().getType();
-        String transExt = documentType.getExtensions().get(srcExt);
-        if (StringUtils.isEmpty(transExt)) {
-            return document.getName();
-        }
-        return FilenameUtils.removeExtension(document
-            .getName()) + "." + transExt;
     }
 
     @Override

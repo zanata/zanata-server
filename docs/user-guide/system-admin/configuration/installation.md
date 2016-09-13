@@ -2,8 +2,8 @@ Zanata can be installed by downloading a web archive (war) file, and configuring
 
 ## What you need
 
-- JBoss Enterprise Application Platform 6 (EAP 6), version 6.4.6 or later. This is the recommended container for Zanata, and it can be [downloaded here](https://www.jboss.org/products/eap/download/).
-- ... OR WildFly (version 10.0.0.Final) which can be [downloaded here](http://wildfly.org/downloads/)
+- JBoss Enterprise Application Platform (EAP), version 7.0.1 or later. This is the recommended container for Zanata, and it can be [downloaded here](https://www.jboss.org/products/eap/download/).
+- ... OR WildFly (version 10.1.0.Final) which can be [downloaded here](http://wildfly.org/downloads/)
 - A suitable MySQL database. This is NOT included in the Zanata archive. You can [download MySQL here](http://dev.mysql.com/downloads/mysql/).
 - An email (SMTP) server for email verification and notifications.
 - JDK version 1.8 or later. [OpenJDK](http://openjdk.java.net/install/) is recommended, but you can also download [Oracle's JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
@@ -18,25 +18,31 @@ The following packages are optional, but recommended:
  Zanata has been thoroughly tested against MySQL 5.5 and the Zanata team therefore recommends that you install and use this version with Zanata.
 
  1. Start MySQL service and create a database schema for Zanata.
- `CREATE DATABASE zanata /**!40100 DEFAULT CHARACTER SET utf8 **/;`
+    ```sql
+    CREATE DATABASE zanata /**!40100 DEFAULT CHARACTER SET utf8 **/
+    ```
+
+ 1. Create `zanata` user with the password `zanatapw` and grant `zanata` user full permissions
+    ```sql
+    CREATE USER 'zanata'@'localhost' IDENTIFIED BY 'zanatapw'
+    GRANT ALL ON zanata.* TO 'zanata'@'localhost'
+    ```
 
 ## Installing Zanata
 
-You can run Zanata on JBoss EAP 6 or Wildfly. Just download one of the installer archives below for your platform, and then extract it on top of your JBoss or Wildfly installation.
+You can run Zanata on JBoss EAP 7 or Wildfly. Just download one of the installer archives below for your platform, and then extract it on top of your JBoss or Wildfly installation.
 
-- [Zanata for JBoss EAP](http://sourceforge.net/projects/zanata/files/installer/zanata-3.6.0-eap-6.zip/download)
-- [Zanata for Wildfly](http://sourceforge.net/projects/zanata/files/installer/zanata-3.6.0-wildfly-8.1.zip/download)
+- [Zanata for JBoss EAP or Wildfly](https://github.com/zanata/zanata-server/releases)
 
-## Run the installer
+You'll find zip files for each platform, for example: `zanata-<version>-eap-7.zip` or `zanata-<version>-wildfly.zip`
 
-Zanata comes bundled with an installer that helps with some of the initial setup. Simply run the following commands on a shell terminal:
+You will also find `war` archives. Don't download these unless you wish to manually configure JBoss, or if you are upgrading an already set up Zanata server.
 
-```sh
-$ cd <JBOSS>/bin/zanata-installer
-$ ./install.sh
-```
+## Modify the configuration properties
 
-(there's also a .bat file if you are on Windows) The installation script will start asking some configuration questions. It will also download the Zanata web application and place it in the JBoss installation.
+Zanata comes bundled with a configuration file to make it easy to set initial properties. You should modify these properties in:
+
+`<JBOSS>/standalone/configuration/zanata.properties`
 
 ## Editing standalone.xml yourself
 
@@ -49,21 +55,46 @@ Zanata does not create an admin user by default. You need to register specific u
 
  1. Open the `<JBOSS>/standalone/configuration/standalone.xml` file.
 
- 1. Locate the following line, and replace `admin` with a comma-separated list of users that require administrator privileges on the system.
+ 1. Locate the following line, and replace `admin` with a comma-separated list of users that require administrator privileges on the system if necessary.
 
 ```xml
-<simple name="java:global/zanata/security/admin-users" value="admin"/>
+<system-properties>
+  ...
+  <property name="zanata.security.adminusers" value="admin"/>
+  ...
+</system-properties>
 ```
 
- 1. Register a user under the name "admin", and it will automatically have administrator privileges. Any number of users may be added to this list in a comma-separated format.
+ 1. Register a user under a name on this list, and it will automatically have administrator privileges. Any number of users may be added to this list in a comma-separated format.
 
- 1. In the same file, configure other properties to your particular setup by adding more lines if necessary. The following properties must be configured in order for Zanata to run properly:
+ 1. In the same file, configure other system properties to your particular setup by adding more lines if necessary. The following properties must be configured in order for Zanata to run properly:
 ```xml
-<simple name="java:global/zanata/email/default-from-address" value="admin@example.com"/>
+<system-properties>
+  ...
+  <property name="zanata.email.defaultfromaddress" value="admin@example.com"/>
+  ...
+</system-properties>
 ```
 
  This is the default email address that will appear as the sender on Zanata emails.
 
+ Alternatively, you can pass this and other system properties to JBoss when starting it (see JBoss documentation for details on how to do this).
+
+## Enabling Cross-Origin Resource Sharing (advanced)
+
+If you have an alternative front-end for Zanata where the browser needs direct access to Zanata REST
+APIs (and authenticated user sessions), you will need to enable Cross-Origin Resource Sharing, by
+adding a system property like this to `<JBOSS>/standalone/configuration/standalone.xml`:
+
+    <property name="zanata.origin.whitelist" value="http://localhost:8000" />
+
+You should adjust the protocol, hostname and port to suit your use case. Multiple origins should
+be separated via space characters.
+
+This setting will cause Zanata to output CORS headers for REST requests, including
+`Access-Control-Allow-Origin` (if Origin is in the whitelist above),
+`Access-Control-Allow-Credentials: true` and
+`Access-Control-Allow-Methods: PUT,POST,DELETE,GET,OPTIONS`.
 ### Email configuration (Zanata 3.6 or earlier)
 
 In Zanata 3.6 or earlier, email is configured by admin in the server settings screen.  By default, an SMTP server on localhost port 25 is expected.
@@ -120,8 +151,10 @@ Any other value will be treated as the name of a virus scanner command: the comm
 
 Go to the `<JBOSS>/bin` directory and run
 
-* `standalone.sh` or `start-zanata.sh` for Linux, Mac
-* `standalone.bat` or `start-zanata.bat` for Windows
+* `standalone-zanata.sh` for Linux, Mac
+* `standalone-zanata.bat` for Windows
+
+_Please make sure these are ran from the `<JBOSS>/bin` directory. These scripts are shortcuts which internally use JBoss' standalone running scripts._
 
 ## Using Zanata
 

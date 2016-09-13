@@ -21,19 +21,15 @@
 package org.zanata.config;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.zanata.util.IServiceLocator;
 import org.zanata.util.Synchronized;
 import org.zanata.ServerConstants;
 import org.zanata.dao.ApplicationConfigurationDAO;
 import org.zanata.model.HApplicationConfiguration;
-import org.zanata.util.ServiceLocator;
 
 /**
  * Configuration store implementation that is backed by database tables.
@@ -49,49 +45,13 @@ public class DatabaseBackedConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, String> configurationValues;
-
     @Inject
-    private IServiceLocator serviceLocator;
+    private ApplicationConfigurationDAO applicationConfigurationDAO;
 
-    /**
-     * Resets the store by clearing out all values. This means that values will
-     * need to be reloaded as they are requested.
-     */
-    @PostConstruct
-    public void reset() {
-        configurationValues = new HashMap<String, String>();
-    }
-
-    /**
-     * Resets a single value of the configuration. This value will be reloaded
-     * from the configuration store the next time it's requested.
-     *
-     * @param key
-     *            Configuration key to reset.
-     */
-    public void reset(String key) {
-        configurationValues.remove(key);
-    }
-
-    private String getConfigValue(String key) {
-        if (!configurationValues.containsKey(key)) {
-            ApplicationConfigurationDAO appConfigDAO =
-                    serviceLocator.getInstance(ApplicationConfigurationDAO.class);
-            HApplicationConfiguration configRecord =
-                    appConfigDAO.findByKey(key);
-            String storedVal = null;
-            if (configRecord != null) {
-                storedVal = configRecord.getValue();
-            }
-            configurationValues.put(key, storedVal);
-        }
-        return configurationValues.get(key);
-    }
-
-    private boolean containsKey(String key) {
-        // Preemptively load the key
-        return getConfigValue(key) != null;
+    private @Nullable String getConfigValue(String key) {
+        HApplicationConfiguration configRecord =
+                applicationConfigurationDAO.findByKey(key);
+        return configRecord != null ? configRecord.getValue() : null;
     }
 
     /**
@@ -121,11 +81,6 @@ public class DatabaseBackedConfig implements Serializable {
 
     public String getHelpUrl() {
         return getConfigValue(HApplicationConfiguration.KEY_HELP_URL);
-    }
-
-    // invalidate key will force reload of that value from db
-    public void invalidateHomeContent() {
-        configurationValues.remove(HApplicationConfiguration.KEY_HOME_CONTENT);
     }
 
     public String getHomeContent() {

@@ -14,7 +14,6 @@ import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.GenericEntity;
@@ -47,7 +46,6 @@ import org.zanata.rest.dto.ProjectIteration;
 import org.zanata.rest.dto.TransUnitStatus;
 import org.zanata.rest.dto.User;
 import org.zanata.rest.dto.resource.ResourceMeta;
-import org.zanata.rest.editor.dto.Locale;
 import org.zanata.rest.editor.service.UserService;
 import org.zanata.search.FilterConstraints;
 import org.zanata.security.ZanataIdentity;
@@ -244,7 +242,7 @@ public class ProjectVersionService implements ProjectVersionResource {
         }
 
         ProjectIteration it = new ProjectIteration();
-        transfer(hProjectIteration, it);
+        getProjectVersionDetails(hProjectIteration, it);
 
         return Response.ok(it).tag(etag).build();
     }
@@ -263,7 +261,7 @@ public class ProjectVersionService implements ProjectVersionResource {
 
         List<User> userList = Lists.newArrayList();
         userList.addAll(accountList.stream()
-            .map(account -> userService.transferToUser(account, displayEmail))
+            .map(account -> userService.getUserInfo(account, displayEmail))
             .collect(Collectors.toList()));
 
 
@@ -293,7 +291,7 @@ public class ProjectVersionService implements ProjectVersionResource {
             locales.stream().map(hLocale -> new LocaleDetails(hLocale.getLocaleId(),
                 hLocale.retrieveDisplayName(), "")).collect(Collectors.toList()));
 
-        Type genericType = new GenericType<List<Locale>>() {
+        Type genericType = new GenericType<List<LocaleDetails>>() {
         }.getGenericType();
         Object entity = new GenericEntity<>(localesRefs, genericType);
         return Response.ok(entity).build();
@@ -332,8 +330,8 @@ public class ProjectVersionService implements ProjectVersionResource {
     public Response getTransUnitStatus(
             @PathParam("projectSlug") String projectSlug,
             @PathParam("versionSlug") String versionSlug,
-            @QueryParam("docId") String docId,
-            @DefaultValue("en-US") @QueryParam("localeId") String localeId) {
+            @PathParam("docId") String docId,
+            @DefaultValue("en-US") @PathParam("localeId") String localeId) {
         if(StringUtils.isEmpty(docId)) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -370,7 +368,7 @@ public class ProjectVersionService implements ProjectVersionResource {
                     .getResId(), state));
         }
 
-        Type genericType = new GenericType<List<Locale>>() {
+        Type genericType = new GenericType<List<TransUnitStatus>>() {
         }.getGenericType();
         Object entity = new GenericEntity<>(statusList, genericType);
         return Response.ok(entity).build();
@@ -431,7 +429,7 @@ public class ProjectVersionService implements ProjectVersionResource {
         }
     }
 
-    public static void transfer(HProjectIteration from, ProjectIteration to) {
+    public static void getProjectVersionDetails(HProjectIteration from, ProjectIteration to) {
         to.setId(from.getSlug());
         to.setStatus(from.getStatus());
         if (from.getProjectType() != null) {

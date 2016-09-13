@@ -35,6 +35,7 @@ import org.zanata.model.HProject;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.LocaleRole;
 import org.zanata.model.ProjectRole;
+import org.zanata.rest.editor.service.resource.LocalesResource;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.security.permission.GrantsPermission;
 import org.zanata.security.permission.PermissionProvider;
@@ -42,7 +43,6 @@ import org.zanata.util.HttpUtil;
 import org.zanata.util.ServiceLocator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import java.util.Optional;
@@ -74,6 +74,9 @@ public class SecurityFunctions extends PermissionProvider {
     @Inject
     @Authenticated
     private Optional<HAccount> authenticatedAccount;
+
+    @Inject
+    private PersonDAO personDAO;
 
     /* admin can do anything */
     @GrantsPermission
@@ -247,9 +250,6 @@ public class SecurityFunctions extends PermissionProvider {
     }
 
     public boolean isUserTranslatorOfLanguage(HLocale lang) {
-        PersonDAO personDAO =
-                ServiceLocator.instance().getInstance(PersonDAO.class);
-
         if (isLoggedIn()) {
             return personDAO.isUserInLanguageTeamWithRoles(
                     authenticatedAccount.get().getPerson(), lang, true, null, null);
@@ -297,9 +297,6 @@ public class SecurityFunctions extends PermissionProvider {
     }
 
     public boolean isUserReviewerOfLanguage(HLocale lang) {
-        PersonDAO personDAO =
-                ServiceLocator.instance().getInstance(PersonDAO.class);
-
         if (isLoggedIn()) {
             return personDAO.isUserInLanguageTeamWithRoles(
                     authenticatedAccount.get().getPerson(), lang, null, true, null);
@@ -359,9 +356,6 @@ public class SecurityFunctions extends PermissionProvider {
 
     /* Membership in global language teams. */
     public boolean isLanguageTeamMember(HLocale lang) {
-        PersonDAO personDAO =
-                ServiceLocator.instance().getInstance(PersonDAO.class);
-
         if (isLoggedIn()) {
             return personDAO.isUserInLanguageTeamWithRoles(
                     authenticatedAccount.get().getPerson(), lang, null, null, null);
@@ -379,6 +373,12 @@ public class SecurityFunctions extends PermissionProvider {
     @GrantsPermission(actions = { "glossary-insert", "glossary-update" })
     public boolean canPushGlossary() {
         return identity.hasRole("glossarist");
+    }
+
+    /* Loggin user can download glossary */
+    @GrantsPermission(actions = { "glossary-download" })
+    public boolean canDownloadGlossary() {
+        return identity.isLoggedIn();
     }
 
     /* 'glossarist-admin' can also delete */
@@ -401,9 +401,6 @@ public class SecurityFunctions extends PermissionProvider {
     /* 'team coordinator' can manage language teams */
     @GrantsPermission(actions = "manage-language-team")
     public boolean isUserCoordinatorOfLanguage(HLocale lang) {
-        PersonDAO personDAO =
-                ServiceLocator.instance().getInstance(PersonDAO.class);
-
         if (isLoggedIn()) {
             return personDAO.isUserInLanguageTeamWithRoles(
                     authenticatedAccount.get().getPerson(), lang, null, null, true);
@@ -553,45 +550,45 @@ public class SecurityFunctions extends PermissionProvider {
      * 1) Check if request can communicate to with rest service path,
      * 2) then check if request can perform the specific API action.
      *
-     * If request is from anonymous user(account == null),
-     * only 'Read' action are allowed. Additionally, role-based check will be
-     * performed in the REST service class.
      *
      * This rule apply to all REST endpoint.
      *
-     * @param account - Authenticated account
-     * @param httpMethod - {@link javax.ws.rs.HttpMethod}
+     * @param identity - zanata identity representing authenticated account
      * @param restServicePath - service path of rest request.
      *                        See annotation @Path in REST service class.
      */
-    public static final boolean canAccessRestPath(@Nullable HAccount account,
-            String httpMethod, String restServicePath) {
-        //This is to allow data injection for function-test/rest-test
-        if(isTestServicePath(restServicePath)) {
-            log.debug("Allow rest access for Zanata test");
+    public static boolean canAccessRestPath(
+            @Nonnull ZanataIdentity identity,
+            String restServicePath) {
+        if(isLocalesServicePath(restServicePath)) {
+            log.debug("Allow rest access for /locales path (Zanata UI)");
             return true;
         }
-        if (account != null) {
-            return true;
-        }
-        if (HttpUtil.isReadMethod(httpMethod)) {
-            return true;
-        }
-        return false;
+        return identity.isLoggedIn();
+
     }
 
-    public static final boolean canAccessRestPath(
-            @Nonnull ZanataIdentity identity,
-            String httpMethod, String restServicePath) {
-        // This is to allow data injection for function-test/rest-test
-        if (isTestServicePath(restServicePath)) {
-            log.debug("Allow rest access for Zanata test");
-            return true;
-        }
-        if (identity.isLoggedIn()) {
-            return true;
-        }
-        return false;
+    /**
+     * Check if the REST api allow anonymous access
+     * If request is from anonymous user,
+     * only 'Read' action and certain specific endpoints are allowed.
+     * Additionally, role-based check will be performed in the REST service
+     * class.
+     * @param httpMethod {@link javax.ws.rs.HttpMethod}
+     * @param servicePath service path of rest request.
+     *                        See annotation @Path in REST service class.
+     * @return
+     */
+    public static boolean doesRestPathAllowAnonymousAccess(String httpMethod,
+            String servicePath) {
+        return HttpUtil.isReadMethod(httpMethod) ||
+                isTestServicePath(servicePath) ||
+                isRefreshingOAuthAccessToken(servicePath);
+    }
+
+    private static boolean isRefreshingOAuthAccessToken(String servicePath) {
+        return servicePath != null &&
+                servicePath.startsWith("/oauth/token");
     }
 
     /**
@@ -601,13 +598,21 @@ public class SecurityFunctions extends PermissionProvider {
      *                        See annotation @Path in REST service class.
      */
     private static boolean isTestServicePath(String servicePath) {
+        // This is to allow data injection for function-test/rest-test
         return servicePath != null
-                && (
-                // when being called in RestLimitingFilter
-                servicePath.contains("/rest/test/") ||
-                        // when being called in ZanataRestSecurityInterceptor
-                servicePath.startsWith("/test")
-        );
+                &&
+                // when being called in ZanataRestSecurityInterceptor
+                servicePath.startsWith("/test/");
+    }
+
+    /**
+     * Check if request path is Zanata UI locale endpoint.
+     * This endpoint is used for getting list of locales internationalised
+     * in Zanata, update locale in Zanata instance.
+     */
+    private static boolean isLocalesServicePath(String servicePath) {
+        return servicePath != null && servicePath.contains("/rest" +
+            LocalesResource.SERVICE_PATH);
     }
 
     private static class AutoCloseSession implements AutoCloseable {

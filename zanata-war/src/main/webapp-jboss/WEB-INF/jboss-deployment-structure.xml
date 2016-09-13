@@ -19,7 +19,7 @@
       <!-- start of unsupported modules -->
       <module name="org.infinispan" />
       <!-- needed by arquillian test -->
-      <module name="com.h2database.h2" />
+      <module name="com.h2database.h2" optional="true" />
       <!-- end of unsupported modules -->
 
       <!-- start of private modules -->
@@ -28,7 +28,6 @@
 
       <!-- start of deprecated modules -->
       <module name="org.jboss.security.negotiation" />
-      <module name="org.picketbox" />
       <!-- end of deprecated modules -->
 
       <!-- other modules -->

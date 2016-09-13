@@ -5,7 +5,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:f="http://java.sun.com/jsf/core"
-  template="../WEB-INF/template/template_nobanner.xhtml">
+  template="/WEB-INF/template/template_nobanner.xhtml">
 
   <f:metadata>
     <f:event type="preRenderView" listener="#{loginAction.getLoginPageRedirect()}"/>
@@ -14,6 +14,22 @@
 
   <ui:define name="page_title">#{msgs['jsf.Login']}</ui:define>
   <ui:define name="center_content">
+
+    <script type="application/javascript">
+      jQuery(document).ready(function () {
+        var usernameFieldId = "[id='#{rich:clientId('username')}']";
+        jQuery(usernameFieldId).focus()
+      })
+
+      /**
+       * enforce hash location by appending the hash lication to the current
+       * action so that it persists to the redirected URL.
+       */
+      function onLogin(form) {
+        form.action = form.action + window.location.hash;
+        return true;
+      }
+    </script>
 
     <div class="header__logo-only">
       <h:link outcome="/home.xhtml" id="home" tabindex="1">
@@ -55,7 +71,7 @@
               </ui:fragment>
 
               <h:form id="loginForm"
-                styleClass="l--push-top-half l--pad-all-1 bg--pop-higher">
+                styleClass="l--push-top-half l--pad-all-1 bg--pop-higher" onsubmit="return onLogin(this)">
                 <div class="l--clearfix">
                   <h:outputLabel for="username"
                     styleClass="l--float-left">#{msgs['jsf.Username']}</h:outputLabel>

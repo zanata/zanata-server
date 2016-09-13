@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
@@ -69,6 +70,8 @@ import lombok.Getter;
  */
 @Named("versionGroupHome")
 @ViewScoped
+@Model
+@Transactional
 public class VersionGroupHome extends SlugHome<HIterationGroup>
         implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -307,6 +310,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
         @Inject
         private ZanataIdentity identity;
 
+        @Inject
+        private Messages msgs;
+
         @Override
         protected List<HPerson> getMaintainers() {
             return versionGroupHome.getInstanceMaintainers();
@@ -351,6 +357,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
 
         @Inject
         private ZanataIdentity identity;
+
+        @Inject
+        private Messages msgs;
 
         private HIterationGroup getInstance() {
             return versionGroupHome.getInstance();
@@ -404,6 +413,9 @@ public class VersionGroupHome extends SlugHome<HIterationGroup>
 
         @Inject
         private ZanataIdentity identity;
+
+        @Inject
+        private Messages msgs;
 
         private HIterationGroup getInstance() {
             return versionGroupHome.getInstance();
