@@ -50,6 +50,9 @@ public class WebhookServiceImpl implements Serializable {
     @Inject
     private Event<WebhookEvent> webhookEventEvent;
 
+    /**
+     * Need @Async annotation for TransactionPhase.AFTER_SUCCESS event
+     */
     @Async
     public void onPublishWebhook(@Observes(
         during = TransactionPhase.AFTER_SUCCESS) WebhookEvent event) {
