@@ -74,13 +74,13 @@ public class Highlighting {
     }
     }-*/;
 
-    public static String diffAsHtml(String text1, String text2) {
-        JavaScriptObject diffs = diff(text1, text2, true);
+    public static String diffAsHtml(String oldtext, String newtext) {
+        JavaScriptObject diffs = diff(oldtext, newtext, true);
         return diffsToHtml(diffs);
     }
 
     @CoverageIgnore("JSNI")
-    private static native JavaScriptObject diff(String text1, String text2,
+    private static native JavaScriptObject diff(String oldtext, String newtext,
             boolean cleanupSemantic)/*-{
     if (!$wnd.diffMatchPatch) {
       $wnd.diffMatchPatch = new $wnd.diff_match_patch();
@@ -88,7 +88,7 @@ public class Highlighting {
     }
 
     var dmp = $wnd.diffMatchPatch;
-    var diffs = dmp.diff_main(text1, text2);
+    var diffs = dmp.diff_main(oldtext, newtext);
     if (cleanupSemantic) {
       dmp.diff_cleanupSemantic(diffs);
     }
@@ -123,8 +123,8 @@ public class Highlighting {
     return html.join('');
     }-*/;
 
-    public static String diffAsHighlight(String text1, String text2) {
-        JavaScriptObject diffs = diff(text1, text2, false);
+    public static String diffAsHighlight(String oldtext, String newtext) {
+        JavaScriptObject diffs = diff(oldtext, newtext, false);
         return diffsHighlight(diffs);
     }
 

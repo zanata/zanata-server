@@ -22,13 +22,13 @@
   var dmp = new diff_match_patch();
 
   function launch() {
-    var text1 = document.getElementById('text1').value;
-    var text2 = document.getElementById('text2').value;
+    var oldtext = document.getElementById('oldtext').value;
+    var newtext = document.getElementById('newtext').value;
     dmp.Diff_Timeout = parseFloat(document.getElementById('timeout').value);
     dmp.Diff_EditCost = parseFloat(document.getElementById('editcost').value);
 
     var ms_start = (new Date()).getTime();
-    var d = dmp.diff_main(text1, text2);
+    var d = dmp.diff_main(oldtext, newtext);
     var ms_end = (new Date()).getTime();
 
     if (document.getElementById('semantic').checked) {
@@ -48,14 +48,14 @@
     <TR>
       <TD WIDTH="50%">
         <H3>Text Version 1:</H3>
-        <TEXTAREA ID="text1" STYLE="width: 100%" ROWS=10>I am the very model of
+        <TEXTAREA ID="oldtext" STYLE="width: 100%" ROWS=10>I am the very model of
           a modern Major-General,
           I've information vegetable, animal, and mineral,
           I know the kings of England, and I quote the fights historical,
           From Marathon to Waterloo, in order categorical.</TEXTAREA></TD>
       <TD WIDTH="50%">
         <H3>Text Version 2:</H3>
-        <TEXTAREA ID="text2" STYLE="width: 100%" ROWS=10>I am the very model of
+        <TEXTAREA ID="newtext" STYLE="width: 100%" ROWS=10>I am the very model of
           a cartoon individual,
           My animation's comical, unusual, and whimsical,
           I'm quite adept at funny gags, comedic theory I have read,

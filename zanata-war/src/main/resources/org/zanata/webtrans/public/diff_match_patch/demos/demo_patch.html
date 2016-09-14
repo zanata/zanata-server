@@ -34,18 +34,18 @@
   var patch_text = '';
 
   function diff_launch() {
-    var text1 = document.getElementById('text1a').value;
-    var text2 = document.getElementById('text2a').value;
+    var oldtext = document.getElementById('oldtexta').value;
+    var newtext = document.getElementById('newtexta').value;
 
     var ms_start = (new Date).getTime();
-    var diff = dmp.diff_main(text1, text2, true);
+    var diff = dmp.diff_main(oldtext, newtext, true);
     var ms_end = (new Date).getTime();
 
     if (diff.length > 2) {
       dmp.diff_cleanupSemantic(diff);
     }
 
-    var patch_list = dmp.patch_make(text1, text2, diff);
+    var patch_list = dmp.patch_make(oldtext, newtext, diff);
     patch_text = dmp.patch_toText(patch_list);
 
     document.getElementById('diffdatediv').innerHTML =
@@ -59,16 +59,16 @@
 
 
   function patch_launch() {
-    var text1 = document.getElementById('text1b').value;
+    var oldtext = document.getElementById('oldtextb').value;
     var patches = dmp.patch_fromText(patch_text);
 
     var ms_start = (new Date).getTime();
-    var results = dmp.patch_apply(patches, text1);
+    var results = dmp.patch_apply(patches, oldtext);
     var ms_end = (new Date).getTime();
 
     document.getElementById('patchdatediv').innerHTML =
       'Time: ' + (ms_end - ms_start) / 1000 + 's';
-    document.getElementById('text2b').value = results[0];
+    document.getElementById('newtextb').value = results[0];
     results = results[1];
     var html = '';
     for (var x = 0; x < results.length; x++) {
@@ -86,7 +86,7 @@
   <H3>Shakespeare's copy:</H3>
   <TABLE WIDTH="100%">
     <TR>
-      <TD WIDTH="50%">Old Version:<BR><TEXTAREA ID="text1a" STYLE="width: 100%"
+      <TD WIDTH="50%">Old Version:<BR><TEXTAREA ID="oldtexta" STYLE="width: 100%"
         ROWS=10>Hamlet: Do you see yonder cloud that's almost in shape of a
         camel?
         Polonius: By the mass, and 'tis like a camel, indeed.
@@ -95,7 +95,7 @@
         Hamlet: Or like a whale?
         Polonius: Very like a whale.
         -- Shakespeare</TEXTAREA></TD>
-      <TD WIDTH="50%">New Version:<BR><TEXTAREA ID="text2a" STYLE="width: 100%"
+      <TD WIDTH="50%">New Version:<BR><TEXTAREA ID="newtexta" STYLE="width: 100%"
         ROWS=10>Hamlet: Do you see the cloud over there that's almost the shape
         of a camel?
         Polonius: By golly, it is like a camel, indeed.
@@ -116,7 +116,7 @@
   <H3>Trekkie's copy:</H3>
   <TABLE WIDTH="100%">
     <TR>
-      <TD WIDTH="50%">Old Version:<BR><TEXTAREA ID="text1b" STYLE="width: 100%"
+      <TD WIDTH="50%">Old Version:<BR><TEXTAREA ID="oldtextb" STYLE="width: 100%"
         ROWS=10>Kirk: Do you see yonder cloud that's almost in shape of a
         Klingon?
         Spock: By the mass, and 'tis like a Klingon, indeed.
@@ -125,7 +125,7 @@
         Kirk: Or like a Romulan?
         Spock: Very like a Romulan.
         -- Trekkie</TEXTAREA></TD>
-      <TD WIDTH="50%">New Version:<BR><TEXTAREA READONLY ID="text2b"
+      <TD WIDTH="50%">New Version:<BR><TEXTAREA READONLY ID="newtextb"
         STYLE="width: 100%" ROWS=10></TEXTAREA></TD>
     </TR>
   </TABLE>

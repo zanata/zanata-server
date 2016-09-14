@@ -88,7 +88,7 @@ public class ResourceUtilsTest extends ZanataTest {
     public void mergeTextFlowWithOneFromChange() {
         List<TextFlow> from = new ArrayList<TextFlow>();
 
-        TextFlow tf1 = new TextFlow("id", LocaleId.EN, "text1");
+        TextFlow tf1 = new TextFlow("id", LocaleId.EN, "oldtext");
         from.add(tf1);
 
         HDocument to = new HDocument();
