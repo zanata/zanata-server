@@ -56,7 +56,7 @@ import org.zanata.model.validator.Url;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
-@Unique(properties = { "url" })
+@Unique(properties = { "url", "project" })
 public class WebHook implements Serializable {
 
     private Long id;
@@ -64,6 +64,7 @@ public class WebHook implements Serializable {
     private HProject project;
 
     @Url
+    @Size(max = 255)
     private String url;
 
     private Set<WebhookType> types = Sets.newHashSet();

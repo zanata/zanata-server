@@ -301,11 +301,14 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson>
             if (!updatedRoles.isEmpty()) {
                 List<WebHook> webHooks = project.getWebHooks();
                 for (ProjectServiceImpl.UpdatedRole updatedRole : updatedRoles) {
+                    ChangeType changeType = updatedRole.isAdded()
+                            ? ChangeType.ADD : ChangeType.REMOVE;
+
                     webhookServiceImpl
-                        .processWebhookMaintainerChanged(project.getSlug(),
-                            updatedRole.getUsername(), updatedRole.getRole(),
-                            webHooks, updatedRole.isAdded() ?
-                                ChangeType.ADDED : ChangeType.REMOVED);
+                            .processWebhookMaintainerChanged(project.getSlug(),
+                                    updatedRole.getUsername(),
+                                    updatedRole.getRole(),
+                                    webHooks, changeType);
                 }
             }
         } else {

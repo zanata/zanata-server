@@ -190,11 +190,9 @@ public class ProjectService implements ProjectResource {
 
         webhookServiceImpl.processWebhookMaintainerChanged(
                 hProject.getSlug(),
-                identity.getCredentials()
-                        .getUsername(),
-                Maintainer,
-                hProject.getWebHooks(),
-                ProjectMaintainerChangedEvent.ChangeType.ADDED);
+                identity.getCredentials().getUsername(),
+                Maintainer, hProject.getWebHooks(),
+                ProjectMaintainerChangedEvent.ChangeType.ADD);
         return response.tag(etag).build();
 
     }

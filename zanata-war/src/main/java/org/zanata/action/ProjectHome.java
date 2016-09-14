@@ -76,6 +76,7 @@ import org.zanata.model.validator.SlugValidator;
 import org.zanata.security.ZanataIdentity;
 import org.zanata.security.annotations.Authenticated;
 import org.zanata.service.LocaleService;
+import org.zanata.service.ProjectService;
 import org.zanata.service.SlugEntityService;
 import org.zanata.service.ValidationService;
 import org.zanata.service.impl.WebhookServiceImpl;
@@ -177,6 +178,9 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     @Inject
     private WebhookServiceImpl webhookServiceImpl;
+
+    @Inject
+    private ProjectService projectServiceImpl;
 
     @Inject
     private UrlUtil urlUtil;
@@ -857,7 +861,7 @@ public class ProjectHome extends SlugHome<HProject> implements
                     getInstance().getSlug(),
                     creator.getAccount().getUsername(), Maintainer,
                     getInstance().getWebHooks(),
-                    ProjectMaintainerChangedEvent.ChangeType.ADDED);
+                    ProjectMaintainerChangedEvent.ChangeType.ADD);
         }
         return retValue;
     }
@@ -894,7 +898,7 @@ public class ProjectHome extends SlugHome<HProject> implements
             webhookServiceImpl.processWebhookMaintainerChanged(getSlug(),
                     person.getAccount().getUsername(), Maintainer,
                     getInstance().getWebHooks(),
-                    ProjectMaintainerChangedEvent.ChangeType.REMOVED);
+                    ProjectMaintainerChangedEvent.ChangeType.REMOVE);
             if (person.equals(authenticatedAccount.getPerson())) {
                 urlUtil.redirectToInternal(urlUtil.projectUrl(getSlug()));
             }
@@ -1086,18 +1090,22 @@ public class ProjectHome extends SlugHome<HProject> implements
         identity.checkPermission(getInstance(), "update");
         Set<WebhookType> types = getTypesFromString(strTypes);
         if(types.isEmpty()) {
-            facesMessages.addGlobal(
-                msgs.get("jsf.project.webhookType.empty"));
+            facesMessages.addGlobal(msgs.get("jsf.project.webhookType.empty"));
             return;
         }
-        if (isValidUrl(url, true)) {
-            secret = StringUtils.isBlank(secret) ? null : secret;
-            WebHook webHook =
-                new WebHook(this.getInstance(), url, types, secret);
-            getInstance().getWebHooks().add(webHook);
-            update();
+        if (!isValidUrl(url)) {
+            return;
+        }
+        if (projectServiceImpl.isDuplicateWebhookUrl(getInstance(), url)) {
+            facesMessages.addGlobal(SEVERITY_ERROR,
+                    msgs.format("jsf.project.DuplicateUrl", url));
+            return;
+        }
+        boolean isAdded = projectServiceImpl.addWebhook(getInstance(), url,
+                secret, types);
+        if (isAdded) {
             facesMessages.addGlobal(
-                msgs.format("jsf.project.AddNewWebhook", url));
+                    msgs.format("jsf.project.AddNewWebhook", url));
         }
     }
 
@@ -1118,19 +1126,23 @@ public class ProjectHome extends SlugHome<HProject> implements
     public void updateWebhook(String id, String url, String secret,
         String strTypes) {
         identity.checkPermission(getInstance(), "update");
-        WebHook webHook = webHookDAO.findById(new Long(id));
         Set<WebhookType> types = getTypesFromString(strTypes);
         if(types.isEmpty()) {
             facesMessages.addGlobal(
                 msgs.get("jsf.project.webhookType.empty"));
             return;
         }
-        if (webHook != null && isValidUrl(url, false)) {
-//            getInstance().getWebHooks().remove(webHook);
-            secret = StringUtils.isBlank(secret) ? null : secret;
-            webHook.update(url, types, secret);
-//            getInstance().getWebHooks().add(webHook);
-            webHookDAO.makePersistent(webHook);
+        if (!isValidUrl(url)) {
+            return;
+        }
+        if (projectServiceImpl.isDuplicateWebhookUrl(getInstance(), url)) {
+            facesMessages.addGlobal(SEVERITY_ERROR,
+                msgs.format("jsf.project.DuplicateUrl", url));
+            return;
+        }
+        boolean updated = projectServiceImpl.updateWebhook(getInstance(),
+                new Long(id), url, secret, types);
+        if (updated) {
             facesMessages.addGlobal(
                 msgs.format("jsf.project.UpdateWebhook", url));
         }
@@ -1138,30 +1150,26 @@ public class ProjectHome extends SlugHome<HProject> implements
 
     public void testWebhook(String url, String secret) {
         identity.checkPermission(getInstance(), "update");
-        if (isValidUrl(url, true)) {
-            webhookServiceImpl.processTestEvent(identity.getAccountUsername(),
-                    getSlug(), url, secret);
+        if (projectServiceImpl.isDuplicateWebhookUrl(getInstance(), url)) {
+            facesMessages.addGlobal(SEVERITY_ERROR,
+                    msgs.format("jsf.project.DuplicateUrl", url));
+            return;
         }
+        if (!isValidUrl(url)) {
+            return;
+        }
+        webhookServiceImpl.processTestEvent(identity.getAccountUsername(),
+                getSlug(), url, secret);
     }
 
     /**
      * Check if url is valid and there is no duplication of url+type
      */
-    private boolean isValidUrl(String url, boolean checkDuplication) {
-        if (!UrlUtil.isValidUrl(url)) {
+    private boolean isValidUrl(String url) {
+        if (!webhookServiceImpl.isValidUrl(url)) {
             facesMessages.addGlobal(SEVERITY_ERROR,
-                    msgs.format("jsf.project.InvalidUrl", url));
+                msgs.format("jsf.project.InvalidUrl", url));
             return false;
-        }
-        if(checkDuplication) {
-            for (WebHook webHook : getInstance().getWebHooks()) {
-                if (StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
-                    facesMessages.addGlobal(SEVERITY_ERROR,
-                        msgs.format("jsf.project.DuplicateUrl",
-                            webHook.getUrl()));
-                    return false;
-                }
-            }
         }
         return true;
     }
@@ -1273,7 +1281,7 @@ public class ProjectHome extends SlugHome<HProject> implements
                 getInstance().getSlug(),
                 maintainer.getAccount().getUsername(), Maintainer,
                 getInstance().getWebHooks(),
-                ProjectMaintainerChangedEvent.ChangeType.ADDED);
+                ProjectMaintainerChangedEvent.ChangeType.ADD);
         }
     }
 

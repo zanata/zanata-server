@@ -120,4 +120,12 @@
     <dropColumn tableName="WebHook" columnName="webhookType" />
   </changeSet>
 
+  <changeSet id="5" author="aeng@redhat.com">
+    <comment>Change url column to text, Add unique constrains of url and project</comment>
+    <modifyDataType tableName="WebHook" columnName="url"
+      newDataType="varchar(255)"/>
+    <addUniqueConstraint tableName="WebHook" columnNames="url, projectId"
+      constraintName="UKWebHookUrl_projectId" />
+  </changeSet>
+
 </databaseChangeLog>

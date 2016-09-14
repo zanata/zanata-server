@@ -14,6 +14,7 @@ import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ocpsoft.common.util.Strings;
 import org.zanata.async.Async;
 import org.zanata.common.ContentState;
@@ -24,6 +25,7 @@ import org.zanata.i18n.Messages;
 import org.zanata.model.ProjectRole;
 import org.zanata.model.WebHook;
 import org.zanata.model.type.WebhookType;
+import org.zanata.util.UrlUtil;
 import org.zanata.webhook.events.DocumentMilestoneEvent;
 import org.zanata.webhook.events.DocumentStatsEvent;
 import org.zanata.webhook.events.ProjectMaintainerChangedEvent;
@@ -49,6 +51,8 @@ public class WebhookServiceImpl implements Serializable {
 
     @Inject
     private Event<WebhookEvent> webhookEventEvent;
+
+    private static final int URL_MAX_LENGTH = 255;
 
     /**
      * Need @Async annotation for TransactionPhase.AFTER_SUCCESS event
@@ -186,6 +190,11 @@ public class WebhookServiceImpl implements Serializable {
         List<String> results = webHook.getTypes().stream().map(Enum::name)
             .collect(Collectors.toList());
         return Strings.join(results, ",");
+    }
+
+    public boolean isValidUrl(String url) {
+        return UrlUtil.isValidUrl(url)
+                && StringUtils.length(url) <= URL_MAX_LENGTH;
     }
 
     public static Set<WebhookType> getTypesFromString(String strTypes) {

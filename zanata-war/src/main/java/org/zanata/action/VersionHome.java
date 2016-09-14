@@ -459,7 +459,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
         String result = super.persist();
         webhookServiceImpl.processWebhookVersionChanged(getProjectSlug(), slug,
                 getProject().getWebHooks(),
-                VersionChangedEvent.ChangeType.CREATED);
+                VersionChangedEvent.ChangeType.CREATE);
         return result;
     }
 
@@ -574,7 +574,7 @@ public class VersionHome extends SlugHome<HProjectIteration> implements
 
         webhookServiceImpl.processWebhookVersionChanged(getProjectSlug(), slug,
                 getProject().getWebHooks(),
-                VersionChangedEvent.ChangeType.DELETED);
+                VersionChangedEvent.ChangeType.DELETE);
     }
 
     @Transactional

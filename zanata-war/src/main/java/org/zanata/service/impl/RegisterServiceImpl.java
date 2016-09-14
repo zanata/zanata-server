@@ -241,13 +241,13 @@ public class RegisterServiceImpl implements RegisterService {
                 webhookServiceImpl.processWebhookMaintainerChanged(proj.getSlug(),
                     activePerson.getAccount().getUsername(), Maintainer,
                     proj.getWebHooks(),
-                    ProjectMaintainerChangedEvent.ChangeType.ADDED);
+                    ProjectMaintainerChangedEvent.ChangeType.ADD);
 
                 proj.removeMaintainer(obsoletePerson);
                 webhookServiceImpl.processWebhookMaintainerChanged(proj.getSlug(),
                     obsoletePerson.getAccount().getUsername(), Maintainer,
                     proj.getWebHooks(),
-                    ProjectMaintainerChangedEvent.ChangeType.REMOVED);
+                    ProjectMaintainerChangedEvent.ChangeType.REMOVE);
             }
 
             // Merge all maintained Version Groups

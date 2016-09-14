@@ -227,7 +227,7 @@ public class DocumentServiceImpl implements DocumentService {
                 webhookServiceImpl.processWebhookSourceDocumentChanged(
                         projectSlug, iterationSlug, document.getDocId(),
                         hProjectIteration.getProject().getWebHooks(),
-                        SourceDocumentChangedEvent.ChangeType.ADDED);
+                        SourceDocumentChangedEvent.ChangeType.ADD);
             }
         }
 
@@ -253,7 +253,7 @@ public class DocumentServiceImpl implements DocumentService {
         webhookServiceImpl.processWebhookSourceDocumentChanged(
                 proj.getSlug(), version.getSlug(), document.getDocId(),
                 proj.getWebHooks(),
-                SourceDocumentChangedEvent.ChangeType.REMOVED);
+                SourceDocumentChangedEvent.ChangeType.REMOVE);
     }
 
     // TODO [CDI] simulate async event (e.g. this event was fired asyncly in seam)

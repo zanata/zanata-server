@@ -25,6 +25,11 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
+import org.zanata.dao.ProjectDAO;
+import org.zanata.dao.WebHookDAO;
 import org.zanata.model.HLocale;
 import org.zanata.model.HPerson;
 import org.zanata.model.HProject;
@@ -33,14 +38,18 @@ import org.zanata.model.HProjectMember;
 import org.zanata.model.LocaleRole;
 import org.zanata.model.PersonProjectMemberships;
 import org.zanata.model.ProjectRole;
+import org.zanata.model.WebHook;
+import org.zanata.model.type.WebhookType;
 import org.zanata.service.ProjectService;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 import static org.zanata.model.LocaleRole.Coordinator;
 import static org.zanata.model.LocaleRole.Reviewer;
 import static org.zanata.model.LocaleRole.Translator;
@@ -54,6 +63,12 @@ import static org.zanata.model.ProjectRole.TranslationMaintainer;
 @RequestScoped
 @Slf4j
 public class ProjectServiceImpl implements ProjectService {
+
+    @Inject
+    private ProjectDAO projectDAO;
+
+    @Inject
+    private WebHookDAO webHookDAO;
 
     @Override
     public List<UpdatedRole> updateProjectPermissions(HProject project,
@@ -89,6 +104,54 @@ public class ProjectServiceImpl implements ProjectService {
             updatedRoles.add(updatedTranslationMaintainer.get());
         }
         return updatedRoles;
+    }
+
+    @Transactional
+    @Override
+    public boolean updateWebhook(HProject project, Long webhookId, String url,
+            String secret, Set<WebhookType> types) {
+        if (types.isEmpty()) {
+            return false;
+        }
+        if (project == null) {
+            return false;
+        }
+        WebHook webHook = webHookDAO.findById(webhookId);
+        if (webHook == null) {
+            return false;
+        }
+        secret = StringUtils.isBlank(secret) ? null : secret;
+        webHook.update(url, types, secret);
+        webHookDAO.makePersistent(webHook);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public boolean addWebhook(HProject project, String url, String secret,
+            Set<WebhookType> types) {
+        if (types.isEmpty()) {
+            return false;
+        }
+        if (project == null) {
+            return false;
+        }
+        secret = StringUtils.isBlank(secret) ? null : secret;
+        WebHook webHook =
+                new WebHook(project, url, types, secret);
+        project.getWebHooks().add(webHook);
+        projectDAO.makePersistent(project);
+        return true;
+    }
+
+    @Override
+    public boolean isDuplicateWebhookUrl(HProject project, String url) {
+        for (WebHook webHook : project.getWebHooks()) {
+            if (StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
