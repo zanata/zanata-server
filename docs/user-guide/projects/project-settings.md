@@ -11,7 +11,7 @@ The Settings tab contains fields that manage appearance and workflow of your pro
 
 ## General Settings
 <figure>
-![Project General Settings tab](/images/project-general-settings.png)
+![Project General Settings tab](/images/admin-project-settings.png)
 <figcaption>Project General Settings tab</figcaption>
 </figure>
 <br>
@@ -43,6 +43,10 @@ $ git clone git@github.com:zanata/zanata-server.git
 This button is used to set a project to read-only, which prevents translations being entered. This may be useful in some cases, but should be used sparingly so that translators are able to work on your project.
 
 This can be toggled using the same button, as desired.
+
+### Delete this project
+
+This button is used to delete a project and remove it from the public projects list. You will not be able to access it anymore. This action cannot be undone, so use with caution.
 
 ------------
 
