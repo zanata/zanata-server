@@ -150,7 +150,7 @@ Types of events available:
 Trigger when document has reached 100% Translated or Approved
 ```
 {
-  "eventType": "org.zanata.events.DocumentMilestoneEvent",
+  "type": "org.zanata.events.DocumentMilestoneEvent",
   "milestone": "100% Translated",
   "locale": "de",
   "docId": "zanata-war/src/main/resources/messages",
@@ -164,13 +164,13 @@ Trigger when document has reached 100% Translated or Approved
 Trigger when translation is updated
 ```
 {
-    "eventType": "org.zanata.events.DocumentMilestoneEvent",
-    "milestone": "100% Translated",
-    "locale": "de",
-    "docId": "zanata-war/src/main/resources/messages",
-    "version": "master",
-    "project": "zanata-server",
-    "editorDocumentUrl": "https://translate.zanata.org/zanata/webtrans/Application.xhtml?project=zanata-server&iteration=master&localeId=de&locale=en#view:doc;doc:zanata-war/src/main/resources/messages"
+    "username":"aeng",
+    "project":"Zanata",
+    "version":"master",
+    "docId":"doc1id",
+    "locale":"zh-CN",
+    "wordDeltasByState":{"New":-16,"Translated":16},
+    "type":"DocumentStatsEvent"
 }
 ```
 

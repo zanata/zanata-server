@@ -21,11 +21,14 @@
 
 package org.zanata.service;
 
+import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.zanata.model.HProject;
 import org.zanata.model.PersonProjectMemberships;
+import org.zanata.model.type.WebhookType;
 import org.zanata.service.impl.ProjectServiceImpl;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Alex Eng<a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -40,6 +43,12 @@ public interface ProjectService {
      */
     List<ProjectServiceImpl.UpdatedRole> updateProjectPermissions(HProject project,
         PersonProjectMemberships memberships);
+
+    @Transactional
+    boolean updateWebhook(HProject project, Long webhookId, String url,
+        String secret, Set<WebhookType> types);
+
+    boolean isDuplicateWebhookUrl(HProject project, String url);
 
     void updateLocalePermissions(HProject project, PersonProjectMemberships memberships);
 }
