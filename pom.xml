@@ -2186,7 +2186,7 @@
     <module>zanata-model</module>
     <module>zanata-war</module>
     <module>zanata-test-war</module>
-    <module>functional-test</module>
+    <!--<module>functional-test</module> -->
     <!-- <module>zanata-dist</module> -->
   </modules>
 </project>

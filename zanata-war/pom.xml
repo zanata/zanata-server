@@ -22,7 +22,6 @@
   <properties>
     <war.config.dir>${basedir}/src/etc</war.config.dir>
     <allow.deploy.skip>true</allow.deploy.skip>
-
     <!-- application properties -->
     <env.debug>false</env.debug>
     <war.name>zanata</war.name>
