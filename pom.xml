@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.zanata</groupId>
     <artifactId>zanata-parent</artifactId>
-    <version>29-SNAPSHOT</version>
+    <version>30-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -2186,7 +2186,7 @@
     <module>zanata-model</module>
     <module>zanata-war</module>
     <module>zanata-test-war</module>
-    <module>functional-test</module>
+    <!--<module>functional-test</module> -->
     <!-- <module>zanata-dist</module> -->
   </modules>
 </project>
