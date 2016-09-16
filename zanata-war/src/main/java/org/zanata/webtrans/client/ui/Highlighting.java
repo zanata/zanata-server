@@ -53,7 +53,7 @@ public class Highlighting {
 
     while (bodyText.length > 0) {
       i = lcBodyText.indexOf(lcSearchTerm, i + 1);
-      if (i < 0) {``
+      if (i < 0) {
         newText += bodyText;
         bodyText = "";
       } else {
