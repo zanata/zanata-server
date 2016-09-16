@@ -53,7 +53,7 @@ public class Highlighting {
 
     while (bodyText.length > 0) {
       i = lcBodyText.indexOf(lcSearchTerm, i + 1);
-      if (i < 0) {
+      if (i < 0) {``
         newText += bodyText;
         bodyText = "";
       } else {
@@ -110,10 +110,10 @@ public class Highlighting {
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
       case $wnd['DIFF_INSERT']:
-        html[x] = '<ins class="diff-insert">' + text + '</ins>';
+        html[x] = '<ins class="diff-match">' + text + '</ins>';
         break;
       case $wnd['DIFF_DELETE']:
-        html[x] = '<del class="diff-delete">' + text + '</del>';
+        html[x] = '<del class="diff-search">' + text + '</del>';
         break;
       case $wnd['DIFF_EQUAL']:
         html[x] = '<span class="diff-equal">' + text + '</span>';
