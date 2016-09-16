@@ -28,7 +28,7 @@
         </tr>
 
         <tr>
-          <td class="diff-insert">
+          <td class="diff-match">
             <ui:text from="{messages.greenColor}" />
           </td>
           <td>
@@ -37,7 +37,7 @@
         </tr>
 
         <tr>
-          <td class="diff-delete">
+          <td class="diff-search">
             <ui:text from="{messages.redColorCrossedOut}" />
           </td>
           <td>
