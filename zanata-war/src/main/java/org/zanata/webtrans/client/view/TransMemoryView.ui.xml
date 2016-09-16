@@ -23,21 +23,6 @@
       margin-right: 0.2em;
     }
 
-    td.diff-search {
-      background: rgba(3, 166, 215, 0.2);
-      text-decoration: none;
-    }
-
-    td.diff-match {
-      background: rgba(255, 59, 61, 0.2);
-      text-decoration: none;
-    }
-
-    td.diff-equal {
-      background: rgba(255, 255, 255, 1);
-      text-decoration: none;
-    }
-
   </ui:style>
 
   <g:HTMLPanel styleName="l--scroll-auto {style.container}">
