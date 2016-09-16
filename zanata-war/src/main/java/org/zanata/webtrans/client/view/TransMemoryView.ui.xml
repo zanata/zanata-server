@@ -58,6 +58,11 @@
         <g:RadioButton name="diffMode" ui:field="diffModeHighlight" />
       </li>
     </ul>
+    <ul>
+      <li>TM DIFF HIGHLIGHTING</li>
+      <li class="diff-match">TM MATCH</li>
+      <li class="diff-search">SEARCH TEXT</li>
+    </ul>
     <g:HTMLPanel ui:field="container" styleName="txt--align-center" />
   </g:HTMLPanel>
 </ui:UiBinder>

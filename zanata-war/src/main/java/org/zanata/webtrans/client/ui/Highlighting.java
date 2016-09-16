@@ -74,13 +74,13 @@ public class Highlighting {
     }
     }-*/;
 
-    public static String diffAsHtml(String oldtext, String newtext) {
-        JavaScriptObject diffs = diff(oldtext, newtext, true);
+    public static String diffAsHtml(String newtext, String oldtext) {
+        JavaScriptObject diffs = diff(newtext, oldtext, true);
         return diffsToHtml(diffs);
     }
 
     @CoverageIgnore("JSNI")
-    private static native JavaScriptObject diff(String oldtext, String newtext,
+    private static native JavaScriptObject diff(String newtext, String oldtext,
             boolean cleanupSemantic)/*-{
     if (!$wnd.diffMatchPatch) {
       $wnd.diffMatchPatch = new $wnd.diff_match_patch();
@@ -88,7 +88,7 @@ public class Highlighting {
     }
 
     var dmp = $wnd.diffMatchPatch;
-    var diffs = dmp.diff_main(oldtext, newtext);
+    var diffs = dmp.diff_main(newtext, oldtext);
     if (cleanupSemantic) {
       dmp.diff_cleanupSemantic(diffs);
     }
@@ -123,8 +123,8 @@ public class Highlighting {
     return html.join('');
     }-*/;
 
-    public static String diffAsHighlight(String oldtext, String newtext) {
-        JavaScriptObject diffs = diff(oldtext, newtext, false);
+    public static String diffAsHighlight(String newtext, String oldtext) {
+        JavaScriptObject diffs = diff(newtext, oldtext, false);
         return diffsHighlight(diffs);
     }
 
@@ -143,11 +143,11 @@ public class Highlighting {
       var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para,
               '<span class="newline"></span><br>');
-      switch (op) {
+      switch (op)
+      {case $wnd['DIFF_DELETE']:
+          break;
       case $wnd['DIFF_INSERT']:
         html[x] = text;
-        break;
-      case $wnd['DIFF_DELETE']:
         break;
       case $wnd['DIFF_EQUAL']:
         html[x] = '<span class="CodeMirror-searching">' + text + '</span>';
