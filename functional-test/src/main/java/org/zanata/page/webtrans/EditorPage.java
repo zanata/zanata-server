@@ -532,10 +532,10 @@ public class EditorPage extends BasePage {
         log.info("Query diff from history compare");
         List<String> diffs = new ArrayList<>();
         for (WebElement element : getCompareTabEntries()) {
-            for (WebElement diffElement : element.findElements(By.className("diff-insert"))) {
+            for (WebElement diffElement : element.findElements(By.className("diff-match"))) {
                 diffs.add("++" + diffElement.getText());
             }
-            for (WebElement diffElement : element.findElements(By.className("diff-delete"))) {
+            for (WebElement diffElement : element.findElements(By.className("diff-search"))) {
                 diffs.add("--" + diffElement.getText());
             }
         }
