@@ -110,10 +110,10 @@ public class Highlighting {
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
       case $wnd['DIFF_INSERT']:
-        html[x] = '<ins class="diff-match">' + text + '</ins>';
+        html[x] = '<ins class="diff-delete">' + text + '</ins>';
         break;
       case $wnd['DIFF_DELETE']:
-        html[x] = '<del class="diff-search">' + text + '</del>';
+        html[x] = '<del class="diff-insert">' + text + '</del>';
         break;
       case $wnd['DIFF_EQUAL']:
         html[x] = '<span class="diff-equal">' + text + '</span>';

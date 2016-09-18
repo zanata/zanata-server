@@ -1,5 +1,5 @@
 Diff, Match and Patch Library
-http://code.google.com/p/google-diff-match-patch/
+http://code.google.com/p/google-diff-delete-patch/
 Neil Fraser
 
 This library is currently available in seven different ports, all using the same API.

@@ -60,8 +60,8 @@
     </ul>
     <ul>
       <li>TM DIFF HIGHLIGHTING</li>
-      <li class="diff-match">TM MATCH</li>
-      <li class="diff-search">SEARCH TEXT</li>
+      <li class="diff-delete">TM MATCH</li>
+      <li class="diff-insert">SEARCH TEXT</li>
     </ul>
     <g:HTMLPanel ui:field="container" styleName="txt--align-center" />
   </g:HTMLPanel>
