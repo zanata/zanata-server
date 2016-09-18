@@ -2,7 +2,7 @@
  * Diff Match and Patch
  *
  * Copyright 2006 Google Inc.
- * http://code.google.com/p/google-diff-match-patch/
+ * http://code.google.com/p/google-diff-delete-patch/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1781,7 +1781,7 @@ diff_match_patch.prototype.patch_make = function(a, opt_b, opt_c) {
           patch = new diff_match_patch.patch_obj();
           patchDiffLength = 0;
           // Unlike Unidiff, our patch lists have a rolling context.
-          // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
+          // http://code.google.com/p/google-diff-delete-patch/wiki/Unidiff
           // Update prepatch text & pos to reflect the application of the
           // just completed patch.
           prepatch_text = postpatch_text;

@@ -13,12 +13,12 @@
       padding: 1em;
       border-radius: 3px;
     }
-    td.diff-search, li.diff-search {
+    td.diff-insert, li.diff-insert {
       background: rgba(3, 166, 215, 0.2);
       text-decoration: none;
     }
 
-    td.diff-match, li.diff-match {
+    td.diff-delete, li.diff-delete {
       background: rgba(255, 59, 61, 0.2);
       text-decoration: none;
     }
@@ -43,7 +43,7 @@
         </tr>
 
         <tr>
-          <td class="diff-match">
+          <td class="diff-delete">
             <ui:text from="{messages.greenColor}" />
           </td>
           <td>
@@ -52,7 +52,7 @@
         </tr>
 
         <tr>
-          <td class="diff-search">
+          <td class="diff-insert">
             <ui:text from="{messages.redColorCrossedOut}" />
           </td>
           <td>
