@@ -78,9 +78,7 @@ public class GlossaryService implements GlossaryResource {
 
     @Override
     public Response getQualifiedName() {
-        List<QualifiedName> names =
-                Lists.newArrayList(new QualifiedName(GLOBAL_QUALIFIED_NAME));
-        return Response.ok(names).build();
+        return Response.ok(new QualifiedName(GLOBAL_QUALIFIED_NAME)).build();
     }
 
     @Override

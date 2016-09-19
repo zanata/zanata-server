@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions'
 import { CALL_API } from 'redux-api-middleware'
-import { cloneDeep, includes, debounce, first, last, isArray } from 'lodash'
+import { cloneDeep, includes, debounce, last } from 'lodash'
 import { saveAs } from 'file-saver'
 import { normalize } from 'normalizr'
 import { GLOSSARY_TERM_ARRAY } from '../schemas.js'
@@ -197,7 +197,7 @@ const getQualifiedName = (dispatch, projectSlug) => {
       type: GLOSSARY_GET_QUALIFIED_NAME_SUCCESS,
       payload: (action, state, res) => {
         return res.json().then((json) => {
-          const qualifiedName = isArray(json) ? first(json).name : json.name
+          const qualifiedName = json.name
           dispatch(getPermission(dispatch, qualifiedName))
           return qualifiedName
         })
