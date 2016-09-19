@@ -109,8 +109,14 @@ public class Highlighting {
       var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
+<<<<<<< HEAD
+=======
+      case $wnd['DIFF_INSERT']:
+        html[x] = '<ins class="diff-delete">' + text + '</ins>';
+        break;
+>>>>>>> 5ca03710c27f8a1ba76d6aa8c96e42c2c1f52d12
       case $wnd['DIFF_DELETE']:
-        html[x] = '<del class="diff-delete">' + text + '</del>';
+        html[x] = '<del class="diff-insert">' + text + '</del>';
         break;
       case $wnd['DIFF_INSERT']:
         html[x] = '<ins class="diff-insert">' + text + '</ins>';
