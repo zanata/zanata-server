@@ -13,20 +13,7 @@
       padding: 1em;
       border-radius: 3px;
     }
-    td.diff-insert, li.diff-insert {
-      background: rgba(3, 166, 215, 0.2);
-      text-decoration: none;
-    }
 
-    td.diff-delete, li.diff-delete {
-      background: rgba(255, 59, 61, 0.2);
-      text-decoration: none;
-    }
-
-    td.diff-equal {
-      background: rgba(255, 255, 255, 1);
-      text-decoration: none;
-    }
 
   </ui:style>
 
