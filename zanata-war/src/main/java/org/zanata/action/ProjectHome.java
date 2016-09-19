@@ -1135,11 +1135,6 @@ public class ProjectHome extends SlugHome<HProject> implements
         if (!isValidUrl(url)) {
             return;
         }
-        if (projectServiceImpl.isDuplicateWebhookUrl(getInstance(), url)) {
-            facesMessages.addGlobal(SEVERITY_ERROR,
-                msgs.format("jsf.project.DuplicateUrl", url));
-            return;
-        }
         boolean updated = projectServiceImpl.updateWebhook(getInstance(),
                 new Long(id), url, secret, types);
         if (updated) {
