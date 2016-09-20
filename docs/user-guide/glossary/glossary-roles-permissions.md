@@ -1,5 +1,7 @@
+# System glossary
+
 <p>
-    Glossary is used globally in all projects within Zanata. User assigned with these roles should understand the
+    System glossary is used across all projects within Zanata. User assigned with these roles should understand the
     responsibility and effect when performing any of these actions.
 </p>
 
@@ -29,5 +31,35 @@ Below are the summary of these 2 roles with their permission.
         <td style="text-align:center">&#10004;</td>
         <td style="text-align:center">&#10004;</td>
         <td style="text-align:center">&#10004;</td>
+    </tr>
+</table>
+
+# Project Glossary
+
+Project glossary is used and only available in the assigned project.
+
+There are 2 roles that manage glossaries in project,  **Project maintainer/Translation Maintainer** and **Project translator**.
+
+Below are the summary of these 2 roles with their permission.
+<table>
+    <th>
+        <tr>
+            <td>**Roles**</td>
+            <td>[Upload glossary](/user-guide/glossary/upload-glossaries)</td>
+            <td>[Edit glossary](/user-guide/glossary/edit-glossaries)</td>
+            <td>[Delete glossary](/user-guide/glossary/delete-glossaries)</td>
+        </tr>
+    </th>
+    <tr>
+        <td>Project maintainer/Translation Maintainer</td>
+        <td style="text-align:center">&#10004;</td>
+        <td style="text-align:center">&#10004;</td>
+        <td style="text-align:center">&#10004;</td>
+    </tr>
+    <tr>
+        <td>Project translator</td>
+        <td style="text-align:center">&#10004;</td>
+        <td style="text-align:center">&#10004;</td>
+        <td style="text-align:center">&#10006;</td>
     </tr>
 </table>
