@@ -57,17 +57,17 @@ function _equivalent(a, b) {
 
 function diff_rebuildtexts(diffs) {
   // Construct the two texts which made up the diff originally.
-  var oldtext = '';
-  var newtext = '';
+  var text1 = '';
+  var text2 = '';
   for ( var x = 0; x < diffs.length; x++) {
     if (diffs[x][0] != DIFF_INSERT) {
-      oldtext += diffs[x][1];
+      text1 += diffs[x][1];
     }
     if (diffs[x][0] != DIFF_DELETE) {
-      newtext += diffs[x][1];
+      text2 += diffs[x][1];
     }
   }
-  return [ oldtext, newtext ];
+  return [ text1, text2 ];
 }
 
 var dmp = new diff_match_patch();
@@ -475,9 +475,9 @@ function testDiffText() {
   var diffs = [ [ DIFF_EQUAL, 'jump' ], [ DIFF_DELETE, 's' ],
       [ DIFF_INSERT, 'ed' ], [ DIFF_EQUAL, ' over ' ], [ DIFF_DELETE, 'the' ],
       [ DIFF_INSERT, 'a' ], [ DIFF_EQUAL, ' lazy' ] ];
-  assertEquals('jumps over the lazy', dmp.diff_oldtext(diffs));
+  assertEquals('jumps over the lazy', dmp.diff_text1(diffs));
 
-  assertEquals('jumped over a lazy', dmp.diff_newtext(diffs));
+  assertEquals('jumped over a lazy', dmp.diff_text2(diffs));
 }
 
 function testDiffDelta() {
@@ -485,18 +485,18 @@ function testDiffDelta() {
   var diffs = [ [ DIFF_EQUAL, 'jump' ], [ DIFF_DELETE, 's' ],
       [ DIFF_INSERT, 'ed' ], [ DIFF_EQUAL, ' over ' ], [ DIFF_DELETE, 'the' ],
       [ DIFF_INSERT, 'a' ], [ DIFF_EQUAL, ' lazy' ], [ DIFF_INSERT, 'old dog' ] ];
-  var oldtext = dmp.diff_oldtext(diffs);
-  assertEquals('jumps over the lazy', oldtext);
+  var text1 = dmp.diff_text1(diffs);
+  assertEquals('jumps over the lazy', text1);
 
   var delta = dmp.diff_toDelta(diffs);
   assertEquals('=4\t-1\t+ed\t=6\t-3\t+a\t=5\t+old dog', delta);
 
   // Convert delta string into a diff.
-  assertEquivalent(diffs, dmp.diff_fromDelta(oldtext, delta));
+  assertEquivalent(diffs, dmp.diff_fromDelta(text1, delta));
 
   // Generates error (19 != 20).
   try {
-    dmp.diff_fromDelta(oldtext + 'x', delta);
+    dmp.diff_fromDelta(text1 + 'x', delta);
     assertEquals(Error, null);
   } catch (e) {
     // Exception expected.
@@ -504,7 +504,7 @@ function testDiffDelta() {
 
   // Generates error (19 != 18).
   try {
-    dmp.diff_fromDelta(oldtext.substring(1), delta);
+    dmp.diff_fromDelta(text1.substring(1), delta);
     assertEquals(Error, null);
   } catch (e) {
     // Exception expected.
@@ -521,20 +521,20 @@ function testDiffDelta() {
   // Test deltas with special characters.
   diffs = [ [ DIFF_EQUAL, '\u0680 \x00 \t %' ],
       [ DIFF_DELETE, '\u0681 \x01 \n ^' ], [ DIFF_INSERT, '\u0682 \x02 \\ |' ] ];
-  oldtext = dmp.diff_oldtext(diffs);
-  assertEquals('\u0680 \x00 \t %\u0681 \x01 \n ^', oldtext);
+  text1 = dmp.diff_text1(diffs);
+  assertEquals('\u0680 \x00 \t %\u0681 \x01 \n ^', text1);
 
   delta = dmp.diff_toDelta(diffs);
   assertEquals('=7\t-7\t+%DA%82 %02 %5C %7C', delta);
 
   // Convert delta string into a diff.
-  assertEquivalent(diffs, dmp.diff_fromDelta(oldtext, delta));
+  assertEquivalent(diffs, dmp.diff_fromDelta(text1, delta));
 
   // Verify pool of unchanged characters.
   diffs = [ [ DIFF_INSERT,
       'A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + $ , # ' ] ];
-  var newtext = dmp.diff_newtext(diffs);
-  assertEquals('A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + $ , # ', newtext);
+  var text2 = dmp.diff_text2(diffs);
+  assertEquals('A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + $ , # ', text2);
 
   delta = dmp.diff_toDelta(diffs);
   assertEquals('+A-Z a-z 0-9 - _ . ! ~ * \' ( ) ; / ? : @ & = + $ , # ', delta);
@@ -544,7 +544,7 @@ function testDiffDelta() {
 }
 
 function testDiffXIndex() {
-  // Translate a location in oldtext to newtext.
+  // Translate a location in text1 to text2.
   // Translation on equality.
   assertEquals(5, dmp.diff_xIndex([ [ DIFF_DELETE, 'a' ],
       [ DIFF_INSERT, '1234' ], [ DIFF_EQUAL, 'xyz' ] ], 2));
@@ -876,31 +876,31 @@ function testPatchMake() {
   var patches = dmp.patch_make('', '');
   assertEquals('', dmp.patch_toText(patches));
 
-  var oldtext = 'The quick brown fox jumps over the lazy dog.';
-  var newtext = 'That quick brown fox jumped over a lazy dog.';
+  var text1 = 'The quick brown fox jumps over the lazy dog.';
+  var text2 = 'That quick brown fox jumped over a lazy dog.';
   // Text2+Text1 inputs.
   var expectedPatch = '@@ -1,8 +1,7 @@\n Th\n-at\n+e\n  qui\n@@ -21,17 +21,18 @@\n jump\n-ed\n+s\n  over \n-a\n+the\n  laz\n';
   // The second patch must be "-21,17 +21,18", not "-22,17 +21,18" due to
   // rolling context.
-  patches = dmp.patch_make(newtext, oldtext);
+  patches = dmp.patch_make(text2, text1);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Text1+Text2 inputs.
   expectedPatch = '@@ -1,11 +1,12 @@\n Th\n-e\n+at\n  quick b\n@@ -22,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n';
-  patches = dmp.patch_make(oldtext, newtext);
+  patches = dmp.patch_make(text1, text2);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Diff input.
-  var diffs = dmp.diff_main(oldtext, newtext, false);
+  var diffs = dmp.diff_main(text1, text2, false);
   patches = dmp.patch_make(diffs);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Text1+Diff inputs.
-  patches = dmp.patch_make(oldtext, diffs);
+  patches = dmp.patch_make(text1, diffs);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Text1+Text2+Diff inputs (deprecated).
-  patches = dmp.patch_make(oldtext, newtext, diffs);
+  patches = dmp.patch_make(text1, text2, diffs);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Character encoding.
@@ -918,13 +918,13 @@ function testPatchMake() {
           .patch_fromText('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n')[0].diffs);
 
   // Long string with repeats.
-  oldtext = '';
+  text1 = '';
   for ( var x = 0; x < 100; x++) {
-    oldtext += 'abcdef';
+    text1 += 'abcdef';
   }
-  newtext = oldtext + '123';
+  text2 = text1 + '123';
   expectedPatch = '@@ -573,28 +573,31 @@\n cdefabcdefabcdefabcdefabcdef\n+123\n';
-  patches = dmp.patch_make(oldtext, newtext);
+  patches = dmp.patch_make(text1, text2);
   assertEquals(expectedPatch, dmp.patch_toText(patches));
 
   // Test null inputs.
