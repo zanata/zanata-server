@@ -227,6 +227,8 @@ public class ProjectPermissionDialog extends AbstractAutocomplete<HPerson>
             } else if (StringUtils
                 .equalsIgnoreCase(role, LocaleRole.Coordinator.name())) {
                 localeRoles.setCoordinator(checked);
+            } else if (StringUtils.equalsIgnoreCase(role, LocaleRole.Glossarist.name())) {
+                localeRoles.setGlossarist(checked);
             }
         } else {
             // No LocaleRoles for the given locale, so create a new one.

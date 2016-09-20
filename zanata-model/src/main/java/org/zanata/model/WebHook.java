@@ -36,7 +36,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
 import com.google.common.collect.Sets;
@@ -46,7 +48,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.zanata.model.type.WebhookType;
-import org.zanata.model.validator.Unique;
 import org.zanata.model.validator.Url;
 
 /**
@@ -56,7 +57,7 @@ import org.zanata.model.validator.Url;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
-@Unique(properties = { "url", "project" })
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"url", "projectId"}))
 public class WebHook implements Serializable {
 
     private Long id;
