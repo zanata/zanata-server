@@ -109,11 +109,11 @@ public class Highlighting {
       var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para, '&para;<br>');
       switch (op) {
-      case $wnd['DIFF_INSERT']:
-        html[x] = '<ins class="diff-insert">' + text + '</ins>';
-        break;
       case $wnd['DIFF_DELETE']:
         html[x] = '<del class="diff-delete">' + text + '</del>';
+        break;
+      case $wnd['DIFF_INSERT']:
+        html[x] = '<ins class="diff-insert">' + text + '</ins>';
         break;
       case $wnd['DIFF_EQUAL']:
         html[x] = '<span class="diff-equal">' + text + '</span>';
@@ -143,11 +143,11 @@ public class Highlighting {
       var text = data.replace(pattern_amp, '&amp;').replace(pattern_lt, '&lt;')
           .replace(pattern_gt, '&gt;').replace(pattern_para,
               '<span class="newline"></span><br>');
-      switch (op) {
+      switch (op)
+      {case $wnd['DIFF_DELETE']:
+          break;
       case $wnd['DIFF_INSERT']:
         html[x] = text;
-        break;
-      case $wnd['DIFF_DELETE']:
         break;
       case $wnd['DIFF_EQUAL']:
         html[x] = '<span class="CodeMirror-searching">' + text + '</span>';

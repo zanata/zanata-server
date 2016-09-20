@@ -13,6 +13,8 @@
       padding: 1em;
       border-radius: 3px;
     }
+
+
   </ui:style>
 
   <g:HTMLPanel styleName="new-zanata">
@@ -28,7 +30,7 @@
         </tr>
 
         <tr>
-          <td class="diff-insert">
+          <td class="diff-delete">
             <ui:text from="{messages.greenColor}" />
           </td>
           <td>
@@ -37,7 +39,7 @@
         </tr>
 
         <tr>
-          <td class="diff-delete">
+          <td class="diff-insert">
             <ui:text from="{messages.redColorCrossedOut}" />
           </td>
           <td>
