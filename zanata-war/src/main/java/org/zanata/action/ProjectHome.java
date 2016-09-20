@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -1128,18 +1129,24 @@ public class ProjectHome extends SlugHome<HProject> implements
         identity.checkPermission(getInstance(), "update");
         Set<WebhookType> types = getTypesFromString(strTypes);
         if(types.isEmpty()) {
-            facesMessages.addGlobal(
-                msgs.get("jsf.project.webhookType.empty"));
+            facesMessages.addGlobal(msgs.get("jsf.project.webhookType.empty"));
             return;
         }
         if (!isValidUrl(url)) {
             return;
         }
+        Long webhookId = new Long(id);
+        if (projectServiceImpl.isDuplicateWebhookUrl(getInstance(), url,
+                webhookId)) {
+            facesMessages.addGlobal(SEVERITY_ERROR,
+                    msgs.format("jsf.project.DuplicateUrl", url));
+            return;
+        }
         boolean updated = projectServiceImpl.updateWebhook(getInstance(),
-                new Long(id), url, secret, types);
+                webhookId, url, secret, types);
         if (updated) {
             facesMessages.addGlobal(
-                msgs.format("jsf.project.UpdateWebhook", url));
+                    msgs.format("jsf.project.UpdateWebhook", url));
         }
     }
 

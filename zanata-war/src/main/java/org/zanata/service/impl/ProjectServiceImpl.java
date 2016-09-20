@@ -155,6 +155,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public boolean isDuplicateWebhookUrl(HProject project, String url,
+            Long webhookId) {
+        for (WebHook webHook : project.getWebHooks()) {
+            if (!webhookId.equals(webHook.getId())
+                    && StringUtils.equalsIgnoreCase(webHook.getUrl(), url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void updateLocalePermissions(HProject project,
         PersonProjectMemberships memberships) {
         HPerson person = memberships.getPerson();

@@ -28,6 +28,7 @@ import org.zanata.model.type.WebhookType;
 import org.zanata.service.impl.ProjectServiceImpl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -52,7 +53,16 @@ public interface ProjectService {
     boolean addWebhook(HProject project, String url, String secret,
         Set<WebhookType> types);
 
+    /**
+     * Check if project contains duplicate webhook with matching url
+     */
     boolean isDuplicateWebhookUrl(HProject project, String url);
+
+    /**
+     * Check if project contains duplicate webhook with matching url other than
+     * given webhookId
+     */
+    boolean isDuplicateWebhookUrl(HProject project, String url, Long webhookId);
 
     void updateLocalePermissions(HProject project, PersonProjectMemberships memberships);
 }
