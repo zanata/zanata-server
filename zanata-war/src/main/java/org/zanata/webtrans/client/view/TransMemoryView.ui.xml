@@ -58,10 +58,10 @@
         <g:RadioButton name="diffMode" ui:field="diffModeHighlight" />
       </li>
     </ul>
-    <ul>
-      <li class="inline">TM DIFF HIGHLIGHTING</li>
-      <li class="diff-delete">TM MATCH</li>
-      <li class="diff-insert">SEARCH TEXT</li>
+    <ul class="list--horizontal l--push-all-quarter legend">
+      <li class="inline zeta">TM Diff Highlighting</li>
+      <li class="inline diff-delete">TM MATCH</li>
+      <li class="inline diff-insert">SEARCH TEXT</li>
     </ul>
     <g:HTMLPanel ui:field="container" styleName="txt--align-center" />
   </g:HTMLPanel>
