@@ -127,6 +127,16 @@ public class UrlRewriteConfig extends HttpConfigurationProvider {
                 .where("section").matches(".*")
 
                 // FIXME this path is ambiguous with /project/view etc.
+                /* Alternatives
+                 *
+                 * /project/translate/{project}/{version}/{document}
+                 * /project/translate/{project}/v/{version}/{document}
+                 * /editor/project/{project}/v/{version}/{document}
+                 *
+                 * Any of these are fine for the API
+                 * because I can easily cut off from /project/translate
+                 * or from /editor/
+                 */
                 .addRule(Join.path("/project/{project}/v/{version}/translate/{document}")
                         .to("/app/index.html"))
                         .where("document").matches(".*")
