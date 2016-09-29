@@ -2,6 +2,7 @@
 ##### Changes
 * [ZNTA-1000](https://zanata.atlassian.net/browse/ZNTA-1000) - Try catch finally on copy version action, logging exception
 * [ZNTA-1001](https://zanata.atlassian.net/browse/ZNTA-1001) - Investigate and fix: copy version fails silently after triggering
+* [ZNTA-1042](https://zanata.atlassian.net/browse/ZNTA-1042) - Add option for cross-origin requests with credentials
 
 
 <h5>Bug fixes</h5>
