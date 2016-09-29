@@ -412,7 +412,7 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Description")
     String description();
 
-    @DefaultMessage("Green color")
+    @DefaultMessage("Blue color")
     String greenColor();
 
     @DefaultMessage("Red color")
@@ -421,13 +421,13 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Plain text")
     String plainText();
 
-    @DefaultMessage("Text contain in result but not in search term")
+    @DefaultMessage("Text contained in result but not in search term (Search text)")
     String tmInsertTagDesc();
 
-    @DefaultMessage("Text contain in search term but not in result")
+    @DefaultMessage("Text contained in search term but not in result (TM match)")
     String tmDelTagDesc();
 
-    @DefaultMessage("Text contain in both search term and result")
+    @DefaultMessage("Text contained in both search term and result")
     String tmPlainTextDesc();
 
     @DefaultMessage("New replacement text")
