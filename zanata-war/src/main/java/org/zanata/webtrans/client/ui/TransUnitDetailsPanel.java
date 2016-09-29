@@ -39,7 +39,7 @@ public class TransUnitDetailsPanel extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
         // this is to remove the .header class so that it won't get style from
         // menu.css
-        disclosurePanel.getHeader().getParent().setStyleName("l--pad-left-quarter txt--mini");
+        disclosurePanel.getHeader().getParent().setStyleName("");
     }
 
     public void setDetails(TransUnit transUnit) {

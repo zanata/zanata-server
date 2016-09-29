@@ -12,10 +12,9 @@
     }
   </ui:style>
 
-  <g:DisclosurePanel animationEnabled="true"
-    addStyleNames="fadeElement" ui:field="disclosurePanel">
+  <g:DisclosurePanel animationEnabled="true" ui:field="disclosurePanel">
     <g:customHeader>
-      <g:Label ui:field="headerLabel" styleName="{style.headerLabel}" />
+      <g:Label ui:field="headerLabel" styleName="{style.headerLabel} button--link button--small" />
     </g:customHeader>
     <g:HTMLPanel tag="ul" styleName="list--no-bullets bg--pop-highest l--pad-all-quarter">
       <li class="txt--meta">
