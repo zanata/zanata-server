@@ -34,6 +34,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringUtils;
@@ -350,12 +351,12 @@ public class UrlUtil implements Serializable {
         }
         boolean hasFilter = StringUtils.isNotBlank(filter);
         if (hasFilter) {
-            url += "?filter=" + filter;
+            url += "?filter=" + encodeString(filter);
         }
         if (localeId != null) {
             String prefix = hasFilter ? "&" : "?";
             url += prefix + "locale=" + localeId;
         }
-        return url + "/" + dswidQuery;
+        return url;
     }
 }
