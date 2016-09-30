@@ -339,7 +339,8 @@ public class UrlUtil implements Serializable {
     /**
      * Get glossary url with dswid parameter
      */
-    public String glossaryUrl(String qualifiedName, String filter) {
+    public String glossaryUrl(String qualifiedName, String filter,
+            LocaleId localeId) {
         String url = contextPath + FRONT_END_PREFIX;
         if (GlossaryService.isProjectGlossary(qualifiedName)) {
             String projectSlug = GlossaryService.getProjectSlug(qualifiedName);
@@ -347,8 +348,13 @@ public class UrlUtil implements Serializable {
         } else {
             url = url + "/#glossary";
         }
-        if (StringUtils.isNotBlank(filter)) {
-            url = url + "&filter=" + filter;
+        boolean hasFilter = StringUtils.isNotBlank(filter);
+        if (hasFilter) {
+            url += "?filter=" + filter;
+        }
+        if (localeId != null) {
+            String prefix = hasFilter ? "&" : "?";
+            url += prefix + "locale=" + localeId;
         }
         return url + "/" + dswidQuery;
     }
