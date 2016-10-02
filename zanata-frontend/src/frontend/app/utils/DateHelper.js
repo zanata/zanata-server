@@ -26,17 +26,21 @@ var DateHelper = {
     }
   },
 
-  dayAsLabel: function (dateStr, numOfDays, useFullName) {
-    var date = moment(dateStr)
-    var dayOfWeekFmt
-    var dayOfMonthFmt
+  dayAsLabel: function (dateStr, numOfDays) {
+    const date = moment(dateStr)
+    const dayOfWeekFmt = 'ddd'
+    const dayOfMonthFmt = 'D/MM'
 
-    dayOfWeekFmt = useFullName ? 'dddd (Do MMM)' : 'ddd'
-    dayOfMonthFmt = useFullName ? 'Do MMM (dddd)' : 'D'
     if (numOfDays < 8) {
       return date.format(dayOfWeekFmt)
-    } else {
+    } else if (numOfDays >= 8 && numOfDays < 32) {
       return date.format(dayOfMonthFmt)
+    } else {
+      if (date.date() === 1) {
+        return date.startOf('month').format('D/MMM')
+      } else {
+        return ''
+      }
     }
   },
 
