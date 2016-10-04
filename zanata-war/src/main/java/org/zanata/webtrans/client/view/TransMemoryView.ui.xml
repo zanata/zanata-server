@@ -60,8 +60,14 @@
     </ul>
     <ul class="list--horizontal l--push-all-quarter legend">
       <li class="bx--inline zeta">TM Diff Highlighting</li>
-      <li class="bx--inline diff-delete">Search text</li>
-      <li class="bx--inline diff-insert">TM match</li>
+      <li class="bx--inline">
+        <g:FocusPanel ui:field="diffLegend">
+          <g:HTMLPanel>
+            <g:InlineLabel styleName="diff-delete l--pad-h-quarter">Search Text</g:InlineLabel>
+            <g:InlineLabel styleName="diff-insert l--pad-h-quarter">TM match</g:InlineLabel>
+          </g:HTMLPanel>
+        </g:FocusPanel>
+      </li>
     </ul>
     <g:HTMLPanel ui:field="container" styleName="txt--align-center" />
   </g:HTMLPanel>

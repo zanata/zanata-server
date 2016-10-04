@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -89,6 +90,9 @@ public class TransMemoryView extends Composite implements
     @UiField
     UiMessages messages;
 
+    @UiField
+    FocusPanel diffLegend;
+
     private final FlexTable resultTable;
     private final Label loadingLabel, noResultFoundLabel;
 
@@ -128,22 +132,15 @@ public class TransMemoryView extends Composite implements
         formatter.setStyleName(0, SIMILARITY_COL, "zeta txt--align-center smallCol");
         formatter.setStyleName(0, ORIGIN_COL, "zeta txt--align-center smallCol");
 
-        Anchor diffLegendInfo = new Anchor();
-        diffLegendInfo.setStyleName("i i--info txt--lead l--push-left-quarter");
-        diffLegendInfo.setTitle(messages.colorLegend());
-
-        diffLegendInfo.addClickHandler(new ClickHandler() {
+        diffLegend.setTitle(messages.colorLegend());
+        diffLegend.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 listener.showDiffLegend(true);
             }
         });
 
-        FlowPanel sourceHeader = new FlowPanel();
-        sourceHeader.add(new InlineLabel(messages.sourceLabel()));
-        sourceHeader.add(diffLegendInfo);
-
-        resultTable.setWidget(0, SOURCE_COL, sourceHeader);
+        resultTable.setWidget(0, SOURCE_COL, new Label(messages.sourceLabel()));
         resultTable.setWidget(0, TARGET_COL, new Label(messages.targetLabel()));
 
         Label numTrans = new Label(messages.hash());
