@@ -123,6 +123,7 @@ var RecentContributions = React.createClass({
                 onHide={() => this.onToggleShowDateRange()}>
                 <Modal.Header>
                   <Modal.Title>Date range selection</Modal.Title>
+                  <span className='C(muted)'>(Maximum 365 days)</span>
                 </Modal.Header>
                 <Modal.Body>
                   <DateRange
