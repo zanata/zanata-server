@@ -28,8 +28,10 @@
         </tr>
 
         <tr>
-          <td class="diff-insert">
-            <ui:text from="{messages.greenColor}" />
+          <td>
+            <g:InlineLabel ui:field="insLabel" styleName="diff-insert l--pad-all-quarter">
+              <ui:text from="{messages.greenColor}" />
+            </g:InlineLabel>
           </td>
           <td>
             <g:Label ui:field="insDescription" />
@@ -37,8 +39,10 @@
         </tr>
 
         <tr>
-          <td class="diff-delete">
-            <ui:text from="{messages.redColorCrossedOut}" />
+          <td>
+            <g:InlineLabel ui:field="delLabel" styleName="diff-delete l--pad-all-quarter">
+              <ui:text from="{messages.redColorCrossedOut}" />
+            </g:InlineLabel>
           </td>
           <td>
             <g:Label ui:field="delDescription" />
@@ -46,7 +50,7 @@
         </tr>
 
         <tr>
-          <td class="diff-equal">
+          <td class="l--pad-all-quarter">
             <ui:text from="{messages.plainText}" />
           </td>
           <td>

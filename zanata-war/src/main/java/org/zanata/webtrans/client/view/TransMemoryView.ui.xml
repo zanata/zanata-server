@@ -23,6 +23,10 @@
       margin-right: 0.2em;
     }
 
+    .legend {
+      cursor: pointer;
+    }
+
   </ui:style>
 
   <g:HTMLPanel styleName="l--scroll-auto {style.container}">
@@ -59,12 +63,14 @@
       </li>
     </ul>
     <ul class="list--horizontal l--push-all-quarter legend">
-      <li class="bx--inline zeta">TM Diff Highlighting</li>
+      <li class="bx--inline zeta">
+        <g:InlineLabel ui:field="diffLegendLabel">TM Diff Highlighting</g:InlineLabel>
+      </li>
       <li class="bx--inline">
-        <g:FocusPanel ui:field="diffLegend">
-          <g:HTMLPanel>
-            <g:InlineLabel styleName="diff-delete l--pad-h-quarter">Search Text</g:InlineLabel>
-            <g:InlineLabel styleName="diff-insert l--pad-h-quarter">TM match</g:InlineLabel>
+        <g:FocusPanel ui:field="diffLegend" styleName="{style.legend} bx--inline">
+          <g:HTMLPanel styleName="bx--inline button--link">
+            <g:InlineLabel styleName="diff-delete l--pad-h-quarter" ui:field="searchText">Search Text</g:InlineLabel>
+            <g:InlineLabel styleName="diff-insert l--pad-h-quarter" ui:field="tmMatch">TM match</g:InlineLabel>
           </g:HTMLPanel>
         </g:FocusPanel>
       </li>

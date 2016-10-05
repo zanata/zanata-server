@@ -22,12 +22,14 @@ package org.zanata.webtrans.client.ui;
 
 import org.zanata.webtrans.client.keys.ShortcutContext;
 import org.zanata.webtrans.client.resources.WebTransMessages;
+import org.zanata.webtrans.shared.model.DiffMode;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.inject.Inject;
@@ -52,6 +54,9 @@ public class DiffColorLegendPanel extends PopupPanel {
     Label insDescription, delDescription, containDescription;
 
     @UiField
+    InlineLabel insLabel, delLabel;
+
+    @UiField
     Styles style;
 
     @UiField
@@ -69,12 +74,25 @@ public class DiffColorLegendPanel extends PopupPanel {
         setWidget(container);
     }
 
-    public void show(ShortcutContext context) {
+    public void show(ShortcutContext context, DiffMode diffMode) {
+        //reset to default style
+        insLabel.setStyleName("diff-insert l--pad-all-quarter");
+        delDescription.removeStyleName("is-hidden");
+        delLabel.removeStyleName("is-hidden");
+
         switch (context) {
         case TM:
-            insDescription.setText(messages.tmInsertTagDesc());
-            delDescription.setText(messages.tmDelTagDesc());
-            containDescription.setText(messages.tmPlainTextDesc());
+            if (diffMode == DiffMode.NORMAL) {
+                insDescription.setText(messages.tmInsertTagDesc());
+                delDescription.setText(messages.tmDelTagDesc());
+                containDescription.setText(messages.tmPlainTextDesc());
+            } else {
+                delLabel.addStyleName("is-hidden");
+                delDescription.addStyleName("is-hidden");
+                insLabel.setStyleName("CodeMirror-searching l--pad-all-quarter");
+                insDescription.setText(messages.tmPlainTextDesc());
+                containDescription.setText(messages.tmDelTagDesc());
+            }
             break;
         case ProjectWideSearch:
             insDescription.setText(messages.searchReplaceInsertTagDesc());

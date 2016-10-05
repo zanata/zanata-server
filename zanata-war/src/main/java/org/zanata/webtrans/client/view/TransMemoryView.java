@@ -91,6 +91,9 @@ public class TransMemoryView extends Composite implements
     UiMessages messages;
 
     @UiField
+    InlineLabel searchText, tmMatch, diffLegendLabel;
+
+    @UiField
     FocusPanel diffLegend;
 
     private final FlexTable resultTable;
@@ -225,6 +228,17 @@ public class TransMemoryView extends Composite implements
     @UiHandler({ "diffModeDiff", "diffModeHighlight" })
     public void onDiffModeOptionChange(ValueChangeEvent<Boolean> event) {
         listener.onDiffModeChanged();
+        if (determineDiffMode() == DiffMode.NORMAL) {
+            tmMatch.addStyleName("diff-insert");
+            tmMatch.removeStyleName("CodeMirror-searching");
+            searchText.removeStyleName("is-hidden");
+            diffLegendLabel.setText(messages.tmDiffHighlighting());
+        } else {
+            tmMatch.removeStyleName("diff-insert");
+            tmMatch.addStyleName("CodeMirror-searching");
+            searchText.addStyleName("is-hidden");
+            diffLegendLabel.setText(messages.tmHighlighting());
+        }
     }
 
     private DiffMode determineDiffMode() {
@@ -391,7 +405,7 @@ public class TransMemoryView extends Composite implements
     @Override
     public void showDiffLegend(boolean show) {
         if (show) {
-            diffLegendPanel.show(ShortcutContext.TM);
+            diffLegendPanel.show(ShortcutContext.TM, determineDiffMode());
         } else {
             diffLegendPanel.hide(true);
         }
