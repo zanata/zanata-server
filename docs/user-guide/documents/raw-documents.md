@@ -21,7 +21,8 @@ Supported formats include:
 * JSON (.json)
 
 _Open Document Formula (*.odf) and Open Document Database (*.odb) are not supported._
-_JSON dedicated localisation formats (eg i18next) are not supported. JSON files will be treated as raw documents._
+_JSON dedicated localisation formats (eg i18next) are not supported._
+_JSON files will be treated as raw documents and standalone strings (eg. array values) will be included in parsing. See the [JSON Filter help page](http://okapi.sourceforge.net/Release/Filters/Help/json.htm) for more information_
 
 ## Known Issues
 
