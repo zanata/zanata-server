@@ -13,13 +13,68 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd $DIR/../
 ZANATA_WAR=$(echo $PWD/zanata-war/target/zanata-*.war)
 
+# volume mapping for JBoss deployment folder (put exploded war or war file here to deploy)
+ZANATA_DEPLOYMENTS_DIR=$HOME/docker-volumes/zanata-deployments
 if [ -f "$ZANATA_WAR" ]
 then
-    chcon -Rt svirt_sandbox_file_t "$ZANATA_WAR"
+    mkdir -p ${ZANATA_DEPLOYMENTS_DIR} && chcon -Rt svirt_sandbox_file_t ${ZANATA_DEPLOYMENTS_DIR}
+    cp ${ZANATA_WAR} ${ZANATA_DEPLOYMENTS_DIR}/ROOT.war
 else
     echo "===== NO war file found. Please build Zanata war first ====="
     exit 1
 fi
+
+# mysql driver file
+MYSQL_DRIVER=$(echo $ZANATA_DEPLOYMENTS_DIR/mysql-connector-java.jar)
+if [ -f "${MYSQL_DRIVER}" ]
+then
+    echo "===== mysql driver linked ====="
+else
+# symlink mysql driver file to JBoss deployments folder
+    if [ -f "/usr/share/java/mysql-connector-java.jar" ]
+    then
+        ln -sf /usr/share/java/mysql-connector-java.jar ${ZANATA_DEPLOYMENTS_DIR}/mysql-connector-java.jar
+    else
+        echo "===== You don't have mysql-connector-java.jar on your system. Please install one"
+        exit 1
+    fi
+fi
+
+
+# JBoss ports
+HTTP_PORT=8080
+DEBUG_PORT=8787
+MGMT_PORT=9090
+
+while getopts ":p:H" opt; do
+  case ${opt} in
+    p)
+      echo "===== set JBoss port offset to $OPTARG ====="
+      if [ "$OPTARG" -eq "$OPTARG" ] 2>/dev/null
+      then
+        HTTP_PORT=$(($OPTARG + 8080))
+        DEBUG_PORT=$(($OPTARG + 8787))
+        MGMT_PORT=$(($OPTARG + 9090))
+        echo "===== http port       : $HTTP_PORT"
+        echo "===== debug port      : $DEBUG_PORT"
+        echo "===== management port : $MGMT_PORT"
+      else
+        echo "===== MUST provide an integer as argument ====="
+        exit 1
+      fi
+      ;;
+    H)
+      echo "========   HELP   ========="
+      echo "-p <offset number> : set JBoss port offset"
+      echo "-H                 : display help"
+      exit
+      ;;
+    \?)
+      echo "Invalid option: -${OPTARG}. Use -H for help" >&2
+      exit 1
+      ;;
+  esac
+done
 
 # volume mapping for zanata server files
 ZANATA_DIR=$HOME/docker-volumes/zanata
@@ -35,11 +90,13 @@ docker build -t zanata/server-dev docker/
 #  By default, we will keep the JVM running, so that a debugger can be attached.
 #  Alternative option: -XX:OnOutOfMemoryError='kill -9 %p'
 
+JBOSS_DEPLOYMENT_VOLUME=/opt/jboss/wildfly/standalone/deployments/
+
 # runs zanata/server-dev:latest docker image
 docker run \
     -e JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/jboss/zanata" \
     --rm --name zanata --link zanatadb:db \
-    -p 8080:8080 -p 8787:8787 -p 9990:9990 -it \
-    -v $ZANATA_WAR:/opt/jboss/wildfly/standalone/deployments/ROOT.war \
+    -p ${HTTP_PORT}:8080 -p ${DEBUG_PORT}:8787 -p ${MGMT_PORT}:9990 -it \
+    -v ${ZANATA_DEPLOYMENTS_DIR}:${JBOSS_DEPLOYMENT_VOLUME} \
     -v $ZANATA_DIR:/opt/jboss/zanata \
     zanata/server-dev
