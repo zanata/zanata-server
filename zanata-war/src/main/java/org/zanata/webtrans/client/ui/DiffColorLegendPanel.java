@@ -48,7 +48,6 @@ public class DiffColorLegendPanel extends PopupPanel {
 
     interface Styles extends CssResource {
         String diffLegendPanel();
-
         String fullWidth();
     }
 
