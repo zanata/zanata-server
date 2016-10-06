@@ -13,9 +13,6 @@
       padding: 1em;
       border-radius: 3px;
     }
-    .fullWidth {
-      width: 100%;
-    }
   </ui:style>
 
   <g:HTMLPanel styleName="new-zanata">
@@ -31,48 +28,50 @@
         </tr>
 
         <tr>
-          <td>
-            <g:InlineLabel ui:field="insLabel" styleName="{style.fullWidth} diff-insert bx--inline-block l--pad-all-quarter">
-              <ui:text from="{messages.greenColor}" />
+          <td class="diff-insert">
+            <g:InlineLabel ui:field="searchOnlyLabel">
+              <ui:text from="{messages.searchOnly}" />
             </g:InlineLabel>
           </td>
           <td>
-            <g:Label ui:field="insDescription" />
+            <g:Label ui:field="searchOnlyDescription" />
           </td>
         </tr>
 
         <tr>
-          <td>
-            <g:InlineLabel ui:field="delLabel" styleName="{style.fullWidth} diff-delete bx--inline-block l--pad-all-quarter">
-              <ui:text from="{messages.redColorCrossedOut}" />
+          <td class="diff-delete">
+            <g:InlineLabel ui:field="tmOnlyLabel">
+              <ui:text from="{messages.tmOnly}" />
             </g:InlineLabel>
           </td>
           <td>
-            <g:Label ui:field="delDescription" />
+            <g:Label ui:field="tmOnlyDescription" />
           </td>
         </tr>
 
         <tr>
-          <td>
-            <g:InlineLabel ui:field="containLabel" styleName="{style.fullWidth}
-             CodeMirror-searching  l--pad-all-quarter">
-              <ui:text from="{messages.yellowColor}" />
-            </g:InlineLabel>
-          </td>
-          <td>
-            <g:Label ui:field="containDescription" />
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            <g:InlineLabel ui:field="absentLabel" styleName="{style.fullWidth}
-             bx--inline-block l--pad-all-quarter">
+          <td class="CodeMirror-searching">
+            <g:InlineLabel ui:field="matchLabel">
               <ui:text from="{messages.noColor}" />
             </g:InlineLabel>
           </td>
           <td>
-            <g:Label ui:field="absentDescription" />
+            <g:Label ui:field="matchDescription">
+              <ui:text from="{messages.tmYellowTextDesc}" />
+            </g:Label>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <g:InlineLabel ui:field="absentLabel">
+              <ui:text from="{messages.noMatch}" />
+            </g:InlineLabel>
+          </td>
+          <td>
+            <g:Label ui:field="absentDescription">
+              <ui:text from="{messages.tmInsertTagDesc}" />
+            </g:Label>
           </td>
         </tr>
 

@@ -20,6 +20,7 @@
  */
 package org.zanata.webtrans.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
 import org.zanata.webtrans.client.keys.ShortcutContext;
 import org.zanata.webtrans.client.resources.WebTransMessages;
 import org.zanata.webtrans.shared.model.DiffMode;
@@ -48,14 +49,13 @@ public class DiffColorLegendPanel extends PopupPanel {
 
     interface Styles extends CssResource {
         String diffLegendPanel();
-        String fullWidth();
     }
 
     @UiField
-    Label insDescription, delDescription, containDescription, absentDescription;
+    Label searchOnlyDescription, tmOnlyDescription, matchDescription, absentDescription;
 
     @UiField
-    InlineLabel insLabel, delLabel, containLabel, absentLabel;
+    InlineLabel searchOnlyLabel, tmOnlyLabel, matchLabel, absentLabel;
 
     @UiField
     Styles style;
@@ -77,41 +77,51 @@ public class DiffColorLegendPanel extends PopupPanel {
 
     public void show(ShortcutContext context, DiffMode diffMode) {
         //reset to default style
-        insLabel.setStyleName(style.fullWidth() + " diff-insert bx--inline-block l--pad-all-quarter");
-        delDescription.removeStyleName("is-hidden");
-        delLabel.removeStyleName("is-hidden");
-        insDescription.removeStyleName("is-hidden");
+        showTableRow(searchOnlyLabel, true);
+        showTableRow(tmOnlyLabel, true);
+        showTableRow(matchLabel, true);
 
         switch (context) {
         case TM:
+            searchOnlyLabel.setText(messages.searchOnly());
+            tmOnlyLabel.setText(messages.tmOnly());
+            matchLabel.setText(messages.noColor());
+
+            searchOnlyDescription.setText(messages.tmInsertTagDesc());
+            tmOnlyDescription.setText(messages.tmDelTagDesc());
+            matchDescription.setText(messages.tmYellowTextDesc());
+
             if (diffMode == DiffMode.NORMAL) {
-                delDescription.setText(messages.tmDelTagDesc());
-                insDescription.setText(messages.tmInsertTagDesc());
-                containLabel.setStyleName(style.fullWidth() +
-                 " CodeMirror-searching bx--inline-block l--pad-all-quarter");
-                containDescription.setText(messages.tmYellowTextDesc());
-                absentLabel.addStyleName("is-hidden");
-                absentDescription.addStyleName("is-hidden");
+                showTableRow(absentLabel, false);
             } else {
-                delLabel.addStyleName("is-hidden");
-                delDescription.addStyleName("is-hidden");
-                insLabel.addStyleName("is-hidden");
-                insDescription.addStyleName("is-hidden");
-                containDescription.setText(messages.tmPlainTextDesc());
-                absentLabel.setStyleName(style.fullWidth() +
-                 "bx--inline-block l--pad-all-quarter");
-                absentDescription.removeStyleName("is-hidden");
-                absentDescription.setText(messages.plainText());
+                showTableRow(tmOnlyLabel, false);
+                showTableRow(searchOnlyLabel, false);
+                showTableRow(absentLabel, true);
             }
             break;
         case ProjectWideSearch:
-            insDescription.setText(messages.searchReplaceInsertTagDesc());
-            delDescription.setText(messages.searchReplaceDelTagDesc());
-            containDescription.setText(messages.searchReplacePlainTextDesc());
+            showTableRow(absentLabel, false);
+            searchOnlyLabel.setText(messages.blueColor());
+            tmOnlyLabel.setText(messages.redColor());
+            matchLabel.setText(messages.yellowColor());
+
+            searchOnlyDescription.setText(messages.searchReplaceInsertTagDesc());
+            tmOnlyDescription.setText(messages.searchReplaceDelTagDesc());
+            matchDescription.setText(messages.searchReplacePlainTextDesc());
             break;
         default:
             break;
         }
         this.center();
+    }
+
+    private void showTableRow(Widget label, boolean show) {
+        if (show) {
+            label.getElement().getParentElement().getParentElement()
+                .removeClassName("is-hidden");
+        } else {
+            label.getElement().getParentElement().getParentElement()
+                .addClassName("is-hidden");
+        }
     }
 }
