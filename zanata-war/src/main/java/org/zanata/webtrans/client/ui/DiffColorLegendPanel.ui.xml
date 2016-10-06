@@ -54,15 +54,31 @@
 
         <tr>
           <td>
-            <span class="{style.fullWidth} l--pad-all-quarter bx--inline-block">
-              <ui:text from="{messages.plainText}" />
-            </span>
+            <g:InlineLabel ui:field="containLabel" styleName="{style.fullWidth}
+             CodeMirror-searching  l--pad-all-quarter">
+              <ui:text from="{messages.yellowColor}" />
+            </g:InlineLabel>
           </td>
           <td>
             <g:Label ui:field="containDescription" />
           </td>
         </tr>
+
+        <tr>
+          <td>
+            <g:InlineLabel ui:field="absentLabel" styleName="{style.fullWidth}
+             bx--inline-block l--pad-all-quarter">
+              <ui:text from="{messages.noColor}" />
+            </g:InlineLabel>
+          </td>
+          <td>
+            <g:Label ui:field="absentDescription" />
+          </td>
+        </tr>
+
       </table>
     </div>
   </g:HTMLPanel>
 </ui:UiBinder>
+
+

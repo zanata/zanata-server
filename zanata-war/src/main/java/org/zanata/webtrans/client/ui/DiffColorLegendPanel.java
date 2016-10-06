@@ -53,10 +53,10 @@ public class DiffColorLegendPanel extends PopupPanel {
     }
 
     @UiField
-    Label insDescription, delDescription, containDescription;
+    Label insDescription, delDescription, containDescription, absentDescription;
 
     @UiField
-    InlineLabel insLabel, delLabel;
+    InlineLabel insLabel, delLabel, containLabel, absentLabel;
 
     @UiField
     Styles style;
@@ -81,19 +81,28 @@ public class DiffColorLegendPanel extends PopupPanel {
         insLabel.setStyleName(style.fullWidth() + " diff-insert bx--inline-block l--pad-all-quarter");
         delDescription.removeStyleName("is-hidden");
         delLabel.removeStyleName("is-hidden");
+        insDescription.removeStyleName("is-hidden");
 
         switch (context) {
         case TM:
             if (diffMode == DiffMode.NORMAL) {
-                insDescription.setText(messages.tmInsertTagDesc());
                 delDescription.setText(messages.tmDelTagDesc());
-                containDescription.setText(messages.tmPlainTextDesc());
+                insDescription.setText(messages.tmInsertTagDesc());
+                containLabel.setStyleName(style.fullWidth() +
+                 " CodeMirror-searching bx--inline-block l--pad-all-quarter");
+                containDescription.setText(messages.tmYellowTextDesc());
+                absentLabel.addStyleName("is-hidden");
+                absentDescription.addStyleName("is-hidden");
             } else {
                 delLabel.addStyleName("is-hidden");
                 delDescription.addStyleName("is-hidden");
-                insLabel.setStyleName(style.fullWidth() + " CodeMirror-searching bx--inline-block l--pad-all-quarter");
-                insDescription.setText(messages.tmPlainTextDesc());
-                containDescription.setText(messages.tmDelTagDesc());
+                insLabel.addStyleName("is-hidden");
+                insDescription.addStyleName("is-hidden");
+                containDescription.setText(messages.tmPlainTextDesc());
+                absentLabel.setStyleName(style.fullWidth() +
+                 "bx--inline-block l--pad-all-quarter");
+                absentDescription.removeStyleName("is-hidden");
+                absentDescription.setText(messages.plainText());
             }
             break;
         case ProjectWideSearch:
