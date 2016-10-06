@@ -56,10 +56,10 @@
         </g:Button>
       </li>
       <li>
-        <g:RadioButton name="diffMode" ui:field="diffModeDiff" />
+        <g:RadioButton name="diffMode" ui:field="diffModeHighlight" />
       </li>
       <li>
-        <g:RadioButton name="diffMode" ui:field="diffModeHighlight" />
+        <g:RadioButton name="diffMode" ui:field="diffModeDiff" />
       </li>
     </ul>
     <ul class="list--horizontal l--push-all-quarter legend">

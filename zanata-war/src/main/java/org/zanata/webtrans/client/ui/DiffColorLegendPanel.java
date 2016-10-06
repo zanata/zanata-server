@@ -48,6 +48,8 @@ public class DiffColorLegendPanel extends PopupPanel {
 
     interface Styles extends CssResource {
         String diffLegendPanel();
+
+        String fullWidth();
     }
 
     @UiField
@@ -76,7 +78,7 @@ public class DiffColorLegendPanel extends PopupPanel {
 
     public void show(ShortcutContext context, DiffMode diffMode) {
         //reset to default style
-        insLabel.setStyleName("diff-insert l--pad-all-quarter");
+        insLabel.setStyleName(style.fullWidth() + " diff-insert bx--inline-block l--pad-all-quarter");
         delDescription.removeStyleName("is-hidden");
         delLabel.removeStyleName("is-hidden");
 
@@ -89,7 +91,7 @@ public class DiffColorLegendPanel extends PopupPanel {
             } else {
                 delLabel.addStyleName("is-hidden");
                 delDescription.addStyleName("is-hidden");
-                insLabel.setStyleName("CodeMirror-searching l--pad-all-quarter");
+                insLabel.setStyleName(style.fullWidth() + " CodeMirror-searching bx--inline-block l--pad-all-quarter");
                 insDescription.setText(messages.tmPlainTextDesc());
                 containDescription.setText(messages.tmDelTagDesc());
             }

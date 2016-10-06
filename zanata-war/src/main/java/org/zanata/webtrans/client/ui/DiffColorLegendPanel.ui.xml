@@ -13,6 +13,9 @@
       padding: 1em;
       border-radius: 3px;
     }
+    .fullWidth {
+      width: 100%;
+    }
   </ui:style>
 
   <g:HTMLPanel styleName="new-zanata">
@@ -29,7 +32,7 @@
 
         <tr>
           <td>
-            <g:InlineLabel ui:field="insLabel" styleName="diff-insert l--pad-all-quarter">
+            <g:InlineLabel ui:field="insLabel" styleName="{style.fullWidth} diff-insert bx--inline-block l--pad-all-quarter">
               <ui:text from="{messages.greenColor}" />
             </g:InlineLabel>
           </td>
@@ -40,7 +43,7 @@
 
         <tr>
           <td>
-            <g:InlineLabel ui:field="delLabel" styleName="diff-delete l--pad-all-quarter">
+            <g:InlineLabel ui:field="delLabel" styleName="{style.fullWidth} diff-delete bx--inline-block l--pad-all-quarter">
               <ui:text from="{messages.redColorCrossedOut}" />
             </g:InlineLabel>
           </td>
@@ -50,8 +53,10 @@
         </tr>
 
         <tr>
-          <td class="l--pad-all-quarter">
-            <ui:text from="{messages.plainText}" />
+          <td>
+            <span class="{style.fullWidth} l--pad-all-quarter bx--inline-block">
+              <ui:text from="{messages.plainText}" />
+            </span>
           </td>
           <td>
             <g:Label ui:field="containDescription" />

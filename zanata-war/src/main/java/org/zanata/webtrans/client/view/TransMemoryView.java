@@ -82,10 +82,10 @@ public class TransMemoryView extends Composite implements
     HTMLPanel container;
 
     @UiField
-    RadioButton diffModeDiff;
+    RadioButton diffModeHighlight;
 
     @UiField
-    RadioButton diffModeHighlight;
+    RadioButton diffModeDiff;
 
     @UiField
     UiMessages messages;
@@ -228,6 +228,10 @@ public class TransMemoryView extends Composite implements
     @UiHandler({ "diffModeDiff", "diffModeHighlight" })
     public void onDiffModeOptionChange(ValueChangeEvent<Boolean> event) {
         listener.onDiffModeChanged();
+        updateDisplayMode();
+    }
+
+    private void updateDisplayMode() {
         if (determineDiffMode() == DiffMode.NORMAL) {
             tmMatch.addStyleName("diff-insert");
             tmMatch.removeStyleName("CodeMirror-searching");
@@ -385,6 +389,7 @@ public class TransMemoryView extends Composite implements
         } else {
             diffModeHighlight.setValue(true);
         }
+        updateDisplayMode();
     }
 
     @UiHandler("tmTextBox")
