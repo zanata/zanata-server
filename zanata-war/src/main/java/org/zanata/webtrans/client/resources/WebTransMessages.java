@@ -415,7 +415,7 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Search only")
     String searchOnly();
 
-    @DefaultMessage("Blue color")
+    @DefaultMessage("Search color")
     String searchColor();
 
     @DefaultMessage("Non-matching text")
@@ -424,13 +424,13 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Matching")
     String noColor();
 
-    @DefaultMessage("Yellow color")
+    @DefaultMessage("Highlight color")
     String highlightColor();
 
     @DefaultMessage("TM only")
     String tmOnly();
 
-    @DefaultMessage("Red color")
+    @DefaultMessage("TM color")
     String tmColor();
 
     @DefaultMessage("Text contained in search term but not in TM")
