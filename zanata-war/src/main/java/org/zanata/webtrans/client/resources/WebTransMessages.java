@@ -416,30 +416,30 @@ public interface WebTransMessages extends Messages {
     String searchOnly();
 
     @DefaultMessage("Blue color")
-    String blueColor();
+    String searchColor();
 
-    @DefaultMessage("No match")
+    @DefaultMessage("Non-matching text")
     String noMatch();
 
     @DefaultMessage("Matching")
     String noColor();
 
     @DefaultMessage("Yellow color")
-    String yellowColor();
+    String highlightColor();
 
     @DefaultMessage("TM only")
     String tmOnly();
 
     @DefaultMessage("Red color")
-    String redColor();
+    String tmColor();
 
-    @DefaultMessage("Text contained in search term but not in result")
+    @DefaultMessage("Text contained in search term but not in TM")
     String tmInsertTagDesc();
 
-    @DefaultMessage("Text contained in result but not in search term")
+    @DefaultMessage("Text contained in TM but not in search term")
     String tmDelTagDesc();
 
-    @DefaultMessage("Text contained in both search term and result")
+    @DefaultMessage("Text contained in both search term and TM")
     String tmYellowTextDesc();
 
     @DefaultMessage("New replacement text")

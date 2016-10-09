@@ -124,7 +124,7 @@ public class Highlighting {
     }-*/;
 
     public static String diffAsHighlight(String oldText, String newText) {
-        JavaScriptObject diffs = diff(newText, oldText, false);
+        JavaScriptObject diffs = diff(oldText, newText, false);
         return diffsHighlight(diffs);
     }
 

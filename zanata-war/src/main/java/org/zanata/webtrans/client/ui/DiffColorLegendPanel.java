@@ -101,9 +101,9 @@ public class DiffColorLegendPanel extends PopupPanel {
             break;
         case ProjectWideSearch:
             showTableRow(absentLabel, false);
-            searchOnlyLabel.setText(messages.blueColor());
-            tmOnlyLabel.setText(messages.redColor());
-            matchLabel.setText(messages.yellowColor());
+            searchOnlyLabel.setText(messages.searchColor());
+            tmOnlyLabel.setText(messages.tmColor());
+            matchLabel.setText(messages.highlightColor());
 
             searchOnlyDescription.setText(messages.searchReplaceInsertTagDesc());
             tmOnlyDescription.setText(messages.searchReplaceDelTagDesc());
