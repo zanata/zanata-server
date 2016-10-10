@@ -440,7 +440,7 @@ public interface WebTransMessages extends Messages {
     String tmDelTagDesc();
 
     @DefaultMessage("Text contained in both search term and TM")
-    String tmYellowTextDesc();
+    String tmHighlightTextDesc();
 
     @DefaultMessage("New replacement text")
     String searchReplaceInsertTagDesc();

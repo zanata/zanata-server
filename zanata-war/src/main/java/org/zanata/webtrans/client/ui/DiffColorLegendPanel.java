@@ -89,7 +89,7 @@ public class DiffColorLegendPanel extends PopupPanel {
 
             searchOnlyDescription.setText(messages.tmInsertTagDesc());
             tmOnlyDescription.setText(messages.tmDelTagDesc());
-            matchDescription.setText(messages.tmYellowTextDesc());
+            matchDescription.setText(messages.tmHighlightTextDesc());
 
             if (diffMode == DiffMode.NORMAL) {
                 showTableRow(absentLabel, false);
