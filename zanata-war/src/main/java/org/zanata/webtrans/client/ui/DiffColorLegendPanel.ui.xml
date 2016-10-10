@@ -57,7 +57,7 @@
           </td>
           <td>
             <g:Label ui:field="matchDescription">
-              <ui:text from="{messages.tmYellowTextDesc}" />
+              <ui:text from="{messages.tmHighlightTextDesc}" />
             </g:Label>
           </td>
         </tr>
