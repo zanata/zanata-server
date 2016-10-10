@@ -415,7 +415,11 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Search only")
     String searchOnly();
 
-    @DefaultMessage("Search color")
+    /**
+     * Used for color legend in search and replace view
+     * The label represent the color for the searched text
+     */
+    @DefaultMessage("Blue color")
     String searchColor();
 
     @DefaultMessage("Non-matching text")
@@ -424,13 +428,21 @@ public interface WebTransMessages extends Messages {
     @DefaultMessage("Matching")
     String noColor();
 
-    @DefaultMessage("Highlight color")
+    /**
+     * Used for color legend in search and replace view
+     * The label represent the color for no changes text
+     */
+    @DefaultMessage("Yellow color")
     String highlightColor();
 
     @DefaultMessage("TM only")
     String tmOnly();
 
-    @DefaultMessage("TM color")
+    /**
+     * Used for color legend in search and replace view
+     * The label represent the color for text to be replaced
+     */
+    @DefaultMessage("Red color")
     String tmColor();
 
     @DefaultMessage("Text contained in search term but not in TM")
