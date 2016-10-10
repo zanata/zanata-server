@@ -128,7 +128,7 @@
     <jdbc.version>5.1.26</jdbc.version>
 
     <resteasy.scope>compile</resteasy.scope>
-    <resteasy.version>3.0.13.Final</resteasy.version>
+    <resteasy.version>3.0.19.Final</resteasy.version>
     <jaxrsapi.version>3.0.12.Final</jaxrsapi.version>
 
     <cargo.extract.dir>${project.build.directory}/cargo/installs</cargo.extract.dir>
