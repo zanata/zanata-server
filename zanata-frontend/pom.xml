@@ -43,8 +43,8 @@
 
     <!-- Editor path within the jar to put the built artifacts.
         Note: META-INF/resources/* is served as static content, so this puts
-              the editor at http://<server>/app -->
-    <editor.bundle.destination>${bundle.dest}/app</editor.bundle.destination>
+              the editor at http://<server>/app/editor -->
+    <editor.bundle.destination>${bundle.dest}/app/editor</editor.bundle.destination>
 
     <!-- Directory that contains the actual built frontend app (index, script and styles) -->
     <frontend.built.artifact.directory>${frontend.build.directory}/dist</frontend.built.artifact.directory>

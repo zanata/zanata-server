@@ -284,7 +284,7 @@ public class Application implements EntryPoint {
     }
 
     public static String getNewEditorLink(WorkspaceId workspaceId, String docId) {
-        return getModuleParentBaseUrl() + "app/#/"
+        return getModuleParentBaseUrl() + "app/editor/#/"
                 + workspaceId.getProjectIterationId().getProjectSlug() + "/"
                 + workspaceId.getProjectIterationId().getIterationSlug()
                 + "/translate/" + docId + "/"

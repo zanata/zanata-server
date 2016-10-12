@@ -10,7 +10,7 @@ const dswid = getDswid()
  * URL path for frontend
  * e.g. http://localhost:8080/app/#explore
  */
-const prefixPath = '/a/'
+const prefixPath = '/app/'
 
 const items = [
   {
