@@ -22,6 +22,7 @@ package org.zanata.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -92,12 +93,17 @@ public class LocaleServiceImpl implements LocaleService {
 
     public static Map<LocaleId, String> getLocaleAliasesByIteration(HProjectIteration iteration) {
         Map<LocaleId, String> localeAliases;
-        if (iteration.isOverrideLocales()) {
-            localeAliases = iteration.getLocaleAliases();
-        } else {
-            localeAliases = iteration.getProject().getLocaleAliases();
+        try {
+            if (iteration.isOverrideLocales()) {
+                localeAliases = iteration.getLocaleAliases();
+            } else {
+                localeAliases = iteration.getProject().getLocaleAliases();
+            }
+            return localeAliases;
+        }catch (NullPointerException e) {
+            e.printStackTrace();
         }
-        return localeAliases;
+        return Maps.newHashMap();
     }
 
     @Inject
