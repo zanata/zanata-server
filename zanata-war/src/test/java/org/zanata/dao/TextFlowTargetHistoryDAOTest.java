@@ -1,5 +1,6 @@
 package org.zanata.dao;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
@@ -23,6 +24,7 @@ import org.zanata.model.HTextFlow;
 import org.zanata.model.HTextFlowBuilder;
 import org.zanata.model.HTextFlowTarget;
 import org.zanata.model.HTextFlowTargetHistory;
+import org.zanata.util.JPACopier;
 
 import com.github.huangp.entityunit.entity.EntityMakerBuilder;
 import com.github.huangp.entityunit.maker.FixedValueMaker;
@@ -82,7 +84,9 @@ public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
     }
 
     @Test
-    public void canGetUserTranslationMatrix() {
+    public void canGetUserTranslationMatrix()
+        throws InvocationTargetException, NoSuchMethodException,
+        InstantiationException, IllegalAccessException {
         HTextFlowBuilder baseBuilder =
                 new HTextFlowBuilder().withDocument(hDocument)
                         .withTargetLocale(hLocale);
@@ -136,6 +140,7 @@ public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
                         .getUserTranslationMatrix(user,
                                 twoDaysAgo.withTimeAtStartOfDay(),
                                 today.withTimeAtStartOfDay(),
+                                false,
                                 Optional.<DateTimeZone> absent(),
                                 DateTimeZone.getDefault(), resultTransformer);
 
@@ -154,7 +159,7 @@ public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
                 .hasSize(1);
         assertThat(yesterdayFuzzy.iterator().next().getWordCount())
                 .describedAs("total words saved as fuzzy yesterday")
-                .isEqualTo(4);
+                .isEqualTo(2);
 
         Iterable<TranslationMatrix> yesterdayApproved =
                 Iterables.filter(result,
@@ -191,7 +196,7 @@ public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
                 .hasSize(1);
         assertThat(twoDaysAgoFuzzy.iterator().next().getWordCount())
                 .describedAs("total words saved as fuzzy two days ago")
-                .isEqualTo(4);
+                .isEqualTo(2);
     }
 
     @Test
@@ -214,7 +219,8 @@ public class TextFlowTargetHistoryDAOTest extends ZanataJpaTest {
         List<TranslationMatrix> result = historyDAO
                 .getUserTranslationMatrix(user,
                         new DateTime(2015, 2, 1, 1, 1, zone),
-                        new DateTime(zone), Optional.<DateTimeZone> absent(),
+                        new DateTime(zone), false,
+                        Optional.<DateTimeZone> absent(),
                         DateTimeZone.getDefault(), resultTransformer);
         assertThat(result).isEmpty();
     }

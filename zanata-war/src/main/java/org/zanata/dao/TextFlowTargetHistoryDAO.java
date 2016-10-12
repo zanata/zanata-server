@@ -268,10 +268,11 @@ public class TextFlowTargetHistoryDAO extends
     @NativeQuery(value = "need to use union", specificTo = "mysql due to usage of date() and convert_tz() functions.")
     public <T> List<T> getUserTranslationMatrix(
             HPerson user, DateTime fromDate, DateTime toDate,
+            boolean automatedEntry,
             Optional<DateTimeZone> userZoneOpt, DateTimeZone systemZone,
             ResultTransformer resultTransformer) {
         // @formatter:off
-        String queryHistory = "select history.id, iter.id as iteration, tft.locale as locale, tf.wordCount as wordCount, history.state as state, history.lastChanged as lastChanged " +
+        String queryHistory = "select tft.id, iter.id as iteration, tft.locale as locale, tf.wordCount as wordCount, history.state as state, history.lastChanged as lastChanged " +
                 "  from HTextFlowTargetHistory history " +
                 "    join HTextFlowTarget tft on tft.id = history.target_id " +
                 "    join HTextFlow tf on tf.id = tft.tf_id " +
@@ -279,7 +280,8 @@ public class TextFlowTargetHistoryDAO extends
                 "    join HProjectIteration iter on iter.id = doc.project_iteration_id " +
                 "  where history.lastChanged >= :fromDate and history.lastChanged <= :toDate " +
                 "    and history.last_modified_by_id = :user and (history.translated_by_id is not null or history.reviewed_by_id is not null)" +
-                "    and history.state <> :untranslated and history.state <> :rejected and history.automatedEntry =:automatedEntry";
+                "    and history.state in (:states) and history.automatedEntry =:automatedEntry" +
+                "    and history.lastChanged = (select max(lastChanged) from HTextFlowTargetHistory where target_id = history.target_id)";
 
         String queryTarget = "select tft.id, iter.id as iteration, tft.locale as locale, tf.wordCount as wordCount, tft.state as state, tft.lastChanged as lastChanged " +
                 "  from HTextFlowTarget tft " +
@@ -288,7 +290,7 @@ public class TextFlowTargetHistoryDAO extends
                 "    join HProjectIteration iter on iter.id = doc.project_iteration_id " +
                 "  where tft.lastChanged >= :fromDate and tft.lastChanged <= :toDate " +
                 "    and tft.last_modified_by_id = :user and (tft.translated_by_id is not null or tft.reviewed_by_id is not null)" +
-                "    and tft.state <> :untranslated and tft.state <> :rejected and tft.automatedEntry =:automatedEntry";
+                "    and tft.state in (:states) and tft.automatedEntry =:automatedEntry";
 
         String convertedLastChanged = convertTimeZoneFunction("lastChanged",
                 userZoneOpt, systemZone);
@@ -301,13 +303,18 @@ public class TextFlowTargetHistoryDAO extends
                         "  ) as all_translation" +
                         "  group by " + dateOfLastChanged + ", iteration, locale, state " +
                         "  order by lastChanged, iteration, locale, state";
+
+        // Only select Approved, Translated and NeedReview
+        List<Integer> states =
+                getContentStateOrdinal(ContentState.TRANSLATED_STATES,
+                        Lists.newArrayList(ContentState.NeedReview));
+
         Query query = getSession().createSQLQuery(queryString)
             .setParameter("user", user.getId())
-            .setInteger("untranslated", ContentState.New.ordinal())
-                .setInteger("rejected", ContentState.Rejected.ordinal())
-            .setBoolean("automatedEntry", false)
             .setTimestamp("fromDate", fromDate.toDate())
             .setTimestamp("toDate", toDate.toDate())
+            .setParameterList("states", states)
+            .setBoolean("automatedEntry", automatedEntry)
             .setResultTransformer(resultTransformer);
         return query.list();
     }
