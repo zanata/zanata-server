@@ -82,7 +82,7 @@ public class TranslateJSONTest extends ZanataTestCase {
                 "basicjson", ".json",
                 "{ \"test\": { \"title\": \"Line One\", \"test1\": { \"title\": \"Line Two\", " +
                 "\"test2\": { \"test3\": { \"ID\": \"Line Three\", " +
-                "\"testarray\": [\"first\", \"second\"] } } } } }");
+                "\"testarray\": [\"First\", \"Second\"] } } } } }");
         zanataRestCaller.createProjectAndVersion("json-translate",
                 "json", "file");
 
