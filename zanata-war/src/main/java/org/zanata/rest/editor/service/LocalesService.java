@@ -54,14 +54,10 @@ import org.zanata.security.ZanataIdentity;
 import org.zanata.service.LocaleService;
 
 import com.google.common.collect.Lists;
-import com.ibm.icu.util.ULocale;
 
 import org.zanata.service.impl.LocaleServiceImpl;
-import org.zanata.webtrans.shared.model.Locale;
 
 import lombok.Setter;
-
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
 
 /**
  * @author Alex Eng <a href="mailto:aeng@redhat.com">aeng@redhat.com</a>
@@ -249,7 +245,7 @@ public class LocalesService implements LocalesResource {
         return result;
     }
 
-    private Function<LocaleId, LocaleDetails> convertToLocaleDetails =
+    private final Function<LocaleId, LocaleDetails> convertToLocaleDetails =
         new Function<LocaleId, LocaleDetails>() {
             @Override
             public LocaleDetails apply(LocaleId localeId) {
@@ -272,8 +268,10 @@ public class LocalesService implements LocalesResource {
             if (StringUtils.isBlank(query)) {
                 return true;
             }
-            return localeDetails.getDisplayName().contains(query)
-                || localeDetails.getLocaleId().toString().contains(query);
+            return StringUtils
+                .containsIgnoreCase(localeDetails.getDisplayName(), query)
+                || StringUtils
+                .containsIgnoreCase(localeDetails.getLocaleId().getId(), query);
         }
     }
 }
